@@ -20,12 +20,13 @@ class ContactForm(forms.Form):
 
 
 def index(request):
+    # bk1 = {"title": u"Les Misérables tome deux",
     bk1 = {"title": "Les Miserables tome deux",
-           "authors": "Victor Hugo",
+           "authors": ["Victor Hugo",],
            "price": 7
            }
     bk2 = {"title": "Living my life",
-           "authors": "Emma Goldman",
+           "authors": ["Emma Goldman",],
            "price": 7.5
            }
     bk3 = {"title": "Sans patrie ni frontières",
@@ -33,10 +34,9 @@ def index(request):
            "price": 8
            }
 
-    bkl = [bk1, bk2, bk3]
+    retlist = [bk1, bk2, bk3]
 
     form = ContactForm()
-    retlist = [bk1, ]
     if request.method == "POST":
         print "----- method is POST"
         form = ContactForm(request.POST)
@@ -47,7 +47,6 @@ def index(request):
             bkl = query.search() #on a une list d'objets decitreScraper.Book
             print "found: ", bkl
             retlist = []
-            from models import Book
 
             # import ipdb; ipdb.set_trace()
             # form.cleaned_data["title"]
@@ -96,14 +95,16 @@ def add(request):
     print "type r: ", type(req)
     # I dont know why but book is a str instead of an object
     req = req.replace("'", '"')
-    # import ipdb; ipdb.set_trace()
+    import ipdb; ipdb.set_trace()
+    # db avec title = u" : json non valide
+    req = req.replace('u"', '"') #bricolage… TODO:
     book = json.loads(req) #pb with accents
     print "my book to add to model: ", book
 
     # Connection to Ruche's DB ! => later…
-    models.Book.from_dict({'title': book['title'],
+    models.Card.from_dict({'title': book['title'],
                       # 'authors': [book['authors']],
-                      'authors': book['authors'][0],
+                      'authors': book['authors'][0], #todo [0] temp
                       'location': 'maison',
                       # 'sortkey': book['authors'],
                       # 'origkey': book['ean']

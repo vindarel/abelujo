@@ -33,7 +33,10 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
-class Book(TimeStampedModel):
+class Card(TimeStampedModel):
+    """a Card represents a book, a CD, a t-shirt, etc. This isn't the
+    physical object
+    """
     origkey = models.CharField(max_length=36, blank=True, null=True)
     title = models.TextField()
     sortkey = models.TextField('Authors', blank=True)
@@ -42,9 +45,9 @@ class Book(TimeStampedModel):
     authors = models.TextField(null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
-    comment = models.TextField(blank=True)
     ean = models.TextField(null=True)
     isbn = models.TextField(null=True)
+    comment = models.TextField(blank=True)
 
 
     class Meta:
@@ -111,7 +114,7 @@ class Book(TimeStampedModel):
         # authors = Author.objects.filter(id__in=author_ids)
 
         # Make the book
-        book, created = Book.objects.get_or_create(
+        book, created = Card.objects.get_or_create(
                 title=book['title'],
                 year_published=year,
                 authors = book.get('authors', None),
