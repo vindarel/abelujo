@@ -7,6 +7,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
                        url(r'^search/$', 'search.views.index'),
                        url(r'^add/', 'search.views.add'),
+                       # url(r'^collection/', 'collection.views.search'),
+                       url(r'^collection/', 'search.views.collection'),
                        # url(r'^search/', 'search.views.fire_query'),
     # Examples:
     # url(r'^$', 'rucheweb.views.home', name='home'),

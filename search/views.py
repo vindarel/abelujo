@@ -11,8 +11,7 @@ from django.template import RequestContext
 
 from decitreScraper import decitreScraper as scraper
 
-# from models import Location, Author, Book
-import models
+from models import Card
 
 class ContactForm(forms.Form):
     title = forms.CharField(max_length=100, required=False)
@@ -102,7 +101,7 @@ def add(request):
     print "my book to add to model: ", book
 
     # Connection to Ruche's DB ! => later…
-    models.Card.from_dict({'title': book['title'],
+    Card.from_dict({'title': book['title'],
                       # 'authors': [book['authors']],
                       'authors': book['authors'][0], #todo [0] temp
                       'location': 'maison',
@@ -124,3 +123,38 @@ def add(request):
 #                               context_instance=RequestContext(request))
 #     # return render('search/index.jade', bk_list) #forces use of RequestContext
 #     # return HttpResponse("Hello, world. You're at the search result index.")
+
+def collection(request):
+    """Search our own collection and take actions
+
+    TODO: function identical to index, except the search function: factorize
+    Arguments:
+    - `self`:
+    """
+    form = ContactForm()
+    retlist = []
+
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            if request.POST.has_key("title") and request.POST["title"]:
+                words = request.POST["title"].split()
+                #TODO: better query !
+                retlist = Card.get_from_kw(words)
+
+            elif request.POST.has_key("ean"):
+                print "--------- recherche ean"
+                ean = form.cleaned_data["ean"]
+                print "on a l ean: ", ean
+                query = scraper(ean=ean)
+                l = query.search()
+                print "livre-ean: ", l
+
+    else:
+        retlist = Card.first_cards(5)
+
+
+    return render(request, "search/collection.jade", {
+            "form": form,
+            "book_list": retlist
+            })

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 
 # Create your models here.
@@ -54,7 +56,8 @@ class Card(TimeStampedModel):
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
-        return u'%s (%s): "%s"' % (self.sortkey, self.year_published, self.title)
+        # return u'%s (%s): "%s"' % (self.sortkey, self.year_published, self.title)
+        return u'%s (%s): "%s"' % (self.title, self.authors, self.ean)
 
     @models.permalink
     def get_absolute_url(self):
@@ -76,6 +79,23 @@ class Card(TimeStampedModel):
         if not self.sortkey and self.authors:
             self.sortkey = ', '.join([a.name for a in self.authors.all()])
             self.save()
+
+    @staticmethod
+    def first_cards(nb):
+        """get the first n cards from our collection (very basic, to test)
+        """
+        ret = Card.objects.all()[:nb]
+        return ret
+
+    @staticmethod
+    def get_from_kw(words):
+        """search some card: quick to test
+        TODO:
+        """
+        #TODO: all key words !
+        print "TODO: search on all keywords"
+        return Card.objects.filter(title__contains=words[0])
+
 
     @staticmethod
     def from_dict(book):
