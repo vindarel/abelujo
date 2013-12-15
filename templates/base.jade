@@ -1,17 +1,15 @@
 html
   head
     title Ruche-web
-    {% load bootstrap3 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
   body.container
     h1 Ruche-web
     div.col-md-2(id="menu")
-        ul
-          li
+          h2
             a(href="/collection") Collection
-          li
+          h2
             a(href="/search") Entries
     div.col-md-10(id="content")
       {% block content %}
       {% endblock content %}
+    div(id="footer")
+      span Qui sommes-nous ?

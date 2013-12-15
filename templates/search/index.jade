@@ -1,10 +1,13 @@
 {% extends "base.jade" %}
 
-
 {% block content %}
 
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 
-form(action='/search/', method='post') {% csrf_token %}
+form(action='/search/', method='post')
+  {% csrf_token %}
   {% bootstrap_form form %}
   // {{ form.as_p }}
   input.btn.btn-primary(type='submit', value='submit')
