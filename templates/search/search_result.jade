@@ -1,0 +1,28 @@
+{% extends "search/index.jade" %}
+
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block search_result %}
+// for b in book_list
+for b in result_list
+  h1 Title: {{b.title}}
+  h2 Authors: {{b.authors}}
+  h3 price: {{b.price}} €
+  div {{b.description}}
+  form(action='/add/', method='post') {% csrf_token %}
+    {% csrf_token %}
+    // {% bootstrap_form result_form %}
+    // what is the way not to do that ?!
+    input(type='hidden', value="{{ b.title }}", name='title')
+    input(type='hidden', value="{{ b.authors }}", name='authors')
+    input(type='hidden', value="{{ b.description }}", name='description')
+    input(type='hidden', value="{{ b.price }}", name='price')
+    input(type='hidden', value="{{ b.ean }}", name='ean')
+    // input(type='hidden', value="{{ b }}", name='book')
+    input.btn.btn-primary(type='submit', value='add book')
+
+
+{% endblock search_result %}

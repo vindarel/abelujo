@@ -17,10 +17,15 @@ class ContactForm(forms.Form):
     title = forms.CharField(max_length=100, required=False)
     ean = forms.CharField(required=False)
 
+class BookForm(ContactForm):
+    authors = forms.CharField()
+    description = forms.IntegerField()
+    price = forms.IntegerField()
+
 
 def index(request):
-    # bk1 = {"title": u"Les Misérables tome deux",
-    bk1 = {"title": "Les Miserables tome deux",
+    bk1 = {"title": u"Les Misérables tome deux",
+    # bk1 = {"title": "Les Miserables tome deux",
            "authors": ["Victor Hugo",],
            "price": 7
            }
@@ -36,37 +41,43 @@ def index(request):
     retlist = [bk1, bk2, bk3]
 
     form = ContactForm()
+    result_form = BookForm()
     if request.method == "POST":
         print "----- method is POST"
         form = ContactForm(request.POST)
-        if request.POST.has_key("title") and request.POST["title"]:
-            s = request.POST["title"].split()
-            print "on recherche: ", s
-            query = scraper(*s)
-            bkl = query.search() #on a une list d'objets decitreScraper.Book
-            print "found: ", bkl
-            retlist = []
-
-            # import ipdb; ipdb.set_trace()
-            # form.cleaned_data["title"]
-            # passer dans un simple dict marche bien, on crée l'objet dans «add»
-            #TODO: use the __json__ method that I implemented for that !
-            for b in bkl:
-                nb = {}
-                nb["title"] = b.title
-                nb["authors"] = b.authors
-                # pb avec acents quelque part
-                # nb = Book()
-                # nb.title = b.title
-                # retlist.append(
-                    # {"title": b.title,
-                     # "authors": str(b.authors),
-                     # "price": b.price
-                     # })
-                retlist.append(nb)
-
         if form.is_valid():
-            if request.POST.has_key("ean"):
+            if request.POST.has_key("title") and request.POST["title"]:
+                # s = request.POST["title"].split()
+                s = form.cleaned_data["title"].split()
+                # print "+++++++form.cleaned_data: ", form.cleaned_data['title'].split()
+                # .POST.get('title', 'backup value')
+                print "on recherche: ", s
+                query = scraper(*s)
+                bkl = query.search() #on a une list d'objets decitreScraper.Book
+                print "found: ", bkl
+                retlist = []
+
+                # import ipdb; ipdb.set_trace()
+                # form.cleaned_data["title"]
+                # passer dans un simple dict marche bien, on crée l'objet dans «add»
+                #TODO: use the __json__ method that I implemented for that !
+                for b in bkl:
+                    nb = {}
+                    nb["title"] = b.title
+                    nb["authors"] = b.authors  # working
+                    nb["description"] = b.description
+
+                    # pb avec acents quelque part
+                    # nb = Book()
+                    # nb.title = b.title
+                    # retlist.append(
+                        # {"title": b.title,
+                         # "authors": str(b.authors),
+                         # "price": b.price
+                         # })
+                    retlist.append(nb)
+
+            elif request.POST.has_key("ean"):
                 print "--------- recherche ean"
                 ean = form.cleaned_data["ean"]
                 print "on a l ean: ", ean
@@ -75,8 +86,10 @@ def index(request):
                 print "livre-ean: ", l
 
     print "------- let's return"
-    return render(request, "search/index.jade", {
+    return render(request, "search/search_result.jade", {
             "form": form,
+            "result_form": result_form,
+            "result_list": retlist,
             # "book_list": bkl #return un objet book de decitreScraper: non
             "book_list": retlist
             })
@@ -87,27 +100,19 @@ def add(request):
     if request.method == "POST":
         print "our post: ", request.POST
 
-    print "request.pots[book]: ", request.POST["book"]
-    req = request.POST["book"]
-    print "notre r: ", req
-    print "r.title ?", req.title
-    print "type r: ", type(req)
-    # I dont know why but book is a str instead of an object
-    req = req.replace("'", '"')
     import ipdb; ipdb.set_trace()
-    # db avec title = u" : json non valide
-    req = req.replace('u"', '"') #bricolage… TODO:
-    book = json.loads(req) #pb with accents
-    print "my book to add to model: ", book
+    req = request.POST
 
+    book = {'title': req['title'],
+            'authors': [req['authors']],
+            # 'authors': book['authors'][0], #todo [0] temp
+            'price': req['price'],
+            'location': 'maison',
+            # 'sortkey': book['authors'],
+            # 'origkey': book['ean']
+            }
     # Connection to Ruche's DB ! => later…
-    Card.from_dict({'title': book['title'],
-                      # 'authors': [book['authors']],
-                      'authors': book['authors'][0], #todo [0] temp
-                      'location': 'maison',
-                      # 'sortkey': book['authors'],
-                      # 'origkey': book['ean']
-                      })
+    Card.from_dict(book)
 
 
     return render(request, 'search/add_book.jade', {
@@ -140,21 +145,26 @@ def collection(request):
             if request.POST.has_key("title") and request.POST["title"]:
                 words = request.POST["title"].split()
                 #TODO: better query !
-                retlist = Card.get_from_kw(words)
+                cards = Card.get_from_kw(words)
 
             elif request.POST.has_key("ean"):
-                print "--------- recherche ean"
-                ean = form.cleaned_data["ean"]
-                print "on a l ean: ", ean
-                query = scraper(ean=ean)
-                l = query.search()
-                print "livre-ean: ", l
+                print "todo"
+
 
     else:
-        retlist = Card.first_cards(5)
+        cards = Card.first_cards(5)
+
+    # obliged not to have unicode decode errors…
+    for card in cards:
+        retlist.append({
+                "title": card.title,
+                "authors": card.authors,
+                # "price": card.price,
+                # "description": card.description,
+                })
 
 
     return render(request, "search/collection.jade", {
             "form": form,
-            "book_list": retlist
+            "book_list": retlist # obliged to give a dict rather than an objet for accent pbs
             })
