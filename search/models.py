@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from django.db import models
 
 # Create your models here.
@@ -50,13 +49,14 @@ class Card(TimeStampedModel):
     ean = models.TextField(null=True)
     isbn = models.TextField(null=True)
     comment = models.TextField(blank=True)
-
+    price = models.CharField(null=True, max_length=20)
+    sold = models.DateField(blank=True, null=True)
+    price_sold = models.CharField(null=True, max_length=20)
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
-        # return u'%s (%s): "%s"' % (self.sortkey, self.year_published, self.title)
         return u'%s (%s): "%s"' % (self.title, self.authors, self.ean)
 
     @models.permalink
@@ -84,7 +84,8 @@ class Card(TimeStampedModel):
     def first_cards(nb):
         """get the first n cards from our collection (very basic, to test)
         """
-        ret = Card.objects.all()[:nb]
+        # ret = Card.objects.all()[:nb]
+        ret = Card.objects.order_by("-created")[:nb]
         return ret
 
     @staticmethod
@@ -96,6 +97,12 @@ class Card(TimeStampedModel):
         print "TODO: search on all keywords"
         return Card.objects.filter(title__contains=words[0])
 
+    @staticmethod
+    def sell(ean=None):
+        # import ipdb; ipdb.set_trace()
+        card = Card.objects.get(ean=ean)
+        card.sold = date.today()
+        card.price_sold = card.price
 
     @staticmethod
     def from_dict(book):
@@ -112,7 +119,6 @@ class Card(TimeStampedModel):
                         converting from another system
         """
         # Some books always go missing...
-        print "---- adding a book"
         # location_string = book.get('location', u'?')
         # location, _ = Location.objects.get_or_create(name=location_string)
 
@@ -126,7 +132,6 @@ class Card(TimeStampedModel):
 
         # Books can have more than one author, some have none
         author_ids = []
-        print "---- hello"
 
         # for a in book.get('authors', []):
         #     author, created = Author.objects.get_or_create(name=a)
@@ -135,16 +140,17 @@ class Card(TimeStampedModel):
 
         # Make the book
         book, created = Card.objects.get_or_create(
-                title=book['title'],
+                title=book.get('title'),
                 year_published=year,
                 authors = book.get('authors', None),
+                price = book.get('price',  0),
+                ean = book.get('ean')
                 # location=location,
                 # origkey=book.get('origkey', None),
                 # sortkey=book.get('sortkey', u''),
         )
 
         # Add the authors
-        print " ++++++ foo"
         # for author in authors:
             # book.authors.add(author)
 

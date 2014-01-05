@@ -5,10 +5,16 @@ html
     h1 Ruche-web
     div.col-md-2(id="menu")
           h2
-            a(href="/collection") Collection
+            a(href="/collection") Mon stock
           h2
-            a(href="/search") Entries
+            a(href="/search") Nouvelle entrée
     div.col-md-10(id="content")
+      {% if messages %}
+      ul
+        {% for msg in messages %}
+        <li {% if msg.tags %} class="{{ msg.tags }}" {% endif %}> {{msg}} </li>
+        {% endfor %}
+      {% endif %}
       {% block content %}
       {% endblock content %}
     div(id="footer")

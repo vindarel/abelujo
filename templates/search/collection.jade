@@ -15,10 +15,14 @@ form(action='/collection/', method='post')
 for b in book_list
   h1 Title: {{b.title}}
   h2 Authors: {{b.authors}}
-  h3 price: {{b.price}} €
-  form(action='/add/', method='post') {% csrf_token %}
+  h3 price: {{b.price}} €, ean: {{ b.ean }}
+  form(action='/collection/sell/', method='post') {% csrf_token %}
     // input(type='hidden', value=b.title, name='book')
+    input(type='hidden', value="{{ b.title }}", name='title')
+    input(type='hidden', value="{{ b.authors }}", name='authors')
+    input(type='hidden', value="{{ b.price }}", name='price')
+    input(type='hidden', value="{{ b.ean }}", name='ean')
     input(type='hidden', value=b, name='book')
-    input.btn.btn-primary(type='submit', value='add book')
+    input.btn.btn-primary(type='submit', value='Sell this book')
 
 {% endblock content %}

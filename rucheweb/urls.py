@@ -8,6 +8,7 @@ urlpatterns = patterns('',
                        url(r'^search/$', 'search.views.index'),
                        url(r'^add/', 'search.views.add'),
                        # url(r'^collection/', 'collection.views.search'),
+                       url(r'^collection/sell', 'search.views.sell'),
                        url(r'^collection/', 'search.views.collection'),
                        # url(r'^search/', 'search.views.fire_query'),
     # Examples:

@@ -7,9 +7,12 @@ from django import forms
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render
 from django.template import RequestContext
+from django.contrib import messages
 # from django.views.decorators.csrf import csrf_protect
 
-from decitreScraper import decitreScraper as scraper
+# from decitreScraper import decitreScraper as scraper
+from chapitreScraper import scraper
+from chapitreScraper import getEan
 
 from models import Card
 
@@ -24,18 +27,21 @@ class BookForm(ContactForm):
 
 
 def index(request):
-    bk1 = {"title": u"Les Misérables tome deux",
+    bk1 = {"title": u"Les Misérables tome 6",
     # bk1 = {"title": "Les Miserables tome deux",
-           "authors": ["Victor Hugo",],
-           "price": 7
+           "authors": "Victor Hugo",
+           "price": 7,
+           "ean": 6,
            }
     bk2 = {"title": "Living my life",
-           "authors": ["Emma Goldman",],
-           "price": 7.5
+           "authors": "Emma Goldman",
+           "price": 7.5,
+           "ean": 6969,
            }
     bk3 = {"title": "Sans patrie ni frontières",
            "authors": "Jan Valtin",
-           "price": 8
+           "price": 8,
+           "ean": 3945,
            }
 
     retlist = [bk1, bk2, bk3]
@@ -64,8 +70,13 @@ def index(request):
                 for b in bkl:
                     nb = {}
                     nb["title"] = b.title
-                    nb["authors"] = b.authors  # working
+                    nb["authors"] = ", ".join([aut for aut in b.authors])  # working
                     nb["description"] = b.description
+                    nb["price"] = b.price
+                    nb['ean'] = b.ean
+                    nb['details_url'] = b.details_url
+                    nb['editor'] = b.editor
+
 
                     # pb avec acents quelque part
                     # nb = Book()
@@ -100,23 +111,32 @@ def add(request):
     if request.method == "POST":
         print "our post: ", request.POST
 
-    import ipdb; ipdb.set_trace()
-    req = request.POST
+    req = request.POST.copy()
+
+    if not req['ean']:
+        # fire a new http request to get the ean:
+        ean = getEan(req['details_url'])
+        print "---- found ean: ", ean
+        req['ean'] = ean
 
     book = {'title': req['title'],
-            'authors': [req['authors']],
+            'authors': req['authors'],
             # 'authors': book['authors'][0], #todo [0] temp
             'price': req['price'],
             'location': 'maison',
+            'ean': req['ean'],
             # 'sortkey': book['authors'],
             # 'origkey': book['ean']
             }
     # Connection to Ruche's DB ! => later…
     Card.from_dict(book)
 
+    messages.add_message(request, messages.SUCCESS, u'Le livre «%s», de %s, a été ajouté avec succès' % (req['title'], req['authors']))
 
-    return render(request, 'search/add_book.jade', {
-                  'book': book
+    # return render(request, 'search/add_book.jade', {
+    return render(request, 'search/index.jade', {
+                  # 'book': book,
+                  'form': ContactForm()
                   })
 
 
@@ -156,10 +176,12 @@ def collection(request):
 
     # obliged not to have unicode decode errors…
     for card in cards:
+        print "=========== card: ", card
         retlist.append({
                 "title": card.title,
                 "authors": card.authors,
-                # "price": card.price,
+                "price": card.price,
+                "ean": card.ean,
                 # "description": card.description,
                 })
 
@@ -168,3 +190,20 @@ def collection(request):
             "form": form,
             "book_list": retlist # obliged to give a dict rather than an objet for accent pbs
             })
+
+def sell(request):
+    req = request.POST
+    book = {'title': req['title'],
+            'authors': req['authors'],
+            'price': req['price'],
+            'location': 'maison',
+            'ean': req['ean']
+            }
+    ret = Card.sell(ean=req['ean'])
+
+    form = ContactForm()
+    message = u"La vente de %s est bien enregistrée" % (req['title'],)
+    messages.add_message(request, messages.SUCCESS, message)
+    return render(request, 'search/index.jade', {
+                  'form': form
+                  })
