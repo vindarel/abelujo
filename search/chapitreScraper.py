@@ -113,9 +113,16 @@ class scraper:
 
         logging.info('args, kwargs: ',  args, kwargs)
         if kwargs:
+            if 'ean' in kwargs:
+                # the name of ean for the search is "reference"
+                kwargs['reference'] = kwargs['ean']
+                kwargs.pop('ean')
             # http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&titre=&ne=&n=0&auteur=&peopleId=&quicksearch=victor+hugo&editeur=&reference=&plng=&optSearch=ALL&beginDate=&endDate=&mot_cle=&prix=&themeId=&collection=&subquicksearch=&page=1
-            self.url = "http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&quicksearch=" #victor+hugo"
-            q = "+".join(kwargs.keys())
+            self.url = "http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam="
+            q = ""
+            for k, v in kwargs.iteritems():
+                urlend = "+".join(val for val in v)
+                q += "&%s=%s" % (k, urlend) # working for ean 8-1-14
 
             self.url += q
             logging.info('on recherche: ' + self.url)
