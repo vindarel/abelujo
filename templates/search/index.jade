@@ -1,5 +1,6 @@
 {% extends "base.jade" %}
 
+
 {% block content %}
 
 {% load bootstrap3 %}
@@ -10,7 +11,10 @@ form(action='/search/', method='post')
   {% csrf_token %}
   {% bootstrap_form form %}
   // {{ form.as_p }}
-  input.btn.btn-primary(type='submit', value='submit')
+  span
+    input.btn.btn-primary(type='submit', value='submit')
+    span ou:
+    a(href="/admin/search/card/add") Ajouter une fiche manuellement
 
 // for b in book_list
 //   h1 Title: {{b.title}}
