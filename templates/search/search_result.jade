@@ -7,14 +7,17 @@
 
 {% block search_result %}
 for b in result_list
-  h1 Title: {{b.title}}
-  h2 Authors: {{b.authors}}
+  if b.details_url
+    h1
+      a(href="{{b.details_url}}") {{b.title}}
+  else
+    h1 {{b.title}}
+  h2 {{b.authors}}
   h3 price: {{b.price}} € ean: {{b.ean}}
   if b.editor
     h3 editor: {{b.editor}}
   if b.description
     div {{b.description}}
-  div details_url: {{b.details_url}}
   form(action='/add/', method='post') {% csrf_token %}
     {% csrf_token %}
     // {% bootstrap_form result_form %}
