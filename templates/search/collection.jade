@@ -13,9 +13,9 @@ form(action='/collection/', method='post')
   input.btn.btn-primary(type='submit', value='submit')
 
 for b in book_list
-  h1 Title: {{b.title}}
-  h2 Authors: {{b.authors}}
-  h3 price: {{b.price}} €, ean: {{ b.ean }}
+  h3 Title: {{b.title}}
+  h4 Authors: {{b.authors}}
+  div price: {{b.price}} €, ean: {{ b.ean }}
   form(action='/collection/sell/', method='post') {% csrf_token %}
     // input(type='hidden', value=b.title, name='book')
     input(type='hidden', value="{{ b.title }}", name='title')
