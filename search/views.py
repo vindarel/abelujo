@@ -13,10 +13,26 @@ from django.contrib import messages
 # from decitreScraper import decitreScraper as scraper
 from chapitreScraper import scraper
 from chapitreScraper import getEan
+from discogsConnector import Scraper as discogs
 
 from models import Card
 
+SCRAPER_CHOICES = [
+    ("Books", (
+            ("chapitre", "chapitre.com - fr"),
+            )
+     ),
+    ("CDs", (
+            ("discogs", "discogs.com"),
+            )
+     )
+    ]
+
 class ContactForm(forms.Form):
+    current_scraper = forms.ChoiceField(choices=SCRAPER_CHOICES,
+                                        label='Data source',
+                                        # help_text='choose the data source for your query',
+                                        )
     title = forms.CharField(max_length=100, required=False)
     ean = forms.CharField(required=False)
 
@@ -53,12 +69,25 @@ def index(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             if request.POST.has_key("title") and request.POST["title"]:
-                # s = request.POST["title"].split()
-                s = form.cleaned_data["title"].split()
+                search_terms = form.cleaned_data["title"].split()
                 # print "+++++++form.cleaned_data: ", form.cleaned_data['title'].split()
-                # .POST.get('title', 'backup value')
-                print "on recherche: ", s
-                query = scraper(*s)
+                print "on recherche: ", search_terms
+                current_scraper = form.data['current_scraper']
+                if current_scraper == u'chapitre':
+                    query = scraper(*search_terms)
+                elif current_scraper == u'discogs':
+                    print "TODO: search on discogs !"
+                    query = discogs(*search_terms)
+                    card_list = query.search()
+                    return render(request, "search/search_result.jade", {
+                            "form": form,
+                            "result_form": result_form,
+                            "result_list": card_list,
+                            "book_list": card_list
+                            })
+
+                # TODO: recevoir des listes de dict, pas des objets, pour recevoir
+                # plusieurs types de scrapers.
                 bkl = query.search() #on a une list d'objets decitreScraper.Book
                 print "found: ", bkl
                 retlist = []
@@ -76,16 +105,6 @@ def index(request):
                     nb['ean'] = b.ean
                     nb['details_url'] = b.details_url
                     nb['editor'] = b.editor
-
-
-                    # pb avec acents quelque part
-                    # nb = Book()
-                    # nb.title = b.title
-                    # retlist.append(
-                        # {"title": b.title,
-                         # "authors": str(b.authors),
-                         # "price": b.price
-                         # })
                     retlist.append(nb)
 
             elif request.POST.has_key("ean"):
@@ -96,12 +115,10 @@ def index(request):
                 l = query.search()
                 print "livre-ean: ", l
 
-    print "------- let's return"
     return render(request, "search/search_result.jade", {
             "form": form,
             "result_form": result_form,
             "result_list": retlist,
-            # "book_list": bkl #return un objet book de decitreScraper: non
             "book_list": retlist
             })
 
