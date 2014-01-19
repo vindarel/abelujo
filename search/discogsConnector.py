@@ -3,6 +3,7 @@
 
 import requests
 import json
+import sys
 
 class Scraper:
 
@@ -11,6 +12,7 @@ class Scraper:
         Constructs the query url to the discogs API.
         doc: http://www.discogs.com/developers/resources/database/release.html
         """
+        self.discogs_url = "http://discogs.com"
         self.api_url = "http://api.discogs.com"
         self.db_search = self.api_url + "/database/search?q="
         self.url = ""
@@ -60,17 +62,18 @@ class Scraper:
                 rel = requests.get(release_url)
 
                 try:
-                    jrel = json.loads(rel.text)
+                    val = json.loads(rel.text)
                     # Do we return the json object or rather an object with
                     # a predefined format ?
-                    card["artist"] = jrel["artists"][0]["name"]
-                    card["title"] = jrel["title"]
-                    card["uri"] = jrel["uri"]
-                    card["format"] = jrel["formats"][0]["name"]
-                    card["tracklist"] = jrel["tracklist"]
-                    card["year"] = jrel["year"]
+                    card["authors"] = val["artists"][0]["name"]
+                    card["title"] = val["title"]
+                    card["details_url"] = self.discogs_url + val["uri"]
+                    card["format"] = val["formats"][0]["name"]
+                    if 'label' in val: card['editor'] = val['label']
+                    card["tracklist"] = val["tracklist"]
+                    card["year"] = val["year"]
                     # images, genre,…
-                    print "found album %s by %s" % (card["title"], card["artist"])
+                    print "found album %s by %s" % (card["title"], card["authors"])
                     return card
 
                 except Exception, e:
@@ -82,19 +85,22 @@ class Scraper:
             # usual case
             res = requests.get(self.url)
             json_res = json.loads(res.text)
-            results = []
-            for val in json_res['results']:
-                card = {}
-                card['authors'] = val['title']
-                card['title'] = val['title']
-                card['price'] = 10
-                card['ean'] = 'one ean'
-                if 'label' in val: card['editor'] = val['label']
-                card['details_url'] = val['uri']
-                results.append(card)
+            to_ret = []
+            for val in json_res["results"]:
+                mycard = {}
                 # import ipdb; ipdb.set_trace()
+                # mycard["authors"] = val["artists"][0]["name"]
+                if 'title' in val: mycard["title"] = val["title"]
+                if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
+                if 'format' in val: mycard["format"] = val["format"][0]
+                if 'label' in val: mycard['editor'] = val['label']
+                if 'barcode' in val: mycard['ean'] = val['barcode'][0]
+                # mycard["year"] = val["year"]
+                if 'genre' in val: mycard['genre'] = val['genre']
+                to_ret.append(mycard)
+                print "got a card: ", mycard
             # return json_res
-            return results
+            return to_ret
 
 if __name__ == '__main__':
     scrap = Scraper("kyuss")
@@ -103,4 +109,4 @@ if __name__ == '__main__':
     scrap = Scraper(ean="7559618112")
     scrap.search()
 
-    # exit(main(sys.argv[1:]))
+    exit(Scraper(*sys.argv[1:]).search())
