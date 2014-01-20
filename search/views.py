@@ -76,15 +76,7 @@ def index(request):
                 if current_scraper == u'chapitre':
                     query = scraper(*search_terms)
                 elif current_scraper == u'discogs':
-                    print "TODO: search on discogs !"
                     query = discogs(*search_terms)
-                    card_list = query.search()
-                    return render(request, "search/search_result.jade", {
-                            "form": form,
-                            "result_form": result_form,
-                            "result_list": card_list,
-                            "book_list": card_list
-                            })
 
                 retlist = query.search() # list of dicts
 
@@ -92,7 +84,8 @@ def index(request):
             "form": form,
             "result_form": result_form,
             "result_list": retlist,
-            "book_list": retlist
+            "book_list": retlist,
+            "data_source": current_scraper,
             })
 
 def add(request):
@@ -105,7 +98,7 @@ def add(request):
 
     if not req['ean']:
         # fire a new http request to get the ean:
-        ean = getEan(req['details_url'])
+        ean = getEan(req['details_url']) # TODO: généraliser
         print "---- found ean: ", ean
         req['ean'] = ean
 
