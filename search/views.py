@@ -64,6 +64,7 @@ def index(request):
 
     form = ContactForm()
     result_form = BookForm()
+    current_scraper = SCRAPER_CHOICES[0][0][0]
     if request.method == "POST":
         print "----- method is POST"
         form = ContactForm(request.POST)
