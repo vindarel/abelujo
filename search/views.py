@@ -18,7 +18,7 @@ from discogsConnector import Scraper as discogs
 from models import Card
 
 SCRAPER_CHOICES = [
-    ("Books", (
+    ("Book shops", (
             ("chapitre", "chapitre.com - fr"),
             )
      ),
@@ -86,34 +86,7 @@ def index(request):
                             "book_list": card_list
                             })
 
-                # TODO: recevoir des listes de dict, pas des objets, pour recevoir
-                # plusieurs types de scrapers.
-                bkl = query.search() #on a une list d'objets decitreScraper.Book
-                print "found: ", bkl
-                retlist = []
-
-                # import ipdb; ipdb.set_trace()
-                # form.cleaned_data["title"]
-                # passer dans un simple dict marche bien, on crée l'objet dans «add»
-                #TODO: use the __json__ method that I implemented for that !
-                for b in bkl:
-                    nb = {}
-                    nb["title"] = b.title
-                    nb["authors"] = ", ".join([aut for aut in b.authors])  # working
-                    nb["description"] = b.description
-                    nb["price"] = b.price
-                    nb['ean'] = b.ean
-                    nb['details_url'] = b.details_url
-                    nb['editor'] = b.editor
-                    retlist.append(nb)
-
-            elif request.POST.has_key("ean"):
-                print "--------- recherche ean"
-                ean = form.cleaned_data["ean"]
-                print "on a l ean: ", ean
-                query = scraper(ean=ean)
-                l = query.search()
-                print "livre-ean: ", l
+                retlist = query.search() # list of dicts
 
     return render(request, "search/search_result.jade", {
             "form": form,

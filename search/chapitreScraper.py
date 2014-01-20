@@ -19,20 +19,20 @@ ERR_OOSTOCK = "produit indisponible"
 class Book(object):
     """A title, list of authors,…
     """
-    title = ""
+    title = u""
     authors = []
 
     def __init__(self, *args, **kwargs):
         """
         """
         self.authors = []
-        self.ean = ""
-        self.isbn = ""
-        self.editor = ""
+        self.ean = u""
+        self.isbn = u""
+        self.editor = u""
         self.price = 0
-        self.img = ""
-        self.details_url = ""
-        self.description = "" # null with chapitre
+        self.img = u""
+        self.details_url = u""
+        self.description = u"" # null with chapitre
 
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
@@ -48,6 +48,18 @@ class Book(object):
         "takes key words arguments, put them into book's properties."
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
+
+    def __todict__(self):
+        res = {}
+        for attr in dir(self):
+            if (not attr.startswith('_')) and type (getattr(self, attr) != type(self.set_properties)):
+                if attr == 'authors':
+                    # that should be temporary, until the dedicated table.
+                    res[attr] = ", ".join(aut for aut in getattr(self, attr))
+                else:
+                    res[attr] = getattr(self, attr)
+
+        return res
 
     def __json__(self):
         """Returns a json representation of the object's attributes"""
@@ -322,7 +334,7 @@ class scraper:
             # details_dict = self._details(dom_product)
             # b.set_properties(**details_dict)
 
-            bk_list.append(b)
+            bk_list.append(b.__todict__())
 
         return bk_list
 
