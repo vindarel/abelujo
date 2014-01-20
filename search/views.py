@@ -97,6 +97,9 @@ def add(request):
     req = request.POST.copy()
 
     if not req['ean']:
+        data_source = req['data_source'] # scraper
+        # use the data_source generically
+
         # fire a new http request to get the ean:
         ean = getEan(req['details_url']) # TODO: généraliser
         print "---- found ean: ", ean
