@@ -1,17 +1,17 @@
 from django.conf.urls import patterns, include, url
+from django.views.generic.base import RedirectView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^$', RedirectView.as_view(url='search/')),
     url(r'^search/$', 'search.views.index'),
     url(r'^add/', 'search.views.add'),
-    # url(r'^collection/', 'collection.views.search'),
     url(r'^collection/sell', 'search.views.sell'),
     url(r'^collection/', 'search.views.collection'),
     (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
-    # url(r'^search/', 'search.views.fire_query'),
 
     # Examples:
     # url(r'^$', 'rucheweb.views.home', name='home'),
