@@ -1,7 +1,13 @@
+import os
+
 # Django settings for rucheweb project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+BASE_DIR, SETTINGS_DIR = os.path.split(os.path.abspath("./"))
+# see:
+# STATIC_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static'))
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -72,12 +78,13 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(BASE_DIR, "rucheweb", "static"), # all that are not related to a certain app
 )
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder', # looks for "static" in the app folder
     'django.contrib.staticfiles.finders.FileSystemFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
@@ -118,7 +125,7 @@ ROOT_URLCONF = 'rucheweb.urls'
 WSGI_APPLICATION = 'rucheweb.wsgi.application'
 
 TEMPLATE_DIRS = (
-    "/home/vince/projets/ruche-web/rucheweb/templates",
+    os.path.join(BASE_DIR, "rucheweb", "templates"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
