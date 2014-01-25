@@ -20,8 +20,6 @@ for b in result_list
     div {{b.description}}
   form(action='/add/', method='post') {% csrf_token %}
     {% csrf_token %}
-    // {% bootstrap_form result_form %}
-    // what is the way not to do that ?!
     input(type='hidden', value="{{ b.title }}", name='title')
     input(type='hidden', value="{{ b.authors }}", name='authors')
     if b.description
@@ -31,7 +29,7 @@ for b in result_list
     if b.editor
       input(type='hidden', value="{{ b.editor }}", name='editor')
     input(type='hidden', value="{{ b.details_url }}", name='details_url')
-    // input(type='hidden', value="{{ b }}", name='book')
+    // input(type='hidden', value="{{ b }}", name='book') // can't do that, the encoding is bad.
     input.btn.btn-primary(type='submit', value='add book', title="Ajouter cet article à mon stock")
 
 

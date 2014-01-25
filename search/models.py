@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.db import models
 
-# Create your models here.
-
-# copied from django-library
 from datetime import date
 
 from django.db import models
 
-#TODO: don't put the model in the search app
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -84,7 +79,6 @@ class Card(TimeStampedModel):
     def first_cards(nb):
         """get the first n cards from our collection (very basic, to test)
         """
-        # ret = Card.objects.all()[:nb]
         ret = Card.objects.order_by("-created")[:nb]
         return ret
 
@@ -99,7 +93,6 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def sell(ean=None):
-        # import ipdb; ipdb.set_trace()
         card = Card.objects.get(ean=ean)
         card.sold = date.today()
         card.price_sold = card.price
@@ -130,14 +123,6 @@ class Card(TimeStampedModel):
         except TypeError:
             year = None
 
-        # Books can have more than one author, some have none
-        author_ids = []
-
-        # for a in book.get('authors', []):
-        #     author, created = Author.objects.get_or_create(name=a)
-        #     author_ids.append(author.id)
-        # authors = Author.objects.filter(id__in=author_ids)
-
         # Make the book
         book, created = Card.objects.get_or_create(
                 title=book.get('title'),
@@ -145,9 +130,6 @@ class Card(TimeStampedModel):
                 authors = book.get('authors', None),
                 price = book.get('price',  0),
                 ean = book.get('ean')
-                # location=location,
-                # origkey=book.get('origkey', None),
-                # sortkey=book.get('sortkey', u''),
         )
 
         # Add the authors
@@ -157,5 +139,4 @@ class Card(TimeStampedModel):
         # Make a sortkey in case it is missing
         # book.set_sortkey()
 
-        print "--------- let's return"
         return book
