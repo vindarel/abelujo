@@ -13,11 +13,17 @@ form(action='/collection/', method='post')
   input.btn.btn-primary(type='submit', value='submit')
 
 for b in book_list
-  h3
-    a(href="/admin/search/card/{{ b.id }}") {{b.title}}
-  if b.authors
-    h4 Authors: {{b.authors}}
-  div price: {{b.price}} €, ean: {{ b.ean }}
+  table.table.table-condensed
+    tr
+      if b.img
+        td: img(src="{{ b.img }}")
+      td
+        h3
+          a(href="/admin/search/card/{{ b.id }}", title="Modifiez la notice") {{b.title}}
+        if b.authors
+          h4 {{b.authors}}
+        div price: {{b.price}} €, ean: {{ b.ean }}
+
   form(action='/collection/sell/', method='post') {% csrf_token %}
     // input(type='hidden', value=b.title, name='book')
     input(type='hidden', value="{{ b.title }}", name='title')

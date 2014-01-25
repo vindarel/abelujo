@@ -84,7 +84,7 @@ def add(request):
 
     req = request.POST.copy()
 
-    if not req['ean']:
+    if not req['ean'] and 'data_source' in req:
         data_source = req['data_source'] # scraper
         # use the data_source generically
 
@@ -143,6 +143,7 @@ def collection(request):
                 "price": card.price,
                 "ean": card.ean,
                 "id": card.id,
+                "img": card.img,
                 # "description": card.description,
                 })
 

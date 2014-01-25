@@ -86,17 +86,19 @@ class Scraper:
             res = requests.get(self.url)
             json_res = json.loads(res.text)
             to_ret = []
+            ean_list = []
             for val in json_res["results"]:
                 mycard = {}
-                # import ipdb; ipdb.set_trace()
                 # mycard["authors"] = val["artists"][0]["name"]
                 if 'title' in val: mycard["title"] = val["title"]
                 if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
                 if 'format' in val: mycard["format"] = val["format"][0]
                 if 'label' in val: mycard['editor'] = val['label']
                 if 'barcode' in val: mycard['ean'] = val['barcode'][0]
+                if 'thumb' in val: mycard['img'] = val['thumb']
                 # mycard["year"] = val["year"]
                 if 'genre' in val: mycard['genre'] = val['genre']
+                #TODO: append if ean not already present
                 to_ret.append(mycard)
                 print "got a card: ", mycard
             # return json_res

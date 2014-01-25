@@ -41,8 +41,9 @@ class Card(TimeStampedModel):
     authors = models.TextField(null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
-    ean = models.TextField(null=True)
-    isbn = models.TextField(null=True)
+    ean = models.CharField(max_length=99, null=True)
+    isbn = models.CharField(max_length=99, null=True)
+    img = models.CharField(max_length=200, null=True, blank=True)
     comment = models.TextField(blank=True)
     price = models.CharField(null=True, max_length=20)
     sold = models.DateField(blank=True, null=True)
@@ -124,12 +125,14 @@ class Card(TimeStampedModel):
             year = None
 
         # Make the book
+        print "--- adding img?", book.get('img')
         book, created = Card.objects.get_or_create(
                 title=book.get('title'),
                 year_published=year,
                 authors = book.get('authors', None),
                 price = book.get('price',  0),
-                ean = book.get('ean')
+                ean = book.get('ean'),
+                img = book.get('img', ""),
         )
 
         # Add the authors
