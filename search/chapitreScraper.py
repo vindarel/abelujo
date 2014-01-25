@@ -204,10 +204,10 @@ class scraper:
             print "Error with authors", e
 
     def _img(self, product):
+
         try:
-            # details_soup = product.getDetailsSoup()
             img_elt = product.product.find(class_='picture')
-            img_url = CHAPITRE_BASE_URL + img_elt.a.attrs['href']
+            img_url = img_elt.a.img.attrs['src']
 
             if not img_url:
                 logging.warning("img url is null")

@@ -27,7 +27,9 @@ class SearchForm(forms.Form):
                                         label='Data source',
                                         # help_text='choose the data source for your query',
                                         )
-    title = forms.CharField(max_length=100, required=False)
+    title = forms.CharField(max_length=100, required=False,
+                            min_length=4,
+                            )
     ean = forms.CharField(required=False)
 
 
@@ -67,6 +69,7 @@ def index(request):
 
                 retlist = query.search() # list of dicts
 
+    print "--- search results:", retlist
     return render(request, "search/search_result.jade", {
             "form": form,
             "result_list": retlist,
@@ -95,6 +98,7 @@ def add(request):
             'price': req['price'],
             'location': 'maison',
             'ean': req['ean'],
+            'img': req['img'],
             }
     # Connection to Ruche's DB ! => later…
     Card.from_dict(book)

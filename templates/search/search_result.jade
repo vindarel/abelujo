@@ -7,17 +7,23 @@
 
 {% block search_result %}
 for b in result_list
-  if b.details_url
-    h3
-      a(href="{{ b.details_url }}") {{b.title}}
-  else
-    h3 {{b.title}}
-  h4 {{b.authors}}
-  div price: {{b.price}} € ean: {{b.ean}}
-  if b.editor
-    div editor: {{b.editor}}
-  if b.description
-    div {{b.description}}
+  div img url: {{b.img}}
+  table.table.table-condensed
+    tr
+      td: img(src="{{ b.img }}")
+      td
+
+        if b.details_url
+          h3: a(href="{{ b.details_url }}") {{b.title}}
+        else
+          h3 {{b.title}}
+        h4 {{b.authors}}
+        div price: {{b.price}} € ean: {{b.ean}}
+        if b.editor
+          div editor: {{b.editor}}
+        if b.description
+          div {{b.description}}
+
   form(action='/add/', method='post') {% csrf_token %}
     {% csrf_token %}
     input(type='hidden', value="{{ b.title }}", name='title')
