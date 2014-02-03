@@ -1,9 +1,13 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import urllib
+
 from django import forms
 from django.shortcuts import render
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from chapitreScraper import scraper
 from chapitreScraper import getEan
@@ -32,48 +36,92 @@ class SearchForm(forms.Form):
                             )
     ean = forms.CharField(required=False)
 
+def get_rev_url(cleaned_data):
+    """ Get the reverse url with the query parameters taken from the form's cleaned data.
+
+    type cleaned_data: dict
+    return: the complete url with query params
+
+    >>> get_rev_url({"current_scraper": "chapitre", "title": u"emma goldman"})
+    /search?q=emma+goldman&source=chapitre
+    """
+
+    qparam = {}
+    qparam['q'] = cleaned_data["title"]
+    print "on recherche: ", qparam
+    qparam['source'] = cleaned_data["current_scraper"]
+    # construct the query parameters of the form
+    # q=query+param&source=discogs
+    params = urllib.urlencode(qparam)
+    rev_url = reverse("card_search") + "?" + params
+    return rev_url
 
 def index(request):
     bk1 = {"title": u"Les Misérables tome 6",
            "authors": "Victor Hugo",
            "price": 7,
            "ean": 6,
+           "img": "",
            }
     bk2 = {"title": "Living my life",
            "authors": "Emma Goldman",
            "price": 7.5,
            "ean": 6969,
+           "img": "",
            }
     bk3 = {"title": "Sans patrie ni frontières",
            "authors": "Jan Valtin",
            "price": 8,
            "ean": 3945,
+           "img": "",
            }
 
     retlist = [bk1, bk2, bk3]
 
     form = SearchForm()
+    page_title = ""
     current_scraper = SCRAPER_CHOICES[0][0][0]
     if request.method == "POST":
-        print "----- method is POST"
         form = SearchForm(request.POST)
         if form.is_valid():
             if request.POST.has_key("title") and request.POST["title"]:
-                search_terms = form.cleaned_data["title"].split()
-                print "on recherche: ", search_terms
-                current_scraper = form.data['current_scraper']
-                if current_scraper == u'chapitre':
-                    query = scraper(*search_terms)
-                elif current_scraper == u'discogs':
-                    query = discogs(*search_terms)
+                current_scraper = form.cleaned_data['current_scraper']
+                rev_url = get_rev_url(form.cleaned_data)
+                # forward to search?q=query+parameters
+                return HttpResponseRedirect(rev_url)
 
-                retlist = query.search() # list of dicts
-
-    print "--- search results:", retlist
     return render(request, "search/search_result.jade", {
             "form": form,
             "result_list": retlist,
             "data_source": current_scraper,
+            "page_title": page_title,
+            })
+
+
+def search(request):
+    form = SearchForm()
+    retlist = []
+    page_title = ""
+    current_scraper = SCRAPER_CHOICES[0][0][0]
+    if request.method == 'GET':
+        current_scraper = request.GET['source']
+        query = request.GET['q']
+        page_title = query[:20]
+        search_terms = [q for q in query.split()]
+
+        if current_scraper == u'chapitre':
+            query = scraper(*search_terms)
+        elif current_scraper == u'discogs':
+            query = discogs(*search_terms)
+
+        retlist = query.search() # list of dicts
+        print "--- search results:", retlist
+
+    return render(request, "search/search_result.jade", {
+            "form": form,
+            "result_list": retlist,
+            "data_source": current_scraper,
+            "page_title": page_title,
             })
 
 def add(request):
@@ -93,12 +141,14 @@ def add(request):
         print "---- found ean: ", ean
         req['ean'] = ean
 
+    if not 'img' in req:
+        req['img'] = ""
     book = {'title': req['title'],
             'authors': req['authors'],
             'price': req['price'],
             'location': 'maison',
             'ean': req['ean'],
-            'img': req['img'],
+            'img': req['img'] ,
             }
     # Connection to Ruche's DB ! => later…
     Card.from_dict(book)
@@ -108,7 +158,9 @@ def add(request):
     return render(request, 'search/index.jade', {
                   'form': SearchForm()
                   })
-
+    # url = reverse('search/foobar', kwargs={'foo': "foo-bar"})
+    # url = reverse('card_search') # when url has a name
+    # return HttpResponseRedirect(url + "?q=bar")
 
 def collection(request):
     """Search our own collection and take actions

@@ -5,6 +5,8 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
+{% block pagetitle %} {{ page_title }} {% endblock %}
+
 {% block search_result %}
 for b in result_list
   table.table.table-condensed
@@ -14,7 +16,7 @@ for b in result_list
       td
 
         if b.details_url
-          h3: a(href="{{ b.details_url }}") {{b.title}}
+          h3: a(href="{{ b.details_url }}", title="Voir la fiche complète sur Chapitre.com") {{b.title}}
         else
           h3 {{b.title}}
         h4 {{b.authors}}
