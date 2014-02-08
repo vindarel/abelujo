@@ -36,6 +36,7 @@ class SearchForm(forms.Form):
                             )
     ean = forms.CharField(required=False)
 
+
 def get_rev_url(cleaned_data):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
 
@@ -106,7 +107,7 @@ def search(request):
     if request.method == 'GET':
         current_scraper = request.GET['source']
         query = request.GET['q']
-        page_title = query[:20]
+        page_title = query[:50]
         search_terms = [q for q in query.split()]
 
         if current_scraper == u'chapitre':
@@ -149,18 +150,16 @@ def add(request):
             'location': 'maison',
             'ean': req['ean'],
             'img': req['img'] ,
+            'quantity': int(req['quantity']), # needs validation -> use ModelForm
             }
     # Connection to Ruche's DB ! => later…
     Card.from_dict(book)
 
-    messages.add_message(request, messages.SUCCESS, u'Le livre «%s», de %s, a été ajouté avec succès' % (req['title'], req['authors']))
+    messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (req['title'],))
 
     return render(request, 'search/index.jade', {
                   'form': SearchForm()
                   })
-    # url = reverse('search/foobar', kwargs={'foo': "foo-bar"})
-    # url = reverse('card_search') # when url has a name
-    # return HttpResponseRedirect(url + "?q=bar")
 
 def collection(request):
     """Search our own collection and take actions
@@ -171,18 +170,18 @@ def collection(request):
     """
     form = SearchForm()
     retlist = []
+    cards = []
 
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
             if request.POST.has_key("title") and request.POST["title"]:
                 words = request.POST["title"].split()
-                #TODO: better query !
+                #TODO: better query, include all authors
                 cards = Card.get_from_kw(words)
 
             elif request.POST.has_key("ean"):
-                print "todo"
-
+                print "todo: search on ean"
 
     else:
         cards = Card.first_cards(5)
@@ -196,6 +195,7 @@ def collection(request):
                 "ean": card.ean,
                 "id": card.id,
                 "img": card.img,
+                "quantity": card.quantity,
                 # "description": card.description,
                 })
 
@@ -207,12 +207,6 @@ def collection(request):
 
 def sell(request):
     req = request.POST
-    book = {'title': req['title'],
-            'authors': req['authors'],
-            'price': req['price'],
-            'location': 'maison',
-            'ean': req['ean']
-            }
     ret = Card.sell(ean=req['ean'])
 
     form = SearchForm()

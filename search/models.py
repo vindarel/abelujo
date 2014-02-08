@@ -48,6 +48,7 @@ class Card(TimeStampedModel):
     price = models.CharField(null=True, max_length=20)
     sold = models.DateField(blank=True, null=True)
     price_sold = models.CharField(null=True, max_length=20)
+    quantity = models.IntegerField(null=False, default=1)
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
@@ -93,10 +94,12 @@ class Card(TimeStampedModel):
         return Card.objects.filter(title__contains=words[0])
 
     @staticmethod
-    def sell(ean=None):
+    def sell(ean=None, quantity=1):
         card = Card.objects.get(ean=ean)
         card.sold = date.today()
         card.price_sold = card.price
+        card.quantity = card.quantity - quantity
+        card.save()
 
     @staticmethod
     def from_dict(book):
@@ -133,6 +136,7 @@ class Card(TimeStampedModel):
                 price = book.get('price',  0),
                 ean = book.get('ean'),
                 img = book.get('img', ""),
+                quantity = book.get('quantity', 1),
         )
 
         # Add the authors

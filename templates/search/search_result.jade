@@ -42,6 +42,9 @@ for b in result_list
     input(type='hidden', value="{{ data_source }}", name='data_source')
     // input(type='hidden', value="{{ b }}", name='book') // can't do that, the encoding is bad.
     input.btn.btn-primary(type='submit', value='add book', title="Ajouter cet article à mon stock")
+    span
+      span Quantité
+      input(type="text", size="5", value="1", name="quantity")
 
 
 

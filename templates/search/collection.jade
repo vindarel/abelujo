@@ -23,6 +23,7 @@ for b in book_list
         if b.authors
           h4 {{b.authors}}
         div price: {{b.price}} €, ean: {{ b.ean }}
+        div exemplaires en stock: {{ b.quantity }}
 
   form(action='/collection/sell/', method='post') {% csrf_token %}
     // input(type='hidden', value=b.title, name='book')
