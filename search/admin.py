@@ -1,6 +1,4 @@
 from django.contrib import admin
-from search.models import Card, Location, Author
+from search.models import Card
 
 admin.site.register(Card)
-admin.site.register(Location)
-admin.site.register(Author)

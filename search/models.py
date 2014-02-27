@@ -11,23 +11,6 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
-class Location(TimeStampedModel):
-    name = models.TextField(unique=True)
-
-    class Meta:
-        ordering = ('name',)
-
-    def __unicode__(self):
-        return self.name
-
-class Author(TimeStampedModel):
-    name = models.TextField(unique=True)
-
-    class Meta:
-        ordering = ('name',)
-
-    def __unicode__(self):
-        return self.name
 
 class Card(TimeStampedModel):
     """a Card represents a book, a CD, a t-shirt, etc. This isn't the

@@ -1,0 +1,13 @@
+django==1.5
+django-bootstrap3
+pyjade                   # process jade templates
+south                    # schema migration
+django-grappelli==2.4.8  # for django 1.5.
+
+# testing
+mock==1.0.1
+
+# web scrapers:
+requests
+beautifulsoup4
+ipdb

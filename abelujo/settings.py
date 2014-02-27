@@ -1,11 +1,11 @@
 import os
 
-# Django settings for rucheweb project.
+# Django settings for abelujo project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-BASE_DIR, SETTINGS_DIR = os.path.split(os.path.abspath("./"))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # see:
 # STATIC_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static'))
 
@@ -18,7 +18,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'rucheweb-db',                      # Or path to database file if using sqlite3.
+        'NAME': 'abelujo-db',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -78,7 +78,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR, "rucheweb", "static"), # all that are not related to a certain app
+    os.path.join(BASE_DIR, "static"), # all that are not related to a certain app
 )
 
 # List of finder classes that know how to find static files in
@@ -119,13 +119,13 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'rucheweb.urls'
+ROOT_URLCONF = 'abelujo.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'rucheweb.wsgi.application'
+# WSGI_APPLICATION = 'abelujo.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, "rucheweb", "templates"),
+    os.path.join(BASE_DIR, "templates"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

@@ -16,8 +16,8 @@ urlpatterns = patterns('',
     (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
 
     # Examples:
-    # url(r'^$', 'rucheweb.views.home', name='home'),
-    # url(r'^rucheweb/', include('rucheweb.foo.urls')),
+    # url(r'^$', 'abelujo.views.home', name='home'),
+    # url(r'^abelujo/', include('abelujo.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
