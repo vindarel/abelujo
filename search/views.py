@@ -99,6 +99,16 @@ def index(request):
             })
 
 
+def search_on_data_source(current_scraper, search_terms):
+    if current_scraper == u'chapitre':
+        print "--- search on chapitre"
+        query = scraper(*search_terms)
+    elif current_scraper == u'discogs':
+        query = discogs(*search_terms)
+
+    retlist = query.search() # list of dicts
+    return retlist
+
 def search(request):
     form = SearchForm()
     retlist = []
@@ -110,12 +120,7 @@ def search(request):
         page_title = query[:50]
         search_terms = [q for q in query.split()]
 
-        if current_scraper == u'chapitre':
-            query = scraper(*search_terms)
-        elif current_scraper == u'discogs':
-            query = discogs(*search_terms)
-
-        retlist = query.search() # list of dicts
+        retlist = search_on_data_source(current_scraper, search_terms)
         print "--- search results:", retlist
 
     return render(request, "search/search_result.jade", {

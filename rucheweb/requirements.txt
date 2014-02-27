@@ -4,6 +4,9 @@ pyjade
 south
 django-grappelli==2.4.8  # for django 1.5
 
+# testing
+mock==1.0.1
+
 # web scrapers:
 requests
 beautifulsoup4

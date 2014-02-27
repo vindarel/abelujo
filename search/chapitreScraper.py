@@ -293,8 +293,7 @@ class scraper:
                     logging.info('isbn: '+ details['isbn'])
 
             if not details:
-                logging.warning("Warning: we didn't get any details (ean,…) about the book" +
-                             title)
+                Logging.Warning("Warning: we didn't get any details (ean,…) about the book")
             return details
 
         except Exception, e:
