@@ -114,7 +114,7 @@ def search(request):
     retlist = []
     page_title = ""
     current_scraper = SCRAPER_CHOICES[0][0][0]
-    if request.method == 'GET':
+    if request.method == 'GET' and 'source' in request.GET.keys():
         current_scraper = request.GET['source']
         query = request.GET['q']
         page_title = query[:50]

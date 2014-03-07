@@ -12,10 +12,12 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 - chercher un titre  dans son stock et le marquer  comme vendu (ce qui
   décrémente de 1 son nombre d'exemplaires).
 
-Nous  nous  basons sur  les  spécifications  fonctionnelles du  projet
-Ruche:  http://ruche.eu.org/wiki  (auxquelles  nous  avons  d'ailleurs
-participité). N'hésitez donc  pas à les lire et à nous  dire si ce que
-nous faisons correspondra à vos besoins.
+Nous nous basons sur les spécifications fonctionnelles du projet
+Ruche, auxquelles nous avons participé:
+http://ruche.eu.org/wiki/Specifications_fonctionnelles. Nous avons
+écrit ce que nous avons compris de la gestion des dépôts, des
+commandes, etc. N'hésitez donc pas à les lire et à nous dire si ce que
+nous commençons correspondra à vos besoins.
 
 **Abelujo** signifie Ruche en Espéranto.
 
@@ -23,14 +25,13 @@ nous faisons correspondra à vos besoins.
 Installation
 ------------
 
-Create a directory for the project:
-
-    mkdir abelujo
-    cd abelujo
-
 Get the sources:
 
     git clone https://gitlab.com/vindarel/abelujo.git
+
+it creates the directory "abelujo":
+
+   cd abelujo
 
 Create  and activate  a virtual  environment (so  than we  can install
 python  libraries locally,  not globally  to your  system). Do  as you
@@ -57,7 +58,7 @@ this:
 
 and open  your browser  to [localhost:8000](http://127.0.0.1:8000).
 
-Enjoy ! Don't forget to give feedback at ehvince (at) mailz.org !
+Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 
 
 Développement
@@ -74,8 +75,8 @@ Nous utilisons:
 - l'habillage CSS  classique de Bootstrap:  http://getbootstrap.com et
   django-bootstrap3
 
-Pour récupérer les données sur  des sites distants, notre web scraping
-se  fait avec  requests  et  beautifulsoup. Si  des
-éléments de  la page  sont générés par  du JavaScript (par  exemple le
-prix ou l'ean), alors nous utilisons selenium.
+Pour récupérer les données sur des sites distants, notre web scraping
+se fait avec requests, selenium (quand une page est générée par du
+javascript) et beautifulsoup, et nous louchons fortement vers
+[scrapy](http://doc.scrapy.org/en/latest/intro/overview.html).
 

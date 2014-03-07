@@ -34,6 +34,13 @@ class SimpleTest(TestCase):
         mymock.assert_called_once_with("chapitre", [u'emma', u'goldman'])
         self.assertTemplateUsed(response, 'search/search_result.jade')
 
+    def test_urls(self):
+        res = self.c.get("/search", follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, "search/search_result.jade")
+        res = self.c.get("/BAR?title=hello")
+        self.assertEqual(res.status_code, 404)
+
 class TestViews(TestCase):
     pass # test views with RequestFactory
 
