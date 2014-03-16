@@ -5,6 +5,9 @@ import requests
 import json
 import sys
 
+DISCOGS_IMG_URL = "http://s.pixogs.com/image/"
+DEFAULT_IMG_SIZE = "150"  # "90" or "150"
+
 class Scraper:
 
     def __init__(self, *args, **kwargs):
@@ -36,6 +39,33 @@ class Scraper:
                 query = "+".join(arg for arg in kwargs["artist"])
                 self.url = self.db_search + query + "&type=" + "artist"
                 print "on cherche: " + self.url
+
+    def _construct_img_url(self, thumb_url, search_type="R"):
+        """As of beginning of march 2014, it appears the thumbnail url we were
+        getting through the api search requires an Oauth
+        authentication. We don't want to do that (yet?), so here's a
+        way to go to the thumbnail we see with a manual search on the
+        website.
+
+        search_type: release -> R, artist -> A ??
+
+        return type: str
+
+        Example:
+        >>> _construct_img_url(http://api.discogs.com/image/R-90-1768971-1242146278.jpeg)
+        http://s.pixogs.com/image/R-90-2172525-1289524848.jpeg
+
+        """
+        try:
+            split = thumb_url.split("-")
+            assert len(split) > 2
+            pixogs_url = DISCOGS_IMG_URL + search_type
+            myimg = "-".join([pixogs_url, DEFAULT_IMG_SIZE] + split[-2:])
+            return myimg
+        except Exception, e:
+            # It doesn t work in some cases
+            # print "--- error getting the image url: ", e
+            return ""
 
     def search(self):
         """
@@ -95,7 +125,11 @@ class Scraper:
                 if 'format' in val: mycard["format"] = val["format"][0]
                 if 'label' in val: mycard['editor'] = val['label']
                 if 'barcode' in val: mycard['ean'] = val['barcode'][0]
-                if 'thumb' in val: mycard['img'] = val['thumb']
+                if 'thumb' in val:
+                    # that link appears not to be available without Oauth registration any more.
+                    # Construct the link we see with a search via the website.
+                    # following works for albums, not artists or sthg else.TODO: artist search
+                    mycard['img'] = self._construct_img_url(val['thumb'])
                 # mycard["year"] = val["year"]
                 if 'genre' in val: mycard['genre'] = val['genre']
                 #TODO: append if ean not already present
