@@ -40,7 +40,7 @@ class Scraper:
                 self.url = self.db_search + query + "&type=" + "artist"
                 print "on cherche: " + self.url
 
-    def _construct_img_url(self, thumb_url, search_type="R"):
+    def _construct_img_url(self, thumb_url, search_type="R", size=DEFAULT_IMG_SIZE):
         """As of beginning of march 2014, it appears the thumbnail url we were
         getting through the api search requires an Oauth
         authentication. We don't want to do that (yet?), so here's a
@@ -48,19 +48,19 @@ class Scraper:
         website.
 
         search_type: release -> R, artist -> A ??
-
+        size: str, "90" or "150"
         return type: str
 
         Example:
         >>> _construct_img_url(http://api.discogs.com/image/R-90-1768971-1242146278.jpeg)
-        http://s.pixogs.com/image/R-90-2172525-1289524848.jpeg
+        http://s.pixogs.com/image/R-150-1768971-1242146278.jpeg
 
         """
         try:
             split = thumb_url.split("-")
             assert len(split) > 2
             pixogs_url = DISCOGS_IMG_URL + search_type
-            myimg = "-".join([pixogs_url, DEFAULT_IMG_SIZE] + split[-2:])
+            myimg = "-".join([pixogs_url, size] + split[-2:])
             return myimg
         except Exception, e:
             # It doesn t work in some cases

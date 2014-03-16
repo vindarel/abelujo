@@ -20,7 +20,8 @@ scraper = os.path.join(cdpp, 'decitreScraper')
 sys.path.append(cdpp)
 from discogsConnector import Scraper as scraper
 
-"""Test that our scraper still works fine with the real discogs website
+"""
+Test that our scraper still works fine with the real discogs website.
 """
 
 class TestDiscogsE2E(unittest.TestCase):
