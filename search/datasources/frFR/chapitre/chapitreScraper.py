@@ -10,8 +10,11 @@ from bs4 import BeautifulSoup
 import sys
 import re
 import requests
+import requests_cache
 import logging
 import json
+
+requests_cache.install_cache()
 
 CHAPITRE_BASE_URL = "http://www.chapitre.com"
 ERR_OOSTOCK = "produit indisponible"
