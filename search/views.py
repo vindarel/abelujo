@@ -9,9 +9,9 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from chapitreScraper import scraper
-from chapitreScraper import getEan
-from discogsConnector import Scraper as discogs
+from datasources.frFR.chapitre.chapitreScraper import scraper
+from datasources.frFR.chapitre.chapitreScraper import getEan
+from datasources.all.discogs.discogsConnector import Scraper as discogs
 
 from models import Card
 

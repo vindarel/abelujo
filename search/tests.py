@@ -38,10 +38,12 @@ class SimpleTest(TestCase):
         res = self.c.get("/search", follow=True)
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "search/search_result.jade")
-        res = self.c.get("/BAR?title=hello")
+        res = self.c.get("/BAR?q=hello")
         self.assertEqual(res.status_code, 404)
+        # Don't fire the query. We may want to setup cache.
+        # res = self.c.get("/search?q=living+life&source=chapitre", follow=True)
+        # self.assertEqual(res.status_code, 200)
 
 class TestViews(TestCase):
     pass # test views with RequestFactory
 
-# test that text appears in the response: assertContains
