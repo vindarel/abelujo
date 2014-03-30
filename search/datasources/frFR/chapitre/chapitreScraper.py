@@ -47,15 +47,10 @@ class Book(object):
         print "\tcover: " + self.img
         print "\n"
 
-    def set_properties(self, *args, **kwargs):
-        "takes key words arguments, put them into book's properties."
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
-
     def __todict__(self):
         res = {}
         for attr in dir(self):
-            if (not attr.startswith('_')) and type (getattr(self, attr) != type(self.set_properties)):
+            if not attr.startswith('_'):
                 if attr == 'authors':
                     # that should be temporary, until the dedicated table.
                     res[attr] = ", ".join(aut for aut in getattr(self, attr))
@@ -68,7 +63,7 @@ class Book(object):
         """Returns a json representation of the object's attributes"""
         res = {}
         for attr in dir(self):
-            if (not attr.startswith('_')) and type(getattr(self, attr)) != type(self.set_properties):
+            if not attr.startswith('_'):
                 res[attr] = getattr(self, attr)
 
         return json.dumps(res, indent=4) #TODO:remove indent for prod

@@ -28,20 +28,9 @@ for b in result_list
 
   form(action='/add/', method='post') {% csrf_token %}
     {% csrf_token %}
-    input(type='hidden', value="{{ b.title }}", name='title')
-    input(type='hidden', value="{{ b.authors }}", name='authors')
-    if b.description
-      input(type='hidden', value="{{ b.description }}", name='description')
-    input(type='hidden', value="{{ b.price }}", name='price')
-    input(type='hidden', value="{{ b.ean }}", name='ean')
-    if b.editor
-      input(type='hidden', value="{{ b.editor }}", name='editor')
-    input(type='hidden', value="{{ b.details_url }}", name='details_url')
-    if b.img
-      input(type='hidden', value="{{ b.img }}", name='img')
+    input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
     input(type='hidden', value="{{ data_source }}", name='data_source')
-    // input(type='hidden', value="{{ b }}", name='book') // can't do that, the encoding is bad.
-    input.btn.btn-primary(type='submit', value='add book', title="Ajouter cet article à mon stock")
+    input.btn.btn-primary(type='submit', value='Ajouter', title="Ajouter cet article à mon stock")
     span
       span Quantité
       input(type="text", size="5", value="1", name="quantity")

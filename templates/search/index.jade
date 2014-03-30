@@ -12,20 +12,9 @@ form(action='/search/', method='post')
   {% bootstrap_form form %}
   // {{ form.as_p }}
   span
-    input.btn.btn-primary(type='submit', value='submit')
-    span ou:
+    input.btn.btn-primary(type='submit', value='Rechercher')
+    span  ou: 
     a(href="/admin/search/card/add") Ajouter une fiche manuellement
-
-// for b in book_list
-//   h1 Title: {{b.title}}
-//   h2 Authors: {{b.authors}}
-//   h3 price: {{b.price}} €
-//   div {{b.description}}
-//   form(action='/add/', method='post') {% csrf_token %}
-//     // input(type='hidden', value=b.title, name='book')
-//     input(type='hidden', value=b, name='book')
-//     input.btn.btn-primary(type='submit', value='add book')
-
 
 div.col-md-10
   {% block search_result %}

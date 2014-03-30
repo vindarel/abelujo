@@ -111,7 +111,6 @@ class Card(TimeStampedModel):
             year = None
 
         # Make the book
-        print "--- adding img?", book.get('img')
         book, created = Card.objects.get_or_create(
                 title=book.get('title'),
                 year_published=year,

@@ -114,6 +114,8 @@ def search(request):
     retlist = []
     page_title = ""
     current_scraper = SCRAPER_CHOICES[0][0][0]
+    if "search_result" in request.session:
+        retlist = request.session["search_result"]
     if request.method == 'GET' and 'source' in request.GET.keys():
         current_scraper = request.GET['source']
         query = request.GET['q']
@@ -121,6 +123,7 @@ def search(request):
         search_terms = [q for q in query.split()]
 
         retlist = search_on_data_source(current_scraper, search_terms)
+        request.session["search_result"] = retlist
         print "--- search results:", retlist
 
     return render(request, "search/search_result.jade", {
@@ -137,10 +140,13 @@ def add(request):
         print "our post: ", request.POST
 
     req = request.POST.copy()
+    forloop_counter0 = int(req["forloop_counter0"])
+    cur_search_result = request.session["search_result"]
+    req = cur_search_result[forloop_counter0]
+    req['quantity'] = request.POST['quantity']
 
     if not req['ean'] and 'data_source' in req:
         data_source = req['data_source'] # scraper
-        # use the data_source generically
 
         # fire a new http request to get the ean (or other missing informations):
         ean = getEan(req['details_url']) # TODO: généraliser
@@ -149,21 +155,18 @@ def add(request):
 
     if not 'img' in req:
         req['img'] = ""
-    book = {'title': req['title'],
-            'authors': req['authors'],
-            'price': req['price'],
-            'location': 'maison',
-            'ean': req['ean'],
-            'img': req['img'] ,
-            'quantity': int(req['quantity']), # needs validation -> use ModelForm
-            }
+
+    # book = {'result_list': cur_,
+            # 'quantity': int(request.POST['quantity']), # needs validation -> use ModelForm
+            # }
     # Connection to Ruche's DB ! => later…
-    Card.from_dict(book)
+    Card.from_dict(req)
 
     messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (req['title'],))
 
-    return render(request, 'search/index.jade', {
-                  'form': SearchForm()
+    return render(request, 'search/search_result.jade', {
+                  'form': SearchForm(),
+                  'result_list': cur_search_result,
                   })
 
 def collection(request):
