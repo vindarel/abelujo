@@ -119,8 +119,10 @@ class Scraper:
             ean_list = []
             for val in json_res["results"]:
                 mycard = {}
-                # mycard["authors"] = val["artists"][0]["name"]
-                if 'title' in val: mycard["title"] = val["title"]
+                if 'title' in val:
+                    mycard["authors"] = [val['title'].split('-')[0]]  # what if the band name contains a - ?
+                if 'title' in val:
+                    mycard["title"] = val["title"]
                 if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
                 if 'format' in val: mycard["format"] = val["format"][0]
                 if 'label' in val: mycard['editor'] = val['label']
@@ -135,7 +137,6 @@ class Scraper:
                 #TODO: append if ean not already present
                 to_ret.append(mycard)
                 print "got a card: ", mycard
-            # return json_res
             return to_ret
 
 if __name__ == '__main__':

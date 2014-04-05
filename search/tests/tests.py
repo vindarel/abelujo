@@ -11,18 +11,9 @@ Do not call the real scrapers: use the mock library.
 """
 
 import mock
-import os
-import sys
 
 from django.test import TestCase
 from django.test.client import Client
-
-# Argh: figure out exactly how Django1.6's test runner works.
-# common_dir = os.path.dirname(os.path.abspath(__file__))
-# cdp, _ = os.path.split(common_dir)
-# sys.path.append(cdp)
-# import ipdb; ipdb.set_trace()
-from search.models import Card
 
 class SimpleTest(TestCase):
     fixture = [{"title":'fixture'}]
@@ -53,4 +44,28 @@ class SimpleTest(TestCase):
         # self.assertEqual(res.status_code, 200)
 
 class TestViews(TestCase):
-    pass # test views with RequestFactory
+    def setUp(self):
+        self.c = Client()
+
+    def test_sell(self):
+        pass # test views with RequestFactory
+
+
+class TestTemplates(TestCase):
+
+    fixture = [{"title": "my discogs search"}]
+
+    def setUp(self):
+        self.c = Client()
+        self.fixture = [{"title": "my discogs search"}]
+
+    @mock.patch('search.views.search_on_data_source', return_value=fixture)
+    def test_discogs_search_results(self, mymock):
+        response = self.c.get("/search", {u'q': u'sky valley', 'source':'discogs'})
+        mymock.assert_called_once_with("discogs", [u'sky', u'valley'])
+        self.assertEqual(response.context['result_list'], self.fixture)
+        self.assertEqual(response.context['data_source'], "discogs")
+        self.assertEqual(response.context['page_title'], u'sky valley')
+        self.assertTemplateUsed(response, 'search/search_result.jade')
+        self.assertContains(response, self.fixture[0]['title'])
+

@@ -11,17 +11,25 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
+class Author(TimeStampedModel):
+    name = models.TextField(unique=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __unicode__(self):
+        return self.name
 
 class Card(TimeStampedModel):
-    """a Card represents a book, a CD, a t-shirt, etc. This isn't the
-    physical object
+    """A Card represents a book, a CD, a t-shirt, etc. This isn't the
+    physical object.
     """
     origkey = models.CharField(max_length=36, blank=True, null=True)
     title = models.TextField()
     sortkey = models.TextField('Authors', blank=True)
     year_published = models.DateField(blank=True, null=True)
-    # authors = models.ManyToManyField(Author)
-    authors = models.TextField(null=True)
+    authors = models.ManyToManyField(Author)
+    # authors = models.TextField(null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
     ean = models.CharField(max_length=99, null=True)
@@ -37,7 +45,7 @@ class Card(TimeStampedModel):
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
-        return u'%s (%s): "%s"' % (self.title, self.authors, self.ean)
+        return u'%s (%s): "%s"' % (self.title, self.authors.all(), self.ean)
 
     @models.permalink
     def get_absolute_url(self):
@@ -85,13 +93,13 @@ class Card(TimeStampedModel):
         card.save()
 
     @staticmethod
-    def from_dict(book):
+    def from_dict(card):
         """Add a book from a dict.
 
         Format of dict:
             title:      string
             year:       int or None
-            authors:    list of strings
+            authors:    list of authors names (list of str)
             location:   string
             sortkey:    string of authors in the order they appear on
                         the cover
@@ -99,33 +107,41 @@ class Card(TimeStampedModel):
                         converting from another system
         """
         # Some books always go missing...
-        # location_string = book.get('location', u'?')
+        # location_string = card.get('location', u'?')
         # location, _ = Location.objects.get_or_create(name=location_string)
 
         # Unknown years is okay
-        year = book.get('year', None)
+        year = card.get('year', None)
         try:
             int(year)
             year = date(year, 1, 1)
         except TypeError:
             year = None
 
-        # Make the book
-        book, created = Card.objects.get_or_create(
-                title=book.get('title'),
+        # Make the card
+        print "--- authors ? ", card.get('authors')
+        # Get authors or create
+        card_authors = []
+        if "authors" in card:
+            for aut in card["authors"]:
+                author, created = Author.objects.get_or_create(name=aut)
+                card_authors.append(author)
+        else:
+            print "this card has no authors (ok for a CD): %s" % (card['title'],)
+
+        card, created = Card.objects.get_or_create(
+                title=card.get('title'),
                 year_published=year,
-                authors = book.get('authors', None),
-                price = book.get('price',  0),
-                ean = book.get('ean'),
-                img = book.get('img', ""),
-                quantity = book.get('quantity', 1),
+                price = card.get('price',  0),
+                ean = card.get('ean'),
+                img = card.get('img', ""),
+                quantity = card.get('quantity', 1),
         )
 
-        # Add the authors
-        # for author in authors:
-            # book.authors.add(author)
+        if card_authors:  # TODO: more tests !
+            card.authors.add(*card_authors)
 
         # Make a sortkey in case it is missing
-        # book.set_sortkey()
+        # card.set_sortkey()
 
-        return book
+        return card

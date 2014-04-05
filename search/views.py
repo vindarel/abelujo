@@ -27,7 +27,7 @@ SCRAPER_CHOICES = [
     ]
 
 class SearchForm(forms.Form):
-    current_scraper = forms.ChoiceField(choices=SCRAPER_CHOICES,
+    data_source = forms.ChoiceField(choices=SCRAPER_CHOICES,
                                         label='Data source',
                                         # help_text='choose the data source for your query',
                                         )
@@ -43,14 +43,14 @@ def get_rev_url(cleaned_data):
     type cleaned_data: dict
     return: the complete url with query params
 
-    >>> get_rev_url({"current_scraper": "chapitre", "title": u"emma goldman"})
+    >>> get_rev_url({"data_source": "chapitre", "title": u"emma goldman"})
     /search?q=emma+goldman&source=chapitre
     """
 
     qparam = {}
     qparam['q'] = cleaned_data["title"]
     print "on recherche: ", qparam
-    qparam['source'] = cleaned_data["current_scraper"]
+    qparam['source'] = cleaned_data["data_source"]
     # construct the query parameters of the form
     # q=query+param&source=discogs
     params = urllib.urlencode(qparam)
@@ -81,12 +81,12 @@ def index(request):
 
     form = SearchForm()
     page_title = ""
-    current_scraper = SCRAPER_CHOICES[0][0][0]
+    data_source = SCRAPER_CHOICES[0][0][0]
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
             if request.POST.has_key("title") and request.POST["title"]:
-                current_scraper = form.cleaned_data['current_scraper']
+                data_source = form.cleaned_data['data_source']
                 rev_url = get_rev_url(form.cleaned_data)
                 # forward to search?q=query+parameters
                 return HttpResponseRedirect(rev_url)
@@ -94,16 +94,16 @@ def index(request):
     return render(request, "search/search_result.jade", {
             "form": form,
             "result_list": retlist,
-            "data_source": current_scraper,
+            "data_source": data_source,
             "page_title": page_title,
             })
 
 
-def search_on_data_source(current_scraper, search_terms):
-    if current_scraper == u'chapitre':
+def search_on_data_source(data_source, search_terms):
+    if data_source == u'chapitre':
         print "--- search on chapitre"
         query = scraper(*search_terms)
-    elif current_scraper == u'discogs':
+    elif data_source == u'discogs':
         query = discogs(*search_terms)
 
     retlist = query.search() # list of dicts
@@ -113,23 +113,23 @@ def search(request):
     form = SearchForm()
     retlist = []
     page_title = ""
-    current_scraper = SCRAPER_CHOICES[0][0][0]
+    data_source = SCRAPER_CHOICES[0][0][0]
     if "search_result" in request.session:
         retlist = request.session["search_result"]
     if request.method == 'GET' and 'source' in request.GET.keys():
-        current_scraper = request.GET['source']
+        data_source = request.GET['source']
         query = request.GET['q']
         page_title = query[:50]
         search_terms = [q for q in query.split()]
 
-        retlist = search_on_data_source(current_scraper, search_terms)
+        retlist = search_on_data_source(data_source, search_terms)
         request.session["search_result"] = retlist
         print "--- search results:", retlist
 
     return render(request, "search/search_result.jade", {
             "form": form,
             "result_list": retlist,
-            "data_source": current_scraper,
+            "data_source": data_source,
             "page_title": page_title,
             })
 
@@ -142,27 +142,24 @@ def add(request):
     req = request.POST.copy()
     forloop_counter0 = int(req["forloop_counter0"])
     cur_search_result = request.session["search_result"]
-    req = cur_search_result[forloop_counter0]
-    req['quantity'] = request.POST['quantity']
+    card = cur_search_result[forloop_counter0]
+    card['quantity'] = request.POST['quantity']
 
-    if not req['ean'] and 'data_source' in req:
-        data_source = req['data_source'] # scraper
+    if not card['ean']:
+        if not 'data_source' in req:
+            print "Error: the data source is unknown."
+            # return an error page
+        else:
+            data_source = req['data_source']
+            # fire a new http request to get the ean (or other missing informations):
+            ean = getEan(card['details_url']) # TODO: généraliser
+            print "---- looked for and found ean: ", ean
+            card['ean'] = ean
 
-        # fire a new http request to get the ean (or other missing informations):
-        ean = getEan(req['details_url']) # TODO: généraliser
-        print "---- found ean: ", ean
-        req['ean'] = ean
-
-    if not 'img' in req:
-        req['img'] = ""
-
-    # book = {'result_list': cur_,
-            # 'quantity': int(request.POST['quantity']), # needs validation -> use ModelForm
-            # }
     # Connection to Ruche's DB ! => later…
-    Card.from_dict(req)
+    Card.from_dict(card)
 
-    messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (req['title'],))
+    messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
 
     return render(request, 'search/search_result.jade', {
                   'form': SearchForm(),
@@ -194,11 +191,10 @@ def collection(request):
     else:
         cards = Card.first_cards(5)
 
-    # obliged not to have unicode decode errors…
     for card in cards:
         retlist.append({
                 "title": card.title,
-                "authors": card.authors,
+                "authors": ", ".join([ca.name for ca in card.authors.all()]),
                 "price": card.price,
                 "ean": card.ean,
                 "id": card.id,
@@ -210,16 +206,20 @@ def collection(request):
 
     return render(request, "search/collection.jade", {
             "form": form,
-            "book_list": retlist # obliged to give a dict rather than an objet for accent pbs
+            "book_list": retlist
             })
 
 def sell(request):
-    req = request.POST
-    ret = Card.sell(ean=req['ean'])
-
     form = SearchForm()
-    message = u"La vente de %s est bien enregistrée" % (req['title'],)
-    messages.add_message(request, messages.SUCCESS, message)
+    req = request.POST
+    if not req["ean"]:
+        msg = u"Erreur: cette notice n'a pas d'ean et ne peut être vendue."
+        messages.add_message(request, messages.ERROR, msg)
+    else:
+        ret = Card.sell(ean=req['ean'])
+        message = u"La vente de %s est bien enregistrée" % (req['title'],)
+        messages.add_message(request, messages.SUCCESS, message)
+
     return render(request, 'search/index.jade', {
                   'form': form
                   })

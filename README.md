@@ -60,11 +60,20 @@ and open  your browser  to [localhost:8000](http://127.0.0.1:8000).
 
 Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 
+### How to update ###
+
+
+For now, when you update the sources (git pull), you certainly will
+have to run the installation process again. We may have updated some
+python packages and the database is very likely to change too (and we
+didn't set up some DB schema migration yet, meaning you'll loose your
+data).
+
 
 Développement
 -------------
 
-Projet Django (2.6), en python (2.7).
+Projet Django (1.6), en python (2.7).
 
 Nous utilisons:
 

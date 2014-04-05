@@ -19,7 +19,10 @@ for b in result_list
           h3: a(href="{{ b.details_url }}", title="Voir la fiche complète sur {{ data_source }}") {{ b.title }}
         else
           h3 {{b.title}}
-        h4 {{b.authors}}
+        h4
+          if b.authors
+            for author in b.authors
+              div {{ author }}
         div price: {{b.price}} € ean: {{b.ean}}
         if b.editor
           div editor: {{b.editor}}

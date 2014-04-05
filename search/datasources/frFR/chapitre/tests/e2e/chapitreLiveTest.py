@@ -33,8 +33,6 @@ class testChapitreFromEan(unittest.TestCase):
         pass
 
     def test_nbr_results(self):
-        print self.bk_list
-        print self.book.__print__()
         self.assertEqual(u"1", self.s._nbr_results())
 
     def test_product_list(self):
@@ -46,14 +44,23 @@ class testChapitreFromEan(unittest.TestCase):
         self.assertTrue(self.book)
 
     def test_title(self):
-        self.assertEqual(u"Les Miserables", self.book.title)
+        self.assertEqual(u"Les Miserables", self.book["title"])
 
     def test_authors(self):
         auths = ["Victor Hugo",]
-        self.assertEqual(auths, self.book.authors)
+        self.assertEqual(auths, self.book["authors"])
+
+    def test_many_authors(self):
+        """The cache is enabled in the scraper. Find how to disable it for end to end tests.
+        """
+        ean = "9782756030067"  # a comic book with 3 authors
+        scrap = scraper(ean=[ean,])
+        bkl = scrap.search()
+        bk = bkl[0]
+        self.assertEqual(len(bk["authors"]), 3)
 
     def test_price(self):
-        self.assertEqual(u'3,50', self.book.price)
+        self.assertEqual(u'3,50', self.book["price"])
 
     def test_book_details(self):
         b = Book(isbn="978-2-03-583425-6", ean="9782035834256",

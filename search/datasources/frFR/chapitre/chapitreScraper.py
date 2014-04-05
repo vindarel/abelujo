@@ -51,11 +51,7 @@ class Book(object):
         res = {}
         for attr in dir(self):
             if not attr.startswith('_'):
-                if attr == 'authors':
-                    # that should be temporary, until the dedicated table.
-                    res[attr] = ", ".join(aut for aut in getattr(self, attr))
-                else:
-                    res[attr] = getattr(self, attr)
+                res[attr] = getattr(self, attr)
 
         return res
 
@@ -193,9 +189,10 @@ class scraper:
         try:
             authors_l = product.product.find_all('em')
             for a in authors_l:
-                aut = a.text.strip("(auteur)").strip()
+                aut = a.text.strip()
                 # author_hrf = aut.a.attrs["href"]
-                authors.append(aut)
+                aut = aut.replace("(auteur)", "").replace("(Auteur)", "").split(";")
+                authors += aut
             logging.info('authors: '+ ', '.join(a for a in authors))
             return authors
         except Exception, e:
@@ -270,32 +267,6 @@ class scraper:
         except Exception, e:
             print "Error while getting the editor", e
 
-    def _details(self, product):
-        try:
-            details_soup = product.getDetailsSoup()
-            tech = details_soup.find(class_='technic')
-            li = tech.find_all('li')
-
-            details = {}
-            for k in li:
-                key = k.contents[0].strip().lower()
-                if key == 'ean :':
-                    # details['ean'] = k.em.text.strip()
-                    details['ean'] = "no direct ean with chapitre."
-                    logging.info('ean: ' + details['ean'])
-                elif key == 'editeur :':
-                    details['editor'] = k.em.text.strip()
-                    logging.info('editor: ' + details['editor'])
-                elif key == 'isbn :':
-                    details['isbn'] = k.em.text.strip()
-                    logging.info('isbn: '+ details['isbn'])
-
-            if not details:
-                Logging.Warning("Warning: we didn't get any details (ean,…) about the book")
-            return details
-
-        except Exception, e:
-            print 'Error on getting book details', e
 
     def search(self, *args, **kwargs): # rename in getBooks ?
         """Searches books. Returns a list of books.
@@ -309,7 +280,7 @@ class scraper:
         bk_list = []
         product_list = self._product_list()
         nbr_results = self._nbr_results()
-        print "nbr_results: "+ nbr_results
+        # print "nbr_results: "+ nbr_results
         for product in product_list:
             b = Book()
             dom_product = DomProduct(product)
@@ -317,19 +288,11 @@ class scraper:
             b.details_url = self._details_url(dom_product)
             b.authors = self._authors(dom_product)
 
-            # the following need to open another connection -> slow
-            # do it on demand.
-            #TODO: the price is on the first page but I can't grab it
             b.price = self._price(dom_product)
             # Summary (4e de couv ?)
             # b.description = self._description(dom_product) #no desc with chapitre
             b.img = self._img(dom_product)
             b.editor = self._editor(dom_product)
-
-            # Technical details: ean, editor,…
-            # this is dependant from a page's implementation(decitre): not good.
-            # details_dict = self._details(dom_product)
-            # b.set_properties(**details_dict)
 
             bk_list.append(b.__todict__())
 
@@ -355,4 +318,3 @@ def getEan(url):
     except Exception, e:
         print "Error while getting the ean of %s :" % (url,)
         print e
-
