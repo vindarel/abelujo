@@ -11,10 +11,18 @@ Do not call the real scrapers: use the mock library.
 """
 
 import mock
+import os
+import sys
 
 from django.test import TestCase
 from django.test.client import Client
 
+# Argh: figure out exactly how Django1.6's test runner works.
+# common_dir = os.path.dirname(os.path.abspath(__file__))
+# cdp, _ = os.path.split(common_dir)
+# sys.path.append(cdp)
+# import ipdb; ipdb.set_trace()
+from search.models import Card
 
 class SimpleTest(TestCase):
     fixture = [{"title":'fixture'}]
@@ -46,4 +54,3 @@ class SimpleTest(TestCase):
 
 class TestViews(TestCase):
     pass # test views with RequestFactory
-

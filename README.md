@@ -64,7 +64,7 @@ Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 Développement
 -------------
 
-Projet Django (2.5), en python (2.7).
+Projet Django (2.6), en python (2.7).
 
 Nous utilisons:
 
@@ -79,4 +79,3 @@ Pour récupérer les données sur des sites distants, notre web scraping
 se fait avec requests, selenium (quand une page est générée par du
 javascript) et beautifulsoup, et nous louchons fortement vers
 [scrapy](http://doc.scrapy.org/en/latest/intro/overview.html).
-
