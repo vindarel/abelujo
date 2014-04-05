@@ -3,12 +3,13 @@ django-bootstrap3
 pyjade                  # process jade templates
 south                   # schema migration
 django-grappelli==2.4.8 # for django 1.5.
+django_extensions==1.3.3# more useful commands to manage.py (shell_plus)
 
 ### testing
 mock==1.0.1
+ipdb
 
 ### web scrapers:
 requests
 requests_cache          # set up a cache in 2 loc
 beautifulsoup4
-ipdb

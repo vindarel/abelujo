@@ -139,12 +139,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap3',
-    'search',
+    'django_extensions',
     'grappelli', # fancy admin UI
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+
+    # Custom:
+    'search',
 )
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
