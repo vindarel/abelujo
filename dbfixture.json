@@ -1,20 +1,50 @@
 [
-{
-    "pk": 1,
-    "model": "auth.user",
-    "fields": {
-        "username": "admin",
-        "first_name": "",
-        "last_name": "",
-        "is_active": true,
-        "is_superuser": true,
-        "is_staff": true,
-        "last_login": "2014-02-28T22:34:38.179Z",
-        "groups": [],
-        "user_permissions": [],
-        "password": "pbkdf2_sha256$10000$CknB4de8HLEw$dqln3JEFWUPZCOqlTozzTXb4B0eo3VYc8WtuIKrbiOE=",
-        "email": "",
-        "date_joined": "2014-02-27T23:18:24.202Z"
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": true,
+            "is_staff": true,
+            "last_login": "2014-02-28T22:34:38.179Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$CknB4de8HLEw$dqln3JEFWUPZCOqlTozzTXb4B0eo3VYc8WtuIKrbiOE=",
+            "email": "",
+            "date_joined": "2014-02-27T23:18:24.202Z"
+        }
+    },
+
+    {
+        "pk": 1,
+        "model": "search.cardtype",
+        "fields": {
+            "name": "book"
+        }
+    },
+    {"pk": 2,
+     "model": "search.cardtype",
+     "fields": {"name": "cd"}
+    },
+    {"pk": 3,
+     "model": "search.cardtype",
+     "fields": {"name": "dvd"}
+    },
+    {"pk": 4,
+     "model": "search.cardtype",
+     "fields": {"name": "tshirt"}
+    },
+    {"pk": 5,
+     "model": "search.cardtype",
+     "fields": {"name": "vinyl"}
+    },
+    {"pk": 6,
+     "model":
+     "search.cardtype",
+     "fields": {"name": "other"}
     }
-}
+
 ]

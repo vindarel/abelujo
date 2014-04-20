@@ -7,6 +7,8 @@ import sys
 
 DISCOGS_IMG_URL = "http://s.pixogs.com/image/"
 DEFAULT_IMG_SIZE = "150"  # "90" or "150"
+TYPE_CD = "cd"
+TYPE_VINYL = "vinyl"
 
 class Scraper:
 
@@ -102,6 +104,7 @@ class Scraper:
                     if 'label' in val: card['editor'] = val['label']
                     card["tracklist"] = val["tracklist"]
                     card["year"] = val["year"]
+                    card["card_type"] = TYPE_CD  # or vinyl
                     # images, genre,…
                     print "found album %s by %s" % (card["title"], card["authors"])
                     return card
@@ -134,7 +137,9 @@ class Scraper:
                     mycard['img'] = self._construct_img_url(val['thumb'])
                 # mycard["year"] = val["year"]
                 if 'genre' in val: mycard['genre'] = val['genre']
-                #TODO: append if ean not already present
+                mycard['card_type'] = TYPE_CD  # to finish
+
+                # append if ean not already present, if title ?
                 to_ret.append(mycard)
                 print "got a card: ", mycard
             return to_ret

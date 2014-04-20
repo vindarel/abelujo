@@ -20,6 +20,14 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+class CardType(models.Model):
+    """The type of a card: a book, a CD, a t-shirt, a DVD,…
+    """
+    name = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self):
+        return self.name
+
 class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
@@ -40,6 +48,8 @@ class Card(TimeStampedModel):
     sold = models.DateField(blank=True, null=True)
     price_sold = models.CharField(null=True, max_length=20)
     quantity = models.IntegerField(null=False, default=1)
+    #: type of the card, if specified (book, CD, tshirt, …)
+    card_type = models.ForeignKey(CardType, blank=True, null=True)
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
@@ -130,12 +140,13 @@ class Card(TimeStampedModel):
             print "this card has no authors (ok for a CD): %s" % (card['title'],)
 
         card, created = Card.objects.get_or_create(
-                title=card.get('title'),
-                year_published=year,
-                price = card.get('price',  0),
-                ean = card.get('ean'),
-                img = card.get('img', ""),
-                quantity = card.get('quantity', 1),
+            title=card.get('title'),
+            year_published=year,
+            price = card.get('price',  0),
+            ean = card.get('ean'),
+            img = card.get('img', ""),
+            quantity = card.get('quantity', 1),
+            card_type = card.get('card_type'),
         )
 
         if card_authors:  # TODO: more tests !

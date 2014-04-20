@@ -18,6 +18,10 @@ requests_cache.install_cache()
 
 CHAPITRE_BASE_URL = "http://www.chapitre.com"
 ERR_OOSTOCK = "produit indisponible"
+TYPE_BOOK = "book"
+TYPE_DVD = "dvd"
+# there is no comic type.
+TYPE_DEFAULT = TYPE_BOOK
 
 class Book(object):
     """A title, list of authors,…
@@ -267,6 +271,20 @@ class scraper:
         except Exception, e:
             print "Error while getting the editor", e
 
+    def _type(self, product):
+        try:
+            type_ = product.product.find(class_="sourceBOOKS")
+            if type_:
+                return TYPE_BOOK
+            else:
+                type_ = product.product.find(class_="sourceDVD")
+                if type_:
+                    return TYPE_DVD
+                else:
+                    return TYPE_DEFAULT
+
+        except Exception, e:
+            print "Error while getting the type", e
 
     def search(self, *args, **kwargs): # rename in getBooks ?
         """Searches books. Returns a list of books.
@@ -293,6 +311,7 @@ class scraper:
             # b.description = self._description(dom_product) #no desc with chapitre
             b.img = self._img(dom_product)
             b.editor = self._editor(dom_product)
+            b.card_type = self._type(dom_product)
 
             bk_list.append(b.__todict__())
 

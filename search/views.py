@@ -59,19 +59,19 @@ def get_rev_url(cleaned_data):
 
 def index(request):
     bk1 = {"title": u"Les Misérables tome 6",
-           "authors": "Victor Hugo",
+           "authors": ["Victor Hugo",],
            "price": 7,
            "ean": 6,
            "img": "",
            }
     bk2 = {"title": "Living my life",
-           "authors": "Emma Goldman",
+           "authors": ["Emma Goldman",],
            "price": 7.5,
            "ean": 6969,
            "img": "",
            }
     bk3 = {"title": "Sans patrie ni frontières",
-           "authors": "Jan Valtin",
+           "authors": ["Jan Valtin",],
            "price": 8,
            "ean": 3945,
            "img": "",
@@ -145,6 +145,10 @@ def add(request):
     card = cur_search_result[forloop_counter0]
     card['quantity'] = request.POST['quantity']
 
+    if not 'card_type' in card:
+        print "card has no type."
+        card['card_type'] = ""
+
     if not card['ean']:
         if not 'data_source' in req:
             print "Error: the data source is unknown."
@@ -156,10 +160,12 @@ def add(request):
             print "---- looked for and found ean: ", ean
             card['ean'] = ean
 
-    # Connection to Ruche's DB ! => later…
-    Card.from_dict(card)
-
-    messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
+    # Add it to the DB.
+    try:
+        Card.from_dict(card)
+        messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
+    except Exception, e:
+        messages.add_message(request, messages.FAILURE, u"%s could not be registered.")
 
     return render(request, 'search/search_result.jade', {
                   'form': SearchForm(),
