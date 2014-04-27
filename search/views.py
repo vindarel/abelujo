@@ -64,35 +64,15 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     return rev_url
 
 def index(request):
-    bk1 = {"title": u"Les Misérables tome 6",
-           "authors": ["Victor Hugo",],
-           "price": 7,
-           "ean": 6,
-           "img": "",
-           }
-    bk2 = {"title": "Living my life",
-           "authors": ["Emma Goldman",],
-           "price": 7.5,
-           "ean": 6969,
-           "img": "",
-           }
-    bk3 = {"title": "Sans patrie ni frontières",
-           "authors": ["Jan Valtin",],
-           "price": 8,
-           "ean": 3945,
-           "img": "",
-           }
-
-    retlist = [bk1, bk2, bk3]
-
     form = SearchForm()
     page_title = ""
     data_source = SCRAPER_CHOICES[0][0][0]
+    retlist = []
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
-            if request.POST.has_key("title") and request.POST["title"]:
-                data_source = form.cleaned_data['data_source']
+            if request.POST.has_key("q") and request.POST["q"]:
+                data_source = form.cleaned_data['source']
                 rev_url = get_reverse_url(form.cleaned_data)
                 # forward to search?q=query+parameters
                 return HttpResponseRedirect(rev_url)
@@ -157,15 +137,18 @@ def search(request):
 
 def add(request):
 
+    card = {}
     print "our ruequest: ", request.POST
     if request.method == "POST":
         print "our post: ", request.POST
 
     req = request.POST.copy()
-    forloop_counter0 = int(req["forloop_counter0"])
-    cur_search_result = request.session["search_result"]
+    # get the last search results of the session:
+    forloop_counter0 = int(req.get("forloop_counter0"))
+    cur_search_result = request.session.get("search_result")
     card = cur_search_result[forloop_counter0]
-    card['quantity'] = request.POST['quantity']
+
+    card['quantity'] = int(request.POST.get('quantity'))
 
     if not 'card_type' in card:
         print "card has no type."
@@ -187,7 +170,8 @@ def add(request):
         Card.from_dict(card)
         messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
     except Exception, e:
-        messages.add_message(request, messages.FAILURE, u"%s could not be registered.")
+        messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
+        print "Error when trying to add card ", e
 
     return render(request, 'search/search_result.jade', {
                   'form': SearchForm(),

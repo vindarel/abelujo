@@ -10,17 +10,25 @@ Note: to compare two objects, don't use assertEqual but the == operator.
 from django.test import TestCase
 
 from search.models import Card
+from search.models import CardType
 from search.models import Author
 
 class TestCards(TestCase):
     def setUp(self):
+        # create an author
         self.GOLDMAN = "Emma Goldman"
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
+        # create a Card
         self.autobio = Card(title="Living my Life", ean="987")
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
-
+        # create card types
+        self.type_book = "book"
+        typ = CardType(name=self.type_book)
+        typ.save()
+        typ = CardType(name="unknown")
+        typ.save()
 
     def test_add(self):
         found = Card.objects.get(title__icontains="living")
@@ -50,3 +58,23 @@ class TestCards(TestCase):
     def test_sell(self):
         Card.sell(ean="987", quantity=2)
         self.assertEqual(Card.objects.get(ean="987").quantity, -1)
+
+    def test_add_good_type(self):
+        obj = Card.from_dict({"title": "living",
+                              "card_type": self.type_book})
+        self.assertEqual(self.type_book, obj.card_type.name)
+
+    def test_add_bad_type(self):
+        badtype = "badtype"
+        obj = Card.from_dict({"title": "living",
+                              "card_type": badtype})
+        self.assertEqual(obj.title, "living")
+        self.assertEqual(obj.card_type.name, "unknown")
+
+    def test_type_unknown(self):
+        obj = Card.from_dict({"title": "living",
+                              "card_type": None})
+        self.assertEqual(obj.card_type.name, "unknown")
+
+        obj = Card.from_dict({"title": "living"})
+        self.assertEqual(obj.card_type.name, "unknown")

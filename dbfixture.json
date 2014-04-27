@@ -45,6 +45,10 @@
      "model":
      "search.cardtype",
      "fields": {"name": "other"}
+    },
+    {"pk": 7,
+     "model":
+     "search.cardtype",
+     "fields": {"name": "unknown"}
     }
-
 ]

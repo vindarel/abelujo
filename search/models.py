@@ -42,12 +42,12 @@ class Card(TimeStampedModel):
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
     ean = models.CharField(max_length=99, null=True)
-    isbn = models.CharField(max_length=99, null=True)
+    isbn = models.CharField(max_length=99, null=True, blank=True)
     img = models.CharField(max_length=200, null=True, blank=True)
     comment = models.TextField(blank=True)
     price = models.CharField(null=True, max_length=20)
     sold = models.DateField(blank=True, null=True)
-    price_sold = models.CharField(null=True, max_length=20)
+    price_sold = models.CharField(null=True, max_length=20, blank=True)
     quantity = models.IntegerField(null=False, default=1)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True)
@@ -109,7 +109,7 @@ class Card(TimeStampedModel):
             card.save()
             return (True, "")
         except ObjectDoesNotExist, e:
-            print "Requested object does not exist %s", e
+            print "Requested card %s does not exist: %s" % (ean, e)
             return (None, "La notice n'existe pas.")
 
     @staticmethod
@@ -149,20 +149,31 @@ class Card(TimeStampedModel):
         else:
             print "this card has no authors (ok for a CD): %s" % (card['title'],)
 
-        card, created = Card.objects.get_or_create(
+        card_obj, created = Card.objects.get_or_create(
             title=card.get('title'),
             year_published=year,
             price = card.get('price',  0),
             ean = card.get('ean'),
             img = card.get('img', ""),
             quantity = card.get('quantity', 1),
-            card_type = card.get('card_type'),
         )
 
         if card_authors:  # TODO: more tests !
-            card.authors.add(*card_authors)
+            card_obj.authors.add(*card_authors)
+
+        # add the type of the card
+        if not card.get('card_type'):
+            card['card_type'] = "unknown"
+        if card.get('card_type'):
+            try:
+                type_obj = CardType.objects.get(name=card.get('card_type'))
+            except ObjectDoesNotExist, e:
+                type_obj = CardType.objects.get(name="unknown")
+
+            card_obj.card_type = type_obj
+            card_obj.save()
 
         # Make a sortkey in case it is missing
         # card.set_sortkey()
 
-        return card
+        return card_obj
