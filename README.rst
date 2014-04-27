@@ -102,3 +102,13 @@ You can have a look at the existing scrapers at
 `search/datasources`. Some abstraction work remains to be done. And
 shall we use scrapy
 http://doc.scrapy.org/en/latest/intro/overview.html ?
+
+Tests coverage
+==============
+
+We simply use `coverage` (`django_coverage` is buggy).
+
+Run with::
+
+    coverage run --source='.' manage.py test search
+    coverage html  # and open: firefox htmlcov/index.html
