@@ -12,6 +12,8 @@ from django.test.client import Client
 
 import mock
 
+fixture = [{"title":'fixture'}]
+
 class TestViews(TestCase):
     def setUp(self):
         self.c = Client()
@@ -41,46 +43,39 @@ class TestViews(TestCase):
         resp = self.post_to_view()
         self.assertTrue(resp)
 
+@mock.patch('search.views.search_on_data_source', return_value=fixture)
 class TestSearchView(TestCase):
-
-    fixture = [{"title":'fixture'}]
 
     def setUp(self):
         self.c = Client()
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
-    def get_for_view(self, cleaned_data, search_mock):
+    def get_for_view(self, cleaned_data):
         """Use our view utility to get the reverse url with encoded query parameters.
         """
         cleaned_data["source"] = "chapitre"
         return self.c.get(get_reverse_url(cleaned_data))
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
     def test_search_no_query_params(self, search_mock):
         resp = self.get_for_view({})
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
     def test_search_with_ean(self, search_mock):
         resp = self.get_for_view({"ean":"123"})
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
     def test_search_with_keywords(self, search_mock):
         data = {"q":"emma gold"}
         resp = self.get_for_view(data)
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
     def test_search_params_not_valid(self, search_mock):
         data = {"foo": "bar"}
         resp = self.get_for_view(data)
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
     def test_search_with_session(self, search_mock):
         pass
