@@ -1,7 +1,11 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
-import urllib
+from datasources.frFR.chapitre.chapitreScraper import scraper
+from datasources.frFR.chapitre.chapitreScraper import getEan
+from datasources.all.discogs.discogsConnector import Scraper as discogs
+
+from models import Card
 
 from django import forms
 from django.shortcuts import render
@@ -9,11 +13,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from datasources.frFR.chapitre.chapitreScraper import scraper
-from datasources.frFR.chapitre.chapitreScraper import getEan
-from datasources.all.discogs.discogsConnector import Scraper as discogs
+import urllib
 
-from models import Card
 
 SCRAPER_CHOICES = [
     ("Book shops", (
@@ -27,34 +28,39 @@ SCRAPER_CHOICES = [
     ]
 
 class SearchForm(forms.Form):
-    data_source = forms.ChoiceField(choices=SCRAPER_CHOICES,
+    source = forms.ChoiceField(choices=SCRAPER_CHOICES,
                                         label='Data source',
                                         # help_text='choose the data source for your query',
                                         )
-    title = forms.CharField(max_length=100, required=False,
-                            min_length=4,
-                            )
+    q = forms.CharField(max_length=100, required=False,
+                        min_length=4,
+                        label="key words",
+                        help_text="Partie du titre, nom de l'auteur, etc.",
+                    )
     ean = forms.CharField(required=False)
 
 
-def get_rev_url(cleaned_data):
+def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
 
     type cleaned_data: dict
     return: the complete url with query params
 
-    >>> get_rev_url({"data_source": "chapitre", "title": u"emma goldman"})
+    >>> get_reverse_url({"source": "chapitre", "q": u"emma goldman"})
     /search?q=emma+goldman&source=chapitre
     """
 
     qparam = {}
-    qparam['q'] = cleaned_data["title"]
+    qparam['source'] = cleaned_data["source"]
+    if "q" in cleaned_data.keys():
+        qparam['q'] = cleaned_data["q"]
+    if "ean" in cleaned_data.keys():
+        qparam['ean'] = cleaned_data["ean"]
     print "on recherche: ", qparam
-    qparam['source'] = cleaned_data["data_source"]
     # construct the query parameters of the form
     # q=query+param&source=discogs
     params = urllib.urlencode(qparam)
-    rev_url = reverse("card_search") + "?" + params
+    rev_url = reverse(url_name) + "?" + params
     return rev_url
 
 def index(request):
@@ -87,7 +93,7 @@ def index(request):
         if form.is_valid():
             if request.POST.has_key("title") and request.POST["title"]:
                 data_source = form.cleaned_data['data_source']
-                rev_url = get_rev_url(form.cleaned_data)
+                rev_url = get_reverse_url(form.cleaned_data)
                 # forward to search?q=query+parameters
                 return HttpResponseRedirect(rev_url)
 
@@ -110,21 +116,37 @@ def search_on_data_source(data_source, search_terms):
     return retlist
 
 def search(request):
-    form = SearchForm()
     retlist = []
     page_title = ""
     data_source = SCRAPER_CHOICES[0][0][0]
-    if "search_result" in request.session:
-        retlist = request.session["search_result"]
-    if request.method == 'GET' and 'source' in request.GET.keys():
-        data_source = request.GET['source']
-        query = request.GET['q']
-        page_title = query[:50]
-        search_terms = [q for q in query.split()]
 
-        retlist = search_on_data_source(data_source, search_terms)
-        request.session["search_result"] = retlist
-        print "--- search results:", retlist
+    form = SearchForm(request.GET)
+    if request.method == 'GET' and form.is_valid():
+        data_source = form.cleaned_data['source']
+        query = form.cleaned_data.get('q')
+        ean_param = form.cleaned_data.get('ean')
+        if ean_param or query:
+            if ean_param:
+                search_terms = {"ean": ean_param}
+                page_title = "search for %s on %s" % (ean_param, data_source)
+            elif query:
+                page_title = query[:50]
+                search_terms = [q for q in query.split()]
+
+            retlist = search_on_data_source(data_source, search_terms)
+            request.session["search_result"] = retlist
+            print "--- search results:", retlist
+        else:
+            # uncomplete form (specify we need ean or q).
+            print "--- form not complete"
+            pass
+
+    else:
+        # POST or form not valid.
+        form = SearchForm()
+        # Re-display results of previous search.
+        if "search_result" in request.session:
+            retlist = request.session["search_result"]
 
     return render(request, "search/search_result.jade", {
             "form": form,
@@ -149,7 +171,7 @@ def add(request):
         print "card has no type."
         card['card_type'] = ""
 
-    if not card['ean']:
+    if not card.get('ean'):
         if not 'data_source' in req:
             print "Error: the data source is unknown."
             # return an error page
@@ -218,14 +240,20 @@ def collection(request):
 def sell(request):
     form = SearchForm()
     req = request.POST
-    if not req["ean"]:
-        msg = u"Erreur: cette notice n'a pas d'ean et ne peut être vendue."
-        messages.add_message(request, messages.ERROR, msg)
-    else:
-        ret = Card.sell(ean=req['ean'])
-        message = u"La vente de %s est bien enregistrée" % (req['title'],)
-        messages.add_message(request, messages.SUCCESS, message)
 
+    if not req.get("ean"):
+        message = u"Erreur: cette notice n'a pas d'ean et ne peut être vendue."
+        level = messages.ERROR
+    else:
+        ret, msg = Card.sell(ean=req['ean'])
+        if ret:
+            message = u"La vente de %s est bien enregistrée." % (req.get('title'),)
+            level = messages.SUCCESS
+        else:
+            message = u"La vente a échoué. %s" % msg
+            level = messages.ERROR
+
+    messages.add_message(request, level, message)
     return render(request, 'search/index.jade', {
                   'form': form
                   })

@@ -6,14 +6,14 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', RedirectView.as_view(url='search/')),
-    url(r'^search/$', 'search.views.index', name="card_index"),
-    url(r'^search$', 'search.views.search', name="card_search"),
-    url(r'^search', 'search.views.search'),
-    url(r'^add/', 'search.views.add'),
-    url(r'^collection/sell', 'search.views.sell'),
-    url(r'^collection/', 'search.views.collection'),
-    (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+                       url(r'^$', RedirectView.as_view(url='search/')),
+                       url(r'^search/$', 'search.views.index', name="card_index"),
+                       url(r'^search$', 'search.views.search', name="card_search"),
+                       url(r'^search', 'search.views.search'),
+                       url(r'^add/', 'search.views.add'),
+                       url(r'^collection/sell', 'search.views.sell', name="card_sell"),
+                       url(r'^collection/', 'search.views.collection'),
+                       (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),

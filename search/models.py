@@ -3,6 +3,7 @@
 from datetime import date
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -96,11 +97,20 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def sell(ean=None, quantity=1):
-        card = Card.objects.get(ean=ean)
-        card.sold = date.today()
-        card.price_sold = card.price
-        card.quantity = card.quantity - quantity
-        card.save()
+        """Sell a card. Decreases its quantity.
+
+        return: a tuple (return_code, "message")
+        """
+        try:
+            card = Card.objects.get(ean=ean)
+            card.sold = date.today()
+            card.price_sold = card.price
+            card.quantity = card.quantity - quantity
+            card.save()
+            return (True, "")
+        except ObjectDoesNotExist, e:
+            print "Requested object does not exist %s", e
+            return (None, "La notice n'existe pas.")
 
     @staticmethod
     def from_dict(card):
