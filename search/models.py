@@ -214,6 +214,9 @@ class Card(TimeStampedModel):
         if not created:
             card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
             card_obj.save()
+        else:
+            card_obj.quantity = card.get('quantity', 1)
+            card_obj.save()
 
         if card_authors:  # TODO: more tests !
             card_obj.authors.add(*card_authors)

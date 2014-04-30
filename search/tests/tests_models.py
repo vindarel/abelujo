@@ -76,6 +76,13 @@ class TestCards(TestCase):
                           })
         self.assertEqual(4, obj.quantity)
 
+    def test_quantity_new(self):
+        obj = Card.from_dict({"title": "New quantity test",
+                              "ean": "111",
+                              "quantity": 2})
+        self.assertEqual(2, obj.quantity)
+
+
     def test_sell(self):
         Card.sell(ean="987", quantity=2)
         self.assertEqual(Card.objects.get(ean="987").quantity, -1)
