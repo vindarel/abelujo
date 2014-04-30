@@ -62,6 +62,10 @@ class TestCards(TestCase):
 
     def test_increment_quantity(self):
         obj = Card.from_dict({"title": self.fixture_title,
+                              "ean": self.fixture_ean,})
+        self.assertEqual(1, obj.quantity)
+
+        obj = Card.from_dict({"title": self.fixture_title,
                               "ean": self.fixture_ean,
                               "quantity": 2})
         self.assertEqual(3, obj.quantity)

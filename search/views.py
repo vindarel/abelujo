@@ -155,17 +155,16 @@ def add(request):
         print "card has no type."
         card['card_type'] = ""
 
-    if not card.get('ean'):
+    if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
         if not 'data_source' in req:
             print "Error: the data source is unknown."
             # return an error page
         else:
             # fire a new http request to get the ean (or other missing informations):
-            complements = postSearch(card['details_url']) # TODO: généraliser
+            complements = postSearch(card['details_url'])
             if not complements.get("ean"):
                 print "--- warning: postSearch couldnt get the ean."
             for k, v in complements.iteritems():
-                # import ipdb; ipdb.set_trace()
                 print "--- postSearch: found %s: %s" % (k,v)
                 card[k] = v
 
@@ -184,11 +183,8 @@ def add(request):
 
 def collection(request):
     """Search our own collection and take actions
-
-    TODO: function identical to index, except the search function: factorize
-    Arguments:
-    - `self`:
     """
+    # TODO: function identical to index, except the search function: factorize
     form = SearchForm()
     retlist = []
     cards = []
@@ -217,7 +213,7 @@ def collection(request):
             "img": card.img,
             "quantity": card.quantity,
             "publisher": card.publisher.name.capitalize(),
-            "collection": card.collection.name.capitalize(),
+            "collection": card.collection.name.capitalize() if card.collection else None,
             "details_url": card.details_url,
             "data_source": card.data_source,
             # "description": card.description,

@@ -1,16 +1,19 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests
 import json
+import requests
 import sys
 
+DATA_SOURCE_NAME = "Discogs.com"
 DISCOGS_IMG_URL = "http://s.pixogs.com/image/"
 DEFAULT_IMG_SIZE = "150"  # "90" or "150"
 TYPE_CD = "cd"
 TYPE_VINYL = "vinyl"
 
 class Scraper:
+    """Search releases on discogs, by keyword or ean.
+    """
 
     def __init__(self, *args, **kwargs):
         """
@@ -72,9 +75,14 @@ class Scraper:
     def search(self):
         """
         if ean search, returns a dict with all the info
+
+        returns:
+
+        - publisher: one label, though a release can have 2 or 3. Fix Abelujo's db model ?
         """
         if self.ean:
             card = {}
+            card["data_source"] = DATA_SOURCE_NAME
             res = requests.get(self.url)
             json_res = json.loads(res.text)
             try:
@@ -122,13 +130,22 @@ class Scraper:
             ean_list = []
             for val in json_res["results"]:
                 mycard = {}
+                mycard["data_source"] = DATA_SOURCE_NAME
+                # if type in val and type == release : filter on releases ?
                 if 'title' in val:
                     mycard["authors"] = [val['title'].split('-')[0]]  # what if the band name contains a - ?
                 if 'title' in val:
                     mycard["title"] = val["title"]
                 if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
                 if 'format' in val: mycard["format"] = val["format"][0]
-                if 'label' in val: mycard['publisher'] = val['label']
+                if 'label' in val:
+                    # releases have often many labels (2 or 3). How important is it ?
+                    # Abelujo's model is Card n-1 publisher
+                    # label is sometimes a str, sometimes a list.
+                    label = val['label']
+                    if type(label) == list:
+                        label = label[0]
+                    mycard['publisher'] = label
                 if 'barcode' in val: mycard['ean'] = val['barcode'][0]
                 if 'thumb' in val:
                     # that link appears not to be available without Oauth registration any more.
@@ -144,11 +161,18 @@ class Scraper:
                 print "got a card: ", mycard
             return to_ret
 
+    def postSearch(self):
+        """Return the info we could not get at the first time/connection.
+        """
+        return []
+
 if __name__ == '__main__':
+    # Testing data:
     scrap = Scraper("kyuss")
     scrap.search()
     scrap = Scraper("kyuss", "blues")
     scrap = Scraper(ean="7559618112")
     scrap.search()
 
-    exit(Scraper(*sys.argv[1:]).search())
+    if len(sys.argv) > 1:
+        exit(Scraper(*sys.argv[1:]).search())

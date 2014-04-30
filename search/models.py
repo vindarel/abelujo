@@ -166,7 +166,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def from_dict(card):
-        """Add a book from a dict.
+        """Add a card from a dict.
 
         Format of dict:
             title:      string
@@ -211,8 +211,9 @@ class Card(TimeStampedModel):
         )
 
         # add the quantity of exemplaries
-        card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
-        card_obj.save()
+        if not created:
+            card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
+            card_obj.save()
 
         if card_authors:  # TODO: more tests !
             card_obj.authors.add(*card_authors)
