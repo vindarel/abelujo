@@ -15,6 +15,7 @@ scraper = os.path.join(cdpp, 'decitreScraper')
 # from ... import decitreScraper
 sys.path.append(cdpp)
 from chapitreScraper import scraper
+from chapitreScraper import postSearch
 from chapitreScraper import Book
 
 """
@@ -68,6 +69,17 @@ class testChapitreFromEan(unittest.TestCase):
         self.assertEqual("Larousse", b.publisher)
         self.assertEqual("978-2-03-583425-6", b.isbn)
 
+
+class TestChapitrePostSearch(unittest.TestCase):
+    """Tests the postSearch method of the scraper, which gets complementary
+    information from the book's product page.
+    """
+
+    def setUp(self):
+        self.details_url = "http://www.chapitre.com/CHAPITRE/fr/BOOK/hugo-victor/les-miserables,962572.aspx"
+
+    def test_postSearch(self):
+        complements = postSearch(self.details_url)
 
 
 if __name__ == '__main__':

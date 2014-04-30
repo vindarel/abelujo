@@ -25,6 +25,15 @@ TYPE_DEFAULT = TYPE_BOOK
 
 class Book(object):
     """A title, list of authors,…
+
+    The following fields are not available in the search results page
+    but in the book's own page. So when the user wants to add a book
+    or get more informations about one, abelujo calls the postSearch
+    method which gets those complementary fields.
+
+    - ean
+    - collection
+
     """
     title = u""
     authors = []
@@ -319,22 +328,51 @@ class scraper:
         return bk_list
 
 
-def getEan(url):
-    """gets the ean of that product
+def postSearch(url):
+    """gets the complementary informations of that product:
 
-    url: the url to the details of the product where we can get the ean (fiche produit)"""
+    - ean (mandatory)
+    - collection
+
+    url: the url to the details of the product where we can get the ean (fiche produit)
+    returns: a dict
+    """
     if not url.startswith('http'):
         print "warning: url must start with http ;)"
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
     details = soup.find_all(class_="productDetails-items-content")
+    # The complementary information we need to return. Ean is compulsory.
+    to_ret = {"ean": None,
+              "collection": None}
+    EAN_LABEL = "isbn"
+    COLLECTION_LABEL = u"collection"  # lower case
+
     try:
         for det in details:
-            if det.span is not None and det.span.attrs is not None and det.span.attrs['itemprop'] is not None and\
-                    det.span.attrs['itemprop'] == "isbn":
-                # this is EAN13
-                print "========= ean found: ", det.span.text.strip()
-                return det.span.text.strip()
+            if (det.span is not None and det.span.attrs is not None and
+                det.span.attrs['itemprop'] is not None):
+                itemprop = det.span.attrs["itemprop"]
+                itemtext = det.span.text.strip()
+                if itemprop == EAN_LABEL:
+                    # this is EAN13
+                    print "========= ean found: ", itemtext
+                    to_ret["ean"] = itemtext
+
+            else:
+                try:
+                    parent = det.findParent()
+                    itemprop = parent.span.text.strip().strip(":").strip().lower()
+                    if itemprop == COLLECTION_LABEL:
+                        itemtext = parent.a.text
+                        to_ret["collection"] = itemtext
+                        print "=== postSearch: found collection: %s" % (itemtext,)
+                except Exception:
+                    pass
+
+        return to_ret
+
     except Exception, e:
         print "Error while getting the ean of %s :" % (url,)
         print e
+        return to_ret

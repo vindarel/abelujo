@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datasources.frFR.chapitre.chapitreScraper import scraper
-from datasources.frFR.chapitre.chapitreScraper import getEan
+from datasources.frFR.chapitre.chapitreScraper import postSearch
 from datasources.all.discogs.discogsConnector import Scraper as discogs
 
 from models import Card
@@ -161,9 +161,13 @@ def add(request):
         else:
             data_source = req['data_source']
             # fire a new http request to get the ean (or other missing informations):
-            ean = getEan(card['details_url']) # TODO: généraliser
-            print "---- looked for and found ean: ", ean
-            card['ean'] = ean
+            complements = postSearch(card['details_url']) # TODO: généraliser
+            if not complements.get("ean"):
+                print "--- warning: postSearch couldnt get the ean."
+            for k, v in complements.iteritems():
+                # import ipdb; ipdb.set_trace()
+                print "--- postSearch: found %s: %s" % (k,v)
+                card[k] = v
 
     # Add it to the DB.
     try:
@@ -205,14 +209,16 @@ def collection(request):
 
     for card in cards:
         retlist.append({
-                "title": card.title,
-                "authors": ", ".join([ca.name for ca in card.authors.all()]),
-                "price": card.price,
-                "ean": card.ean,
-                "id": card.id,
-                "img": card.img,
-                "quantity": card.quantity,
-                # "description": card.description,
+            "title": card.title,
+            "authors": ", ".join([ca.name for ca in card.authors.all()]),
+            "price": card.price,
+            "ean": card.ean,
+            "id": card.id,
+            "img": card.img,
+            "quantity": card.quantity,
+            "publisher": card.publisher.name.capitalize(),
+            "collection": card.collection.name.capitalize(),
+            # "description": card.description,
                 })
 
 

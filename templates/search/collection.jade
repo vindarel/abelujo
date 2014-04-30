@@ -22,7 +22,12 @@ for b in book_list
           a(href="/admin/search/card/{{ b.id }}", title="Modifiez la notice") {{b.title}}
         if b.authors
           h4 {{b.authors}}
-        div price: {{b.price}} €, ean: {{ b.ean }}
+        div prix: {{b.price}} €, ean: {{ b.ean }}
+        if b.publisher
+          div
+            span éditeur: {{ b.publisher }}
+            if b.collection
+              span ({{ b.collection }})
         div exemplaires en stock: {{ b.quantity }}
 
   form(action='/collection/sell/', method='post') {% csrf_token %}

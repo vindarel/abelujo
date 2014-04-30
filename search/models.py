@@ -42,6 +42,26 @@ class Publisher (models.Model):
     def __unicode__(self):
         return self.name
 
+class Collection (models.Model):
+    """A collection (or sub-collection) of books.
+
+    A collection is a set of cards gathered under a common title,
+    chosen by the publisher.
+    """
+
+    #: Name of the collection
+    name = models.CharField(max_length=200)
+    #: Is it an ordered collection ?
+    ordered = models.IntegerField(null=True, blank=True)
+    #: Parent collection. A null field means this collection is not
+    # the sub-collection of another one.
+    parent = models.ForeignKey("Collection", null=True, blank=True)
+
+    class Meta:
+        ordering = ("name",)
+
+    def __unicode__(self):
+        return self.name
 
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
@@ -57,25 +77,28 @@ class Card(TimeStampedModel):
     physical object.
     """
     origkey = models.CharField(max_length=36, blank=True, null=True)
-    title = models.TextField()
-    card_type = models.ForeignKey(CardType, blank=True, null=True)
+    title = models.CharField(max_length=CHAR_LENGTH)
     #: type of the card, if specified (book, CD, tshirt, …)
-    sortkey = models.TextField('Authors', blank=True)
-    year_published = models.DateField(blank=True, null=True)
-    authors = models.ManyToManyField(Author)
-    # authors = models.TextField(null=True)
-    # location = models.ForeignKey(Location, blank=True, null=True)
-        #    default=u'?', on_delete=models.SET_DEFAULT)
+    card_type = models.ForeignKey(CardType, blank=True, null=True)
+    #: ean/isbn (mandatory)
     ean = models.CharField(max_length=99, null=True)
     isbn = models.CharField(max_length=99, null=True, blank=True)
-    img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
-    comment = models.TextField(blank=True)
+    sortkey = models.TextField('Authors', blank=True)
+    authors = models.ManyToManyField(Author)
     price = models.CharField(null=True, max_length=20)
-    sold = models.DateField(blank=True, null=True)
-    price_sold = models.CharField(null=True, max_length=20, blank=True)
     quantity = models.IntegerField(null=False, default=1)
     #: Publisher of the card:
     publisher = models.ForeignKey(Publisher, blank=True, null=True)
+    year_published = models.DateField(blank=True, null=True)
+    #: Collection
+    collection = models.ForeignKey(Collection, blank=True, null=True)
+    # location = models.ForeignKey(Location, blank=True, null=True)
+        #    default=u'?', on_delete=models.SET_DEFAULT)
+    sold = models.DateField(blank=True, null=True)
+    price_sold = models.CharField(null=True, max_length=20, blank=True)
+    img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    comment = models.TextField(blank=True)
+
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
@@ -187,11 +210,12 @@ class Card(TimeStampedModel):
             card_obj.authors.add(*card_authors)
 
         # add the type of the card
-        if not card.get('card_type'):
+        if not card.get("card_type"):
             card['card_type'] = "unknown"
-        if card.get('card_type'):
+        typ = card.get("card_type")
+        if typ:
             try:
-                type_obj = CardType.objects.get(name=card.get('card_type'))
+                type_obj = CardType.objects.get(name=typ)
             except ObjectDoesNotExist, e:
                 type_obj = CardType.objects.get(name="unknown")
 
@@ -199,16 +223,30 @@ class Card(TimeStampedModel):
             card_obj.save()
 
         # add the publisher
-        if card.get('card_type'):
+        pub = card.get("publisher")
+        if pub:
+            pub = pub.lower()
             try:
-                pub = card.get("publisher").lower()
-                publisher_obj, created = Publisher.objects.get_or_create(name=pub)
+                publisher_obj, created = Publisher.objects.get_or_create(name=pub)  # manage case
                 card_obj.publisher = publisher_obj
                 card_obj.save()
                 if created:
-                    print "--- new publisher created: %s" % (pub.capitalize(),)
+                    print "--- new publisher created: %s" % (pub,)
             except Exception, e:
                 print "--- error while adding the publisher: %s" % (e,)
+
+        # add the collection
+        collection = card.get("collection")
+        if collection:
+            collection = collection.lower()
+            try:
+                collection_obj, created = Collection.objects.get_or_create(name=collection)
+                card_obj.collection = collection_obj
+                card_obj.save()
+                if created:
+                    print "--- new collection created: %s" % (collection,)
+            except Exception, e:
+                print "--- error while adding the collection: %s" % (e,)
 
         # Make a sortkey in case it is missing
         # card.set_sortkey()

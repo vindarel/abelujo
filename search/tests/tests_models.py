@@ -12,6 +12,7 @@ from django.test import TestCase
 from search.models import Author
 from search.models import Card
 from search.models import CardType
+from search.models import Collection
 from search.models import Publisher
 
 class TestCards(TestCase):
@@ -93,11 +94,11 @@ class TestPublisher(TestCase):
         typ = CardType(name="unknown")
         typ.save()
         # create a publisher
-        self.publisher = Publisher(name="Agone")
+        self.publisher = Publisher(name="agone")
         self.publisher.save()
 
     def test_publisher_existing(self):
-        pub = "Agone"
+        pub = "agone"
         obj = Card.from_dict({"title": "living", "publisher": pub})
         self.assertEqual(pub.lower(), obj.publisher.name)
 
@@ -108,3 +109,34 @@ class TestPublisher(TestCase):
         publishers = Publisher.objects.all()
         self.assertEqual(2, len(publishers))
         self.assertTrue(pub.lower() in [p.name for p in publishers])
+
+class TestCollection(TestCase):
+    """Testing the addition of a collection to a card.
+    """
+
+    def setUp(self):
+        # create a Card
+        self.autobio = Card(title="Living my Life", ean="987")
+        self.autobio.save()
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # create a collection
+        self.collection_name = "livre de poche"
+        self.collection = Collection(name=self.collection_name)
+        self.collection.save()
+
+    def test_collection_existing(self):
+        obj = Card.from_dict({"title": "living", "collection": self.collection_name})
+        self.assertEqual(self.collection_name.lower(), obj.collection.name)
+
+    def test_collection_non_existing(self):
+        collection = "new collection"
+        obj = Card.from_dict({"title": "living", "collection": collection})
+        self.assertEqual(collection.lower(), obj.collection.name)
+        collections = Collection.objects.all()
+        self.assertEqual(2, len(collections))
+        self.assertTrue(collection.lower() in [p.name for p in collections])
+
+    def test_parent_collection(self):
+        pass

@@ -79,3 +79,12 @@ class TestSearchView(TestCase):
 
     def test_search_with_session(self, search_mock):
         pass
+
+@mock.patch('search.views.search_on_data_source', return_value=fixture)
+class TestAddView(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+
+    def test_call_postSearch(self, mymock):
+        pass
