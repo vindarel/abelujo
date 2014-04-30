@@ -149,6 +149,7 @@ def add(request):
     card = cur_search_result[forloop_counter0]
 
     card['quantity'] = int(request.POST.get('quantity'))
+    data_source = req['data_source']  # or card['data_source'] ?
 
     if not 'card_type' in card:
         print "card has no type."
@@ -159,7 +160,6 @@ def add(request):
             print "Error: the data source is unknown."
             # return an error page
         else:
-            data_source = req['data_source']
             # fire a new http request to get the ean (or other missing informations):
             complements = postSearch(card['details_url']) # TODO: généraliser
             if not complements.get("ean"):
@@ -198,7 +198,7 @@ def collection(request):
         if form.is_valid():
             if request.POST.has_key("title") and request.POST["title"]:
                 words = request.POST["title"].split()
-                #TODO: better query, include all authors
+                #TODO: better query, include all authors
                 cards = Card.get_from_kw(words)
 
             elif request.POST.has_key("ean"):
@@ -218,6 +218,8 @@ def collection(request):
             "quantity": card.quantity,
             "publisher": card.publisher.name.capitalize(),
             "collection": card.collection.name.capitalize(),
+            "details_url": card.details_url,
+            "data_source": card.data_source,
             # "description": card.description,
                 })
 

@@ -97,6 +97,10 @@ class Card(TimeStampedModel):
     sold = models.DateField(blank=True, null=True)
     price_sold = models.CharField(null=True, max_length=20, blank=True)
     img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    #: the internet source from which we got the card's informations
+    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    #: link to the card's data source
+    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True)
     comment = models.TextField(blank=True)
 
 
@@ -136,7 +140,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def get_from_kw(words):
-        """search some card: quick to test
+        """search some card: quick to test
         TODO:
         """
         #TODO: all key words !
@@ -204,6 +208,8 @@ class Card(TimeStampedModel):
             ean = card.get('ean'),
             img = card.get('img', ""),
             quantity = card.get('quantity', 1),
+            details_url = card.get('details_url'),
+            data_source = card.get('data_source'),
         )
 
         if card_authors:  # TODO: more tests !

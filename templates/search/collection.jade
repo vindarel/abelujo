@@ -18,8 +18,10 @@ for b in book_list
       if b.img
         td: img(src="{{ b.img }}")
       td
-        h3
-          a(href="/admin/search/card/{{ b.id }}", title="Modifiez la notice") {{b.title}}
+        span
+          h3
+            a(href="/admin/search/card/{{ b.id }}", title="Modifiez la notice") {{b.title}}
+          a(href="{{ b.details_url }}") Voir sur {{ b.data_source }}
         if b.authors
           h4 {{b.authors}}
         div prix: {{b.price}} €, ean: {{ b.ean }}

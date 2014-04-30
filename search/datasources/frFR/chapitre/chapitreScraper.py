@@ -16,6 +16,7 @@ import json
 
 requests_cache.install_cache()
 
+DATA_SOURCE_NAME = "Chapitre.com"
 CHAPITRE_BASE_URL = "http://www.chapitre.com"
 ERR_OOSTOCK = "produit indisponible"
 TYPE_BOOK = "book"
@@ -47,6 +48,9 @@ class Book(object):
         self.publisher = u""
         self.price = 0
         self.img = u""
+        #: name of the source
+        self.data_source = u""
+        #: link to the product's page
         self.details_url = u""
         self.description = u"" # null with chapitre
 
@@ -312,6 +316,7 @@ class scraper:
         for product in product_list:
             b = Book()
             dom_product = DomProduct(product)
+            b.data_source = DATA_SOURCE_NAME
             b.title = self._title(dom_product)
             b.details_url = self._details_url(dom_product)
             b.authors = self._authors(dom_product)
