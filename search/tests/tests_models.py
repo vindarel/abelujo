@@ -22,7 +22,9 @@ class TestCards(TestCase):
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
         # create a Card
-        self.autobio = Card(title="Living my Life", ean="987")
+        self.fixture_ean = "987"
+        self.fixture_title = "living my life"
+        self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
         # mandatory: unknown card type
@@ -57,6 +59,18 @@ class TestCards(TestCase):
         TITLE = "I am a CD without authors"
         to_add = Card.from_dict({"title":TITLE})
         self.assertTrue(to_add)
+
+    def test_increment_quantity(self):
+        obj = Card.from_dict({"title": self.fixture_title,
+                              "ean": self.fixture_ean,
+                              "quantity": 2})
+        self.assertEqual(3, obj.quantity)
+
+        obj = Card.from_dict({"title": self.fixture_title,
+                              "ean": self.fixture_ean,
+                              # quantity: one by default
+                          })
+        self.assertEqual(4, obj.quantity)
 
     def test_sell(self):
         Card.sell(ean="987", quantity=2)

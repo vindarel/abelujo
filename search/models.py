@@ -191,7 +191,6 @@ class Card(TimeStampedModel):
             year = None
 
         # Make the card
-        print "--- authors ? ", card.get('authors')
         # Get authors or create
         card_authors = []
         if "authors" in card:
@@ -207,10 +206,13 @@ class Card(TimeStampedModel):
             price = card.get('price',  0),
             ean = card.get('ean'),
             img = card.get('img', ""),
-            quantity = card.get('quantity', 1),
             details_url = card.get('details_url'),
             data_source = card.get('data_source'),
         )
+
+        # add the quantity of exemplaries
+        card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
+        card_obj.save()
 
         if card_authors:  # TODO: more tests !
             card_obj.authors.add(*card_authors)
