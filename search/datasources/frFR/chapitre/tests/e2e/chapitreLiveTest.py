@@ -47,7 +47,7 @@ class testChapitreFromEan(unittest.TestCase):
         self.assertEqual(u"Les Miserables", self.book["title"])
 
     def test_authors(self):
-        auths = ["Victor Hugo",]
+        auths = [u"Victor Hugo",]
         self.assertEqual(auths, self.book["authors"])
 
     def test_many_authors(self):
@@ -64,8 +64,8 @@ class testChapitreFromEan(unittest.TestCase):
 
     def test_book_details(self):
         b = Book(isbn="978-2-03-583425-6", ean="9782035834256",
-                 editor="Larousse")
-        self.assertEqual("Larousse", b.editor)
+                 publisher="Larousse")
+        self.assertEqual("Larousse", b.publisher)
         self.assertEqual("978-2-03-583425-6", b.isbn)
 
 

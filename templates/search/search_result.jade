@@ -24,8 +24,8 @@ for b in result_list
             for author in b.authors
               div {{ author }}
         div price: {{b.price}} € ean: {{b.ean}}
-        if b.editor
-          div editor: {{b.editor}}
+        if b.publisher
+          div éditeur: {{b.publisher}}
         if b.description
           div {{b.description}}
 

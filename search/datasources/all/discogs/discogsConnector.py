@@ -101,7 +101,7 @@ class Scraper:
                     card["title"] = val["title"]
                     card["details_url"] = self.discogs_url + val["uri"]
                     card["format"] = val["formats"][0]["name"]
-                    if 'label' in val: card['editor'] = val['label']
+                    if 'label' in val: card['publisher'] = val['label']
                     card["tracklist"] = val["tracklist"]
                     card["year"] = val["year"]
                     card["card_type"] = TYPE_CD  # or vinyl
@@ -128,7 +128,7 @@ class Scraper:
                     mycard["title"] = val["title"]
                 if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
                 if 'format' in val: mycard["format"] = val["format"][0]
-                if 'label' in val: mycard['editor'] = val['label']
+                if 'label' in val: mycard['publisher'] = val['label']
                 if 'barcode' in val: mycard['ean'] = val['barcode'][0]
                 if 'thumb' in val:
                     # that link appears not to be available without Oauth registration any more.

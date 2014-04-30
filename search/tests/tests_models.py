@@ -9,9 +9,10 @@ Note: to compare two objects, don't use assertEqual but the == operator.
 
 from django.test import TestCase
 
+from search.models import Author
 from search.models import Card
 from search.models import CardType
-from search.models import Author
+from search.models import Publisher
 
 class TestCards(TestCase):
     def setUp(self):
@@ -23,11 +24,12 @@ class TestCards(TestCase):
         self.autobio = Card(title="Living my Life", ean="987")
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
-        # create card types
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # create other card types
         self.type_book = "book"
         typ = CardType(name=self.type_book)
-        typ.save()
-        typ = CardType(name="unknown")
         typ.save()
 
     def test_add(self):
@@ -78,3 +80,31 @@ class TestCards(TestCase):
 
         obj = Card.from_dict({"title": "living"})
         self.assertEqual(obj.card_type.name, "unknown")
+
+class TestPublisher(TestCase):
+    """Testing the addition of a publisher to a card.
+    """
+
+    def setUp(self):
+        # create a Card
+        self.autobio = Card(title="Living my Life", ean="987")
+        self.autobio.save()
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # create a publisher
+        self.publisher = Publisher(name="Agone")
+        self.publisher.save()
+
+    def test_publisher_existing(self):
+        pub = "Agone"
+        obj = Card.from_dict({"title": "living", "publisher": pub})
+        self.assertEqual(pub.lower(), obj.publisher.name)
+
+    def test_publisher_non_existing(self):
+        pub = "Foo"
+        obj = Card.from_dict({"title": "living", "publisher": pub})
+        self.assertEqual(pub.lower(), obj.publisher.name)
+        publishers = Publisher.objects.all()
+        self.assertEqual(2, len(publishers))
+        self.assertTrue(pub.lower() in [p.name for p in publishers])

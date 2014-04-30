@@ -12,7 +12,7 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 sys.path.append(cdpp)
 
-from search.datasources.frFR.chapitre.chapitreScraper import scraper
+from chapitreScraper import scraper
 
 class testChapitre(unittest.TestCase):
     """

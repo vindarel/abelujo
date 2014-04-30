@@ -5,6 +5,8 @@ from datetime import date
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
+CHAR_LENGTH = 200
+
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -21,6 +23,26 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+class Publisher (models.Model):
+    """The publisher of the card.
+    """
+
+    #: Name of the publisher
+    name = models.CharField(max_length=CHAR_LENGTH)
+    #: ISBN of the publisher
+    isbn = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    #: Contact address (to put in own table)
+    address = models.TextField(null=True, blank=True)
+    #: Optional comment
+    comment = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("name",)
+
+    def __unicode__(self):
+        return self.name
+
+
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
@@ -29,12 +51,15 @@ class CardType(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
     """
     origkey = models.CharField(max_length=36, blank=True, null=True)
     title = models.TextField()
+    card_type = models.ForeignKey(CardType, blank=True, null=True)
+    #: type of the card, if specified (book, CD, tshirt, …)
     sortkey = models.TextField('Authors', blank=True)
     year_published = models.DateField(blank=True, null=True)
     authors = models.ManyToManyField(Author)
@@ -43,14 +68,14 @@ class Card(TimeStampedModel):
         #    default=u'?', on_delete=models.SET_DEFAULT)
     ean = models.CharField(max_length=99, null=True)
     isbn = models.CharField(max_length=99, null=True, blank=True)
-    img = models.CharField(max_length=200, null=True, blank=True)
+    img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     comment = models.TextField(blank=True)
     price = models.CharField(null=True, max_length=20)
     sold = models.DateField(blank=True, null=True)
     price_sold = models.CharField(null=True, max_length=20, blank=True)
     quantity = models.IntegerField(null=False, default=1)
-    #: type of the card, if specified (book, CD, tshirt, …)
-    card_type = models.ForeignKey(CardType, blank=True, null=True)
+    #: Publisher of the card:
+    publisher = models.ForeignKey(Publisher, blank=True, null=True)
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
@@ -172,6 +197,18 @@ class Card(TimeStampedModel):
 
             card_obj.card_type = type_obj
             card_obj.save()
+
+        # add the publisher
+        if card.get('card_type'):
+            try:
+                pub = card.get("publisher").lower()
+                publisher_obj, created = Publisher.objects.get_or_create(name=pub)
+                card_obj.publisher = publisher_obj
+                card_obj.save()
+                if created:
+                    print "--- new publisher created: %s" % (pub.capitalize(),)
+            except Exception, e:
+                print "--- error while adding the publisher: %s" % (e,)
 
         # Make a sortkey in case it is missing
         # card.set_sortkey()

@@ -35,7 +35,7 @@ class Book(object):
         self.authors = []
         self.ean = u""
         self.isbn = u""
-        self.editor = u""
+        self.publisher = u""
         self.price = 0
         self.img = u""
         self.details_url = u""
@@ -47,7 +47,7 @@ class Book(object):
     def __print__(self):
         """Pretty output"""
         print '"' + self.title + '", ' + " ".join([a for a in self.authors])
-        print "\t" + self.editor + " " + self.price + " ean: " + self.ean
+        print "\t" + self.publisher + " " + self.price + " ean: " + self.ean
         print "\tcover: " + self.img
         print "\n"
 
@@ -197,6 +197,7 @@ class scraper:
                 # author_hrf = aut.a.attrs["href"]
                 aut = aut.replace("(auteur)", "").replace("(Auteur)", "").split(";")
                 authors += aut
+                authors = [a.strip() for a in authors]
             logging.info('authors: '+ ', '.join(a for a in authors))
             return authors
         except Exception, e:
@@ -258,18 +259,18 @@ class scraper:
             print 'Error getting the description', e
 
 
-    def _editor(self, product):
+    def _publisher(self, product):
         try:
-            editor = product.product.find(class_='editeur')
-            if editor:
-                editor = editor.text.strip("Editeur :").strip()
+            publisher = product.product.find(class_='editeur')
+            if publisher:
+                publisher = publisher.text.strip("Editeur :").strip().strip(".")
             else:
-                editor = "undefined"
-            logging.info('editor:' + editor)
-            return editor
+                publisher = "undefined"
+            logging.info('publisher:' + publisher)
+            return publisher
 
         except Exception, e:
-            print "Error while getting the editor", e
+            print "Error while getting the publisher", e
 
     def _type(self, product):
         try:
@@ -310,7 +311,7 @@ class scraper:
             # Summary (4e de couv ?)
             # b.description = self._description(dom_product) #no desc with chapitre
             b.img = self._img(dom_product)
-            b.editor = self._editor(dom_product)
+            b.publisher = self._publisher(dom_product)
             b.card_type = self._type(dom_product)
 
             bk_list.append(b.__todict__())
