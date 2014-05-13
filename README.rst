@@ -90,7 +90,7 @@ We use:
 We are currently working at expanding the database (adding locations,
 distributors, …).
 
-We get our data with some webscraping when needed (discogs provide an
+We get our data with some webscraping when needed (discogs provides an
 api) which we do with those libraries:
 
 * requests (better than urllib)

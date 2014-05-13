@@ -39,6 +39,11 @@ class SearchForm(forms.Form):
                     )
     ean = forms.CharField(required=False)
 
+class AddForm(forms.Form):
+    # The hidden form populated when the user clicks on "add this card".
+    forloop_counter0 = forms.CharField(max_length=5)
+    quantity = forms.CharField(max_length=1000)
+    # data_source is optionnal here.
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
@@ -51,7 +56,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     """
 
     qparam = {}
-    qparam['source'] = cleaned_data["source"]
+    qparam['source'] = cleaned_data.get("source")
     if "q" in cleaned_data.keys():
         qparam['q'] = cleaned_data["q"]
     if "ean" in cleaned_data.keys():
@@ -135,51 +140,78 @@ def search(request):
             "page_title": page_title,
             })
 
+def _request_session_get(request, key):
+    """Gets the session's key.
+
+    A function is needed to mock this call in unit tests (Django
+    doesn't provide anything to use the session in tests).
+    """
+    return request.session.get(key)
+
 def add(request):
+    """Add the requested Card to the DB.
+
+    Before adding it, we need to get the last information about the
+    Card, the ones we couldn't get at the first scraping. We call the
+    `postSearch` method of the scraper module. Sometimes it is the
+    only way to get the ean (with the minimum of http requests).
+
+    The list of cards is stored in the session. The template only returns the list's indice.
+
+    """
 
     card = {}
+    resp_status = 200
+    cur_search_result = _request_session_get(request, "search_result")
     print "our ruequest: ", request.POST
     if request.method == "POST":
         print "our post: ", request.POST
 
     req = request.POST.copy()
-    # get the last search results of the session:
-    forloop_counter0 = int(req.get("forloop_counter0"))
-    cur_search_result = request.session.get("search_result")
-    card = cur_search_result[forloop_counter0]
+    form = AddForm(req)
+    if not form.is_valid():
+        resp_status = 400
+    else:
+        # get the last search results of the session:
+        forloop_counter0 = int(req.get("forloop_counter0"))
+        cur_search_result = _request_session_get(request, "search_result")
+        if not cur_search_result:
+            print "Error: the session has no search_result."
+            pass
+        card = cur_search_result[forloop_counter0]
 
-    card['quantity'] = int(request.POST.get('quantity'))
-    data_source = req['data_source']  # or card['data_source'] ?
+        card['quantity'] = int(request.POST.get('quantity'))
+        data_source = req['data_source']  # or card['data_source'] ?
 
-    if not 'card_type' in card:
-        print "card has no type."
-        card['card_type'] = ""
+        if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
+            if not 'data_source' in req:
+                print "Error: the data source is unknown."
+                # return an error page
+            else:
+                # fire a new http request to get the ean (or other missing informations):
+                complements = postSearch(card['details_url'])
+                if not complements.get("ean"):
+                    print "--- warning: postSearch couldnt get the ean."
+                for k, v in complements.iteritems():
+                    print "--- postSearch: found %s: %s" % (k,v)
+                    card[k] = v
 
-    if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
-        if not 'data_source' in req:
-            print "Error: the data source is unknown."
-            # return an error page
-        else:
-            # fire a new http request to get the ean (or other missing informations):
-            complements = postSearch(card['details_url'])
-            if not complements.get("ean"):
-                print "--- warning: postSearch couldnt get the ean."
-            for k, v in complements.iteritems():
-                print "--- postSearch: found %s: %s" % (k,v)
-                card[k] = v
+        # Add it to the DB.
+        try:
+            Card.from_dict(card)
+            messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
+        except Exception, e:
+            messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
+            print "Error when trying to add card ", e
+            resp_status = 400
 
-    # Add it to the DB.
-    try:
-        Card.from_dict(card)
-        messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
-    except Exception, e:
-        messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
-        print "Error when trying to add card ", e
-
-    return render(request, 'search/search_result.jade', {
+    return render(request, 'search/search_result.jade',
+                  {
                   'form': SearchForm(),
                   'result_list': cur_search_result,
-                  })
+                  },
+                  status=resp_status,
+                  )
 
 def collection(request):
     """Search our own collection and take actions

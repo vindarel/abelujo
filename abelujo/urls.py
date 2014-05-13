@@ -10,7 +10,7 @@ urlpatterns = patterns('',
                        url(r'^search/$', 'search.views.index', name="card_index"),
                        url(r'^search$', 'search.views.search', name="card_search"),
                        url(r'^search', 'search.views.search'),
-                       url(r'^add/', 'search.views.add'),
+                       url(r'^add/', 'search.views.add', name="card_add"),
                        url(r'^collection/sell', 'search.views.sell', name="card_sell"),
                        url(r'^collection/', 'search.views.collection'),
                        (r'^grappelli/', include('grappelli.urls')), # grappelli URLS

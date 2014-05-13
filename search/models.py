@@ -223,16 +223,16 @@ class Card(TimeStampedModel):
 
         # add the type of the card
         if not card.get("card_type"):
-            card['card_type'] = "unknown"
-        typ = card.get("card_type")
-        if typ:
-            try:
-                type_obj = CardType.objects.get(name=typ)
-            except ObjectDoesNotExist, e:
-                type_obj = CardType.objects.get(name="unknown")
+            typ = "unknown"
+        else:
+            typ = card.get("card_type")
+        try:
+            type_obj = CardType.objects.get(name=typ)
+        except ObjectDoesNotExist, e:
+            type_obj = CardType.objects.get(name="unknown")
 
-            card_obj.card_type = type_obj
-            card_obj.save()
+        card_obj.card_type = type_obj
+        card_obj.save()
 
         # add the publisher
         pub = card.get("publisher")

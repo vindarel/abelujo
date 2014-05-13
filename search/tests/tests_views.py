@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from search.models import Card
+from search.models import CardType
 from search.models import Author
 
 from search.views import get_reverse_url
@@ -12,7 +13,13 @@ from django.test.client import Client
 
 import mock
 
-fixture = [{"title":'fixture'}]
+fixture = [{"title":'fixture',
+            "ean": "111",
+            "details_url": "http://fake_url.com",
+        }]
+
+fixture_no_ean = fixture[:]
+fixture_no_ean[0].pop("ean")
 
 class TestViews(TestCase):
     def setUp(self):
@@ -53,7 +60,8 @@ class TestSearchView(TestCase):
         """Use our view utility to get the reverse url with encoded query parameters.
         """
         cleaned_data["source"] = "chapitre"
-        return self.c.get(get_reverse_url(cleaned_data))
+        # get the reverse url with encoded paramaters
+        return self.c.get(get_reverse_url(cleaned_data, url_name="card_search"))
 
     def test_search_no_query_params(self, search_mock):
         resp = self.get_for_view({})
@@ -84,7 +92,56 @@ class TestSearchView(TestCase):
 class TestAddView(TestCase):
 
     def setUp(self):
+        # create an author
+        self.GOLDMAN = "Emma Goldman"
+        self.goldman = Author(name=self.GOLDMAN)
+        self.goldman.save()
+        # create a Card
+        self.fixture_ean = "987"
+        self.fixture_title = "living my life"
+        self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
+        self.autobio.save()
+        self.autobio.authors.add(self.goldman)
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # create other card types
+        self.type_book = "book"
+        typ = CardType(name=self.type_book)
+        typ.save()
+
         self.c = Client()
 
-    def test_call_postSearch(self, mymock):
+    @mock.patch('search.views._request_session_get', return_value=fixture)
+    def test_call_postSearch(self, mock_data_source, fake_session):
+        data = {"forloop_counter0": 0,
+                "quantity": 5,
+                "data_source": "chapitre",
+        }
+        resp = self.c.post(reverse("card_add"), data)
+        self.assertEqual(200, resp.status_code)
+        # our fixture is registered to the DB:
+        all_cards = Card.objects.all()
+        self.assertEqual(2, len(all_cards))
+        self.assertEqual(fixture[0]["ean"], all_cards[0].ean, "ean are not equal")
+        self.assertEqual(fixture[0]["title"], all_cards[0].title, "title are not equal")
+        self.assertEqual(fixture[0]["quantity"], all_cards[0].quantity, "quantities are not equal")
+
+    @mock.patch('search.views._request_session_get', return_value=fixture)
+    def test_call_postSearch_form_not_valid(self, mock_data_source, fake_session):
+        data = {"forloop_counter0": "not valid",
+                "quantity": 1,
+                "data_source": "chapitre",
+        }
+        resp = self.c.post(reverse("card_add"), data)
+        self.assertEqual(400, resp.status_code)
+
+    @mock.patch('search.views._request_session_get', return_value=fixture_no_ean)
+    def test_call_postSearch_form_call_postSearch(self, mock_data_source, fake_session):
+        data = {"forloop_counter0": 1,
+                "quantity": 1,
+                "data_source": "chapitre",
+        }
+        # import ipdb; ipdb.set_trace()
+        # resp = self.c.post(reverse("card_add"), data)
         pass
