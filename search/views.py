@@ -119,6 +119,8 @@ def search(request):
                 search_terms = [q for q in query.split()]
 
             retlist = search_on_data_source(data_source, search_terms)
+            if not retlist:
+                messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
             request.session["search_result"] = retlist
             print "--- search results:", retlist
         else:

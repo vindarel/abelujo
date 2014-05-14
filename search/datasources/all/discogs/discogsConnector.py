@@ -13,6 +13,8 @@ TYPE_VINYL = "vinyl"
 
 class Scraper:
     """Search releases on discogs, by keyword or ean.
+
+    Limitations: see discogs doc.
     """
 
     def __init__(self, *args, **kwargs):
@@ -103,8 +105,6 @@ class Scraper:
 
                 try:
                     val = json.loads(rel.text)
-                    # Do we return the json object or rather an object with
-                    # a predefined format ?
                     card["authors"] = val["artists"][0]["name"]
                     card["title"] = val["title"]
                     card["details_url"] = self.discogs_url + val["uri"]
@@ -114,7 +114,7 @@ class Scraper:
                         label = val['label']
                         if type(label) == str:
                             label = [label]
-                        card['publishers'] = label
+                        card['publishers'] = list(set(label))  # rm duplicates
                     card["tracklist"] = val["tracklist"]
                     card["year"] = val["year"]
                     card["card_type"] = TYPE_CD  # or vinyl
@@ -134,35 +134,40 @@ class Scraper:
             to_ret = []
             ean_list = []
             for val in json_res["results"]:
-                mycard = {}
-                mycard["data_source"] = DATA_SOURCE_NAME
-                # if type in val and type == release : filter on releases ?
-                if 'title' in val:
-                    mycard["authors"] = [val['title'].split('-')[0]]  # what if the band name contains a - ?
-                if 'title' in val:
-                    mycard["title"] = val["title"]
-                if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
-                if 'format' in val: mycard["format"] = val["format"][0]
-                if 'label' in val:
-                    # releases have often many labels (2 or 3).
-                    # label is sometimes a str, sometimes a list.
-                    label = val['label']
-                    if type(label) == str:
-                        label = [label]
-                    mycard['publishers'] = label
-                if 'barcode' in val: mycard['ean'] = val['barcode'][0]
-                if 'thumb' in val:
-                    # that link appears not to be available without Oauth registration any more.
-                    # Construct the link we see with a search via the website.
-                    # following works for albums, not artists or sthg else.TODO: artist search
-                    mycard['img'] = self._construct_img_url(val['thumb'])
-                # mycard["year"] = val["year"]
-                if 'genre' in val: mycard['genre'] = val['genre']
-                mycard['card_type'] = TYPE_CD  # to finish
+                # discogs' results can be a release, an artist, a label… we want releases.
+                if val["type"] == "release":
+                    mycard = {}
+                    mycard["data_source"] = DATA_SOURCE_NAME
+                    # if type in val and type == release : filter on releases ?
+                    if 'title' in val:
+                        mycard["authors"] = [val['title'].split('-')[0]]  # what if the band name contains a - ?
+                    if 'title' in val:
+                        mycard["title"] = val["title"]
+                    if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
+                    if 'format' in val: mycard["format"] = val["format"][0]
+                    if 'label' in val:
+                        # releases have often many labels (2 or 3).
+                        # label is sometimes a str, sometimes a list.
+                        label = val['label']
+                        if type(label) == str:
+                            label = [label]
+                        # remove duplicates
+                        mycard['publishers'] = list(set(label))
 
-                # append if ean not already present, if title ?
-                to_ret.append(mycard)
-                print "got a card: ", mycard
+                    if 'barcode' in val: mycard['ean'] = val['barcode'][0]
+                    if 'thumb' in val:
+                        # that link appears not to be available without Oauth registration any more.
+                        # Construct the link we see with a search via the website.
+                        # following works for albums, not artists or sthg else.TODO: artist search
+                        mycard['img'] = self._construct_img_url(val['thumb'])
+                    # mycard["year"] = val["year"]
+                    if 'genre' in val: mycard['genre'] = val['genre']
+                    mycard['card_type'] = TYPE_CD  # to finish
+
+                    # append if ean not already present, if title ?
+                    to_ret.append(mycard)
+                    print "got a card: ", mycard
+
             return to_ret
 
     def postSearch(self):

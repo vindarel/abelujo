@@ -16,12 +16,13 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 scraper = os.path.join(cdpp, 'decitreScraper')
 
-# from ... import decitreScraper
 sys.path.append(cdpp)
 from discogsConnector import Scraper as scraper
 
 """
 Test that our scraper still works fine with the real discogs website.
+
+We only look for releases (not artists or labels).
 """
 
 class TestDiscogsE2E(unittest.TestCase):
@@ -40,14 +41,14 @@ class TestDiscogsE2E(unittest.TestCase):
         for key in ["authors", "title", "details_url", "format", "tracklist", "year"]:
             self.assertTrue(res[key])
         self.assertEqual(res["authors"], u"Kyuss")
-        # check we have access to details_url ?
 
-    def testArtistSearch(self):
-        search = scraper(artist=["kyuss",])
-        res = search.search()
-        print res[0]["title"]
-        self.assertTrue(res)
-        self.assertEqual(res[0]["title"], u"Kyuss")
+    # We are not interested in artist search, but in releases.
+    # def testArtistSearch(self):
+        # search = scraper(artist=["kyuss",])
+        # res = search.search()
+        # print res[0]["title"]
+        # self.assertTrue(res)
+        # self.assertEqual(res[0]["title"], u"Kyuss")
 
         # TODO: get the artist image ?
         # check we have access to the image
@@ -56,9 +57,6 @@ class TestDiscogsE2E(unittest.TestCase):
         # req = requests.get(img)
         # self.assertEqual(req.status_code, requests.codes.ok,
                          # "the image is not accessible: %s with %s " % (req.reason, img))
-
-        # TODO: finish thinking about the format of returned results
-        # (all discogs json ? our own object ?), and finish the test.
 
     def testKeyWordsSearch(self):
         kw = ["kyuss", "circus"]
