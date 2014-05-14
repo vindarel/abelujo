@@ -340,6 +340,7 @@ def postSearch(url):
     - collection
 
     url: the url to the details of the product where we can get the ean (fiche produit)
+
     returns: a dict
     """
     if not url.startswith('http'):

@@ -19,8 +19,11 @@ fixture = [{"title":'fixture',
             "details_url": "http://fake_url.com",
         }]
 
-fixture_no_ean = fixture[:]
-fixture_no_ean[0].pop("ean")
+fixture_no_ean = [{"title": "fixture no ean",
+                   "details_url": "http://fake_url"
+               }]
+
+fake_postSearch = {"ean": "111"}
 
 class DBFixture():
     """Create a card with an author, a type, a publisher.
@@ -141,7 +144,7 @@ class TestAddView(TestCase):
         self.c = Client()
 
     @mock.patch('search.views._request_session_get', return_value=fixture)
-    def test_call_postSearch(self, mock_data_source, fake_session):
+    def test_addview_nominal(self, mock_data_source, fake_session):
         data = {"forloop_counter0": 0,
                 "quantity": 5,
                 "data_source": "chapitre",
@@ -156,7 +159,7 @@ class TestAddView(TestCase):
         self.assertEqual(fixture[0]["quantity"], all_cards[0].quantity, "quantities are not equal")
 
     @mock.patch('search.views._request_session_get', return_value=fixture)
-    def test_call_postSearch_form_not_valid(self, mock_data_source, fake_session):
+    def test_form_not_valid(self, mock_data_source, fake_session):
         data = {"forloop_counter0": "not valid",
                 "quantity": 1,
                 "data_source": "chapitre",
@@ -165,14 +168,15 @@ class TestAddView(TestCase):
         self.assertEqual(400, resp.status_code)
 
     @mock.patch('search.views._request_session_get', return_value=fixture_no_ean)
-    def test_call_postSearch_form_call_postSearch(self, mock_data_source, fake_session):
-        data = {"forloop_counter0": 1,
+    @mock.patch('search.views.postSearch', return_value=fake_postSearch)
+    def test_call_postSearch_no_ean(self, mock_postSearch, fake_session, mock_data_source):
+        data = {"forloop_counter0": 0,
                 "quantity": 1,
                 "data_source": "chapitre",
         }
-        # import ipdb; ipdb.set_trace()
-        # resp = self.c.post(reverse("card_add"), data)
-        pass
+        resp = self.c.post(reverse("card_add"), data)
+        mock_postSearch.assert_called_once_with(fixture_no_ean[0]["details_url"])
+
 
 class TestCollectionView(TestCase, DBFixture):
 

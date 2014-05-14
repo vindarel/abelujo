@@ -182,7 +182,7 @@ def add(request):
             pass
         card = cur_search_result[forloop_counter0]
 
-        card['quantity'] = int(request.POST.get('quantity'))
+        card['quantity'] = int(req.get('quantity'))
         data_source = req['data_source']  # or card['data_source'] ?
 
         if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
