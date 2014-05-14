@@ -181,8 +181,21 @@ class TestAddView(TestCase):
 class TestCollectionView(TestCase, DBFixture):
 
     def setUp(self):
+        DBFixture.__init__(self)
         self.c = Client()
 
     def test_nominal(self):
-        resp = self.c.get(reverse("card_collection"))
+        resp = self.c.get(reverse("card_collection"))  # get the 5th first cards
+        self.assertEqual(resp.status_code, 200)
+
+    def test_search_title(self):
+        form = {"q": "living",
+                "source": "chapitre"}
+        resp = self.c.post(reverse("card_collection"), data=form)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_search_ean(self):
+        form = {"ean": self.fixture_ean,
+                "source": "chapitre"}
+        resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)

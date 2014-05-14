@@ -226,12 +226,14 @@ def collection(request):
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
-            if request.POST.has_key("title") and request.POST["title"]:
-                words = request.POST["title"].split()
+            if form.cleaned_data.get("q"):
+                words = form.cleaned_data["q"].split()
                 #TODO: better query, include all authors
                 cards = Card.get_from_kw(words)
 
             elif request.POST.has_key("ean"):
+                messages.add_message(request, messages.INFO,
+                                     "La recherche par ean n'est pas encore implémentée.")
                 print "todo: search on ean"
 
     else:
