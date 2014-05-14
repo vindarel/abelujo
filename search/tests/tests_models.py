@@ -119,18 +119,27 @@ class TestPublisher(TestCase):
         typ = CardType(name="unknown")
         typ.save()
         # create a publisher
-        self.publisher = Publisher(name="agone")
-        self.publisher.save()
+        self.publishers = Publisher(name="agone")
+        self.publishers.save()
 
     def test_publisher_existing(self):
         pub = "agone"
-        obj = Card.from_dict({"title": "living", "publisher": pub})
-        self.assertEqual(pub.lower(), obj.publisher.name)
+        obj = Card.from_dict({"title": "living", "publishers": [pub]})
+        all_pubs = obj.publishers.all()
+        self.assertEqual(1, len(all_pubs))
+        self.assertEqual(pub.lower(), all_pubs[0].name)
+
+    def test_many_publishers(self):
+        pub = ["agone", "maspero"]
+        obj = Card.from_dict({"title": "living", "publishers": pub})
+        all_pubs = obj.publishers.all()
+        self.assertEqual(len(pub), len(all_pubs))
+        self.assertEqual(pub[0].lower(), all_pubs[0].name)
 
     def test_publisher_non_existing(self):
         pub = "Foo"
-        obj = Card.from_dict({"title": "living", "publisher": pub})
-        self.assertEqual(pub.lower(), obj.publisher.name)
+        obj = Card.from_dict({"title": "living", "publishers": [pub]})
+        self.assertEqual(pub.lower(), obj.publishers.all()[0].name)
         publishers = Publisher.objects.all()
         self.assertEqual(2, len(publishers))
         self.assertTrue(pub.lower() in [p.name for p in publishers])

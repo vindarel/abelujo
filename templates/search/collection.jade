@@ -25,9 +25,9 @@ for b in book_list
         if b.authors
           h4 {{b.authors}}
         div prix: {{b.price}} €, ean: {{ b.ean }}
-        if b.publisher
+        if b.publishers
           div
-            span éditeur: {{ b.publisher }}
+            span éditeur: {{ b.publishers }}
             if b.collection
               span ({{ b.collection }})
         div exemplaires en stock: {{ b.quantity }}

@@ -42,6 +42,7 @@ class Publisher (models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Collection (models.Model):
     """A collection (or sub-collection) of books.
 
@@ -88,7 +89,7 @@ class Card(TimeStampedModel):
     price = models.CharField(null=True, max_length=20)
     quantity = models.IntegerField(null=False, default=1)
     #: Publisher of the card:
-    publisher = models.ForeignKey(Publisher, blank=True, null=True)
+    publishers = models.ManyToManyField(Publisher, blank=True, null=True)
     year_published = models.DateField(blank=True, null=True)
     #: Collection
     collection = models.ForeignKey(Collection, blank=True, null=True)
@@ -119,6 +120,7 @@ class Card(TimeStampedModel):
             return self.sortkey
         return u', '.join([a.name for a in self.authors.all()])
 
+
     def display_year_published(self):
         "We only care about the year"
 
@@ -137,6 +139,8 @@ class Card(TimeStampedModel):
         """
         ret = Card.objects.order_by("-created")[:nb]
         return ret
+
+
 
     @staticmethod
     def get_from_kw(words):
@@ -210,6 +214,10 @@ class Card(TimeStampedModel):
             data_source = card.get('data_source'),
         )
 
+        # add the authors
+        if card_authors:  # TODO: more tests !
+            card_obj.authors.add(*card_authors)
+
         # add the quantity of exemplaries
         if not created:
             card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
@@ -218,14 +226,12 @@ class Card(TimeStampedModel):
             card_obj.quantity = card.get('quantity', 1)
             card_obj.save()
 
-        if card_authors:  # TODO: more tests !
-            card_obj.authors.add(*card_authors)
-
         # add the type of the card
         if not card.get("card_type"):
             typ = "unknown"
         else:
             typ = card.get("card_type")
+
         try:
             type_obj = CardType.objects.get(name=typ)
         except ObjectDoesNotExist, e:
@@ -234,16 +240,18 @@ class Card(TimeStampedModel):
         card_obj.card_type = type_obj
         card_obj.save()
 
-        # add the publisher
-        pub = card.get("publisher")
-        if pub:
-            pub = pub.lower()
+        # add the publishers
+        pubs = card.get("publishers")
+        if pubs:
             try:
-                publisher_obj, created = Publisher.objects.get_or_create(name=pub)  # manage case
-                card_obj.publisher = publisher_obj
+                for pub in pubs:
+                    pub = pub.lower()
+                    pub_obj, created = Publisher.objects.get_or_create(name=pub)
+                    card_obj.publishers.add(pub_obj)
+                    if created:
+                        print "--- new publisher created: %s" % (pub,)
+
                 card_obj.save()
-                if created:
-                    print "--- new publisher created: %s" % (pub,)
             except Exception, e:
                 print "--- error while adding the publisher: %s" % (e,)
 

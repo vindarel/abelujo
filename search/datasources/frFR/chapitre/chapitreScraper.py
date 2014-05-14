@@ -45,7 +45,7 @@ class Book(object):
         self.authors = []
         self.ean = u""
         self.isbn = u""
-        self.publisher = u""
+        self.publishers = u""
         self.price = 0
         self.img = u""
         #: name of the source
@@ -60,7 +60,7 @@ class Book(object):
     def __print__(self):
         """Pretty output"""
         print '"' + self.title + '", ' + " ".join([a for a in self.authors])
-        print "\t" + self.publisher + " " + self.price + " ean: " + self.ean
+        print "\t" + self.publishers + " " + self.price + " ean: " + self.ean
         print "\tcover: " + self.img
         print "\n"
 
@@ -280,7 +280,7 @@ class scraper:
             else:
                 publisher = "undefined"
             logging.info('publisher:' + publisher)
-            return publisher
+            return [publisher]
 
         except Exception, e:
             print "Error while getting the publisher", e
@@ -325,7 +325,7 @@ class scraper:
             # Summary (4e de couv ?)
             # b.description = self._description(dom_product) #no desc with chapitre
             b.img = self._img(dom_product)
-            b.publisher = self._publisher(dom_product)
+            b.publishers = self._publisher(dom_product)
             b.card_type = self._type(dom_product)
 
             bk_list.append(b.__todict__())

@@ -244,7 +244,7 @@ def collection(request):
             "id": card.id,
             "img": card.img,
             "quantity": card.quantity,
-            "publisher": card.publisher.name.capitalize(),
+            "publishers": ", ".join([p.name.capitalize() for p in card.publishers.all()]),
             "collection": card.collection.name.capitalize() if card.collection else None,
             "details_url": card.details_url,
             "data_source": card.data_source,

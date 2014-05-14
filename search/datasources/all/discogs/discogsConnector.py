@@ -78,7 +78,7 @@ class Scraper:
 
         returns:
 
-        - publisher: one label, though a release can have 2 or 3. Fix Abelujo's db model ?
+        - publishers: a list of labels (str)
         """
         if self.ean:
             card = {}
@@ -109,7 +109,12 @@ class Scraper:
                     card["title"] = val["title"]
                     card["details_url"] = self.discogs_url + val["uri"]
                     card["format"] = val["formats"][0]["name"]
-                    if 'label' in val: card['publisher'] = val['label']
+                    if 'label' in val:
+                        # sometimes str, we need list
+                        label = val['label']
+                        if type(label) == str:
+                            label = [label]
+                        card['publishers'] = label
                     card["tracklist"] = val["tracklist"]
                     card["year"] = val["year"]
                     card["card_type"] = TYPE_CD  # or vinyl
@@ -139,13 +144,12 @@ class Scraper:
                 if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
                 if 'format' in val: mycard["format"] = val["format"][0]
                 if 'label' in val:
-                    # releases have often many labels (2 or 3). How important is it ?
-                    # Abelujo's model is Card n-1 publisher
+                    # releases have often many labels (2 or 3).
                     # label is sometimes a str, sometimes a list.
                     label = val['label']
-                    if type(label) == list:
-                        label = label[0]
-                    mycard['publisher'] = label
+                    if type(label) == str:
+                        label = [label]
+                    mycard['publishers'] = label
                 if 'barcode' in val: mycard['ean'] = val['barcode'][0]
                 if 'thumb' in val:
                     # that link appears not to be available without Oauth registration any more.

@@ -3,6 +3,7 @@
 
 from search.models import Card
 from search.models import CardType
+from search.models import Publisher
 from search.models import Author
 
 from search.views import get_reverse_url
@@ -20,6 +21,33 @@ fixture = [{"title":'fixture',
 
 fixture_no_ean = fixture[:]
 fixture_no_ean[0].pop("ean")
+
+class DBFixture():
+    """Create a card with an author, a type, a publisher.
+    """
+    def __init__(self):
+        # create an author
+        self.GOLDMAN = "Emma Goldman"
+        self.goldman = Author(name=self.GOLDMAN)
+        self.goldman.save()
+        # create a Card
+        self.fixture_ean = "987"
+        self.fixture_title = "living my life"
+        self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
+        self.autobio.save()
+        self.autobio.authors.add(self.goldman)
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # create other card types
+        self.type_book = "book"
+        typ = CardType(name=self.type_book)
+        typ.save()
+        # add a publisher
+        pub = Publisher(name="agone")
+        pub.save()
+        self.autobio.publishers.add(pub)
+
 
 class TestViews(TestCase):
     def setUp(self):
@@ -145,3 +173,12 @@ class TestAddView(TestCase):
         # import ipdb; ipdb.set_trace()
         # resp = self.c.post(reverse("card_add"), data)
         pass
+
+class TestCollectionView(TestCase, DBFixture):
+
+    def setUp(self):
+        self.c = Client()
+
+    def test_nominal(self):
+        resp = self.c.get(reverse("card_collection"))
+        self.assertEqual(resp.status_code, 200)
