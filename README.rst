@@ -31,17 +31,17 @@ Feedback welcomed at ehvince at mailz dot org.
 Installation
 ------------
 
-Get the sources:
+Get the sources::
 
     git clone https://gitlab.com/vindarel/abelujo.git
 
-it creates the directory "abelujo":
+it creates the directory "abelujo"::
 
    cd abelujo
 
 Create  and activate  a virtual  environment (so  than we  can install
 python  libraries locally,  not globally  to your  system). Do  as you
-are used to, or do the following:
+are used to, or do the following::
 
     sudo pip install virtualenvwrapper  # you need: sudo apt-get install python-pip
     source venv_create.sh
@@ -50,13 +50,13 @@ now  your  shell prompt  should  indicate  you  are in  the  "abelujo"
 virtualenv. To quit  the virutal env, type "deactivate".  To enter it,
 type "workon <TAB> abelujo".
 
-To  install the  dependencies, create  and populate  the  database, run:
+To  install the  dependencies, create  and populate  the  database, run::
 
     ./install.sh
 
 
 We are  done !  Now  to try Abelujo,  run the development  server like
-this:
+this::
 
     python manage.py runserver
     # or set the port with:

@@ -1,4 +1,4 @@
-Abelujo - logiciel libre de gestion de petite librairie indépendante
+Abelujo - logiciel libre de gestion de petite librairie independante
 --------------------------------------------------------------------
 
 Projet actuellement en chantier. Il est néanmoins possible de:
@@ -6,7 +6,8 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 - rechercher  des livres  par mots-clefs  ou par n°ISBN/EAN.  La recherche
   s'effectue sur le site chapitre.com.
 - rechercher des CDs (via discogs.com)
-- choisir combien d'exemplaires sont à ajouter dans le stock
+- choisir combien d'exemplaires sont à ajouter dans le stock, les
+  bouger de lieu
 - éditer les fiches de livres,
 - chercher un titre  dans son stock et le marquer  comme vendu (ce qui
   décrémente de 1 son nombre d'exemplaires).
