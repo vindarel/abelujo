@@ -1,17 +1,18 @@
 Abelujo - free software to manage small and independent book (and records) shops.
---------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 
 This project is at its debut stage. However it is already possible to:
 
-* look up for books, either by keywords or by isbn/ean. For now the
-  search solely uses the french website chapitre.com, but it is
-  possible to add other sources (we have one for Foyles coming, a
-  londonian bookshop, and we are working on a way to make it very
-  easy to write other scrapers).
-* look up for CDs (via discogs.com)
+* look up for **books**, either by keywords or by isbn/ean.
+  *For now the search solely uses the french website chapitre.com, but
+  it is possible to add other sources (we have one for Foyles coming,
+  a londonian bookshop, and we are working on a way to make it very
+  easy to write other scrapers).*
+* look up for **CDs** (via discogs.com)
 * choose how many exemplaries you add to your stock, edit the cards,
-  search a book in your database and
+  search a book in your database
+* choose how many copies you put in what place
 * sell a book.
 
 We base our work on the software specifications from the Ruche project
@@ -23,7 +24,7 @@ it and tell us wether or not what we are doing will suit your needs
 (I'll translate this document to english one day or another, but you
 should tell me now if you're interested).
 
-**Abelujo** means Beehive in Espéranto.
+**Abelujo** means Beehive in Esperanto.
 
 Feedback welcomed at ehvince at mailz dot org.
 
@@ -71,8 +72,8 @@ How to update
 For now, when you update the sources (git pull), you certainly will
 have to run the installation process again. We may have updated some
 python packages and the database is very likely to change too (and we
-didn't set up some DB schema migration yet, meaning you'll loose your
-data).
+didn't set up some DB schema migration yet, so you'll have to delete
+it first, meaning you'll loose your data).
 
 
 Development

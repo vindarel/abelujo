@@ -16,6 +16,7 @@ from search.models import Collection
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
+from search.models import Preferences
 
 
 class TestCards(TestCase):
@@ -33,6 +34,12 @@ class TestCards(TestCase):
         # mandatory: unknown card type
         typ = CardType(name="unknown")
         typ.save()
+        # a needed place:
+        self.place_name = "test place"
+        self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
+        self.place.save()
+        # mandatory: preferences table
+        self.preferences = Preferences(default_place=self.place).save()
         # create other card types
         self.type_book = "book"
         typ = CardType(name=self.type_book)
@@ -57,6 +64,8 @@ class TestCards(TestCase):
         self.assertTrue(self.GOLDMAN in names)
         # Check that the author was created
         self.assertTrue(Author.objects.get(name=ZINN))
+        # Check the association card - place (via intermediate table) was created.
+        self.assertEqual(self.place_name, to_add.placecopies_set.all()[0].place.name)
 
     def test_from_dict_no_authors(self):
         TITLE = "I am a CD without authors"
@@ -109,6 +118,9 @@ class TestCards(TestCase):
 
         obj = Card.from_dict({"title": "living"})
         self.assertEqual(obj.card_type.name, "unknown")
+
+    def test_placecopies(self):
+        pass
 
 class TestPublisher(TestCase):
     """Testing the addition of a publisher to a card.
@@ -195,3 +207,6 @@ class TestPlaceCopies(TestCase):
         self.place.add_copies(self.card)
         new_nb = self.place.placecopies_set.get(card=self.card).nb
         self.assertEqual(self.nb_copies + 1, new_nb)
+        self.place.add_copies(self.card, 10)
+        new_nb = self.place.placecopies_set.get(card=self.card).nb
+        self.assertEqual(self.nb_copies + 1 + 10, new_nb)

@@ -50,5 +50,25 @@
      "model":
      "search.cardtype",
      "fields": {"name": "unknown"}
+    },
+
+    {
+        "fields": {
+            "can_sell": true,
+            "comment": null,
+            "date_creation": "2014-05-14",
+            "date_deletion": null,
+            "is_stand": false,
+            "name": "default place"
+        },
+        "model": "search.place",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "default_place": 1
+        },
+        "model": "search.preferences",
+        "pk": 1
     }
 ]

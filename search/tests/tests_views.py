@@ -4,6 +4,8 @@
 from search.models import Card
 from search.models import CardType
 from search.models import Publisher
+from search.models import Place
+from search.models import Preferences
 from search.models import Author
 
 from search.views import get_reverse_url
@@ -26,7 +28,10 @@ fixture_no_ean = [{"title": "fixture no ean",
 fake_postSearch = {"ean": "111"}
 
 class DBFixture():
-    """Create a card with an author, a type, a publisher.
+    """Create a card and required DB entries.
+
+    The card gets an author, a type, a publisher;
+    The required entries are the unknown card type, the Preferences with a default place.
     """
     def __init__(self):
         # create an author
@@ -40,16 +45,21 @@ class DBFixture():
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
         # mandatory: unknown card type
-        typ = CardType(name="unknown")
-        typ.save()
+        self.typ = CardType(name="unknown")
+        self.typ.save()
         # create other card types
         self.type_book = "book"
-        typ = CardType(name=self.type_book)
-        typ.save()
+        self.typ = CardType(name=self.type_book)
+        self.typ.save()
         # add a publisher
-        pub = Publisher(name="agone")
-        pub.save()
-        self.autobio.publishers.add(pub)
+        self.pub = Publisher(name="agone")
+        self.pub.save()
+        self.autobio.publishers.add(self.pub)
+        # a needed place:
+        self.place = Place(name="test place", is_stand=False, can_sell=True)
+        self.place.save()
+        # Preferences: (default place)
+        self.preferences = Preferences(default_place=self.place).save()
 
 
 class TestViews(TestCase):

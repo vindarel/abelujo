@@ -1,20 +1,20 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
-from datasources.frFR.chapitre.chapitreScraper import scraper
-from datasources.frFR.chapitre.chapitreScraper import postSearch
-from datasources.all.discogs.discogsConnector import Scraper as discogs
-
-from models import Card
-
-from django import forms
-from django.shortcuts import render
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-
 import urllib
 
+from django import forms
+from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
+from datasources.all.discogs.discogsConnector import Scraper as discogs
+from datasources.frFR.chapitre.chapitreScraper import postSearch
+from datasources.frFR.chapitre.chapitreScraper import scraper
+from models import Card
+from models import Place
+from models import Preferences
 
 SCRAPER_CHOICES = [
     ("Book shops", (
@@ -39,11 +39,25 @@ class SearchForm(forms.Form):
                     )
     ean = forms.CharField(required=False)
 
+def get_places_choices():
+    not_stands = Place.objects.filter(is_stand=False)
+    ret = [ (p.name, p.name) for p in not_stands]
+    return ret
+
+
 class AddForm(forms.Form):
     # The hidden form populated when the user clicks on "add this card".
-    forloop_counter0 = forms.CharField(max_length=5)
-    quantity = forms.CharField(max_length=1000)
-    # data_source is optionnal here.
+    # The search is saved to the session. What element do we want ?
+    forloop_counter0 = forms.CharField(max_length=5,
+                                       widget=forms.HiddenInput)
+    # How many copies ?
+    quantity = forms.CharField(max_length=1000,
+                               widget=forms.HiddenInput)
+    # What site we searched on.
+    data_source = forms.CharField(max_length=100, required=False,
+                                  widget=forms.HiddenInput)
+    # The place where to put this copy: the one by default.
+    # to do
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
@@ -198,7 +212,7 @@ def add(request):
                     print "--- postSearch: found %s: %s" % (k,v)
                     card[k] = v
 
-        # Add it to the DB.
+        # Add the card to the DB.
         try:
             Card.from_dict(card)
             messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
@@ -252,6 +266,7 @@ def collection(request):
             "collection": card.collection.name.capitalize() if card.collection else None,
             "details_url": card.details_url,
             "data_source": card.data_source,
+            "places": ", ".join([p.name for p in card.places.all()]),  # todo: detail how many copies by place
             # "description": card.description,
                 })
 

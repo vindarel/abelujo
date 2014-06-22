@@ -31,6 +31,8 @@ for b in book_list
             if b.collection
               span ({{ b.collection }})
         div exemplaires en stock: {{ b.quantity }}
+        div Lieus de stockage:
+          span {{ b.places }}
 
   form(action='/collection/sell/', method='post') {% csrf_token %}
     // input(type='hidden', value=b.title, name='book')

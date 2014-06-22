@@ -68,7 +68,6 @@ class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
     name = models.CharField(max_length=100, null=True)
-
     def __unicode__(self):
         return self.name
 
@@ -95,6 +94,7 @@ class Card(TimeStampedModel):
     collection = models.ForeignKey(Collection, blank=True, null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
+    #: the places were we can find this card (and how many).
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, null=True)  #TODO: allow null
     sold = models.DateField(blank=True, null=True)
     price_sold = models.CharField(null=True, max_length=20, blank=True)
@@ -149,7 +149,7 @@ class Card(TimeStampedModel):
         TODO:
         """
         #TODO: all key words !
-        print "TODO: search on all keywords"
+        print "TODO: search the collection on all keywords"
         return Card.objects.filter(title__contains=words[0])
 
     @staticmethod
@@ -269,6 +269,15 @@ class Card(TimeStampedModel):
             except Exception, e:
                 print "--- error while adding the collection: %s" % (e,)
 
+        # Add the default place (to the intermediate table).
+        try:
+            default_place = Preferences.objects.all()[0].default_place
+            place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
+            place_copy.nb = 1
+            place_copy.save()
+        except Exception, e:
+            print "--- error while setting the default place: %s" % (e,)
+
         # Make a sortkey in case it is missing
         # card.set_sortkey()
 
@@ -280,6 +289,7 @@ class PlaceCopies (models.Model):
     """
     # This is the join table defined in Card with the "through" argument:
     # https://docs.djangoproject.com/en/1.5/topics/db/models/#intermediary-manytomany
+
     # so than we can add custom fields to the join.
     #: The card
     card = models.ForeignKey("Card")
@@ -287,10 +297,10 @@ class PlaceCopies (models.Model):
     place = models.ForeignKey("Place")
 
     #: Number of copies
-    nb = models.IntegerField(null=True, blank=True)
+    nb = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return "%s: %i exemplaries" % (self.place.nameself.number)
+        return "%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
 
 class Place (models.Model):
@@ -330,7 +340,7 @@ class Place (models.Model):
         - nb: the number of copies to add (optional)
 
         returns:
-        -
+        - nothing
 
         """
         try:
@@ -340,3 +350,13 @@ class Place (models.Model):
         except Exception,e:
             print "--- error while adding %s to the place %s" % (card.name, self.name)
             print e
+
+class Preferences(models.Model):
+    """
+    Default preferences.
+    """
+    #: What place to add the cards by default ? (we register them, then move them)
+    default_place = models.OneToOneField(Place)
+
+    def __unicode__(self):
+        return "Place: %s" % self.default_place.name
