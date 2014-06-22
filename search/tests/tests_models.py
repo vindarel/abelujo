@@ -13,7 +13,10 @@ from search.models import Author
 from search.models import Card
 from search.models import CardType
 from search.models import Collection
+from search.models import Place
+from search.models import PlaceCopies
 from search.models import Publisher
+
 
 class TestCards(TestCase):
     def setUp(self):
@@ -174,3 +177,21 @@ class TestCollection(TestCase):
 
     def test_parent_collection(self):
         pass
+
+
+class TestPlaceCopies(TestCase):
+
+    def setUp(self):
+        # Create a relation Card - PlaceCopies - Place
+        self.place = Place(name="here", is_stand=False, can_sell=True); self.place.save()
+        self.card = Card(title="test card") ; self.card.save()
+        self.nb_copies = 9
+        self.pl_cop = PlaceCopies(card=self.card, place=self.place, nb=self.nb_copies).save()
+
+    def tearDown(self):
+        pass
+
+    def test_add_copies(self):
+        self.place.add_copies(self.card)
+        new_nb = self.place.placecopies_set.get(card=self.card).nb
+        self.assertEqual(self.nb_copies + 1, new_nb)

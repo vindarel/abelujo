@@ -95,6 +95,7 @@ class Card(TimeStampedModel):
     collection = models.ForeignKey(Collection, blank=True, null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
+    places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, null=True)  #TODO: allow null
     sold = models.DateField(blank=True, null=True)
     price_sold = models.CharField(null=True, max_length=20, blank=True)
     img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
@@ -272,3 +273,70 @@ class Card(TimeStampedModel):
         # card.set_sortkey()
 
         return card_obj
+
+
+class PlaceCopies (models.Model):
+    """Copies of a card present in a place.
+    """
+    # This is the join table defined in Card with the "through" argument:
+    # https://docs.djangoproject.com/en/1.5/topics/db/models/#intermediary-manytomany
+    # so than we can add custom fields to the join.
+    #: The card
+    card = models.ForeignKey("Card")
+    #: The place
+    place = models.ForeignKey("Place")
+
+    #: Number of copies
+    nb = models.IntegerField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s: %i exemplaries" % (self.place.nameself.number)
+
+
+class Place (models.Model):
+    """A place can be a selling point, a warehouse or a stand.
+    """
+    #: Name of this place
+    name = models.CharField(max_length=CHAR_LENGTH)
+
+    #: Copies: PlaceCopies
+
+    #: Date of creation
+    date_creation = models.DateField(auto_now_add=True)
+
+    #: Date of deletion
+    date_deletion = models.DateField(null=True, blank=True)
+
+    #: Is this place a stand ?
+    is_stand = models.BooleanField()
+
+    #: Is it allowed to sell books from here ?
+    can_sell = models.BooleanField()
+
+    #: Optional comment
+    comment = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("name",)
+
+    def __unicode__(self):
+        return self.name
+
+    def add_copies(self, card, nb=1):
+        """Adds the given number of copies (1 by default) of the given card to
+        this place.
+
+        - card: a card objects
+        - nb: the number of copies to add (optional)
+
+        returns:
+        -
+
+        """
+        try:
+            place_copy = self.placecopies_set.get(card=card)
+            place_copy.nb += nb
+            place_copy.save()
+        except Exception,e:
+            print "--- error while adding %s to the place %s" % (card.name, self.name)
+            print e
