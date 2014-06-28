@@ -31,13 +31,10 @@ for b in result_list
         if b.description
           div {{b.description}}
 
-  form(action='/add/', method='post') {% csrf_token %}
+  form.form-inline(action='/add/', method='post')
     {% csrf_token %}
+    {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
-    input(type='hidden', value="{{ data_source }}", name='data_source')
     input.btn.btn-primary(type='submit', value='Ajouter', title="Ajouter cet article à mon stock")
-    span
-      span Quantité
-      input(type="text", size="5", value="1", name="quantity")
 
 {% endblock search_result %}

@@ -6,15 +6,19 @@ import urllib
 from django import forms
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from datasources.all.discogs.discogsConnector import Scraper as discogs
 from datasources.frFR.chapitre.chapitreScraper import postSearch
 from datasources.frFR.chapitre.chapitreScraper import scraper
+
 from models import Card
 from models import Place
-from models import Preferences
+
+MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
+DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 
 SCRAPER_CHOICES = [
     ("Book shops", (
@@ -39,25 +43,28 @@ class SearchForm(forms.Form):
                     )
     ean = forms.CharField(required=False)
 
+
+class MyNumberInput(TextInput):
+    input_type = 'number'
+
+
+class AddForm(forms.Form):
+    """The form populated when the user clicks on "add this card"."""
+    # The search is saved to the session so we need to get the element we want: hence the for counter.
+    # We couldn't find how to populate its value (which is {{ forloop.counter0 }})
+    # without not writting it explicitely in the template.
+    forloop_counter0 = forms.IntegerField(min_value=0,
+                                          widget=forms.HiddenInput())
+    # How many copies ?
+    quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
+                                                                'step':1, 'value':DEFAULT_NB_COPIES,
+                                                                'style':"width: 70px"}))
+
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
     ret = [ (p.name, p.name) for p in not_stands]
     return ret
 
-
-class AddForm(forms.Form):
-    # The hidden form populated when the user clicks on "add this card".
-    # The search is saved to the session. What element do we want ?
-    forloop_counter0 = forms.CharField(max_length=5,
-                                       widget=forms.HiddenInput)
-    # How many copies ?
-    quantity = forms.CharField(max_length=1000,
-                               widget=forms.HiddenInput)
-    # What site we searched on.
-    data_source = forms.CharField(max_length=100, required=False,
-                                  widget=forms.HiddenInput)
-    # The place where to put this copy: the one by default.
-    # to do
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
@@ -97,7 +104,7 @@ def index(request):
                 return HttpResponseRedirect(rev_url)
 
     return render(request, "search/search_result.jade", {
-            "form": form,
+            "searchForm": form,
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
@@ -150,7 +157,8 @@ def search(request):
             retlist = request.session["search_result"]
 
     return render(request, "search/search_result.jade", {
-            "form": form,
+            "searchForm": form,
+            "addForm": AddForm(),
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
@@ -170,7 +178,7 @@ def add(request):
     Before adding it, we need to get the last information about the
     Card, the ones we couldn't get at the first scraping. We call the
     `postSearch` method of the scraper module. Sometimes it is the
-    only way to get the ean (with the minimum of http requests).
+    only way to get the ean (with only two http requests).
 
     The list of cards is stored in the session. The template only returns the list's indice.
 
@@ -189,15 +197,14 @@ def add(request):
         resp_status = 400
     else:
         # get the last search results of the session:
-        forloop_counter0 = int(req.get("forloop_counter0"))
         cur_search_result = _request_session_get(request, "search_result")
         if not cur_search_result:
             print "Error: the session has no search_result."
             pass
-        card = cur_search_result[forloop_counter0]
+        card = cur_search_result[form.cleaned_data["forloop_counter0"]]
 
-        card['quantity'] = int(req.get('quantity'))
-        data_source = req['data_source']  # or card['data_source'] ?
+        card['quantity'] = form.cleaned_data["quantity"]
+        data_source = card["data_source"]
 
         if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
             if not 'data_source' in req:
@@ -223,7 +230,8 @@ def add(request):
 
     return render(request, 'search/search_result.jade',
                   {
-                  'form': SearchForm(),
+                  'searchForm': SearchForm(),
+                  'addForm': AddForm(),
                   'result_list': cur_search_result,
                   },
                   status=resp_status,
@@ -272,7 +280,7 @@ def collection(request):
 
 
     return render(request, "search/collection.jade", {
-            "form": form,
+            "searchForm": form,
             "book_list": retlist
             })
 
@@ -294,5 +302,5 @@ def sell(request):
 
     messages.add_message(request, level, message)
     return render(request, 'search/index.jade', {
-                  'form': form
+                  'searchForm': form
                   })

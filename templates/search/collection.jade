@@ -8,7 +8,7 @@
 
 form(action='/collection/', method='post')
   {% csrf_token %}
-  {% bootstrap_form form %}
+  {% bootstrap_form searchForm %}
   // {{ form.as_p }}
   input.btn.btn-primary(type='submit', value='submit')
 

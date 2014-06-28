@@ -19,10 +19,12 @@ import mock
 fixture = [{"title":'fixture',
             "ean": "111",
             "details_url": "http://fake_url.com",
+            "data_source": "chapitre"
         }]
 
 fixture_no_ean = [{"title": "fixture no ean",
-                   "details_url": "http://fake_url"
+                   "details_url": "http://fake_url",
+                   "data_source": "chapitre"
                }]
 
 fake_postSearch = {"ean": "111"}
