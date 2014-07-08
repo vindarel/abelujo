@@ -141,8 +141,6 @@ class Card(TimeStampedModel):
         ret = Card.objects.order_by("-created")[:nb]
         return ret
 
-
-
     @staticmethod
     def get_from_kw(words):
         """search some card: quick to test
@@ -270,16 +268,13 @@ class Card(TimeStampedModel):
                 print "--- error while adding the collection: %s" % (e,)
 
         # Add the default place (to the intermediate table).
-        try:
-            default_place = Preferences.objects.all()[0].default_place
-            place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
-            place_copy.nb = 1
-            place_copy.save()
-        except Exception, e:
-            print "--- error while setting the default place: %s" % (e,)
-
-        # Make a sortkey in case it is missing
-        # card.set_sortkey()
+        # try:
+        #     default_place = Preferences.objects.all()[0].default_place
+        #     place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
+        #     place_copy.nb = 1
+        #     place_copy.save()
+        # except Exception, e:
+        #     print "--- error while setting the default place: %s" % (e,)
 
         return card_obj
 
@@ -332,6 +327,17 @@ class Place (models.Model):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def card_to_default_place(card_obj, nb=1):
+        # Add the card to the default place (to the intermediate table).
+        try:
+            default_place = Preferences.objects.all()[0].default_place
+            place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
+            place_copy.nb += nb
+            place_copy.save()
+        except Exception, e:
+            print "--- error while setting the default place: %s" % (e,)
+
     def add_copies(self, card, nb=1):
         """Adds the given number of copies (1 by default) of the given card to
         this place.
@@ -366,7 +372,7 @@ class BasketCopies(models.Model):
     """
     card = models.ForeignKey("Card")
     basket = models.ForeignKey("Basket")
-    nb = models.IntegerField(default=1)
+    nb = models.IntegerField(default=0)
 
     def __unicode__(self):
         return "Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
@@ -398,10 +404,12 @@ class Basket(models.Model):
     def add_copy(self, card, nb=1):
         """Adds the given card to the basket.
 
+        If no relation already exist with the card, create one.
+
         nb: nb to add (1 by default)
         """
         try:
-            basket_copy = self.basketcopies_set.get(card=card)
+            basket_copy, created = self.basketcopies_set.get_or_create(card=card)
             basket_copy.nb += nb
             basket_copy.save()
         except Exception as e:

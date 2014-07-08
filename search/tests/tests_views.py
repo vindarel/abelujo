@@ -157,9 +157,8 @@ class TestAddView(TestCase):
 
     @mock.patch('search.views._request_session_get', return_value=fixture)
     def test_addview_nominal(self, mock_data_source, fake_session):
-        data = {"forloop_counter0": 0,
-                "quantity": 5,
-                "data_source": "chapitre",
+        data = {"forloop_counter0": [0,],
+                "quantity": [5,],
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(200, resp.status_code)
@@ -173,8 +172,7 @@ class TestAddView(TestCase):
     @mock.patch('search.views._request_session_get', return_value=fixture)
     def test_form_not_valid(self, mock_data_source, fake_session):
         data = {"forloop_counter0": "not valid",
-                "quantity": 1,
-                "data_source": "chapitre",
+                "quantity": [1,],
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(400, resp.status_code)
@@ -182,9 +180,8 @@ class TestAddView(TestCase):
     @mock.patch('search.views._request_session_get', return_value=fixture_no_ean)
     @mock.patch('search.views.postSearch', return_value=fake_postSearch)
     def test_call_postSearch_no_ean(self, mock_postSearch, fake_session, mock_data_source):
-        data = {"forloop_counter0": 0,
-                "quantity": 1,
-                "data_source": "chapitre",
+        data = {"forloop_counter0": [0,],
+                "quantity": [1,],
         }
         resp = self.c.post(reverse("card_add"), data)
         mock_postSearch.assert_called_once_with(fixture_no_ean[0]["details_url"])

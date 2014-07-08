@@ -31,7 +31,7 @@ for b in result_list
         if b.description
           div {{b.description}}
 
-  form.form-inline(action='/add/', method='post')
+  form(action='/add/', method='post')
     {% csrf_token %}
     {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')

@@ -14,6 +14,7 @@ from datasources.all.discogs.discogsConnector import Scraper as discogs
 from datasources.frFR.chapitre.chapitreScraper import postSearch
 from datasources.frFR.chapitre.chapitreScraper import scraper
 
+from models import Basket
 from models import Card
 from models import Place
 
@@ -49,6 +50,12 @@ class MyNumberInput(TextInput):
     input_type = 'number'
 
 
+def get_basket_choices():
+    # TODO: make list dynamic + query in class.
+    return [(0, "Aucun panier")] + [(basket.id, basket.name) for basket in Basket.objects.all()]
+
+basket_choices = get_basket_choices()
+
 class AddForm(forms.Form):
     """The form populated when the user clicks on "add this card"."""
     # The search is saved to the session so we need to get the element we want: hence the for counter.
@@ -60,6 +67,9 @@ class AddForm(forms.Form):
     quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
                                                                 'step':1, 'value':DEFAULT_NB_COPIES,
                                                                 'style':"width: 70px"}))
+    basket = forms.ChoiceField(choices=basket_choices,  #TODO en cours
+                               label="Ajouter la notice au panier (optionnel)",
+                               required=False)
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
@@ -159,7 +169,7 @@ def search(request):
 
     return render(request, "search/search_result.jade", {
             "searchForm": form,
-            "addForm": AddForm(),
+            "addForm": AddForm(initial={"basket": basket_choices[0]}),
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
@@ -188,13 +198,10 @@ def add(request):
     card = {}
     resp_status = 200
     cur_search_result = _request_session_get(request, "search_result")
-    print "our ruequest: ", request.POST
-    if request.method == "POST":
-        print "our post: ", request.POST
-
     req = request.POST.copy()
     form = AddForm(req)
     if not form.is_valid():
+        print "debug: add view: form is not valid."
         resp_status = 400
     else:
         # get the last search results of the session:
@@ -208,7 +215,7 @@ def add(request):
         data_source = card["data_source"]
 
         if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
-            if not 'data_source' in req:
+            if not data_source:
                 print "Error: the data source is unknown."
                 # return an error page
             else:
@@ -220,10 +227,28 @@ def add(request):
                     print "--- postSearch: found %s: %s" % (k,v)
                     card[k] = v
 
-        # Add the card to the DB.
         try:
-            Card.from_dict(card)
+            # Add the card to the DB.
+            card_obj = Card.from_dict(card)
+
+            # Add a copy to a basket or to the default place ?
+            basket_id = form.cleaned_data.get("basket")
+            if basket_id:
+                # add to the basket
+                basket_id = int(basket_id)
+                print "adding card %s to basket %i" % (card['title'], basket_id)
+                basket = Basket.objects.get(id=basket_id)
+                basket.add_copy(card_obj)
+            else:
+                # add to the default place.
+                print "adding card %s to default place" % (card['title'],)
+                Place.card_to_default_place(card_obj)
+
             messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
+        except Basket.DoesNotExist as e:
+            messages.add_message(request, messages.ERROR,
+                                 u"The basket n° %s was not found. The card could not be registered." % (form.cleaned_data["basket"],))
+            print "Error when fetching basket %s: %s" % (form.cleaned_data["basket"], e)
         except Exception, e:
             messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
             print "Error when trying to add card ", e

@@ -67,8 +67,6 @@ class TestCards(TestCase):
         self.assertTrue(self.GOLDMAN in names)
         # Check that the author was created
         self.assertTrue(Author.objects.get(name=ZINN))
-        # Check the association card - place (via intermediate table) was created.
-        self.assertEqual(self.place_name, to_add.placecopies_set.all()[0].place.name)
 
     def test_from_dict_no_authors(self):
         TITLE = "I am a CD without authors"
@@ -202,6 +200,7 @@ class TestPlaceCopies(TestCase):
         self.card = Card(title="test card") ; self.card.save()
         self.nb_copies = 9
         self.pl_cop = PlaceCopies(card=self.card, place=self.place, nb=self.nb_copies).save()
+        self.prefs = Preferences(default_place=self.place).save()
 
     def tearDown(self):
         pass
@@ -214,31 +213,25 @@ class TestPlaceCopies(TestCase):
         new_nb = self.place.placecopies_set.get(card=self.card).nb
         self.assertEqual(self.nb_copies + 1 + 10, new_nb)
 
+    def test_card_to_default_place(self):
+        Place.card_to_default_place(self.card, nb=3)
+
 
 class TestBaskets(TestCase):
 
     def setUp(self):
-        # Create a relation Card - BasketCopies - Basket
+        # Create a Card and a Basket.
         self.basket = Basket(name="test basket"); self.basket.save()
         self.card = Card(title="test card") ; self.card.save()
         self.nb_copies = 9
-        self.basket_copies = BasketCopies(card=self.card, basket=self.basket)
-        self.basket_copies.save()
 
     def tearDown(self):
         pass
 
-    def test_basket_copies(self):
-        self.assertEqual(self.basket_copies.nb, 1)
-        # custom nb of copies
-        self.basket_copies = BasketCopies(card=self.card, basket=self.basket, nb=self.nb_copies)
-        self.basket_copies.save()
-        self.assertEqual(self.basket_copies.nb, self.nb_copies)
-
     def test_basket_add_copy(self):
         # add a card.
-        self.basket.add_copy(self.card)
-        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 2)
+        self.basket.add_copy(self.card)  # it creates the intermediate table if not found.
+        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1)
         # idem, with specific nb.
         self.basket.add_copy(self.card, nb=self.nb_copies)
-        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 2 + self.nb_copies)
+        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1 + self.nb_copies)
