@@ -359,4 +359,62 @@ class Preferences(models.Model):
     default_place = models.OneToOneField(Place)
 
     def __unicode__(self):
-        return "Place: %s" % self.default_place.name
+        return "Place: %s" % (self.default_place.name,)
+
+class BasketCopies(models.Model):
+    """Copies present in a basket (intermediate table).
+    """
+    card = models.ForeignKey("Card")
+    basket = models.ForeignKey("Basket")
+    nb = models.IntegerField(default=1)
+
+    def __unicode__(self):
+        return "Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
+
+class Basket(models.Model):
+    """A basket is a set of copies that are put in it for later use. Its
+    copies can be present in the stock or not. To mix with a basket's
+    copies doesn't mean mixing with physical copies of the stock.
+    """
+    # This class is really similar to PlaceCopies. Do something about it.
+    #: Name of the basket
+    name = models.CharField(max_length=CHAR_LENGTH)
+    #: Short description
+    descrition = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
+    #: Type of the basket (preparation of a command, a stand, other, etc)
+    basket_type = models.ForeignKey("BasketType", null=True, blank=True)
+    #: Copies in it:
+    copies = models.ManyToManyField(Card, through="BasketCopies", blank=True, null=True)
+    # Access the intermediate table with basketcopies_set.all(), basketcopies_set.get(card=card)
+    #: Comment:
+    comment = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
+
+    class Meta:
+        ordering = ("name",)
+
+    def __unicode__(self):
+        return self.name
+
+    def add_copy(self, card, nb=1):
+        """Adds the given card to the basket.
+
+        nb: nb to add (1 by default)
+        """
+        try:
+            basket_copy = self.basketcopies_set.get(card=card)
+            basket_copy.nb += nb
+            basket_copy.save()
+        except Exception as e:
+            print "Error while adding a card to basket %s: %s" % (self.name,e)
+
+class BasketType (models.Model):
+    """
+    """
+
+    name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+
+    class Meta:
+        ordering = ("name",)
+
+    def __unicode__(self):
+        return self.name

@@ -10,6 +10,9 @@ Note: to compare two objects, don't use assertEqual but the == operator.
 from django.test import TestCase
 
 from search.models import Author
+from search.models import Basket
+from search.models import BasketCopies
+from search.models import BasketType
 from search.models import Card
 from search.models import CardType
 from search.models import Collection
@@ -210,3 +213,32 @@ class TestPlaceCopies(TestCase):
         self.place.add_copies(self.card, 10)
         new_nb = self.place.placecopies_set.get(card=self.card).nb
         self.assertEqual(self.nb_copies + 1 + 10, new_nb)
+
+
+class TestBaskets(TestCase):
+
+    def setUp(self):
+        # Create a relation Card - BasketCopies - Basket
+        self.basket = Basket(name="test basket"); self.basket.save()
+        self.card = Card(title="test card") ; self.card.save()
+        self.nb_copies = 9
+        self.basket_copies = BasketCopies(card=self.card, basket=self.basket)
+        self.basket_copies.save()
+
+    def tearDown(self):
+        pass
+
+    def test_basket_copies(self):
+        self.assertEqual(self.basket_copies.nb, 1)
+        # custom nb of copies
+        self.basket_copies = BasketCopies(card=self.card, basket=self.basket, nb=self.nb_copies)
+        self.basket_copies.save()
+        self.assertEqual(self.basket_copies.nb, self.nb_copies)
+
+    def test_basket_add_copy(self):
+        # add a card.
+        self.basket.add_copy(self.card)
+        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 2)
+        # idem, with specific nb.
+        self.basket.add_copy(self.card, nb=self.nb_copies)
+        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 2 + self.nb_copies)

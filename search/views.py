@@ -45,6 +45,7 @@ class SearchForm(forms.Form):
 
 
 class MyNumberInput(TextInput):
+    # render an IntegerField with a "number" html5 widget, not text.
     input_type = 'number'
 
 
