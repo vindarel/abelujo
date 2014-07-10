@@ -28,6 +28,8 @@ class Scraper:
         self.url = ""
         self.ean = None
 
+        self.headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0"}
+
         if not args and not kwargs:
             print "give some search keywords"
 
@@ -85,7 +87,7 @@ class Scraper:
         if self.ean:
             card = {}
             card["data_source"] = DATA_SOURCE_NAME
-            res = requests.get(self.url)
+            res = requests.get(self.url, headers=self.headers)
             json_res = json.loads(res.text)
             try:
                 uri = json_res["results"][0]["uri"]
@@ -101,7 +103,7 @@ class Scraper:
             if release:
                 release_url = self.api_url + "/releases/" + release
                 print "release_url: ", release_url
-                rel = requests.get(release_url)
+                rel = requests.get(release_url, headers=self.headers)
 
                 try:
                     val = json.loads(rel.text)
@@ -129,7 +131,7 @@ class Scraper:
 
         else:
             # usual case
-            res = requests.get(self.url)
+            res = requests.get(self.url, headers=self.headers)
             json_res = json.loads(res.text)
             to_ret = []
             ean_list = []
