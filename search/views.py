@@ -266,7 +266,6 @@ def add(request):
 def collection(request):
     """Search our own collection and take actions
     """
-    # TODO: function identical to index, except the search function: factorize
     form = SearchForm()
     retlist = []
     cards = []
@@ -282,7 +281,7 @@ def collection(request):
             elif request.POST.has_key("ean"):
                 messages.add_message(request, messages.INFO,
                                      "La recherche par ean n'est pas encore implémentée.")
-                print "todo: search on ean"
+                print "TODO: search on ean"
 
     else:
         cards = Card.first_cards(5)
@@ -300,9 +299,8 @@ def collection(request):
             "collection": card.collection.name.capitalize() if card.collection else None,
             "details_url": card.details_url,
             "data_source": card.data_source,
-            "places": ", ".join([p.name for p in card.places.all()]),  # todo: detail how many copies by place
-            # "description": card.description,
-                })
+            "places": ", ".join([p.name for p in card.places.all()]),
+        })
 
 
     return render(request, "search/collection.jade", {

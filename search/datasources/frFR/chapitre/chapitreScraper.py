@@ -1,13 +1,30 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 
-# it is difficult to find the prices on decitre (in the front page,
-#   i.e. getting all the book infos in one request).
-# TODO: use chapitre.com !
-#http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&titre=&ne=&n=0&auteur=&peopleId=&quicksearch=victor+hugo&editeur=&reference=&plng=&optSearch=ALL&beginDate=&endDate=&mot_cle=&prix=&themeId=&collection=&subquicksearch=&page=1
+"""Program responsible to find books on chapitre.com. The search is
+based on key words or on the ean.
+
+The search works in 2 steps:
+
+- fire the search and get a result page. In that page, we find books,
+  the link to their detailed page, and some information. We get all we
+  can of that page and return a list of dictionaries to display in the
+  UI.
+
+- but some important information may be missing from this page and be
+  only available from the detailed book's page (like the ean, in the
+  case of chapitre.com). But we MUST fetch the ean and register it to
+  the database. So we first display the information we have, and when
+  the user clicks "add this book", then we look for the ean on this
+  book's details page. That way we don't do it for every book of the
+  search result, that would be too long.
+
+"""
+
+# example search url:
+# http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&titre=&ne=&n=0&auteur=&peopleId=&quicksearch=victor+hugo&editeur=&reference=&plng=&optSearch=ALL&beginDate=&endDate=&mot_cle=&prix=&themeId=&collection=&subquicksearch=&page=1
 
 from bs4 import BeautifulSoup
-import sys
 import re
 import requests
 import requests_cache
@@ -156,7 +173,7 @@ class scraper:
             print 'search url: ', self.url
 
         self.r = requests.get(self.url)
-        #TODO to be continued
+        #TODO: to be continued
         self.soup = BeautifulSoup(self.r.text)
 
     def _product_list(self):

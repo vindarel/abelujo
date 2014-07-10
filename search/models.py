@@ -144,9 +144,7 @@ class Card(TimeStampedModel):
     @staticmethod
     def get_from_kw(words):
         """search some card: quick to test
-        TODO:
         """
-        #TODO: all key words !
         print "TODO: search the collection on all keywords"
         return Card.objects.filter(title__contains=words[0])
 
