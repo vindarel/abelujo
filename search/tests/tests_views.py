@@ -93,7 +93,8 @@ class TestViews(TestCase):
         resp = self.post_to_view()
         self.assertTrue(resp)
 
-@mock.patch('search.views.search_on_data_source', return_value=fixture)
+
+@mock.patch('search.views.search_on_data_source', return_value=(fixture, []))
 class TestSearchView(TestCase):
 
     def setUp(self):

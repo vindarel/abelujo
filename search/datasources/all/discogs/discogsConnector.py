@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-import requests
 import sys
+import traceback
+
+import requests
 
 DATA_SOURCE_NAME = "Discogs.com"
 DISCOGS_IMG_URL = "http://s.pixogs.com/image/"
@@ -15,6 +17,17 @@ class Scraper:
     """Search releases on discogs, by keyword or ean.
 
     Limitations: see discogs doc.
+
+    == Exceptions handling ==
+
+    if an exception occurs, we want it to be catched early and not to
+    be blocking, but we still want to tell the outside world that an
+    exception occured. For example, the unit tests should exit on
+    exception and the UI could say that an error occured.
+
+    Consequently, the search() method returns the result AND a list of
+    stacktraces.
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -29,6 +42,8 @@ class Scraper:
         self.ean = None
 
         self.headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0"}
+
+        self.stacktraces = []  # store stacktraces
 
         if not args and not kwargs:
             print "give some search keywords"
@@ -80,22 +95,23 @@ class Scraper:
         """
         if ean search, returns a dict with all the info
 
-        returns:
+        returns: a couple results / stacktraces.
 
         - publishers: a list of labels (str)
         """
+        self.stacktraces = []
         if self.ean:
             card = {}
             card["data_source"] = DATA_SOURCE_NAME
             res = requests.get(self.url, headers=self.headers)
-            json_res = json.loads(res.text)
             try:
+                json_res = json.loads(res.text)
                 uri = json_res["results"][0]["uri"]
                 print "uri: ", uri
             except Exception, e:
                 print "Error searching ean %s: " % (self.ean,)
                 print e
-                return None
+                return None, traceback.format_exc()
 
             # now getting the release id
             release = uri.split("/")[-1]
@@ -122,55 +138,75 @@ class Scraper:
                     card["card_type"] = TYPE_CD  # or vinyl
                     # images, genre,…
                     print "found album %s by %s" % (card["title"], card["authors"])
-                    return card
 
                 except Exception, e:
                     print "Error on getting release informations of %s " % (release_url,)
                     print e
-                    return card
+                    print "Traceback: %s" % (traceback.format_exc())
+                    self.stacktraces.append(traceback.format_exc())
+
+                return card, self.stacktraces
 
         else:
-            # usual case
-            res = requests.get(self.url, headers=self.headers)
-            json_res = json.loads(res.text)
-            to_ret = []
-            ean_list = []
-            for val in json_res["results"]:
-                # discogs' results can be a release, an artist, a label… we want releases.
-                if val["type"] == "release":
-                    mycard = {}
-                    mycard["data_source"] = DATA_SOURCE_NAME
-                    # if type in val and type == release : filter on releases ?
-                    if 'title' in val:
-                        mycard["authors"] = [val['title'].split('-')[0]]  # what if the band name contains a - ?
-                    if 'title' in val:
-                        mycard["title"] = val["title"]
-                    if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
-                    if 'format' in val: mycard["format"] = val["format"][0]
-                    if 'label' in val:
-                        # releases have often many labels (2 or 3).
-                        # label is sometimes a str, sometimes a list.
-                        label = val['label']
-                        if type(label) == str:
-                            label = [label]
-                        # remove duplicates
-                        mycard['publishers'] = list(set(label))
+            # usual case: a search by keywords
+            try:
+                to_ret = []
+                res = requests.get(self.url, headers=self.headers)
+                if res.status_code == 403:
+                    return to_ret, ["Discogs: 403 Error", traceback.format_exc()]
+                json_res = json.loads(res.text)
+                # ean_list = []  # don't return more than an entry by ean ? but some info and thumbnails can vary.
+                for val in json_res["results"]:
+                    # discogs' results can be a release, an artist, a label… we want releases.
+                    if val["type"] == "release":
+                        mycard = {}
+                        mycard["data_source"] = DATA_SOURCE_NAME
+                        # if type in val and type == release : filter on releases ?
+                        if 'title' in val:
+                            mycard["authors"] = [val['title'].split('-')[0]]  # what if the band name contains a - ?
+                        if 'title' in val:
+                            mycard["title"] = val["title"]
+                        if 'uri' in val: mycard["details_url"] = self.discogs_url + val["uri"]
+                        if 'format' in val: mycard["format"] = val["format"][0]
+                        if 'label' in val:
+                            # releases have often many labels (2 or 3).
+                            # label is sometimes a str, sometimes a list.
+                            label = val['label']
+                            if type(label) == str:
+                                label = [label]
+                            # remove duplicates
+                            mycard['publishers'] = list(set(label))
 
-                    if 'barcode' in val: mycard['ean'] = val['barcode'][0]
-                    if 'thumb' in val:
-                        # that link appears not to be available without Oauth registration any more.
-                        # Construct the link we see with a search via the website.
-                        # following works for albums, not artists or sthg else.TODO: artist search
-                        mycard['img'] = self._construct_img_url(val['thumb'])
-                    # mycard["year"] = val["year"]
-                    if 'genre' in val: mycard['genre'] = val['genre']
-                    mycard['card_type'] = TYPE_CD  # to finish
+                        if 'barcode' in val:
+                            if val["barcode"] != []:
+                                mycard['ean'] = val['barcode'][0]
+                            else:
+                                # discogs now includes mp3 to the search results.
+                                # Some vinyls don't have a barcode too.
+                                # print "debug: following entry has no barcode: %s" % (val,)
+                                pass
+                        if 'thumb' in val:
+                            # that link appears not to be available without Oauth registration any more.
+                            # Construct the link we see with a search via the website.
+                            # following works for albums, not artists or sthg else.TODO: artist search
+                            mycard['img'] = self._construct_img_url(val['thumb'])
+                        if 'genre' in val: mycard['genre'] = val['genre']
+                        mycard['card_type'] = TYPE_CD  # to finish
+                        # mycard["year"] = val["year"]
 
-                    # append if ean not already present, if title ?
-                    to_ret.append(mycard)
-                    print "got a card: ", mycard
+                        # append if ean not already present, if title ?
+                        to_ret.append(mycard)
+                        print "got a card: ", mycard
 
-            return to_ret
+            except IndexError as e:
+                print "IndexError with val %s" % (val,)
+                print "Traceback: %s" % (traceback.format_exc())
+                self.stacktraces.append(traceback.format_exc())
+            except Exception as e:
+                print "discogs search: unknown exception: %s" % (e,)
+                self.stacktraces.append(traceback.format_exc())
+
+            return to_ret, self.stacktraces
 
     def postSearch(self):
         """Return the info we could not get at the first time/connection.

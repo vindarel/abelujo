@@ -36,8 +36,9 @@ class TestDiscogsE2E(unittest.TestCase):
     def testEan(self):
         ean = "7559618112"
         search = scraper(ean=ean)
-        res = search.search()
+        res, traces = search.search()
         self.assertTrue(res)
+        self.assertEqual(traces, [])
         for key in ["authors", "title", "details_url", "format", "tracklist", "year"]:
             self.assertTrue(res[key])
         self.assertEqual(res["authors"], u"Kyuss")
@@ -61,8 +62,9 @@ class TestDiscogsE2E(unittest.TestCase):
     def testKeyWordsSearch(self):
         kw = ["kyuss", "circus"]
         self.s = scraper(*kw)
-        res = self.s.search()
+        res, stacktraces = self.s.search()
         self.assertTrue(res)
+        self.assertEqual(stacktraces, [], "the search threw the following exceptions:\n%s" % (stacktraces,))
         self.assertEqual(res[0]["title"], u'Kyuss - ...And The Circus Leaves Town')
 
         # Check we have access to the image:

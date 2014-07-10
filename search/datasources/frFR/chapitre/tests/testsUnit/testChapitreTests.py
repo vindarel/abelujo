@@ -41,7 +41,7 @@ class testChapitre(unittest.TestCase):
         """
         ean = "9782756030067"  # a comic book with 3 authors
         scrap = scraper(ean=[ean,])
-        bkl = scrap.search()
+        bkl, traces = scrap.search()
         bk = bkl[0]
         self.assertEqual(len(bk["authors"]), 3)
 

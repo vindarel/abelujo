@@ -15,8 +15,12 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
+search_on_data_source_fixture = (
+    [{"title":'fixture'}], # results
+    []  # stacktraces
+)
+
 class SimpleTest(TestCase):
-    fixture = [{"title":'fixture'}]
 
     def setUp(self):
         self.c = Client()
@@ -25,7 +29,7 @@ class SimpleTest(TestCase):
         res = self.c.get("/", follow=True)
         self.assertRedirects(res, reverse("card_index"), status_code=301) # permanent redirection
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
+    @mock.patch('search.views.search_on_data_source', return_value=search_on_data_source_fixture)
     def test_templates_used(self, mymock):
 
         response = self.c.get(reverse("card_search"), {u'q': u'emma goldman', 'source':'chapitre'})
@@ -46,21 +50,19 @@ class SimpleTest(TestCase):
 
 class TestTemplates(TestCase):
 
-    fixture = [{"title": "my discogs search"}]
-
     def setUp(self):
         self.c = Client()
-        self.fixture = [{"title": "my discogs search"}]
+        self.search_results = search_on_data_source_fixture[0]
 
-    @mock.patch('search.views.search_on_data_source', return_value=fixture)
+    @mock.patch('search.views.search_on_data_source', return_value=search_on_data_source_fixture)
     def test_discogs_search_results(self, mymock):
         """Call the search view with mocked data and check the template is
         populated as expected.
         """
         response = self.c.get(reverse("card_search"), {u'q': u'sky valley', 'source':'discogs'})
         mymock.assert_called_once_with("discogs", [u'sky', u'valley'])
-        self.assertEqual(response.context['result_list'], self.fixture)
+        self.assertEqual(response.context['result_list'], self.search_results)
         self.assertEqual(response.context['data_source'], "discogs")
         self.assertEqual(response.context['page_title'], u'sky valley')
         self.assertTemplateUsed(response, 'search/search_result.jade')
-        self.assertContains(response, self.fixture[0]['title'])
+        self.assertContains(response, self.search_results[0]['title'])

@@ -123,14 +123,19 @@ def index(request):
 
 
 def search_on_data_source(data_source, search_terms):
+    """search with the appropriate scraper.
+
+    return: a couple (search results, stacktraces). Search result is a
+    list of dicts.
+    """
     if data_source == u'chapitre':
         print "--- search on chapitre"
         query = scraper(*search_terms)
     elif data_source == u'discogs':
         query = discogs(*search_terms)
 
-    retlist = query.search() # list of dicts
-    return retlist
+    res, traces = query.search()
+    return res, traces
 
 def search(request):
     retlist = []
@@ -150,7 +155,7 @@ def search(request):
                 page_title = query[:50]
                 search_terms = [q for q in query.split()]
 
-            retlist = search_on_data_source(data_source, search_terms)
+            retlist, traces = search_on_data_source(data_source, search_terms)
             if not retlist:
                 messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
             request.session["search_result"] = retlist

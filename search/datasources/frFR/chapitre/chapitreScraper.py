@@ -119,6 +119,13 @@ class DomProduct:
 
 
 class scraper:
+    """Must have:
+
+    - an init to construct the url
+
+    - a search() method to fire the query, which must return a tuple
+      search results/stacktraces.
+    """
 
     query = ""
 
@@ -327,6 +334,7 @@ class scraper:
 
         """
         bk_list = []
+        stacktraces = []
         product_list = self._product_list()
         nbr_results = self._nbr_results()
         # print "nbr_results: "+ nbr_results
@@ -347,7 +355,7 @@ class scraper:
 
             bk_list.append(b.__todict__())
 
-        return bk_list
+        return bk_list, stacktraces
 
 
 def postSearch(url):
