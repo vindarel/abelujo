@@ -238,7 +238,7 @@ def add(request):
 
             # Add a copy to a basket or to the default place ?
             basket_id = form.cleaned_data.get("basket")
-            if basket_id:
+            if basket_id and int(basket_id):
                 # add to the basket
                 basket_id = int(basket_id)
                 print "adding card %s to basket %i" % (card['title'], basket_id)
@@ -254,10 +254,11 @@ def add(request):
             messages.add_message(request, messages.ERROR,
                                  u"The basket n° %s was not found. The card could not be registered." % (form.cleaned_data["basket"],))
             print "Error when fetching basket %s: %s" % (form.cleaned_data["basket"], e)
+            resp_status = 500
         except Exception, e:
             messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
             print "Error when trying to add card ", e
-            resp_status = 400
+            resp_status = 500
 
     return render(request, 'search/search_result.jade',
                   {

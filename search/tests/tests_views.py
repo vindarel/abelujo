@@ -16,11 +16,11 @@ from django.test.client import Client
 
 import mock
 
-fixture = [{"title":'fixture',
-            "ean": "111",
-            "details_url": "http://fake_url.com",
-            "data_source": "chapitre"
-        }]
+fixture_search_datasource = [{"title":'fixture',
+                         "ean": "111",
+                         "details_url": "http://fake_url.com",
+                         "data_source": "chapitre"
+                     }]
 
 fixture_no_ean = [{"title": "fixture no ean",
                    "details_url": "http://fake_url",
@@ -94,7 +94,7 @@ class TestViews(TestCase):
         self.assertTrue(resp)
 
 
-@mock.patch('search.views.search_on_data_source', return_value=(fixture, []))
+@mock.patch('search.views.search_on_data_source', return_value=(fixture_search_datasource, []))
 class TestSearchView(TestCase):
 
     def setUp(self):
@@ -132,7 +132,7 @@ class TestSearchView(TestCase):
     def test_search_with_session(self, search_mock):
         pass
 
-@mock.patch('search.views.search_on_data_source', return_value=fixture)
+@mock.patch('search.views.search_on_data_source', return_value=fixture_search_datasource)
 class TestAddView(TestCase):
 
     def setUp(self):
@@ -156,24 +156,26 @@ class TestAddView(TestCase):
 
         self.c = Client()
 
-    @mock.patch('search.views._request_session_get', return_value=fixture)
+    @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
     def test_addview_nominal(self, mock_data_source, fake_session):
         data = {"forloop_counter0": [0,],
                 "quantity": [5,],
+                "basket": [0,],
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(200, resp.status_code)
         # our fixture is registered to the DB:
         all_cards = Card.objects.all()
         self.assertEqual(2, len(all_cards))
-        self.assertEqual(fixture[0]["ean"], all_cards[0].ean, "ean are not equal")
-        self.assertEqual(fixture[0]["title"], all_cards[0].title, "title are not equal")
-        self.assertEqual(fixture[0]["quantity"], all_cards[0].quantity, "quantities are not equal")
+        self.assertEqual(fixture_search_datasource[0]["ean"], all_cards[0].ean, "ean are not equal")
+        self.assertEqual(fixture_search_datasource[0]["title"], all_cards[0].title, "title are not equal")
+        self.assertEqual(fixture_search_datasource[0]["quantity"], all_cards[0].quantity, "quantities are not equal")
 
-    @mock.patch('search.views._request_session_get', return_value=fixture)
+    @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
     def test_form_not_valid(self, mock_data_source, fake_session):
         data = {"forloop_counter0": "not valid",
                 "quantity": [1,],
+                "basket": [0,],
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(400, resp.status_code)
@@ -183,6 +185,7 @@ class TestAddView(TestCase):
     def test_call_postSearch_no_ean(self, mock_postSearch, fake_session, mock_data_source):
         data = {"forloop_counter0": [0,],
                 "quantity": [1,],
+                "basket": [0,],
         }
         resp = self.c.post(reverse("card_add"), data)
         mock_postSearch.assert_called_once_with(fixture_no_ean[0]["details_url"])
@@ -199,13 +202,11 @@ class TestCollectionView(TestCase, DBFixture):
         self.assertEqual(resp.status_code, 200)
 
     def test_search_title(self):
-        form = {"q": "living",
-                "source": "chapitre"}
+        form = {"q": "living",}
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
 
     def test_search_ean(self):
-        form = {"ean": self.fixture_ean,
-                "source": "chapitre"}
+        form = {"ean": self.fixture_ean,}
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
