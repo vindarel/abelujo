@@ -208,10 +208,11 @@ class Scraper:
 
             return to_ret, self.stacktraces
 
-    def postSearch(self):
-        """Return the info we could not get at the first time/connection.
-        """
-        return []
+
+def postSearch(self):
+    """Return the info we could not get at the first time/connection.
+    """
+    return []
 
 if __name__ == '__main__':
     # Testing data:

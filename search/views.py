@@ -10,9 +10,8 @@ from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from datasources.all.discogs.discogsConnector import Scraper as discogs
-from datasources.frFR.chapitre.chapitreScraper import postSearch
-from datasources.frFR.chapitre.chapitreScraper import scraper
+import datasources.all.discogs.discogsConnector as discogs
+import datasources.frFR.chapitre.chapitreScraper as chapitre
 
 from models import Basket
 from models import Card
@@ -21,6 +20,7 @@ from models import Place
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 
+# scraper names are the name of the imported module.
 SCRAPER_CHOICES = [
     ("Book shops", (
             ("chapitre", "chapitre.com - fr"),
@@ -100,6 +100,31 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     rev_url = reverse(url_name) + "?" + params
     return rev_url
 
+def search_on_data_source(data_source, search_terms):
+    """search with the appropriate scraper.
+
+    data_source is the name of an imported module.
+    search_terms: list of strings.
+
+    return: a couple (search results, stacktraces). Search result is a
+    list of dicts.
+    """
+    # get the imported module by name.
+    # They all must have a class Scraper.
+    scraper = getattr(globals()[data_source], "Scraper")
+    res, traces = scraper(*search_terms).search()
+    return res, traces
+
+def postSearch(data_source, details_url):
+    """Call the postSearch function of the module imported with the name
+    of data_source.
+
+    data_source: a scraper name, containing a function postSearch
+    details_url: url of the card's details.
+    """
+    scraper = getattr(globals()[data_source], "postSearch")
+    return scraper.postSearch(details_url)
+
 def index(request):
     form = SearchForm()
     page_title = ""
@@ -122,20 +147,7 @@ def index(request):
             })
 
 
-def search_on_data_source(data_source, search_terms):
-    """search with the appropriate scraper.
 
-    return: a couple (search results, stacktraces). Search result is a
-    list of dicts.
-    """
-    if data_source == u'chapitre':
-        print "--- search on chapitre"
-        query = scraper(*search_terms)
-    elif data_source == u'discogs':
-        query = discogs(*search_terms)
-
-    res, traces = query.search()
-    return res, traces
 
 def search(request):
     retlist = []
@@ -222,10 +234,11 @@ def add(request):
         if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
             if not data_source:
                 print "Error: the data source is unknown."
+                resp_status = 500
                 # return an error page
             else:
                 # fire a new http request to get the ean (or other missing informations):
-                complements = postSearch(card['details_url'])
+                complements = postSearch(data_source, card['details_url'])
                 if not complements.get("ean"):
                     print "--- warning: postSearch couldnt get the ean."
                 for k, v in complements.iteritems():

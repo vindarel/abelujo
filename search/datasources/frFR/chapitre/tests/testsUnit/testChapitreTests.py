@@ -12,7 +12,7 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 sys.path.append(cdpp)
 
-from chapitreScraper import scraper
+from chapitreScraper import Scraper
 
 class testChapitre(unittest.TestCase):
     """
@@ -27,12 +27,12 @@ class testChapitre(unittest.TestCase):
 
     def test_ean_search_url(self):
         ean = '9782035834256'
-        req = scraper(ean=[ean,])
+        req = Scraper(ean=[ean,])
         ean_url = self.detailed_search_base_url + "&reference=" + ean
         self.assertTrue(req.url, ean_url)
 
     def test_keywords_search_url(self):
-        req = scraper('victor', 'hugo')
+        req = Scraper('victor', 'hugo')
         res_url = self.search_keywords + "victor+hugo"
         self.assertEqual(req.url, res_url)
 
@@ -40,7 +40,7 @@ class testChapitre(unittest.TestCase):
         """The same as e2e test… but keep the cache.
         """
         ean = "9782756030067"  # a comic book with 3 authors
-        scrap = scraper(ean=[ean,])
+        scrap = Scraper(ean=[ean,])
         bkl, traces = scrap.search()
         bk = bkl[0]
         self.assertEqual(len(bk["authors"]), 3)

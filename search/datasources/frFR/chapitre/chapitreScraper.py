@@ -19,6 +19,9 @@ The search works in 2 steps:
   book's details page. That way we don't do it for every book of the
   search result, that would be too long.
 
+A scraper must have:
+- a class named Scraper, with a method  "search"
+- a function named postSearch.
 """
 
 # example search url:
@@ -118,7 +121,7 @@ class DomProduct:
             return self.details_soup
 
 
-class scraper:
+class Scraper:
     """Must have:
 
     - an init to construct the url

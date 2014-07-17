@@ -24,7 +24,7 @@ fixture_search_datasource = [{"title":'fixture',
 
 fixture_no_ean = [{"title": "fixture no ean",
                    "details_url": "http://fake_url",
-                   "data_source": "chapitre"
+                   "data_source": "chapitre"  # must fetch module's name
                }]
 
 fake_postSearch = {"ean": "111"}
@@ -188,7 +188,8 @@ class TestAddView(TestCase):
                 "basket": [0,],
         }
         resp = self.c.post(reverse("card_add"), data)
-        mock_postSearch.assert_called_once_with(fixture_no_ean[0]["details_url"])
+        mock_postSearch.assert_called_once_with(fixture_no_ean[0]["data_source"],
+                                                fixture_no_ean[0]["details_url"])
 
 
 class TestCollectionView(TestCase, DBFixture):
