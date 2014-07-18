@@ -25,6 +25,17 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+class Distributor(TimeStampedModel):
+    """The entity that distributes the copies (a publisher can be a
+    distributor).
+    """
+    class Meta:
+        app_label = "search"
+        ordering = ("name",)
+
+    name = models.CharField(max_length=CHAR_LENGTH)
+
+
 class Publisher (models.Model):
     """The publisher of the card.
     """
@@ -445,3 +456,35 @@ class BasketType (models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class DepositCopies(TimeStampedModel):
+    """doc
+    """
+    class Meta:
+        app_label = "search"
+        # ordering = ("name",)
+
+    card = models.ForeignKey(Card)
+    deposit = models.ForeignKey("Deposit")
+    #: Number of copies now present in the stock.
+    nb = models.IntegerField(default=0)
+    #: Minimum of copies we want to have.
+    threshold = models.IntegerField(blank=True, null=True, default=0)
+    #: Do we have a limit of time to pay ?
+    due_date = models.DateField(blank=True, null=True)
+
+
+class Deposit(TimeStampedModel):
+    """Deposits. The bookshop received copies (from different cards) from
+    a distributor but didn't pay them yet.
+    """
+    class Meta:
+        app_label = "search"
+        ordering = ("name",)
+
+    name = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    #: the distributor (or person) we have the copies from.
+    distributor = models.ForeignKey(Distributor, blank=True, null=True)
+    #: the copies concerned by this deposit with this distributor.
+    copies = models.ManyToManyField(Card, through="DepositCopies", blank=True, null=True)

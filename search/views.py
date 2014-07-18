@@ -350,3 +350,6 @@ def sell(request):
     return render(request, 'search/index.jade', {
                   'searchForm': form
                   })
+
+def deposits(request):
+    return render(request, "search/deposits.jade")
