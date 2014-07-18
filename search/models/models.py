@@ -13,12 +13,14 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+        app_label = "search"
 
 class Author(TimeStampedModel):
     name = models.TextField(unique=True)
 
     class Meta:
         ordering = ('name',)
+        app_label = "search"
 
     def __unicode__(self):
         return self.name
@@ -38,6 +40,7 @@ class Publisher (models.Model):
 
     class Meta:
         ordering = ("name",)
+        app_label = "search"
 
     def __unicode__(self):
         return self.name
@@ -59,6 +62,7 @@ class Collection (models.Model):
     parent = models.ForeignKey("Collection", null=True, blank=True)
 
     class Meta:
+        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -68,6 +72,10 @@ class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
     name = models.CharField(max_length=100, null=True)
+
+    class Meta:
+        app_label = "search"
+
     def __unicode__(self):
         return self.name
 
@@ -107,6 +115,7 @@ class Card(TimeStampedModel):
 
 
     class Meta:
+        app_label = "search"
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
@@ -292,6 +301,9 @@ class PlaceCopies (models.Model):
     #: Number of copies
     nb = models.IntegerField(default=0)
 
+    class Meta:
+        app_label = "search"
+
     def __unicode__(self):
         return "%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
@@ -320,6 +332,7 @@ class Place (models.Model):
     comment = models.TextField(null=True, blank=True)
 
     class Meta:
+        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -362,6 +375,9 @@ class Preferences(models.Model):
     #: What place to add the cards by default ? (we register them, then move them)
     default_place = models.OneToOneField(Place)
 
+    class Meta:
+        app_label = "search"
+
     def __unicode__(self):
         return "Place: %s" % (self.default_place.name,)
 
@@ -371,6 +387,9 @@ class BasketCopies(models.Model):
     card = models.ForeignKey("Card")
     basket = models.ForeignKey("Basket")
     nb = models.IntegerField(default=0)
+
+    class Meta:
+        app_label = "search"
 
     def __unicode__(self):
         return "Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
@@ -394,6 +413,7 @@ class Basket(models.Model):
     comment = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
 
     class Meta:
+        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -420,6 +440,7 @@ class BasketType (models.Model):
     name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
 
     class Meta:
+        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):

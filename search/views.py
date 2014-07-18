@@ -1,6 +1,7 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import traceback
 import urllib
 
 from django import forms
@@ -52,7 +53,8 @@ class MyNumberInput(TextInput):
 
 def get_basket_choices():
     # TODO: make list dynamic + query in class.
-    return [(0, "Aucun panier")] + [(basket.id, basket.name) for basket in Basket.objects.all()]
+    return [(0, "Aucun panier")] + [(basket.id, basket.name)
+                                    for basket in Basket.objects.all()]
 
 basket_choices = get_basket_choices()
 
@@ -271,6 +273,7 @@ def add(request):
         except Exception, e:
             messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
             print "Error when trying to add card ", e
+            print traceback.format_exc()
             resp_status = 500
 
     return render(request, 'search/search_result.jade',
