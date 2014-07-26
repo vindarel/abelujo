@@ -6,7 +6,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-div Créer un depot
+h3 Nouveau dépôt:
 form(action='/create/', method='post')
   {% csrf_token %}
   {% bootstrap_form DepositForm %}

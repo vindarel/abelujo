@@ -90,7 +90,14 @@ class DepositForm(forms.ModelForm):
 
     class Meta:
         model = Deposit
-        fields = ["name", "distributor", "copies",]
+        fields = ["name",
+                  "distributor",
+                  "deposit_type",
+                  "initial_nb_copies",
+                  "min_nb_copies",
+                  "auto_command",
+                  "copies",
+        ]
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
