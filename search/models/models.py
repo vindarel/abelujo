@@ -15,6 +15,7 @@ class TimeStampedModel(models.Model):
         abstract = True
         app_label = "search"
 
+
 class Author(TimeStampedModel):
     name = models.TextField(unique=True)
 
@@ -25,15 +26,28 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+
 class Distributor(TimeStampedModel):
     """The entity that distributes the copies (a publisher can be a
     distributor).
     """
+
+    name = models.CharField(max_length=CHAR_LENGTH)
+
     class Meta:
         app_label = "search"
         ordering = ("name",)
 
-    name = models.CharField(max_length=CHAR_LENGTH)
+    def __unicode__(self):
+        return self.name
+
+    @staticmethod
+    def get_from_kw(**kwargs):
+        """Return a list of deposits.
+
+        No arguments: return all.
+        """
+        return Deposit.objects.order_by("name")
 
 
 class Publisher (models.Model):
@@ -488,3 +502,14 @@ class Deposit(TimeStampedModel):
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
     #: the copies concerned by this deposit with this distributor.
     copies = models.ManyToManyField(Card, through="DepositCopies", blank=True, null=True)
+
+    def __unicode__(self):
+        return u"Deposit '%s' with distributor: %s" % (self.name, self.distributor)
+
+    @staticmethod
+    def get_from_kw(**kwargs):
+        """Return a list of deposits.
+
+        No arguments: return all.
+        """
+        return Deposit.objects.order_by("name")

@@ -16,6 +16,8 @@ import datasources.frFR.chapitre.chapitreScraper as chapitre
 
 from models import Basket
 from models import Card
+from models import Deposit
+from models import Distributor
 from models import Place
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
@@ -56,7 +58,6 @@ def get_basket_choices():
     return [(0, "Aucun panier")] + [(basket.id, basket.name)
                                     for basket in Basket.objects.all()]
 
-basket_choices = get_basket_choices()
 
 class AddForm(forms.Form):
     """The form populated when the user clicks on "add this card"."""
@@ -69,15 +70,27 @@ class AddForm(forms.Form):
     quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
                                                                 'step':1, 'value':DEFAULT_NB_COPIES,
                                                                 'style':"width: 70px"}))
-    basket = forms.ChoiceField(choices=basket_choices,  #TODO en cours
+    basket = forms.ChoiceField(choices=get_basket_choices(),
                                label="Ajouter la notice au panier (optionnel)",
                                required=False)
+
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
     ret = [ (p.name, p.name) for p in not_stands]
     return ret
 
+def get_distributor_choices():
+    choices = [(dist.id, dist.name) for dist in Distributor.get_from_kw()]
+    return choices
+
+class DepositForm(forms.ModelForm):
+    """Create a new deposit.
+    """
+
+    class Meta:
+        model = Deposit
+        fields = ["name", "distributor", "copies",]
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
@@ -188,7 +201,7 @@ def search(request):
 
     return render(request, "search/search_result.jade", {
             "searchForm": form,
-            "addForm": AddForm(initial={"basket": basket_choices[0]}),
+            "addForm": AddForm(initial={"basket": get_basket_choices()[0]}),
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
@@ -352,4 +365,14 @@ def sell(request):
                   })
 
 def deposits(request):
+    deposits = Deposit.get_from_kw()
     return render(request, "search/deposits.jade")
+
+def deposits_new(request):
+
+    return render(request, "search/deposits_create.jade", {
+        "DepositForm": DepositForm(),
+        })
+
+def deposits_create(request):
+    return render(request, "search/deposits_create.jade")

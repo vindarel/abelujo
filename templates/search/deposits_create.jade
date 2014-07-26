@@ -1,0 +1,16 @@
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+div Créer un depot
+form(action='/create/', method='post')
+  {% csrf_token %}
+  {% bootstrap_form DepositForm %}
+  // {{ form.as_p }}
+
+
+{% endblock content %}
