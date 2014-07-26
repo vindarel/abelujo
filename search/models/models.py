@@ -15,6 +15,7 @@ class TimeStampedModel(models.Model):
         abstract = True
         app_label = "search"
 
+
 class Author(TimeStampedModel):
     name = models.TextField(unique=True)
 
@@ -25,15 +26,28 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+
 class Distributor(TimeStampedModel):
     """The entity that distributes the copies (a publisher can be a
     distributor).
     """
+
+    name = models.CharField(max_length=CHAR_LENGTH)
+
     class Meta:
         app_label = "search"
         ordering = ("name",)
 
-    name = models.CharField(max_length=CHAR_LENGTH)
+    def __unicode__(self):
+        return self.name
+
+    @staticmethod
+    def get_from_kw(**kwargs):
+        """Return a list of deposits.
+
+        No arguments: return all.
+        """
+        return Deposit.objects.order_by("name")
 
 
 class Publisher (models.Model):
@@ -479,12 +493,44 @@ class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
     a distributor but didn't pay them yet.
     """
-    class Meta:
-        app_label = "search"
-        ordering = ("name",)
 
     name = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     #: the distributor (or person) we have the copies from.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
-    #: the copies concerned by this deposit with this distributor.
+    #: the cards to include in this deposit, with their nb of copies.
     copies = models.ManyToManyField(Card, through="DepositCopies", blank=True, null=True)
+
+    #: type of the deposit. Some people also sent their books to a
+    #: library and act like a distributor.
+    DEPOSIT_TYPES_CHOICES = (("lib", "dépôt de libraire"),
+                             ("dist", "dépôt de distributeur"))
+    deposit_type = models.CharField(choices=DEPOSIT_TYPES_CHOICES,
+                                    default=DEPOSIT_TYPES_CHOICES[0],
+                                    max_length=CHAR_LENGTH)
+
+    #: initial number of all cards for that deposit (create another deposit if you need it).
+    initial_nb_copies = models.IntegerField(blank=True, null=True, default=0,
+                                            verbose_name="Nombre initial d'exemplaires pour ce dépôt:")
+
+    #: minimal number of copies to have in stock. When not, do an action (raise an alert).
+    min_nb_copies = models.IntegerField(blank=True, null=True, default=0,
+                                        verbose_name="Nombre minimun d'exemplaires")
+    #: auto-command when the minimal nb of copies is reached ?
+    # (for now: add to the "to command" basket).
+    auto_command = models.BooleanField(default=True, verbose_name="Automatiquement marquer les fiches à commander")
+
+
+    class Meta:
+        app_label = "search"
+        ordering = ("name",)
+
+    def __unicode__(self):
+        return u"Deposit '%s' with distributor: %s" % (self.name, self.distributor)
+
+    @staticmethod
+    def get_from_kw(**kwargs):
+        """Return a list of deposits.
+
+        No arguments: return all.
+        """
+        return Deposit.objects.order_by("name")

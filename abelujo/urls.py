@@ -16,9 +16,13 @@ urlpatterns = patterns('',
                            name="card_sell"),
                        url(r'^collection/', 'search.views.collection',
                            name="card_collection"),
-                       url(r'^deposits/', 'search.views.deposits',
-                           name="card_deposits"),
-                       (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+                       url(r'^deposits/$', 'search.views.deposits',
+                           name="deposits"),
+                       url(r'^deposits/new', 'search.views.deposits_new',
+                           name="deposits_new"),
+                       url(r'^deposits/create', 'search.views.deposits_create',
+                           name="deposits_create"),
+                       url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),
