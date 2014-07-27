@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.shortcuts import redirect
 
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
@@ -98,6 +99,18 @@ class DepositForm(forms.ModelForm):
                   "auto_command",
                   "copies",
         ]
+
+def get_deposits_choices():
+    choices = [(depo.id, depo.name) for depo in Deposit.objects.all()]
+    return choices
+
+class AddToDepositForm(forms.Form):
+    """When we view our stock, choose to add the card to a deposit.
+    """
+    deposit = forms.ChoiceField(choices=get_deposits_choices(),
+                                 label=u"Ajouter au depot:",
+                                 required=False)
+
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """ Get the reverse url with the query parameters taken from the form's cleaned data.
@@ -318,7 +331,9 @@ def collection(request):
             if form.cleaned_data.get("q"):
                 words = form.cleaned_data["q"].split()
                 #TODO: better query, include all authors
-                cards = Card.get_from_kw(words)
+                cards = Card.get_from_kw(words, to_list=True)
+                # store results in session for later re-use
+                request.session["collection_search"] = cards
 
             elif request.POST.has_key("ean"):
                 messages.add_message(request, messages.INFO,
@@ -326,28 +341,15 @@ def collection(request):
                 print "TODO: search on ean"
 
     else:
-        cards = Card.first_cards(5)
-
-    for card in cards:
-        retlist.append({
-            "title": card.title,
-            "authors": ", ".join([ca.name for ca in card.authors.all()]),
-            "price": card.price,
-            "ean": card.ean,
-            "id": card.id,
-            "img": card.img,
-            "quantity": card.quantity,
-            "publishers": ", ".join([p.name.capitalize() for p in card.publishers.all()]),
-            "collection": card.collection.name.capitalize() if card.collection else None,
-            "details_url": card.details_url,
-            "data_source": card.data_source,
-            "places": ", ".join([p.name for p in card.places.all()]),
-        })
-
+        cards = request.session.get("collection_search")
+        if not cards:
+            cards = Card.first_cards(5, to_list=True)
+            request.session["collection_search"] = cards
 
     return render(request, "search/collection.jade", {
             "searchForm": form,
-            "book_list": retlist
+            "book_list": cards,
+            "AddToDepositForm": AddToDepositForm,
             })
 
 def sell(request):
@@ -383,3 +385,29 @@ def deposits_new(request):
 
 def deposits_create(request):
     return render(request, "search/deposits_create.jade")
+
+def deposits_add_card(request):
+    """Add the given card (post) to the given deposit (in the form).
+    """
+    resp_status = 200
+    req = request.POST.copy()
+    form = AddToDepositForm(req)
+    if not form.is_valid():
+        print "deposits_add_card: form is not valid"
+        resp_status = 500
+    else:
+        card_ean = req["ean"]
+        if not card_ean:
+            print "deposits_add_card: the ean is null. That should not happen !"
+            resp_status = 400
+            messages.add_message(request, messages.ERROR,
+                                 u"We could not add the card to the deposit: the given ean is null.")
+        else:
+            deposit_id = form.cleaned_data["deposit"]
+            # TODO: do the logic !
+            messages.add_message(request, messages.SUCCESS,
+                                 u'The card were successfully added to the deposit.')
+
+    retlist = request.session.get("collection_search")
+    redirect_to = req.get('redirect_to')
+    return redirect(redirect_to, status=resp_status)

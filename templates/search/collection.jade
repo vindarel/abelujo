@@ -43,4 +43,10 @@ for b in book_list
     input(type='hidden', value=b, name='book')
     input.btn.btn-primary(type='submit', value='Vendre')
 
+  form.form-inline(action="/deposits/addcard/", method="post") {% csrf_token %}
+    {% bootstrap_form AddToDepositForm %}
+    input(type="hidden", value='{% url "search.views.collection" %}', name="redirect_to")
+    input(type="hidden", value="{{ b.ean }}", name="ean")
+    input.btn.btn-primary(type="submit", value="ajouter au dépôt")
+
 {% endblock content %}

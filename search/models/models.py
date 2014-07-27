@@ -169,18 +169,47 @@ class Card(TimeStampedModel):
             self.save()
 
     @staticmethod
-    def first_cards(nb):
+    def obj_to_list(cards):
+        """Transform a list of card objects to a python list.
+        Used to give stuff from view to template.
+        """
+
+        retlist = []
+        for card in cards:
+            retlist.append({
+                "title": card.title,
+                "authors": ", ".join([ca.name for ca in card.authors.all()]),
+                "price": card.price,
+                "ean": card.ean,
+                "id": card.id,
+                "img": card.img,
+                "quantity": card.quantity,
+                "publishers": ", ".join([p.name.capitalize() for p in card.publishers.all()]),
+                "collection": card.collection.name.capitalize() if card.collection else None,
+                "details_url": card.details_url,
+                "data_source": card.data_source,
+                "places": ", ".join([p.name for p in card.places.all()]),
+            })
+        return retlist
+
+    @staticmethod
+    def first_cards(nb, to_list=False):
         """get the first n cards from our collection (very basic, to test)
         """
         ret = Card.objects.order_by("-created")[:nb]
+        if to_list:
+            ret = Card.obj_to_list(ret)
         return ret
 
     @staticmethod
-    def get_from_kw(words):
+    def get_from_kw(words, to_list=False):
         """search some card: quick to test
         """
         print "TODO: search the collection on all keywords"
-        return Card.objects.filter(title__contains=words[0])
+        res = Card.objects.filter(title__icontains=words[0])
+        if to_list:
+            res = Card.obj_to_list(res)
+        return res
 
     @staticmethod
     def sell(ean=None, quantity=1):
