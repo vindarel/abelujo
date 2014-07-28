@@ -1,8 +1,7 @@
 django==1.6
-django-bootstrap3
 pyjade                  # process jade templates
 south                   # schema migration
-django-grappelli==2.5.1
+bootstrap-admin         # bootstrap theme, nice search feature
 
 ### testing
 mock==1.0.1
