@@ -123,6 +123,8 @@ class Card(TimeStampedModel):
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
     year_published = models.DateField(blank=True, null=True)
+    #: Distributor:
+    distributor = models.ForeignKey("Distributor", blank=True, null=True)
     #: Collection
     collection = models.ForeignKey(Collection, blank=True, null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
@@ -189,6 +191,7 @@ class Card(TimeStampedModel):
                 "details_url": card.details_url,
                 "data_source": card.data_source,
                 "places": ", ".join([p.name for p in card.places.all()]),
+                "distributor": card.distributor.name,
             })
         return retlist
 
@@ -523,7 +526,7 @@ class Deposit(TimeStampedModel):
     a distributor but didn't pay them yet.
     """
 
-    name = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    name = models.CharField(primary_key=True, max_length=CHAR_LENGTH)
     #: the distributor (or person) we have the copies from.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
     #: the cards to include in this deposit, with their nb of copies.
@@ -563,3 +566,16 @@ class Deposit(TimeStampedModel):
         No arguments: return all.
         """
         return Deposit.objects.order_by("name")
+
+    @staticmethod
+    def from_dict(depo_dict):
+        """Creates a deposit from the given dictionnary.
+
+        Thanks to the form validation, we are sure the deposit's name is unique.
+
+        depo_dict: dictionnary
+
+        returns: the deposit object
+        """
+        dep, created = Deposit.objects.get_or_create(**depo_dict)
+        return dep

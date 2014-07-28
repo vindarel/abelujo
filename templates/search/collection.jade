@@ -30,6 +30,8 @@ for b in book_list
             span éditeur: {{ b.publishers }}
             if b.collection
               span ({{ b.collection }})
+        if b.distributor
+          div diffuseur: {{ b.distributor }}
         div exemplaires en stock: {{ b.quantity }}
         div Lieus de stockage:
           span {{ b.places }}
@@ -45,7 +47,7 @@ for b in book_list
 
   form.form-inline(action="/deposits/addcard/", method="post") {% csrf_token %}
     {% bootstrap_form AddToDepositForm %}
-    input(type="hidden", value='{% url "search.views.collection" %}', name="redirect_to")
+    input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
     input(type="hidden", value="{{ b.ean }}", name="ean")
     input.btn.btn-primary(type="submit", value="ajouter au dépôt")
 

@@ -6,7 +6,12 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-a.btn.btn-primary(href="new") Nouveau dépôt
-div hello deposits
+h3 Dépôts existants:
+table.table.table-striped.table-hover
+  for dep in deposits
+    tr
+      td {{ dep.name }}
+      td {{ dep.distributor.name }}
 
+a.btn.btn-primary(href="{% url 'deposits_new' %}") Nouveau dépôt
 {% endblock content %}
