@@ -70,5 +70,14 @@
         },
         "model": "search.preferences",
         "pk": 1
+    },
+    {
+        "fields": {
+            "name": "default distributor",
+            "created": "2014-07-27T18:34:23.369Z",
+            "modified": "2014-07-27T18:34:23.369Z"
+        },
+        "model": "search.distributor",
+        "pk": 1
     }
 ]
