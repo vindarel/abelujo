@@ -139,14 +139,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    # 'grappelli', # fancy admin UI
+    'bootstrap3',
     'bootstrap_admin',
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
     # Custom:
-
     'search',
 )
 
