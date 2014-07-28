@@ -7,6 +7,9 @@
 {% bootstrap_javascript %}
 
 a.btn.btn-primary(href="new") Nouveau dépôt
-div hello deposits
+h3 Dépôts existants:
+for dep in deposits
+  div
+    span {{ dep.name }} avec {{ dep.distributor.name }}
 
 {% endblock content %}

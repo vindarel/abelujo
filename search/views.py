@@ -101,7 +101,7 @@ class DepositForm(forms.ModelForm):
         ]
 
 def get_deposits_choices():
-    choices = [(depo.id, depo.name) for depo in Deposit.objects.all()]
+    choices = [(depo.name, depo.name) for depo in Deposit.objects.all()]
     return choices
 
 class AddToDepositForm(forms.Form):
@@ -341,7 +341,7 @@ def collection(request):
                 print "TODO: search on ean"
 
     else:
-        cards = request.session.get("collection_search")
+        # cards = request.session.get("collection_search")
         if not cards:
             cards = Card.first_cards(5, to_list=True)
             request.session["collection_search"] = cards
@@ -374,8 +374,9 @@ def sell(request):
                   })
 
 def deposits(request):
-    deposits = Deposit.get_from_kw()
-    return render(request, "search/deposits.jade")
+    deposits = Deposit.objects.all()
+    return render(request, "search/deposits.jade", {
+        "deposits": deposits})
 
 def deposits_new(request):
 
@@ -384,7 +385,27 @@ def deposits_new(request):
         })
 
 def deposits_create(request):
-    return render(request, "search/deposits_create.jade")
+    results = 200
+    if request.method == "POST":
+        req = request.POST.copy()
+        form = DepositForm(req)
+        if form.is_valid():
+            deposit = form.cleaned_data
+            try:
+                depo_obj = Deposit.from_dict(deposit)
+            except Exception as e:
+                print "Error when creating the deposit"
+                messages.add_message(request, messages.ERROR,
+                                     "Error when adding the deposit")
+            messages.add_message(request, messages.SUCCESS,
+                                 "the deposit was successfuly created.")
+
+        else:
+            return render(request, "search/deposits_create.jade", {
+                "DepositForm": form,
+                })
+
+    return redirect("/deposits/")  # should make status follow
 
 def deposits_add_card(request):
     """Add the given card (post) to the given deposit (in the form).
@@ -392,21 +413,22 @@ def deposits_add_card(request):
     resp_status = 200
     req = request.POST.copy()
     form = AddToDepositForm(req)
-    if not form.is_valid():
-        print "deposits_add_card: form is not valid"
-        resp_status = 500
-    else:
-        card_ean = req["ean"]
-        if not card_ean:
-            print "deposits_add_card: the ean is null. That should not happen !"
-            resp_status = 400
-            messages.add_message(request, messages.ERROR,
-                                 u"We could not add the card to the deposit: the given ean is null.")
+    if request.method == "POST":
+        if not form.is_valid():
+            print "deposits_add_card: form is not valid"
+            resp_status = 500
         else:
-            deposit_id = form.cleaned_data["deposit"]
-            # TODO: do the logic !
-            messages.add_message(request, messages.SUCCESS,
-                                 u'The card were successfully added to the deposit.')
+            card_ean = req["ean"]
+            if not card_ean:
+                print "deposits_add_card: the ean is null. That should not happen !"
+                resp_status = 400
+                messages.add_message(request, messages.ERROR,
+                                     u"We could not add the card to the deposit: the given ean is null.")
+            else:
+                deposit_id = form.cleaned_data["deposit"]
+                # TODO: do the logic !
+                messages.add_message(request, messages.SUCCESS,
+                                     u'The card were successfully added to the deposit.')
 
     retlist = request.session.get("collection_search")
     redirect_to = req.get('redirect_to')

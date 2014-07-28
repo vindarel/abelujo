@@ -7,10 +7,10 @@
 {% bootstrap_javascript %}
 
 h3 Nouveau dépôt:
-form(action='/create/', method='post')
+form(action='/deposits/create/', method='post')
   {% csrf_token %}
   {% bootstrap_form DepositForm %}
-  // {{ form.as_p }}
+  input.btn.btn-primary(type="submit", value="Enregistrer")
 
 
 {% endblock content %}

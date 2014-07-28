@@ -30,6 +30,8 @@ for b in book_list
             span éditeur: {{ b.publishers }}
             if b.collection
               span ({{ b.collection }})
+        if b.distributor
+          div diffuseur: {{ b.distributor }}
         div exemplaires en stock: {{ b.quantity }}
         div Lieus de stockage:
           span {{ b.places }}
