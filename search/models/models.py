@@ -146,7 +146,7 @@ class Card(TimeStampedModel):
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
-        return u'%s (%s): "%s"' % (self.title, self.authors.all(), self.ean)
+        return u'%s, %s' % (self.title, self.authors.all()[0].name)
 
     @models.permalink
     def get_absolute_url(self):
