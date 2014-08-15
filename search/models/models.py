@@ -172,8 +172,10 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def obj_to_list(cards):
-        """Transform a list of card objects to a python list.
-        Used to give stuff from view to template.
+        """Transform a list of Card objects to a python list.
+
+        Used to save a search result in the session, which needs a
+        serializable object.
         """
 
         retlist = []
@@ -191,7 +193,7 @@ class Card(TimeStampedModel):
                 "details_url": card.details_url,
                 "data_source": card.data_source,
                 "places": ", ".join([p.name for p in card.places.all()]),
-                "distributor": card.distributor.name,
+                "distributor": card.distributor.name if card.distributor else None
             })
         return retlist
 
@@ -520,7 +522,6 @@ class DepositCopies(TimeStampedModel):
     #: Do we have a limit of time to pay ?
     due_date = models.DateField(blank=True, null=True)
 
-
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
     a distributor but didn't pay them yet.
@@ -559,6 +560,15 @@ class Deposit(TimeStampedModel):
     def __unicode__(self):
         return u"Deposit '%s' with distributor: %s" % (self.name, self.distributor)
 
+    def add_copies(self, copies):
+        "Add the given list of copies objects to this deposit."
+        try:
+            for copy in copies:
+                deposit_copy = self.depositcopies_set.create(card=copy)
+                deposit_copy.save()
+        except Exception as e:
+            print "Error while adding a card to the deposit.", e
+
     @staticmethod
     def get_from_kw(**kwargs):
         """Return a list of deposits.
@@ -577,5 +587,12 @@ class Deposit(TimeStampedModel):
 
         returns: the deposit object
         """
-        dep, created = Deposit.objects.get_or_create(**depo_dict)
-        return dep
+        #TODO: we know the name is unique, so just use create
+        # and then add the copies to the intermediate table. Almost done ! :)
+        try:
+            copies = depo_dict.pop('copies')
+            dep = Deposit.objects.create(**depo_dict)
+            dep.add_copies(copies)
+            return dep
+        except Exception as e:
+            print "error ! ", e
