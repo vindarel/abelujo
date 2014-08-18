@@ -1,12 +1,15 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic.base import RedirectView
 
-# Uncomment the next two lines to enable the admin:
+import autocomplete_light
+autocomplete_light.autodiscover()  # before importing the admin.
+
 from django.contrib import admin
 admin.autodiscover()
 
 #TODO: move to the right app
 urlpatterns = patterns('',
+                       url(r'^autocomplete/', include('autocomplete_light.urls')),
                        url(r'^$', RedirectView.as_view(url='search/')),
                        url(r'^search/$', 'search.views.index', name="card_index"),
                        url(r'^search$', 'search.views.search', name="card_search"),

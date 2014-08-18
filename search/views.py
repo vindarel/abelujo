@@ -12,6 +12,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.shortcuts import redirect
 
+import autocomplete_light
+
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
 
@@ -88,17 +90,20 @@ def get_distributor_choices():
 class DepositForm(forms.ModelForm):
     """Create a new deposit.
     """
-
+    copies = forms.ModelMultipleChoiceField(Card.objects.all(),
+                                            widget=autocomplete_light.MultipleChoiceWidget("CardAutocomplete"),
+                                            cache_choices=True,
+                                            required=False)
     class Meta:
         model = Deposit
-        fields = ["name",
-                  "distributor",
-                  "deposit_type",
-                  "initial_nb_copies",
-                  "min_nb_copies",
-                  "auto_command",
-                  "copies",
-        ]
+        # fields = ["name",
+                  # "distributor",
+                  # "deposit_type",
+                  # "initial_nb_copies",
+                  # "min_nb_copies",
+                  # "auto_command",
+                  # "copies",
+        # ]
 
 def get_deposits_choices():
     choices = [(depo.name, depo.name) for depo in Deposit.objects.all()]
@@ -330,7 +335,7 @@ def collection(request):
         if form.is_valid():
             if form.cleaned_data.get("q"):
                 words = form.cleaned_data["q"].split()
-                #TODO: better query, include all authors
+                #XXX: better query, include all authors
                 cards = Card.get_from_kw(words, to_list=True)
                 # store results in session for later re-use
                 request.session["collection_search"] = cards
@@ -343,6 +348,7 @@ def collection(request):
     else:
         # cards = request.session.get("collection_search")
         if not cards:
+            # Get a serializable object to store it in the session.
             cards = Card.first_cards(5, to_list=True)
             request.session["collection_search"] = cards
 
@@ -393,12 +399,12 @@ def deposits_create(request):
             deposit = form.cleaned_data
             try:
                 depo_obj = Deposit.from_dict(deposit)
+                messages.add_message(request, messages.SUCCESS,
+                                     "Le dépôt a été créé avec succès.")
             except Exception as e:
                 print "Error when creating the deposit"
                 messages.add_message(request, messages.ERROR,
                                      "Error when adding the deposit")
-            messages.add_message(request, messages.SUCCESS,
-                                 "the deposit was successfuly created.")
 
         else:
             return render(request, "search/deposits_create.jade", {
@@ -428,7 +434,7 @@ def deposits_add_card(request):
                 deposit_id = form.cleaned_data["deposit"]
                 # TODO: do the logic !
                 messages.add_message(request, messages.SUCCESS,
-                                     u'The card were successfully added to the deposit.')
+                                     u'La notice a été ajoutée au dépôt.')
 
     retlist = request.session.get("collection_search")
     redirect_to = req.get('redirect_to')
