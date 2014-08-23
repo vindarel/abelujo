@@ -1,18 +1,19 @@
 import autocomplete_light
-# from models import Person
 from models import Card
 
-# This will generate a PersonAutocomplete class
-autocomplete_light.register(Card,
+# This will generate a CardAutocomplete class
+class CardAutocomplete(autocomplete_light.AutocompleteModelBase):
     # Just like in ModelAdmin.search_fields
-    search_fields=['title', ],
+    search_fields=['title', 'authors.objects.all()'],
     # This will actually html attribute data-placeholder which will set
     # javascript attribute widget.autocomplete.placeholder.
-    # autocomplete_js_attributes={'placeholder': 'Other model name ?',},
-)
+    autocomplete_js_attributes={'placeholder': 'ean',},
+    # autocomplete_template = 'your_autocomplete_box.html'
 
-# equivalent:
-# class CardAutocomplete(autocomplete_light.AutocompleteModelBase):
-    # search_fields = ["^title",]
+    def choices_for_request(self):
+        q = self.request.GET['q']
+        cards = Card.search(q)
+        # log cards
+        return cards
 
-# autocomplete_light.register(Card, CardAutocomplete)
+autocomplete_light.register(Card, CardAutocomplete)
