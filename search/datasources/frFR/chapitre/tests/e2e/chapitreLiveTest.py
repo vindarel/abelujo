@@ -5,16 +5,13 @@ import os
 import sys
 import unittest
 
-
 common_dir = os.path.dirname(os.path.abspath(__file__))
 cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 scraper = os.path.join(cdpp, 'decitreScraper')
 
-# http://stackoverflow.com/questions/714063/python-importing-modules-from-parent-folder
-# from ... import decitreScraper
 sys.path.append(cdpp)
-from chapitreScraper import scraper
+from chapitreScraper import Scraper
 from chapitreScraper import postSearch
 from chapitreScraper import Book
 
@@ -26,8 +23,8 @@ class testChapitreFromEan(unittest.TestCase):
 
     def setUp(self):
         ean = '9782035834256'
-        self.s = scraper(ean=[ean,])
-        self.bk_list = self.s.search()
+        self.s = Scraper(ean=[ean,])  #TODO: we must disable the cache.
+        self.bk_list = self.s.search()[0]  # the books, not the stacktraces
         self.book = self.bk_list[0]
 
     def tearDown(self):
@@ -45,7 +42,7 @@ class testChapitreFromEan(unittest.TestCase):
         self.assertTrue(self.book)
 
     def test_title(self):
-        self.assertEqual(u"Les Miserables", self.book["title"])
+        self.assertEqual(u"Les Misérables", self.book["title"])
 
     def test_authors(self):
         auths = [u"Victor Hugo",]
@@ -55,9 +52,9 @@ class testChapitreFromEan(unittest.TestCase):
         """The cache is enabled in the scraper. Find how to disable it for end to end tests.
         """
         ean = "9782756030067"  # a comic book with 3 authors
-        scrap = scraper(ean=[ean,])
+        scrap = Scraper(ean=[ean,])
         bkl = scrap.search()
-        bk = bkl[0]
+        bk = bkl[0][0]
         self.assertEqual(len(bk["authors"]), 3)
 
     def test_price(self):

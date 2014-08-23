@@ -328,12 +328,14 @@ class Scraper:
             print "Error while getting the type", e
 
     def search(self, *args, **kwargs): # rename in getBooks ?
-        """Searches books. Returns a list of books.
+        """Searches books. Returns a couple (list of books, stachktraces of
+        errors).
 
         From keywords, fires a query on decitre and parses the list of
         results to retrieve the information of each book.
 
         args: liste de mots, rajoutés dans le champ ?q=
+        returns: a tuple (list of books dictionnaries, list of stacktraces).
 
         """
         bk_list = []
