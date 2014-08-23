@@ -3,6 +3,7 @@
 from datetime import date
 
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
 CHAR_LENGTH = 200
@@ -148,27 +149,10 @@ class Card(TimeStampedModel):
     def __unicode__(self):
         return u'%s, %s' % (self.title, self.authors.all()[0].name)
 
-    @models.permalink
-    def get_absolute_url(self):
-        return ('book_detail', (), {'pk': self.pk})
-
     def display_authors(self):
         if self.sortkey:
             return self.sortkey
         return u', '.join([a.name for a in self.authors.all()])
-
-
-    def display_year_published(self):
-        "We only care about the year"
-
-        return self.year_published.strftime(u'%Y')
-
-    def set_sortkey(self):
-        "Generate a sortkey"
-
-        if not self.sortkey and self.authors:
-            self.sortkey = ', '.join([a.name for a in self.authors.all()])
-            self.save()
 
     @staticmethod
     def obj_to_list(cards):
@@ -215,6 +199,16 @@ class Card(TimeStampedModel):
         if to_list:
             res = Card.obj_to_list(res)
         return res
+
+    @staticmethod
+    def search(q):
+        """Search a card on its title and its authors' names.
+
+        q: the keyword to search
+        """
+        cards = Card.objects.filter(Q(title__icontains=q) |
+                                    Q(authors__name__icontains=q))
+        return cards
 
     @staticmethod
     def sell(ean=None, quantity=1):
@@ -343,6 +337,22 @@ class Card(TimeStampedModel):
         #     print "--- error while setting the default place: %s" % (e,)
 
         return card_obj
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('book_detail', (), {'pk': self.pk})
+
+    def display_year_published(self):
+        "We only care about the year"
+
+        return self.year_published.strftime(u'%Y')
+
+    def set_sortkey(self):
+        "Generate a sortkey"
+
+        if not self.sortkey and self.authors:
+            self.sortkey = ', '.join([a.name for a in self.authors.all()])
+            self.save()
 
 
 class PlaceCopies (models.Model):
