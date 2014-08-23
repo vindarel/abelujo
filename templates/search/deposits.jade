@@ -6,7 +6,10 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 Dépôts existants:
+if deposits
+  h3 Dépôts existants:
+else
+  h3 Aucun dépôt existant
 table.table.table-striped.table-hover
   for dep in deposits
     tr
