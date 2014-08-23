@@ -99,6 +99,18 @@ You can have a look at the existing scrapers at search/datasources. Some
 abstraction work remains to be done. And shall we use scrapy
 <http://doc.scrapy.org/en/latest/intro/overview.html> ?
 
+Load testing data
+-----------------
+
+For the moment, we have to delete the current database if the models
+change, so we loose our data, but it is possible to load a small set
+of testing data::
+
+    ./manage.py loaddata dumpdata.json
+
+this will load a handful of Cards, Authors, Publishers and
+Baskets. There are already a default Place and Distributor.
+
 Tests coverage
 --------------
 
