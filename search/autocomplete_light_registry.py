@@ -7,7 +7,7 @@ class CardAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields=['title', 'authors.objects.all()'],
     # This will actually html attribute data-placeholder which will set
     # javascript attribute widget.autocomplete.placeholder.
-    autocomplete_js_attributes={'placeholder': 'ean',},
+    autocomplete_js_attributes={'placeholder': 'ean',}
     # autocomplete_template = 'your_autocomplete_box.html'
 
     def choices_for_request(self):
