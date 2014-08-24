@@ -3,6 +3,8 @@
 
 from search.models import Card
 from search.models import CardType
+from search.models import Deposit
+from search.models import Distributor
 from search.models import Publisher
 from search.models import Place
 from search.models import Preferences
@@ -63,6 +65,9 @@ class DBFixture():
         # Preferences: (default place)
         self.preferences = Preferences(default_place=self.place).save()
 
+        # a Distributor and a Deposit with no cards
+        self.distributor = Distributor(name="distributor test").save()
+        self.deposit = Deposit(name="deposit test").save()
 
 class TestViews(TestCase):
     def setUp(self):
@@ -211,3 +216,18 @@ class TestCollectionView(TestCase, DBFixture):
         form = {"ean": self.fixture_ean,}
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
+
+
+class TestDeposit(TestCase, DBFixture):
+
+    def setUp(self):
+        DBFixture.__init__(self)
+        self.c = Client()
+
+    def test_new_nominal(self):
+        resp = self.c.get(reverse("deposits_new"))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_create(self):
+        # TODO !
+        pass

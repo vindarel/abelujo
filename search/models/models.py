@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from django.contrib import messages
 from django.db import models
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
@@ -570,14 +571,42 @@ class Deposit(TimeStampedModel):
     def __unicode__(self):
         return u"Deposit '%s' with distributor: %s" % (self.name, self.distributor)
 
+    @staticmethod
+    def filter_copies(copies, distributor):
+        """Filter out the copies that don't have this distributor.
+
+        Return the list of copies, filtered.
+        """
+        MSG_CARD_DIFFERENT_DIST = u"Attention: la notice \"%s\" n'a pas été ajoutée au dépôt car elle n'a pas le même distributeur (\"%s\" au lieu de \"%s\")"
+        filtered = []
+        msgs = []
+        for copy in copies:
+            if copy.distributor and (copy.distributor.name == distributor):
+                filtered.append(copy)
+            else:
+                cur_dist = copy.distributor.name if copy.distributor else "aucun"
+                msgs.append({'level': messages.WARNING,
+                             'message': MSG_CARD_DIFFERENT_DIST %
+                             (copy.title, cur_dist, distributor)})
+
+        return filtered, msgs
+
     def add_copies(self, copies):
         "Add the given list of copies objects to this deposit."
+        msgs = []
         try:
             for copy in copies:
-                deposit_copy = self.depositcopies_set.create(card=copy)
-                deposit_copy.save()
+                if copy.distributor and (copy.distributor.name == self.distributor.name):
+                    deposit_copy = self.depositcopies_set.create(card=copy)
+                    deposit_copy.save()
+                else:
+                    print "Error: we should have filtered the copies before."
+            return []
+
         except Exception as e:
             print "Error while adding a card to the deposit.", e
+            return msgs.append({'level': messages.ERROR,
+                                'message': e})  # don't add this error in prod.
 
     @staticmethod
     def get_from_kw(**kwargs):
@@ -599,10 +628,21 @@ class Deposit(TimeStampedModel):
         """
         #TODO: we know the name is unique, so just use create
         # and then add the copies to the intermediate table. Almost done ! :)
+        msgs = []
         try:
             copies = depo_dict.pop('copies')
-            dep = Deposit.objects.create(**depo_dict)
-            dep.add_copies(copies)
-            return dep
+            copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
+            # Don't create it if it has no valid copies.
+            if not copies_to_add:
+                msgs.append({'level': messages.WARNING,
+                             'message': "Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
+            else:
+                dep = Deposit.objects.create(**depo_dict)
+                msgs += dep.add_copies(copies_to_add)
+                msgs.append({'level':messages.SUCCESS,
+                             'message':"Le dépôt a été créé avec succès."})
+            return  msgs
         except Exception as e:
             print "error ! ", e
+            return msgs.append({'level': messages.ERROR,
+                                'message': e})

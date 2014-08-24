@@ -398,9 +398,10 @@ def deposits_create(request):
         if form.is_valid():
             deposit = form.cleaned_data
             try:
-                depo_obj = Deposit.from_dict(deposit)
-                messages.add_message(request, messages.SUCCESS,
-                                     "Le dépôt a été créé avec succès.")
+                msgs = Deposit.from_dict(deposit)
+                for msg in msgs:
+                    messages.add_message(request, msg["level"],
+                                         msg["message"])
             except Exception as e:
                 print "Error when creating the deposit"
                 messages.add_message(request, messages.ERROR,

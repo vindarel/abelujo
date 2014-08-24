@@ -7,6 +7,7 @@ Test the models.
 Note: to compare two objects, don't use assertEqual but the == operator.
 """
 
+from django.contrib import messages
 from django.test import TestCase
 
 from search.models import Author
@@ -16,6 +17,9 @@ from search.models import BasketType
 from search.models import Card
 from search.models import CardType
 from search.models import Collection
+from search.models import Deposit
+from search.models import DepositCopies
+from search.models import Distributor
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
@@ -235,3 +239,64 @@ class TestBaskets(TestCase):
         # idem, with specific nb.
         self.basket.add_copy(self.card, nb=self.nb_copies)
         self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1 + self.nb_copies)
+
+
+class TestDeposits(TestCase):
+
+    def setUp(self):
+        self.distributor = Distributor(name="my dist")
+        self.distributor.save()
+        self.goldman = Author(name="goldman")
+        self.goldman.save()
+        self.card = Card(title="test card"); self.card.save()
+        self.card.authors.add(self.goldman)
+        self.card2 = Card(title="test card2"); self.card2.save()
+        self.card2.authors.add(self.goldman)
+        self.deposit = Deposit(name="deposit nominal",
+                               distributor=self.distributor,)
+
+    def testNominal(self):
+        self.card.distributor = self.distributor
+        msgs = self.deposit.add_copies([self.card,])
+        self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
+
+    def testNoDistributor(self):
+        self.card.distributor = None
+        msgs = self.deposit.add_copies([self.card,])
+        self.assertEqual(len(msgs), 0)
+        self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
+
+    def testDifferentDistributor(self):
+        self.other_dist = Distributor(name="other dist").save()
+        self.card.distributor = self.other_dist
+        msgs = self.deposit.add_copies([self.card,])
+        self.assertEqual(len(msgs), 0)
+        self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
+
+    def testFromDictNominal(self):
+        self.card.distributor = self.distributor
+        msgs = Deposit.from_dict({'name': 'test',
+                                  'copies': [self.card,],
+                                  'distributor': self.distributor,
+                                  })
+        self.assertEqual(len(msgs), 1, "add deposit from dict: %s" % msgs)
+        self.assertEqual(msgs[0]['level'], messages.SUCCESS)
+
+    def testFromDictBadDeposit(self):
+        self.card.distributor = None
+        msgs = Deposit.from_dict({'name': 'test',
+                                  'copies': [self.card,],
+                                  'distributor': self.distributor,
+                                  })
+        self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
+        self.assertEqual(msgs[0]['level'], messages.WARNING)
+
+    def testFromDictBadDepositOneGood(self):
+        self.card.distributor = None
+        self.card2.distributor = self.distributor
+        msgs = Deposit.from_dict({'name': 'test',
+                                  'copies': [self.card, self.card2],
+                                  'distributor': self.distributor,
+                                  })
+        self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
+        self.assertEqual(msgs[0]['level'], messages.WARNING)
