@@ -192,7 +192,7 @@ LOGGING = {
         # catch all:
         '': {
             'handlers': ['mail_admins', 'console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': True,
         }
     }
