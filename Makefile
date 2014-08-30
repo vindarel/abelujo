@@ -5,6 +5,14 @@
 # The target names are not a file produced by the commands of that target. Always out of date.
 .PHONY: clean e2e unit test data cov
 
+# Install in current directory
+install:
+	./install.sh
+
+# Run the dev server
+run:
+	python manage.py runserver 8000  # should check the port
+
 # Run end to end tests only.
 e2e:
 	cd search/ && ./e2etests.sh
@@ -15,6 +23,10 @@ unit:
 
 # Run all tests possible.
 test: e2e unit
+
+# Install the app in a fresh environment
+ci:
+	source ci-testing.sh
 
 # Load sample data, for testing purposes.
 data:

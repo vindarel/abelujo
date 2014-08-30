@@ -81,7 +81,6 @@ We use:
 
 -   **jade** templates, which compile to html: <http://jade-lang.com/>
     and pyjade for the Django integration
--   **Grappelli** for the admin app <http://grappelliproject.com/>
 -   Bootstrap's CSS: <http://getbootstrap.com> and django-bootstrap3
 
 We are currently working at expanding the database (adding locations,

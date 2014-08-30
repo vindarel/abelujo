@@ -27,7 +27,6 @@ urlpatterns = patterns('',
                            name="deposits_new"),
                        url(r'^deposits/create', 'search.views.deposits_create',
                            name="deposits_create"),
-                       url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),
