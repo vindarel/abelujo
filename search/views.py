@@ -1,27 +1,28 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import logging
 import traceback
 import urllib
 
+import autocomplete_light
 from django import forms
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.shortcuts import redirect
-
-import autocomplete_light
+from django.shortcuts import render
 
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
-
 from models import Basket
 from models import Card
 from models import Deposit
 from models import Distributor
 from models import Place
+
+log = logging.getLogger(__name__)
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
@@ -133,7 +134,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
         qparam['q'] = cleaned_data["q"]
     if "ean" in cleaned_data.keys():
         qparam['ean'] = cleaned_data["ean"]
-    print "on recherche: ", qparam
+    log.debug("on recherche: ", qparam)
     # construct the query parameters of the form
     # q=query+param&source=discogs
     params = urllib.urlencode(qparam)
@@ -211,10 +212,10 @@ def search(request):
             if not retlist:
                 messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
             request.session["search_result"] = retlist
-            print "--- search results:", retlist
+            log.debug("--- search results: %s" % retlist)
         else:
             # uncomplete form (specify we need ean or q).
-            print "--- form not complete"
+            log.debug("--- form not complete")
             pass
 
     else:
@@ -258,13 +259,13 @@ def add(request):
     req = request.POST.copy()
     form = AddForm(req)
     if not form.is_valid():
-        print "debug: add view: form is not valid."
+        log.debug("debug: add view: form is not valid.")
         resp_status = 400
     else:
         # get the last search results of the session:
         cur_search_result = _request_session_get(request, "search_result")
         if not cur_search_result:
-            print "Error: the session has no search_result."
+            log.debug("Error: the session has no search_result.")
             pass
         card = cur_search_result[form.cleaned_data["forloop_counter0"]]
 
@@ -273,16 +274,16 @@ def add(request):
 
         if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
             if not data_source:
-                print "Error: the data source is unknown."
+                log.debug("Error: the data source is unknown.")
                 resp_status = 500
                 # return an error page
             else:
                 # fire a new http request to get the ean (or other missing informations):
                 complements = postSearch(data_source, card['details_url'])
                 if not complements.get("ean"):
-                    print "--- warning: postSearch couldnt get the ean."
+                    log.debug("--- warning: postSearch couldnt get the ean.")
                 for k, v in complements.iteritems():
-                    print "--- postSearch: found %s: %s" % (k,v)
+                    log.debug("--- postSearch: found %s: %s" % (k,v))
                     card[k] = v
 
         try:
@@ -294,24 +295,24 @@ def add(request):
             if basket_id and int(basket_id):
                 # add to the basket
                 basket_id = int(basket_id)
-                print "adding card %s to basket %i" % (card['title'], basket_id)
+                log.debug("adding card %s to basket %i" % (card['title'], basket_id))
                 basket = Basket.objects.get(id=basket_id)
                 basket.add_copy(card_obj)
             else:
                 # add to the default place.
-                print "adding card %s to default place" % (card['title'],)
+                log.debug("adding card %s to default place" % (card['title'],))
                 Place.card_to_default_place(card_obj)
 
             messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
         except Basket.DoesNotExist as e:
             messages.add_message(request, messages.ERROR,
                                  u"The basket n° %s was not found. The card could not be registered." % (form.cleaned_data["basket"],))
-            print "Error when fetching basket %s: %s" % (form.cleaned_data["basket"], e)
+            log.error("Error when fetching basket %s: %s" % (form.cleaned_data["basket"], e))
             resp_status = 500
         except Exception, e:
             messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
-            print "Error when trying to add card ", e
-            print traceback.format_exc()
+            log.error("Error when trying to add card ", e)
+            log.error(traceback.format_exc())
             resp_status = 500
 
     return render(request, 'search/search_result.jade',
@@ -343,7 +344,7 @@ def collection(request):
             elif request.POST.has_key("ean"):
                 messages.add_message(request, messages.INFO,
                                      "La recherche par ean n'est pas encore implémentée.")
-                print "TODO: search on ean"
+                log.debug("TODO: search on ean")
 
     else:
         # cards = request.session.get("collection_search")
@@ -403,7 +404,7 @@ def deposits_create(request):
                     messages.add_message(request, msg["level"],
                                          msg["message"])
             except Exception as e:
-                print "Error when creating the deposit"
+                log.error("Error when creating the deposit: %s" % e)
                 messages.add_message(request, messages.ERROR,
                                      "Error when adding the deposit")
 
@@ -422,12 +423,12 @@ def deposits_add_card(request):
     form = AddToDepositForm(req)
     if request.method == "POST":
         if not form.is_valid():
-            print "deposits_add_card: form is not valid"
+            log.debug("deposits_add_card: form is not valid")
             resp_status = 500
         else:
             card_ean = req["ean"]
             if not card_ean:
-                print "deposits_add_card: the ean is null. That should not happen !"
+                log.debug("deposits_add_card: the ean is null. That should not happen !")
                 resp_status = 400
                 messages.add_message(request, messages.ERROR,
                                      u"We could not add the card to the deposit: the given ean is null.")

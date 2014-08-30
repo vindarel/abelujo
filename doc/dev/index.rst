@@ -1,6 +1,24 @@
 Developer documentation
 =======================
 
+Intermediate tables
+-------------------
+
+Goal: have a many to many relationship, like between a place and a
+card, but specify some custom elements, like the number of copies.
+
+See the Django doc: https://docs.djangoproject.com/en/1.5/topics/db/models/#intermediary-manytomany
+
+So, we can create a Card and a Place as usual. But to access a Card
+from a Place, we have to use the intermediate table, like this::
+
+    self.place.placecopies_set.get(card=mycard)  # or all() or others, cf doc.
+
+See:
+
+* the relation card-place, card-basket, and their unit tests for usage
+  examples (test_models.py).
+
 
 Autocompletion in forms
 -----------------------
@@ -24,3 +42,18 @@ We have usable forms without the need to write a line of javascript,
 and that's fine for now. We want to stay focused on the application
 logic (we know all the burden that requires the affordmentioned
 framework !).
+
+Logging
+-------
+
+We define a default logger so than we can setup a logger with::
+
+    import logging
+    log = logging.getLogger(__name__)
+
+and it will by default print verbose messages to the console (Django's
+default is to a file). In `settings.py`, see the handler `console` and
+the logger `""` to catch all the undefined ones.
+
+https://docs.djangoproject.com/en/1.6/topics/logging/
+http://www.miximum.fr/an-effective-logging-strategy-with-django.html

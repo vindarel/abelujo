@@ -47,7 +47,6 @@ class TestDiscogsE2E(unittest.TestCase):
     # def testArtistSearch(self):
         # search = scraper(artist=["kyuss",])
         # res = search.search()
-        # print res[0]["title"]
         # self.assertTrue(res)
         # self.assertEqual(res[0]["title"], u"Kyuss")
 

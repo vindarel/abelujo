@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from datetime import date
 
 from django.contrib import messages
@@ -8,6 +10,8 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
 CHAR_LENGTH = 200
+
+log = logging.getLogger(__name__)
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -195,7 +199,7 @@ class Card(TimeStampedModel):
     def get_from_kw(words, to_list=False):
         """search some card: quick to test
         """
-        print "TODO: search the collection on all keywords"
+        log.debug("TODO: search the collection on all keywords")
         res = Card.objects.filter(title__icontains=words[0])
         if to_list:
             res = Card.obj_to_list(res)
@@ -225,7 +229,7 @@ class Card(TimeStampedModel):
             card.save()
             return (True, "")
         except ObjectDoesNotExist, e:
-            print "Requested card %s does not exist: %s" % (ean, e)
+            log.warning("Requested card %s does not exist: %s" % (ean, e))
             return (None, "La notice n'existe pas.")
 
     @staticmethod
@@ -262,7 +266,7 @@ class Card(TimeStampedModel):
                 author, created = Author.objects.get_or_create(name=aut)
                 card_authors.append(author)
         else:
-            print "this card has no authors (ok for a CD): %s" % (card['title'],)
+            log.warning("this card has no authors (ok for a CD): %s" % card['title'])
 
         card_obj, created = Card.objects.get_or_create(
             title=card.get('title'),
@@ -309,11 +313,11 @@ class Card(TimeStampedModel):
                     pub_obj, created = Publisher.objects.get_or_create(name=pub)
                     card_obj.publishers.add(pub_obj)
                     if created:
-                        print "--- new publisher created: %s" % (pub,)
+                        log.debug("--- new publisher created: %s" % (pub,))
 
                 card_obj.save()
             except Exception, e:
-                print "--- error while adding the publisher: %s" % (e,)
+                log.error("--- error while adding the publisher: %s" % (e,))
 
         # add the collection
         collection = card.get("collection")
@@ -324,9 +328,9 @@ class Card(TimeStampedModel):
                 card_obj.collection = collection_obj
                 card_obj.save()
                 if created:
-                    print "--- new collection created: %s" % (collection,)
+                    log.debug("--- new collection created: %s" % (collection,))
             except Exception, e:
-                print "--- error while adding the collection: %s" % (e,)
+                log.error("--- error while adding the collection: %s" % (e,))
 
         # Add the default place (to the intermediate table).
         # try:
@@ -335,7 +339,7 @@ class Card(TimeStampedModel):
         #     place_copy.nb = 1
         #     place_copy.save()
         # except Exception, e:
-        #     print "--- error while setting the default place: %s" % (e,)
+        #     log.error("--- error while setting the default place: %s" % (e,))
 
         return card_obj
 
@@ -417,7 +421,7 @@ class Place (models.Model):
             place_copy.nb += nb
             place_copy.save()
         except Exception, e:
-            print "--- error while setting the default place: %s" % (e,)
+            log.error("--- error while setting the default place: %s" % (e,))
 
     def add_copies(self, card, nb=1):
         """Adds the given number of copies (1 by default) of the given card to
@@ -435,8 +439,8 @@ class Place (models.Model):
             place_copy.nb += nb
             place_copy.save()
         except Exception,e:
-            print "--- error while adding %s to the place %s" % (card.name, self.name)
-            print e
+            log.error("--- error while adding %s to the place %s" % (card.name, self.name))
+            log.error(e)
 
 class Preferences(models.Model):
     """
@@ -501,7 +505,7 @@ class Basket(models.Model):
             basket_copy.nb += nb
             basket_copy.save()
         except Exception as e:
-            print "Error while adding a card to basket %s: %s" % (self.name,e)
+            log.error("Error while adding a card to basket %s: %s" % (self.name,e))
 
 class BasketType (models.Model):
     """
@@ -600,11 +604,11 @@ class Deposit(TimeStampedModel):
                     deposit_copy = self.depositcopies_set.create(card=copy)
                     deposit_copy.save()
                 else:
-                    print "Error: we should have filtered the copies before."
+                    log.error("Error: we should have filtered the copies before.")
             return []
 
         except Exception as e:
-            print "Error while adding a card to the deposit.", e
+            log.error("Error while adding a card to the deposit.", e)
             return msgs.append({'level': messages.ERROR,
                                 'message': e})  # don't add this error in prod.
 
@@ -626,8 +630,6 @@ class Deposit(TimeStampedModel):
 
         returns: the deposit object
         """
-        #TODO: we know the name is unique, so just use create
-        # and then add the copies to the intermediate table. Almost done ! :)
         msgs = []
         try:
             copies = depo_dict.pop('copies')
@@ -643,6 +645,6 @@ class Deposit(TimeStampedModel):
                              'message':"Le dépôt a été créé avec succès."})
             return  msgs
         except Exception as e:
-            print "error ! ", e
+            log.error("error ! ", e)
             return msgs.append({'level': messages.ERROR,
                                 'message': e})

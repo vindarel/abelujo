@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import json
+import logging
 import sys
 import traceback
 
 import requests
+
+log = logging.getLogger(__name__)
 
 DATA_SOURCE_NAME = "Discogs.com"
 DISCOGS_IMG_URL = "http://s.pixogs.com/image/"
@@ -46,23 +49,23 @@ class Scraper:
         self.stacktraces = []  # store stacktraces
 
         if not args and not kwargs:
-            print "give some search keywords"
+            log.debug("give some search keywords")
 
         if args:
             query = "+".join(arg for arg in args)
             self.url = self.db_search + query
-            print "we'll search: " + self.url
+            log.debug("we'll search: %s" % self.url)
 
         if kwargs:
             if "ean" in kwargs:
                 self.ean = kwargs["ean"]
                 self.url = self.db_search + self.ean
-                print "ean search: " + self.url
+                log.debug("ean search: %s" % self.url)
 
             elif "artist" in kwargs:
                 query = "+".join(arg for arg in kwargs["artist"])
                 self.url = self.db_search + query + "&type=" + "artist"
-                print "on cherche: " + self.url
+                log.debug("on cherche: %s" % self.url)
 
     def _construct_img_url(self, thumb_url, search_type="R", size=DEFAULT_IMG_SIZE):
         """As of beginning of march 2014, it appears the thumbnail url we were
@@ -88,7 +91,7 @@ class Scraper:
             return myimg
         except Exception, e:
             # It doesn t work in some cases
-            # print "--- error getting the image url: ", e
+            # log.error("--- error getting the image url: ", e)
             return ""
 
     def search(self):
@@ -107,18 +110,16 @@ class Scraper:
             try:
                 json_res = json.loads(res.text)
                 uri = json_res["results"][0]["uri"]
-                print "uri: ", uri
             except Exception, e:
-                print "Error searching ean %s: " % (self.ean,)
-                print e
+                log.error("Error searching ean %s\n: " % (self.ean, e))
                 return None, traceback.format_exc()
 
             # now getting the release id
             release = uri.split("/")[-1]
-            print "release: ", release
+            log.debug("release: %s" % release)
             if release:
                 release_url = self.api_url + "/releases/" + release
-                print "release_url: ", release_url
+                log.debug("release_url: %s" % release_url)
                 rel = requests.get(release_url, headers=self.headers)
 
                 try:
@@ -137,12 +138,11 @@ class Scraper:
                     card["year"] = val["year"]
                     card["card_type"] = TYPE_CD  # or vinyl
                     # images, genre,…
-                    print "found album %s by %s" % (card["title"], card["authors"])
+                    log.debug("found album %s by %s" % (card["title"], card["authors"]))
 
                 except Exception, e:
-                    print "Error on getting release informations of %s " % (release_url,)
-                    print e
-                    print "Traceback: %s" % (traceback.format_exc())
+                    log.error("Error on getting release informations of %s\n %s " % (release_url, e))
+                    log.error("Traceback: %s" % (traceback.format_exc()))
                     self.stacktraces.append(traceback.format_exc())
 
                 return card, self.stacktraces
@@ -183,7 +183,7 @@ class Scraper:
                             else:
                                 # discogs now includes mp3 to the search results.
                                 # Some vinyls don't have a barcode too.
-                                # print "debug: following entry has no barcode: %s" % (val,)
+                                # log.debug("debug: following entry has no barcode: %s" % (val,))
                                 pass
                         if 'thumb' in val:
                             # that link appears not to be available without Oauth registration any more.
@@ -196,14 +196,14 @@ class Scraper:
 
                         # append if ean not already present, if title ?
                         to_ret.append(mycard)
-                        print "got a card: ", mycard
+                        log.debug("got a card: %s" % mycard)
 
             except IndexError as e:
-                print "IndexError with val %s" % (val,)
-                print "Traceback: %s" % (traceback.format_exc())
+                log.error("IndexError with val %s" % (val,))
+                log.error("Traceback: %s" % (traceback.format_exc()))
                 self.stacktraces.append(traceback.format_exc())
             except Exception as e:
-                print "discogs search: unknown exception: %s" % (e,)
+                log.error("discogs search: unknown exception: %s" % (e,))
                 self.stacktraces.append(traceback.format_exc())
 
             return to_ret, self.stacktraces

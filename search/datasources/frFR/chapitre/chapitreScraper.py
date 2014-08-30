@@ -29,12 +29,14 @@ A scraper must have:
 
 from bs4 import BeautifulSoup
 import re
+import logging
 import requests
 import requests_cache
-import logging
 import json
 
 requests_cache.install_cache()
+logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 DATA_SOURCE_NAME = "Chapitre.com"
 CHAPITRE_BASE_URL = "http://www.chapitre.com"
@@ -153,7 +155,6 @@ class Scraper:
 
         """
 
-        logging.info('args: ' + ' '.join(a for a in args))
         if not args and not kwargs:
             print 'Error: give args to the query'
 
@@ -161,7 +162,6 @@ class Scraper:
                    # 'Host':'www.decitre.fr',
                    # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 
-        logging.info('args, kwargs: ',  args, kwargs)
         if kwargs:
             if 'ean' in kwargs:
                 # the name of ean for the search is "reference"
@@ -175,12 +175,11 @@ class Scraper:
                 q += "&%s=%s" % (k, urlend) # working for ean 8-1-14
 
             self.url += q
-            logging.info('on recherche: ' + self.url)
 
         else:
             self.query = "+".join(args)
             self.url = "http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&quicksearch=" + self.query
-            print 'search url: ', self.url
+            log.debug('search url: %s' % self.url)
 
         self.r = requests.get(self.url)
         #TODO: to be continued
@@ -191,10 +190,10 @@ class Scraper:
         try:
             plist = self.soup.find_all('div', class_='resultsProduct')
             if not plist:
-                logging.info('Warning: product list is null :/')
+                log.warning('Warning: product list is null :/')
             return plist
         except Exception, e:
-            print 'Error while getting the list of books', e
+            log.debug('Error while getting the list of books: %s' % e)
 
 
     def _nbr_results(self):
@@ -202,31 +201,28 @@ class Scraper:
             nbr_result_list = self.soup.find('div', class_='nb_results')
             res = nbr_result_list.find('strong').text
             if not res:
-                print 'Error matching nbr_result'
+                log.warning('Error matching nbr_result')
                 res = "undefined"
-            logging.info("nbr of results: " + res)
             return res
 
         except Exception, e:
-            print "\nError fetching the nb of results:", e
+            log.debug("\nError fetching the nb of results: %s" % e)
 
     def _details_url(self, product):
         try:
             title = product.product.find_all(class_='productTitle')[0]
             url = title.a.attrs['href']
-            logging.info('url:'+ url)
             return CHAPITRE_BASE_URL + url
         except Exception, e:
-            print "Error while looking for the title", e
+            log.debug("Error while looking for the title: %s" % e)
 
     def _title(self, product):
         try:
             title = product.product.find_all(class_='productTitle')[0]
             title = title.text.strip()
-            logging.info('title:'+ title)
             return title
         except Exception, e:
-            print "Error while looking for the title", e
+            log.debug("Error while looking for the title %s" % e)
 
     def _authors(self, product):
         authors = []
@@ -238,10 +234,9 @@ class Scraper:
                 aut = aut.replace("(auteur)", "").replace("(Auteur)", "").split(";")
                 authors += aut
                 authors = [a.strip() for a in authors]
-            logging.info('authors: '+ ', '.join(a for a in authors))
             return authors
         except Exception, e:
-            print "Error with authors", e
+            log.debug("Error with authors %s" % e)
 
     def _img(self, product):
 
@@ -250,14 +245,13 @@ class Scraper:
             img_url = img_elt.a.img.attrs['src']
 
             if not img_url:
-                logging.warning("img url is null")
+                log.warning("img url is null")
 
-            logging.info("img url: " + img_url)
             return img_url
 
         except Exception, e:
-            logging.exception("Error getting the image's url")
-            print e
+            log.error("Error getting the image's url")
+            log.debug(e)
             return ""
 
     def _price(self, product):
@@ -277,10 +271,9 @@ class Scraper:
                 else:
                     price = "undefined"
 
-            logging.info('price: ' + price)
             return price
         except Exception, e:
-            print 'Error getting price', e
+            log.debug('Error getting price', e)
 
 
     def _description(self, product):
@@ -290,13 +283,12 @@ class Scraper:
             # description = details_soup.find(id="description").text.strip()
             description = "no description with chapitre.com"
             if not description:
-                logging.info('the description is null :/')
+                log.info('the description is null :/')
 
-            logging.info('description: ' + description)
             return description
 
         except Exception, e:
-            print 'Error getting the description', e
+            log.debug('Error getting the description', e)
 
 
     def _publisher(self, product):
@@ -306,11 +298,10 @@ class Scraper:
                 publisher = publisher.text.strip("Editeur :").strip().strip(".")
             else:
                 publisher = "undefined"
-            logging.info('publisher:' + publisher)
             return [publisher]
 
         except Exception, e:
-            print "Error while getting the publisher", e
+            log.debug("Error while getting the publisher %s" % e)
 
     def _type(self, product):
         try:
@@ -325,7 +316,7 @@ class Scraper:
                     return TYPE_DEFAULT
 
         except Exception, e:
-            print "Error while getting the type", e
+            log.debug("Error while getting the type %s" % e)
 
     def search(self, *args, **kwargs): # rename in getBooks ?
         """Searches books. Returns a couple (list of books, stachktraces of
@@ -342,7 +333,7 @@ class Scraper:
         stacktraces = []
         product_list = self._product_list()
         nbr_results = self._nbr_results()
-        # print "nbr_results: "+ nbr_results
+        # log.debug("nbr_results: "+ nbr_results)
         for product in product_list:
             b = Book()
             dom_product = DomProduct(product)
@@ -374,7 +365,7 @@ def postSearch(url):
     returns: a dict
     """
     if not url.startswith('http'):
-        print "warning: url must start with http ;)"
+        log.debug("warning: url must start with http ;)")
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
     details = soup.find_all(class_="productDetails-items-content")
@@ -392,7 +383,7 @@ def postSearch(url):
                 itemtext = det.span.text.strip()
                 if itemprop == EAN_LABEL:
                     # this is EAN13
-                    print "========= ean found: ", itemtext
+                    log.debug("ean found: %s" % itemtext)
                     to_ret["ean"] = itemtext
 
             else:
@@ -402,13 +393,13 @@ def postSearch(url):
                     if itemprop == COLLECTION_LABEL:
                         itemtext = parent.a.text
                         to_ret["collection"] = itemtext
-                        print "=== postSearch: found collection: %s" % (itemtext,)
+                        log.debug("postSearch: found collection: %s" % (itemtext,))
                 except Exception:
                     pass
 
         return to_ret
 
     except Exception, e:
-        print "Error while getting the ean of %s :" % (url,)
-        print e
+        log.debug("Error while getting the ean of %s :" % (url,))
+        log.debug(e)
         return to_ret
