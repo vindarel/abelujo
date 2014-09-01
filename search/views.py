@@ -5,7 +5,6 @@ import logging
 import traceback
 import urllib
 
-import autocomplete_light
 from django import forms
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -13,7 +12,10 @@ from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
 
+import autocomplete_light
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
 from models import Basket
@@ -379,13 +381,19 @@ def sell(request):
                   'searchForm': form
                   })
 
-def deposits(request):
-    deposits = Deposit.objects.all()
-    return render(request, "search/deposits.jade", {
-        "deposits": deposits})
+class depositsListView(ListView):
+    model = Deposit
+    template_name = "search/deposits.jade"
+    context_object_name = "deposits"
+
+#  # for a comparison:
+# def deposits(request):
+    # deposits = Deposit.objects.all()
+    # return render(request, "search/deposits.jade", {
+        # "deposits": deposits})
+
 
 def deposits_new(request):
-
     return render(request, "search/deposits_create.jade", {
         "DepositForm": DepositForm(),
         })
@@ -440,3 +448,20 @@ def deposits_add_card(request):
     retlist = request.session.get("collection_search")
     redirect_to = req.get('redirect_to')
     return redirect(redirect_to, status=resp_status)
+
+
+def deposits_view(request, depo_name):
+    """display the given deposit."""
+    deposit = None
+    copies = []
+    template = "search/deposits_view.jade"
+    try:
+        deposit = Deposit.objects.get(name=depo_name)
+        copies = deposit.copies.all()
+    except Deposit.DoesNotExist as e:
+        messages.add_message(request, messages.ERROR, "Le dépôt demandé n'existe pas !")
+        log.error("le depot demande (%s) n'existe pas: %s" % (depo_name, e))
+    return render(request, template, {
+        "deposit": deposit,
+        "copies": copies,
+    })

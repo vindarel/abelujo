@@ -1,10 +1,14 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include
+from django.conf.urls import patterns
+from django.conf.urls import url
+from django.contrib import admin
 from django.views.generic.base import RedirectView
 
 import autocomplete_light
+from search.views import depositsListView
+
 autocomplete_light.autodiscover()  # before importing the admin.
 
-from django.contrib import admin
 admin.autodiscover()
 
 #TODO: move to the right app
@@ -19,7 +23,7 @@ urlpatterns = patterns('',
                            name="card_sell"),
                        url(r'^collection/', 'search.views.collection',
                            name="card_collection"),
-                       url(r'^deposits/$', 'search.views.deposits',
+                       url(r'^deposits/$', depositsListView.as_view(),
                            name="deposits"),
                        url(r'^deposits/addcard', "search.views.deposits_add_card",
                            name="deposits_add_card"),
@@ -27,6 +31,8 @@ urlpatterns = patterns('',
                            name="deposits_new"),
                        url(r'^deposits/create', 'search.views.deposits_create',
                            name="deposits_create"),
+                       url(r'^deposits/(.+)', 'search.views.deposits_view',
+                           name="deposits_view"),
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),

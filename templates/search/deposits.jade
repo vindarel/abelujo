@@ -13,7 +13,8 @@ else
 table.table.table-striped.table-hover
   for dep in deposits
     tr
-      td {{ dep.name }}
+      td
+        a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
       td {{ dep.distributor.name }}
 
 a.btn.btn-primary(href="{% url 'deposits_new' %}") Nouveau dépôt

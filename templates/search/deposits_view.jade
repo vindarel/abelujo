@@ -1,0 +1,32 @@
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+a(href="/admin/search/deposit/{{deposit.name}}") modifier
+dl.dl-horizontal
+  dt Dépôt
+  dd {{ deposit.name }}
+  dt Distributeur
+  dd {{ deposit.distributor }}
+  dt Type de dépôt
+  dd {{ deposit.deposit_type }}
+  dt Réassort automatique
+  dd {{ deposit.auto_command | yesno:"oui,non"}}
+if copies
+  b Exemplaires en dépôt:
+else
+  b.text-center.alert.alert-info Ce dépôt ne contient aucune notice.
+table.table.table-striped.table-hover
+  for copy in copies
+    tr
+      td {{ copy.title }}
+      td {{ copy.getAuthorsString }}
+      td {{ copy.editor | yesno:",pas d'éditeur"}}
+      td {{ copy.price }} €
+
+a(href="").btn.btn-primary(title="état de dépôt", value="état de dépôt", type="submit") état de dépôt
+{% endblock content %}

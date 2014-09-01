@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from datetime import date
+from textwrap import dedent
 
+from django.utils.http import quote
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
 
 CHAR_LENGTH = 200
 
@@ -185,6 +186,12 @@ class Card(TimeStampedModel):
                 "distributor": card.distributor.name if card.distributor else None
             })
         return retlist
+
+    def getAuthorsString(self):
+        """returns a string with the list of authors.
+        It is called from the templates so can't take any arg.
+        """
+        return ", ".join([aut.name for aut in self.authors.all()])
 
     @staticmethod
     def first_cards(nb, to_list=False):
@@ -541,7 +548,6 @@ class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
     a distributor but didn't pay them yet.
     """
-
     name = models.CharField(primary_key=True, max_length=CHAR_LENGTH)
     #: the distributor (or person) we have the copies from.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
@@ -581,7 +587,9 @@ class Deposit(TimeStampedModel):
 
         Return the list of copies, filtered.
         """
-        MSG_CARD_DIFFERENT_DIST = u"Attention: la notice \"%s\" n'a pas été ajoutée au dépôt car elle n'a pas le même distributeur (\"%s\" au lieu de \"%s\")"
+        MSG_CARD_DIFFERENT_DIST = dedent(u"""Attention: la notice \"%s\" n'a pas
+            été ajoutée au dépôt car elle n'a pas
+            le même distributeur (\"%s\" au lieu de \"%s\).""")
         filtered = []
         msgs = []
         for copy in copies:
@@ -594,6 +602,9 @@ class Deposit(TimeStampedModel):
                              (copy.title, cur_dist, distributor)})
 
         return filtered, msgs
+
+    def get_absolute_url(self):
+        return quote(self.name)
 
     def add_copies(self, copies):
         "Add the given list of copies objects to this deposit."
