@@ -101,8 +101,8 @@ class TestCards(TestCase):
 
 
     def test_sell(self):
-        Card.sell(ean="987", quantity=2)
-        self.assertEqual(Card.objects.get(ean="987").quantity, -1)
+        Card.sell(id=self.autobio.id, quantity=2)
+        self.assertEqual(Card.objects.get(id=self.autobio.id).quantity, -1)
 
     def test_add_good_type(self):
         obj = Card.from_dict({"title": "living",

@@ -41,7 +41,7 @@ for b in book_list
     input(type='hidden', value="{{ b.title }}", name='title')
     input(type='hidden', value="{{ b.authors }}", name='authors')
     input(type='hidden', value="{{ b.price }}", name='price')
-    input(type='hidden', value="{{ b.ean }}", name='ean')
+    input(type='hidden', value="{{ b.id }}", name='id')
     input(type='hidden', value=b, name='book')
     input.btn.btn-primary(type='submit', value='Vendre')
 

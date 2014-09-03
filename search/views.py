@@ -362,12 +362,11 @@ def collection(request):
 def sell(request):
     form = SearchForm()
     req = request.POST
-
-    if not req.get("ean"):
-        message = u"Erreur: cette notice n'a pas d'ean et ne peut être vendue."
+    if not req.get("id"):
+        message = u"Erreur: cette notice n'existe pas."
         level = messages.ERROR
     else:
-        ret, msg = Card.sell(ean=req['ean'])
+        ret, msg = Card.sell(id=req['id'])
         if ret:
             message = u"La vente de %s est bien enregistrée." % (req.get('title'),)
             level = messages.SUCCESS

@@ -216,20 +216,20 @@ class Card(TimeStampedModel):
         return cards
 
     @staticmethod
-    def sell(ean=None, quantity=1):
+    def sell(id=None, quantity=1):
         """Sell a card. Decreases its quantity.
 
         return: a tuple (return_code, "message")
         """
         try:
-            card = Card.objects.get(ean=ean)
+            card = Card.objects.get(id=id)
             card.sold = date.today()
             card.price_sold = card.price
             card.quantity = card.quantity - quantity
             card.save()
             return (True, "")
         except ObjectDoesNotExist, e:
-            log.warning("Requested card %s does not exist: %s" % (ean, e))
+            log.warning("Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")
 
     @staticmethod
