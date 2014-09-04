@@ -3,28 +3,39 @@ script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js", type="
 
 html
   head
-    title Abelujo {% block pagetitle %} {% endblock %}
-  body.container
-    span
-      h1 Abelujo
-      a(href="/admin") admin
+    title Abelujo
+    div {% block pagetitle %} {% endblock %}
+  nav.navbar.navbar-default(role="navigation")
+    body.container
+      div.navbar-collapse
+        ul.nav.navbar-nav
+          li.active(href="#") Abelujo
+          li
+            a.text-right(href="/#") Accueil
+        url.nav.navbar-nav.navbar-right
+          li
+            a.text-right(href="/admin") Admin
 
+  body.container
     div.col-md-2(id="menu")
-          h2
+      div
+        ul.nav.nav-pills.nav-stacked
+          li
             a(href="/collection") Mon stock
-          h2
+          li
             a(href="/search") Nouvelle entrée
-          h2
+          li
             a(href="/deposits") Dépôts
 
-    div.col-md-10(id="content")
-      {% if messages %}
-      ul
-        {% for msg in messages %}
-        <li {% if msg.tags %} class="{{ msg.tags }}" {% endif %}> {{msg}} </li>
-        {% endfor %}
-      {% endif %}
-      {% block content %}
-      {% endblock content %}
+  div.col-md-10(id="content")
+    {% if messages %}
+    ul
+      {% for msg in messages %}
+      <li {% if msg.tags %} class="{{ msg.tags }}" {% endif %}> {{msg}} </li>
+      {% endfor %}
+    {% endif %}
+    {% block content %}
+    {% endblock content %}
+
     div(id="footer")
       span Qui sommes-nous ?
