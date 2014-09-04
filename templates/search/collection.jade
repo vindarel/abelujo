@@ -24,17 +24,35 @@ for b in book_list
           a(href="{{ b.details_url }}") Voir sur {{ b.data_source }}
         if b.authors
           h4 {{b.authors}}
-        div prix: {{b.price}} €, ean: {{ b.ean }}
-        if b.publishers
-          div
-            span éditeur: {{ b.publishers }}
-            if b.collection
-              span ({{ b.collection }})
-        if b.distributor
-          div diffuseur: {{ b.distributor }}
-        div exemplaires en stock: {{ b.quantity }}
-        div Lieus de stockage:
-          span {{ b.places }}
+        table.table-condensed
+          tr
+            if b.publishers
+              td
+                span
+                  b(title="{{ b.publishers }}") éditeur 
+                  span(title="{{ b.publishers }}") {{ b.publishers | truncatewords:2}}
+            td
+              span
+                b ean 
+                span {{ b.ean }}
+            td
+              span
+                b(title="{% if not collection %} collection inconnue {% endif%}") collection 
+                span(title="{% if not collection %} collection inconnue {% endif%}") {{ b.collection | yesno:",---" }}
+            td
+              {{ b.price }} €
+          tr
+            if b.distributor
+              td
+                span
+                  b diffuseur 
+                  span {{ b.distributor }}
+            td
+              b stockage 
+              span {{ b.places }}
+            td
+              b en stock 
+              span {{ b.quantity }}
 
   form(action='/collection/sell/', method='post') {% csrf_token %}
     // input(type='hidden', value=b.title, name='book')
