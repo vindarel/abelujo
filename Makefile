@@ -22,7 +22,7 @@ unit:
 	./manage.py test search
 
 # Run all tests possible.
-test: e2e unit
+test: unit e2e
 
 # Install the app in a fresh environment
 ci:
