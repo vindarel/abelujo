@@ -25,3 +25,5 @@ Installation et développement
 =============================
 
 Nous vous laissons le soin de lire les instructions en anglais !
+
+![chercher une notice](doc/abelujo-collection.png =500x)
