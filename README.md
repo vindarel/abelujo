@@ -27,6 +27,8 @@ tell me now if you're interested).
 
 Feedback welcomed at ehvince at mailz dot org.
 
+![looking for a registered card](doc/abelujo-collection.png)
+
 Installation
 ============
 
