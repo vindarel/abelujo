@@ -338,8 +338,7 @@ def collection(request):
         if form.is_valid():
             if form.cleaned_data.get("q"):
                 words = form.cleaned_data["q"].split()
-                #XXX: better query, include all authors
-                cards = Card.get_from_kw(words, to_list=True)
+                cards = Card.search(words[0], to_list=True)
                 # store results in session for later re-use
                 request.session["collection_search"] = cards
 

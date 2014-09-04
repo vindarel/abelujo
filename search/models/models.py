@@ -203,6 +203,26 @@ class Card(TimeStampedModel):
         return ret
 
     @staticmethod
+    def search(q, to_list=False):
+        """Search a card on its title and its authors' names.
+
+        q: a list of key words
+        TODO: handle more than one kw !
+
+        to_list: if True, we return a list of dicts, not Card
+        objects. Used to store the search result into the session,
+        which doesn't know how to store Card objects.
+
+        q: the keyword to search
+
+        """
+        cards = Card.objects.filter(Q(title__icontains=q) |
+                                    Q(authors__name__icontains=q))
+        if to_list:
+            cards = Card.obj_to_list(cards)
+        return cards
+
+    @staticmethod
     def get_from_kw(words, to_list=False):
         """search some card: quick to test
         """
@@ -211,16 +231,6 @@ class Card(TimeStampedModel):
         if to_list:
             res = Card.obj_to_list(res)
         return res
-
-    @staticmethod
-    def search(q):
-        """Search a card on its title and its authors' names.
-
-        q: the keyword to search
-        """
-        cards = Card.objects.filter(Q(title__icontains=q) |
-                                    Q(authors__name__icontains=q))
-        return cards
 
     @staticmethod
     def sell(id=None, quantity=1):
