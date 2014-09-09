@@ -22,16 +22,33 @@ for b in result_list
         h4
           if b.authors
             for author in b.authors
-              div {{ author }}
-        div price: {{b.price}} € ean: {{b.ean}}
-        if b.publishers
-          span éditeur:
-          for pub in b.publishers
-            span {{ pub }} 
+              span {{ author }}
+              if not forloop.last
+                span ; 
+        table.table-condensed
+          tr
+            td
+              span
+                b éditeur 
+                for pub in b.publishers
+                  span {{ pub }}
+                  if not forloop.last
+                    span ; 
+            td
+              span
+                b(title="l'ean sera téléchargé à l'enregistrement de la notice.") ean 
+                span {{ b.ean }}
+                if not ean
+                  span ---
+            td
+                span
+                  b prix 
+                  span {{ b.price }} €
+
         if b.description
           div {{b.description}}
 
-  form(action='/add/', method='post')
+  form.form-inline(action='/add/', method='post')
     {% csrf_token %}
     {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')

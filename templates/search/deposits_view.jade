@@ -25,7 +25,7 @@ table.table.table-striped.table-hover
     tr
       td {{ copy.title }}
       td {{ copy.getAuthorsString }}
-      td {{ copy.editor | yesno:",pas d'éditeur"}}
+      td {{ copy.editor }}
       td {{ copy.price }} €
 
 a(href="").btn.btn-primary(title="état de dépôt", value="état de dépôt", type="submit") état de dépôt

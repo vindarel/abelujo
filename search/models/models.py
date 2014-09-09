@@ -160,6 +160,12 @@ class Card(TimeStampedModel):
             return self.sortkey
         return u', '.join([a.name for a in self.authors.all()])
 
+    def getAuthorsString(self):
+        """returns a string with the list of authors.
+        It is called from the templates so can't take any arg.
+        """
+        return "; ".join([aut.name for aut in self.authors.all()])
+
     @staticmethod
     def obj_to_list(cards):
         """Transform a list of Card objects to a python list.
@@ -186,12 +192,6 @@ class Card(TimeStampedModel):
                 "distributor": card.distributor.name if card.distributor else None
             })
         return retlist
-
-    def getAuthorsString(self):
-        """returns a string with the list of authors.
-        It is called from the templates so can't take any arg.
-        """
-        return ", ".join([aut.name for aut in self.authors.all()])
 
     @staticmethod
     def first_cards(nb, to_list=False):

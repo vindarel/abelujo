@@ -38,7 +38,12 @@ for b in book_list
             td
               span
                 b(title="{% if not collection %} collection inconnue {% endif%}") collection 
-                span(title="{% if not collection %} collection inconnue {% endif%}") {{ b.collection | yesno:",---" }}
+                span(title="{% if not b.collection %} collection inconnue {% endif%}")
+                  {% if not collection %}
+                  span ---
+                  {% else %}
+                  span {{ b.collection }}
+                  {% endif %}
             td
               {{ b.price }} €
           tr
