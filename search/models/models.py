@@ -566,8 +566,15 @@ class Deposit(TimeStampedModel):
 
     #: type of the deposit. Some people also sent their books to a
     #: library and act like a distributor.
-    DEPOSIT_TYPES_CHOICES = (("lib", "dépôt de libraire"),
-                             ("dist", "dépôt de distributeur"))
+    DEPOSIT_TYPES_CHOICES = [
+        ("Dépôt de libraire", (
+            ("lib", "dépôt de libraire"),
+            ("fix", "dépôt fixe"),
+          )),
+        ("Dépôt de distributeur", (
+            ("dist", "dépôt de distributeur"),
+        )),
+        ]
     deposit_type = models.CharField(choices=DEPOSIT_TYPES_CHOICES,
                                     default=DEPOSIT_TYPES_CHOICES[0],
                                     max_length=CHAR_LENGTH)
