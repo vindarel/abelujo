@@ -372,31 +372,12 @@ def postSearch(url):
     # The complementary information we need to return. Ean is compulsory.
     to_ret = {"ean": None,
               "collection": None}
-    EAN_LABEL = "isbn"
     COLLECTION_LABEL = u"collection"  # lower case
+    collection_id = "ctl00_PHCenter_productTop_productDetail_rpDetails_ctl03_rpLinks_ctl00_hlLabel"
 
     try:
-        for det in details:
-            if (det.span is not None and det.span.attrs is not None and
-                det.span.attrs['itemprop'] is not None):
-                itemprop = det.span.attrs["itemprop"]
-                itemtext = det.span.text.strip()
-                if itemprop == EAN_LABEL:
-                    # this is EAN13
-                    log.debug("ean found: %s" % itemtext)
-                    to_ret["ean"] = itemtext
-
-            else:
-                try:
-                    parent = det.findParent()
-                    itemprop = parent.span.text.strip().strip(":").strip().lower()
-                    if itemprop == COLLECTION_LABEL:
-                        itemtext = parent.a.text
-                        to_ret["collection"] = itemtext
-                        log.debug("postSearch: found collection: %s" % (itemtext,))
-                except Exception:
-                    pass
-
+        to_ret["ean"] = soup.find(itemprop="isbn").text
+        to_ret["collection"] = soup.find(id=collection_id).text
         return to_ret
 
     except Exception, e:
