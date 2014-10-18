@@ -30,10 +30,11 @@ for b in result_list
             td
               span
                 b éditeur 
-                for pub in b.publishers
-                  span {{ pub }}
-                  if not forloop.last
-                    span ; 
+                if b.publishers
+                    for pub in b.publishers
+                      span {{ pub }}
+                      if not forloop.last
+                        span ; 
             td
               span
                 b(title="l'ean sera téléchargé à l'enregistrement de la notice.") ean 

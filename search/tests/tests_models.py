@@ -201,7 +201,8 @@ class TestPlaceCopies(TestCase):
     def setUp(self):
         # Create a relation Card - PlaceCopies - Place
         self.place = Place(name="here", is_stand=False, can_sell=True); self.place.save()
-        self.card = Card(title="test card") ; self.card.save()
+        self.card = Card(title="test card")
+        self.card.save()
         self.nb_copies = 9
         self.pl_cop = PlaceCopies(card=self.card, place=self.place, nb=self.nb_copies).save()
         self.prefs = Preferences(default_place=self.place).save()

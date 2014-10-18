@@ -153,7 +153,9 @@ class Card(TimeStampedModel):
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
-        return u'%s, %s' % (self.title, self.authors.all()[0].name)
+        authors = self.authors.all()
+        authors = authors[0].name if authors else ""
+        return u'%s, %s' % (self.title, authors)
 
     def display_authors(self):
         if self.sortkey:
