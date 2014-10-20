@@ -1,0 +1,199 @@
+#!/bin/env python
+# -*- coding: utf-8 -*-
+
+import logging
+import os
+import sys
+import time
+
+import ods2csv2py
+# Relative imports inside a package using __main__ don't work. Need
+# a sys.path trick or a setup.py entrypoint for the script.
+common_dir = os.path.dirname(os.path.abspath(__file__))
+cdp, _ = os.path.split(common_dir)
+sys.path.append(cdp)
+from frFR.chapitre.chapitreScraper import postSearch
+from frFR.chapitre.chapitreScraper import Scraper
+
+
+"""Workflow is as follow:
+- get the list of rows from the ods file (with ods2csv2py)
+- fire a search on a datasource for each card
+- find a good matching result inside the result list
+- we return:
+  - a list of matches
+  - a list of matches but with ean not found
+  - a list of cards not found
+
+The price is the one from the ods sheet. TODO:
+"""
+
+logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
+TIMEOUT = 0.2
+
+def filterResults(cards, odsrow):
+    """:param list_of_dicts cards: list of dicts with cards informations
+    (list of authors, title, list of publishers, ean, etc.). See the
+    scrapers documentation.
+
+    returns one card.
+    """
+    card_not_found = None
+    card_no_ean    = None
+    card_found     = None
+    for card in cards:
+        if not cards:
+            card_not_found = card
+            continue
+        # check the publisher, the price, etc
+        if cardCorresponds(card, odsrow):
+            post_search = postSearch(card["details_url"])
+            for key in post_search.keys():
+                card[key] = post_search[key]
+            if not card["ean"]:
+                card_no_ean = card
+            else:
+                card_found = card
+            break
+
+    return (card_found, card_no_ean, card_not_found)
+
+def cardCorresponds(card, odsrow):
+    """check if the card found with a scraper corresponds to what was in the user's ods file.
+    """
+    return True
+
+    #: list of important rows of the user file to check. Typically,
+    # the title and the publisher. The price is questionnable because the
+    # bookshop may sell it cheaper for some reasons.
+    rows_to_check = [
+        "title",
+        "authors",  # on the ods side, they are comma-separated.
+        "publisher",
+        ]
+
+    check_price = False
+    #: messages of warnings, successes or errors: list of dicts with
+    # "level":warning, "message": "foo", "field": field
+    messages = []
+    status = True
+    for row in rows_to_check:
+        if row == "authors":
+            log.debug("warning: ensure rows are named the same (both authors with an s for instance).")
+            res, msg = check_authors(card["authors"], odsrow["authors"])
+            if msg:
+                messages.append(msg)
+            status = status and res
+        elif row == "title":
+            res, msg = check_title(card["title"], odsrow["title"])
+
+    return status, messages
+
+def check_title(from_search, from_ods):
+    """check the titles look the same.
+    Returns a tuple (status, messages).
+    """
+    return True, None
+
+def check_authors(from_search, from_ods):
+    """check if the two authors/list of authors are the same.
+    Returns a tupel (status, message dict).
+    """
+    # from_s = ", ".join([aut.lower() for aut  in from_card])
+    # print "caution: authors not checked."
+    return True, None
+
+def search_on_scraper(search_terms):
+    """Fire the search.
+
+    This method is easy to monkeypatch in unit tests.
+    """
+    return Scraper(search_terms).search()
+
+def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=search_on_scraper,
+                level="DEBUG"):
+    """
+    Look for the desired cards on remote datasources.
+
+    :param list_of_dict data: list of dict with names of columns, generally author, title, etc.
+    :parama str datasource: the scraper to use ("chapitre", "discogs", etc).
+
+    return a tuple (cards found, cards without ean, cards not found on remote sources).
+    """
+    log.setLevel(level.upper())
+    cards_not_found = []
+    cards_no_ean    = []
+    cards_found     = []
+    #: catch the names of the ods columns.
+    ODS_AUTHORS = "authors"
+    ODS_PUBLISHER = "publisher"
+    for row in odsdata:
+        search_terms = row["title"] + " " + row[ODS_AUTHORS] + row[ODS_PUBLISHER]
+        log.debug("Searching %s for '%s'..." % (datasource, search_terms))
+        cards, stacktraces = search_on_datasource(search_terms)
+        log.debug("found %s cards.\n" % len(cards))
+        if stacktraces:
+            log.debug("warning: found errors:", stacktraces)
+        if cards:
+            found, no_ean, not_found = filterResults(cards, row)
+        else:
+            cards_not_found.append(row)
+        if found:
+            log.debug("found a valid result: {}".format(found))
+            cards_found.append(found)
+        if no_ean:
+            cards_no_ean.append(no_ean)
+        if not_found:  # TODO: useless
+            cards_not_found.append(not_found)
+        time.sleep(timeout)              # be gentle with the remote server...
+
+    return (cards_found, cards_no_ean, cards_not_found)
+
+def run(odsfile, datasource, timeout=TIMEOUT):
+    cards_found = cards_no_ean = cards_not_found = None
+    to_ret = {"found": cards_found, "no_ean": None, "not_found": None,
+              "odsdata": None,
+              "messages": None,
+              "status": 0}
+    odsdata = ods2csv2py.run(odsfile)
+    if odsdata.get("status") == 1:
+        # TODO: propagate the error
+        return odsdata
+    log.debug("\n".join(res['title'] for res in odsdata["data"]))
+    log.debug("ods sheet data: %i results\n" % (len(odsdata["data"]),))
+    cards_found, cards_no_ean, cards_not_found = lookupCards(odsdata["data"], datasource=datasource, timeout=timeout)
+    # TODO: check that the total corresponds.
+    # TODO: make a list to confront the result to the ods value.
+    log.debug("\nThe following cards will be added to the database: %i results\n" % (len(cards_found),))
+    for card in cards_found:
+        log.debug("- " + card['title'])
+        log.debug("\t" , card)
+    log.debug("\nCards without ean: %i results\n" % (len(cards_no_ean),))
+    log.debug(cards_no_ean)
+    log.debug("\nCards not found: %i results\n" % (len(cards_not_found,)))
+    log.debug(cards_not_found)
+    log.debug("\nResults: %i cards found, %i without ean, %i not found" % (len(cards_found),
+                                                                       len(cards_no_ean),
+                                                                       len(cards_not_found)))
+    to_ret["found"]     = cards_found
+    to_ret["no_ean"]    = cards_no_ean
+    to_ret["not_found"] = cards_not_found
+    to_ret["odsdata"]   = odsdata
+    return to_ret
+
+def main():
+    datasource = "chapitre"
+    if len(sys.argv) > 1 and sys.argv[1]:
+        odsfile = sys.argv[1]
+        odsdata = run(odsfile, datasource, timeout=TIMEOUT)
+        if odsdata["messages"]:
+            log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
+        return odsdata["status"]
+
+    else:
+        log.debug("usage: python ods2abelujo.py odsfile.ods")
+
+if __name__ == '__main__':
+    exit(main())
