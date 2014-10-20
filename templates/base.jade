@@ -1,8 +1,18 @@
-script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js", type="text/javascript")
-{% include 'autocomplete_light/static.html' %}
-
+!!! 5
+{% load staticfiles %}
 html
   head
+    html(ng-app)
+       head
+        script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js", type="text/javascript")
+        {% include 'autocomplete_light/static.html' %}
+        link(rel="stylesheet", href='{% static "lib/bootstrap/css/bootstrap.min.css" %}')
+        script(src='{% static "lib/angular/angular.js" %}')
+
+        // example for angular:
+        //div
+          input(type="text", ng-model="yourName", placeholder="Enter a name here")
+          div Hello {% verbatim %} {{yourName}} {% endverbatim %} !
     title Abelujo
     div {% block pagetitle %} {% endblock %}
   nav.navbar.navbar-default(role="navigation")

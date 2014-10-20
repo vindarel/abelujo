@@ -15,7 +15,7 @@ This project is at its debut stage. However it is already possible to:
     search a book in your database
 -   choose how many copies you put in what place
 -   sell a book.
--   import data from a LibreOffice Calc file (.ods). See the [user documentation](doc/user/index.rst "user doc").
+-   **import data from a LibreOffice Calc file** (.ods). See the [user documentation](doc/user/index.rst "user doc").
 
 We base our work on the software specifications from the Ruche project
 (to which we particpated):
@@ -47,20 +47,22 @@ Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,
 or do the following:
 
-    sudo pip install virtualenvwrapper  # you need: sudo apt-get install python-pip
+    # you need: sudo apt-get install python-pip
+    sudo pip install virtualenvwrapper
     source venv_create.sh
 
-now your shell prompt should indicate you are in the "abelujo"
-virtualenv. To quit the virutal env, type "deactivate". To enter it,
-type "workon \<TAB\> abelujo".
+now your shell prompt should show you are in the `abelujo`
+virtualenv. To quit the virutal env, type `deactivate`. To enter it,
+type `workon \<TAB\> abelujo`.
 
 To install the dependencies, create and populate the database, run:
 
-    ./install.sh
+    make install
+    # that calls /install.sh
 
 We are done ! Now to try Abelujo, run the development server like this:
 
-    python manage.py runserver
+    make run
     # or set the port with:
     # python manage.py runserver 9876
 
@@ -71,7 +73,7 @@ Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 How to update
 -------------
 
-For now, when you update the sources (git pull), you certainly will have
+For now, when you update the sources (`git pull`), you certainly will have
 to run the installation process again. We may have updated some python
 packages and the database is very likely to change too (and we didn't
 set up some DB schema migration yet, so you'll have to delete it first,
@@ -80,28 +82,23 @@ meaning you'll loose your data).
 Development
 ===========
 
-Django project (1.6), in python (2.7).
+Django project (1.6), in python (2.7), with AngularJS (1.2)
 
 We use:
 
--   **jade** templates, which compile to html: <http://jade-lang.com/>
+-   [jade templates](http://jade-lang.com/), which compile to html.
     and pyjade for the Django integration
--   Bootstrap's CSS: <http://getbootstrap.com> and django-bootstrap3
+-   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
+-   the [AngularJS](https://angularjs.org/) MVC javascript framework.
 
-We are currently working at expanding the database (adding locations,
+We are currently working at expanding the database (adding deposits,
 distributors, …).
 
 We get our data with some webscraping when needed (discogs provides an
-api) which we do with those libraries:
+api).
 
--   requests (better than urllib)
--   selenium, if we need to interprate the javascript (sometimes needed
-    to get the price or another important information),
--   beautifulsoup, to parse the html
-
-You can have a look at the existing scrapers at search/datasources. Some
-abstraction work remains to be done. And shall we use scrapy
-<http://doc.scrapy.org/en/latest/intro/overview.html> ?
+You can have a look at the existing scrapers at [search/datasources](search/datasources/). Some
+abstraction work remains to be done. And shall we use [scrapy](http://doc.scrapy.org/en/latest/intro/overview.html) ?
 
 Load testing data
 -----------------
@@ -110,7 +107,9 @@ For the moment, we have to delete the current database if the models
 change, so we loose our data, but it is possible to load a small set
 of testing data::
 
-    ./manage.py loaddata dumpdata.json
+    make data
+    # a shortcut for
+    # ./manage.py loaddata dumpdata.json
 
 this will load a handful of Cards, Authors, Publishers and
 Baskets. There are already a default Place and Distributor.
@@ -122,5 +121,7 @@ We simply use coverage (django\_coverage is buggy).
 
 Run with:
 
-    coverage run --source='.' manage.py test search
-    coverage html  # and open: firefox htmlcov/index.html
+    make cov
+    # or:
+    # coverage run --source='.' manage.py test search
+    # coverage html  # and open: firefox htmlcov/index.html

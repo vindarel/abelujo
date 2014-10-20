@@ -36,12 +36,9 @@ We use **django-autocomplete-light**: http://django-autocomplete-light.readthedo
 The app django-ajax-selects is similar but was more difficult to setup.
 
 Another obvious solution is to set up a full featured MVC javascript
-framework, like AngularJS, but we don't want to deal with that yet.
+framework, like AngularJS, but a django app is simpler and quicker to
+set up in simple cases.
 
-We have usable forms without the need to write a line of javascript,
-and that's fine for now. We want to stay focused on the application
-logic (we know all the burden that requires the affordmentioned
-framework !).
 
 Logging
 -------
@@ -57,3 +54,19 @@ the logger `""` to catch all the undefined ones.
 
 https://docs.djangoproject.com/en/1.6/topics/logging/
 http://www.miximum.fr/an-effective-logging-strategy-with-django.html
+
+
+Why AngularJS and not JQuery/Ember/<project xxx> ?
+--------------------------------------------------
+
+[AngularJS](https://angularjs.org/) is a Model-View-Controller
+framework to build dynamic user interfaces. It does double-data
+binding at its core.
+
+Angular isn't comparable with JQuery. See the basics: <https://angularjs.org/#the-basics>
+
+Why not a simple library that does double data binding (like view.js)
+? Because we will use all the power of Angular.
+
+Ember has a similar scope. But besides technical details, it appears
+we already have significant experience with Angular.
