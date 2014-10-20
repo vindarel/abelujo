@@ -11,6 +11,9 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 -   éditer les fiches de livres,
 -   chercher un titre dans son stock et le marquer comme vendu (ce qui
     décrémente de 1 son nombre d'exemplaires).
+-   importer des données depuis un fichier LibreOffice Calc (.ods). Voir
+    la [documentation utilisateur](doc/french/index.rst "doc utilisateur").
+
 
 Nous nous basons sur les spécifications fonctionnelles du projet Ruche,
 auxquelles nous avons participé:

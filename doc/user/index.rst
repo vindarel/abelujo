@@ -34,14 +34,12 @@ Type::
     # python manage.py runscript odsimport.py --script-args yourfile.ods
 
 You will see a verbose output. The script will:
-- parse your ods file and find a list of cards with their respective
-  information,
-- for each of them, fire a query to the datasource on the title and
-  the publisher,
-- check and filter the results against your data,
-- sort the fetched data into three groups: the cards found, the ones
-  found but without ean, the ones not found;
-- ask for confirmation if it seems the two sets of data differ,
-- add the cards to Abelujo's database.
+
+* parse your ods file and find a list of cards with their respective information,
+* for each of them, fire a query to the datasource on the title and the publisher,
+* check and filter the results against your data,
+* sort the fetched data into three groups: the cards found, the ones found but without ean, the ones not found;
+* ask for confirmation if it seems the two sets of data differ,
+* add the cards to Abelujo's database.
 
 Note: you must not have the ods file open at the same time.

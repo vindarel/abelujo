@@ -13,6 +13,7 @@ This project is at its debut stage. However it is already possible to:
     search a book in your database
 -   choose how many copies you put in what place
 -   sell a book.
+-   import data from a LibreOffice Calc file (.ods). See the [user documentation](doc/user/index.rst "user doc").
 
 We base our work on the software specifications from the Ruche project
 (to which we particpated):

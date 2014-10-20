@@ -17,6 +17,7 @@ Usage::
     # python manage.py runscript odsimport.py --script-args yourfile.ods
 
 Le script va:
+
 - lire le fichier ods et récupérer la liste des notices,
 - pour chacune, lancer une recherche web (par défaut sur chapitre.com),
 - vérifier la concordance des résultats de recherche avec vos données,
