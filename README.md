@@ -1,6 +1,8 @@
 Abelujo - free software to manage small and independent book (and records) shops.
 =================================================================================
 
+français: [Lisez-moi](README_fr.md "README en français")
+
 This project is at its debut stage. However it is already possible to:
 
 -   look up for **books**, either by keywords or by isbn/ean. *For now
