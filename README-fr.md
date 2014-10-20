@@ -27,6 +27,8 @@ commençons correspondra à vos besoins.
 Installation et développement
 =============================
 
-Nous vous laissons le soin de lire les instructions en anglais !
+Nous vous laissons le soin de [lire les instructions en anglais](README.md "").
+
+Ci-dessous une capture d'écran de la recherche dans la base de données:
 
 ![chercher une notice](doc/abelujo-collection.png)
