@@ -86,19 +86,22 @@ Django project (1.6), in python (2.7), with AngularJS (1.2)
 
 We use:
 
--   [jade templates](http://jade-lang.com/), which compile to html.
+-   [jade templates](http://jade-lang.com/), which compile to html,
     and pyjade for the Django integration
 -   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
--   the [AngularJS](https://angularjs.org/) MVC javascript framework.
+-   the [AngularJS](https://angularjs.org/) javascript framework.
 
 We are currently working at expanding the database (adding deposits,
 distributors, …).
 
-We get our data with some webscraping when needed (discogs provides an
+We get the data about books with some webscraping (discogs provides an
 api).
 
 You can have a look at the existing scrapers at [search/datasources](search/datasources/). Some
 abstraction work remains to be done. And shall we use [scrapy](http://doc.scrapy.org/en/latest/intro/overview.html) ?
+
+You are invited to read the [developer documentation](doc/dev/index.rst).
+
 
 Load testing data
 -----------------
@@ -114,14 +117,13 @@ of testing data::
 this will load a handful of Cards, Authors, Publishers and
 Baskets. There are already a default Place and Distributor.
 
-Tests coverage
---------------
+Troubleshooting
+---------------
 
-We simply use coverage (django\_coverage is buggy).
+If you get:
 
-Run with:
+    OperationalError: no such column: search_card.card_type_id
 
-    make cov
-    # or:
-    # coverage run --source='.' manage.py test search
-    # coverage html  # and open: firefox htmlcov/index.html
+it is probably because you pulled the sources and didn't update your
+DB. As explained, at the moment you need to delete your current DB and
+run `make install` again.

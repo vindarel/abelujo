@@ -70,3 +70,16 @@ Why not a simple library that does double data binding (like view.js)
 
 Ember has a similar scope. But besides technical details, it appears
 we already have significant experience with Angular.
+
+
+Tests coverage
+--------------
+
+We simply use coverage (django\_coverage is buggy).
+
+Run with:
+
+    make cov
+    # or:
+    # coverage run --source='.' manage.py test search
+    # coverage html  # and open: firefox htmlcov/index.html
