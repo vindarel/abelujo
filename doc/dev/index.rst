@@ -1,6 +1,8 @@
 Developer documentation
 =======================
 
+You'll find here some explanations about our technical choices.
+
 Intermediate tables
 -------------------
 
@@ -31,7 +33,7 @@ We want some sort of autocompletion: we start typing a part of the
 title of the form and we are displayed a nice list of matching
 results.
 
-We use **django-autocomplete-light**: http://django-autocomplete-light.readthedocs.org/en/latest/
+We use `django-autocomplete-light <http://django-autocomplete-light.readthedocs.org/en/latest/>`_.
 
 The app django-ajax-selects is similar but was more difficult to setup.
 
@@ -53,17 +55,18 @@ default is to a file). In `settings.py`, see the handler `console` and
 the logger `""` to catch all the undefined ones.
 
 https://docs.djangoproject.com/en/1.6/topics/logging/
+
 http://www.miximum.fr/an-effective-logging-strategy-with-django.html
 
 
 Why AngularJS and not JQuery/Ember/<project xxx> ?
 --------------------------------------------------
 
-[AngularJS](https://angularjs.org/) is a Model-View-Controller
+`AngularJS <https://angularjs.org/>`_ is a Model-View-Controller
 framework to build dynamic user interfaces. It does double-data
 binding at its core.
 
-Angular isn't comparable with JQuery. See the basics: <https://angularjs.org/#the-basics>
+Angular isn't comparable with JQuery. See the basics: https://angularjs.org/#the-basics
 
 Why not a simple library that does double data binding (like view.js)
 ? Because we will use all the power of Angular.
@@ -77,7 +80,7 @@ Tests coverage
 
 We simply use coverage (django\_coverage is buggy).
 
-Run with:
+Run with::
 
     make cov
     # or:
