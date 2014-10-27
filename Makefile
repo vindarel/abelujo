@@ -3,7 +3,7 @@
 # Makefile: because we need more elaborate commands than manage.py
 
 # The target names are not a file produced by the commands of that target. Always out of date.
-.PHONY: clean e2e unit test data cov odsimport
+.PHONY: clean e2e unit test data cov odsimport doc
 
 # Install in current directory
 install:
@@ -50,6 +50,9 @@ cov:
 src = ""
 odsimport:
 	python manage.py runscript odsimport --script-args $(src)
+
+doc:
+	@cd doc/dev/ && make html
 
 clean:
 	find . -name "*.pyc" -exec rm {} +
