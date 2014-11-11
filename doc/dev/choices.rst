@@ -11,10 +11,14 @@ binding at its core.
 Angular isn't comparable with JQuery. See the basics: https://angularjs.org/#the-basics
 
 Why not a simple library that does double data binding (like view.js)
-? Because we will use all the power of Angular.
+? Because we will use all the power of Angular (we need js functions
+as controllers and the like).
 
 Ember has a similar scope. But besides technical details, it appears
 we already have significant experience with Angular.
+
+Read our Angular crash course to learn how to add Angular to a Django
+project, how to build everything, and how everything works.
 
 Npm
 ---

@@ -3,11 +3,26 @@
 # Makefile: because we need more elaborate commands than manage.py
 
 # The target names are not a file produced by the commands of that target. Always out of date.
-.PHONY: clean e2e unit test data cov odsimport doc
+.PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp
 
 # Install in current directory
-install:
+install_script:
 	./install.sh
+
+# Install everything: Django requirements, the DB, node packages, and
+# build the app.
+install:  install_script npm gulp
+
+# Install npm and bower packages
+npm:
+	@echo "Installing Node and bower packages..."
+	npm install
+	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
+	@echo "sudo apt-get install nodejs-legacy"
+
+# Build static files
+gulp:
+	gulp
 
 # Run the dev server
 run:

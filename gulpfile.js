@@ -4,7 +4,7 @@ var args   = require('yargs').argv;
 
 // Include Our Plugins
 var less = require('gulp-less');
-var karma = require('gulp-karma');
+// var karma = require('gulp-karma');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');

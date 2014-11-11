@@ -7,6 +7,7 @@ Contents:
    :maxdepth: 2
 
    choices.rst
+   angular-crash-course
    abelujo-dev.rst
    tuto.rst
 

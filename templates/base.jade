@@ -15,23 +15,24 @@
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 !!! 5
 {% load staticfiles %}
-html
+html(ng-app="abelujo")
   head
-    html(ng-app)
-       head
-        script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js", type="text/javascript")
-        {% include 'autocomplete_light/static.html' %}
-        link(rel="stylesheet", href='{% static "lib/bootstrap/css/bootstrap.min.css" %}')
-        script(src='{% static "lib/angular/angular.js" %}')
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js", type="text/javascript")
+    {% include 'autocomplete_light/static.html' %}
+    link(rel="stylesheet", href='{% static "lib/bootstrap/css/bootstrap.min.css" %}')
+    script(type='text/javascript', src="{% static 'underscore/underscore.js' %}")
+    script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
+    script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
 
-        // example for angular:
-        //div
-          input(type="text", ng-model="yourName", placeholder="Enter a name here")
-          div Hello {% verbatim %} {{yourName}} {% endverbatim %} !
+    // example for angular:
+    // div(ng-controller="IntroController")
+    div
+      input(type="text", ng-model="yourName", placeholder="Enter a name here")
+      div Hello {% verbatim %} {{yourName}} {% endverbatim %} !
     title Abelujo
     div {% block pagetitle %} {% endblock %}
-  nav.navbar.navbar-default(role="navigation")
-    body.container
+  body.container
+    nav.navbar.navbar-default(role="navigation")
       div.navbar-collapse
         ul.nav.navbar-nav
           li.active(href="#") Abelujo
