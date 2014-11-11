@@ -168,9 +168,14 @@ class Card(TimeStampedModel):
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
+        MAX_LENGTH = 15
         authors = self.authors.all()
         authors = authors[0].name if authors else ""
-        return u'%s, %s' % (self.title, authors)
+        publishers = ", ".join([pub.name for pub in self.publishers.all()])
+        if len(publishers) > MAX_LENGTH:
+            publishers = publishers[0:MAX_LENGTH] + "..."
+        distributor = self.distributor.name if self.distributor else "aucun"
+        return u'%s, %s, éditeur: %s, distributeur: %s' % (self.title, authors, publishers, distributor)
 
     def display_authors(self):
         if self.sortkey:
