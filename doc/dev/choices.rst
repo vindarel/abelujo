@@ -15,3 +15,69 @@ Why not a simple library that does double data binding (like view.js)
 
 Ember has a similar scope. But besides technical details, it appears
 we already have significant experience with Angular.
+
+Npm
+---
+
+The Node Package Manager. Install dependencies listed in
+`package.json` (it must be a valid json: no commentaries, beware
+of trailing commas) and execute post-install actions.
+
+Run::
+
+    npm install
+
+It installs `gulp`, `bower`, etc.
+
+Post-actions:
+
+- `bower install` (reading bower.json list of dependencies).
+
+Todo: enable js tests: https://github.com/bearstech/cookiecutter-django-bootstrap-angular/blob/master/{{cookiecutter.project_name}}/package.json
+
+
+Bower
+-----
+
+`Bower <http://bower.io/>`_ is a package manager (of js libraries) optimized for the
+front-end. It uses a flat dependency-tree, requiring only one version
+for each package. It requires nodejs, npm and git.
+
+`django-bower <https://pypi.python.org/pypi/django-bower>`_ leverages
+some actions to install bower packages.
+
+Given some configuration into `settings.py`, it provides a management
+command to install packages in ``static/bower_components/``.::
+
+    ./manage.py bower install
+
+The list of requirements lies in ``settings.py`` into the variable ``BOWER_INSTALLED_APPS``.
+
+Then we can add scripts in templates like:::
+
+    {% load static %}
+    <script type="text/javascript" src='{% static 'jquery/jquery.js' %}'></script>
+
+django-bower VS gulpfile
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+to decide TODO:
+
+Gulp
+----
+
+`Gulp <https://github.com/gulpjs/gulp>`_ defines itself as the
+streaming build system. We configure actions to:
+
+- take all the installed JS libs in bower_components and concatenate them in one file;
+- take all our own JS code and pass it through any transformer/code
+  checker (linter) needed (coffee, jshint);
+- concatenate all our JS code in one big JS file, so than we simply
+  include one file in our templates and we have included our Angular app;
+- do the same with custom CSS.
+
+The defined actions are (see `gulpfile.js`):
+
+- `gulp` by default runs `less` and `concat`
+- `gulp run`
+- `gulp watch`: auto browser reload.

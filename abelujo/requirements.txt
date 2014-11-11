@@ -37,3 +37,5 @@ django-autocomplete-light # ajax autocompletion without writing javascript
 
 ### utils
 toolz                   # pure, lazy, composable functional programming
+
+django-bower            # bower front-end packages management.
