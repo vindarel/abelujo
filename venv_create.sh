@@ -21,4 +21,4 @@
 export WORKON_HOME=~/.venvs
 [[ -d $WORKON_HOME ]] || mkdir -p $WORKON_HOME
 source /usr/local/bin/virtualenvwrapper.sh
-mkvirtualenv abelujo-ci
+mkvirtualenv abelujo
