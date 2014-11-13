@@ -24,18 +24,18 @@ Npm
 ---
 
 The Node Package Manager. Install dependencies listed in
-`package.json` (it must be a valid json: no commentaries, beware
+``package.json`` (it must be a valid json: no commentaries, beware
 of trailing commas) and execute post-install actions.
 
 Run::
 
     npm install
 
-It installs `gulp`, `bower`, etc.
+It installs ``gulp``, ``bower``, etc.
 
 Post-actions:
 
-- `bower install` (reading bower.json list of dependencies).
+- ``bower install`` (reading bower.json list of dependencies).
 
 Todo: enable js tests: https://github.com/bearstech/cookiecutter-django-bootstrap-angular/blob/master/{{cookiecutter.project_name}}/package.json
 
@@ -50,7 +50,7 @@ for each package. It requires nodejs, npm and git.
 `django-bower <https://pypi.python.org/pypi/django-bower>`_ leverages
 some actions to install bower packages.
 
-Given some configuration into `settings.py`, it provides a management
+Given some configuration into ``settings.py``, it provides a management
 command to install packages in ``static/bower_components/``.::
 
     ./manage.py bower install
@@ -80,8 +80,40 @@ streaming build system. We configure actions to:
   include one file in our templates and we have included our Angular app;
 - do the same with custom CSS.
 
-The defined actions are (see `gulpfile.js`):
+The defined actions are (see ``gulpfile.js``):
 
-- `gulp` by default runs `less` and `concat`
-- `gulp run`
-- `gulp watch`: auto browser reload.
+- ``gulp`` by default runs ``less`` and ``concat``
+- ``gulp run``
+- ``gulp watch``: auto browser reload.
+
+RapydScript
+-----------
+
+A browser understands javascript, so the front end of a web app must
+be written in js. However, it is a very unconsistent language with
+many pitfalls, and a bit of a pain to write because of its many
+parenthesis and brackets, especially for a python developer.
+
+Many alternatives exist and `RapydScript
+<https://github.com/atsepkov/RapydScript>`_ is one of them, with a
+little community at the moment. It is a little language that
+transpiles to javascript. It solves many inconsistencies of js,
+doesn't get in our way (it `is` javascript after all) and adds a few
+more features. We'll give it a try because **RapydScript is very, very
+pythonic**. It is not python, there are a few differences, but it does
+reduce the gap and context-switching when editing python and
+rapydscript files (pyj).
+
+With gulp, we build both the js and pyj, in separate target files. We
+use our `gulp-rapyd <https://gitlab.com/vindarel/gulp-rapyd>`_
+package. To load the js generated from the pyj, choose it in
+``base.jade``.
+
+
+Why not CoffeeScript ?
+~~~~~~~~~~~~~~~~~~~~~~
+
+CoffeeScript is a popular little language that transpiles to
+javascript, just like RapydScript, but it ressembles more of Ruby,
+with some weird syntactic sugar that is not very explicit. We'll give
+the pythonic alternative our preference.

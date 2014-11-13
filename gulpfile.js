@@ -1,8 +1,10 @@
 // Include gulp
 var gulp = require('gulp');
-var args   = require('yargs').argv;
 
 // Include Our Plugins
+var rapyd = require("gulp-rapyd");  // install with npm install path/to/project or http/gitlab/...
+var args   = require('yargs').argv;
+var gutil = require('gulp-util');
 var less = require('gulp-less');
 // var karma = require('gulp-karma');
 var concat = require('gulp-concat');
@@ -40,6 +42,20 @@ gulp.task('less', function() {
     return gulp.src('static/css/*.less')
         .pipe(less())
         .pipe(gulp.dest('static/css'));
+});
+
+gulp.task('compile:rapyd', function() {
+  gulp.src('static/js/app/**/*.pyj')
+    .pipe(rapyd({bare: true}).on('error', gutil.log))
+    .pipe(gulp.dest('static/js/build/rapyd/'))
+});
+
+// Concatenate pyj compiled files
+gulp.task('concatjs:rapyd', function () {
+  return gulp.src("static/js/build/rapyd/**/*js")
+    .pipe(concat('rapyd.js'))
+    // .pipe(uglify())
+    .pipe(gulp.dest('static/js/build'));
 });
 
 // Concatenate js vendor files
@@ -105,3 +121,6 @@ gulp.task('watch', function() {
 // Default Task
 // gulp.task('default', ['less', 'test', 'concat']);
 gulp.task('default', ['less', 'concat']);
+
+// compile only RapydScript files
+gulp.task('rapyd', ['less', 'compile:rapyd', 'concatjs:rapyd']);

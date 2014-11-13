@@ -49,6 +49,26 @@ This will add cards, publishers and everything to the database so than
 you can test it for real.
 
 
+Try out RapydScript
+-------------------
+
+First install RapydScript:::
+
+    npm install rapydscript
+
+Now to compile RapydScript files you could do it manually, but to do
+it with gulp you need the ``gulp-rapyd`` extension. Install it with::
+
+    npm install git://github.com/vindarel/gulp-rapyd
+
+Now you can run ``gulp rapyd``. This will compile all ``pyj`` files
+found in ``static/js/app/`` and concatenate them in
+``static/js/build/rapyd.js``.
+
+Remember to change the imported
+scripts in ``base.jade`` (see the line importing `rapyd.js`).
+
+
 Tests coverage
 --------------
 

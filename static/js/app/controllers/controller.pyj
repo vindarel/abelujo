@@ -1,0 +1,3 @@
+angular.module('abelujo.controllers', []).controller('IntroController', ['$scope', def ($scope):
+      $scope.yourName = "from your Angular app with RapydScript";
+])
