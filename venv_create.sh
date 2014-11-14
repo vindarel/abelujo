@@ -18,7 +18,9 @@
 # Create and activate a virtualenv
 # http://virtualenvwrapper.readthedocs.org/en/latest/
 
+# if no argument given, set the env name.
+VENV_NAME=${1:-abelujo}
 export WORKON_HOME=~/.venvs
 [[ -d $WORKON_HOME ]] || mkdir -p $WORKON_HOME
 source /usr/local/bin/virtualenvwrapper.sh
-mkvirtualenv abelujo
+mkvirtualenv $VENV_NAME
