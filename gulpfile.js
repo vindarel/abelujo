@@ -53,7 +53,7 @@ gulp.task('compile:rapyd', function() {
 // Concatenate pyj compiled files
 gulp.task('concatjs:rapyd', function () {
   return gulp.src("static/js/build/rapyd/**/*js")
-    .pipe(concat('rapyd.js'))
+    .pipe(concat('abelujo.js'))
     // .pipe(uglify())
     .pipe(gulp.dest('static/js/build'));
 });
