@@ -13,14 +13,14 @@ var jshint = require('gulp-jshint');
 var bg = require("gulp-bg");
 
 var vendorJsFiles = [
-  // 'static/bower_components/jquery/dist/jquery.min.js',
-  // 'static/bower_components/jquery.cookie/jquery.cookie.js',
-  'static/bower_components/angular/angular.min.js',
+  // 'static/bower_components/jquery/jquery.min.js', // load separately and first (needed by autocomplete_light and django_bootstrap).
+  'static/bower_components/angularjs/angular.min.js',
   'static/bower_components/angular-resource/angular-resource.min.js',
   'static/bower_components/angular-route/angular-route.min.js',
   'static/bower_components/angular-sanitize/angular-sanitize.min.js',
   'static/bower_components/angular-cookies/angular-cookies.min.js',
   'static/bower_components/angular-ui-router/release/angular-ui-router.min.js',
+  'static/bower_components/bootstrap/**/*.js',
 ];
 
 var appFiles = [
