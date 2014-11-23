@@ -17,7 +17,7 @@
 {% load staticfiles %}
 html(ng-app="abelujo")
   head
-    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js", type="text/javascript")
+    script(type='text/javascript', src="{% static 'bower_components/jquery/jquery.js' %}") // load jquery before autocomplete_light and django_bootstrap.
     {% include 'autocomplete_light/static.html' %}
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")

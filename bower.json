@@ -8,7 +8,7 @@
         "angular-sanitize": "latest",
         "angular-ui-router": "latest",
         "bootstrap": "3.3",
-        "font-awesome": "latest"
+        "jquery"   : "~1.9"
     },
     "description": "abelujo",
     "ignore": [
