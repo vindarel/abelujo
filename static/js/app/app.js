@@ -9,6 +9,9 @@ angular.module('abelujo', [
     'ngResource',
     'ngSanitize',
     'ui.router',
+    'ui.bootstrap',
+
+    // application level:
     'abelujo.filters',
     'abelujo.services',
     'abelujo.directives',

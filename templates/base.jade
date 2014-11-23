@@ -21,12 +21,11 @@ html(ng-app="abelujo")
     {% include 'autocomplete_light/static.html' %}
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
-
     // example for angular:
     // div(ng-controller="IntroController")
     div
-      input(type="text", ng-model="yourName", placeholder="Enter a name here")
-      div Hello {% verbatim %} {{yourName}} {% endverbatim %} !
+      input.form-control(type='text', ng-model='{% verbatim %} selected {% endverbatim %}', typeahead='{% verbatim %} state for state in states | filter:$viewValue  {% endverbatim %}')
+
     title Abelujo
     div {% block pagetitle %} {% endblock %}
   body.container
