@@ -2,7 +2,7 @@
 var gulp = require('gulp');
 
 // Include Our Plugins
-var rapyd = require("gulp-rapyd");  // install with npm install path/to/project or http/gitlab/...
+var rapyd = require("gulp-rapyd");
 var args   = require('yargs').argv;
 var gutil = require('gulp-util');
 var less = require('gulp-less');

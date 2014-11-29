@@ -10,6 +10,7 @@
         "gulp-karma": "~0.0.4",
         "gulp-less": "~1.2.3",
         "gulp-uglify": "~0.2.1",
+        "gulp-util": "~3.0",
         "http-server": "~0.6.1",
         "karma": "~0.10",
         "karma-phantomjs-launcher": "~0.1",
