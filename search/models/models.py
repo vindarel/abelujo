@@ -71,6 +71,11 @@ class Distributor(TimeStampedModel):
         """
         return Deposit.objects.order_by("name")
 
+    @staticmethod
+    def search(query=None):
+        if not query:
+            return Distributor.objects.all()
+
 
 class Publisher (models.Model):
     """The publisher of the card.
@@ -194,6 +199,7 @@ class Card(TimeStampedModel):
 
         Used to save a search result in the session, which needs a
         serializable object.
+        TODO: https://docs.djangoproject.com/en/1.6/topics/serialization/
         """
 
         retlist = []
@@ -225,7 +231,7 @@ class Card(TimeStampedModel):
         return ret
 
     @staticmethod
-    def search(q, to_list=False):
+    def search(q, to_list=False, distributor=None):
         """Search a card on its title and its authors' names.
 
         q: a list of key words
@@ -240,6 +246,9 @@ class Card(TimeStampedModel):
         """
         cards = Card.objects.filter(Q(title__icontains=q) |
                                     Q(authors__name__icontains=q))
+        if distributor and cards:
+            cards = cards.filter(distributor__name__exact=distributor)
+
         if to_list:
             cards = Card.obj_to_list(cards)
         return cards

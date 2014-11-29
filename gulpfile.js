@@ -22,6 +22,7 @@ var vendorJsFiles = [
   'static/bower_components/angular-sanitize/angular-sanitize.min.js',
   'static/bower_components/angular-cookies/angular-cookies.min.js',
   'static/bower_components/angular-ui-router/release/angular-ui-router.min.js',
+  'static/bower_components/underscore/underscore-min.js',
   // 'static/bower_components/bootstrap/**/*.js',
 ];
 
@@ -71,8 +72,8 @@ gulp.task('concatjs:vendor', function () {
 // Concatenate js app files
 gulp.task('concatjs:app', function () {
   return gulp.src(appFiles)
-    // .pipe(jshint('.jshintrc'))
-    // .pipe(jshint.reporter('default'))
+    .pipe(jshint('.jshintrc'))
+    .pipe(jshint.reporter('default'))
     .pipe(concat('abelujo.js'))
     // .pipe(uglify())
     .pipe(gulp.dest('static/js/build'));

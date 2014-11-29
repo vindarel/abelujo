@@ -9,7 +9,8 @@
         "angular-sanitize": "latest",
         "angular-ui-router": "latest",
         "bootstrap": "3.3",
-        "jquery"   : "~1.9"
+        "jquery"   : "~1.9",
+        "underscore": "latest"
     },
     "description": "abelujo",
     "ignore": [

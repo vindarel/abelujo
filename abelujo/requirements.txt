@@ -31,9 +31,11 @@ requests_cache          # set up a cache in 2 loc
 beautifulsoup4
 
 ### Django extensions
-django_extensions==1.3.3# more useful commands to manage.py (shell_plus)
-Werkzeug                # runserver_plus: richer tracebacks and inline console
+django_extensions==1.3.3  # more useful commands to manage.py (shell_plus)
+Werkzeug                  # runserver_plus: richer tracebacks and inline console
 django-autocomplete-light # ajax autocompletion without writing javascript
+django-angular            # utilities to integrate django and angular
+                          # (integrate forms, csrf protection, share templates,...)
 
 ### utils
 toolz                   # pure, lazy, composable functional programming

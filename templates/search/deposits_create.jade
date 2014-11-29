@@ -22,6 +22,23 @@
 {% bootstrap_javascript %}
 
 h3 Nouveau dépôt:
+div(ng-controller="IntroController")
+
+  // form(action='/api/distributors', method='post')
+  form(method='post')
+      select.form-control(ng-model="distributor", ng-options='{% verbatim %}dist for dist in dist_list{% endverbatim %}')
+        option(value="") ---
+      div
+        span Cherchez des notices
+        span(ng-show="distributor") dont le distributeur est {% verbatim %} {{ distributor }} {% endverbatim %}:
+      input.nullable.form-control(type='text', typeahead-loading="loadingCards", ng-model='{% verbatim %} copy_selected {% endverbatim %}', typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}', typeahead-min-length="3", typeahead-on-select="add_selected_card($item)")
+      i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
+      ul.list-group(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
+        li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
+          i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)")
+
+      input.btn.btn-primary(type="submit", value="Enregistrer", ng-click="addDeposit()")
+
 form(action='/deposits/create/', method='post')
   {% csrf_token %}
   {% bootstrap_form DepositForm %}

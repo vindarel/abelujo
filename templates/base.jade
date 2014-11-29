@@ -15,17 +15,17 @@
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 !!! 5
 {% load staticfiles %}
+
 html(ng-app="abelujo")
   head
     script(type='text/javascript', src="{% static 'bower_components/jquery/jquery.js' %}") // load jquery before autocomplete_light and django_bootstrap.
     {% include 'autocomplete_light/static.html' %}
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
-    // example for angular:
-    // div(ng-controller="IntroController")
-    div
-      input.form-control(type='text', ng-model='{% verbatim %} selected {% endverbatim %}', typeahead='{% verbatim %} state for state in states | filter:$viewValue  {% endverbatim %}')
 
+    // example for angular:
+    // div
+    div(ng-controller="IntroController")
     title Abelujo
     div {% block pagetitle %} {% endblock %}
   body.container
