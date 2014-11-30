@@ -101,13 +101,16 @@ transpiles to javascript. It solves many inconsistencies of js,
 doesn't get in our way (it `is` javascript after all) and adds a few
 more features. We'll give it a try because **RapydScript is very, very
 pythonic**. It is not python, there are a few differences, but it does
-reduce the gap and context-switching when editing python and
-rapydscript files (pyj).
+reduce the gap and context-switching when editing backend (py) and
+frontend files (pyj).
 
-With gulp, we build both the js and pyj, in separate target files. We
-use our `gulp-rapyd <https://gitlab.com/vindarel/gulp-rapyd>`_
-package. To load the js generated from the pyj, choose it in
-``base.jade``.
+We use our `gulp-rapyd <https://gitlab.com/vindarel/gulp-rapyd>`_
+package to build the rapydscript files.
+
+A big drawback at the moment is the lack of tools. We only found a
+decent `editing mode
+<https://github.com/tgienger/language-rapydscript>`_ for the Atom
+editor :/
 
 
 Why not CoffeeScript ?
