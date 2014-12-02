@@ -8,6 +8,18 @@ angular.module('abelujo.controllers', [])
       $scope.cards_selected = [];
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
+      //TODO: use django-angular to limit code duplication.
+      $scope.deposit_types = [
+          {name:"depôt fixe", target:"dépôt de libraire"},
+          {name:"depôt libraire", target:"dépôt de distributeur"},
+          {name:"distributeur", target:"dépôt de distributeur"}
+      ];
+
+      $scope.deposit_type = $scope.deposit_types[0];
+      $scope.deposit_name = undefined;
+      $scope.initial_nb = 1;
+      $scope.minimal_nb = 1;
+      $scope.auto_command = undefined;
 
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
@@ -43,11 +55,14 @@ angular.module('abelujo.controllers', [])
           if ($scope.cards_selected.length > 0) {
               cards_id = _.map($scope.cards_selected, function(card) {
                   return card.id;
-              })
+              });
           }
           var params = {"cards_id": cards_id,
                         "distributor_name": $scope.distributor,
-                        "deposit_name": $scope.deposit,
+                        "name": $scope.deposit_name,
+                        "initial_nb": $scope.initial_nb,
+                        "minimal_nb": $scope.minimal_nb,
+                        "auto_command": $scope.auto_command,
                        };
           // needed for Django to process the params to its request.POST dict.
           $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
