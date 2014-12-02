@@ -29,7 +29,6 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
-import autocomplete_light
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
 from models import Basket
@@ -108,7 +107,6 @@ class DepositForm(forms.ModelForm):
     """Create a new deposit.
     """
     copies = forms.ModelMultipleChoiceField(Card.objects.all(),
-                                            widget=autocomplete_light.MultipleChoiceWidget("CardAutocomplete"),
                                             cache_choices=True,
                                             required=False)
     class Meta:

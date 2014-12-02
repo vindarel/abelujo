@@ -58,10 +58,5 @@ div(ng-controller="IntroController")
       // input.btn.btn-primary(type="submit", value="Enregistrer", ng-click="addDeposit()")
       input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
 
-form(action='/deposits/create/', method='post')
-  {% csrf_token %}
-  {% bootstrap_form DepositForm %}
-  input.btn.btn-primary(type="submit", value="Enregistrer")
-
 
 {% endblock content %}

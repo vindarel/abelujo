@@ -19,16 +19,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
-import autocomplete_light
 from search.views import depositsListView
-
-autocomplete_light.autodiscover()  # before importing the admin.
-
-admin.autodiscover()
 
 #TODO: move to the right app
 urlpatterns = patterns('',
-                       url(r'^autocomplete/', include('autocomplete_light.urls')),
                        url(r'^$', RedirectView.as_view(url='search/')),
                        url(r'^search/$', 'search.views.index', name="card_index"),
                        url(r'^search$', 'search.views.search', name="card_search"),
