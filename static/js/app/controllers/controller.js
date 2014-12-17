@@ -96,4 +96,24 @@ angular.module('abelujo.controllers', [])
           $scope.cards_selected.splice(index_to_rm, 1);
       };
 
+      $scope.reset_card_list_following_dist = function(dist_name){
+          // rather on-select ?
+          //TODO: don't rm card if good dist.
+          $scope.cards_selected = [];
+      };
+
+      $scope.closeAlert = function(index) {
+          $scope.messages.splice(index, 1);
+      };
+
+      // Watch the change of distributor: we would like to filter out
+      // the cards that don't have the right dist.
+      $scope.$watch("distributor", function(){
+          $scope.cards_selected = _.map($scope.cards_selected, function(card){
+              // But we don't have access to the card's details (distributor.name).
+              return card;
+          });
+          // So let's just erase the card list.
+          $scope.cards_selected = [];
+      });
   }]);
