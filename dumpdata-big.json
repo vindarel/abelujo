@@ -1,0 +1,2607 @@
+[
+    {
+        "fields": {
+            "app_label": "auth",
+            "model": "permission",
+            "name": "permission"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "app_label": "auth",
+            "model": "group",
+            "name": "group"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "app_label": "auth",
+            "model": "user",
+            "name": "user"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "app_label": "contenttypes",
+            "model": "contenttype",
+            "name": "content type"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "app_label": "sessions",
+            "model": "session",
+            "name": "session"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "app_label": "sites",
+            "model": "site",
+            "name": "site"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "app_label": "admin",
+            "model": "logentry",
+            "name": "log entry"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "author",
+            "name": "author"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "distributor",
+            "name": "distributor"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "publisher",
+            "name": "publisher"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 10
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "collection",
+            "name": "collection"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 11
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "cardtype",
+            "name": "card type"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 12
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "card",
+            "name": "card"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 13
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "placecopies",
+            "name": "place copies"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "place",
+            "name": "place"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "preferences",
+            "name": "preferences"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "basketcopies",
+            "name": "basket copies"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "basket",
+            "name": "basket"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "baskettype",
+            "name": "basket type"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 19
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "depositcopies",
+            "name": "deposit copies"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 20
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "deposit",
+            "name": "deposit"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 21
+    },
+    {
+        "fields": {
+            "app_label": "search",
+            "model": "address",
+            "name": "address"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 22
+    },
+    {
+        "fields": {
+            "domain": "example.com",
+            "name": "example.com"
+        },
+        "model": "sites.site",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:32.327Z",
+            "modified": "2014-10-15T09:37:32.327Z",
+            "name": "Chambat, Gregory"
+        },
+        "model": "search.author",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:32.433Z",
+            "modified": "2014-10-15T09:37:32.433Z",
+            "name": "Biberfeld, Laurence"
+        },
+        "model": "search.author",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:33.481Z",
+            "modified": "2014-10-15T09:37:33.481Z",
+            "name": "Daniel Gu\u00e9rin"
+        },
+        "model": "search.author",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:34.409Z",
+            "modified": "2014-10-15T09:37:34.409Z",
+            "name": "G. Leroux"
+        },
+        "model": "search.author",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:35.439Z",
+            "modified": "2014-10-15T09:37:35.439Z",
+            "name": "Jean-Pierre Biondi"
+        },
+        "model": "search.author",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:36.468Z",
+            "modified": "2014-10-15T09:37:36.468Z",
+            "name": "London, Jack"
+        },
+        "model": "search.author",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:36.576Z",
+            "modified": "2014-10-15T09:37:36.576Z",
+            "name": "Tanxxx"
+        },
+        "model": "search.author",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:37.473Z",
+            "modified": "2014-10-15T09:37:37.473Z",
+            "name": "John Holloway"
+        },
+        "model": "search.author",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:38.410Z",
+            "modified": "2014-10-15T09:37:38.410Z",
+            "name": "Pierre T\u00e9vanian"
+        },
+        "model": "search.author",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:39.299Z",
+            "modified": "2014-10-15T09:37:39.299Z",
+            "name": "Gleyse, Romualo"
+        },
+        "model": "search.author",
+        "pk": 10
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:40.386Z",
+            "modified": "2014-10-15T09:37:40.386Z",
+            "name": "Estebaranz/jtxo"
+        },
+        "model": "search.author",
+        "pk": 11
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:41.323Z",
+            "modified": "2014-10-15T09:37:41.323Z",
+            "name": "Vaneigem, Raoul"
+        },
+        "model": "search.author",
+        "pk": 12
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:41.449Z",
+            "modified": "2014-10-15T09:37:41.449Z",
+            "name": "Dupuis, Jules-Francois"
+        },
+        "model": "search.author",
+        "pk": 13
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:42.511Z",
+            "modified": "2014-10-15T09:37:42.511Z",
+            "name": "Maurice Rajsfus"
+        },
+        "model": "search.author",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:43.591Z",
+            "modified": "2014-10-15T09:37:43.591Z",
+            "name": "Paul Roussenq"
+        },
+        "model": "search.author",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:44.612Z",
+            "modified": "2014-10-15T09:37:44.612Z",
+            "name": "FOURNIER ERIC"
+        },
+        "model": "search.author",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:45.657Z",
+            "modified": "2014-10-15T09:37:45.657Z",
+            "name": "Fournier, Eric"
+        },
+        "model": "search.author",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:46.554Z",
+            "modified": "2014-10-15T09:37:46.554Z",
+            "name": "Thierry Pelletier"
+        },
+        "model": "search.author",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:47.524Z",
+            "modified": "2014-10-15T09:37:47.524Z",
+            "name": "Claude Guillon"
+        },
+        "model": "search.author",
+        "pk": 19
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:48.545Z",
+            "modified": "2014-10-15T09:37:48.545Z",
+            "name": "Dieudonne, Eugene"
+        },
+        "model": "search.author",
+        "pk": 20
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:48.697Z",
+            "modified": "2014-10-15T09:37:48.697Z",
+            "name": "Guitard, Thierry"
+        },
+        "model": "search.author",
+        "pk": 21
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:49.825Z",
+            "modified": "2014-10-15T09:37:49.825Z",
+            "name": "Jack London"
+        },
+        "model": "search.author",
+        "pk": 22
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:50.721Z",
+            "modified": "2014-10-15T09:37:50.721Z",
+            "name": "Dominique Vidal"
+        },
+        "model": "search.author",
+        "pk": 23
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:51.783Z",
+            "modified": "2014-10-15T09:37:51.783Z",
+            "name": "Marcus Rediker"
+        },
+        "model": "search.author",
+        "pk": 24
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:52.696Z",
+            "modified": "2014-10-15T09:37:52.696Z",
+            "name": "Rigouste, Mathieu"
+        },
+        "model": "search.author",
+        "pk": 25
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:54.085Z",
+            "modified": "2014-10-15T09:37:54.085Z",
+            "name": "Tevanian/tissot"
+        },
+        "model": "search.author",
+        "pk": 26
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:54.964Z",
+            "modified": "2014-10-15T09:37:54.964Z",
+            "name": "Nicolas de La Casini\u00e8re"
+        },
+        "model": "search.author",
+        "pk": 27
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:57.181Z",
+            "modified": "2014-10-15T09:37:57.181Z",
+            "name": "Daniel Defoe"
+        },
+        "model": "search.author",
+        "pk": 28
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:58.272Z",
+            "modified": "2014-10-15T09:37:58.272Z",
+            "name": "Carlos Marighela"
+        },
+        "model": "search.author",
+        "pk": 29
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:37:59.300Z",
+            "modified": "2014-10-15T09:37:59.300Z",
+            "name": "Gr\u00e9gory Chambat"
+        },
+        "model": "search.author",
+        "pk": 30
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:01.067Z",
+            "modified": "2014-10-15T09:38:01.067Z",
+            "name": "Mogniss H. Abdallah"
+        },
+        "model": "search.author",
+        "pk": 31
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:02.179Z",
+            "modified": "2014-10-15T09:38:02.179Z",
+            "name": "Mar, Iana"
+        },
+        "model": "search.author",
+        "pk": 32
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:03.100Z",
+            "modified": "2014-10-15T09:38:03.100Z",
+            "name": "Levaray/guitard"
+        },
+        "model": "search.author",
+        "pk": 33
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:04.900Z",
+            "modified": "2014-10-15T09:38:04.900Z",
+            "name": "Jos\u00e9 Peirats"
+        },
+        "model": "search.author",
+        "pk": 34
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:05.812Z",
+            "modified": "2014-10-15T09:38:05.812Z",
+            "name": "Sahagian/jean-Luc"
+        },
+        "model": "search.author",
+        "pk": 35
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:06.884Z",
+            "modified": "2014-10-15T09:38:06.884Z",
+            "name": "G\u00e9rard Mordillat"
+        },
+        "model": "search.author",
+        "pk": 36
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:07.745Z",
+            "modified": "2014-10-15T09:38:07.746Z",
+            "name": "Robert Tombs"
+        },
+        "model": "search.author",
+        "pk": 37
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:09.077Z",
+            "modified": "2014-10-15T09:38:09.077Z",
+            "name": "Bouchenot, Matthias"
+        },
+        "model": "search.author",
+        "pk": 38
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:10.081Z",
+            "modified": "2014-10-15T09:38:10.081Z",
+            "name": "Gaston Leroux"
+        },
+        "model": "search.author",
+        "pk": 39
+    },
+    {
+        "fields": {
+            "created": "2014-10-15T09:38:11.094Z",
+            "modified": "2014-10-15T09:38:11.094Z",
+            "name": "Collectif"
+        },
+        "model": "search.author",
+        "pk": 40
+    },
+    {
+        "fields": {
+            "created": "2014-07-27T18:34:23.369Z",
+            "modified": "2014-07-27T18:34:23.369Z",
+            "name": "default distributor"
+        },
+        "model": "search.distributor",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "created": "2014-10-30T12:22:12.492Z",
+            "modified": "2014-10-30T12:22:12.492Z",
+            "name": "rst"
+        },
+        "model": "search.distributor",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "address": null,
+            "comment": null,
+            "isbn": null,
+            "name": "libertalia"
+        },
+        "model": "search.publisher",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "address": null,
+            "comment": null,
+            "isbn": null,
+            "name": "ons du masque"
+        },
+        "model": "search.publisher",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "address": null,
+            "comment": null,
+            "isbn": null,
+            "name": "l'esprit frappeur"
+        },
+        "model": "search.publisher",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "address": null,
+            "comment": null,
+            "isbn": null,
+            "name": "livre de poche"
+        },
+        "model": "search.publisher",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "name": "a boulets rouges",
+            "ordered": null,
+            "parent": null
+        },
+        "model": "search.collection",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "name": "book"
+        },
+        "model": "search.cardtype",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "name": "cd"
+        },
+        "model": "search.cardtype",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "name": "dvd"
+        },
+        "model": "search.cardtype",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "name": "tshirt"
+        },
+        "model": "search.cardtype",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "name": "vinyl"
+        },
+        "model": "search.cardtype",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "name": "other"
+        },
+        "model": "search.cardtype",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "name": "unknown"
+        },
+        "model": "search.cardtype",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "authors": [
+                2,
+                1
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:32.543Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/chambat-gregory-biberfeld-laurence/apprendre-a-desobeir-petite-histoire-de-l-ecole-qui-resiste,57512500.aspx",
+            "distributor": null,
+            "ean": "9782918059363",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/500/57512500_11205026.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:33.337Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Apprendre \u00e0 d\u00e9sobeir ; petite histoire de l'\u00e9cole qui r\u00e9siste",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "authors": [
+                3
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:33.614Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/guerin-daniel/bourgeois-et-bras-nus-guerre-sociale-durant-le-revolution-francaise-1793-1795,54748482.aspx",
+            "distributor": null,
+            "ean": "9782918059295",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/482/54748482_10852487.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:34.274Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Bourgeois et bras nus ; guerre sociale durant le R\u00e9volution fran\u00e7aise (1793-1795)",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "authors": [
+                4
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:34.519Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/leroux-g/cheri-bibi-et-cecily,39992458.aspx",
+            "distributor": null,
+            "ean": "9782702436127",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/458/39992458_8653406.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:35.280Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                2
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Cheri-Bibi Et Cecily",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "authors": [
+                5
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:35.598Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/biondi-jean-pierre/clio-et-les-grands-blancs-la-decolonisation-inachevee,35221403.aspx",
+            "distributor": null,
+            "ean": "9782918059165",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/403/35221403_8211630.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:36.333Z",
+            "origkey": null,
+            "price": "15,30",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Clio et les grands-blancs ; la d\u00e9colonisation inachev\u00e9e",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "authors": [
+                6,
+                7
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:36.703Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/london-jack-tanxxx/construire-un-feu,58485456.aspx",
+            "distributor": null,
+            "ean": "9782918059394",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/456/58485456_11425306.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:37.329Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Construire un feu",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "authors": [
+                8
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:37.607Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/holloway-john/crack-capitalism-33-theses-contre-le-capital,41626741.aspx",
+            "distributor": 1,
+            "ean": "9782918059226",
+            "img": "http://www.images-chapitre.com/indispo/newnormal.png",
+            "isbn": "",
+            "modified": "2014-11-19T14:55:07.061Z",
+            "origkey": "",
+            "price": "produit indisponible",
+            "price_sold": "",
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Crack Capitalism - 33 Theses Contre Le Capital",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "authors": [
+                9
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:38.520Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/pierre-tevanian/devoilements-du-hijab-a-la-burqa,41626742.aspx",
+            "distributor": null,
+            "ean": "9782918059233",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/742/41626742_9856451.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:39.155Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Devoilements : du hijab a la burqa",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "authors": [
+                10,
+                6
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:39.426Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/london-jack-gleyse-romualo/greve-generale,58485457.aspx",
+            "distributor": null,
+            "ean": "9782918059400",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/457/58485457_11425309.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:40.235Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Gr\u00e8ve g\u00e9n\u00e9rale !",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "authors": [
+                11
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:40.513Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/estebaranz-jtxo/guerre-a-l-etat-luttes-autonomes-et-experiences-alter,39487051.aspx",
+            "distributor": null,
+            "ean": "9782918059196",
+            "img": "http://www.images-chapitre.com/ima0/newnormal/051/39487051_9501924.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:41.197Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Guerre A L'Etat - Luttes Autonomes Et Experiences Alter",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "authors": [
+                13,
+                12
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:41.576Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/vaneigem-raoul-dupuis-jules-francois/histoire-desinvolte-du-surrealisme,58485455.aspx",
+            "distributor": null,
+            "ean": "9782918059387",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/455/58485455_11425303.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:42.327Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Histoire d\u00e9sinvolte du surr\u00e9alisme",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 10
+    },
+    {
+        "fields": {
+            "authors": [
+                14
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:42.639Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/rajsfus-maurice/je-n-aime-pas-la-police-de-mon-pays,44544503.aspx",
+            "distributor": null,
+            "ean": "9782918059240",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/503/44544503_10583463.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:43.347Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Je n'aime pas la police de mon pays",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 11
+    },
+    {
+        "fields": {
+            "authors": [
+                15
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:43.726Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/roussenq-paul/l-enfer-du-bagne,22746535.aspx",
+            "distributor": null,
+            "ean": "9782918059028",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/535/22746535_2559505.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:44.453Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "L'enfer du bagne",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 12
+    },
+    {
+        "fields": {
+            "authors": [
+                16
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:44.847Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/fournier-eric/la-cite-du-sang-violences-politiques-entre-bandes-durant-l-affaire-dreyfus,8996620.aspx",
+            "distributor": null,
+            "ean": "9782952829250",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/620/8996620_4044244.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:45.539Z",
+            "origkey": null,
+            "price": "13,20",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "La cit\u00e9 du sang ; violences politiques entre bandes durant l'affaire Dreyfus",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 13
+    },
+    {
+        "fields": {
+            "authors": [
+                17
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:45.776Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/fournier-eric/la-commune-n-est-pas-morte,53490445.aspx",
+            "distributor": null,
+            "ean": "9782918059288",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/445/53490445_10851129.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:46.428Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "La commune n'est pas morte",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "authors": [
+                18
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:46.679Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/collectif-pelletier/la-petite-maison-dans-la-zermi-chroniques-d-un-saisonnier-de-la-misere-tox-acade,1646862.aspx",
+            "distributor": null,
+            "ean": "9782952829243",
+            "img": "http://www.images-chapitre.com/ima3/newnormal/862/1646862_8827965.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:47.390Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "La petite maison dans la Zermi, chroniques d'un saisonnier de la mis\u00e8re ; Tox academy",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "authors": [
+                19
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:47.642Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/guillon-claude/la-terrorisation-democratique,25009235.aspx",
+            "distributor": null,
+            "ean": "9782918059073",
+            "img": "http://www.images-chapitre.com/ima0/newnormal/235/25009235_9203729.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:48.418Z",
+            "origkey": null,
+            "price": "7,10",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "La terrorisation d\u00e9mocratique",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "authors": [
+                20,
+                21
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:48.890Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/dieudonne-eugene-guitard-thierry/la-vie-des-forcats,63758961.aspx",
+            "distributor": null,
+            "ean": "9782918059530",
+            "img": "http://www.images-chapitre.com/ima3/newnormal/961/63758961_11875929.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:49.674Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "La vie des forcats",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "authors": [
+                22
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:49.952Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/london-jack/le-mexicain,1646859.aspx",
+            "distributor": null,
+            "ean": "9782952829205",
+            "img": "http://www.images-chapitre.com/ima3/newnormal/859/1646859_3444229.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:50.594Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Le mexicain",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "authors": [
+                23
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:50.906Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/vidal-dominique/le-ventre-est-encore-fecond-les-nouvelles-extremes-droites-europeennes,51856481.aspx",
+            "distributor": null,
+            "ean": "9782918059301",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/481/51856481_10584813.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:51.632Z",
+            "origkey": null,
+            "price": "7,00",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Le ventre est encore f\u00e9cond ; les nouvelles extr\u00eames droites europ\u00e9ennes",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 19
+    },
+    {
+        "fields": {
+            "authors": [
+                24
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:51.927Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/rediker-marcus/les-forcats-de-la-mer-marins-marchands-et-pirates-dans-le-monde-anglo-saxons-170,17750407.aspx",
+            "distributor": null,
+            "ean": "9782918059011",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/407/17750407_6708848.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:52.569Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Les for\u00e7ats de la mer ; marins, marchands et pirates dans le monde anglo-saxons (1700-1750)",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 20
+    },
+    {
+        "fields": {
+            "authors": [
+                25
+            ],
+            "card_type": 1,
+            "collection": 1,
+            "comment": "",
+            "created": "2014-10-15T09:37:52.822Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/rigouste-mathieu/les-marchands-de-peur-la-bande-a-bauer-et-l-ideologie-securitaire,55378446.aspx",
+            "distributor": null,
+            "ean": "9782918059356",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/446/55378446_10900358.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:53.942Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Les marchands de peur ; la bande \u00e0 Bauer et l'id\u00e9ologie s\u00e9curitaire",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 21
+    },
+    {
+        "fields": {
+            "authors": [
+                26
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:54.202Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/tevanian-tissot/les-mots-sont-importants,23666290.aspx",
+            "distributor": null,
+            "ean": "9782918059097",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/290/23666290_6187649.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:54.837Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Les mots sont importants",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 22
+    },
+    {
+        "fields": {
+            "authors": [
+                27
+            ],
+            "card_type": 1,
+            "collection": 1,
+            "comment": "",
+            "created": "2014-10-15T09:37:55.165Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/de-la-casiniere-nicolas/les-predateurs-du-beton-enquete-sur-la-multinationale-vinci,57799469.aspx",
+            "distributor": null,
+            "ean": "9782918059370",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/469/57799469_11220401.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:56.160Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Les predateurs du b\u00e9ton ; enqu\u00eate sur la multinationale Vinci",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 23
+    },
+    {
+        "fields": {
+            "authors": [
+                18
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:56.288Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/pelletier-thierry/les-rois-du-rock,55327457.aspx",
+            "distributor": null,
+            "ean": "9782918059349",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/457/55327457_10900354.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:57.054Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Les rois du rock",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 24
+    },
+    {
+        "fields": {
+            "authors": [
+                28
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:57.308Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/defoe-daniel/libertalia-une-utopie-pirate,1408114.aspx",
+            "distributor": null,
+            "ean": "9782844050588",
+            "img": "http://www.images-chapitre.com/ima0/newnormal/114/1408114_10650660.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:58.145Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                3
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Libertalia, Une Utopie Pirate",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 25
+    },
+    {
+        "fields": {
+            "authors": [
+                29
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:58.496Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/marighela-carlos/manuel-du-guerillero-urbain,23666289.aspx",
+            "distributor": null,
+            "ean": "9782918059066",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/289/23666289_4070776.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:37:59.149Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Manuel du guerillero urbain",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 26
+    },
+    {
+        "fields": {
+            "authors": [
+                30
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:37:59.444Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/chambat-gregory/pedagogie-et-revolution,41626740.aspx",
+            "distributor": null,
+            "ean": "9782918059219",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/740/41626740_9501929.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:00.104Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Pedagogie Et Revolution",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 27
+    },
+    {
+        "fields": {
+            "authors": [
+                24
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:00.232Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/rediker-marcus/pirates-de-tous-les-pays-l-age-d-or-de-la-piraterie-atlantique-1716-1726,61929536.aspx",
+            "distributor": null,
+            "ean": "9782918059486",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/536/61929536_11664179.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:00.899Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Pirates de tous les pays ; l'\u00e2ge d'or de la piraterie atlantique (1716-1726)",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 28
+    },
+    {
+        "fields": {
+            "authors": [
+                31
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:01.227Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/abdallah-mogniss-h/rengainez-on-arrive,51819522.aspx",
+            "distributor": null,
+            "ean": "9782918059318",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/522/51819522_10584853.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:02.019Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Rengainez, on arrive !",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 29
+    },
+    {
+        "fields": {
+            "authors": [
+                32
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:02.315Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/mar-iana/travailleurs-vos-papiers,33602495.aspx",
+            "distributor": null,
+            "ean": "9782918059158",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/495/33602495_9203730.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:02.974Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Travailleurs, vos papiers !",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 30
+    },
+    {
+        "fields": {
+            "authors": [
+                33
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:03.227Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/levaray-guitard/tue-ton-patron-saison-2,44544504.aspx",
+            "distributor": null,
+            "ean": "9782918059257",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/504/44544504_10317498.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:03.894Z",
+            "origkey": null,
+            "price": "8,00",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Tue Ton Patron, Saison 2",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 31
+    },
+    {
+        "fields": {
+            "authors": [
+                22
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:04.031Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/london-jack-guitard-thierry/un-steak,33602494.aspx",
+            "distributor": null,
+            "ean": "9782918059141",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/494/33602494_8043339.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:04.699Z",
+            "origkey": null,
+            "price": "6,10",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Un steak",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 32
+    },
+    {
+        "fields": {
+            "authors": [
+                34
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:05.027Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/peirats-jose/une-revolution-pour-horizon-les-anarcho-syndicalistes-espagnols-1869-1939,39487052.aspx",
+            "distributor": null,
+            "ean": "9782918059202",
+            "img": "http://www.images-chapitre.com/ima0/newnormal/052/39487052_11442294.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:08.961Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 2,
+            "sold": null,
+            "sortkey": "",
+            "title": "Une r\u00e9volution pour horizon ; les anarcho-syndicalistes espagnols, 1869-1939",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 33
+    },
+    {
+        "fields": {
+            "authors": [
+                35
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:05.956Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/sahagian-jean-luc/victor-serge-l-homme-double,35221404.aspx",
+            "distributor": null,
+            "ean": "9782918059172",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/404/35221404_8447862.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:06.740Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Victor Serge, L'Homme Double",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 34
+    },
+    {
+        "fields": {
+            "authors": [
+                36
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:07.019Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/mordillat-gerard/yorick,53490446.aspx",
+            "distributor": null,
+            "ean": "9782918059325",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/446/53490446_10848931.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:07.627Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Yorick",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 35
+    },
+    {
+        "fields": {
+            "authors": [
+                37
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:07.872Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/tombs-robert/paris-bivouac-des-revolutions-la-commune-de-1871,60909456.aspx",
+            "distributor": null,
+            "ean": "9782918059448",
+            "img": "http://www.images-chapitre.com/ima1/newnormal/456/60909456_11638405.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:08.582Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Paris, bivouac des r\u00e9volutions ; la Commune de 1871",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 36
+    },
+    {
+        "fields": {
+            "authors": [
+                38
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:09.195Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/bouchenot-matthias/tenir-la-rue-l-autodefense-socialiste-1929-1938,61929537.aspx",
+            "distributor": null,
+            "ean": "9782918059493",
+            "img": "http://www.images-chapitre.com/ima2/newnormal/537/61929537_11663299.jpg",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:09.929Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                1
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Tenir la rue ; l'autod\u00e9fense socialiste (1929-1938)",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 37
+    },
+    {
+        "fields": {
+            "authors": [
+                39
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:10.224Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/gaston-leroux/les-aventures-de-cheri-bibi-les-cages-flottantes,31363559.aspx",
+            "distributor": null,
+            "ean": null,
+            "img": "http://www.images-chapitre.com/indispo/newnormal.png",
+            "isbn": null,
+            "modified": "2014-10-15T09:38:10.976Z",
+            "origkey": null,
+            "price": "produit indisponible",
+            "price_sold": null,
+            "publishers": [
+                4
+            ],
+            "quantity": 1,
+            "sold": null,
+            "sortkey": "",
+            "title": "Les aventures De Ch\u00e9ri - Bibi - Les Cages Flottantes",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 38
+    },
+    {
+        "fields": {
+            "authors": [
+                40
+            ],
+            "card_type": 1,
+            "collection": null,
+            "comment": "",
+            "created": "2014-10-15T09:38:11.212Z",
+            "data_source": "Chapitre.com",
+            "details_url": "http://www.chapitre.com/CHAPITRE/fr/BOOK/collectif/feu-au-centre-de-retention-des-sans-papiers-temoignent,22487777.aspx",
+            "distributor": 1,
+            "ean": "0",
+            "img": "http://www.images-chapitre.com/indispo/newnormal.png",
+            "isbn": "",
+            "modified": "2014-10-30T18:19:47.217Z",
+            "origkey": "",
+            "price": "produit indisponible",
+            "price_sold": "",
+            "publishers": [
+                1
+            ],
+            "quantity": 2,
+            "sold": null,
+            "sortkey": "",
+            "title": "Feu au centre de r\u00e9tention. Des sans-papiers t\u00e9moignent",
+            "year_published": null
+        },
+        "model": "search.card",
+        "pk": 39
+    },
+    {
+        "fields": {
+            "can_sell": true,
+            "comment": null,
+            "date_creation": "2014-05-14",
+            "date_deletion": null,
+            "is_stand": false,
+            "name": "default place"
+        },
+        "model": "search.place",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "default_place": 1
+        },
+        "model": "search.preferences",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "card": 39,
+            "created": "2014-10-30T18:20:17.439Z",
+            "deposit": "libertalia, default distributor",
+            "due_date": null,
+            "modified": "2014-10-30T18:20:17.581Z",
+            "nb": 0,
+            "threshold": 0
+        },
+        "model": "search.depositcopies",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "auto_command": true,
+            "created": "2014-10-30T18:20:17.212Z",
+            "deposit_type": "fix",
+            "distributor": 1,
+            "initial_nb_copies": 0,
+            "minimal_nb_copies": 0,
+            "modified": "2014-10-30T18:20:17.212Z"
+        },
+        "model": "search.deposit",
+        "pk": "libertalia, default distributor"
+    },
+    {
+        "fields": {
+            "auto_command": true,
+            "created": "2014-11-24T15:32:22.109Z",
+            "deposit_type": "('D\\xc3\\xa9p\\xc3\\xb4t de libraire', (('lib', 'd\\xc3\\xa9p\\xc3\\xb4t de libraire'), ('fix', 'd\\xc3\\xa9p\\xc3\\xb4t fixe')))",
+            "distributor": 2,
+            "initial_nb_copies": 0,
+            "minimal_nb_copies": 0,
+            "modified": "2014-11-24T15:32:22.109Z"
+        },
+        "model": "search.deposit",
+        "pk": "ng depo"
+    },
+    {
+        "fields": {
+            "auto_command": true,
+            "created": "2014-11-24T15:30:59.682Z",
+            "deposit_type": "('D\\xc3\\xa9p\\xc3\\xb4t de libraire', (('lib', 'd\\xc3\\xa9p\\xc3\\xb4t de libraire'), ('fix', 'd\\xc3\\xa9p\\xc3\\xb4t fixe')))",
+            "distributor": null,
+            "initial_nb_copies": 0,
+            "minimal_nb_copies": 0,
+            "modified": "2014-11-24T15:30:59.682Z"
+        },
+        "model": "search.deposit",
+        "pk": "undefined"
+    },
+    {
+        "fields": {
+            "codename": "add_permission",
+            "content_type": 1,
+            "name": "Can add permission"
+        },
+        "model": "auth.permission",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "codename": "change_permission",
+            "content_type": 1,
+            "name": "Can change permission"
+        },
+        "model": "auth.permission",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "codename": "delete_permission",
+            "content_type": 1,
+            "name": "Can delete permission"
+        },
+        "model": "auth.permission",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "codename": "add_group",
+            "content_type": 2,
+            "name": "Can add group"
+        },
+        "model": "auth.permission",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "codename": "change_group",
+            "content_type": 2,
+            "name": "Can change group"
+        },
+        "model": "auth.permission",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "codename": "delete_group",
+            "content_type": 2,
+            "name": "Can delete group"
+        },
+        "model": "auth.permission",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "codename": "add_user",
+            "content_type": 3,
+            "name": "Can add user"
+        },
+        "model": "auth.permission",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "codename": "change_user",
+            "content_type": 3,
+            "name": "Can change user"
+        },
+        "model": "auth.permission",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "codename": "delete_user",
+            "content_type": 3,
+            "name": "Can delete user"
+        },
+        "model": "auth.permission",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "codename": "add_contenttype",
+            "content_type": 4,
+            "name": "Can add content type"
+        },
+        "model": "auth.permission",
+        "pk": 10
+    },
+    {
+        "fields": {
+            "codename": "change_contenttype",
+            "content_type": 4,
+            "name": "Can change content type"
+        },
+        "model": "auth.permission",
+        "pk": 11
+    },
+    {
+        "fields": {
+            "codename": "delete_contenttype",
+            "content_type": 4,
+            "name": "Can delete content type"
+        },
+        "model": "auth.permission",
+        "pk": 12
+    },
+    {
+        "fields": {
+            "codename": "add_session",
+            "content_type": 5,
+            "name": "Can add session"
+        },
+        "model": "auth.permission",
+        "pk": 13
+    },
+    {
+        "fields": {
+            "codename": "change_session",
+            "content_type": 5,
+            "name": "Can change session"
+        },
+        "model": "auth.permission",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "codename": "delete_session",
+            "content_type": 5,
+            "name": "Can delete session"
+        },
+        "model": "auth.permission",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "codename": "add_site",
+            "content_type": 6,
+            "name": "Can add site"
+        },
+        "model": "auth.permission",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "codename": "change_site",
+            "content_type": 6,
+            "name": "Can change site"
+        },
+        "model": "auth.permission",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "codename": "delete_site",
+            "content_type": 6,
+            "name": "Can delete site"
+        },
+        "model": "auth.permission",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "codename": "add_logentry",
+            "content_type": 7,
+            "name": "Can add log entry"
+        },
+        "model": "auth.permission",
+        "pk": 19
+    },
+    {
+        "fields": {
+            "codename": "change_logentry",
+            "content_type": 7,
+            "name": "Can change log entry"
+        },
+        "model": "auth.permission",
+        "pk": 20
+    },
+    {
+        "fields": {
+            "codename": "delete_logentry",
+            "content_type": 7,
+            "name": "Can delete log entry"
+        },
+        "model": "auth.permission",
+        "pk": 21
+    },
+    {
+        "fields": {
+            "codename": "add_author",
+            "content_type": 8,
+            "name": "Can add author"
+        },
+        "model": "auth.permission",
+        "pk": 22
+    },
+    {
+        "fields": {
+            "codename": "change_author",
+            "content_type": 8,
+            "name": "Can change author"
+        },
+        "model": "auth.permission",
+        "pk": 23
+    },
+    {
+        "fields": {
+            "codename": "delete_author",
+            "content_type": 8,
+            "name": "Can delete author"
+        },
+        "model": "auth.permission",
+        "pk": 24
+    },
+    {
+        "fields": {
+            "codename": "add_distributor",
+            "content_type": 9,
+            "name": "Can add distributor"
+        },
+        "model": "auth.permission",
+        "pk": 25
+    },
+    {
+        "fields": {
+            "codename": "change_distributor",
+            "content_type": 9,
+            "name": "Can change distributor"
+        },
+        "model": "auth.permission",
+        "pk": 26
+    },
+    {
+        "fields": {
+            "codename": "delete_distributor",
+            "content_type": 9,
+            "name": "Can delete distributor"
+        },
+        "model": "auth.permission",
+        "pk": 27
+    },
+    {
+        "fields": {
+            "codename": "add_publisher",
+            "content_type": 10,
+            "name": "Can add publisher"
+        },
+        "model": "auth.permission",
+        "pk": 28
+    },
+    {
+        "fields": {
+            "codename": "change_publisher",
+            "content_type": 10,
+            "name": "Can change publisher"
+        },
+        "model": "auth.permission",
+        "pk": 29
+    },
+    {
+        "fields": {
+            "codename": "delete_publisher",
+            "content_type": 10,
+            "name": "Can delete publisher"
+        },
+        "model": "auth.permission",
+        "pk": 30
+    },
+    {
+        "fields": {
+            "codename": "add_collection",
+            "content_type": 11,
+            "name": "Can add collection"
+        },
+        "model": "auth.permission",
+        "pk": 31
+    },
+    {
+        "fields": {
+            "codename": "change_collection",
+            "content_type": 11,
+            "name": "Can change collection"
+        },
+        "model": "auth.permission",
+        "pk": 32
+    },
+    {
+        "fields": {
+            "codename": "delete_collection",
+            "content_type": 11,
+            "name": "Can delete collection"
+        },
+        "model": "auth.permission",
+        "pk": 33
+    },
+    {
+        "fields": {
+            "codename": "add_cardtype",
+            "content_type": 12,
+            "name": "Can add card type"
+        },
+        "model": "auth.permission",
+        "pk": 34
+    },
+    {
+        "fields": {
+            "codename": "change_cardtype",
+            "content_type": 12,
+            "name": "Can change card type"
+        },
+        "model": "auth.permission",
+        "pk": 35
+    },
+    {
+        "fields": {
+            "codename": "delete_cardtype",
+            "content_type": 12,
+            "name": "Can delete card type"
+        },
+        "model": "auth.permission",
+        "pk": 36
+    },
+    {
+        "fields": {
+            "codename": "add_card",
+            "content_type": 13,
+            "name": "Can add card"
+        },
+        "model": "auth.permission",
+        "pk": 37
+    },
+    {
+        "fields": {
+            "codename": "change_card",
+            "content_type": 13,
+            "name": "Can change card"
+        },
+        "model": "auth.permission",
+        "pk": 38
+    },
+    {
+        "fields": {
+            "codename": "delete_card",
+            "content_type": 13,
+            "name": "Can delete card"
+        },
+        "model": "auth.permission",
+        "pk": 39
+    },
+    {
+        "fields": {
+            "codename": "add_placecopies",
+            "content_type": 14,
+            "name": "Can add place copies"
+        },
+        "model": "auth.permission",
+        "pk": 40
+    },
+    {
+        "fields": {
+            "codename": "change_placecopies",
+            "content_type": 14,
+            "name": "Can change place copies"
+        },
+        "model": "auth.permission",
+        "pk": 41
+    },
+    {
+        "fields": {
+            "codename": "delete_placecopies",
+            "content_type": 14,
+            "name": "Can delete place copies"
+        },
+        "model": "auth.permission",
+        "pk": 42
+    },
+    {
+        "fields": {
+            "codename": "add_place",
+            "content_type": 15,
+            "name": "Can add place"
+        },
+        "model": "auth.permission",
+        "pk": 43
+    },
+    {
+        "fields": {
+            "codename": "change_place",
+            "content_type": 15,
+            "name": "Can change place"
+        },
+        "model": "auth.permission",
+        "pk": 44
+    },
+    {
+        "fields": {
+            "codename": "delete_place",
+            "content_type": 15,
+            "name": "Can delete place"
+        },
+        "model": "auth.permission",
+        "pk": 45
+    },
+    {
+        "fields": {
+            "codename": "add_preferences",
+            "content_type": 16,
+            "name": "Can add preferences"
+        },
+        "model": "auth.permission",
+        "pk": 46
+    },
+    {
+        "fields": {
+            "codename": "change_preferences",
+            "content_type": 16,
+            "name": "Can change preferences"
+        },
+        "model": "auth.permission",
+        "pk": 47
+    },
+    {
+        "fields": {
+            "codename": "delete_preferences",
+            "content_type": 16,
+            "name": "Can delete preferences"
+        },
+        "model": "auth.permission",
+        "pk": 48
+    },
+    {
+        "fields": {
+            "codename": "add_basketcopies",
+            "content_type": 17,
+            "name": "Can add basket copies"
+        },
+        "model": "auth.permission",
+        "pk": 49
+    },
+    {
+        "fields": {
+            "codename": "change_basketcopies",
+            "content_type": 17,
+            "name": "Can change basket copies"
+        },
+        "model": "auth.permission",
+        "pk": 50
+    },
+    {
+        "fields": {
+            "codename": "delete_basketcopies",
+            "content_type": 17,
+            "name": "Can delete basket copies"
+        },
+        "model": "auth.permission",
+        "pk": 51
+    },
+    {
+        "fields": {
+            "codename": "add_basket",
+            "content_type": 18,
+            "name": "Can add basket"
+        },
+        "model": "auth.permission",
+        "pk": 52
+    },
+    {
+        "fields": {
+            "codename": "change_basket",
+            "content_type": 18,
+            "name": "Can change basket"
+        },
+        "model": "auth.permission",
+        "pk": 53
+    },
+    {
+        "fields": {
+            "codename": "delete_basket",
+            "content_type": 18,
+            "name": "Can delete basket"
+        },
+        "model": "auth.permission",
+        "pk": 54
+    },
+    {
+        "fields": {
+            "codename": "add_baskettype",
+            "content_type": 19,
+            "name": "Can add basket type"
+        },
+        "model": "auth.permission",
+        "pk": 55
+    },
+    {
+        "fields": {
+            "codename": "change_baskettype",
+            "content_type": 19,
+            "name": "Can change basket type"
+        },
+        "model": "auth.permission",
+        "pk": 56
+    },
+    {
+        "fields": {
+            "codename": "delete_baskettype",
+            "content_type": 19,
+            "name": "Can delete basket type"
+        },
+        "model": "auth.permission",
+        "pk": 57
+    },
+    {
+        "fields": {
+            "codename": "add_depositcopies",
+            "content_type": 20,
+            "name": "Can add deposit copies"
+        },
+        "model": "auth.permission",
+        "pk": 58
+    },
+    {
+        "fields": {
+            "codename": "change_depositcopies",
+            "content_type": 20,
+            "name": "Can change deposit copies"
+        },
+        "model": "auth.permission",
+        "pk": 59
+    },
+    {
+        "fields": {
+            "codename": "delete_depositcopies",
+            "content_type": 20,
+            "name": "Can delete deposit copies"
+        },
+        "model": "auth.permission",
+        "pk": 60
+    },
+    {
+        "fields": {
+            "codename": "add_deposit",
+            "content_type": 21,
+            "name": "Can add deposit"
+        },
+        "model": "auth.permission",
+        "pk": 61
+    },
+    {
+        "fields": {
+            "codename": "change_deposit",
+            "content_type": 21,
+            "name": "Can change deposit"
+        },
+        "model": "auth.permission",
+        "pk": 62
+    },
+    {
+        "fields": {
+            "codename": "delete_deposit",
+            "content_type": 21,
+            "name": "Can delete deposit"
+        },
+        "model": "auth.permission",
+        "pk": 63
+    },
+    {
+        "fields": {
+            "codename": "add_address",
+            "content_type": 22,
+            "name": "Can add address"
+        },
+        "model": "auth.permission",
+        "pk": 64
+    },
+    {
+        "fields": {
+            "codename": "change_address",
+            "content_type": 22,
+            "name": "Can change address"
+        },
+        "model": "auth.permission",
+        "pk": 65
+    },
+    {
+        "fields": {
+            "codename": "delete_address",
+            "content_type": 22,
+            "name": "Can delete address"
+        },
+        "model": "auth.permission",
+        "pk": 66
+    },
+    {
+        "fields": {
+            "date_joined": "2014-02-27T23:18:24.202Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2014-11-19T14:54:47.871Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$OP2yuJYQivAp$jVP5F33JPhdQGP3d7qDaTwZrE1zboRMcsUWiVQ3ivZI=",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "auth.user",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-10-30T18:19:47.222Z",
+            "change_message": "Changed ean and distributor.",
+            "content_type": 13,
+            "object_id": "39",
+            "object_repr": "Feu au centre de r\u00e9tention. Des sans-papiers t\u00e9moignent, Collectif, \u00e9diteur: libertalia, distributeur: default distributor",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-11-19T14:55:07.066Z",
+            "change_message": "Changed distributor.",
+            "content_type": 13,
+            "object_id": "6",
+            "object_repr": "Crack Capitalism - 33 Theses Contre Le Capital, John Holloway, \u00e9diteur: libertalia, distributeur: default distributor",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 2
+    }
+]

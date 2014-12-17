@@ -49,7 +49,7 @@ ci:
 
 # Load sample data, for testing purposes.
 data:
-	./manage.py loaddata dumpdata
+	./manage.py loaddata dumpdata-big
 
 # Code coverage analysis:
 cov:
