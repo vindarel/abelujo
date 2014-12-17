@@ -69,6 +69,14 @@ Remember to change the imported
 scripts in ``base.jade`` (see the line importing `rapyd.js`).
 
 
+Running Tests
+-------------
+
+Run::
+
+    make unit # or ./manage.py test
+
+
 Tests coverage
 --------------
 

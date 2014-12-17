@@ -34,7 +34,9 @@ e2e:
 
 # run only unit tests.
 unit:
-	./manage.py test search
+	#TODO: use django-nose or move datasources.
+	# With this pattern we don't run the tests from "datasources".
+	./manage.py test search --pattern="tests*.py"
 
 # Run test of an independent module.
 ods:
