@@ -17,9 +17,12 @@ angular.module('abelujo.controllers', [])
 
       $scope.deposit_type = $scope.deposit_types[0];
       $scope.deposit_name = undefined;
-      $scope.initial_nb = 1;
-      $scope.minimal_nb = 1;
+      $scope.initial_nb_copies = 1;
+      $scope.minimal_nb_copies = 1;
       $scope.auto_command = undefined;
+
+      // messages for ui feedback: list of couple level/message
+      $scope.messages = undefined;
 
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
@@ -57,13 +60,15 @@ angular.module('abelujo.controllers', [])
                   return card.id;
               });
           }
-          var params = {"cards_id": cards_id,
-                        "distributor_name": $scope.distributor,
-                        "name": $scope.deposit_name,
-                        "initial_nb": $scope.initial_nb,
-                        "minimal_nb": $scope.minimal_nb,
-                        "auto_command": $scope.auto_command,
-                       };
+          var params = {
+              "name"              : $scope.deposit_name,
+              "distributor"       : $scope.distributor,
+              "cards_id"          : cards_id,
+              "deposit_type"      : $scope.deposit_type.name, //xxx: use sthg else than the name
+              "initial_nb_copies" : $scope.initial_nb_copies,
+              "minimal_nb_copies" : $scope.minimal_nb_copies,
+              "auto_command"      : $scope.auto_command,
+          };
           // needed for Django to process the params to its request.POST dict.
           $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
 
@@ -83,6 +88,7 @@ angular.module('abelujo.controllers', [])
 
           return $http.post("/api/deposits", params)
               .then(function(response){
+                  $scope.messages = response.data.messages;
                   return response.data;
               });
       };

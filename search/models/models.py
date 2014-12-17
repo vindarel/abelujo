@@ -264,6 +264,25 @@ class Card(TimeStampedModel):
         return res
 
     @staticmethod
+    def get_from_id_list(cards_id):
+        """
+        cards_id: list of card ids
+
+        returns: a list of Card objects
+        """
+        res = {"result": [],
+               "messages": []}
+        for id in cards_id:
+            try:
+                card = Card.objects.get(id=id)
+                res["result"].append(card)
+            except ObjectDoesNotExist:
+                msg = "the card of id {} doesn't exist.".format(id)
+                log.debug(msg)
+                res["messages"].append({"level": messages.WARNING, "message": msg})
+        return res
+
+    @staticmethod
     def sell(id=None, quantity=1):
         """Sell a card. Decreases its quantity.
 
@@ -585,6 +604,16 @@ class DepositCopies(TimeStampedModel):
     #: Do we have a limit of time to pay ?
     due_date = models.DateField(blank=True, null=True)
 
+DEPOSIT_TYPES_CHOICES = [
+    ("Dépôt de libraire", (
+        ("lib", "dépôt de libraire"),
+        ("fix", "dépôt fixe"),
+      )),
+    ("Dépôt de distributeur", (
+        ("dist", "dépôt de distributeur"),
+    )),
+    ]
+
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
     a distributor but didn't pay them yet.
@@ -597,15 +626,6 @@ class Deposit(TimeStampedModel):
 
     #: type of the deposit. Some people also sent their books to a
     #: library and act like a distributor.
-    DEPOSIT_TYPES_CHOICES = [
-        ("Dépôt de libraire", (
-            ("lib", "dépôt de libraire"),
-            ("fix", "dépôt fixe"),
-          )),
-        ("Dépôt de distributeur", (
-            ("dist", "dépôt de distributeur"),
-        )),
-        ]
     deposit_type = models.CharField(choices=DEPOSIT_TYPES_CHOICES,
                                     default=DEPOSIT_TYPES_CHOICES[0],
                                     max_length=CHAR_LENGTH)
@@ -615,7 +635,7 @@ class Deposit(TimeStampedModel):
                                             verbose_name="Nombre initial d'exemplaires pour ce dépôt:")
 
     #: minimal number of copies to have in stock. When not, do an action (raise an alert).
-    min_nb_copies = models.IntegerField(blank=True, null=True, default=0,
+    minimal_nb_copies = models.IntegerField(blank=True, null=True, default=0,
                                         verbose_name="Nombre minimun d'exemplaires")
     #: auto-command when the minimal nb of copies is reached ?
     # (for now: add to the "to command" basket).
@@ -685,25 +705,31 @@ class Deposit(TimeStampedModel):
 
         Thanks to the form validation, we are sure the deposit's name is unique.
 
-        depo_dict: dictionnary
+        depo_dict: dictionnary with the required Deposit
+        fields. Copies and Distributor are objects.
 
-        returns: the deposit object
+        returns: a list of messages which are dictionnaries:
+        level: success/danger/warning (angular-bootstrap labels),
+        message: string
+
         """
         msgs = []
         try:
-            copies = depo_dict.pop('copies')
+            copies = depo_dict.pop('copies')  # add the copies after deposit creation.
             copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
             # Don't create it if it has no valid copies.
             if not copies_to_add:
-                msgs.append({'level': messages.WARNING,
-                             'message': "Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
+                msgs.append({'level': "warning",
+                             'message': u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
             else:
+                if depo_dict["auto_command"] == "true":
+                    depo_dict["auto_command"] = True  # TODO: form validation beforehand.
                 dep = Deposit.objects.create(**depo_dict)
                 msgs += dep.add_copies(copies_to_add)
-                msgs.append({'level':messages.SUCCESS,
+                msgs.append({'level': "success",
                              'message':"Le dépôt a été créé avec succès."})
             return  msgs
         except Exception as e:
-            log.error("error ! ", e)
-            return msgs.append({'level': messages.ERROR,
+            log.error("Adding a Deposit from_dict error ! ", e)
+            return msgs.append({'level': "danger",
                                 'message': e})

@@ -81,7 +81,8 @@ class DBFixture():
         self.preferences = Preferences(default_place=self.place).save()
 
         # a Distributor and a Deposit with no cards
-        self.distributor = Distributor(name="distributor test").save()
+        self.distributor_name = "distributor test"
+        self.distributor = Distributor(name=self.distributor_name).save()
         self.deposit = Deposit(name="deposit test").save()
 
 class TestViews(TestCase):

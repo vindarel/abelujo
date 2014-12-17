@@ -15,15 +15,15 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 django==1.6
 django-bootstrap3
-pyjade                  # process jade templates
-south                   # schema migration
-bootstrap-admin         # bootstrap theme, nice search feature
+pyjade                  # process jade templates.
+bootstrap-admin         # bootstrap theme, nice search feature.
 
 ### testing
 mock==1.0.1
 ipdb
 coverage==3.7.1
-nose==1.3.1             # friendly test runner
+nose==1.3.1             # friendly test runner.
+factory_boy             # quick and easy test fixtures.
 
 ### web scrapers:
 requests
@@ -31,13 +31,11 @@ requests_cache          # set up a cache in 2 loc
 beautifulsoup4
 
 ### Django extensions
-django_extensions==1.3.3  # more useful commands to manage.py (shell_plus)
-Werkzeug                  # runserver_plus: richer tracebacks and inline console
-django-autocomplete-light # ajax autocompletion without writing javascript
+django_extensions==1.3.3  # more useful commands to manage.py (shell_plus).
+Werkzeug                  # runserver_plus: richer tracebacks and inline console.
+django-autocomplete-light # ajax autocompletion without writing javascript.
 django-angular            # utilities to integrate django and angular
-                          # (integrate forms, csrf protection, share templates,...)
+                          # (integrate forms, csrf protection, share templates,...).
 
 ### utils
-toolz                   # pure, lazy, composable functional programming
-
-django-bower            # bower front-end packages management.
+toolz                   # pure, lazy, composable functional programming.

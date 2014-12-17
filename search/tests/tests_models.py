@@ -139,6 +139,19 @@ class TestCards(TestCase):
         obj = Card.from_dict({"title": "living"})
         self.assertEqual(obj.card_type.name, "unknown")
 
+    def test_get_from_id_list(self):
+        cards_id = [1]
+        res = Card.get_from_id_list(cards_id)
+        self.assertTrue(res["result"])
+        self.assertEqual(res["result"][0].title, self.fixture_title)
+
+    def test_get_from_id_list_non_existent(self):
+        cards_id = [1,2]
+        res = Card.get_from_id_list(cards_id)
+        self.assertTrue(res["result"])
+        self.assertTrue(res["messages"])
+        self.assertEqual(res["messages"][0]["message"], "the card of id 2 doesn't exist.")
+
     def test_placecopies(self):
         pass
 
@@ -271,25 +284,25 @@ class TestDeposits(TestCase):
         self.deposit = Deposit(name="deposit nominal",
                                distributor=self.distributor,)
 
-    def testNominal(self):
+    def test_nominal(self):
         self.card.distributor = self.distributor
         msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
 
-    def testNoDistributor(self):
+    def test_no_distributor(self):
         self.card.distributor = None
         msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(len(msgs), 0)
         self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
 
-    def testDifferentDistributor(self):
+    def test_different_distributor(self):
         self.other_dist = Distributor(name="other dist").save()
         self.card.distributor = self.other_dist
         msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(len(msgs), 0)
         self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
 
-    def testFromDictNominal(self):
+    def test_from_dict_nominal(self):
         self.card.distributor = self.distributor
         msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card,],
@@ -298,7 +311,7 @@ class TestDeposits(TestCase):
         self.assertEqual(len(msgs), 1, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], messages.SUCCESS)
 
-    def testFromDictBadDeposit(self):
+    def test_from_dict_bad_deposit(self):
         self.card.distributor = None
         msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card,],
@@ -307,7 +320,7 @@ class TestDeposits(TestCase):
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], messages.WARNING)
 
-    def testFromDictBadDepositOneGood(self):
+    def test_from_dict_bad_deposit_one_good(self):
         self.card.distributor = None
         self.card2.distributor = self.distributor
         msgs = Deposit.from_dict({'name': 'test',

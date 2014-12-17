@@ -1,10 +1,8 @@
 angular.module('abelujo.controllers', []).controller('IntroController', ['$scope', def ($scope):
 
-      $scope.selected = undefined
-      $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
-
+      $scope.selected = None
       $scope.dist_list = []
-      $scope.distributor = undefined
+      $scope.distributor = None
       $http.get("/api/distributors")
       .then(def(response): # "then", not "success"
           return response.data.map(def(item):
@@ -13,12 +11,13 @@ angular.module('abelujo.controllers', []).controller('IntroController', ['$scope
           )
       )
 
-      $scope.copy_selected = undefined;
-      $scope.copies = ["goldman", "arendt"];
+      $scope.copy_selected = None
+      $scope.copies = ["goldman", "arendt"]
       $scope.getCards = def(val):
           return $http.get("/api/cards", {
-              params: {
-                  "query: val,
+              params:
+              {
+                  "query": val,
                   "distributor": $scope.distributor,
               }})
 
