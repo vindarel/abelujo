@@ -96,15 +96,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"), # all that are not related to a certain app
 )
 
-# BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'static/bower_components/')
-BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'static/')
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder', # looks for "static" in the app folder
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'djangobower.finders.BowerFinder',
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -165,16 +161,10 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     # Custom:
-    'djangobower',
     'djangular',
     'search',
 )
 
-
-BOWER_INSTALLED_APPS = (
-    "underscore",
-    "fontawesome",
-    )
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
