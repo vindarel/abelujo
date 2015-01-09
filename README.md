@@ -55,9 +55,9 @@ now your shell prompt should show you are in the `abelujo`
 virtualenv. To quit the virutal env, type `deactivate`. To enter it,
 type `workon \<TAB\> abelujo`.
 
-Install `nodejs` (to have `npm`, the Node Package Manager):
+Install `nodejs` and `npm`, the Node Package Manager:
 
-    sudo apt-get install nodejs
+    sudo apt-get install nodejs npm
     # Debian users may have to install nodejs-legacy (if you get errors on names clashes between node and nodejs)
 
 To install the dependencies, create and populate the database, run:
