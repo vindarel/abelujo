@@ -60,6 +60,10 @@ Install `nodejs` and `npm`, the Node Package Manager:
     sudo apt-get install nodejs npm
     # Debian users may have to install nodejs-legacy (if you get errors on names clashes between node and nodejs)
 
+Install `gulp` globally, a javascript build system:
+
+	sudo npm install gulp -g
+
 To install the dependencies, create and populate the database, run:
 
     make install
