@@ -5,6 +5,12 @@
 # The target names are not a file produced by the commands of that target. Always out of date.
 .PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp
 
+# System dependencies to install as root on Debian (Ubuntu/LinuxMint):
+debian:
+	@sudo apt-get install python-pip nodejs nodejs-legacy npm
+	@sudo pip install virtualenvwrapper
+	@sudo npm install gulp -g
+
 # Install in current directory
 install_script:
 	./install.sh
