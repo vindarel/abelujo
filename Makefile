@@ -7,7 +7,7 @@
 
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
 debian:
-	@sudo apt-get install python-pip nodejs nodejs-legacy npm
+	@sudo apt-get install -y python-pip nodejs nodejs-legacy npm
 	@sudo pip install virtualenvwrapper
 	@sudo npm install gulp -g
 
