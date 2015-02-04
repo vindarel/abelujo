@@ -1,0 +1,174 @@
+#!/bin/env python
+# -*- coding: utf-8 -*-
+
+# Buch Wagner scraper
+# http://www.buch-wagner.de
+
+from bs4 import BeautifulSoup
+import re
+import logging
+import requests
+import requests_cache
+import json
+
+requests_cache.install_cache()
+logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
+SOURCE_NAME = "Buch-Wagner Munchen"
+SOURCE_URL_BASE = "http://www.buch-wagner.de"
+SOURCE_URL_SEARCH = "http://www.buch-wagner.de/SearchCmd?storeId=55250&catalogId=4099276460822233274&langId=-3&knv_header=yes&pageSize=12&beginIndex=0&sType=SimpleSearch&resultCatEntryType=2&showResultsPage=true&pageView=image&searchBtn=Search&searchFld=CATEGORY&searchFldName=Bücher&searchFldCount=29&searchFldId=4099276460822241224&searchTerm="
+ERR_OUTOFSTOCK = u"product out of stock"
+TYPE_BOOK = "book"
+TYPE_DVD = "dvd"
+# there is no comic type.
+TYPE_DEFAULT = TYPE_BOOK
+
+# xpath to retrieve information on the main search result page.
+SEARCH = {
+    "TITLE": ""
+    }
+
+
+"""
+Some fields are not available directly in the search results page
+but in the book's details page, which needs another GET
+request. We don't request it for every book, this would be too
+long. We will fetch those complementary informations when the user
+recquires it (when it clicks to add a book or to get more
+informations about one). We call the postSearch method, defined
+above, which gets those complementary fields, if any.
+"""
+
+
+class Scraper:
+    """Must have:
+
+    - an init to construct the url
+
+    - a search() method to fire the query, which must return a tuple
+      search results/stacktraces.
+    """
+
+    query = ""
+
+    def __init__(self, *args, **kwargs):
+        """Constructs the query url with the given parameters, retrieves the
+        page and parses it through BeautifulSoup. Then we can call
+        search() to get a list of results, or specific methods (_ean,
+        _authors, _title, …).
+
+        parameters: either a list of words (fires a global search) or
+        keywords arguments (key/values pairs, values being lists).
+
+        Keys can be: label (for title), author_names,publisher, ean, …
+        the same as decitre (without the dctr_ prefix).
+
+        """
+
+        if not args and not kwargs:
+            print 'Error: give args to the query'
+
+        # headers = {'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.65 Safari/537.36',
+                   # 'Host':'www.decitre.fr',
+                   # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+
+        if kwargs:
+            if 'ean' in kwargs:
+                # the name of ean for the search is "reference"
+                kwargs['reference'] = kwargs['ean']
+                kwargs.pop('ean')
+            self.url = SOURCE_URL_SEARCH  # ready to add query+args+parameters
+            q = ""
+            for k, v in kwargs.iteritems():
+                urlend = "+".join(val for val in v)
+                q += "&%s=%s" % (k, urlend)
+
+            self.url += q
+
+        else:
+            self.query = "+".join(args)
+            self.url = SOURCE_URL_SEARCH + self.query
+            log.debug('search url: %s' % self.url)
+
+        self.r = requests.get(self.url)
+        #TODO: to be continued
+        self.soup = BeautifulSoup(self.r.text)
+
+    def _product_list(self):
+        items = self.soup.find_all(class_="categorySummary")
+        return items
+
+    def _title(self, product):
+        try:
+            title = product.find(class_="prodTitle").h3.a.text.strip()
+            return title
+        except Exception as e:
+            log.error("Error while getting a title element of {}: {}".format(self.query, e))
+
+    def _details_url(self, product):
+        details_url = product.find(class_="prodTitle").h3.a.attrs["href"].strip()
+        details_url = SOURCE_URL_BASE + details_url
+        return details_url
+
+    def _price(self, product):
+        price = product.find(class_="bookPrise").text
+        price = price.replace("EUR", "").strip()
+        return price
+
+    def _authors(self, product):
+        authors = product.find(class_="prodSubTitle").h3.a.text.strip()
+        return authors
+
+    def _description(self, product):
+        """No description in the result page.
+        There is a summup in the details page.
+        """
+        pass
+
+    def _img(self, product):
+        img = product.find(class_="icoBook").img.attrs["src"]
+        img = "http:" + img
+        return img
+
+    def _publisher(self, product):
+        publisher = product.find(class_="year").text.strip()
+        publisher = publisher.split("-")[1].strip()
+        return publisher
+
+    def _date(self, product):
+        date = product.find(class_="year").text.strip()
+        date = date.split("-")[0].split(":")[1].strip()
+        return date
+
+    def search(self, *args, **kwargs):
+        """Searches books.
+
+        Returns: a couple list of books / stacktraces.
+        """
+        bk_list = []
+        stacktraces = []
+        product_list = self._product_list()
+        for product in product_list:
+            b = {}
+            b["data_source"] = SOURCE_NAME
+            b["title"] = self._title(product)
+            b["details_url"] = self._details_url(product)
+            b["authors"] = self._authors(product)
+            b["price"] = self._price(product)
+            b["description"] = self._description(product)
+            b["img"] = self._img(product)
+            b["publishers"] = self._publisher(product)
+            b["date"] = self._date(product)
+            b["card_type"] = TYPE_BOOK
+            bk_list.append(b)
+
+        return bk_list, stacktraces
+
+
+if __name__=="__main__":
+    scrap = Scraper("emma", "goldman")
+    bklist, errors = scrap.search()
+    import pprint
+    map(pprint.pprint, bklist)
+    print "Nb results: {}".format(len(bklist))
