@@ -1,4 +1,4 @@
-Abelujo - logiciel libre de gestion de petite librairie indépendante (et discaires)
+Abelujo - logiciel libre de gestion de petite librairie indépendante (et disquaires)
 ====================================================================
 
 Projet actuellement en chantier. Il est néanmoins possible de:
