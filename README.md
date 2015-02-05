@@ -43,22 +43,25 @@ it creates the directory "abelujo":
 
     cd abelujo
 
+Install the required dependencies for Debian (Ubuntu/LinuxMint/etc):
+
+    make debian
+    # a shortcut for
+    # sudo apt-get install python-pip nodejs nodejs-legacy npm
+	# sudo pip install virtualenvwrapper
+	# sudo npm install gulp -g  # a JS build system.
+    # Debian users have to install nodejs-legacy if the node command doesn't give you a javascript shell.
+
 Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,
 or do the following:
 
-    # you need: sudo apt-get install python-pip
-    sudo pip install virtualenvwrapper
     source venv_create.sh
 
 now your shell prompt should show you are in the `abelujo`
 virtualenv. To quit the virutal env, type `deactivate`. To enter it,
 type `workon \<TAB\> abelujo`.
 
-Install `nodejs` and `npm`, the Node Package Manager:
-
-    sudo apt-get install nodejs npm
-    # Debian users may have to install nodejs-legacy (if you get errors on names clashes between node and nodejs)
 
 To install the dependencies, create and populate the database, run:
 
