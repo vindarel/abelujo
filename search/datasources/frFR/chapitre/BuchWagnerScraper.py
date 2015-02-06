@@ -15,9 +15,9 @@ requests_cache.install_cache()
 logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-SOURCE_NAME = "Buch-Wagner Munchen"
-SOURCE_URL_BASE = "http://www.buch-wagner.de"
-SOURCE_URL_SEARCH = "http://www.buch-wagner.de/SearchCmd?storeId=55250&catalogId=4099276460822233274&langId=-3&knv_header=yes&pageSize=12&beginIndex=0&sType=SimpleSearch&resultCatEntryType=2&showResultsPage=true&pageView=image&searchBtn=Search&searchFld=CATEGORY&searchFldName=Bücher&searchFldCount=29&searchFldId=4099276460822241224&searchTerm="
+SOURCE_NAME = "BuchWagner"
+SOURCE_URL_BASE = u"http://www.buch-wagner.de"
+SOURCE_URL_SEARCH = u"http://www.buch-wagner.de/SearchCmd?storeId=55250&catalogId=4099276460822233274&langId=-3&knv_header=yes&pageSize=12&beginIndex=0&sType=SimpleSearch&resultCatEntryType=2&showResultsPage=true&pageView=image&searchBtn=Search&searchFld=CATEGORY&searchFldName=Bücher&searchFldCount=29&searchFldId=4099276460822241224&searchTerm="
 ERR_OUTOFSTOCK = u"product out of stock"
 TYPE_BOOK = "book"
 TYPE_DVD = "dvd"
@@ -117,12 +117,13 @@ class Scraper:
         return price
 
     def _authors(self, product):
-        authors = product.find(class_="prodSubTitle").h3.a.text.strip()
+        authors = []
+        authors.append(product.find(class_="prodSubTitle").h3.a.text.strip())
         return authors
 
     def _description(self, product):
         """No description in the result page.
-        There is a summup in the details page.
+        There is a summup in the details page. See postSearch.
         """
         pass
 
@@ -134,7 +135,7 @@ class Scraper:
     def _publisher(self, product):
         publisher = product.find(class_="year").text.strip()
         publisher = publisher.split("-")[1].strip()
-        return publisher
+        return [publisher]
 
     def _date(self, product):
         date = product.find(class_="year").text.strip()
@@ -161,14 +162,49 @@ class Scraper:
             b["publishers"] = self._publisher(product)
             b["date"] = self._date(product)
             b["card_type"] = TYPE_BOOK
+            # b["ean"] = # missing
             bk_list.append(b)
 
         return bk_list, stacktraces
 
+def postSearch(url):
+    """Complementary informations to fetch on a details' page.
+
+    - ean (compulsory)
+    - description
+    """
+    req = requests.get(url)
+    soup = BeautifulSoup(req.text)
+    details = soup.find_all(class_="productDetails-items-content")
+    # The complementary information we need to return. Ean is compulsory.
+    to_ret = {"ean": None}
+
+    try:
+        ean = soup.find(class_="floatRight")
+        ean = ean.find_all("p")[2].text.strip().split(":")[1].strip()
+        to_ret["ean"] = ean
+        to_ret["isbn-13"] = ean
+        log.debug("postSearch of {}: we got ean {}.".format(url, ean))
+
+    except Exception, e:
+        log.debug("Error while getting the ean of {} : {}".format(url, e))
+        log.debug(e)
+
+    try:
+        description = soup.find(class_="alt_content").p.text.strip()
+        to_ret["description"] = description
+    except Exception as e:
+        log.debug("Error while getting the description of {}: {}".format(url, e))
+
+    return to_ret
+
 
 if __name__=="__main__":
+    import pprint
     scrap = Scraper("emma", "goldman")
     bklist, errors = scrap.search()
-    import pprint
     map(pprint.pprint, bklist)
     print "Nb results: {}".format(len(bklist))
+    print "1st book postSearch:"
+    post = postSearch(bklist[0]["details_url"])
+    print post
