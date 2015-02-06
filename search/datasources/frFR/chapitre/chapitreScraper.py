@@ -350,21 +350,20 @@ class Scraper:
         nbr_results = self._nbr_results()
         # log.debug("nbr_results: "+ nbr_results)
         for product in product_list:
-            b = Book()
             dom_product = DomProduct(product)
-            b.data_source = DATA_SOURCE_NAME
-            b.title = self._title(dom_product)
-            b.details_url = self._details_url(dom_product)
-            b.authors = self._authors(dom_product)
+            b["data_source"] = DATA_SOURCE_NAME
+            b["title"] = self._title(dom_product)
+            b["details_url"] = self._details_url(dom_product)
+            b["authors"] = self._authors(dom_product)
 
-            b.price = self._price(dom_product)
+            b["price"] = self._price(dom_product)
             # Summary (4e de couv ?)
-            # b.description = self._description(dom_product) #no desc with chapitre
-            b.img = self._img(dom_product)
-            b.publishers = self._publisher(dom_product)
-            b.card_type = self._type(dom_product)
+            # b["description"] = self._description(dom_product) #no desc with chapitre
+            b["img"] = self._img(dom_product)
+            b["publishers"] = self._publisher(dom_product)
+            b["card_type"] = self._type(dom_product)
 
-            bk_list.append(b.__todict__())
+            bk_list.append(b)
 
         return bk_list, stacktraces
 
