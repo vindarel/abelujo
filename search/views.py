@@ -177,8 +177,7 @@ def postSearch(data_source, details_url):
     data_source: a scraper name, containing a function postSearch
     details_url: url of the card's details.
     """
-    scraper = getattr(globals()[data_source], "postSearch")
-    return scraper.postSearch(details_url)
+    return getattr(globals()[data_source], "postSearch")(details_url)
 
 def index(request):
     form = SearchForm()
@@ -286,7 +285,8 @@ def add(request):
         card['quantity'] = form.cleaned_data["quantity"]
         data_source = card["data_source"]
 
-        if not card.get('ean') and "chapitre" in data_source:  # have to call postSearch of the right module.
+        # Call the postSearch method of the datasource module.
+        if not card.get('ean'):
             if not data_source:
                 log.debug("Error: the data source is unknown.")
                 resp_status = 500
@@ -295,9 +295,9 @@ def add(request):
                 # fire a new http request to get the ean (or other missing informations):
                 complements = postSearch(data_source, card['details_url'])
                 if not complements.get("ean"):
-                    log.debug("--- warning: postSearch couldnt get the ean.")
+                    log.warning("warning: postSearch couldnt get the ean.")
                 for k, v in complements.iteritems():
-                    log.debug("--- postSearch: found %s: %s" % (k,v))
+                    log.debug("postSearch: found %s: %s" % (k,v))
                     card[k] = v
 
         try:

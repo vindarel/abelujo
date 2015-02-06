@@ -53,7 +53,7 @@ requests_cache.install_cache()
 logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-DATA_SOURCE_NAME = "Chapitre.com"
+DATA_SOURCE_NAME = "chapitre"
 CHAPITRE_BASE_URL = "http://www.chapitre.com"
 ERR_OOSTOCK = "produit indisponible"
 TYPE_BOOK = "book"
@@ -351,6 +351,7 @@ class Scraper:
         # log.debug("nbr_results: "+ nbr_results)
         for product in product_list:
             dom_product = DomProduct(product)
+            b = {}
             b["data_source"] = DATA_SOURCE_NAME
             b["title"] = self._title(dom_product)
             b["details_url"] = self._details_url(dom_product)
@@ -392,9 +393,9 @@ def postSearch(url):
     try:
         to_ret["ean"] = soup.find(itemprop="isbn").text
         to_ret["collection"] = soup.find(id=collection_id).text
-        return to_ret
 
     except Exception, e:
         log.debug("Error while getting the ean of %s :" % (url,))
         log.debug(e)
-        return to_ret
+
+    return to_ret
