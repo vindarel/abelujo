@@ -1,15 +1,20 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 
-# Buch Wagner scraper
-# http://www.buch-wagner.de
+"""
+German Buch Wagner bookshop scraper.
+http://www.buch-wagner.de
+"""
 
 from bs4 import BeautifulSoup
-import re
+from functools import wraps
+import json
 import logging
+import re
 import requests
 import requests_cache
-import json
+import sys
+import traceback
 
 requests_cache.install_cache()
 logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
@@ -40,6 +45,41 @@ informations about one). We call the postSearch method, defined
 above, which gets those complementary fields, if any.
 """
 
+
+
+def catch_errors(fn):
+    """Catch all sort of exceptions, print them, print the stacktrace.
+
+    This is helpful to refactor try/except blocks.
+    I.e:
+
+    ```
+    def method():
+        try:
+            foo._title(url)
+        except Exception as e:
+            log.debug("error at ...")
+    ```
+    becomes
+    ```
+    @catch_errors
+    def method():
+        foo._title()
+    ```
+    """
+
+    @wraps(fn)  # juste to preserve the name of the decorated fn.
+    def handler(inst, arg):
+        try:
+            return fn(inst, arg)
+        except Exception as e:
+            log.error("Error at method {}: {}".format(fn.__name__, e))
+            log.error("for search: {}".format(inst.query))
+            # The traceback must point to its origin, not to this decorator:
+            exc_type, exc_instance, exc_traceback = sys.exc_info()
+            log.error("".join(traceback.format_tb(exc_traceback)))
+
+    return handler
 
 class Scraper:
     """Must have:
@@ -99,44 +139,49 @@ class Scraper:
         items = self.soup.find_all(class_="categorySummary")
         return items
 
+    @catch_errors
     def _title(self, product):
-        try:
-            title = product.find(class_="prodTitle").h3.a.text.strip()
-            return title
-        except Exception as e:
-            log.error("Error while getting a title element of {}: {}".format(self.query, e))
+        title = product.find(class_="prodTitle").h3.a.text.strip()
+        return title
 
+    @catch_errors
     def _details_url(self, product):
         details_url = product.find(class_="prodTitle").h3.a.attrs["href"].strip()
         details_url = SOURCE_URL_BASE + details_url
         return details_url
 
+    @catch_errors
     def _price(self, product):
         price = product.find(class_="bookPrise").text
         price = price.replace("EUR", "").strip()
         return price
 
+    @catch_errors
     def _authors(self, product):
         authors = []
         authors.append(product.find(class_="prodSubTitle").h3.a.text.strip())
         return authors
 
+    @catch_errors
     def _description(self, product):
         """No description in the result page.
         There is a summup in the details page. See postSearch.
         """
         pass
 
+    @catch_errors
     def _img(self, product):
         img = product.find(class_="icoBook").img.attrs["src"]
         img = "http:" + img
         return img
 
+    @catch_errors
     def _publisher(self, product):
         publisher = product.find(class_="year").text.strip()
         publisher = publisher.split("-")[1].strip()
         return [publisher]
 
+    @catch_errors
     def _date(self, product):
         date = product.find(class_="year").text.strip()
         date = date.split("-")[0].split(":")[1].strip()
@@ -173,6 +218,10 @@ def postSearch(url):
     - ean (compulsory)
     - description
     """
+    if not url:
+        log.error("postSearch error: url is {} !".format(url))
+        return None
+
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
     details = soup.find_all(class_="productDetails-items-content")
