@@ -17,6 +17,7 @@ django==1.6
 django-bootstrap3
 pyjade                  # process jade templates.
 bootstrap-admin         # bootstrap theme, nice search feature.
+pyyaml
 
 ### testing
 mock==1.0.1

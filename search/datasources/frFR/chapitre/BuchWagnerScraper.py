@@ -1,6 +1,22 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright 2014 The Abelujo Developers
+# See the COPYRIGHT file at the top-level directory of this distribution
+
+# Abelujo is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Abelujo is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
 """
 German Buch Wagner bookshop scraper.
 http://www.buch-wagner.de
@@ -28,12 +44,6 @@ TYPE_BOOK = "book"
 TYPE_DVD = "dvd"
 # there is no comic type.
 TYPE_DEFAULT = TYPE_BOOK
-
-# xpath to retrieve information on the main search result page.
-SEARCH = {
-    "TITLE": ""
-    }
-
 
 """
 Some fields are not available directly in the search results page
@@ -187,6 +197,10 @@ class Scraper:
         date = date.split("-")[0].split(":")[1].strip()
         return date
 
+    @catch_errors
+    def _ean(self, product):
+        pass
+
     def search(self, *args, **kwargs):
         """Searches books.
 
@@ -198,6 +212,7 @@ class Scraper:
         for product in product_list:
             b = {}
             b["data_source"] = SOURCE_NAME
+            b["ean"] = self._ean(product) # missing
             b["title"] = self._title(product)
             b["details_url"] = self._details_url(product)
             b["authors"] = self._authors(product)
@@ -207,7 +222,6 @@ class Scraper:
             b["publishers"] = self._publisher(product)
             b["date"] = self._date(product)
             b["card_type"] = TYPE_BOOK
-            # b["ean"] = # missing
             bk_list.append(b)
 
         return bk_list, stacktraces
