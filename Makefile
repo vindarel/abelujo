@@ -12,12 +12,16 @@ debian:
 	@sudo npm install gulp -g
 
 # Install in current directory
-install_script:
-	./install.sh
+deps:
+	@pip install -r abelujo/requirements.txt     # install python libraries locally
+
+db:
+	@python manage.py syncdb --noinput           # populate the db for django
+	@python manage.py loaddata dbfixture.json    # set admin user (admin/admin)
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  install_script npm gulp
+install:  deps db npm gulp
 
 # Install npm and bower packages
 npm:
