@@ -81,6 +81,8 @@ odsimport:
 doc:
 	@cd doc/dev/ && make html
 
+html: doc
+
 clean:
 	find . -name "*.pyc" -exec rm {} +
 	rm -rf htmlcov
