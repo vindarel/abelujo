@@ -40,3 +40,4 @@ django-angular            # utilities to integrate django and angular
 
 ### utils
 toolz                   # pure, lazy, composable functional programming.
+sphinx==1.2.3           # documentation system.
