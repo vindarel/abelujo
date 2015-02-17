@@ -121,6 +121,7 @@ Docker, you'll have some work !
 
 - Python crash course: http://learnpythonthehardway.org/book/
 - Django documentation: https://docs.djangoproject.com/en/1.6/
+- Python ecosystem: https://github.com/vinta/awesome-python
 
 We use ``git`` as a source control system. You'll need to learn the
 basics (essentially what ``git commit``, ``git pull``, ``git push``

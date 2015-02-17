@@ -9,6 +9,7 @@ Contents:
    choices.rst
    angular-crash-course
    abelujo-dev.rst
+   webscraping.rst
    tuto.rst
 
 
