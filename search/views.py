@@ -31,7 +31,7 @@ from django.views.generic.detail import DetailView
 
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
-import datasources.frFR.chapitre.BuchWagnerScraper as BuchWagner # same name as module's SOURCE_NAME
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner # same name as module's SOURCE_NAME
 from models import Basket
 from models import Card
 from models import Deposit
@@ -47,7 +47,7 @@ DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 SCRAPER_CHOICES = [
     ("Book shops", (
             ("chapitre", "chapitre.com - fr"),
-            ("BuchWagner", "Buch-Wagner Munchen - de"),
+            ("buchWagner", "buchWagner Munchen - de"),
             )
      ),
     ("CDs", (

@@ -36,7 +36,7 @@ requests_cache.install_cache()
 logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-SOURCE_NAME = "BuchWagner"
+SOURCE_NAME = "buchWagner"
 SOURCE_URL_BASE = u"http://www.buch-wagner.de"
 SOURCE_URL_SEARCH = u"http://www.buch-wagner.de/SearchCmd?storeId=55250&catalogId=4099276460822233274&langId=-3&knv_header=yes&pageSize=12&beginIndex=0&sType=SimpleSearch&resultCatEntryType=2&showResultsPage=true&pageView=image&searchBtn=Search&searchFld=CATEGORY&searchFldName=Bücher&searchFldCount=29&searchFldId=4099276460822241224&searchTerm="
 ERR_OUTOFSTOCK = u"product out of stock"
