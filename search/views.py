@@ -34,6 +34,7 @@ import datasources.frFR.chapitre.chapitreScraper as chapitre
 import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner # same name as module's SOURCE_NAME
 from models import Basket
 from models import Card
+from models import CardType
 from models import Deposit
 from models import Distributor
 from models import Place
@@ -66,6 +67,21 @@ class SearchForm(forms.Form):
                         label="key words",
                         help_text="Partie du titre, nom de l'auteur, etc.",
                     )
+    ean = forms.CharField(required=False)
+
+def get_card_type_choices():
+    return [(0, "Tout")] + [(typ.id, typ.name)
+                           for typ in CardType.objects.all()]
+
+class CollectionSearchForm(forms.Form):
+    card_type = forms.ChoiceField(get_card_type_choices(),
+                                  label="Type de notice",
+                                  required=False)
+    q = forms.CharField(max_length=100,
+                        required=True,
+                        min_length=3,
+                        label="Mots-clefs")
+
     ean = forms.CharField(required=False)
 
 
@@ -343,23 +359,33 @@ def add(request):
 def collection(request):
     """Search our own collection and take actions
     """
-    form = SearchForm()
+    form = CollectionSearchForm()
     retlist = []
     cards = []
 
     if request.method == "POST":
-        form = SearchForm(request.POST)
+        form = CollectionSearchForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data.get("q"):
-                words = form.cleaned_data["q"].split()
-                cards = Card.search(words[0], to_list=True)
-                # store results in session for later re-use
-                request.session["collection_search"] = cards
-
-            elif request.POST.has_key("ean"):
+            if request.POST.has_key("ean") and \
+               form.cleaned_data.get("ean"):
                 messages.add_message(request, messages.INFO,
                                      "La recherche par ean n'est pas encore implémentée.")
                 log.debug("TODO: search on ean")
+
+            else:
+                card_type_id = form.cleaned_data.get("card_type")
+                if card_type_id:
+                    card_type_id = int(card_type_id)
+                words = form.cleaned_data.get("q").split()
+                if len(words) > 1:
+                    messages.add_message(request, messages.INFO,
+                                         "Beware: we only search for the first keyword at the moment.")
+                cards = Card.search(words[0], #TODO: all keywords please
+                                    card_type_id=card_type_id,
+                                    to_list=True)
+                # store results in session for later re-use
+                request.session["collection_search"] = cards
+
 
     else:
         # cards = request.session.get("collection_search")
@@ -375,7 +401,7 @@ def collection(request):
             })
 
 def sell(request):
-    form = SearchForm()
+    form = CollectionSearchForm()
     req = request.POST
     if not req.get("id"):
         message = u"Erreur: cette notice n'existe pas."

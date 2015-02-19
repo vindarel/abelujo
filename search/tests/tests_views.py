@@ -228,6 +228,16 @@ class TestCollectionView(TestCase, DBFixture):
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
 
+    def test_search_no_keywords(self):
+        form = {"q": "",}
+        resp = self.c.post(reverse("card_collection"), data=form)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_search_with_card_type(self):
+        form = {"q": "living", "card_type": "1"}  # all strings.
+        resp = self.c.post(reverse("card_collection"), data=form)
+        self.assertEqual(resp.status_code, 200)
+
     def test_search_ean(self):
         form = {"ean": self.fixture_ean,}
         resp = self.c.post(reverse("card_collection"), data=form)

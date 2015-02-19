@@ -27,6 +27,9 @@ form(action='/collection/', method='post')
   // {{ form.as_p }}
   input.btn.btn-primary(type='submit', value='submit')
 
+unless book_list
+  p.bg-info Aucun résultat
+
 for b in book_list
   table.table.table-condensed
     tr

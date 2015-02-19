@@ -43,6 +43,10 @@ from search.models import Preferences
 
 class TestCards(TestCase):
     def setUp(self):
+        # Create card types
+        self.type_book = "book"
+        typ = CardType(name=self.type_book)
+        typ.save()
         # create an author
         self.GOLDMAN = "Emma Goldman"
         self.goldman = Author(name=self.GOLDMAN)
@@ -50,7 +54,9 @@ class TestCards(TestCase):
         # create a Card
         self.fixture_ean = "987"
         self.fixture_title = "living my life"
-        self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
+        self.autobio = Card(title=self.fixture_title,
+                            ean=self.fixture_ean,
+                            card_type=typ)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
         # mandatory: unknown card type
@@ -62,10 +68,6 @@ class TestCards(TestCase):
         self.place.save()
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
-        # create other card types
-        self.type_book = "book"
-        typ = CardType(name=self.type_book)
-        typ.save()
 
     def test_add(self):
         found = Card.objects.get(title__icontains="living")
@@ -114,6 +116,25 @@ class TestCards(TestCase):
                               "quantity": 2})
         self.assertEqual(2, obj.quantity)
 
+    def test_search(self):
+        res = Card.search("gold", card_type_id=1)
+        self.assertEqual(1, len(res))
+
+    def test_search_notype(self):
+        res = Card.search("gold", card_type_id=999)
+        self.assertFalse(res)
+
+    def test_search_alltypes(self):
+        res = Card.search("gold", card_type_id=0)
+        self.assertTrue(res)
+
+    def test_search_only_type(self):
+        # should not pass data validation.
+        res = Card.search("", card_type_id=1)
+        self.assertEqual(1, len(res))
+
+    def test_search_key_words(self):
+        pass #TODO !
 
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)

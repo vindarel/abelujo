@@ -136,16 +136,15 @@ class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
     """
-    origkey = models.CharField(max_length=36, blank=True, null=True)
     title = models.CharField(max_length=CHAR_LENGTH)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True)
     #: ean/isbn (mandatory)
-    ean = models.CharField(max_length=99, null=True)
+    ean = models.CharField(max_length=99, null=True, blank=True)
     isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
-    price = models.CharField(null=True, max_length=20)
+    price = models.CharField(null=True, max_length=20, blank=True)
     quantity = models.IntegerField(null=False, default=1)
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
@@ -231,26 +230,33 @@ class Card(TimeStampedModel):
         return ret
 
     @staticmethod
-    def search(q, to_list=False, distributor=None):
+    def search(q, card_type_id=None, distributor=None, to_list=False):
         """Search a card on its title and its authors' names.
 
-        q: a list of key words
+        q: (string) a key word
         TODO: handle more than one kw !
+
+        card_type_id: id referencing to CardType
 
         to_list: if True, we return a list of dicts, not Card
         objects. Used to store the search result into the session,
         which doesn't know how to store Card objects.
 
-        q: the keyword to search
-
+        returns: a list of objects or a list of dicts if to_list is
+        specified.
         """
         cards = Card.objects.filter(Q(title__icontains=q) |
-                                    Q(authors__name__icontains=q))
+                                     Q(authors__name__icontains=q))
+
         if distributor and cards:
             cards = cards.filter(distributor__name__exact=distributor)
 
+        if cards and card_type_id:
+            cards = cards.filter(card_type=card_type_id)
+
         if to_list:
             cards = Card.obj_to_list(cards)
+
         return cards
 
     @staticmethod
