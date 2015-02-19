@@ -309,7 +309,7 @@ class TestDeposits(TestCase):
                                   'distributor': self.distributor,
                                   })
         self.assertEqual(len(msgs), 1, "add deposit from dict: %s" % msgs)
-        self.assertEqual(msgs[0]['level'], messages.SUCCESS)
+        self.assertEqual(msgs[0]['level'], "success")
 
     def test_from_dict_bad_deposit(self):
         self.card.distributor = None

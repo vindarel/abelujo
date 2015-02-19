@@ -714,22 +714,23 @@ class Deposit(TimeStampedModel):
 
         """
         msgs = []
-        try:
-            copies = depo_dict.pop('copies')  # add the copies after deposit creation.
-            copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
-            # Don't create it if it has no valid copies.
-            if not copies_to_add:
-                msgs.append({'level': "warning",
-                             'message': u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
-            else:
-                if depo_dict["auto_command"] == "true":
-                    depo_dict["auto_command"] = True  # TODO: form validation beforehand.
+        copies = depo_dict.pop('copies')  # add the copies after deposit creation.
+        copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
+        # Don't create it if it has no valid copies.
+        if not copies_to_add:
+            msgs.append({'level': "warning",
+                         'message': u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
+        else:
+            if depo_dict.get("auto_command") == "true":
+                depo_dict["auto_command"] = True  # TODO: form validation beforehand.
+            try:
                 dep = Deposit.objects.create(**depo_dict)
                 msgs += dep.add_copies(copies_to_add)
                 msgs.append({'level': "success",
                              'message':"Le dépôt a été créé avec succès."})
-            return  msgs
-        except Exception as e:
-            log.error("Adding a Deposit from_dict error ! ", e)
-            return msgs.append({'level': "danger",
-                                'message': e})
+            except Exception as e:
+                log.error("Adding a Deposit from_dict error ! ", e)
+                return msgs.append({'level': "danger",
+                                    'message': e})
+
+        return  msgs
