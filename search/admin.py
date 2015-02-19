@@ -25,10 +25,19 @@ from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
 
+class CardAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Card
+
+    search_fields = ["title", "authors__name"]
+    list_display = ("title", "distributor", "price",)
+    list_editable = ("distributor", "price",)
+    filter_horizontal = ("authors", "publishers",)
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
-admin.site.register(Card)
+admin.site.register(Card, CardAdmin)
 admin.site.register(Deposit)
 admin.site.register(Distributor)
 admin.site.register(Place)
