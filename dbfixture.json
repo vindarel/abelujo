@@ -26,27 +26,42 @@
         }
     },
     {"pk": 2,
-     "model": "search.cardtype",
-     "fields": {"name": "cd"}
+     "model":
+     "search.cardtype",
+     "fields": {"name": "booklet"}
     },
     {"pk": 3,
-     "model": "search.cardtype",
-     "fields": {"name": "dvd"}
+     "model":
+     "search.cardtype",
+     "fields": {"name": "newspaper"}
     },
     {"pk": 4,
-     "model": "search.cardtype",
-     "fields": {"name": "tshirt"}
+     "model":
+     "search.cardtype",
+     "fields": {"name": "other print"}
     },
     {"pk": 5,
      "model": "search.cardtype",
-     "fields": {"name": "vinyl"}
+     "fields": {"name": "cd"}
     },
     {"pk": 6,
+     "model": "search.cardtype",
+     "fields": {"name": "dvd"}
+    },
+    {"pk": 7,
+     "model": "search.cardtype",
+     "fields": {"name": "tshirt"}
+    },
+    {"pk": 8,
+     "model": "search.cardtype",
+     "fields": {"name": "vinyl"}
+    },
+    {"pk": 9,
      "model":
      "search.cardtype",
      "fields": {"name": "other"}
     },
-    {"pk": 7,
+    {"pk": 10,
      "model":
      "search.cardtype",
      "fields": {"name": "unknown"}
