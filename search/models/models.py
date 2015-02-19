@@ -172,6 +172,8 @@ class Card(TimeStampedModel):
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
+        """To pretty print a list of cards, see models.utils.ppcard.
+        """
         MAX_LENGTH = 15
         authors = self.authors.all()
         authors = authors[0].name if authors else ""
