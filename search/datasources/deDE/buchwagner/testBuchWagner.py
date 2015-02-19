@@ -21,8 +21,8 @@ import sys
 import unittest
 import yaml
 
-from BuchWagnerScraper import Scraper
-from BuchWagnerScraper import postSearch
+from buchWagnerScraper import Scraper
+from buchWagnerScraper import postSearch
 
 def filterAttribute(attr, dataresult, fdata):
     """Filter out elements from fdata.

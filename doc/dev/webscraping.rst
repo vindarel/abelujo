@@ -103,6 +103,9 @@ Test strategy
 
 Unit tests and end-to-end tests.
 
+They are long the first time we run them (awaiting HTTP requests),
+quick the second time (using the cache).
+
 TODO: finish e2e tests
 
 TODO: Continuous integration.

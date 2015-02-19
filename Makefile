@@ -52,8 +52,13 @@ unit:
 ods:
 	cd search/datasources/odslookup/tests/ && nosetests --nologcapture
 
+# Test the scrapers but not the ods module.
+testscrapers:
+	@cd search/datasources/frFR/ && nosetests
+	@cd search/datasources/deDE/buchwagner/ && nosetests
+
 # Run all tests possible.
-test: unit e2e ods
+test: unit e2e ods testscrapers
 
 # Install the app in a fresh environment
 ci:
