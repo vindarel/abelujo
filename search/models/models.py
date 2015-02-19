@@ -464,10 +464,10 @@ class Place (models.Model):
     date_deletion = models.DateField(null=True, blank=True)
 
     #: Is this place a stand ?
-    is_stand = models.BooleanField()
+    is_stand = models.BooleanField(default=False)
 
     #: Is it allowed to sell books from here ?
-    can_sell = models.BooleanField()
+    can_sell = models.BooleanField(default=True)
 
     #: Optional comment
     comment = models.TextField(null=True, blank=True)
