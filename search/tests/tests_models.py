@@ -117,24 +117,25 @@ class TestCards(TestCase):
         self.assertEqual(2, obj.quantity)
 
     def test_search(self):
-        res = Card.search("gold", card_type_id=1)
+        # Should search with way more cards.
+        res = Card.search(["gold"], card_type_id=1)
         self.assertEqual(1, len(res))
 
     def test_search_notype(self):
-        res = Card.search("gold", card_type_id=999)
+        res = Card.search(["gold"], card_type_id=999)
         self.assertFalse(res)
 
     def test_search_alltypes(self):
-        res = Card.search("gold", card_type_id=0)
+        res = Card.search(["gold"], card_type_id=0)
         self.assertTrue(res)
 
     def test_search_only_type(self):
-        # should not pass data validation.
-        res = Card.search("", card_type_id=1)
-        self.assertEqual(1, len(res))
+        # Doesn't pass data validation.
+        self.assertFalse(Card.search("", card_type_id=1))
 
     def test_search_key_words(self):
-        pass #TODO !
+        res = Card.search(["liv", "gold"])
+        self.assertEqual(1, len(res))
 
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)

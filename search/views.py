@@ -377,10 +377,7 @@ def collection(request):
                 if card_type_id:
                     card_type_id = int(card_type_id)
                 words = form.cleaned_data.get("q").split()
-                if len(words) > 1:
-                    messages.add_message(request, messages.INFO,
-                                         "Beware: we only search for the first keyword at the moment.")
-                cards = Card.search(words[0], #TODO: all keywords please
+                cards = Card.search(words,
                                     card_type_id=card_type_id,
                                     to_list=True)
                 # store results in session for later re-use

@@ -230,11 +230,10 @@ class Card(TimeStampedModel):
         return ret
 
     @staticmethod
-    def search(q, card_type_id=None, distributor=None, to_list=False):
+    def search(words, card_type_id=None, distributor=None, to_list=False):
         """Search a card on its title and its authors' names.
 
-        q: (string) a key word
-        TODO: handle more than one kw !
+        words: (list of strings) a list of key words
 
         card_type_id: id referencing to CardType
 
@@ -245,8 +244,17 @@ class Card(TimeStampedModel):
         returns: a list of objects or a list of dicts if to_list is
         specified.
         """
-        cards = Card.objects.filter(Q(title__icontains=q) |
-                                     Q(authors__name__icontains=q))
+        if not words:
+            # Doesn't pass data validation of the view.
+            return []
+
+        head = words[0]
+        cards = Card.objects.filter(Q(title__icontains=head) |
+                                     Q(authors__name__icontains=head))
+        if len(words) > 1:
+            for elt in words[1:]:
+                cards = cards.filter(Q(title__icontains=elt)|
+                                     Q(authors__name__icontains=elt))
 
         if distributor and cards:
             cards = cards.filter(distributor__name__exact=distributor)
