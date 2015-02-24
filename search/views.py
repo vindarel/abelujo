@@ -393,6 +393,7 @@ def collection(request):
 
     return render(request, "search/collection.jade", {
             "searchForm": form,
+            "nb_results": len(cards),
             "book_list": cards,
             "AddToDepositForm": AddToDepositForm,
             })

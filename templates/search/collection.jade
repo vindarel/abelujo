@@ -30,6 +30,7 @@ form(action='/collection/', method='post')
 unless book_list
   p.bg-info Aucun résultat
 
+p {{ nb_results }} results
 for b in book_list
   table.table.table-condensed
     tr
@@ -39,7 +40,8 @@ for b in book_list
         span
           h3
             a(href="/admin/search/card/{{ b.id }}", title="Modifiez la notice") {{b.title}}
-          a(href="{{ b.details_url }}") Voir sur {{ b.data_source }}
+          if b.details_url
+            a(href="{{ b.details_url }}") Voir sur {{ b.data_source }}
         if b.authors
           h4 {{b.authors}}
         table.table-condensed
