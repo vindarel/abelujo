@@ -18,8 +18,8 @@ def cards(request, **response_kwargs):
     """return the json list of all cards.
     """
     data = ['goldman', 'arendt', 'hello from django json']
-    # import ipdb; ipdb.set_trace()
     query = request.GET.get("query")
+    query = query.split()
     distributor = request.GET.get("distributor")
     # data = serializers.serialize("json", Card.search(query))
     data = Card.search(query, to_list=True, distributor=distributor)
