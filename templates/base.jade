@@ -22,9 +22,6 @@ html(ng-app="abelujo")
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
 
-    // example for angular:
-    // div
-    div(ng-controller="IntroController")
     div {% block pagetitle %} {% endblock %}
   body.container
     nav.navbar.navbar-default(role="navigation")
