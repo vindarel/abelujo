@@ -9,6 +9,7 @@ from django.core import serializers
 from django.http import HttpResponse
 
 from models import Card
+from models import Basket
 from models import Deposit
 from models import Distributor
 
@@ -23,7 +24,7 @@ def cards(request, **response_kwargs):
     distributor = request.GET.get("distributor")
     # data = serializers.serialize("json", Card.search(query))
     data = Card.search(query, to_list=True, distributor=distributor)
-    print "we have json cards:", data
+    log.info("we have json distributors: ", data)
     response_kwargs['content_type'] = 'application/json'
     return HttpResponse(json.dumps(data), **response_kwargs)
 
@@ -32,8 +33,8 @@ def distributors(request, **response_kwargs):
         query = request.GET.get("query")
         data = Distributor.search(query)
         data = serializers.serialize("json", data)
+        log.info("we have json distributors: ", data)
         response_kwargs['content_type'] = 'application/json'
-        print "we have json distributors: ", data
         return HttpResponse(data, **response_kwargs)
 
 def list_from_coma_separated_ints(str):

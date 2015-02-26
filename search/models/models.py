@@ -212,6 +212,7 @@ class Card(TimeStampedModel):
                 "ean": card.ean,
                 "id": card.id,
                 "img": card.img,
+                "get_absolute_url": card.get_absolute_url(),
                 "quantity": card.quantity,
                 "publishers": ", ".join([p.name.capitalize() for p in card.publishers.all()]),
                 "collection": card.collection.name.capitalize() if card.collection else None,
@@ -302,18 +303,28 @@ class Card(TimeStampedModel):
     def sell(id=None, quantity=1):
         """Sell a card. Decreases its quantity.
 
+        :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")
         """
+        # Why use a static method ? Because from the view, we get
+        # back an id and not a Card object. Why ? Because we want to
+        # store list of cards into the session, and we can't serialize
+        # Card objects as is, so we use lits of dicts (but we may use
+        # django serialization instead).
         try:
             card = Card.objects.get(id=id)
             card.sold = date.today()
             card.price_sold = card.price
             card.quantity = card.quantity - quantity
             card.save()
-            return (True, "")
         except ObjectDoesNotExist, e:
             log.warning("Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")
+
+        if card.quantity <= 0:
+            Basket.add_to_auto_command(card)
+
+        return (True, "")
 
     @staticmethod
     def from_dict(card):
@@ -426,13 +437,11 @@ class Card(TimeStampedModel):
 
         return card_obj
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('book_detail', (), {'pk': self.pk})
+        return "/admin/search/card/{}".format(self.id)
 
     def display_year_published(self):
         "We only care about the year"
-
         return self.year_published.strftime(u'%Y')
 
     def set_sortkey(self):
@@ -576,6 +585,17 @@ class Basket(models.Model):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def auto_command_nb():
+        """Return the number of cards in the auto_command basket, if any.
+
+        (the basket may not exist in tests).
+        """
+        try:
+            return Basket.objects.get(name="auto_command").copies.count()
+        except:
+            return 0
+
     def add_copy(self, card, nb=1):
         """Adds the given card to the basket.
 
@@ -589,6 +609,15 @@ class Basket(models.Model):
             basket_copy.save()
         except Exception as e:
             log.error("Error while adding a card to basket %s: %s" % (self.name,e))
+
+    @staticmethod
+    def add_to_auto_command(card):
+        """Add the given Card object to the basket for auto commands.
+        """
+        try:
+            Basket.objects.get(name="auto_command").add_copy(card)
+        except:
+            log.error("Error while adding the card {} to the auto_command basket.".format(card.__unicode__))
 
 class BasketType (models.Model):
     """
@@ -745,7 +774,7 @@ class Deposit(TimeStampedModel):
                 msgs.append({'level': "success",
                              'message':"Le dépôt a été créé avec succès."})
             except Exception as e:
-                log.error("Adding a Deposit from_dict error ! ", e)
+                log.error("Adding a Deposit from_dict error ! {}".format(e))
                 return msgs.append({'level': "danger",
                                     'message': e})
 

@@ -275,8 +275,9 @@ class TestPlaceCopies(TestCase):
 class TestBaskets(TestCase):
 
     def setUp(self):
-        # Create a Card and a Basket.
+        # Create a Card, a Basket and the "auto_command" Basket.
         self.basket = Basket(name="test basket"); self.basket.save()
+        self.basket_commands, created = Basket.objects.get_or_create(name="auto_command"); self.basket_commands.save()
         self.card = Card(title="test card") ; self.card.save()
         self.nb_copies = 9
 
@@ -291,6 +292,13 @@ class TestBaskets(TestCase):
         self.basket.add_copy(self.card, nb=self.nb_copies)
         self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1 + self.nb_copies)
 
+    def test_sell_auto_command_add_to_basket(self):
+        """When a card reaches the threshold (0), pertains to a deposit and
+        the deposit's auto_command is set to True, then add this card to the
+        appropriate basket.
+        """
+        Card.sell(id=self.card.id)
+        self.assertEqual(self.basket_commands.basketcopies_set.get(card=self.card).nb, 1)
 
 class TestDeposits(TestCase):
 

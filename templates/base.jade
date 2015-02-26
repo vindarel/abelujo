@@ -18,14 +18,13 @@
 
 html(ng-app="abelujo")
   head
-    script(type='text/javascript', src="{% static 'bower_components/jquery/jquery.js' %}") // load jquery before autocomplete_light and django_bootstrap.
+    script(type='text/javascript', src="{% static 'bower_components/jquery/jquery.js' %}") // load jquery before django_bootstrap.
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
 
     // example for angular:
     // div
     div(ng-controller="IntroController")
-    title Abelujo
     div {% block pagetitle %} {% endblock %}
   body.container
     nav.navbar.navbar-default(role="navigation")
@@ -48,6 +47,10 @@ html(ng-app="abelujo")
             a(href="/search") Nouvelle entrée
           li
             a(href="/deposits") Dépôts
+          li
+            a(href="/commands") A commander
+              span.badge {% block auto_command_nb %} {{auto_command_nb}} {% endblock %}
+              // nb of copies in auto_command basket
 
   div.col-md-10(id="content")
     {% if messages %}

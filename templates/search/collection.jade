@@ -15,6 +15,8 @@
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 {% extends "base.jade" %}
 
+{% block auto_command_nb %} {{ auto_command_nb }} {% endblock %}
+
 {% block content %}
 
 {% load bootstrap3 %}
@@ -38,8 +40,7 @@ for b in book_list
         td: img(src="{{ b.img }}")
       td
         span
-          h3
-            a(href="/admin/search/card/{{ b.id }}", title="Modifiez la notice") {{b.title}}
+          h3: a(href="{{ b.get_absolute_url }}", title="Modifiez la notice") {{b.title}}
           if b.details_url
             a(href="{{ b.details_url }}") Voir sur {{ b.data_source }}
         if b.authors

@@ -23,16 +23,19 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-if deposits
-  h3 Dépôts existants:
-else
-  h3 Aucun dépôt existant
-table.table.table-striped.table-hover
-  for dep in deposits
+unless cards
+  p Aucune notice dans ce panier.
+table.table.table-condensed.table-striped
+  tr
+    td Titre
+    td Auteurs
+    td Diffuseur
+    td Quantité restante
+  for card in cards
     tr
-      td
-        a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
-      td {{ dep.distributor.name }}
+      td: a(href="{{ card.get_absolute_url }}") {{ card.title }}
+      td {{ card.display_authors }}
+      td {{ card.distributor.name }}
+      td {{ card.quantity }}
 
-a.btn.btn-primary(href="{% url 'deposits_new' %}") Nouveau dépôt
-{% endblock content %}
+{% endblock %}
