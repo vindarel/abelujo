@@ -27,12 +27,16 @@ form(action='/collection/', method='post')
   {% csrf_token %}
   {% bootstrap_form searchForm %}
   // {{ form.as_p }}
-  input.btn.btn-primary(type='submit', value='submit')
+  input.btn.btn-primary(type='submit', value='valider')
+
 
 unless book_list
   p.bg-info Aucun résultat
 
-p {{ nb_results }} results
+span: span {{ nb_results }} results
+      a(href="/collection/?format=text")
+        input.btn.btn-primary(type="submit", value="voir en texte", style="float: right;")
+
 for b in book_list
   table.table.table-condensed
     tr

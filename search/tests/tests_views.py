@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from search.models import Basket
 from search.models import Card
 from search.models import CardType
 from search.models import Deposit
@@ -79,6 +80,10 @@ class DBFixture():
         self.place.save()
         # Preferences: (default place)
         self.preferences = Preferences(default_place=self.place).save()
+        # create a Basket
+        self.basket = Basket(name="basket_test")
+        self.basket.save()
+
 
         # a Distributor and a Deposit with no cards
         self.distributor_name = "distributor test"
@@ -242,6 +247,13 @@ class TestCollectionView(TestCase, DBFixture):
         form = {"ean": self.fixture_ean,}
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
+
+    def test_view_as_text(self):
+        resp = self.c.get(reverse("card_collection") + "/?format=text")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue("living" in resp.content)
+        self.assertTrue("Goldman" in resp.content)
+        self.assertTrue("1 titles, 1 exemplaries" in resp.content)
 
 
 class TestDeposit(TestCase, DBFixture):

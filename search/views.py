@@ -24,6 +24,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.generic import ListView
@@ -32,12 +33,15 @@ from django.views.generic.detail import DetailView
 import datasources.all.discogs.discogsConnector as discogs
 import datasources.frFR.chapitre.chapitreScraper as chapitre
 import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner # same name as module's SOURCE_NAME
+
 from models import Basket
 from models import Card
 from models import CardType
 from models import Deposit
 from models import Distributor
 from models import Place
+
+from search.models.utils import ppcard
 
 log = logging.getLogger(__name__)
 
@@ -129,14 +133,8 @@ class DepositForm(forms.ModelForm):
                                             required=False)
     class Meta:
         model = Deposit
-        # fields = ["name",
-                  # "distributor",
-                  # "deposit_type",
-                  # "initial_nb_copies",
-                  # "min_nb_copies",
-                  # "auto_command",
-                  # "copies",
-        # ]
+        fields = "__all__"
+        # exclude = ["copies",]
 
 def get_deposits_choices():
     choices = [(depo.name, depo.name) for depo in Deposit.objects.all()]
@@ -392,11 +390,18 @@ def collection(request):
 
 
     else:
-        # cards = request.session.get("collection_search")
+        # GET
+        cards = request.session.get("collection_search")
         if not cards:
             # Get a serializable object to store it in the session.
-            cards = Card.first_cards(5, to_list=True)
+            cards = Card.first_cards(5)
+            cards = Card.obj_to_list(cards)
             request.session["collection_search"] = cards
+
+        if request.GET.get("format") == "text":
+            response = HttpResponse(ppcard(cards),
+                                    content_type="text/plain;charset=utf-8")
+            return response
 
     return render(request, "search/collection.jade", {
             "searchForm": form,
