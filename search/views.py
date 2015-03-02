@@ -78,7 +78,7 @@ class CollectionSearchForm(forms.Form):
                                   label="Type de notice",
                                   required=False)
     q = forms.CharField(max_length=100,
-                        required=True,
+                        required=False,
                         min_length=3,
                         label="Mots-clefs")
 

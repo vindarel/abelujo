@@ -131,7 +131,7 @@ class TestCards(TestCase):
 
     def test_search_only_type(self):
         # Doesn't pass data validation.
-        self.assertFalse(Card.search("", card_type_id=1))
+        self.assertTrue(Card.search("", card_type_id=1))
 
     def test_search_key_words(self):
         res = Card.search(["liv", "gold"])

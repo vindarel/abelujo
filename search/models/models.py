@@ -236,6 +236,8 @@ class Card(TimeStampedModel):
     def search(words, card_type_id=None, distributor=None, to_list=False):
         """Search a card on its title and its authors' names.
 
+        SIZE_LIMIT = 100
+
         words: (list of strings) a list of key words
 
         card_type_id: id referencing to CardType
@@ -247,17 +249,18 @@ class Card(TimeStampedModel):
         returns: a list of objects or a list of dicts if to_list is
         specified.
         """
-        if not words:
+        SIZE_LIMIT = 100 #TODO: pagination
+        if words:
             # Doesn't pass data validation of the view.
-            return []
-
-        head = words[0]
-        cards = Card.objects.filter(Q(title__icontains=head) |
-                                     Q(authors__name__icontains=head))
-        if len(words) > 1:
-            for elt in words[1:]:
-                cards = cards.filter(Q(title__icontains=elt)|
-                                     Q(authors__name__icontains=elt))
+            head = words[0]
+            cards = Card.objects.filter(Q(title__icontains=head) |
+                                         Q(authors__name__icontains=head))
+            if len(words) > 1:
+                for elt in words[1:]:
+                    cards = cards.filter(Q(title__icontains=elt)|
+                                         Q(authors__name__icontains=elt))
+        else:
+            cards = Card.objects.all()  # returns a QuerySets, which are lazy.
 
         if distributor and cards:
             cards = cards.filter(distributor__name__exact=distributor)
@@ -268,7 +271,7 @@ class Card(TimeStampedModel):
         if to_list:
             cards = Card.obj_to_list(cards)
 
-        return cards
+        return cards[:SIZE_LIMIT]
 
     @staticmethod
     def get_from_kw(words, to_list=False):
