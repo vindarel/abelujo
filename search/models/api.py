@@ -18,12 +18,15 @@ log = logging.getLogger(__name__)
 def cards(request, **response_kwargs):
     """return the json list of all cards.
     """
-    data = ['goldman', 'arendt', 'hello from django json']
+    data = []
     query = request.GET.get("query")
-    query = query.split()
+    query = query.split() if query else None
     distributor = request.GET.get("distributor")
+    card_type_id = request.GET.get("card_type_id")
     # data = serializers.serialize("json", Card.search(query))
-    data = Card.search(query, to_list=True, distributor=distributor)
+    data = Card.search(query, to_list=True,
+                       distributor=distributor,
+                       card_type_id=card_type_id)
     log.info("we have json distributors: ", data)
     response_kwargs['content_type'] = 'application/json'
     return HttpResponse(json.dumps(data), **response_kwargs)
