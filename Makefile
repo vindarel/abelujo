@@ -3,7 +3,7 @@
 # Makefile: because we need more elaborate commands than manage.py
 
 # The target names are not a file produced by the commands of that target. Always out of date.
-.PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp
+.PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp tox
 
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
 debian:
@@ -59,6 +59,11 @@ testscrapers:
 
 # Run all tests possible.
 test: unit e2e ods testscrapers
+
+# Build test virtual environments, test against multiple python versions.
+# see tox.ini
+tox:
+	@tox
 
 # Install the app in a fresh environment
 ci:

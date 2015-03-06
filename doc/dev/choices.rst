@@ -1,6 +1,24 @@
 Technical choices
 =================
 
+Tox
+---
+
+`Tox <https://testrun.org/tox/latest/>`_ is a generic virtualenv
+management and test command line tool we can use for:
+
+- checking our package installs correctly with different Python
+  versions and interpreters
+- running our tests in each of the environments, configuring our
+   test tool of choice
+- acting as a frontend to Continuous Integration servers, greatly
+    reducing boilerplate and merging CI and shell-based testing.
+
+Abelujo only runs on python2.7 at the moment. Tox helps us test that
+our application installs and runs correctly in a fresh virtual
+environment.
+
+
 Why AngularJS and not JQuery/Ember/<project xxx> ?
 --------------------------------------------------
 
