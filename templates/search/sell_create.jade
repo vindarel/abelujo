@@ -1,0 +1,49 @@
+// Copyright 2014 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+h3 Effectuer une vente
+div(ng-controller="sellController")
+
+  div
+    alert(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
+
+  // form(action='/api/distributors', method='post')
+  form(method='post')
+      b
+        div Type de fiche
+      select.form-control(ng-model="card_type", ng-options="elt.name group by elt.target for elt in card_types", required)
+
+      div
+        span Cherchez des {% verbatim %} {{ card_type }} {% endverbatim %}
+
+      input.nullable.form-control(type='text', typeahead-loading="loadingCards", ng-model='{% verbatim %} copy_selected {% endverbatim %}', typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}', typeahead-min-length="3", typeahead-on-select="add_selected_card($item)")
+      i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
+      ul.list-group(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
+        li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
+          i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)")
+
+      input.btn.btn-primary(type="submit", value="Enregistrer", ng-click="addDeposit()")
+      // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
+
+
+{% endblock content %}

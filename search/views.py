@@ -411,25 +411,28 @@ def collection(request):
             "auto_command_nb": auto_command_nb,
             })
 
-def sell(request):
-    form = CollectionSearchForm()
-    req = request.POST
-    if not req.get("id"):
-        message = u"Erreur: cette notice n'existe pas."
-        level = messages.ERROR
-    else:
-        ret, msg = Card.sell(id=req['id'])
-        if ret:
-            message = u"La vente de %s est bien enregistrée." % (req.get('title'),)
-            level = messages.SUCCESS
-        else:
-            message = u"La vente a échoué. %s" % msg
-            level = messages.ERROR
+# def sell(request):
+#     form = CollectionSearchForm()
+#     req = request.POST
+#     if not req.get("id"):
+#         message = u"Erreur: cette notice n'existe pas."
+#         level = messages.ERROR
+#     else:
+#         ret, msg = Card.sell(id=req['id'])
+#         if ret:
+#             message = u"La vente de %s est bien enregistrée." % (req.get('title'),)
+#             level = messages.SUCCESS
+#         else:
+#             message = u"La vente a échoué. %s" % msg
+#             level = messages.ERROR
 
-    messages.add_message(request, level, message)
-    return render(request, 'search/index.jade', {
-                  'searchForm': form
-                  })
+#     messages.add_message(request, level, message)
+#     return render(request, 'search/index.jade', {
+#                   'searchForm': form
+#                   })
+
+def sell(request):
+    return render(request, "search/sell_create.jade")
 
 class depositsListView(ListView):
     model = Deposit
