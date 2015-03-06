@@ -98,6 +98,8 @@ We use:
 -   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
 -   the [AngularJS](https://angularjs.org/) javascript framework.
 
+See the developer documentation: http://dev.abelujo.cc/
+
 We are currently working at expanding the database (adding deposits,
 distributors, …).
 
@@ -106,8 +108,6 @@ api).
 
 You can have a look at the existing scrapers at [search/datasources](search/datasources/). Some
 abstraction work remains to be done. And shall we use [scrapy](http://doc.scrapy.org/en/latest/intro/overview.html) ?
-
-You are invited to read the [developer documentation](doc/dev/index.rst).
 
 
 Load testing data
