@@ -766,7 +766,7 @@ class Deposit(TimeStampedModel):
         copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
         # Don't create it if it has no valid copies.
         if not copies_to_add:
-            msgs.append({'level': "warning",
+            msgs.append({'level': messages.WARNING,
                          'message': u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
         else:
             if depo_dict.get("auto_command") == "true":
