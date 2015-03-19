@@ -23,7 +23,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
       $scope.card_type = $scope.card_types[0];
       $scope.tmpcard = undefined;
       $scope.selected_ids = [];
-      $scope.total_price = undefined;
+      $scope.total_price = 0;
 
       // messages for ui feedback: list of couple level/message
       $scope.messages = undefined;
@@ -110,8 +110,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
               $scope.total_price += $scope.tmpcard.price;
               $scope.selected_ids.push($scope.tmpcard.id);
           };
-          $scope.selected_ids.splice(index_to_rm, 1);
+          $scope.copy_selected = undefined;
+      };
+
+      $scope.remove_from_selection = function(index_to_rm){
           $scope.total_price -= $scope.cards_selected[index_to_rm].price;
+          $scope.selected_ids.splice(index_to_rm, 1);
+          $scope.cards_selected.splice(index_to_rm, 1);
       };
 
       $scope.reset_card_list_following_dist = function(dist_name){
