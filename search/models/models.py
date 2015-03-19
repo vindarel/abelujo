@@ -144,7 +144,7 @@ class Card(TimeStampedModel):
     isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
-    price = models.CharField(null=True, max_length=20, blank=True)
+    price = models.FloatField(null=True, blank=True)
     quantity = models.IntegerField(null=False, default=1)
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)

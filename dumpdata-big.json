@@ -788,7 +788,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/403/35221403_8211630.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:36.333Z",
-            "price": "15,30",
+            "price": 15.30,
             "price_sold": null,
             "publishers": [
                 1
@@ -1061,7 +1061,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/620/8996620_4044244.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:45.539Z",
-            "price": "13,20",
+            "price": 13.20,
             "price_sold": null,
             "publishers": [
                 1
@@ -1151,7 +1151,7 @@
             "img": "http://www.images-chapitre.com/ima0/newnormal/235/25009235_9203729.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:48.418Z",
-            "price": "7,10",
+            "price": 7.10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1242,7 +1242,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/481/51856481_10584813.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:51.632Z",
-            "price": "7,00",
+            "price": 7.00,
             "price_sold": null,
             "publishers": [
                 1
@@ -1602,7 +1602,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/504/44544504_10317498.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:03.894Z",
-            "price": "8,00",
+            "price": 8.00,
             "price_sold": null,
             "publishers": [
                 1
@@ -1632,7 +1632,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/494/33602494_8043339.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:04.699Z",
-            "price": "6,10",
+            "price": 6.10,
             "price_sold": null,
             "publishers": [
                 1
