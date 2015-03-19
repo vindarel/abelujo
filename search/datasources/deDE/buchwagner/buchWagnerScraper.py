@@ -23,14 +23,22 @@ http://www.buch-wagner.de
 """
 
 from bs4 import BeautifulSoup
-from functools import wraps
-import json
 import logging
-import re
+import os
 import requests
 import requests_cache
 import sys
-import traceback
+
+# Add "datasources" to sys.path (independant from Django project,
+# to clean up for own module).
+common_dir = os.path.dirname(os.path.abspath(__file__))
+cdp, _ = os.path.split(common_dir)
+cdpp, _ = os.path.split(cdp)
+cdppp, _ = os.path.split(cdpp)
+sys.path.append(cdppp)
+from datasources.utils.scraperUtils import priceFromText
+from datasources.utils.scraperUtils import priceStr2Float
+from datasources.utils.decorators import catch_errors
 
 requests_cache.install_cache()
 logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
@@ -57,39 +65,6 @@ above, which gets those complementary fields, if any.
 
 
 
-def catch_errors(fn):
-    """Catch all sort of exceptions, print them, print the stacktrace.
-
-    This is helpful to refactor try/except blocks.
-    I.e:
-
-    ```
-    def method():
-        try:
-            foo._title(url)
-        except Exception as e:
-            log.debug("error at ...")
-    ```
-    becomes
-    ```
-    @catch_errors
-    def method():
-        foo._title()
-    ```
-    """
-
-    @wraps(fn)  # juste to preserve the name of the decorated fn.
-    def handler(inst, arg):
-        try:
-            return fn(inst, arg)
-        except Exception as e:
-            log.error("Error at method {}: {}".format(fn.__name__, e))
-            log.error("for search: {}".format(inst.query))
-            # The traceback must point to its origin, not to this decorator:
-            exc_type, exc_instance, exc_traceback = sys.exc_info()
-            log.error("".join(traceback.format_tb(exc_traceback)))
-
-    return handler
 
 class Scraper:
     """Must have:
