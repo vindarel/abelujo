@@ -139,6 +139,7 @@ class Scraper:
     def _price(self, product):
         price = product.find(class_="bookPrise").text
         price = price.replace("EUR", "").strip()
+        price = priceStr2Float(price)
         return price
 
     @catch_errors
