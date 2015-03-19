@@ -43,11 +43,23 @@ A scraper must have:
 # http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&titre=&ne=&n=0&auteur=&peopleId=&quicksearch=victor+hugo&editeur=&reference=&plng=&optSearch=ALL&beginDate=&endDate=&mot_cle=&prix=&themeId=&collection=&subquicksearch=&page=1
 
 from bs4 import BeautifulSoup
-import re
 import logging
+import os
 import requests
 import requests_cache
+import sys
 import json
+
+# Add "datasources" to sys.path (independant from Django project,
+# to clean up for own module).
+common_dir = os.path.dirname(os.path.abspath(__file__))
+cdp, _ = os.path.split(common_dir)
+cdpp, _ = os.path.split(cdp)
+cdppp, _ = os.path.split(cdpp)
+sys.path.append(cdppp)
+
+from datasources.utils.scraperUtils import priceFromText
+from datasources.utils.scraperUtils import priceStr2Float
 
 requests_cache.install_cache()
 logging.basicConfig(format='%(levelname)s [%(name)s]:%(message)s', level=logging.DEBUG)
@@ -55,7 +67,8 @@ log = logging.getLogger(__name__)
 
 DATA_SOURCE_NAME = "chapitre"
 CHAPITRE_BASE_URL = "http://www.chapitre.com"
-ERR_OOSTOCK = "produit indisponible"
+ERR_OOSTOCK = 0
+"""what to set the price with when we don't find it."""
 TYPE_BOOK = "book"
 TYPE_DVD = "dvd"
 # there is no comic type.
@@ -269,24 +282,29 @@ class Scraper:
             log.debug(e)
             return ""
 
+
     def _price(self, product):
-        "the real price, without -5%"
+        """The real price, without -5%.
+
+        return: an int
+        """
         try:
             # if product is out of stock, there is no price but a pb-inner with
             #   "ce produit est temporairement indisponible"
 
             realprice = product.product.find(class_='publicPrice')
             if realprice:
-                match = re.search('\d+,?\d*', realprice.text)
-                price = match.group()
+                price = priceFromText(realprice.text)
             else:
-                pb = product.product.find(class_="pb-inner")
+                pb = product.product.find(class_="actualPrice")
                 if pb:
-                    price = ERR_OOSTOCK
+                    price = priceFromText(pb.text)
                 else:
-                    price = "undefined"
+                    price = 0
 
+            price = priceStr2Float(price)
             return price
+
         except Exception, e:
             log.debug('Error getting price', e)
 

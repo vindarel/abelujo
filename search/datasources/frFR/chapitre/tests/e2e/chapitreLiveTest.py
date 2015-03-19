@@ -73,8 +73,9 @@ class testChapitreFromEan(unittest.TestCase):
         self.assertEqual(len(bk["authors"]), 3)
 
     def test_price(self):
-        # don't check the value since chapitre.com has more and more undefined prices.
         self.assertTrue(self.book["price"])
+        # chapitre.com has undefined prices, but they should be rendered as Floats anyway.
+        self.assertTrue(type(self.book["price"]) == type(0.5))
 
     def test_book_details(self):
         b = Book(isbn="978-2-03-583425-6", ean="9782035834256",

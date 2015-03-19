@@ -698,7 +698,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/500/57512500_11205026.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:33.337Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -728,7 +728,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/482/54748482_10852487.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:34.274Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -758,7 +758,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/458/39992458_8653406.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:35.280Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 2
@@ -819,7 +819,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/456/58485456_11425306.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:37.329Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -849,7 +849,7 @@
             "img": "http://www.images-chapitre.com/indispo/newnormal.png",
             "isbn": "",
             "modified": "2014-11-19T14:55:07.061Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": "",
             "publishers": [
                 1
@@ -879,7 +879,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/742/41626742_9856451.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:39.155Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -910,7 +910,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/457/58485457_11425309.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:40.235Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -940,7 +940,7 @@
             "img": "http://www.images-chapitre.com/ima0/newnormal/051/39487051_9501924.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:41.197Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -971,7 +971,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/455/58485455_11425303.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:42.327Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1001,7 +1001,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/503/44544503_10583463.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:43.347Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1031,7 +1031,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/535/22746535_2559505.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:44.453Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1091,7 +1091,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/445/53490445_10851129.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:46.428Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1121,7 +1121,7 @@
             "img": "http://www.images-chapitre.com/ima3/newnormal/862/1646862_8827965.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:47.390Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1182,7 +1182,7 @@
             "img": "http://www.images-chapitre.com/ima3/newnormal/961/63758961_11875929.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:49.674Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1212,7 +1212,7 @@
             "img": "http://www.images-chapitre.com/ima3/newnormal/859/1646859_3444229.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:50.594Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1272,7 +1272,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/407/17750407_6708848.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:52.569Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1302,7 +1302,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/446/55378446_10900358.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:53.942Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1332,7 +1332,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/290/23666290_6187649.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:54.837Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1362,7 +1362,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/469/57799469_11220401.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:56.160Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1392,7 +1392,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/457/55327457_10900354.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:57.054Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1422,7 +1422,7 @@
             "img": "http://www.images-chapitre.com/ima0/newnormal/114/1408114_10650660.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:58.145Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 3
@@ -1452,7 +1452,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/289/23666289_4070776.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:37:59.149Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1482,7 +1482,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/740/41626740_9501929.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:00.104Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1512,7 +1512,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/536/61929536_11664179.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:00.899Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1542,7 +1542,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/522/51819522_10584853.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:02.019Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1572,7 +1572,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/495/33602495_9203730.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:02.974Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1662,7 +1662,7 @@
             "img": "http://www.images-chapitre.com/ima0/newnormal/052/39487052_11442294.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:08.961Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1692,7 +1692,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/404/35221404_8447862.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:06.740Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1722,7 +1722,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/446/53490446_10848931.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:07.627Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1752,7 +1752,7 @@
             "img": "http://www.images-chapitre.com/ima1/newnormal/456/60909456_11638405.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:08.582Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1782,7 +1782,7 @@
             "img": "http://www.images-chapitre.com/ima2/newnormal/537/61929537_11663299.jpg",
             "isbn": null,
             "modified": "2014-10-15T09:38:09.929Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 1
@@ -1812,7 +1812,7 @@
             "img": "http://www.images-chapitre.com/indispo/newnormal.png",
             "isbn": null,
             "modified": "2014-10-15T09:38:10.976Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": null,
             "publishers": [
                 4
@@ -1842,7 +1842,7 @@
             "img": "http://www.images-chapitre.com/indispo/newnormal.png",
             "isbn": "",
             "modified": "2014-10-30T18:19:47.217Z",
-            "price": "produit indisponible",
+            "price": 10,
             "price_sold": "",
             "publishers": [
                 1
