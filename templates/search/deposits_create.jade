@@ -52,7 +52,14 @@ div(ng-controller="IntroController")
       div
         span Cherchez des notices 
         span(ng-show="distributor")  dont le distributeur est {% verbatim %} {{ distributor }} {% endverbatim %}:
-      input.nullable.form-control(type='text', typeahead-loading="loadingCards", ng-model='{% verbatim %} copy_selected {% endverbatim %}', typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}', typeahead-min-length="3", typeahead-on-select="add_selected_card($item)")
+      input.nullable.form-control(
+        type='text'
+        typeahead-loading="loadingCards"
+        ng-model='{% verbatim %} copy_selected {% endverbatim %}'
+        typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}'
+        typeahead-min-length="3"
+        typeahead-on-select="add_selected_card($item)"
+      )
       i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
       ul.list-group(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
         li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
