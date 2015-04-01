@@ -89,7 +89,7 @@ meaning you'll loose your data).
 Development
 ===========
 
-Django project (1.6), in python (2.7), with AngularJS (1.2)
+Django project (1.7), in python (2.7), with AngularJS (1.2)
 
 We use:
 
