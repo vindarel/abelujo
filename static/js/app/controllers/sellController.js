@@ -57,47 +57,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
               });
       };
 
-      // $scope.addDeposit = function() {
-      //     var cards_id = [];
-      //     // get the selected card's id TODO:
-      //     if ($scope.cards_selected.length > 0) {
-      //         cards_id = _.map($scope.cards_selected, function(card) {
-      //             return card.id;
-      //         });
-      //     }
-      //     var params_deposit = {
-      //         "name"              : $scope.deposit_name,
-      //         "distributor"       : $scope.distributor,
-      //         "cards_id"          : cards_id,
-      //         "deposit_type"      : $scope.deposit_type.name, //xxx: use sthg else than the name
-      //         "initial_nb_copies" : $scope.initial_nb_copies,
-      //         "minimal_nb_copies" : $scope.minimal_nb_copies,
-      //         "auto_command"      : $scope.auto_command,
-      //     };
-      //     // needed for Django to process the params to its request.POST dict.
-      //     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-
-      //     // We need not to pass the parameters encoded as json to Django.
-      //     // Encode them like url parameters.
-      //     // xxx: put in service
-      //     var transformRequestAsFormPost = function(obj){
-      //         var str = [];
-      //         for(var p in obj)
-      //             str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-      //         return str.join("&");
-      //     };
-      //     $http.defaults.transformRequest = transformRequestAsFormPost; // don't transfrom params to json.
-      //     var config = {
-      //         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-      //     };
-
-      //     return $http.post("/api/deposits", params_deposit)
-      //         .then(function(response){
-      //             $scope.messages = response.data.messages;
-      //             return response.data;
-      //         });
-      // };
-
       $scope.add_selected_card = function(card_repr){
           // $scope.cards_selected.push(card_repr);
           $scope.tmpcard = _.filter($scope.cards_fetched, function(it){
