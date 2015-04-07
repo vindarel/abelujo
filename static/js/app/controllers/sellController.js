@@ -88,6 +88,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
           $scope.messages.splice(index, 1);
       };
 
+
+    $scope.updateTotalPrice = function() {
+        $scope.total_price = _.reduce($scope.cards_selected,
+                                      function(memo, it) {return memo + it.price;},
+                                      0)
+    };
+
       // Watch the change of distributor: we would like to filter out
       // the cards that don't have the right dist.
       $scope.$watch("distributor", function(){

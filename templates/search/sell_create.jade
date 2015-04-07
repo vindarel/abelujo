@@ -58,15 +58,15 @@ div(ng-controller="sellController")
       h3(ng-show="cards_selected.length")
         {% verbatim %} {{ cards_selected.length }} {% endverbatim %} titres sélectionnés. Total: {% verbatim %} {{ total_price }} {% endverbatim %}
       div(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
-        h3: a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
+        h4: a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
         span
-            h4 {% verbatim %} {{card.authors}} {% endverbatim %}
+            div {% verbatim %} {{card.authors}} {% endverbatim %}
             input.form-control(
-              type="float"
+              type="number", step="0.01", min=0
               value="{% verbatim %} {{card.price}} {% endverbatim %}"
+              ng-model="{% verbatim %} cards_selected[$index].price {% endverbatim %}"
+              ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
             )
-              {% verbatim %} {{card.price}} {% endverbatim %}
-
 
           i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)")
 
