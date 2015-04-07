@@ -699,7 +699,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:33.337Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -729,7 +729,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:34.274Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -759,7 +759,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:35.280Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 2
             ],
@@ -789,7 +789,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:36.333Z",
             "price": 15.30,
-            "price_sold": null,
+            "price_sold": 15.30,
             "publishers": [
                 1
             ],
@@ -820,7 +820,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:37.329Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -850,7 +850,7 @@
             "isbn": "",
             "modified": "2014-11-19T14:55:07.061Z",
             "price": 10,
-            "price_sold": "",
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -880,7 +880,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:39.155Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -911,7 +911,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:40.235Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -941,7 +941,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:41.197Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -972,7 +972,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:42.327Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1002,7 +1002,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:43.347Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1032,7 +1032,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:44.453Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1062,7 +1062,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:45.539Z",
             "price": 13.20,
-            "price_sold": null,
+            "price_sold": 13.20,
             "publishers": [
                 1
             ],
@@ -1092,7 +1092,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:46.428Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1122,7 +1122,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:47.390Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1152,7 +1152,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:48.418Z",
             "price": 7.10,
-            "price_sold": null,
+            "price_sold": 7.10,
             "publishers": [
                 1
             ],
@@ -1183,7 +1183,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:49.674Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1213,7 +1213,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:50.594Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1243,7 +1243,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:51.632Z",
             "price": 7.00,
-            "price_sold": null,
+            "price_sold": 7.00,
             "publishers": [
                 1
             ],
@@ -1273,7 +1273,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:52.569Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1303,7 +1303,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:53.942Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1333,7 +1333,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:54.837Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1363,7 +1363,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:56.160Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1393,7 +1393,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:57.054Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1423,7 +1423,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:58.145Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 3
             ],
@@ -1453,7 +1453,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:37:59.149Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1483,7 +1483,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:00.104Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1513,7 +1513,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:00.899Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1543,7 +1543,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:02.019Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1573,7 +1573,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:02.974Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1603,7 +1603,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:03.894Z",
             "price": 8.00,
-            "price_sold": null,
+            "price_sold": 8.00,
             "publishers": [
                 1
             ],
@@ -1633,7 +1633,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:04.699Z",
             "price": 6.10,
-            "price_sold": null,
+            "price_sold": 6.10,
             "publishers": [
                 1
             ],
@@ -1663,7 +1663,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:08.961Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1693,7 +1693,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:06.740Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1723,7 +1723,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:07.627Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1753,7 +1753,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:08.582Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1783,7 +1783,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:09.929Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 1
             ],
@@ -1813,7 +1813,7 @@
             "isbn": null,
             "modified": "2014-10-15T09:38:10.976Z",
             "price": 10,
-            "price_sold": null,
+            "price_sold": 10,
             "publishers": [
                 4
             ],
@@ -1843,7 +1843,7 @@
             "isbn": "",
             "modified": "2014-10-30T18:19:47.217Z",
             "price": 10,
-            "price_sold": "",
+            "price_sold": 10,
             "publishers": [
                 1
             ],

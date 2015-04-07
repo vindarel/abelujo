@@ -136,6 +136,7 @@ class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
     """
+
     title = models.CharField(max_length=CHAR_LENGTH)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True)
@@ -145,6 +146,7 @@ class Card(TimeStampedModel):
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
     price = models.FloatField(null=True, blank=True)
+    price_sold = models.FloatField(null=True, blank=True)
     quantity = models.IntegerField(null=False, default=1)
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
@@ -158,7 +160,6 @@ class Card(TimeStampedModel):
     #: the places were we can find this card (and how many).
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, null=True)  #TODO: allow null
     sold = models.DateField(blank=True, null=True)
-    price_sold = models.CharField(null=True, max_length=20, blank=True)
     img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: the internet source from which we got the card's informations
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
@@ -166,6 +167,13 @@ class Card(TimeStampedModel):
     details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True)
     comment = models.TextField(blank=True)
 
+    def save(self, *args, **kwargs):
+        """We override the save method in order to copy the price to
+        price_sold.
+        """
+        # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
+        self.price_sold = self.price
+        super(Card, self).save(*args, **kwargs)
 
     class Meta:
         app_label = "search"
@@ -209,6 +217,7 @@ class Card(TimeStampedModel):
                 "title": card.title,
                 "authors": ", ".join([ca.name for ca in card.authors.all()]),
                 "price": card.price,
+                "price_sold": card.price_sold,
                 "ean": card.ean,
                 "id": card.id,
                 "img": card.img,
@@ -369,6 +378,7 @@ class Card(TimeStampedModel):
             title=card.get('title'),
             year_published=year,
             price = card.get('price',  0),
+            price_sold = card.get('price_sold',  0),
             ean = card.get('ean'),
             img = card.get('img', ""),
             details_url = card.get('details_url'),

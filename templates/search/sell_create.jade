@@ -63,8 +63,8 @@ div(ng-controller="sellController")
             div {% verbatim %} {{card.authors}} {% endverbatim %}
             input.form-control(
               type="number", step="0.01", min=0
-              value="{% verbatim %} {{card.price}} {% endverbatim %}"
-              ng-model="{% verbatim %} cards_selected[$index].price {% endverbatim %}"
+              value="{% verbatim %} {{card.price_sold}} {% endverbatim %}"
+              ng-model="{% verbatim %} cards_selected[$index].price_sold {% endverbatim %}"
               ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
             )
 

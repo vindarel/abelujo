@@ -91,7 +91,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
 
     $scope.updateTotalPrice = function() {
         $scope.total_price = _.reduce($scope.cards_selected,
-                                      function(memo, it) {return memo + it.price;},
+                                      function(memo, it) {
+                                          return memo + it.price_sold;},
                                       0)
     };
 
