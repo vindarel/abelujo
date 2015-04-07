@@ -48,9 +48,12 @@ Install the required dependencies for Debian (Ubuntu/LinuxMint/etc):
     make debian
     # a shortcut for
     # sudo apt-get install python-pip nodejs nodejs-legacy npm
+    # sudo pip install --upgrade pip
 	# sudo pip install virtualenvwrapper
 	# sudo npm install gulp -g  # a JS build system.
     # Debian users have to install nodejs-legacy if the node command doesn't give you a javascript shell.
+    # Debian wheezy 7.8: install npm with
+    # curl https://www.npmjs.com/install.sh | sudo sh
 
 Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,

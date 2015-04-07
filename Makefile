@@ -8,8 +8,8 @@
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
 debian:
 	@sudo apt-get install -y python-pip nodejs nodejs-legacy npm
+	@sudo pip install --upgrade pip
 	@sudo pip install virtualenvwrapper
-	@sudo npm install gulp -g
 
 # Install in current directory
 deps:
@@ -27,6 +27,7 @@ install:  deps db npm gulp
 npm:
 	@echo "Installing Node and bower packages..."
 	npm install
+	@sudo npm install gulp -g
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
