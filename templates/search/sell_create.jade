@@ -34,6 +34,24 @@ div(ng-controller="sellController")
 
   // form(action='/api/distributors', method='post')
   form(method='post')
+
+      b Date
+      .row
+        .col-md-6
+          p.input-group
+            input.form-control(
+              type='text'
+              datepicker-popup='{{format}}'
+              ng-model='date'
+              is-open='opened'
+              datepicker-options='dateOptions'
+              ng-required='true'
+              close-text='Close'
+            )
+            span.input-group-btn
+              button.btn.btn-default(type='button', ng-click='open($event)')
+                i.glyphicon.glyphicon-calendar
+
       b
         div Type de fiche
       select.form-control(

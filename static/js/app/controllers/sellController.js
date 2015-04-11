@@ -160,4 +160,30 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.cards_selected = [];
     };
 
+   // The date picker:
+
+    $scope.today = function() {
+        $scope.date = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function () {
+        $scope.date = null;
+    };
+
+    $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+    };
+
+    $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+    };
+
+    $scope.formats = ['dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    $scope.format = $scope.formats[0];
+
   }]);
