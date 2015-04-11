@@ -12,6 +12,7 @@ from models import Card
 from models import Basket
 from models import Deposit
 from models import Distributor
+# from models import Sell
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ def list_from_coma_separated_ints(str):
     """
     # Data validation: should check that we only have ints and comas...
     if str:
-        return str.split(",")
+        return [int(it) for it in str.split(",")]
     else:
         return []
 
@@ -86,3 +87,38 @@ def deposits(request, **response_kwargs):
         msgs = {"status": httplib.OK,
                 "messages": depo_msgs}
         return HttpResponse(json.dumps(msgs), **response_kwargs)
+
+def sell(request, **response_kwargs):
+    """
+    messages: we need, for the client, a list of dictionnaries:
+       - level: is either "success", "danger" or "",
+       - message: is a str of the actual message to display.
+    """
+    sell_msgs = [] # list of dicts with "level" and "message".
+    success_msg = [{"level": "success",
+                    "message": "Vente effectuée."}]
+    if request.method == "POST":
+        params = request.POST.copy()
+        #TODO: data validation
+        if params.get("cards_id") == "null":
+            pass #TODO: return and display an error.
+        response_kwargs["content_type"] = "application/json"
+        cards_id = list_from_coma_separated_ints(params.get("cards_id"))
+
+        try:
+            for id in cards_id:
+                sold, retcode = Card.sell(id)
+                if not sold:
+                    sell_msgs.append(
+                        {"level": retcode, # retcode must be "success" or "danger"
+                         "message": "La notice {} n'a pas été vendue.".format(id)})
+
+        except Exception as e:
+            log.error("api/sell error: ", e)
+            sell_msgs.append({"level": httplib.INTERNAL_SERVER_ERROR,
+                              "message": e})
+            return HttpResponse(json.dumps(sell_msgs), **response_kwargs)
+
+        if not sell_msgs:
+            sell_msgs = success_msg
+        return HttpResponse(json.dumps(sell_msgs), **response_kwargs)

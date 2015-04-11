@@ -294,10 +294,10 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def get_from_id_list(cards_id):
-        """
-        cards_id: list of card ids
+        """cards_id: list of card ids
 
-        returns: a list of Card objects
+        returns: a dictionnary "messages", "results" with a list of
+        error messages and the list of Card object.
         """
         res = {"result": [],
                "messages": []}
@@ -314,6 +314,9 @@ class Card(TimeStampedModel):
     @staticmethod
     def sell(id=None, quantity=1):
         """Sell a card. Decreases its quantity.
+
+        Warning: this is a static method, use it like this:
+        >>> import models.Card; Card.sell(the_card_id)
 
         :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")

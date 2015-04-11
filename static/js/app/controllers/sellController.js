@@ -1,4 +1,4 @@
-angular.module("abelujo").controller('sellController', ['$http', '$scope', function ($http, $scope) {
+angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', '$window', function ($http, $scope, $timeout, $window) {
       // set the xsrf token via cookies.
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
@@ -26,7 +26,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
       $scope.total_price = 0;
 
       // messages for ui feedback: list of couple level/message
-      $scope.messages = undefined;
+      $scope.alerts = undefined;
 
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
@@ -85,7 +85,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
       };
 
       $scope.closeAlert = function(index) {
-          $scope.messages.splice(index, 1);
+          $scope.alerts.splice(index, 1);
       };
 
 
@@ -106,11 +106,58 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
           // So let's just erase the card list.
           $scope.cards_selected = [];
       });
-    $scope.cancelSell = function() {
+
+    $scope.sellCards = function() {
+          var cards_id = [];
+          // get the selected card's id TODO:
+          if ($scope.cards_selected.length > 0) {
+              cards_id = _.map($scope.cards_selected, function(card) {
+                  return card.id;
+              });
+          }
+
+          var params = {
+              "cards_id": cards_id,
+          };
+
+          // This is needed for Django to process the params to its
+          // request.POST dictionnary:
+          $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+
+          // We need not to pass the parameters encoded as json to Django.
+          // Encode them like url parameters.
+          // TODO: put in a service.
+          var transformRequestAsFormPost = function(obj){
+              var str = [];
+              for(var p in obj)
+                  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+              return str.join("&");
+          };
+          $http.defaults.transformRequest = transformRequestAsFormPost; // don't transfrom params to json.
+          var config = {
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+          };
+
+          return $http.post("/api/sell", params)
+              .then(function(response){
+                  // Display server messages.
+                  $scope.alerts = response.data;
+
+                  // Remove the alert after 3 seconds:
+                  // ok, but the bottom text comes back too abruptely.
+                  // $timeout(function(){
+                      // $scope.alerts.splice($scope.alerts.indexOf(alert), 1);
+                  // }, 3000); // maybe '}, 3000, false);' to avoid calling apply
+
+                  $scope.cancelCurrentData();
+                  return response.data;
+              });
+      };
+
+    $scope.cancelCurrentData = function() {
         $scope.total_price = null;
         $scope.selected_ids = [];
         $scope.cards_selected = [];
-        $scope.messages = [];
     };
 
   }]);
