@@ -106,4 +106,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', funct
           // So let's just erase the card list.
           $scope.cards_selected = [];
       });
+    $scope.cancelSell = function() {
+        $scope.total_price = null;
+        $scope.selected_ids = [];
+        $scope.cards_selected = [];
+        $scope.messages = [];
+    };
+
   }]);
