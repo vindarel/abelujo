@@ -63,7 +63,7 @@ div(ng-controller="IntroController")
       i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
       ul.list-group(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
         li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
-          i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)")
+          i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
 
       input.btn.btn-primary(type="submit", value="Enregistrer", ng-click="addDeposit()")
       // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
