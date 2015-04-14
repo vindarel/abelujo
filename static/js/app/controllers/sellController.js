@@ -1,4 +1,6 @@
-angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', '$window', function ($http, $scope, $timeout, $window) {
+angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', function ($http, $scope, $timeout, utils) {
+    // utils: in services.js
+
       // set the xsrf token via cookies.
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
@@ -126,14 +128,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
           // We need not to pass the parameters encoded as json to Django.
           // Encode them like url parameters.
-          // TODO: put in a service.
-          var transformRequestAsFormPost = function(obj){
-              var str = [];
-              for(var p in obj)
-                  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-              return str.join("&");
-          };
-          $http.defaults.transformRequest = transformRequestAsFormPost; // don't transfrom params to json.
+          $http.defaults.transformRequest = utils.transformRequestAsFormPost; // don't transfrom params to json.
           var config = {
               headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
           };
