@@ -15,19 +15,43 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import logging
 from datetime import date
 from textwrap import dedent
 
-from django.utils.http import quote
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
+from django.utils.http import quote
 
 CHAR_LENGTH = 200
 
 log = logging.getLogger(__name__)
+
+PAYMENT_CHOICES = [
+    (0, "cash"),
+    (1, "check"),
+    (2, "credit card"),
+    (3, "gift"),
+    (4, "other"),
+    ]
+
+DEPOSIT_TYPES_CHOICES = [
+    ("Dépôt de libraire", (
+        ("lib", "dépôt de libraire"),
+        ("fix", "dépôt fixe"),
+      )),
+    ("Dépôt de distributeur", (
+        ("dist", "dépôt de distributeur"),
+    )),
+    ]
+
+# Statuses for the client (understood by bootstrap).
+STATUS_SUCCESS = "success"
+STATUS_ERROR = "error"
+STATUS_WARNING = "warning"
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -159,8 +183,9 @@ class Card(TimeStampedModel):
         #    default=u'?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, null=True)  #TODO: allow null
-    sold = models.DateField(blank=True, null=True)
-    img = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    #: when and how this card was sold: sells (see the Sell table).
+    #: an url to show a thumbnail of the cover:
+    img = models.URLField(null=True, blank=True)
     #: the internet source from which we got the card's informations
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: link to the card's data source
@@ -169,7 +194,7 @@ class Card(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
-        price_sold.
+        price_sold. We want it to initialize the angular form.
         """
         # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
         self.price_sold = self.price
@@ -328,8 +353,6 @@ class Card(TimeStampedModel):
         # django serialization instead).
         try:
             card = Card.objects.get(id=id)
-            card.sold = date.today()
-            card.price_sold = card.price
             card.quantity = card.quantity - quantity
             card.save()
         except ObjectDoesNotExist, e:
@@ -665,16 +688,6 @@ class DepositCopies(TimeStampedModel):
     #: Do we have a limit of time to pay ?
     due_date = models.DateField(blank=True, null=True)
 
-DEPOSIT_TYPES_CHOICES = [
-    ("Dépôt de libraire", (
-        ("lib", "dépôt de libraire"),
-        ("fix", "dépôt fixe"),
-      )),
-    ("Dépôt de distributeur", (
-        ("dist", "dépôt de distributeur"),
-    )),
-    ]
-
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
     a distributor but didn't pay them yet.
@@ -795,3 +808,116 @@ class Deposit(TimeStampedModel):
                                     'message': e})
 
         return  msgs
+
+class SoldCards(models.Model):
+
+    class Meta:
+        app_label = "search"
+
+    card = models.ForeignKey(Card)
+    sell = models.ForeignKey("Sell")
+    #: Number of this card sold:
+    quantity = models.IntegerField(default=1)
+    #: Price sold:
+    price_sold = models.FloatField()
+
+class Sell(models.Model):
+    """A sell represents a set of one or more cards that are sold:
+    - at the same time,
+    - under the same payment,
+    - where the price sold can be different from the card's original price,
+    - to one client.
+
+    The fact to sell a card can raise an alert, like if we have a copy
+    in a deposit and another not, we'll have to choose which copy to
+    sell. This can be done later on.
+
+    See "alerts": http://ruche.eu.org/wiki/Specifications_fonctionnelles#Alerte
+    """
+
+    class Meta:
+        app_label = "search"
+
+    date = models.DateField()
+    copies = models.ManyToManyField(Card, through="SoldCards", blank=True, null=True)
+    payment = models.CharField(choices=PAYMENT_CHOICES,
+                               default=PAYMENT_CHOICES[0],
+                               max_length=CHAR_LENGTH,
+                               blank=True, null=True)
+    # alerts
+    # client
+
+    @staticmethod
+    def sell_cards(ids_prices_nb, date=None, payment=None):
+        """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
+
+        The default of "price_sold" is the card's price, the default
+        quantity is 1. No error is returned, only a log (it's supposed
+        not to happen, to be checked before calling this method).
+
+        return: a 3-tuple (the Sell object, the global status, a list of messages).
+
+        """
+        msgs = [] # error messages
+        status = STATUS_SUCCESS
+        cards_obj = []
+        sell = None
+
+        if not ids_prices_nb:
+            log.warning("Sell: no cards are passed on. That shouldn't happen.")
+            status = STATUS_WARNING
+            return sell, status, msgs
+
+        if not date:
+            date = datetime.date.today()
+        for it in ids_prices_nb:
+            # "sell" a card.
+            id = it.get("id")
+            if not id:
+                log.error("Error: id {} shouldn't be None.".format(id))
+
+            try:
+                card = Card.objects.get(id=id)
+                cards_obj.append(card)
+                Card.sell(id, quantity=it.get('quantity', 1))
+            except ObjectDoesNotExist:
+                msg = "Error: the card of id {} doesn't exist.".format(id)
+                log.error(msg)
+                msgs.append(msg)
+                status = STATUS_WARNING
+
+        # Create the Sell.
+        try:
+            sell = Sell(date=date, payment=payment)
+            sell.save()
+        except Exception as e:
+            status = STATUS_ERROR
+            msgs.append("Ooops, we couldn't sell anything :S")
+            log.error("Error on creating Sell object: {}".format(e))
+
+        # Add the cards and their attributes.
+        for i, card in enumerate(cards_obj):
+            try:
+                price_sold = ids_prices_nb[i].get("price_sold", card.price)
+                if not price_sold:
+                    log.error("Error: the price_sold of card {} ({}) wasn't set and the card's price is None.".format(card.title, card.id))
+                    status = STATUS_WARNING
+                    continue
+
+                quantity = ids_prices_nb[i].get("quantity", 1)
+                log.info("Selling {} ex of {} ({}) at {}.".format(quantity, card.title, card.id, price_sold))
+                sold = sell.soldcards_set.create(card=card,
+                                                  price_sold=price_sold,
+                                                  quantity=quantity)
+                sold.save()
+            except Exception as e:
+                msgs.append("Warning: we couldn't sell {}.".format(card.title))
+                log.error("Error on adding the card {} ({}) to the sell {}: {}".format(card.id,
+                                                                                       card.title,
+                                                                                       sell.id,
+                                                                                       e))
+                status = STATUS_ERROR
+
+        if not msgs:
+            msgs.append("La vente a été effectuée avec succès.")
+        return (sell, status, msgs)

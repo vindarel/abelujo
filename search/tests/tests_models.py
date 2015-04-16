@@ -39,6 +39,9 @@ from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
 from search.models import Preferences
+from search.models import Sell
+
+from search.models import STATUS_SUCCESS, STATUS_ERROR, STATUS_WARNING
 
 
 class TestCards(TestCase):
@@ -359,3 +362,83 @@ class TestDeposits(TestCase):
                                   })
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], messages.WARNING)
+
+class TestSells(TestCase):
+
+    def setUp(self):
+        # Create card types
+        self.type_book = "book"
+        typ = CardType(name=self.type_book)
+        typ.save()
+        # create an author
+        self.GOLDMAN = "Emma Goldman"
+        self.goldman = Author(name=self.GOLDMAN)
+        self.goldman.save()
+        # create a Card
+        self.fixture_ean = "987"
+        self.fixture_title = "living my life"
+        self.autobio = Card(title=self.fixture_title,
+                            ean=self.fixture_ean,
+                            card_type=typ)
+        self.autobio.save()
+        self.autobio.authors.add(self.goldman)
+        # a second card:
+        self.secondcard = Card(title="second card",
+                               ean="123")
+        self.secondcard.save()
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # a needed place:
+        self.place_name = "test place"
+        self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
+        self.place.save()
+        # mandatory: preferences table
+        self.preferences = Preferences(default_place=self.place).save()
+
+    def tearDown(self):
+        pass
+
+    def test_sell_many_cards(self):
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1},
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+        sell, status, msgs = Sell.sell_cards(to_sell)
+        self.assertEqual(STATUS_SUCCESS, status)
+
+        int_table = sell.soldcards_set.all()
+        self.assertEqual(len(int_table), 2)
+        # check prices
+        self.assertEqual(int_table[0].price_sold, p1)
+        self.assertEqual(int_table[1].price_sold, p2)
+        # check quantities
+        self.assertEqual(int_table[0].card.quantity, 0)
+        self.assertEqual(int_table[1].card.quantity, -1)
+
+    def test_sell_none(self):
+        to_sell = []
+        sell, status, msgs = Sell.sell_cards(to_sell)
+        self.assertEqual(STATUS_WARNING, status)
+
+    def test_sell_no_price(self):
+        p1 = 7.7
+        p2 = 9.9
+        self.autobio.price = None
+        self.autobio.save()
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    # "price_sold": p1
+                },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+
+        sell, status, msgs = Sell.sell_cards(to_sell)
+        self.assertEqual(STATUS_WARNING, status)
+        int_table = sell.soldcards_set.all()
+        self.assertTrue(len(int_table), 1)
