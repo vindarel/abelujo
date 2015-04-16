@@ -153,7 +153,7 @@ class CardType(models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class Card(TimeStampedModel):
@@ -214,7 +214,7 @@ class Card(TimeStampedModel):
         if len(publishers) > MAX_LENGTH:
             publishers = publishers[0:MAX_LENGTH] + "..."
         distributor = self.distributor.name if self.distributor else "aucun"
-        return u'%s, %s, éditeur: %s, distributeur: %s' % (self.title, authors, publishers, distributor)
+        return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     def display_authors(self):
         if self.sortkey:
@@ -355,9 +355,11 @@ class Card(TimeStampedModel):
             card = Card.objects.get(id=id)
             card.quantity = card.quantity - quantity
             card.save()
-        except ObjectDoesNotExist, e:
-            log.warning("Requested card %s does not exist: %s" % (id, e))
+        except ObjectDoesNotExist as e:
+            log.warning(u"Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")
+        except Exception as e:
+            log.error(u"Error selling a card: {}.".format(e))
 
         if card.quantity <= 0:
             Basket.add_to_auto_command(card)
@@ -398,7 +400,7 @@ class Card(TimeStampedModel):
                 author, created = Author.objects.get_or_create(name=aut)
                 card_authors.append(author)
         else:
-            log.warning("this card has no authors (ok for a CD): %s" % card['title'])
+            log.warning(u"this card has no authors (ok for a CD): %s" % card['title'])
 
         card_obj, created = Card.objects.get_or_create(
             title=card.get('title'),
@@ -450,7 +452,7 @@ class Card(TimeStampedModel):
 
                 card_obj.save()
             except Exception, e:
-                log.error("--- error while adding the publisher: %s" % (e,))
+                log.error(u"--- error while adding the publisher: %s" % (e,))
 
         # add the collection
         collection = card.get("collection")
@@ -463,7 +465,7 @@ class Card(TimeStampedModel):
                 if created:
                     log.debug("--- new collection created: %s" % (collection,))
             except Exception, e:
-                log.error("--- error while adding the collection: %s" % (e,))
+                log.error(u"--- error while adding the collection: %s" % (e,))
 
         # Add the default place (to the intermediate table).
         # try:
@@ -472,7 +474,7 @@ class Card(TimeStampedModel):
         #     place_copy.nb = 1
         #     place_copy.save()
         # except Exception, e:
-        #     log.error("--- error while setting the default place: %s" % (e,))
+        #     log.error(u"--- error while setting the default place: %s" % (e,))
 
         return card_obj
 
@@ -552,7 +554,7 @@ class Place (models.Model):
             place_copy.nb += nb
             place_copy.save()
         except Exception, e:
-            log.error("--- error while setting the default place: %s" % (e,))
+            log.error(u"--- error while setting the default place: %s" % (e,))
 
     def add_copies(self, card, nb=1):
         """Adds the given number of copies (1 by default) of the given card to
@@ -570,7 +572,7 @@ class Place (models.Model):
             place_copy.nb += nb
             place_copy.save()
         except Exception,e:
-            log.error("--- error while adding %s to the place %s" % (card.name, self.name))
+            log.error(u"--- error while adding %s to the place %s" % (card.name, self.name))
             log.error(e)
 
 class Preferences(models.Model):
@@ -647,7 +649,7 @@ class Basket(models.Model):
             basket_copy.nb += nb
             basket_copy.save()
         except Exception as e:
-            log.error("Error while adding a card to basket %s: %s" % (self.name,e))
+            log.error(u"Error while adding a card to basket %s: %s" % (self.name,e))
 
     @staticmethod
     def add_to_auto_command(card):
@@ -655,8 +657,8 @@ class Basket(models.Model):
         """
         try:
             Basket.objects.get(name="auto_command").add_copy(card)
-        except:
-            log.error("Error while adding the card {} to the auto_command basket.".format(card.__unicode__))
+        except Exception as e:
+            log.error(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
 
 class BasketType (models.Model):
     """
@@ -757,11 +759,11 @@ class Deposit(TimeStampedModel):
                     deposit_copy = self.depositcopies_set.create(card=copy)
                     deposit_copy.save()
                 else:
-                    log.error("Error: we should have filtered the copies before.")
+                    log.error(u"Error: we should have filtered the copies before.")
             return []
 
         except Exception as e:
-            log.error("Error while adding a card to the deposit.", e)
+            log.error(u"Error while adding a card to the deposit.", e)
             return msgs.append({'level': messages.ERROR,
                                 'message': e})  # don't add this error in prod.
 
@@ -803,7 +805,7 @@ class Deposit(TimeStampedModel):
                 msgs.append({'level': "success",
                              'message':"Le dépôt a été créé avec succès."})
             except Exception as e:
-                log.error("Adding a Deposit from_dict error ! {}".format(e))
+                log.error(u"Adding a Deposit from_dict error ! {}".format(e))
                 return msgs.append({'level': "danger",
                                     'message': e})
 
@@ -858,15 +860,15 @@ class Sell(models.Model):
         return: a 3-tuple (the Sell object, the global status, a list of messages).
 
         """
-        msgs = [] # error messages
+        alerts = [] # error messages
         status = STATUS_SUCCESS
         cards_obj = []
         sell = None
 
         if not ids_prices_nb:
-            log.warning("Sell: no cards are passed on. That shouldn't happen.")
+            log.warning(u"Sell: no cards are passed on. That shouldn't happen.")
             status = STATUS_WARNING
-            return sell, status, msgs
+            return sell, status, alerts
 
         if not date:
             date = datetime.date.today()
@@ -874,7 +876,7 @@ class Sell(models.Model):
             # "sell" a card.
             id = it.get("id")
             if not id:
-                log.error("Error: id {} shouldn't be None.".format(id))
+                log.error(u"Error: id {} shouldn't be None.".format(id))
 
             try:
                 card = Card.objects.get(id=id)
@@ -883,7 +885,7 @@ class Sell(models.Model):
             except ObjectDoesNotExist:
                 msg = "Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
-                msgs.append(msg)
+                alerts.append({"level": STATUS_ERROR, "message": msg})
                 status = STATUS_WARNING
 
         # Create the Sell.
@@ -892,32 +894,35 @@ class Sell(models.Model):
             sell.save()
         except Exception as e:
             status = STATUS_ERROR
-            msgs.append("Ooops, we couldn't sell anything :S")
-            log.error("Error on creating Sell object: {}".format(e))
+            alerts.append({"message": "Ooops, we couldn't sell anything :S",
+                           "level": STATUS_ERROR})
+            log.error(u"Error on creating Sell object: {}".format(e))
 
         # Add the cards and their attributes.
         for i, card in enumerate(cards_obj):
-            try:
-                price_sold = ids_prices_nb[i].get("price_sold", card.price)
-                if not price_sold:
-                    log.error("Error: the price_sold of card {} ({}) wasn't set and the card's price is None.".format(card.title, card.id))
-                    status = STATUS_WARNING
-                    continue
+            price_sold = ids_prices_nb[i].get("price_sold", card.price)
+            if not price_sold:
+                log.error(u"Error: the price_sold of card {} wasn't set and the card's price is None.".format(card.__unicode__()))
+                status = STATUS_WARNING
+                continue
+            quantity = ids_prices_nb[i].get("quantity", 1)
 
-                quantity = ids_prices_nb[i].get("quantity", 1)
-                log.info("Selling {} ex of {} ({}) at {}.".format(quantity, card.title, card.id, price_sold))
+            try:
+                log.info(u"Selling {} copies of {} at {}.".format(quantity, card.__unicode__(), price_sold))
                 sold = sell.soldcards_set.create(card=card,
-                                                  price_sold=price_sold,
-                                                  quantity=quantity)
+                                                 price_sold=price_sold,
+                                                 quantity=quantity)
                 sold.save()
             except Exception as e:
-                msgs.append("Warning: we couldn't sell {}.".format(card.title))
-                log.error("Error on adding the card {} ({}) to the sell {}: {}".format(card.id,
-                                                                                       card.title,
-                                                                                       sell.id,
-                                                                                       e))
+                alerts.append({"message": "Warning: we couldn't sell {}.".format(card.id),
+                              "level": STATUS_WARNING})
+                log.error(u"Error on adding the card {} to the sell {}: {}".format(card.__unicode__(),
+                                                                                   sell.id,
+                                                                                   e))
                 status = STATUS_ERROR
 
-        if not msgs:
-            msgs.append("La vente a été effectuée avec succès.")
-        return (sell, status, msgs)
+        if not alerts:
+            alerts.append({"message":"La vente a été effectuée avec succès.",
+                           "level": STATUS_SUCCESS})
+
+        return (sell, status, alerts)

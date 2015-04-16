@@ -1,4 +1,4 @@
-angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', function ($http, $scope, $timeout, utils) {
+angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', '$filter', function ($http, $scope, $timeout, utils, $filter) {
     // utils: in services.js
 
       // set the xsrf token via cookies.
@@ -110,16 +110,25 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       });
 
     $scope.sellCards = function() {
-          var cards_id = [];
-          // get the selected card's id TODO:
+          var to_sell = [];
+          var ids = [];
+          var prices = [];
+          var quantities = [];
           if ($scope.cards_selected.length > 0) {
-              cards_id = _.map($scope.cards_selected, function(card) {
+              ids = _.map($scope.cards_selected, function(card) {
                   return card.id;
               });
-          }
+              prices = _.map($scope.cards_selected, function(card){
+                  return card.price_sold;
+              });
+              quantities = _.map($scope.cards_selected, function(card){
+                  return 1; //TODO: choose quantity
+              });
+          };
 
           var params = {
-              "cards_id": cards_id,
+              "to_sell": [ids, prices, quantities],
+              "date": $scope.date.toString($scope.format)
           };
 
           // This is needed for Django to process the params to its
@@ -136,7 +145,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           return $http.post("/api/sell", params)
               .then(function(response){
                   // Display server messages.
-                  $scope.alerts = response.data;
+                  $scope.alerts = response.data.alerts;
 
                   // Remove the alert after 3 seconds:
                   // ok, but the bottom text comes back too abruptely.
@@ -178,7 +187,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         startingDay: 1
     };
 
-    $scope.formats = ['dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    // We use it for datejs.
+    $scope.formats = ['yyyy-MM-dd', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
     $scope.format = $scope.formats[0];
 
   }]);

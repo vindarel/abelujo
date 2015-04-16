@@ -8,15 +8,16 @@ angular.module('abelujo.services', []).
 var utils = angular.module('abelujo.services', []);
 utils.factory('utils', function() {
   return {
-      // We need not to pass the parameters encoded as json to Django.
+      // We need not to pass the parameters encoded as json to Django,
+      // because it re-encodes everything in json and the result is horrible.
       // Encode them like url parameters.
       transformRequestAsFormPost: function(obj){
-          //factory function body that constructs shinyNewServiceInstance
+          // obj: a list of simple types. Not a list of dictionnaries.
           var str = [];
           for(var p in obj)
               str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
           return str.join("&");
       }
-  }
+  };
 
 });

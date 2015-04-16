@@ -24,6 +24,7 @@ from search.models import Deposit
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
+from search.models import Sell
 
 class CardAdmin(admin.ModelAdmin):
     class Meta:
@@ -43,3 +44,4 @@ admin.site.register(Distributor)
 admin.site.register(Place)
 admin.site.register(PlaceCopies)
 admin.site.register(Publisher)
+admin.site.register(Sell)
