@@ -29,6 +29,7 @@ div(ng-controller="sellController")
       ng-repeat="alert in alerts"
       type="{% verbatim %} {{alert.level}} {% endverbatim %}"
       close="closeAlert($item)"
+      ng-click="closeAlert($item)"
     )
       {% verbatim %} {{alert.message}} {% endverbatim %}
 
