@@ -17,6 +17,7 @@ from django.conf.urls import include
 from django.conf.urls import patterns
 from django.conf.urls import url
 from django.contrib import admin
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from search.views import depositsListView
@@ -46,6 +47,8 @@ urlpatterns = patterns('',
                            name="deposits_view"),
                        url(r'^commands/', 'search.views.basket_auto_command',
                            name="basket_auto_command"),
+                       url(r'^history/', TemplateView.as_view(template_name="search/history.jade"),
+                           name="search_history"),
 
                        url(r'^api/cards$', 'search.models.api.cards', name="api_cards"),
                        url(r'^api/distributors$', 'search.models.api.distributors', name="api_distributors"),

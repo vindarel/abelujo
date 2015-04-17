@@ -447,7 +447,6 @@ class depositsListView(ListView):
     # return render(request, "search/deposits.jade", {
         # "deposits": deposits})
 
-
 def deposits_new(request):
     auto_command_nb = Basket.auto_command_nb()
     return render(request, "search/deposits_create.jade", {

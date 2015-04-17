@@ -50,6 +50,8 @@ html(ng-app="abelujo")
             a(href="/commands") A commander
               span.badge {% block auto_command_nb %} {{auto_command_nb}} {% endblock %}
               // nb of copies in auto_command basket
+          li
+            a(href="/history") Historique
 
   div.col-md-10(id="content")
     {% if messages %}
