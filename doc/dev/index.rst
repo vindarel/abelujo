@@ -10,7 +10,8 @@ Contents:
    angular-crash-course
    abelujo-dev.rst
    webscraping.rst
-   tuto.rst
+   django-dev.rst
+   clientside-dev.rst
 
 
 Indices and tables
