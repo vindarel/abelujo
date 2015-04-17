@@ -1,0 +1,110 @@
+Editors configurations
+======================
+
+
+Here we share tips on our favorite(s) editors. Indeed, it must assist
+you in many areas: development in python and javascript (syntax
+highlighting, code checker, ...), development with AngularJS,
+documentation writing, json editing, project management, and why not
+test runner and shell interface.
+
+Emacs
+-----
+
+Emacs' package manager
+~~~~~~~~~~~~~~~~~~~~~~
+
+Starting with version 24 Emacs has an official package manager:
+`package.el` (we already had el-get and it still works). But you won't
+go long if you don't activate the MELPA repository: see
+http://wikemacs.org/wiki/MELPA
+
+Now to install a package::
+
+  Alt-x package-install RET the package RET
+
+.. note::
+
+   The packages below are available either on MELPA or on the
+   official package.el repository (GNU ELPA).
+
+Not sure ? Use a starter kit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+True enough, Emacs isn't user friendly without some configarution. If
+you didn't tweak it a lot yet, it's a good idea to start with an
+excellent configuration out of the box. There are some options and our
+favorite is Prelude: https://github.com/bbatsov/prelude
+
+Vim emulation
+~~~~~~~~~~~~~
+
+You can get modal editing with the excellent `evil-mode`: http://wikemacs.org/index.php/Evil
+
+Python
+~~~~~~
+
+See http://wikemacs.org/wiki/Python
+
+
+Javascript
+~~~~~~~~~~
+
+See: http://wikemacs.org/wiki/JavaScript
+
+- js2-mode: http://wikemacs.org/wiki/Js2-mode
+
+RapydScript
+~~~~~~~~~~~
+
+- (work ongoing) our `rapyd-mode`: https://gitlab.com/emacs-stuff/rapyd-mode
+
+
+Django mode
+~~~~~~~~~~~
+
+https://github.com/myfreeweb/django-mode
+
+Gives a menu and some global functions to interact with Django.
+
+Angular snippets and utils
+~
+
+- syntax highlighting of angular keywords in html templates, snippets and tab completion: https://omouse.github.io/angularjs-mode/
+
+- syntax highlighting in `jade` templates: our `angularjs-jade-mode`: https://gitlab.com/snippets/4113
+- our `angular-utils`: https://gitlab.com/emacs-stuff/my-elisp/blob/master/angular-utils.el may offer useful commands, may not.
+
+Jade templates
+~~~~~~~~~~~~~~
+
+- `jade-mode` for syntax highlighting
+- our `html2jade` to copy-paste html snippets and turn them to jade:
+  https://gitlab.com/emacs-stuff/html2jade
+
+JSON
+~~~~
+
+- Check the json integrity with `flymake-json`. You need::
+
+    npm install -g jsonlint
+
+- `json-mode`: syntax highlighting and commands to reformat.
+
+Shell interaction
+~~~~~~~~~~~~~~~~~
+
+See http://wikemacs.org/wiki/shell
+
+
+See also
+~~~~~~~~
+
+- effectively open files of the project with projectile: https://github.com/bbatsov/projectile
+- `elscreen` to have tabs.
+
+More documentation:
+~~~~~~~~~~~~~~~~~~~
+
+  - `awesome-emacs`: https://github.com/emacs-tw/awesome-emacs
+- wikemacs

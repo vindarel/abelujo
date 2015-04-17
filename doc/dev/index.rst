@@ -12,6 +12,7 @@ Contents:
    webscraping.rst
    django-dev.rst
    clientside-dev.rst
+   editors.rst
 
 
 Indices and tables

@@ -1,3 +1,6 @@
+Client-side development
+=======================
+
 Add a bower dependency
 ----------------------
 
