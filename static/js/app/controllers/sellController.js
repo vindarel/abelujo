@@ -12,16 +12,26 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       //TODO: use django-angular to limit code duplication.
       $scope.card_types = [
           // WARNING duplication from dbfixture.json
-          {name:"all", id:null},
-          {name:"book", group:"livre",        id:1},
-          {name:"booklet", group:"livre",     id:2},
-          {name:"newspaper", group:"livre",   id:3},
-          {name:"other print", group:"livre", id:4},
+          {name:"tout imprimé", id:null},
+          {name:"livre", group:"livre",        id:1},
+          {name:"brochure", group:"livre",     id:2},
+          {name:"périodique", group:"livre",   id:3},
+          {name:"autre parution", group:"livre", id:4},
           {name:"CD", group:"CD",             id:5},
           {name:"DVD", group:"CD",            id:6},
           {name:"vinyl", group:"CD",          id:8},
           {name:"autres", group:"autres",     id:9},
       ];
+
+      $scope.payment_means = [
+          {name: "espèces", id:1},
+          {name: "chèque", id:2},
+          {name: "carte bancaire", id:3},
+          {name: "cadeau", id:4},
+          {name: "autre", id:5},
+      ];
+      $scope.payment = $scope.payment_means[0];
+
       $scope.card_type = $scope.card_types[0];
       $scope.tmpcard = undefined;
       $scope.selected_ids = [];
@@ -51,9 +61,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                       // xxx: take the repr from django
                       // return item.title + ", " + item.authors + ", éd. " + item.publishers;
                       var repr = item.title + ", " + item.authors + ", éd. " + item.publishers;
+                      item.quantity = 1;
                       $scope.cards_fetched.push({"repr": repr,
                                                  "id": item.id,
-                                                 "item": item,});
+                                                 "item": item});
                       return {"repr": repr, "id": item.id};
                   });
               });
@@ -72,12 +83,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               $scope.selected_ids.push($scope.tmpcard.id);
           };
           $scope.copy_selected = undefined;
+          $scope.updateTotalPrice();
       };
 
       $scope.remove_from_selection = function(index_to_rm){
-          $scope.total_price -= $scope.cards_selected[index_to_rm].price;
           $scope.selected_ids.splice(index_to_rm, 1);
           $scope.cards_selected.splice(index_to_rm, 1);
+          $scope.updateTotalPrice();
       };
 
       $scope.reset_card_list_following_dist = function(dist_name){
@@ -94,8 +106,15 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.updateTotalPrice = function() {
         $scope.total_price = _.reduce($scope.cards_selected,
                                       function(memo, it) {
-                                          return memo + it.price_sold;},
+                                          return memo + (it.price_sold * it.quantity);},
                                       0)
+    };
+
+    $scope.getTotalCopies = function(){
+        return _.reduce($scope.cards_selected,
+                 function(memo, it){
+                     return memo + it.quantity;},
+                     0)
     };
 
       // Watch the change of distributor: we would like to filter out
@@ -122,7 +141,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   return card.price_sold;
               });
               quantities = _.map($scope.cards_selected, function(card){
-                  return 1; //TODO: choose quantity
+                  return card.quantity;
               });
           };
 
