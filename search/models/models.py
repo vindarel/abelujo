@@ -849,6 +849,11 @@ class Sell(models.Model):
     # alerts
     # client
 
+    def __unicode__(self):
+        return "Sell {} of {} copies at {}.".format(self.id,
+                                                    self.soldcards_set.count(),
+                                                    self.date)
+
     @staticmethod
     def sell_cards(ids_prices_nb, date=None, payment=None):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
