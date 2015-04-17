@@ -24,6 +24,7 @@ var vendorJsFiles = [
   'static/bower_components/angular-ui-router/release/angular-ui-router.min.js',
   'static/bower_components/underscore/underscore-min.js',
   // 'static/bower_components/bootstrap/**/*.js',
+    'static/bower_components/datejs/build/production/date.min.js',
 ];
 
 var appFiles = [

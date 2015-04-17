@@ -10,8 +10,10 @@
         "angular-ui-router": "latest",
         "bootstrap": "3.3",
         "jquery"   : "~1.9",
-        "underscore": "latest"
+        "underscore": "latest",
+        "datejs": "latest"
     },
+
     "description": "abelujo",
     "ignore": [
         ".git",
