@@ -13,6 +13,7 @@ from models import Basket
 from models import Deposit
 from models import Distributor
 from models import Sell
+from models import getHistory
 
 log = logging.getLogger(__name__)
 
@@ -151,4 +152,22 @@ def sell(request, **response_kwargs):
             alerts = success_msg
         to_ret = {"status": status,
                   "alerts": alerts}
+        return HttpResponse(json.dumps(to_ret), **response_kwargs)
+
+
+def history(request, **response_kwargs):
+    alerts = []
+    if request.method == "GET":
+        params = request.GET.copy()
+        response_kwargs["content_type"] = "application/json"
+        try:
+            hist, status, alerts = getHistory()
+            hist = [it.to_list() for it in hist]
+        except Exception as e:
+            log.error(u"api/history error: {}".format(e))
+            return HttpResponse(json.dumps(alerts), **response_kwargs)
+
+        to_ret = {"status": status,
+                  "alerts": alerts,
+                  "data": hist}
         return HttpResponse(json.dumps(to_ret), **response_kwargs)

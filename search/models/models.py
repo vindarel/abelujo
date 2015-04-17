@@ -27,6 +27,7 @@ from django.db.models import Q
 from django.utils.http import quote
 
 CHAR_LENGTH = 200
+PAGE_SIZE = 50
 
 log = logging.getLogger(__name__)
 
@@ -854,6 +855,21 @@ class Sell(models.Model):
                                                     self.soldcards_set.count(),
                                                     self.date)
 
+    def to_list(self):
+        """Return this object as a python list, ready to be serialized or
+        json-ified."""
+        cards = map(lambda it: Card.obj_to_list([it.card])[0],
+                  self.soldcards_set.all())
+        ret = {
+            "id": self.id,
+            "date": self.date.strftime("%Y-%m-%d"), #YYYY-mm-dd
+            "cards": cards,
+            # "payment": self.payment,
+            "total_price": None,
+            }
+
+        return ret
+
     @staticmethod
     def sell_cards(ids_prices_nb, date=None, payment=None):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
@@ -931,3 +947,14 @@ class Sell(models.Model):
                            "level": STATUS_SUCCESS})
 
         return (sell, status, alerts)
+
+def getHistory(to_list=False):
+    """return the last sells and inputs.
+
+    With pagination.
+
+    returns: a tuple: (list of Sell objects, status, alerts).
+    """
+    alerts = []
+    sells = Sell.objects.all()[:PAGE_SIZE]
+    return sells, STATUS_SUCCESS, alerts

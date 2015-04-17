@@ -22,9 +22,13 @@ Test the models.
 Note: to compare two objects, don't use assertEqual but the == operator.
 """
 
+import datetime
+
 from django.contrib import messages
 from django.test import TestCase
 
+import factory
+from factory.django import DjangoModelFactory
 from search.models import Author
 from search.models import Basket
 from search.models import BasketCopies
@@ -35,13 +39,15 @@ from search.models import Collection
 from search.models import Deposit
 from search.models import DepositCopies
 from search.models import Distributor
+from search.models import getHistory
 from search.models import Place
 from search.models import PlaceCopies
-from search.models import Publisher
 from search.models import Preferences
+from search.models import Publisher
 from search.models import Sell
-
-from search.models import STATUS_SUCCESS, STATUS_ERROR, STATUS_WARNING
+from search.models import STATUS_ERROR
+from search.models import STATUS_SUCCESS
+from search.models import STATUS_WARNING
 
 
 class TestCards(TestCase):
@@ -442,3 +448,31 @@ class TestSells(TestCase):
         self.assertEqual(STATUS_WARNING, status)
         int_table = sell.soldcards_set.all()
         self.assertTrue(len(int_table), 1)
+
+class SellsFactory(DjangoModelFactory):
+    class Meta:
+        model = Sell
+
+    date = datetime.date.today()
+
+class CardFactory(DjangoModelFactory):
+    class Meta:
+        model = Card
+
+    title = factory.Sequence(lambda n: 'card title %d' % n)
+    # distributor = factory.SubFactory(DistributorFactory)
+
+class TestHistory(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory.create()
+        self.sell = SellsFactory.create()
+        Sell.sell_cards([{"id":"1", "price_sold":1, "quantity": 1}])
+
+    def tearDown(self):
+        pass
+
+    def test_history(self):
+        hist, status, alerts = getHistory()
+        self.assertEqual(2, len(hist)) # one is created without cards sold.
+        self.assertEqual(STATUS_SUCCESS, status)
