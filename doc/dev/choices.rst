@@ -57,6 +57,17 @@ Post-actions:
 
 Todo: enable js tests: https://github.com/bearstech/cookiecutter-django-bootstrap-angular/blob/master/{{cookiecutter.project_name}}/package.json
 
+Now a few words about npm libraries we use.
+
+datejs
+~~~~~~
+
+http://www.datejs.com/2007/11/27/getting-started-with-datejs/
+
+It enhances the javascript `Date` object with many useful methods. For
+example, we can print a date to a given format with
+`date.toString("yyyy-MM-dd")`. With bare javascript this isn't
+possible (as cleanly).
 
 Bower
 -----
@@ -82,8 +93,6 @@ Then we can add scripts in templates like:::
 
 django-bower VS gulpfile
 ~~~~~~~~~~~~~~~~~~~~~~~~
-
-to decide TODO:
 
 Gulp
 ----
