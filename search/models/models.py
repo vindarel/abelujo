@@ -855,6 +855,12 @@ class Sell(models.Model):
                                                     self.soldcards_set.count(),
                                                     self.date)
 
+    def total_price(self):
+        total = 0
+        for card in self.soldcards_set.all():
+            total += card.price_sold * card.quantity
+        return total
+
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
         json-ified."""
@@ -865,7 +871,8 @@ class Sell(models.Model):
             "date": self.date.strftime("%Y-%m-%d"), #YYYY-mm-dd
             "cards": cards,
             # "payment": self.payment,
-            "total_price": None,
+            "total_price": self.total_price(),
+            "details_url": "/admin/search/{}/{}".format(self.__class__.__name__.lower(), self.id),
             }
 
         return ret
@@ -956,5 +963,5 @@ def getHistory(to_list=False):
     returns: a tuple: (list of Sell objects, status, alerts).
     """
     alerts = []
-    sells = Sell.objects.all()[:PAGE_SIZE]
+    sells = Sell.objects.order_by("-date")[:PAGE_SIZE]
     return sells, STATUS_SUCCESS, alerts

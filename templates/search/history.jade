@@ -24,10 +24,14 @@
 
 
 div(ng-controller="historyController")
-    h3(ng-show="history") Historique des ventes
+    h3(ng-show="history") Historique des ventes //unseen
     div(
       ng-repeat="hist in history"
     )
-      a(href="{% verbatim %} /admin/search/sell/{{hist.id}} {% endverbatim %}") Vente {% verbatim %} {{ hist.id }}: {{history[$item].item.cards.length}} notices {% endverbatim %}
+      div
+        a(href="{% verbatim %} {{ hist.item.details_url }} {% endverbatim %}") Vente du {% verbatim %} {{hist.item.date }}: {{hist.item.cards.length}} notices {% endverbatim %}
+        div total: {% verbatim %} {{hist.item.total_price}} {% endverbatim %}
+        div(ng-repeat="card in hist.item.cards")
+          div {% verbatim %} {{ card.title }} {% endverbatim %}
 
 {% endblock content %}
