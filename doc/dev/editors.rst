@@ -8,6 +8,7 @@ highlighting, code checker, ...), development with AngularJS,
 documentation writing, json editing, project management, and why not
 test runner and shell interface.
 
+
 Emacs
 -----
 
@@ -34,7 +35,7 @@ Not sure ? Use a starter kit
 True enough, Emacs isn't user friendly without some configarution. If
 you didn't tweak it a lot yet, it's a good idea to start with an
 excellent configuration out of the box. There are some options and our
-favorite is Prelude: https://github.com/bbatsov/prelude
+favorite is `Prelude <https://github.com/bbatsov/prelude>`_.
 
 Vim emulation
 ~~~~~~~~~~~~~
@@ -57,7 +58,7 @@ See: http://wikemacs.org/wiki/JavaScript
 RapydScript
 ~~~~~~~~~~~
 
-- (work ongoing) our `rapyd-mode`: https://gitlab.com/emacs-stuff/rapyd-mode
+- Our `rapyd-mode`: https://gitlab.com/emacs-stuff/rapyd-mode
 
 
 Django mode
@@ -67,8 +68,8 @@ https://github.com/myfreeweb/django-mode
 
 Gives a menu and some global functions to interact with Django.
 
-Angular snippets and utils
-~
+Angular snippets and utilities:
+
 
 - syntax highlighting of angular keywords in html templates, snippets and tab completion: https://omouse.github.io/angularjs-mode/
 
@@ -85,7 +86,8 @@ Jade templates
 JSON
 ~~~~
 
-- Check the json integrity with `flymake-json`. You need::
+- Check the json integrity with `flymake-json
+  <http://melpa.org/#/flymake-json>`_. You need::
 
     npm install -g jsonlint
 
@@ -100,11 +102,28 @@ See http://wikemacs.org/wiki/shell
 See also
 ~~~~~~~~
 
-- effectively open files of the project with projectile: https://github.com/bbatsov/projectile
-- `elscreen` to have tabs.
+- effectively open files and run commands on the project with
+  `projectile <https://github.com/bbatsov/projectile>`_.
+- `elscreen <http://wikemacs.org/wiki/Elscreen>`_ to have tabs.
 
-More documentation:
-~~~~~~~~~~~~~~~~~~~
+More documentation
+~~~~~~~~~~~~~~~~~~
 
-  - `awesome-emacs`: https://github.com/emacs-tw/awesome-emacs
+- `awesome-emacs`: https://github.com/emacs-tw/awesome-emacs
 - wikemacs
+
+Shell
+-----
+
+npm completion
+~~~~~~~~~~~~~~
+
+Run::
+
+    .< (npm completion
+
+on your current shell and put this command in your .bashrc.
+
+If available on your system, the following does the same::
+
+  apt-get install npm-completion

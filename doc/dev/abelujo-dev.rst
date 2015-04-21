@@ -71,32 +71,119 @@ This will add cards, publishers and everything to the database so than
 you can test it for real.
 
 
-Try out RapydScript
--------------------
+Try out RapydScript, the pythonic javascript
+--------------------------------------------
 
 First install RapydScript:::
 
-    npm install rapydscript
+    npm install rapydscript -g
 
 Now to compile RapydScript files you could do it manually, but to do
 it with gulp you need the ``gulp-rapyd`` extension. Install it with::
 
     npm install git://github.com/vindarel/gulp-rapyd
 
-Now you can run ``gulp rapyd``. This will compile all ``pyj`` files
+Now you can run `gulp rapyd`. This will compile all ``pyj`` files
 found in ``static/js/app/`` and concatenate them in
-``static/js/build/rapyd.js``.
+``static/js/build/abelujo.js`` (check in the gulpfile.js) which is
+loaded in the html template ``base.jade`` in a `script` tag::
 
-Remember to change the imported
-scripts in ``base.jade`` (see the line importing `rapyd.js`).
+    script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
+
+ which is necessary for the browser to load and run our javascript application.
+
+You can recompile everything on every change with::
+
+  gulp watch
+
+
+Testing strategy
+----------------
+
+We have different sorts of tests to write and run: unit tests, end to
+end tests, tests of the user interface and integration tests.
+
+Like with all python software, we write **unit tests**. They are aimed at
+testing logical blocks of code, like a function on its own. We use the
+`unittest` module and the Django facilities for the backend.
+
+We must also unit test the javascript code (the logic lies in
+angularjs controllers and directives).
+
+Writing tests is mandatory to check that our code doesn't break with
+time and refactorings. They are also necessary to reproduce and fix
+bugs, and they are useful, when we write them, to better understand
+and design the code we want to write. That's part of why a developper
+should embrace the `Test Driven Development` (TDD) workflow: the goal
+is to write tests before even writing the firt line of code.
+
+Testing that a method does the expected logic doesn't guarantee that
+it works with data from the real world. For example, let's consider
+our web scrapers that pull data from online bookstores. We have to
+write unit tests to check that they work as expected, but we also need
+to test that they still work against the current website on the
+internet. Indeed, remote websites can change, the format of the data
+they accept or return can change and break our code. We then have to
+run tests against the real world once in a while. We call those **end
+to end tests**.
+
+We also write a lot of javascript for **the user interface** in the
+browser. Some pages do a lot of logic with javascript. The selling
+page, for example: it asks for data to the server, it does some
+calculation and it gives some data back to the server to be registered
+in the database. We need to test all that too. This is doable with the
+`protractor <https://angular.github.io/protractor/>`_ test framework
+from AngularJS.
+
+Now we know how to test each part of our application. Great, but this
+isn't enough. Nothing guarantees that those parts work happily
+together ! We then need **integration tests**. They are fortunately
+done partly with protractor (because it launches a real web browser
+with the current state of the application we can test the interaction
+with the server).
+
+But we also have to test that all the packages and software that we
+rely on install correctly. We do it partially with `tox
+<https://testrun.org/tox/>`_, which tests the python side, that our
+`pip` dependencies install correctly in a fresh environment, and that
+no one is missing ;) At is core it is made to test the installation
+against multiple versions of python but we don't need that (yet).
+
+And this isn't enough yet, because nothing guarantees that ``pip``
+itself or ``node`` are installed correctly on the machine, which can be
+a fresh or an old Debian, an Ubuntu, a web server, ... for that, we
+started setting up `Docker` and a **continuous integration** server
+on Gitlab.com. But that's an ongoing work.
 
 
 Running Tests
 -------------
 
-Run::
+To run python unit tests::
 
-    make unit # or ./manage.py test
+    make unit # or ./manage.py test search.tests.testfile.someClass.some_method
+
+Python's end-to-end tests::
+
+    make e2e
+
+To run the javascript unit tests::
+
+    TODO !
+
+To run the javascript end-to-end tests (with Protractor), open 3
+terminal windows:
+
+- run our web app with the usual `make run` (or `./manage.py runserver`)
+- start the webdriver: `make webdriver-start`
+- at last, run the tests: `make protractor`. We also have a debugger
+  mode with `make protractor-debug` (requires Chrome >= 39).
+
+About Protractor:
+
+- https://angular.github.io/protractor/#/getting-started
+- an extension: https://github.com/andresdominguez/elementor (requires
+  Chrome >= 39)
 
 
 Tests coverage
