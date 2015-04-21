@@ -27,9 +27,28 @@ install:  deps db npm gulp
 npm:
 	@echo "Installing Node and bower packages..."
 	npm install
-	@sudo npm install gulp -g
+	@echo "Installing gulp and rapydscript globally... (needs root)"
+	# Don't install protractor globally, we'll have permission pb with the webdriver.
+	@sudo npm install -g gulp rapydscript elementor
+	# Install or update Selenium etc
+	webdriver-manager update
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
+
+# Run the tests of the UI in a browser.
+NODEBIN=./node_modules/.bin/
+PROTRACTOR_CMD=$(NODEBIN)protractor
+PROTRACTOR_CONF=search/tests/integration-tests/conf.js
+# Start the webdriver before the protractor tests.
+webdriver-start:
+	$(NODEBIN)webdriver-manager start
+
+protractor:
+	$(PROTRACTOR_CMD) $(PROTRACTOR_CONF)
+
+protractor-debug:
+	$(PROTRACTOR_CMD)  --elementExplorer $(PROTRACTOR_CONF)
+	@echo "Chrome version must be >= 39.0"
 
 # Build static files
 gulp:
