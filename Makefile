@@ -7,7 +7,8 @@
 
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
 debian:
-	@sudo apt-get install -y python-pip nodejs nodejs-legacy npm
+	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
+	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs sudo apt-get install -y
 	@sudo pip install --upgrade pip
 	@sudo pip install virtualenvwrapper
 

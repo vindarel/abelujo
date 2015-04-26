@@ -1,0 +1,7 @@
+python-pip
+python-dev
+nodejs
+nodejs-legacy
+npm
+postgresql-contrib
+libpq-dev

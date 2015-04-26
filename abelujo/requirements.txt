@@ -18,6 +18,7 @@ django-bootstrap3
 pyjade                  # process jade templates.
 bootstrap-admin         # bootstrap theme, nice search feature.
 pyyaml
+psycopg2                # postgresql database engine.
 
 ### testing
 mock==1.0.1

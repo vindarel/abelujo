@@ -59,6 +59,37 @@ This is installed with `make debian`::
 
     sudo apt-get install nodejs-legacy
 
+Use the Postgresql database
+---------------------------
+
+We need to create a database with the following steps::
+
+    sudo su - postgres
+    createdb abelujo_db
+    createuser abelujo_user -P # and enter a password.
+
+Now call a postgresql prompt::
+
+    psql
+    GRANT ALL PRIVILEGES ON DATABASE abelujo_db TO abelujo_user;
+
+Now we have a postgre database and a user ("postgres") to use it. We
+just have to put it in our ``abelujo/settings.py``.
+
+Create the db::
+
+    ./manage.py syncdb
+
+Note: if we have "authentication peer failed for user XXX", edit the
+file ``/etc/postgresql/9.3/main/pg_hba.conf`` (which lists
+permissions) and change::
+
+    local all all peer
+
+to::
+
+    local all all trust
+
 
 Populate the DB with testing data
 ---------------------------------
