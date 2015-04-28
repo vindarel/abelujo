@@ -112,6 +112,11 @@ odsimport:
 doc:
 	@cd doc/dev/ && make html
 
+publish:
+	# publish on dev.abelujo.cc
+	# @rsync -avzr doc/dev/_build/html/ $(ABELUJO_USER)@$(ABELUJO_SERVER)w4a152947@ssh.web4all.fr:/datas/vol3/w4a152947/var/www/dev.abelujo.cc/htdocs/
+	@rsync -avzr doc/dev/_build/html/ $(ABELUJO_USER)@$(ABELUJO_SERVER):$(ABELUJO_HTDOCS)
+
 html: doc
 
 clean:
