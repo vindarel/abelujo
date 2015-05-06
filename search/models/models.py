@@ -751,16 +751,22 @@ class Deposit(TimeStampedModel):
     def get_absolute_url(self):
         return quote(self.name)
 
-    def add_copies(self, copies):
-        "Add the given list of copies objects to this deposit."
+    def add_copies(self, copies, nb=1):
+        """Add the given list of copies objects to this deposit.
+
+        copies: list of Card objects.
+
+        return: []
+        """
         msgs = []
         try:
             for copy in copies:
                 if copy.distributor and (copy.distributor.name == self.distributor.name):
-                    deposit_copy = self.depositcopies_set.create(card=copy)
+                    deposit_copy = self.depositcopies_set.create(card=copy, nb=nb)
                     deposit_copy.save()
                 else:
-                    log.error(u"Error: we should have filtered the copies before.")
+                    log.error(dedent(u"""Error: the distributor names do not match.
+                    We should have filtered the copies before."""))
             return []
 
         except Exception as e:

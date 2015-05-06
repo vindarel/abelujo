@@ -327,6 +327,10 @@ class TestDeposits(TestCase):
         self.card.distributor = self.distributor
         msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
+        self.assertEqual(1, self.card.quantity_deposits())
+        self.deposit.add_copies([self.card])
+        self.assertEqual(2, self.card.quantity_deposits())
+
 
     def test_no_distributor(self):
         self.card.distributor = None
