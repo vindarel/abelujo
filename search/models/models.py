@@ -16,6 +16,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import operator
 import logging
 from datetime import date
 from textwrap import dedent
@@ -493,6 +494,16 @@ class Card(TimeStampedModel):
             self.sortkey = ', '.join([a.name for a in self.authors.all()])
             self.save()
 
+    def is_in_deposits(self):
+        return self.deposit_set.all()
+
+    def quantity_deposits(self):
+        return reduce(operator.add, [it.nb for it in self.depositcopies_set.all()], 0)
+
+    def ambigous_sell(self):
+        in_deposits = self.quantity_deposits()
+        log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
+        return self.is_in_deposits() and (in_deposits > 0) and (self.quantity >= in_deposits)
 
 class PlaceCopies (models.Model):
     """Copies of a card present in a place.
@@ -572,6 +583,7 @@ class Place (models.Model):
             place_copy = self.placecopies_set.get(card=card)
             place_copy.nb += nb
             place_copy.save()
+            return place_copy.nb
         except Exception,e:
             log.error(u"--- error while adding %s to the place %s" % (card.name, self.name))
             log.error(e)
@@ -685,7 +697,7 @@ class DepositCopies(TimeStampedModel):
     card = models.ForeignKey(Card)
     deposit = models.ForeignKey("Deposit")
     #: Number of copies now present in the stock.
-    nb = models.IntegerField(default=0)
+    nb = models.IntegerField(default=1)
     #: Minimum of copies we want to have.
     threshold = models.IntegerField(blank=True, null=True, default=0)
     #: Do we have a limit of time to pay ?
@@ -827,6 +839,8 @@ class SoldCards(models.Model):
     sell = models.ForeignKey("Sell")
     #: Number of this card sold:
     quantity = models.IntegerField(default=1)
+    #: Initial price: TODO:
+    # price_init = models.FloatField()
     #: Price sold:
     price_sold = models.FloatField()
 
@@ -909,13 +923,26 @@ class Sell(models.Model):
         for it in ids_prices_nb:
             # "sell" a card.
             id = it.get("id")
+            quantity = it.get("quantity", 1)
             if not id:
                 log.error(u"Error: id {} shouldn't be None.".format(id))
+            card = Card.objects.get(id=id)
+            cards_obj.append(card)
+
+            # Create an alert ?
+            if card.ambigous_sell():
+                alert = Alert(card=card); alert.save()
+                alert.add_deposits_of_card(card)
+                #TODO: ajouter les messages pour la UI
+                # msgs.append
+                log.info("Alert created for card {}".format(card.title))
 
             try:
-                card = Card.objects.get(id=id)
-                cards_obj.append(card)
-                Card.sell(id, quantity=it.get('quantity', 1))
+                # TODO: on décrémente quand même sa qty ? Si non, la
+                # vision du stock sera fausse. Mais c'est peut être
+                # voulu, jusqu'à résolution des alertes. Sauf si la
+                # vision du stock vérifie les alertes.
+                Card.sell(id, quantity=quantity)
             except ObjectDoesNotExist:
                 msg = "Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
@@ -955,6 +982,7 @@ class Sell(models.Model):
                                                                                    e))
                 status = STATUS_ERROR
 
+        # XXX: misleading names: alerts (messages) and Alert.
         if not alerts:
             alerts.append({"message":"La vente a été effectuée avec succès.",
                            "level": STATUS_SUCCESS})
@@ -971,3 +999,27 @@ def getHistory(to_list=False):
     alerts = []
     sells = Sell.objects.order_by("-date")[:PAGE_SIZE]
     return sells, STATUS_SUCCESS, alerts
+
+class Alert(models.Model):
+    """An alert stores the information that a Sell is ambiguous. That
+    happens when we want to sell a card and it has at least one
+    exemplary in (at least) one deposit AND it also has exemplaries
+    not in deposits. We need to ask the user which exemplary to sell.
+    """
+
+    class Meta:
+        app_label = "search"
+
+    card = models.ForeignKey("Card")
+    deposits = models.ManyToManyField(Deposit, blank=True, null=True)
+    date_creation = models.DateField(auto_now_add=True)
+    date_resolution = models.DateField(null=True, blank=True)
+    resolution_auto = models.BooleanField(default=False)
+    comment = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "alert for card {}".format(self.card.id)
+
+    def add_deposits_of_card(self, card):
+        for it in card.deposit_set.all():
+            self.deposits.add(it)

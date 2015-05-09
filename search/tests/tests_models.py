@@ -30,6 +30,7 @@ from django.test import TestCase
 import factory
 from factory.django import DjangoModelFactory
 from search.models import Author
+from search.models import Alert
 from search.models import Basket
 from search.models import BasketCopies
 from search.models import BasketType
@@ -403,6 +404,12 @@ class TestSells(TestCase):
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
+        # a Distributor:
+        self.dist = Distributor(name="dist test")
+        self.dist.save()
+        # a Deposit:
+        self.depo = Deposit(name="deposit test", distributor=self.dist)
+        self.depo.save()
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
 
@@ -453,6 +460,26 @@ class TestSells(TestCase):
         int_table = sell.soldcards_set.all()
         self.assertTrue(len(int_table), 1)
 
+    def test_alert_deposit(self):
+        """Create an ambigous sell, check an Alert is created."""
+        self.autobio.quantity = 2 # 1 in deposit, 1 not: ambigous.
+        # add a copy to the deposit:
+        self.autobio.distributor = self.dist
+        self.autobio.save()
+        self.depo.add_copies([self.autobio])
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    # "price_sold": p1
+                },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+        sell, status, msgs = Sell.sell_cards(to_sell)
+        self.assertEqual(Alert.objects.count(), 1)
+
+
 class SellsFactory(DjangoModelFactory):
     class Meta:
         model = Sell
@@ -465,6 +492,16 @@ class CardFactory(DjangoModelFactory):
 
     title = factory.Sequence(lambda n: 'card title %d' % n)
     # distributor = factory.SubFactory(DistributorFactory)
+
+class DepositFactory(DjangoModelFactory):
+    class Meta:
+        model = Deposit
+    name = factory.Sequence(lambda n: "deposit test %d" % n)
+
+class DistributorFactory(DjangoModelFactory):
+    class Meta:
+        model = Distributor
+    name = factory.Sequence(lambda n: "distributor test %s" % n)
 
 class TestHistory(TestCase):
 
@@ -480,3 +517,24 @@ class TestHistory(TestCase):
         hist, status, alerts = getHistory()
         self.assertEqual(2, len(hist)) # one is created without cards sold.
         self.assertEqual(STATUS_SUCCESS, status)
+
+class TestAlerts(TestCase):
+
+    def setUp(self):
+        # a card in a deposit, with the same distributor each.
+        self.dist = DistributorFactory.create()
+        self.card = CardFactory.create()
+        self.card.distributor = self.dist
+        self.deposit = DepositFactory.create()
+        self.deposit.distributor = self.dist
+        self.deposit.add_copies([self.card])
+        # the tested Alert.
+        self.alert = Alert(card=self.card)
+        self.alert.save()
+
+    def test_nominal(self):
+        self.alert.deposits.add(self.deposit)
+
+    def test_add_deposits_of_card(self):
+        self.alert.add_deposits_of_card(self.card)
+        self.assertEqual(1, len(self.card.deposit_set.all()))
