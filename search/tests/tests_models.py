@@ -532,6 +532,11 @@ class TestAlerts(TestCase):
         self.alert = Alert(card=self.card)
         self.alert.save()
 
+    def test_get_alerts(self):
+        self.alert.deposits.add(self.deposit)
+        got = Alert.get_alerts(to_list=True)
+        self.assertTrue(got)
+
     def test_nominal(self):
         self.alert.deposits.add(self.deposit)
 

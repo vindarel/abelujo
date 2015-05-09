@@ -29,6 +29,9 @@ from django.utils.http import quote
 
 CHAR_LENGTH = 200
 PAGE_SIZE = 50
+#: Date format used to jsonify dates, used by angular-ui (datepicker)
+# and the ui in general (datejs).
+DATE_FORMAT = "%Y-%m-%d"
 
 log = logging.getLogger(__name__)
 
@@ -229,35 +232,37 @@ class Card(TimeStampedModel):
         """
         return "; ".join([aut.name for aut in self.authors.all()])
 
+    def to_list(self):
+        res = {
+            "title": self.title,
+            "authors": ", ".join([ca.name for ca in self.authors.all()]),
+            "price": self.price,
+            "price_sold": self.price_sold,
+            "ean": self.ean,
+            "id": self.id,
+            "img": self.img,
+            "get_absolute_url": self.get_absolute_url(),
+            "quantity": self.quantity,
+            "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
+            "collection": self.collection.name.capitalize() if self.collection else None,
+            "details_url": self.details_url,
+            "data_source": self.data_source,
+            "places": ", ".join([p.name for p in self.places.all()]),
+            "distributor": self.distributor.name if self.distributor else None,
+            "ambigous_sell": self.ambigous_sell(),
+        }
+        return res
+
     @staticmethod
     def obj_to_list(cards):
         """Transform a list of Card objects to a python list.
 
         Used to save a search result in the session, which needs a
-        serializable object.
+        serializable object, and for the api to encode to json.
         TODO: https://docs.djangoproject.com/en/1.6/topics/serialization/
         """
 
-        retlist = []
-        for card in cards:
-            retlist.append({
-                "title": card.title,
-                "authors": ", ".join([ca.name for ca in card.authors.all()]),
-                "price": card.price,
-                "price_sold": card.price_sold,
-                "ean": card.ean,
-                "id": card.id,
-                "img": card.img,
-                "get_absolute_url": card.get_absolute_url(),
-                "quantity": card.quantity,
-                "publishers": ", ".join([p.name.capitalize() for p in card.publishers.all()]),
-                "collection": card.collection.name.capitalize() if card.collection else None,
-                "details_url": card.details_url,
-                "data_source": card.data_source,
-                "places": ", ".join([p.name for p in card.places.all()]),
-                "distributor": card.distributor.name if card.distributor else None
-            })
-        return retlist
+        return [card.to_list() for card in cards]
 
     @staticmethod
     def first_cards(nb, to_list=False):
@@ -495,7 +500,7 @@ class Card(TimeStampedModel):
             self.save()
 
     def is_in_deposits(self):
-        return self.deposit_set.all()
+        return self.deposit_set.count() > 0
 
     def quantity_deposits(self):
         return reduce(operator.add, [it.nb for it in self.depositcopies_set.all()], 0)
@@ -738,6 +743,13 @@ class Deposit(TimeStampedModel):
     def __unicode__(self):
         return u"Deposit '%s' with distributor: %s" % (self.name, self.distributor)
 
+    def to_list(self):
+        ret = {
+            "name": self.name,
+            "distributor": self.distributor.name if self.distributor else "",
+        }
+        return ret
+
     @staticmethod
     def filter_copies(copies, distributor):
         """Filter out the copies that don't have this distributor.
@@ -888,7 +900,7 @@ class Sell(models.Model):
                   self.soldcards_set.all())
         ret = {
             "id": self.id,
-            "date": self.date.strftime("%Y-%m-%d"), #YYYY-mm-dd
+            "date": self.date.strftime(DATE_FORMAT), #YYYY-mm-dd
             "cards": cards,
             # "payment": self.payment,
             "total_price": self.total_price(),
@@ -1018,7 +1030,33 @@ class Alert(models.Model):
     comment = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return "alert for card {}".format(self.card.id)
+        return "alert for card {}, created {}".format(self.card.id, self.date_creation)
+
+    def obj_to_list(self):
+        resolution = self.date_resolution
+        if resolution:
+            resolution = resolution.strftime(DATE_FORMAT)
+        res = {
+            "card": self.card.to_list(),
+            "date_creation": self.date_creation.strftime(DATE_FORMAT),
+            "date_resolution": resolution,
+            "deposits": [dep.to_list() for dep in self.deposits.all()],
+            "deposits_repr": ", ".join(dep.name for dep in self.deposits.all()),
+        }
+        return res
+
+    @staticmethod
+    def get_alerts(to_list=False):
+        """Get all the alerts.
+
+        Return: a 3-tuple (list of alerts, status, list of messages).
+        """
+        alerts = Alert.objects.all().order_by("-date_creation")
+        msgs = []
+        status = STATUS_SUCCESS
+        if to_list:
+            alerts = [alert.obj_to_list() for alert in alerts]
+        return (alerts, status, msgs)
 
     def add_deposits_of_card(self, card):
         for it in card.deposit_set.all():

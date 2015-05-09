@@ -8,6 +8,7 @@ import logging
 from django.core import serializers
 from django.http import HttpResponse
 
+from models import Alert
 from models import Card
 from models import Basket
 from models import Deposit
@@ -171,3 +172,21 @@ def history(request, **response_kwargs):
                   "alerts": alerts,
                   "data": hist}
         return HttpResponse(json.dumps(to_ret), **response_kwargs)
+
+def alerts(request, **response_kwargs):
+    msgs = []
+    alerts = []
+    status = 0
+    if request.method == "GET":
+        params = request.GET.copy()
+        response_kwargs["content_type"] = "application/json"
+        try:
+            alerts, status, msgs = Alert.get_alerts(to_list=True)
+
+        except Exception as e:
+            pass
+
+    to_ret = {"status": status,
+              "alerts": msgs,
+              "data": alerts}
+    return HttpResponse(json.dumps(to_ret), **response_kwargs)

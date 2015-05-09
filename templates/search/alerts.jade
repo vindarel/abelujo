@@ -1,0 +1,33 @@
+// Copyright 2014 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block auto_command_nb %} {{ auto_command_nb }} {% endblock %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+div(ng-controller="alertsController")
+  div.list-group(ng-repeat="alert in alerts")
+    div.list-group-item(ng-class="{% verbatim %} {'list-group-item-success': true, 'list-group-item-danger': {{ alert.card.ambigous_sell }} } {% endverbatim %}") Alert du  {% verbatim %} {{ alert.date_creation }} {% endverbatim %}
+        div concernant la notice "{% verbatim %} {{ alert.card.title}} {% endverbatim %}"
+        div conflit ? {% verbatim %} {{ alert.card.ambigous_sell }} {% endverbatim %}
+        div depots concernés: {% verbatim %} {{ alert.deposits_repr }} {% endverbatim %}
+
+{% endblock %}
