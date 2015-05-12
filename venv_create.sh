@@ -22,5 +22,6 @@
 VENV_NAME=${1:-abelujo}
 export WORKON_HOME=~/.venvs
 [[ -d $WORKON_HOME ]] || mkdir -p $WORKON_HOME
-source /usr/local/bin/virtualenvwrapper.sh
+# source /usr/local/bin/virtualenvwrapper.sh
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 mkvirtualenv $VENV_NAME
