@@ -13,8 +13,10 @@ This project is at its debut stage. However it is already possible to:
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
 -   choose how many exemplaries you add to your stock, edit the cards,
     search a book in your database
--   choose how many copies you put in what place
--   sell a book.
+-   use many places
+-   manage deposits and distributors
+-   sell a book, resolve conflicts of distributors
+-   register cards in baskets
 -   **import data from a LibreOffice Calc file** (.ods). See the [user documentation](doc/user/index.rst "user doc").
 
 We base our work on the software specifications from the Ruche project

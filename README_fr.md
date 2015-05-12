@@ -8,9 +8,9 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 -   rechercher des **CDs** (via [discogs.com](http://www.discogs.com),
 -   choisir combien d'exemplaires sont à ajouter dans le stock, les
     bouger de lieu,
--   chercher un titre dans son stock et le marquer comme vendu (ce qui
-    décrémente de 1 son nombre d'exemplaires).
-- créer des dépôts
+-   chercher dans son stock,
+-   effectuer des ventes,
+-   créer des dépôts, gérer les conflits à la vente,
 -   **importer des données** depuis un fichier **LibreOffice Calc** (.ods). Voir la [documentation utilisateur](doc/french/index.rst "doc utilisateur").
 
 
