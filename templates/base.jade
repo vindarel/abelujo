@@ -48,8 +48,7 @@ html(ng-app="abelujo")
             a(href="/deposits") Dépôts
           li
             a(href="/commands") A commander
-              span.badge {% block auto_command_nb %} {{auto_command_nb}} {% endblock %}
-              // nb of copies in auto_command basket
+              span.badge {% verbatim %} {{auto_command_total}} {% endverbatim %}
           li
             a(href="/history") Historique
 

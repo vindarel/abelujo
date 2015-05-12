@@ -52,6 +52,7 @@ urlpatterns = patterns('',
     url(r'^alerts/', TemplateView.as_view(template_name="search/alerts.jade"),
         name="search_alerts"),
 
+    url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
     url(r'^api/cards$', 'search.models.api.cards', name="api_cards"),
     url(r'^api/distributors$', 'search.models.api.distributors', name="api_distributors"),
     url(r'^api/deposits$', 'search.models.api.deposits', name="api_deposits"),

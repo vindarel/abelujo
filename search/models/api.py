@@ -173,6 +173,17 @@ def history(request, **response_kwargs):
                   "data": hist}
         return HttpResponse(json.dumps(to_ret), **response_kwargs)
 
+def auto_command_total(request, **response_kwargs):
+    total = -1
+    if request.method == "GET":
+        params = request.GET.copy()
+        response_kwargs["content_type"] = "application/json"
+        try:
+            total = Basket.auto_command_nb()
+        except Exception as e:
+            pass
+    return HttpResponse(json.dumps(total), **response_kwargs)
+
 def alerts(request, **response_kwargs):
     msgs = []
     alerts = []

@@ -200,14 +200,12 @@ def index(request):
     page_title = ""
     data_source = SCRAPER_CHOICES[0][0][0]
     retlist = []
-    auto_command_nb = 0
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
             if request.POST.has_key("q") and request.POST["q"]:
                 data_source = form.cleaned_data['source']
                 rev_url = get_reverse_url(form.cleaned_data)
-                auto_command_nb = Basket.objects.get(name="auto_command").copies.count()
                 page_title = "search index"
                 # forward to search?q=query+parameters
                 return HttpResponseRedirect(rev_url)
@@ -217,7 +215,6 @@ def index(request):
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
-            "auto_command_nb": auto_command_nb,
             })
 
 
@@ -227,7 +224,6 @@ def search(request):
     retlist = []
     page_title = ""
     data_source = SCRAPER_CHOICES[0][0][0]
-    auto_command_nb = Basket.auto_command_nb()
 
     form = SearchForm(request.GET)
     if request.method == 'GET' and form.is_valid():
@@ -265,7 +261,6 @@ def search(request):
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
-            "auto_command_nb": auto_command_nb,
             })
 
 def _request_session_get(request, key):
@@ -366,7 +361,6 @@ def collection(request):
     form = CollectionSearchForm()
     retlist = []
     cards = []
-    auto_command_nb = Basket.auto_command_nb()
 
     if request.method == "POST":
         form = CollectionSearchForm(request.POST)
@@ -408,7 +402,6 @@ def collection(request):
             "nb_results": len(cards),
             "book_list": cards,
             "AddToDepositForm": AddToDepositForm,
-            "auto_command_nb": auto_command_nb,
             })
 
 # def sell(request):
@@ -438,8 +431,6 @@ class depositsListView(ListView):
     model = Deposit
     template_name = "search/deposits.jade"
     context_object_name = "deposits"
-    #TODO: add context object: auto_command_nb
-    #https://docs.djangoproject.com/en/1.7/topics/class-based-views/generic-display/#
 
 #  # for a comparison:
 # def deposits(request):
@@ -448,10 +439,8 @@ class depositsListView(ListView):
         # "deposits": deposits})
 
 def deposits_new(request):
-    auto_command_nb = Basket.auto_command_nb()
     return render(request, "search/deposits_create.jade", {
         "DepositForm": DepositForm(),
-        "auto_command_nb": auto_command_nb,
         })
 
 def deposits_create(request):
@@ -510,7 +499,6 @@ def deposits_view(request, depo_name):
     """display the given deposit."""
     deposit = None
     copies = []
-    auto_command_nb = Basket.auto_command_nb()
     template = "search/deposits_view.jade"
     try:
         deposit = Deposit.objects.get(name=depo_name)
@@ -521,7 +509,6 @@ def deposits_view(request, depo_name):
     return render(request, template, {
         "deposit": deposit,
         "copies": copies,
-        "auto_command_nb": auto_command_nb,
     })
 
 
