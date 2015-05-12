@@ -31,8 +31,9 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 import datasources.all.discogs.discogsConnector as discogs
-import datasources.frFR.chapitre.chapitreScraper as chapitre
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner # same name as module's SOURCE_NAME
+import datasources.frFR.chapitre.chapitreScraper as chapitre # same name as module's SOURCE_NAME
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.esES.casadellibro.casadellibroScraper as casadellibro
 
 from models import Basket
 from models import Card
@@ -53,6 +54,7 @@ SCRAPER_CHOICES = [
     ("Book shops", (
             ("chapitre", "chapitre.com - fr"),
             ("buchWagner", "buchWagner Munchen - de"),
+            ("casadellibro", "casa del libro, Madrid - es"),
             )
      ),
     ("CDs", (

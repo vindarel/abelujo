@@ -8,6 +8,7 @@ This project is at its debut stage. However it is already possible to:
 -   look up for **books**, either by keywords or by isbn/ean. You can currently search for:
     * french books (through [chapitre.com](http://www.chapitre.com/))
     * german books(through [buch-wagner.de](http://www.buch-wagner.de))
+    * spanish books (through [casadellibro.com](http://www.casadellibro.com))
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
     * *Note: we have one for Foyles coming (from London)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
