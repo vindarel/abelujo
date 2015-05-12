@@ -34,7 +34,7 @@ html(ng-app="abelujo")
           li
             a.text-right(href="/admin") Admin
 
-  body.container
+  body.container(ng-controller="baseController")
     div.col-md-2(id="menu")
       div
         ul.nav.nav-pills.nav-stacked
@@ -55,6 +55,7 @@ html(ng-app="abelujo")
 
           li
             a(href="/alerts") Alertes
+              span.badge {% verbatim %} {{ alerts_open }} {% endverbatim %}
 
   div.col-md-10(id="content")
     {% if messages %}

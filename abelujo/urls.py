@@ -58,6 +58,7 @@ urlpatterns = patterns('',
     url(r'^api/sell$', 'search.models.api.sell', name="api_sell"),
     url(r'^api/history$', 'search.models.api.history', name="api_history"),
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),
+    url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),

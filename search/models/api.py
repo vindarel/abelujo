@@ -190,3 +190,15 @@ def alerts(request, **response_kwargs):
               "alerts": msgs,
               "data": alerts}
     return HttpResponse(json.dumps(to_ret), **response_kwargs)
+
+def alerts_open(request, **response_kwargs):
+    total = 0
+    if request.method == "GET":
+        params = request.GET.copy()
+        response_kwargs["content_type"] = "application/json"
+        try:
+            total = Alert.objects.count()
+        except Exception as e:
+            pass
+
+    return HttpResponse(json.dumps(total), **response_kwargs)
