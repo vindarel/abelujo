@@ -96,7 +96,11 @@ div(ng-controller="sellController")
         h4
           a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
           span {% verbatim %} {{card.authors}} {% endverbatim %}
+          i.glyphicon.glyphicon-warning-sign(
+            ng-show="{% verbatim %} cards_selected[$index].ambigous_sell {% endverbatim %}"
+            title="There is a conflict with deposits.")
           i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
+          i.glyphicon.glyphicon-exclamation-s
         span
 
         .row
@@ -120,6 +124,8 @@ div(ng-controller="sellController")
                   ng-model="{% verbatim %} cards_selected[$index].quantity {% endverbatim %}"
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )
+
+
 
 
       input.btn.btn-primary(id="validateButton", type="submit", value="Valider", ng-click="sellCards()")
