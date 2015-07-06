@@ -47,6 +47,8 @@ html(ng-app="abelujo")
           li
             a(href="/deposits") Dépôts
           li
+            a(href="inventories") Inventaires
+          li
             a(href="/commands") A commander
               span.badge {% verbatim %} {{auto_command_total}} {% endverbatim %}
           li
@@ -55,6 +57,7 @@ html(ng-app="abelujo")
           li
             a(href="/alerts") Alertes
               span.badge {% verbatim %} {{ alerts_open }} {% endverbatim %}
+
 
   div.col-md-10(id="content")
     {% if messages %}

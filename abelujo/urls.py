@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from search.views import depositsListView
+from search.views import inventoriesListView
 
 #TODO: move to the right app
 urlpatterns = patterns('',
@@ -51,6 +52,10 @@ urlpatterns = patterns('',
         name="search_history"),
     url(r'^alerts/', TemplateView.as_view(template_name="search/alerts.jade"),
         name="search_alerts"),
+    url(r'^inventories/$', inventoriesListView.as_view(),
+        name="inventories"),
+    url(r'^inventories/new$', TemplateView.as_view(template_name="search/inventory_new.jade"),
+        name="inventory_new"),
 
     url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
     url(r'^api/cards$', 'search.models.api.cards', name="api_cards"),
@@ -60,6 +65,7 @@ urlpatterns = patterns('',
     url(r'^api/history$', 'search.models.api.history', name="api_history"),
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),
     url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),
+    # url(r'^api/inventory$', 'search.models.api.inventory', name="api_alerts_open"),
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),

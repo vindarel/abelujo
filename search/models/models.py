@@ -552,6 +552,9 @@ class Place (models.Model):
     #: Is it allowed to sell books from here ?
     can_sell = models.BooleanField(default=True)
 
+    #: Are we doing an inventory on it right now ?
+    inventory_ongoing = models.BooleanField(default=False)
+
     #: Optional comment
     comment = models.TextField(null=True, blank=True)
 
@@ -1143,3 +1146,24 @@ class Alert(models.Model):
     def add_deposits_of_card(self, card):
         for it in card.deposit_set.all():
             self.deposits.add(it)
+
+class InventoryCards(models.Model):
+    """The list of cards of an inventory, plus other information:
+    - the quantity of them
+    """
+    card = models.ForeignKey(Card)
+    inventory = models.ForeignKey("Inventory")
+    #: How many copies of it did we find in our stock ?
+    quantity = models.IntegerField(default=1)
+
+class Inventory(TimeStampedModel):
+    """An inventory can happen for a place or a shelf. Once we begin it we
+    can't manipulate the stock from there. We list the copies we have in
+    stock, and enter the missing ones.
+    """
+
+    class Meta:
+        app_label = "search"
+
+    copies = models.ManyToManyField(Card, through="InventoryCards", blank=True, null=True)
+    place = models.OneToOneField("Place", blank=True, null=True)

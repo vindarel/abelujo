@@ -41,6 +41,7 @@ from models import CardType
 from models import Deposit
 from models import DepositState
 from models import Distributor
+from models import Inventory
 from models import Place
 
 from search.models.utils import ppcard
@@ -430,6 +431,11 @@ def collection(request):
 def sell(request):
     return render(request, "search/sell_create.jade")
 
+class inventoriesListView(ListView):
+    model = Inventory
+    template_name = "search/inventories.jade"
+    context_object_name = "inventories"
+
 class depositsListView(ListView):
     model = Deposit
     template_name = "search/deposits.jade"
@@ -528,3 +534,10 @@ def basket_auto_command(request):
             "auto_command_nb": auto_command_nb,
             "pagetitle": "hello basket",
         })
+
+def inventory_list(request):
+    """Display all the ongoing inventories.
+
+    An inventory can happen for a place or for a shelf.
+    """
+    pass
