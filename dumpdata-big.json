@@ -172,24 +172,6 @@
     },
     {
         "fields": {
-            "app_label": "search",
-            "model": "depositcopies",
-            "name": "deposit copies"
-        },
-        "model": "contenttypes.contenttype",
-        "pk": 20
-    },
-    {
-        "fields": {
-            "app_label": "search",
-            "model": "deposit",
-            "name": "deposit"
-        },
-        "model": "contenttypes.contenttype",
-        "pk": 21
-    },
-    {
-        "fields": {
             "domain": "example.com",
             "name": "example.com"
         },
