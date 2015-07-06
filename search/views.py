@@ -39,6 +39,7 @@ from models import Basket
 from models import Card
 from models import CardType
 from models import Deposit
+from models import DepositState
 from models import Distributor
 from models import Place
 
@@ -498,7 +499,7 @@ def deposits_add_card(request):
 
 
 def deposits_view(request, depo_name):
-    """display the given deposit."""
+    """Display the given deposit."""
     deposit = None
     copies = []
     template = "search/deposits_view.jade"
@@ -508,6 +509,7 @@ def deposits_view(request, depo_name):
     except Deposit.DoesNotExist as e:
         messages.add_message(request, messages.ERROR, "Le dépôt demandé n'existe pas !")
         log.error("le depot demande (%s) n'existe pas: %s" % (depo_name, e))
+
     return render(request, template, {
         "deposit": deposit,
         "copies": copies,

@@ -28,11 +28,20 @@ if deposits
 else
   h3 Aucun dépôt existant
 table.table.table-striped.table-hover
+  tr
+      td Nom du dépot
+      td diffuseur
+      td Dernier état de dépôt
+      td Alertes
+      td Exemplaires restants
   for dep in deposits
     tr
       td
         a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
       td {{ dep.distributor.name }}
+      td {{ dep.last_checkout }}
+      td {{ dep.nb_alerts }}
+      //- td {{ dep. }}
 
 a.btn.btn-primary(href="{% url 'deposits_new' %}") Nouveau dépôt
 {% endblock content %}

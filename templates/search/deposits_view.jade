@@ -33,6 +33,10 @@ dl.dl-horizontal
   dd {{ deposit.deposit_type }}
   dt Réassort automatique
   dd {{ deposit.auto_command | yesno:"oui,non"}}
+  dt Dernier état de dépôt
+  dd {{ deposit.last_checkout }}
+  dt Nombre d'alertes liées
+  dd {{ nb_alerts }}
 if copies
   b Exemplaires en dépôt:
 else

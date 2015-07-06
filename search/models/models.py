@@ -691,6 +691,52 @@ class BasketType (models.Model):
     def __unicode__(self):
         return self.name
 
+class DepositStateCopies(models.Model):
+    """For each card of the deposit state, remember:
+
+    - the number of cards,
+    - its pourcentage,
+    """
+    class Meta:
+        app_label = "search"
+
+    card = models.ForeignKey(Card)
+    deposit_state = models.ForeignKey("DepositState")
+    #: the initial number of that card in stock.
+    nb_initial = models.IntegerField(default=1)
+    #: the current number (at the date of the deposit state).
+    nb_current = models.IntegerField(default=1)
+    #: the quantity of sold cards since the last deposit state.
+    nb_sells = models.IntegerField(default=1)
+    #: number of wanted copies.
+    nb_wanted = models.IntegerField(default=1)
+    #: quantity to command to the distributor.
+    nb_to_command = models.IntegerField(default=1)
+    #: quantity to return. (beware, some distributors ask a card not
+    # to stay longer than a certain time in a deposit)
+    nb_to_return = models.IntegerField(default=1)
+
+class DepositState(TimeStampedModel):
+    """Deposit states. We do a deposit state to know what cards have been
+    sold since the last deposit state, so what sum do we need to pay to
+    the distributor.
+
+    We need to close alerts related to the cards of the deposit before
+    to begin a deposit state.
+
+    Once the deposit state is validated, it can't be modified any
+    more.
+
+    """
+
+    class Meta:
+        app_label = "search"
+
+    # "created" and "modified" are inherited.
+    deposit = models.ForeignKey("Deposit")
+    copies = models.ManyToManyField(Card, through="DepositStateCopies", blank=True, null=True)
+    closed = models.BooleanField(default=False, blank=True)
+
 
 class DepositCopies(TimeStampedModel):
     """doc
@@ -707,6 +753,8 @@ class DepositCopies(TimeStampedModel):
     threshold = models.IntegerField(blank=True, null=True, default=0)
     #: Do we have a limit of time to pay ?
     due_date = models.DateField(blank=True, null=True)
+
+
 
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
@@ -841,6 +889,40 @@ class Deposit(TimeStampedModel):
                                     'message': e})
 
         return  msgs
+
+    def nb_alerts(self):
+        """Is the distributor of this deposit concerned by open alerts ? If
+        so, we can not start a deposit checkout.
+
+        Return: integer, the number of alerts.
+        """
+        try:
+            alerts_found = Alert.objects.filter(deposits__name=self.name).count()
+        except ObjectDoesNotExist as e:
+            log.error("Error looking for alerts of deposit {}: {}".format(self.name, e))
+        return alerts_found
+
+
+    def last_checkout(self):
+        """Return the date at which we did the last checkout of this
+        deposit."""
+        # TODO to test
+        last_checkout_date = "jamais"
+        try:
+            last_checkout_obj = DepositState.objects.filter(deposit__name=self.name).order_by("created").last()
+        except ObjectDoesNotExist as e:
+            log.error("Error looking for DepositState of {}: {}".format(self.name, e))
+
+        if last_checkout_obj:
+            last_checkout_date = last_checkout_obj.created
+
+        return last_checkout_date
+
+    def nb_current_copies(self):
+        """Return the present quantity of copies of this deposit in stock.
+        """
+        pass #ONGOING
+
 
 class SoldCards(models.Model):
 
