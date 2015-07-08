@@ -33,7 +33,7 @@ for b in result_list
       td
 
         if b.details_url
-          h3: a(href="{{ b.details_url }}", title="Voir la fiche complète sur {{ data_source }}") {{ b.title }}
+          h3: a(target="_blank", href="{{ b.details_url }}", title="Voir la fiche complète sur {{ data_source }}") {{ b.title }}
         else
           h3 {{b.title}}
         h4

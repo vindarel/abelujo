@@ -46,7 +46,7 @@ for b in book_list
         span
           h3: a(href="{{ b.get_absolute_url }}", title="Modifiez la notice") {{b.title}}
           if b.details_url
-            a(href="{{ b.details_url }}") Voir sur {{ b.data_source }}
+            a(target="_blank", href="{{ b.details_url }}") Voir sur {{ b.data_source }}
         if b.authors
           h4 {{b.authors}}
         table.table-condensed
