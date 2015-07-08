@@ -43,6 +43,7 @@ from models import DepositState
 from models import Distributor
 from models import Inventory
 from models import Place
+from models import Publisher
 
 from search.models.utils import ppcard
 
@@ -103,6 +104,15 @@ def get_basket_choices():
     return [(0, "Aucun panier")] + [(basket.id, basket.name)
                                     for basket in Basket.objects.all()]
 
+def get_distributor_choices():
+    dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
+    pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
+    choices = [("Diffuseurs",
+                dists),
+               ("Éditeurs",
+                pubs)]
+    return choices
+
 
 class AddForm(forms.Form):
     """The form populated when the user clicks on "add this card"."""
@@ -115,8 +125,11 @@ class AddForm(forms.Form):
     quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
                                                                 'step':1, 'value':DEFAULT_NB_COPIES,
                                                                 'style':"width: 70px"}))
+    distributor = forms.ChoiceField(choices=get_distributor_choices(),
+                                    label="Diffuseur",
+                                    required=True)
     basket = forms.ChoiceField(choices=get_basket_choices(),
-                               label="Ajouter la notice au panier (optionnel)",
+                               label="Ajouter au panier",
                                required=False)
 
 

@@ -542,7 +542,9 @@
         "fields": {
             "created": "2014-07-27T18:34:23.369Z",
             "modified": "2014-07-27T18:34:23.369Z",
-            "name": "default distributor"
+            "name": "default distributor",
+            "discount": 35,
+            "stars": 3
         },
         "model": "search.distributor",
         "pk": 1
@@ -551,7 +553,9 @@
         "fields": {
             "created": "2014-10-30T12:22:12.492Z",
             "modified": "2014-10-30T12:22:12.492Z",
-            "name": "rst"
+            "name": "rst",
+            "discount": 0,
+            "stars": 0
         },
         "model": "search.distributor",
         "pk": 2

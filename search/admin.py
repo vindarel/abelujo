@@ -35,12 +35,19 @@ class CardAdmin(admin.ModelAdmin):
     list_editable = ("distributor", "price",)
     filter_horizontal = ("authors", "publishers",)
 
+class DistributorAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Distributor
+
+    list_display = ("name", "discount", "stars")
+    list_editable = ("discount", "stars")
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Deposit)
-admin.site.register(Distributor)
+admin.site.register(Distributor, DistributorAdmin)
 admin.site.register(Place)
 admin.site.register(PlaceCopies)
 admin.site.register(Publisher)

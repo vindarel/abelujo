@@ -84,6 +84,11 @@ class Distributor(TimeStampedModel):
     """
 
     name = models.CharField(max_length=CHAR_LENGTH)
+    #: The discount. When we pay the distributor we keep the amount of
+    # the discount.
+    discount = models.IntegerField(default=0, null=True, blank=True)
+    #: Star the distributors to give precendence to our favourite ones.
+    stars = models.IntegerField(default=0, null=True, blank=True)
 
     class Meta:
         app_label = "search"
