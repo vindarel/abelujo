@@ -58,8 +58,8 @@ for b in book_list
                   span(title="{{ b.publishers }}") {{ b.publishers | truncatewords:2}}
             td
               span
-                b ean 
-                span {{ b.ean }}
+                b isbn 
+                span {{ b.isbn }}
             td
               span
                 b(title="{% if not collection %} collection inconnue {% endif%}") collection 

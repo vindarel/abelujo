@@ -52,12 +52,12 @@ for b in result_list
                       span {{ pub }}
                       if not forloop.last
                         span ; 
+            {% if b.isbn %}
             td
               span
-                b(title="l'ean sera téléchargé à l'enregistrement de la notice.") ean 
-                span {{ b.ean }}
-                if not ean
-                  span ---
+                b(title="l'isbn sera téléchargé à l'enregistrement de la notice.") isbn 
+                span {{ b.isbn }}
+            {% endif %}
             td
                 span
                   b prix 

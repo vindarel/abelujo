@@ -390,10 +390,10 @@ class Scraper:
 def postSearch(url):
     """gets the complementary informations of that product:
 
-    - ean (mandatory)
+    - isbn (mandatory)
     - collection
 
-    url: the url to the details of the product where we can get the ean (fiche produit)
+    url: the url to the details of the product where we can get the isbn (fiche produit)
 
     returns: a dict
     """
@@ -402,18 +402,19 @@ def postSearch(url):
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
     details = soup.find_all(class_="productDetails-items-content")
-    # The complementary information we need to return. Ean is compulsory.
-    to_ret = {"ean": None,
+    # The complementary information we need to return. Isbn is compulsory.
+    to_ret = {"isbn": None,
               "collection": None}
     COLLECTION_LABEL = u"collection"  # lower case
     collection_id = "ctl00_PHCenter_productTop_productDetail_rpDetails_ctl03_rpLinks_ctl00_hlLabel"
 
     try:
-        to_ret["ean"] = soup.find(itemprop="isbn").text
+        to_ret["isbn"] = soup.find(itemprop="isbn").text
         to_ret["collection"] = soup.find(id=collection_id).text
+        log.debug("postSearch of chapitre for {}: found {}".format(url, to_ret))
 
     except Exception, e:
-        log.debug("Error while getting the ean of %s :" % (url,))
+        log.debug("Error while getting the isbn of %s :" % (url,))
         log.debug(e)
 
     return to_ret

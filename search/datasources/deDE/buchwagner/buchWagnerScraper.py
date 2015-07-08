@@ -205,7 +205,7 @@ class Scraper:
 def postSearch(url):
     """Complementary informations to fetch on a details' page.
 
-    - ean (compulsory)
+    - isbn (compulsory)
     - description
     """
     if not url:
@@ -222,7 +222,7 @@ def postSearch(url):
         ean = soup.find(class_="floatRight")
         ean = ean.find_all("p")[2].text.strip().split(":")[1].strip()
         to_ret["ean"] = ean
-        to_ret["isbn-13"] = ean
+        to_ret["isbn"] = ean
         log.debug("postSearch of {}: we got ean {}.".format(url, ean))
 
     except Exception, e:

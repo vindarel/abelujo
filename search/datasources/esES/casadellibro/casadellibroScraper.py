@@ -132,7 +132,7 @@ class Scraper(baseScraper):
         pass
 
 def postSearch(url):
-    """Get the ean."""
+    """Get the ean/isbn."""
     if not url:
         log.error("postSearch error: url is False ! ({}).".format(url))
         return None
@@ -145,7 +145,7 @@ def postSearch(url):
         ean = soup.find(class_="book-header-2-subtitle-isbn").text
         ean = ean.replace("ISBN", "").strip()
         to_ret["ean"] = ean
-        to_ret["isbn-13"] = ean
+        to_ret["isbn"] = ean
         log.debug("postSearch of {}: we got ean {}.".format(url, ean))
     except Exception as e:
         log.debug("postSearch: error while getting the ean of {}: {}".format(url, e))
