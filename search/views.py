@@ -315,8 +315,8 @@ def add(request):
             else:
                 # fire a new http request to get the ean (or other missing informations):
                 complements = postSearch(data_source, card['details_url'])
-                if not complements.get("ean"):
-                    log.warning("warning: postSearch couldnt get the ean.")
+                if not complements.get("isbn"):
+                    log.warning("warning: postSearch couldnt get the isbn.")
                 for k, v in complements.iteritems():
                     log.debug("postSearch: found %s: %s" % (k,v))
                     card[k] = v
@@ -389,12 +389,9 @@ def collection(request):
 
     else:
         # GET
-        cards = request.session.get("collection_search")
-        if not cards:
-            # Get a serializable object to store it in the session.
-            cards = Card.first_cards(5)
-            cards = Card.obj_to_list(cards)
-            request.session["collection_search"] = cards
+        # Get the last new cards of the database.
+        cards = Card.first_cards(5)
+        cards = Card.obj_to_list(cards)
 
         if request.GET.get("format") == "text":
             response = HttpResponse(ppcard(cards),
