@@ -16,6 +16,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+from django.core.urlresolvers import reverse
 import operator
 import logging
 from datetime import date
@@ -23,6 +24,7 @@ from textwrap import dedent
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
@@ -202,6 +204,7 @@ class Card(TimeStampedModel):
     details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True)
     comment = models.TextField(blank=True)
 
+
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
         price_sold. We want it to initialize the angular form.
@@ -236,6 +239,24 @@ class Card(TimeStampedModel):
         It is called from the templates so can't take any arg.
         """
         return "; ".join([aut.name for aut in self.authors.all()])
+
+    def get_distributors(self):
+        """Get the list of distributors without an error in case it is
+        self.distributor is null. To use in card_show template.
+
+        """
+        if self.distributor:
+            return self.distributor.all()
+        else:
+            return []
+
+    def get_publishers(self):
+        """Avoid error in case self.publisher is None. For direct use in
+        templates."""
+        if self.publishers:
+            return self.publishers.all()
+        else:
+            return []
 
     def to_list(self):
         res = {
@@ -493,7 +514,7 @@ class Card(TimeStampedModel):
         return card_obj
 
     def get_absolute_url(self):
-        return "/admin/search/card/{}".format(self.id)
+        return reverse("card_show", args=(self.id,))
 
     def display_year_published(self):
         "We only care about the year"

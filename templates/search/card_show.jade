@@ -1,0 +1,66 @@
+// Copyright 2014 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block content %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+.row
+  a(href="/admin/search/card/{{object.pk}}", title="Modifier la fiche") Éditer
+.row
+  .col-lg-3
+    .row
+      img.img-responsive(src="{{ object.img }}")
+    .row
+      h4 {{ object.price }} €  ({{ object.card_type }})
+      h4 en stock: {{ object.quantity }}
+      div isbn: {{ object.isbn }}
+      a(target="_blank", href="{{ object.details_url }}") source: {{ object.data_source }}
+  .col-lg-9
+    h3 {{ object.title }}
+    h4 {{ object.display_authors }}
+    div Éditeur(s):
+        ul.list-group
+            for pub in object.get_publishers
+                li.list-group-item {{ pub.name }}
+
+    div Diffuseur(s):
+        ul.list-group
+            for dist in object.get_distributors
+                li.list-group-item {{ dist.name }}
+
+    div Présente dans:
+      ul.list-group
+        {% for place_copy in object.placecopies_set.all %}
+        li.list-group-item {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
+        {% endfor %}
+
+    div Dépôts: {{ object.depositcopies_set.count }}
+      ul.list-group
+        {% for dep in object.depositcopies_set.all %}
+        li.list-group-item {{ dep.deposit.name }}: {{ dep.nb }}
+        {% endfor %}
+
+    div Alertes: {{ object.alert_set.count }}
+
+.row
+  .col-lg-9
+    div {{ object.comment }}
+
+{% endblock content %}

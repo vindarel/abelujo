@@ -20,8 +20,9 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
-from search.views import depositsListView
-from search.views import inventoriesListView
+from search.views import CardDetailView
+from search.views import DepositsListView
+from search.views import InventoriesListView
 
 #TODO: move to the right app
 urlpatterns = patterns('',
@@ -29,6 +30,8 @@ urlpatterns = patterns('',
     url(r'^search/$', 'search.views.index', name="card_index"),
     url(r'^search$', 'search.views.search', name="card_search"),
     url(r'^search', 'search.views.search'),
+    url(r'^stock/card/(?P<pk>\d+)/$', CardDetailView.as_view(),
+        name="card_show"),
     url(r'^add/', 'search.views.add', name="card_add"),
     # url(r'^collection/sell', 'search.views.sell',
         # name="card_sell"),
@@ -36,7 +39,7 @@ urlpatterns = patterns('',
         name="card_sell"),
     url(r'^collection/', 'search.views.collection',
         name="card_collection"),
-    url(r'^deposits/$', depositsListView.as_view(),
+    url(r'^deposits/$', DepositsListView.as_view(),
         name="deposits"),
     url(r'^deposits/addcard', "search.views.deposits_add_card",
         name="deposits_add_card"),
@@ -52,7 +55,7 @@ urlpatterns = patterns('',
         name="search_history"),
     url(r'^alerts/', TemplateView.as_view(template_name="search/alerts.jade"),
         name="search_alerts"),
-    url(r'^inventories/$', inventoriesListView.as_view(),
+    url(r'^inventories/$', InventoriesListView.as_view(),
         name="inventories"),
     url(r'^inventories/new$', TemplateView.as_view(template_name="search/inventory_new.jade"),
         name="inventory_new"),

@@ -288,6 +288,11 @@ def _request_session_get(request, key):
     """
     return request.session.get(key)
 
+class CardDetailView(DetailView):
+
+    model = Card
+    template_name = "search/card_show.jade"
+
 def add(request):
     """Add the requested Card to the DB.
 
@@ -441,12 +446,12 @@ def collection(request):
 def sell(request):
     return render(request, "search/sell_create.jade")
 
-class inventoriesListView(ListView):
+class InventoriesListView(ListView):
     model = Inventory
     template_name = "search/inventories.jade"
     context_object_name = "inventories"
 
-class depositsListView(ListView):
+class DepositsListView(ListView):
     model = Deposit
     template_name = "search/deposits.jade"
     context_object_name = "deposits"
