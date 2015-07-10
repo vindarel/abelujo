@@ -12,23 +12,23 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       //TODO: use django-angular to limit code duplication.
       $scope.card_types = [
           // WARNING duplication from dbfixture.json
-          {name:"tout imprimé", id:null},
-          {name:"livre", group:"livre",        id:1},
-          {name:"brochure", group:"livre",     id:2},
-          {name:"périodique", group:"livre",   id:3},
-          {name:"autre parution", group:"livre", id:4},
-          {name:"CD", group:"CD",             id:5},
-          {name:"DVD", group:"CD",            id:6},
-          {name:"vinyl", group:"CD",          id:8},
-          {name:"autres", group:"autres",     id:9},
+          {name: gettext("tout imprimé"), id:null},
+          {name: gettext("livre"), group: gettext("livre"), id:1},
+          {name: gettext("brochure"), group: gettext("livre"),id:2},
+          {name: gettext("périodique"), group: gettext("livre"), id:3},
+          {name: gettext("autre parution"), group: gettext("livre"), id:4},
+          {name: gettext("CD"), group: gettext("CD"), id:5},
+          {name: gettext("DVD"), group: gettext("CD"), id:6},
+          {name: gettext("vinyl"), group: gettext("CD"), id:8},
+          {name: gettext("autres"), group: gettext("autres"), id:9},
       ];
 
       $scope.payment_means = [
-          {name: "espèces", id:1},
-          {name: "chèque", id:2},
-          {name: "carte bancaire", id:3},
-          {name: "cadeau", id:4},
-          {name: "autre", id:5},
+          {name: gettext("espèces"), id:1},
+          {name: gettext("chèque"), id:2},
+          {name: gettext("carte bancaire"), id:3},
+          {name: gettext("cadeau"), id:4},
+          {name: gettext("autre"), id:5},
       ];
       $scope.payment = $scope.payment_means[0];
 
@@ -81,7 +81,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               $scope.cards_selected.push($scope.tmpcard);
               $scope.total_price += $scope.tmpcard.price;
               $scope.selected_ids.push($scope.tmpcard.id);
-          };
+          }
           $scope.copy_selected = undefined;
           $scope.updateTotalPrice();
       };
@@ -107,14 +107,14 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.total_price = _.reduce($scope.cards_selected,
                                       function(memo, it) {
                                           return memo + (it.price_sold * it.quantity);},
-                                      0)
+                                      0);
     };
 
     $scope.getTotalCopies = function(){
         return _.reduce($scope.cards_selected,
-                 function(memo, it){
-                     return memo + it.quantity;},
-                     0)
+                        function(memo, it){
+                            return memo + it.quantity;},
+                        0);
     };
 
       // Watch the change of distributor: we would like to filter out
@@ -143,7 +143,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               quantities = _.map($scope.cards_selected, function(card){
                   return card.quantity;
               });
-          };
+          }
 
         var params = {
             "to_sell": [ids, prices, quantities],

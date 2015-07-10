@@ -10,9 +10,18 @@ angular.module('abelujo.controllers', [])
       $scope.cards_fetched = [];
       //TODO: use django-angular to limit code duplication.
       $scope.deposit_types = [
-          {name:"depôt fixe", target:"dépôt de libraire"},
-          {name:"depôt libraire", target:"dépôt de distributeur"},
-          {name:"distributeur", target:"dépôt de distributeur"}
+          {
+              name: gettext("depôt fixe"),
+              target: gettext("dépôt de libraire")
+          },
+          {
+              name: gettext("depôt libraire"),
+              target: gettext("dépôt de distributeur")
+          },
+          {
+              name: gettext("distributeur"),
+              target: gettext("dépôt de distributeur")
+          }
       ];
 
       $scope.deposit_type = $scope.deposit_types[0];
