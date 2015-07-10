@@ -19,18 +19,19 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
 unless cards
-  p Aucune notice dans ce panier.
+  p {% trans "Aucune notice dans ce panier" %}.
 table.table.table-condensed.table-striped
   tr
-    td Titre
-    td Auteurs
-    td Diffuseur
-    td Quantité restante
+    td {% trans "Titre" %}
+    td {% trans "Auteurs" %}
+    td {% trans "Diffuseur" %}
+    td {% trans "Quantité restante" %}
   for card in cards
     tr
       td: a(href="{{ card.get_absolute_url }}") {{ card.title }}

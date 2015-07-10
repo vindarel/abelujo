@@ -18,6 +18,7 @@
 {% block auto_command_nb %} {{ auto_command_nb }} {% endblock %}
 {% block title %} searching TEST {% endblock %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -33,7 +34,9 @@ for b in result_list
       td
 
         if b.details_url
-          h3: a(target="_blank", href="{{ b.details_url }}", title="Voir la fiche complète sur {{ data_source }}") {{ b.title }}
+          {% blocktrans with details=b.details_url source=data_source title=b.title%}
+          h3: a(target="_blank", href="{{ details }}", title="Voir la fiche complète sur {{ source }}") {{ title }}
+          {% endblocktrans %}
         else
           h3 {{b.title}}
         h4
@@ -70,6 +73,6 @@ for b in result_list
     {% csrf_token %}
     {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
-    input.btn.btn-primary(type='submit', value='Ajouter', title="Ajouter cet article à mon stock")
+    input.btn.btn-primary(type='submit', value='{% trans "Ajouter" %}', title="{% trans 'Ajouter cette notice au panier' %}")
 
 {% endblock search_result %}

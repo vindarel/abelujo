@@ -19,6 +19,7 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -28,9 +29,9 @@ form(action='/search/', method='post')
   {% bootstrap_form searchForm %}
   // {{ form.as_p }}
   span
-    input.btn.btn-primary(type='submit', value='Rechercher')
-    span  ou: 
-    a(href="/admin/search/card/add") Ajouter une fiche manuellement
+    input.btn.btn-primary(type='submit', value='{% trans "Rechercher" %}')
+    span  {% trans "ou" %}: 
+    a(href="/admin/search/card/add") {% trans "Ajouter une fiche manuellement" %}
 
 div.col-md-10
   {% block search_result %}

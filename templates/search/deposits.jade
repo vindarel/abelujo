@@ -19,21 +19,22 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
 if deposits
-  h3 Dépôts existants:
+  h3 {% trans "Dépôts existants" %}:
 else
-  h3 Aucun dépôt existant
+  h3 {% trans "Aucun dépôt existant" %}
 table.table.table-striped.table-hover
   tr
-      td Nom du dépot
-      td diffuseur
-      td Dernier état de dépôt
-      td Alertes
-      td Exemplaires restants
+      td {% trans "Nom du dépot" %}
+      td {% trans "Diffuseur" %}
+      td {% trans "Dernier état de dépôt" %}
+      td {% trans "Alertes" %}
+      td {% trans "Exemplaires restants" %}
   for dep in deposits
     tr
       td

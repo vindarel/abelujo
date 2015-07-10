@@ -19,21 +19,22 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
 
-h3 Inventaires en cours
+h3 {% trans "Inventaires en cours" %}
 table.table.table-striped.table-hover
   tr
-    td Créé le
-    td Lieu concerné
+    td {% trans "Créé le" %}
+    td {% trans "Lieu concerné" %}
   for inv in inventories
     tr
       td {{ inv.created }}
       td {{ inv.place }}
 
-a.btn.btn-primary(href="{% url 'inventory_new' %}") Commencer un inventaire
+a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "Commencer un inventaire" %}
 
 {% endblock content %}

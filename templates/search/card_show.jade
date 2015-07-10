@@ -16,6 +16,8 @@
 {% extends "base.jade" %}
 
 {% block content %}
+
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -29,35 +31,35 @@
       img.img-responsive(src="{{ object.img }}")
     .row
       h4 {{ object.price }} €  ({{ object.card_type }})
-      h4 en stock: {{ object.quantity }}
+      h4 {% trans "en stock" %}: {{ object.quantity }}
       div isbn: {{ object.isbn }}
       a(target="_blank", href="{{ object.details_url }}") source: {{ object.data_source }}
   .col-lg-9
     h3 {{ object.title }}
     h4 {{ object.display_authors }}
-    div Éditeur(s):
+    div {% trans "Éditeurs" %}:
         ul.list-group
             for pub in object.get_publishers
                 li.list-group-item {{ pub.name }}
 
-    div Diffuseur(s):
+    div {% trans "Diffuseur" %}:
         ul.list-group
             for dist in object.get_distributors
                 li.list-group-item {{ dist.name }}
 
-    div Présente dans:
+    div {% trans "Présente dans" %}:
       ul.list-group
         {% for place_copy in object.placecopies_set.all %}
         li.list-group-item {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
         {% endfor %}
 
-    div Dépôts: {{ object.depositcopies_set.count }}
+    div {% trans "Dépôts" %}: {{ object.depositcopies_set.count }}
       ul.list-group
         {% for dep in object.depositcopies_set.all %}
         li.list-group-item {{ dep.deposit.name }}: {{ dep.nb }}
         {% endfor %}
 
-    div Alertes: {{ object.alert_set.count }}
+    div {% trans "Alertes" %}: {{ object.alert_set.count }}
 
 .row
   .col-lg-9

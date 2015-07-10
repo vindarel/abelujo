@@ -28,6 +28,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
+from django.utils.translation import ugettext as _
 
 CHAR_LENGTH = 200
 PAGE_SIZE = 50
@@ -905,7 +906,7 @@ class Deposit(TimeStampedModel):
         # Don't create it if it has no valid copies.
         if not copies_to_add:
             msgs.append({'level': messages.WARNING,
-                         'message': u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."})
+                         'message': _(u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide.")})
         else:
             if depo_dict.get("auto_command") == "true":
                 depo_dict["auto_command"] = True  # TODO: form validation beforehand.
@@ -913,7 +914,7 @@ class Deposit(TimeStampedModel):
                 dep = Deposit.objects.create(**depo_dict)
                 msgs += dep.add_copies(copies_to_add)
                 msgs.append({'level': "success",
-                             'message':"Le dépôt a été créé avec succès."})
+                             'message':_("Le dépôt a été créé avec succès.")})
             except Exception as e:
                 log.error(u"Adding a Deposit from_dict error ! {}".format(e))
                 return msgs.append({'level': "danger",
@@ -938,7 +939,7 @@ class Deposit(TimeStampedModel):
         """Return the date at which we did the last checkout of this
         deposit."""
         # TODO to test
-        last_checkout_date = "jamais"
+        last_checkout_date = _("jamais")
         try:
             last_checkout_obj = DepositState.objects.filter(deposit__name=self.name).order_by("created").last()
         except ObjectDoesNotExist as e:

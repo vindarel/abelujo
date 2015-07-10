@@ -19,28 +19,29 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
 a(href="/admin/search/deposit/{{deposit.name}}") modifier
 dl.dl-horizontal
-  dt Dépôt
+  dt {% trans "Dépôt" %}
   dd {{ deposit.name }}
-  dt Distributeur
+  dt {% trans "Distributeur" %}
   dd {{ deposit.distributor }}
-  dt Type de dépôt
+  dt {% trans "Type de dépôt" %}
   dd {{ deposit.deposit_type }}
-  dt Réassort automatique
+  dt {% trans "Réassort automatique" %}
   dd {{ deposit.auto_command | yesno:"oui,non"}}
-  dt Dernier état de dépôt
+  dt {% trans "Dernier état de dépôt" %}
   dd {{ deposit.last_checkout }}
-  dt Nombre d'alertes liées
+  dt {% trans "Nombre d'alertes liées" %}
   dd {{ nb_alerts }}
 if copies
-  b Exemplaires en dépôt:
+  b {% trans "Exemplaires en dépôt" %}:
 else
-  b.text-center.alert.alert-info Ce dépôt ne contient aucune notice.
+  b.text-center.alert.alert-info {% trans "Ce dépôt ne contient aucune notice." %}
 table.table.table-striped.table-hover
   for copy in copies
     tr
@@ -49,5 +50,9 @@ table.table.table-striped.table-hover
       td {{ copy.editor }}
       td {{ copy.price }} €
 
-a(href="").btn.btn-primary(title="état de dépôt", value="état de dépôt", type="submit") état de dépôt
+{% trans "état de dépôt" as deposit_state %}
+{% blocktrans %}
+a(href="").btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
+{% endblocktrans %}
+
 {% endblock content %}

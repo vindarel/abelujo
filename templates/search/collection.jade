@@ -19,6 +19,7 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -27,7 +28,7 @@ form(action='/collection/', method='post')
   {% csrf_token %}
   {% bootstrap_form searchForm %}
   // {{ form.as_p }}
-  input.btn.btn-primary(type='submit', value='valider')
+  input.btn.btn-primary(type='submit', value="{% trans 'valider' %}")
 
 
 unless book_list
@@ -35,7 +36,7 @@ unless book_list
 
 span: span {{ nb_results }} results
       a(href="/collection/?format=text")
-        input.btn.btn-primary(type="submit", value="voir en texte", style="float: right;")
+        input.btn.btn-primary(type="submit", value="{% trans 'voir en texte' %}", style="float: right;")
 
 for b in book_list
   table.table.table-condensed
@@ -44,9 +45,9 @@ for b in book_list
         td: img(src="{{ b.img }}")
       td
         span
-          h3: a(href="{{ b.get_absolute_url }}", title="Modifiez la notice") {{b.title}}
+          h3: a(href="{{ b.get_absolute_url }}", title='{% trans "Modifiez la notice" %}') {{b.title}}
           if b.details_url
-            a(target="_blank", href="{{ b.details_url }}") Voir sur {{ b.data_source }}
+            a(target="_blank", href="{{ b.details_url }}") {% trans "Voir sur" %} {{ b.data_source }}
         if b.authors
           h4 {{b.authors}}
         table.table-condensed
@@ -54,7 +55,7 @@ for b in book_list
             if b.publishers
               td
                 span
-                  b(title="{{ b.publishers }}") éditeur 
+                  b(title="{{ b.publishers }}") {% trans "éditeur" %} 
                   span(title="{{ b.publishers }}") {{ b.publishers | truncatewords:2}}
             td
               span
@@ -62,7 +63,7 @@ for b in book_list
                 span {{ b.isbn }}
             td
               span
-                b(title="{% if not collection %} collection inconnue {% endif%}") collection 
+                b(title="{% if not collection %} collection inconnue {% endif%}") {% trans "collection" %} 
                 span(title="{% if not b.collection %} collection inconnue {% endif%}")
                   {% if not collection %}
                   span ---
@@ -75,13 +76,13 @@ for b in book_list
             if b.distributor
               td
                 span
-                  b diffuseur 
+                  b {% trans "diffuseur" %} 
                   span {{ b.distributor }}
             td
-              b stockage 
+              b {% trans "stockage" %} 
               span {{ b.places }}
             td
-              b en stock 
+              b {% trans "en stock" %} 
               span {{ b.quantity }}
 
   form(action='/collection/sell/', method='post') {% csrf_token %}
@@ -91,12 +92,12 @@ for b in book_list
     input(type='hidden', value="{{ b.price }}", name='price')
     input(type='hidden', value="{{ b.id }}", name='id')
     input(type='hidden', value=b, name='book')
-    input.btn.btn-primary(type='submit', value='Vendre')
+    input.btn.btn-primary(type='submit', value='{% trans "Vendre" %}')
 
   form.form-inline(action="/deposits/addcard/", method="post") {% csrf_token %}
     {% bootstrap_form AddToDepositForm %}
     input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
     input(type="hidden", value="{{ b.ean }}", name="ean")
-    input.btn.btn-primary(type="submit", value="ajouter au dépôt")
+    input.btn.btn-primary(type="submit", value='{% trans "ajouter au dépôt" %}')
 
 {% endblock content %}

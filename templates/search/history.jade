@@ -18,19 +18,20 @@
 
 {% block content %}
 
+{% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
 
 div(ng-controller="historyController")
-    h3 Historique des ventes
+    h3 {% trans "Historique des ventes" %}
     div(
       ng-repeat="hist in history"
     )
       div
-        a(href="{% verbatim %} {{ hist.item.details_url }} {% endverbatim %}") Vente du {% verbatim %} {{hist.item.date }}: {{hist.item.cards.length}} notices {% endverbatim %}
-        div total: {% verbatim %} {{hist.item.total_price}} {% endverbatim %}
+        a(href="{% verbatim %} {{ hist.item.details_url }} {% endverbatim %}") {% trans "Vente du" %} {% verbatim %} {{hist.item.date }}: {{hist.item.cards.length}} {% endverbatim %} {% trans "notices" %}
+        div {% trans "total" %}: {% verbatim %} {{hist.item.total_price}} {% endverbatim %}
         div(ng-repeat="card in hist.item.cards")
           div {% verbatim %} {{ card.title }} {% endverbatim %}
 

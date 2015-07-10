@@ -27,6 +27,7 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
@@ -73,23 +74,23 @@ class SearchForm(forms.Form):
                                         )
     q = forms.CharField(max_length=100, required=False,
                         min_length=4,
-                        label="key words",
-                        help_text="Partie du titre, nom de l'auteur, etc.",
+                        label=_("Key words"),
+                        help_text=_("Part of title, of author's name, etc."),
                     )
     ean = forms.CharField(required=False)
 
 def get_card_type_choices():
-    return [(0, "Tout")] + [(typ.id, typ.name)
-                           for typ in CardType.objects.all()]
+    return [(0, _("Tout"))] + [(typ.id, typ.name)
+                               for typ in CardType.objects.all()]
 
 class CollectionSearchForm(forms.Form):
     card_type = forms.ChoiceField(get_card_type_choices(),
-                                  label="Type de notice",
+                                  label=_("Type de notice"),
                                   required=False)
     q = forms.CharField(max_length=100,
                         required=False,
                         min_length=3,
-                        label="Mots-clefs")
+                        label=_("Mots-clefs"))
 
     ean = forms.CharField(required=False)
 
@@ -101,15 +102,15 @@ class MyNumberInput(TextInput):
 
 def get_basket_choices():
     # TODO: make list dynamic + query in class.
-    return [(0, "Aucun panier")] + [(basket.id, basket.name)
+    return [(0, _("Aucun panier"))] + [(basket.id, basket.name)
                                     for basket in Basket.objects.all()]
 
 def get_distributor_choices():
     dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
     pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
-    choices = [("Diffuseurs",
+    choices = [(_("Diffuseurs"),
                 dists),
-               ("Éditeurs",
+               (_(u"Éditeurs"),
                 pubs)]
     return choices
 
@@ -126,10 +127,10 @@ class AddForm(forms.Form):
                                                                 'step':1, 'value':DEFAULT_NB_COPIES,
                                                                 'style':"width: 70px"}))
     distributor = forms.ChoiceField(choices=get_distributor_choices(),
-                                    label="Diffuseur",
+                                    label=_("Diffuseur"),
                                     required=True)
     basket = forms.ChoiceField(choices=get_basket_choices(),
-                               label="Ajouter au panier",
+                               label=_("Ajouter au panier"),
                                required=False)
 
 
@@ -161,7 +162,7 @@ class AddToDepositForm(forms.Form):
     """When we view our stock, choose to add the card to a deposit.
     """
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                 label=u"Ajouter au depot:",
+                                 label=_(u"Ajouter au depot:"),
                                  required=False)
 
 
@@ -259,11 +260,9 @@ def search(request):
             if not retlist:
                 messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
             request.session["search_result"] = retlist
-            log.debug("--- search results: %s" % retlist)
         else:
-            # uncomplete form (specify we need ean or q).
-            log.debug("--- form not complete")
-            pass
+            # Uncomplete form (specify we need ean or q).
+            log.error("form not complete")
 
     else:
         # POST or form not valid.
@@ -311,14 +310,12 @@ def add(request):
     req = request.POST.copy()
     form = AddForm(req)
     if not form.is_valid():
-        log.debug("debug: add view: form is not valid.")
         resp_status = 400
     else:
-        # get the last search results of the session:
+        # Get the last search results of the session:
         cur_search_result = _request_session_get(request, "search_result")
         if not cur_search_result:
             log.debug("Error: the session has no search_result.")
-            pass
         card = cur_search_result[form.cleaned_data["forloop_counter0"]]
 
         card['quantity'] = form.cleaned_data["quantity"]
@@ -390,7 +387,7 @@ def collection(request):
             if request.POST.has_key("ean") and \
                form.cleaned_data.get("ean"):
                 messages.add_message(request, messages.INFO,
-                                     "La recherche par ean n'est pas encore implémentée.")
+                                     _("The search by ean isn't implemented yet."))
                 log.debug("TODO: search on ean")
 
             else:
@@ -482,7 +479,7 @@ def deposits_create(request):
             except Exception as e:
                 log.error("Error when creating the deposit: %s" % e)
                 messages.add_message(request, messages.ERROR,
-                                     "Error when adding the deposit")
+                                     _("Error when adding the deposit"))
 
         else:
             return render(request, "search/deposits_create.jade", {
@@ -507,12 +504,12 @@ def deposits_add_card(request):
                 log.debug("deposits_add_card: the ean is null. That should not happen !")
                 resp_status = 400
                 messages.add_message(request, messages.ERROR,
-                                     u"We could not add the card to the deposit: the given ean is null.")
+                                     _(u"We could not add the card to the deposit: the given ean is null."))
             else:
                 deposit_id = form.cleaned_data["deposit"]
                 # TODO: do the logic !
                 messages.add_message(request, messages.SUCCESS,
-                                     u'La notice a été ajoutée au dépôt.')
+                                     _(u'La notice a été ajoutée au dépôt.'))
 
     retlist = request.session.get("collection_search")
     redirect_to = req.get('redirect_to')
@@ -528,7 +525,7 @@ def deposits_view(request, depo_name):
         deposit = Deposit.objects.get(name=depo_name)
         copies = deposit.copies.all()
     except Deposit.DoesNotExist as e:
-        messages.add_message(request, messages.ERROR, "Le dépôt demandé n'existe pas !")
+        messages.add_message(request, messages.ERROR, _("Le dépôt demandé n'existe pas !"))
         log.error("le depot demande (%s) n'existe pas: %s" % (depo_name, e))
 
     return render(request, template, {
@@ -547,7 +544,6 @@ def basket_auto_command(request):
             "basket": basket,
             "cards": cards,
             "auto_command_nb": auto_command_nb,
-            "pagetitle": "hello basket",
         })
 
 def inventory_list(request):
