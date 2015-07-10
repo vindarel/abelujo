@@ -23,7 +23,7 @@
 {% bootstrap_javascript %}
 
 h3 Nouveau dépôt
-div(ng-controller="IntroController")
+div(ng-controller="DepositCreateController")
 
   div
     alert(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}

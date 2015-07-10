@@ -1,5 +1,5 @@
 angular.module('abelujo.controllers', [])
-  .controller('IntroController', ['$http', '$scope', 'utils', function ($http, $scope, utils) {
+  .controller('DepositCreateController', ['$http', '$scope', 'utils', function ($http, $scope, utils) {
       // set the xsrf token via cookies.
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
