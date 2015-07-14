@@ -57,7 +57,7 @@ gulp:
 
 # Run the dev server
 run:
-	python manage.py runserver 8000  # should check the port
+	python manage.py runserver 8000
 
 # Run end to end tests only.
 e2e:
@@ -118,6 +118,18 @@ publish:
 	@rsync -avzr doc/dev/_build/html/ $(ABELUJO_USER)@$(ABELUJO_SERVER):$(ABELUJO_HTDOCS)
 
 html: doc
+
+# I18n, translation.
+# doc: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#localization-how-to-create-language-files
+translation-files:
+	# py, html, jade files and all locales:
+	python manage.py makemessages -a -e py,html,jade
+	# Same for js files:
+	# (we may want to translate js in admin/)
+	django-admin.py makemessages -d djangojs --ignore="static/bower_components/*" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" -a
+
+translation-compile:
+	django-admin.py compilemessages
 
 clean:
 	find . -name "*.pyc" -exec rm {} +

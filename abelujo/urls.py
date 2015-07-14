@@ -72,7 +72,7 @@ urlpatterns += patterns("",
     # Exclude /api/ from i18n so than we
     # don't bother of the language prefix in
     # js code.
-    # TODO: set the language inside the api.
+    # XXX: the strings returned by the api (called from JS) are not translated. See issue #14.
 
     url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
     url(r'^api/cards$', 'search.models.api.cards', name="api_cards"),
