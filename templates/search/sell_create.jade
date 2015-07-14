@@ -95,7 +95,7 @@ div(ng-controller="sellController")
         {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titres sélectionnés. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
       div(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4
-          a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
+          a(target="_blank", href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
           span {% verbatim %} {{card.authors}} {% endverbatim %}
           i.glyphicon.glyphicon-warning-sign(
             ng-show="{% verbatim %} cards_selected[$index].ambigous_sell {% endverbatim %}"
