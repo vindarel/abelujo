@@ -130,6 +130,7 @@ def sell(request, **response_kwargs):
     alerts = [] # list of dicts with "level" and "message".
     success_msg = [{"level": "success",
                     "message": "Vente effectuée."}]
+
     if request.method == "POST":
         params = request.POST.copy()
         #TODO: data validation
@@ -154,6 +155,9 @@ def sell(request, **response_kwargs):
         to_ret = {"status": status,
                   "alerts": alerts}
         return HttpResponse(json.dumps(to_ret), **response_kwargs)
+
+    elif request.method == "GET":
+        log.error("Calling /api/sell with GET instead of POST.")
 
 
 def history(request, **response_kwargs):

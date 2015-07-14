@@ -24,6 +24,7 @@ angular.module('abelujo.controllers', [])
       $scope.cards_selected = [];
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
+
       //TODO: use django-angular to limit code duplication.
       $scope.deposit_types = [
           {

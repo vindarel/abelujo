@@ -1101,7 +1101,7 @@ class Sell(models.Model):
                                                  quantity=quantity)
                 sold.save()
             except Exception as e:
-                alerts.append({"message": "Warning: we couldn't sell {}.".format(card.id),
+                alerts.append({"message": _("Warning: we couldn't sell {}.".format(card.id)),
                               "level": STATUS_WARNING})
                 log.error(u"Error on adding the card {} to the sell {}: {}".format(card.__unicode__(),
                                                                                    sell.id,
@@ -1110,7 +1110,7 @@ class Sell(models.Model):
 
         # XXX: misleading names: alerts (messages) and Alert.
         if not alerts:
-            alerts.append({"message":"La vente a été effectuée avec succès.",
+            alerts.append({"message": _(u"La vente a été effectuée avec succès."),
                            "level": STATUS_SUCCESS})
 
         return (sell, status, alerts)

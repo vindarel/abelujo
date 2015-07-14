@@ -24,7 +24,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-form(action='/search/', method='post')
+form(action="{% url 'card_search' %}")
   {% csrf_token %}
   {% bootstrap_form searchForm %}
   // {{ form.as_p }}

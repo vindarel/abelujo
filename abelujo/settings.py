@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Copyright 2014 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
@@ -55,6 +57,18 @@ TIME_ZONE = 'America/Chicago'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
+
+ugettext = lambda s:s
+LANGUAGES = (
+    ('en', ugettext('English')),
+    ('fr', ugettext('Français')),
+    ('de', ugettext('German')),
+    ('es', ugettext('Castellano')),
+    ('ca', ugettext('Catalan')),
+)
+LOCALE_PATHS = (
+    ('locale'),
+)
 
 SITE_ID = 1
 
@@ -123,6 +137,15 @@ TEMPLATE_LOADERS = (
 #     ),
 # )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages"
+)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -130,6 +153,8 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.csrf.CsrfViewMiddleware',  # warning: csrf disabled.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # i18n in url patterns:
+    'django.middleware.locale.LocaleMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )

@@ -80,7 +80,7 @@ class SearchForm(forms.Form):
     ean = forms.CharField(required=False)
 
 def get_card_type_choices():
-    return [(0, _("Tout"))] + [(typ.id, typ.name)
+    return [(0, _(u"Tout"))] + [(typ.id, typ.name)
                                for typ in CardType.objects.all()]
 
 class CollectionSearchForm(forms.Form):
@@ -90,7 +90,7 @@ class CollectionSearchForm(forms.Form):
     q = forms.CharField(max_length=100,
                         required=False,
                         min_length=3,
-                        label=_("Mots-clefs"))
+                        label=_(u"Mots-clefs"))
 
     ean = forms.CharField(required=False)
 
@@ -102,13 +102,13 @@ class MyNumberInput(TextInput):
 
 def get_basket_choices():
     # TODO: make list dynamic + query in class.
-    return [(0, _("Aucun panier"))] + [(basket.id, basket.name)
+    return [(0, _(u"Aucun panier"))] + [(basket.id, basket.name)
                                     for basket in Basket.objects.all()]
 
 def get_distributor_choices():
     dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
     pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
-    choices = [(_("Diffuseurs"),
+    choices = [(_(u"Diffuseurs"),
                 dists),
                (_(u"Éditeurs"),
                 pubs)]
@@ -127,10 +127,10 @@ class AddForm(forms.Form):
                                                                 'step':1, 'value':DEFAULT_NB_COPIES,
                                                                 'style':"width: 70px"}))
     distributor = forms.ChoiceField(choices=get_distributor_choices(),
-                                    label=_("Diffuseur"),
+                                    label=_(u"Diffuseur"),
                                     required=True)
     basket = forms.ChoiceField(choices=get_basket_choices(),
-                               label=_("Ajouter au panier"),
+                               label=_(u"Ajouter au panier"),
                                required=False)
 
 
@@ -162,7 +162,7 @@ class AddToDepositForm(forms.Form):
     """When we view our stock, choose to add the card to a deposit.
     """
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                 label=_(u"Ajouter au depot:"),
+                                 label=_(u"Ajouter au dépôt:"),
                                  required=False)
 
 
@@ -234,9 +234,6 @@ def index(request):
             "data_source": data_source,
             "page_title": page_title,
             })
-
-
-
 
 def search(request):
     retlist = []
@@ -375,7 +372,7 @@ def add(request):
                   )
 
 def collection(request):
-    """Search our own collection and take actions
+    """Search our own collection and take actions.
     """
     form = CollectionSearchForm()
     retlist = []
@@ -387,7 +384,7 @@ def collection(request):
             if request.POST.has_key("ean") and \
                form.cleaned_data.get("ean"):
                 messages.add_message(request, messages.INFO,
-                                     _("The search by ean isn't implemented yet."))
+                                     _(u"The search by ean isn't implemented yet."))
                 log.debug("TODO: search on ean")
 
             else:
@@ -479,7 +476,7 @@ def deposits_create(request):
             except Exception as e:
                 log.error("Error when creating the deposit: %s" % e)
                 messages.add_message(request, messages.ERROR,
-                                     _("Error when adding the deposit"))
+                                     _(u"Error when adding the deposit"))
 
         else:
             return render(request, "search/deposits_create.jade", {
@@ -525,7 +522,7 @@ def deposits_view(request, depo_name):
         deposit = Deposit.objects.get(name=depo_name)
         copies = deposit.copies.all()
     except Deposit.DoesNotExist as e:
-        messages.add_message(request, messages.ERROR, _("Le dépôt demandé n'existe pas !"))
+        messages.add_message(request, messages.ERROR, _(u"Le dépôt demandé n'existe pas !"))
         log.error("le depot demande (%s) n'existe pas: %s" % (depo_name, e))
 
     return render(request, template, {

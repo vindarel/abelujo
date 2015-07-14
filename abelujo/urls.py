@@ -15,6 +15,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 from django.conf.urls import include
 from django.conf.urls import patterns
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls import url
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -27,9 +28,8 @@ from search.views import InventoriesListView
 js_info_dict = { 'packages': ('search', '',), }
 
 #XXX: include the url patterns from the app.
-urlpatterns = patterns('',
+urlpatterns = i18n_patterns('',
     # Access to the translations in javascript code:
-    # TODO: reverse url doesn't work in template.
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict,),
 
     url(r'^$', RedirectView.as_view(url='search/')),
@@ -65,6 +65,14 @@ urlpatterns = patterns('',
         name="inventories"),
     url(r'^inventories/new$', TemplateView.as_view(template_name="search/inventory_new.jade"),
         name="inventory_new"),
+
+                    )
+
+urlpatterns += patterns("",
+    # Exclude /api/ from i18n so than we
+    # don't bother of the language prefix in
+    # js code.
+    # TODO: set the language inside the api.
 
     url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
     url(r'^api/cards$', 'search.models.api.cards', name="api_cards"),
