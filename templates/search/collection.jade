@@ -24,7 +24,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-form(action='/collection/', method='post')
+form(action='{% url "card_collection" %}', method="post")
   {% csrf_token %}
   {% bootstrap_form searchForm %}
   // {{ form.as_p }}
@@ -32,10 +32,10 @@ form(action='/collection/', method='post')
 
 
 unless book_list
-  p.bg-info Aucun résultat
+  p.bg-info {% trans "Aucun résultat" %}
 
-span: span {{ nb_results }} results
-      a(href="/collection/?format=text")
+span: span {{ nb_results }} {% trans "results" %}
+      a(href="{% url 'card_collection' %}?format=text")
         input.btn.btn-primary(type="submit", value="{% trans 'voir en texte' %}", style="float: right;")
 
 for b in book_list

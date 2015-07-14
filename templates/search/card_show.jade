@@ -24,7 +24,7 @@
 
 
 .row
-  a(href="/admin/search/card/{{object.pk}}", title="Modifier la fiche") Éditer
+  a(href="/admin/search/card/{{object.pk}}", title="Modifier la fiche") {% trans "Éditer" %}
 .row
   .col-lg-3
     .row
@@ -33,7 +33,7 @@
       h4 {{ object.price }} €  ({{ object.card_type }})
       h4 {% trans "en stock" %}: {{ object.quantity }}
       div isbn: {{ object.isbn }}
-      a(target="_blank", href="{{ object.details_url }}") source: {{ object.data_source }}
+      a(target="_blank", href="{{ object.details_url }}") {% trans "source" %}: {{ object.data_source }}
   .col-lg-9
     h3 {{ object.title }}
     h4 {{ object.display_authors }}

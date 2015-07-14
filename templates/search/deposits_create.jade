@@ -22,7 +22,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 Nouveau dépôt
+h3 {% trans "Nouveau dépôt" %}
 div(ng-controller="DepositCreateController")
 
   div
@@ -66,7 +66,7 @@ div(ng-controller="DepositCreateController")
         li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
           i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
 
-      input.btn.btn-primary(type="submit", value="Enregistrer", ng-click="addDeposit()")
+      input.btn.btn-primary(type="submit", value="{% trans 'Enregistrer' %}", ng-click="addDeposit()")
       // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
 
 

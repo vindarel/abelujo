@@ -44,5 +44,5 @@ table.table.table-striped.table-hover
       td {{ dep.nb_alerts }}
       //- td {{ dep. }}
 
-a.btn.btn-primary(href="{% url 'deposits_new' %}") Nouveau dépôt
+a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "Nouveau dépôt" %}
 {% endblock content %}

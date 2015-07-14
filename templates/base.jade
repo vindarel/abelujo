@@ -41,23 +41,23 @@ html(ng-app="abelujo")
       div
         ul.nav.nav-pills.nav-stacked
           li
-            a(href="/collection") {% trans "Mon stock" %}
+            a(href='{% url "card_collection" %}') {% trans "Mon stock" %}
           li
-            a(href="/sell") {% trans "Vente" %}
+            a(href='{% url "card_sell" %}') {% trans "Vente" %}
           li
-            a(href="/search") {% trans "Nouvelle entrée" %}
+            a(href='{% url "card_index" %}') {% trans "Nouvelle entrée" %}
           li
-            a(href="/deposits") {% trans "Dépôts" %}
+            a(href='{% url "deposits" %}') {% trans "Dépôts" %}
           li
-            a(href="/inventories") {% trans "Inventaires" %}
+            a(href='{% url "inventories" %}') {% trans "Inventaires" %}
           li
-            a(href="/commands") {% trans "A commander" %}
+            a(href='{% url "basket_auto_command" %}') {% trans "A commander" %}
               span.badge {% verbatim %} {{auto_command_total}} {% endverbatim %}
           li
-            a(href="/history") {% trans "Historique" %}
+            a(href='{% url "search_history" %}') {% trans "Historique" %}
 
           li
-            a(href="/alerts") {% trans "Alertes" %}
+            a(href='{% url "search_alerts" %}') {% trans "Alertes" %}
               span.badge {% verbatim %} {{ alerts_open }} {% endverbatim %}
 
 
