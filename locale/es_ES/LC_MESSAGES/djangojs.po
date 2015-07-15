@@ -1,0 +1,227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-15 13:45+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ruche-web/admin/js/SelectFilter2.js:47
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:47
+#, c-format
+msgid "Available %s"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:60
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:60
+msgid "Filter"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:64
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:64
+msgid "Choose all"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:64
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:64
+#, c-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:70
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:70
+msgid "Choose"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:72
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:72
+msgid "Remove"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:78
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:78
+#, c-format
+msgid "Chosen %s"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:84
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:84
+msgid "Remove all"
+msgstr ""
+
+#: ruche-web/admin/js/SelectFilter2.js:84
+#: ruche-web/rucheweb/admin/js/SelectFilter2.js:84
+#, c-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: ruche-web/admin/js/actions.js:26 ruche-web/admin/js/actions.min.js:26
+#: ruche-web/rucheweb/admin/js/actions.js:26
+#: ruche-web/rucheweb/admin/js/actions.min.js:26
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/js/app/controllers/DepositCreateController.js:31
+msgid "fix deposit"
+msgstr ""
+
+#: static/js/app/controllers/DepositCreateController.js:32
+#: static/js/app/controllers/DepositCreateController.js:35
+msgid "bookshop deposit"
+msgstr ""
+
+#: static/js/app/controllers/DepositCreateController.js:36
+#: static/js/app/controllers/DepositCreateController.js:40
+#, fuzzy
+#| msgid "distributeur"
+msgid "distributor deposit"
+msgstr "difusora"
+
+#: static/js/app/controllers/DepositCreateController.js:39
+#, fuzzy
+#| msgid "distributeur"
+msgid "distributor"
+msgstr "difusora"
+
+#: static/js/app/controllers/sellController.js:15
+msgid "all publication"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:16
+#: static/js/app/controllers/sellController.js:17
+#: static/js/app/controllers/sellController.js:18
+#: static/js/app/controllers/sellController.js:19
+msgid "book"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:17
+msgid "booklet"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:18
+msgid "periodical"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:19
+msgid "other print"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:20
+#: static/js/app/controllers/sellController.js:21
+#: static/js/app/controllers/sellController.js:22
+#: static/js/build/abelujo.js:293 static/js/build/abelujo.js.c:294
+#: static/js/build/abelujo.js:295
+msgid "CD"
+msgstr "CD"
+
+#: static/js/app/controllers/sellController.js:21
+#: static/js/build/abelujo.js:294
+msgid "DVD"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:22
+#: static/js/build/abelujo.js:295
+msgid "vinyl"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:23
+msgid "others"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:27
+msgid "cash"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:28
+msgid "cheque"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:29
+msgid "visa card"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:30
+msgid "gift"
+msgstr ""
+
+#: static/js/app/controllers/sellController.js:31
+msgid "other"
+msgstr ""
+
+#: static/js/build/abelujo.js:34
+msgid "depôt fixe"
+msgstr "depósito fijo"
+
+#: static/js/build/abelujo.js:35
+msgid "dépôt de libraire"
+msgstr "depósito de librería"
+
+#: static/js/build/abelujo.js:38
+msgid "depôt libraire"
+msgstr "depôt librería"
+
+#: static/js/build/abelujo.js:39 static/js/build/abelujo.js.c:43
+msgid "dépôt de distributeur"
+msgstr "depôt de difusora"
+
+#: static/js/build/abelujo.js:42
+msgid "distributeur"
+msgstr "difusora"
+
+#: static/js/build/abelujo.js:288
+msgid "tout imprimé"
+msgstr "todo de imprimido"
+
+#: static/js/build/abelujo.js:289 static/js/build/abelujo.js.c:290
+#: static/js/build/abelujo.js:291 static/js/build/abelujo.js.c:292
+msgid "livre"
+msgstr "libro"
+
+#: static/js/build/abelujo.js:290
+msgid "brochure"
+msgstr "folleto"
+
+#: static/js/build/abelujo.js:291
+msgid "périodique"
+msgstr "periódico"
+
+#: static/js/build/abelujo.js:292
+msgid "autre parution"
+msgstr "otra publicación"
+
+#: static/js/build/abelujo.js:296
+msgid "autres"
+msgstr "otros"
+
+#: static/js/build/abelujo.js:300
+msgid "espèces"
+msgstr "efectivo"
+
+#: static/js/build/abelujo.js:301
+msgid "chèque"
+msgstr "cheque"
+
+#: static/js/build/abelujo.js:302
+msgid "carte bancaire"
+msgstr "visa"
+
+#: static/js/build/abelujo.js:303
+msgid "cadeau"
+msgstr "presente"
+
+#: static/js/build/abelujo.js:304
+msgid "autre"
+msgstr "otro"

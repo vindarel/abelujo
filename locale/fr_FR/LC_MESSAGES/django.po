@@ -1,0 +1,497 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-15 06:44-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: abelujo/settings.py:63
+msgid "English"
+msgstr "Anglas"
+
+#: abelujo/settings.py:64
+msgid "Français"
+msgstr ""
+
+#: abelujo/settings.py:65
+msgid "German"
+msgstr "Allemand"
+
+#: abelujo/settings.py:66
+msgid "Castellano"
+msgstr "Castillan"
+
+#: abelujo/settings.py:67
+msgid "Catalan"
+msgstr ""
+
+#: ruche-web/search/chapitreScraper.py:22
+msgid "produit indisponible"
+msgstr "produit indisponible"
+
+#: ruche-web/search/chapitreScraper.py:172
+msgid "Error matching nbr_result"
+msgstr ""
+
+#: search/models.py:170
+msgid "The card doesn't exist."
+msgstr "La notice n'existe pas."
+
+#: search/models/api.py:133 search/models/models.py:1113
+msgid "Sell successfull."
+msgstr "La vente a été réalisée avec succès."
+
+#: search/models/models.py:909
+msgid "The deposit wasn't created. It must contain at least one valid card"
+msgstr "Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide"
+
+#: search/models/models.py:917
+msgid "The deposit was successfully created."
+msgstr "Le dépôt a été créé avec succès."
+
+#: search/models/models.py:942
+msgid "never"
+msgstr "jamais"
+
+#: search/models/models.py:1104
+msgid "Warning: we couldn't sell {}."
+msgstr "Attention: la vente de {} a échoué."
+
+#: search/views.py:77
+#, fuzzy
+#| msgid "key words"
+msgid "Key words"
+msgstr "mots-clefs"
+
+#: search/views.py:78
+#, fuzzy
+#| msgid "Partie du titre, nom de l'auteur, etc."
+msgid "Part of title, of author's name, etc."
+msgstr "Partie du titre, nom de l'auteur, etc."
+
+#: search/views.py:83
+msgid "All cards"
+msgstr "Toutes notices"
+
+#: search/views.py:88
+msgid "Type of card"
+msgstr "Tipe de notice"
+
+#: search/views.py:93
+#, fuzzy
+#| msgid "key words"
+msgid "Key-words"
+msgstr "mots-clefs"
+
+#: search/views.py:105
+msgid "No basket"
+msgstr "Aucun panier"
+
+#: search/views.py:111
+msgid "Distributors"
+msgstr "Diffuseurs"
+
+#: search/views.py:113 templates/search/card_show.jade:40
+msgid "Publishers"
+msgstr "Éditeurs"
+
+#: search/views.py:130 templates/search/basket_auto_command.jade:33
+#: templates/search/card_show.jade:45 templates/search/deposits_create.jade:50
+#: templates/search/deposits_view.jade:31
+msgid "Distributor"
+msgstr "Diffuseur"
+
+#: search/views.py:133
+msgid "Add to basket"
+msgstr "Ajouter au panier"
+
+#: search/views.py:165
+msgid "Add to the deposit:"
+msgstr "Ajouter au dépôt:"
+
+#: search/views.py:387
+msgid "The search by ean isn't implemented yet."
+msgstr "La recherche par isbn n'est pas encore implémentée."
+
+#: search/views.py:479
+msgid "Error when adding the deposit"
+msgstr "Erreur en ajoutant le dépôt"
+
+#: search/views.py:504
+msgid "We could not add the card to the deposit: the given ean is null."
+msgstr "Impossible d'ajouter cette notice au dépôt: l'isbn est nul."
+
+#: search/views.py:509
+msgid "The card were successfully added to the deposit."
+msgstr "La notice a été ajoutée au dépôt."
+
+#: search/views.py:525
+msgid "This deposit doesn't exist !"
+msgstr "Le dépôt demandé n'existe pas !"
+
+#: templates/admin/search/base_site.html:19
+msgid "Django site admin"
+msgstr "Admin de Django"
+
+#: templates/admin/search/base_site.html:22
+#, fuzzy
+#| msgid "Django site admin"
+msgid "Django (overriden) administration"
+msgstr "Admin de Django"
+
+#: templates/base.jade:35
+msgid "Admin"
+msgstr ""
+
+#: templates/base.jade:42
+msgid "My stock"
+msgstr "Mon stock"
+
+#: templates/base.jade:44
+msgid "Sell"
+msgstr "Vendre"
+
+#: templates/base.jade:46
+msgid "New entry"
+msgstr "Nouvelle entrée"
+
+#: templates/base.jade:48 templates/search/card_show.jade:56
+msgid "Deposits"
+msgstr "Dépôts"
+
+#: templates/base.jade:50
+msgid "Inventories"
+msgstr "Inventaires"
+
+#: templates/base.jade:52
+msgid "To command"
+msgstr "A commander"
+
+#: templates/base.jade:55
+msgid "History"
+msgstr "Historique"
+
+#: templates/base.jade:58 templates/search/card_show.jade:62
+#: templates/search/deposits_view.jade:39
+msgid "Alerts"
+msgstr "Alertes"
+
+#: templates/search/alerts.jade:29
+msgid "Alert of the"
+msgstr "Alerte du"
+
+#: templates/search/alerts.jade:30
+msgid "about the card"
+msgstr "à propos de la notice"
+
+#: templates/search/alerts.jade:31
+msgid "conflict"
+msgstr "conflit"
+
+#: templates/search/alerts.jade:32
+msgid "related deposits"
+msgstr "dépôts concernés"
+
+#: templates/search/basket_auto_command.jade:28
+msgid "No card is this basket"
+msgstr "Aucun exemplaire dans ce panier"
+
+#: templates/search/basket_auto_command.jade:31
+msgid "Title"
+msgstr "Titre"
+
+#: templates/search/basket_auto_command.jade:32
+msgid "Authors"
+msgstr "Auteurs"
+
+#: templates/search/basket_auto_command.jade:34
+msgid "Quantity left"
+msgstr "Quantité restante"
+
+#: templates/search/card_show.jade:27 templates/search/collection.jade:48
+msgid "Edit the card"
+msgstr "Modifier la notice"
+
+#: templates/search/card_show.jade:27
+msgid "Edit"
+msgstr "Édition"
+
+#: templates/search/card_show.jade:34 templates/search/collection.jade:85
+msgid "in stock"
+msgstr "en stock"
+
+#: templates/search/card_show.jade:36
+msgid "source"
+msgstr ""
+
+#: templates/search/card_show.jade:50
+msgid "Presente in"
+msgstr "Présente dans"
+
+#: templates/search/collection.jade:31
+msgid "valider"
+msgstr ""
+
+#: templates/search/collection.jade:35
+msgid "No results"
+msgstr "Aucun résultat"
+
+#: templates/search/collection.jade:37
+msgid "results"
+msgstr "résultats"
+
+#: templates/search/collection.jade:39
+msgid "voir en texte"
+msgstr ""
+
+#: templates/search/collection.jade:50
+msgid "See on"
+msgstr "Voir sur"
+
+#: templates/search/collection.jade:58
+msgid "publisher"
+msgstr "éditeur"
+
+#: templates/search/collection.jade:66
+msgid "collection inconnue"
+msgstr ""
+
+#: templates/search/collection.jade:66
+msgid "collection"
+msgstr ""
+
+#: templates/search/collection.jade:79
+msgid "distributor"
+msgstr "diffuseur"
+
+#: templates/search/collection.jade:82
+msgid "places"
+msgstr "lieus de stockage"
+
+#: templates/search/collection.jade:92
+msgid "add to deposit"
+msgstr "ajouter au dépôt"
+
+#: templates/search/deposits.jade:28
+msgid "Dépôts existants"
+msgstr ""
+
+#: templates/search/deposits.jade:30
+msgid "Aucun dépôt existant"
+msgstr ""
+
+#: templates/search/deposits.jade:33
+msgid "Nom du dépot"
+msgstr ""
+
+#: templates/search/deposits.jade:34
+msgid "Diffuseur"
+msgstr ""
+
+#: templates/search/deposits.jade:35
+msgid "Dernier état de dépôt"
+msgstr ""
+
+#: templates/search/deposits.jade:36
+msgid "Alertes"
+msgstr ""
+
+#: templates/search/deposits.jade:37
+msgid "Exemplaires restants"
+msgstr ""
+
+#: templates/search/deposits.jade:47
+msgid "Nouveau dépôt"
+msgstr ""
+
+#: templates/search/deposits_create.jade:25
+msgid "New deposit"
+msgstr "Nouveau dépôt"
+
+#: templates/search/deposits_create.jade:34
+msgid "Name of the deposit"
+msgstr "Nom du dépôt"
+
+#: templates/search/deposits_create.jade:37
+msgid "Type"
+msgstr "Tipe"
+
+#: templates/search/deposits_create.jade:40
+msgid "Inital quantity"
+msgstr "Quantity initiale"
+
+#: templates/search/deposits_create.jade:43
+msgid "Minimum wanted quantity"
+msgstr "Quantité minimum demandée"
+
+#: templates/search/deposits_create.jade:48
+msgid "Auto-command the cards"
+msgstr "Marquer à commander automatiquement"
+
+#: templates/search/deposits_create.jade:54
+msgid "Look for cards"
+msgstr "Chercher des notices"
+
+#: templates/search/deposits_create.jade:55
+msgid "whose distributor is"
+msgstr "dont le distributeur est"
+
+#: templates/search/deposits_create.jade:69
+#: templates/search/sell_create.jade:129
+msgid "Validate"
+msgstr "Valider"
+
+#: templates/search/deposits_view.jade:27
+msgid "edit"
+msgstr "modifier"
+
+#: templates/search/deposits_view.jade:29
+msgid "Deposit"
+msgstr "Dépôt"
+
+#: templates/search/deposits_view.jade:33
+msgid "Deposit type"
+msgstr "Tipe de dépôt"
+
+#: templates/search/deposits_view.jade:35
+msgid "Auto command"
+msgstr "Auto-commander"
+
+#: templates/search/deposits_view.jade:37
+msgid "Last deposit state"
+msgstr "Dernier état de dépôt"
+
+#: templates/search/deposits_view.jade:42
+msgid "Exemplaries in stock"
+msgstr "Exemplaires en stock"
+
+#: templates/search/deposits_view.jade:44
+msgid "This deposit doesn't have any card."
+msgstr "Ce dépôt ne contient aucune notice."
+
+#: templates/search/deposits_view.jade:53
+msgid "deposit state"
+msgstr "état de dépôt"
+
+#: templates/search/deposits_view.jade:54
+#, python-format
+msgid ""
+"\n"
+"a(href=\"\").btn.btn-primary(title=\"%(deposit_state)s\", value="
+"\"%(deposit_state)s\", type=\"submit\") %(deposit_state)s\n"
+msgstr ""
+
+#: templates/search/history.jade:28
+msgid "History of sells"
+msgstr "Historique des ventes"
+
+#: templates/search/history.jade:33
+msgid "Sell of the"
+msgstr "Vente du"
+
+#: templates/search/history.jade:33
+msgid "cards"
+msgstr "notices"
+
+#: templates/search/history.jade:34
+msgid "total"
+msgstr ""
+
+#: templates/search/index.jade:32
+msgid "Search"
+msgstr "Recherche"
+
+#: templates/search/index.jade:33
+msgid "or"
+msgstr "ou"
+
+#: templates/search/index.jade:34
+msgid "Add a card manually"
+msgstr "Ajouter une notice manuellement"
+
+#: templates/search/inventories.jade:28
+msgid "Inventory started"
+msgstr "Inventaire en cours"
+
+#: templates/search/inventories.jade:31
+msgid "Created the"
+msgstr "Créé le"
+
+#: templates/search/inventories.jade:32
+msgid "On the place"
+msgstr "Lieu"
+
+#: templates/search/inventories.jade:38
+msgid "Start an inventory"
+msgstr "Commencer un inventaire"
+
+#: templates/search/inventory_new.jade:25
+msgid "Inventory ongoing"
+msgstr "Inventaire en cours"
+
+#: templates/search/inventory_new.jade:30
+msgid "Search in the stock"
+msgstr "Chercher dans le stock"
+
+#: templates/search/inventory_new.jade:38 templates/search/sell_create.jade:82
+msgid "Use TAB to validate your choice, Enter to proceed."
+msgstr "Utilisez TAB pour valider la selection, Entrée pour finir la vente."
+
+#: templates/search/inventory_new.jade:48 templates/search/sell_create.jade:94
+msgid "titles selected. Total:"
+msgstr "titres sélectionnés. Total:"
+
+#: templates/search/inventory_new.jade:55
+#: templates/search/sell_create.jade:101
+msgid "There is a conflict with deposits."
+msgstr "Il y a un conflit de dépôts."
+
+#: templates/search/inventory_new.jade:62
+#: templates/search/sell_create.jade:120
+msgid "Quantity"
+msgstr "Quantité"
+
+#: templates/search/search_result.jade:37
+#, python-format
+msgid ""
+"\n"
+"          h3: a(target=\"_blank\", href=\"%(details)s\", title=\"See the "
+"complete card on %(source)s\") %(title)s\n"
+"          "
+msgstr ""
+
+#: templates/search/search_result.jade:61
+msgid "The isbn will be downloaded when you press enter."
+msgstr "Le n°isbn sera téléchargé à l'enregistrement de la notice."
+
+#: templates/search/search_result.jade:76
+msgid "Add"
+msgstr "Ajouter"
+
+#: templates/search/search_result.jade:76
+msgid "Add this card to the basket"
+msgstr "Ajouter cette notice au panier"
+
+#: templates/search/sell_create.jade:25
+msgid "Selling cards"
+msgstr "Vente"
+
+#: templates/search/sell_create.jade:91
+msgid "Look for a"
+msgstr "Chercher un"
+
+#: templates/search/sell_create.jade:131
+msgid "Cancel"
+msgstr "Annuler"
