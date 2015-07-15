@@ -85,15 +85,6 @@ for b in book_list
               b {% trans "en stock" %} 
               span {{ b.quantity }}
 
-  form(action='/collection/sell/', method='post') {% csrf_token %}
-    // input(type='hidden', value=b.title, name='book')
-    input(type='hidden', value="{{ b.title }}", name='title')
-    input(type='hidden', value="{{ b.authors }}", name='authors')
-    input(type='hidden', value="{{ b.price }}", name='price')
-    input(type='hidden', value="{{ b.id }}", name='id')
-    input(type='hidden', value=b, name='book')
-    input.btn.btn-primary(type='submit', value='{% trans "Vendre" %}')
-
   form.form-inline(action="/deposits/addcard/", method="post") {% csrf_token %}
     {% bootstrap_form AddToDepositForm %}
     input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
