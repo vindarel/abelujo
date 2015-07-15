@@ -85,7 +85,7 @@ for b in book_list
               b {% trans "en stock" %} 
               span {{ b.quantity }}
 
-  form.form-inline(action="/deposits/addcard/", method="post") {% csrf_token %}
+  form.form-inline(action="{% url 'deposits_add_card' %}", method="post") {% csrf_token %}
     {% bootstrap_form AddToDepositForm %}
     input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
     input(type="hidden", value="{{ b.ean }}", name="ean")
