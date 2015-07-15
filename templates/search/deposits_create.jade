@@ -26,7 +26,7 @@ h3 {% trans "New deposit" %}
 div(ng-controller="DepositCreateController")
 
   div
-    alert(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
+    alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
 
   // form(action='/api/distributors', method='post')
   form(method='post')
@@ -52,7 +52,7 @@ div(ng-controller="DepositCreateController")
         option(value="") ---
       div
         span {% trans "Look for cards" %} 
-        span(ng-show="distributor")  {% trans "whose distributor is" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
+        span.ng-cloak(ng-show="distributor")  {% trans "whose distributor is" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
       input.nullable.form-control(
         type='text'
         typeahead-loading="loadingCards"
@@ -61,8 +61,8 @@ div(ng-controller="DepositCreateController")
         typeahead-min-length="3"
         typeahead-on-select="add_selected_card($item)"
       )
-      i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
-      ul.list-group(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
+      i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
+      ul.list-group.ng-cloak(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
         li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
           i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
 

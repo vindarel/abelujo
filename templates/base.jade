@@ -50,13 +50,13 @@ html(ng-app="abelujo")
             a(href='{% url "inventories" %}') {% trans "Inventories" %}
           li
             a(href='{% url "basket_auto_command" %}') {% trans "To command" %}
-              span.badge {% verbatim %} {{auto_command_total}} {% endverbatim %}
+              span.badge.ng-cloak {% verbatim %} {{auto_command_total}} {% endverbatim %}
           li
             a(href='{% url "search_history" %}') {% trans "History" %}
 
           li
             a(href='{% url "search_alerts" %}') {% trans "Alerts" %}
-              span.badge {% verbatim %} {{ alerts_open }} {% endverbatim %}
+              span.badge.ng-cloak {% verbatim %} {{ alerts_open }} {% endverbatim %}
 
 
   div.col-md-10(id="content")

@@ -37,16 +37,16 @@ div(ng-controller="inventoryNewController")
             typeahead-on-select="add_selected_card($item)"
             title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
           )
-          i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
+          i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
 
           span.input-group-btn
             button.btn.btn-default(type='button')
               i.glyphicon.glyphicon-refresh
 
 
-  h3(ng-show="cards_selected.length")
+  h3.ng-cloak(ng-show="cards_selected.length")
     {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
-  div(ng-show="cards_selected", ng-repeat="card in cards_selected")
+  div(ng-cloak, ng-show="cards_selected", ng-repeat="card in cards_selected")
     h4
       a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
       span {% verbatim %} {{card.authors}} {% endverbatim %}
