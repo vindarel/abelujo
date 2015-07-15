@@ -51,6 +51,50 @@ and open your browser to `http://127.0.0.1:8000 <http://127.0.0.1:8000>`_.
 
 See the Makefile for all the targets.
 
+Run the development server
+--------------------------
+
+See two lines above !
+
+
+Use Apache's mod_wsgi for the development server
+------------------------------------------------
+
+Django's `manage.py runserver` development command is very handy but
+doesn't represent a production server, in particular because it is
+single-threaded. This isn't ideal. New problems may arise at the very
+moment we deploy the application on a real server. To avoid that, we
+must use the same server during development that the production one. A
+popular choice is Apache's `mod_wsgi` and it is very easily usable on
+development thanks to `mod_wsgi-express`.
+
+See the full presentation by the author, it is really a good read: http://blog.dscpl.com.au/2015/05/using-modwsgi-express-as-development.html
+
+In short, given `apache` and `apache-dev` are installed on our system,
+we only one (or two) new python packages, `mod_wsgi`, which will
+extend Django's `manage.py`.
+
+The command to run a development server with Apache's `mod_wsgi`,
+nearly like in production is now::
+
+    python manage.py runmodwsgi --reload-on-changes
+
+We then have new rules on our `Makefile` for shortcuts::
+
+    make run-wsgi
+    # you need manage.py collectstatic
+
+This runs the server at the foreground. Multithreaded.
+
+and::
+
+    make run-wsgi-debug
+
+This disables the auto-reloading of sources and the multithreading,
+thus allowing to stop on a python debugger (`pdb`).
+
+We then advise to use `mod_wsgi` the most possible.
+
 
 Debian specificity: name collision between node and nodejs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -266,11 +310,11 @@ Run with::
     # coverage run --source='.' manage.py test search
     # coverage html  # and open: firefox htmlcov/index.html
 
-Contribute to Abelujo
----------------------
+How to contribute to Abelujo (git, gitlab, workflow)
+----------------------------------------------------
 
 To help develop Abelujo (welcome !) you need some basics in Python and
-git. Then you'll have to find your way in Django. You can help with
+Git. Then you'll have to find your way in Django. You can help with
 html, css and javascript too. And if you're experienced with
 Docker, you'll have some work !
 
@@ -287,3 +331,52 @@ replace Github by Gitlab).
 
 - best Git ressource: http://www.git-scm.com/
 - check out those git GUI too: http://www.git-scm.com/downloads/guis and `emacs' magit interface <https://magit.github.io/master/magit.html>`_.
+
+Allright ! Take your time, I'll wait for you. The next step is easier,
+you're going to **create an account on Gitlab.com**. Gitlab is a
+web-based Git repository manager. It also has an issue tracking system
+and a basic wiki. It's like Github, but there's an open-source
+version of it. The sources of Abejulo are hosted on `Gitlab.com
+<https://gitlab.com>`_ . So, go there and create an account. You don't
+need one to grab the sources, but you need one to cooperate with us.
+
+Indeed, the workflow is as follows:
+- you have your copy of Abelujo, forked from the original (so that is
+  nows where it comes from)
+- you work on your repository.
+- you regularly update your repository with the modifications of the
+  original repository (you want to be up to date to avoid conflicts).
+- when you're finished, you open a pull-request on Gitlab.
+- we discuss it, it is eventually merged.
+
+Once you have an account, you need to fork Abelujo's repository. With
+your fork, you'll be able to (easily) suggest to us your new
+developments (through pull-requests). So, go on `Abelujo's repository
+<https://gitlab.com/vindarel/abelujo>`_ and click your "fork" button.
+
+Now you can pull the sources of **yours** Abelujo copy::
+
+    git clone git@gitlab.com:<your_user_name>/abelujo.git
+
+Choose the ssh version of the link over the https one. With some
+configuration of ssh on your side, you won't have to type your
+username and password every time.
+
+.. Note::
+
+    If we recall well (ping us if needed), you need to add your ssh
+    public key to your gitlab account (profile settings -> ssh
+    keys). This key is located at "~/.ssh/id_rsa.pub". If it doesn't
+    exist, create it with "ssh-keygen rsa". A passphrase isn't
+    compulsory.
+
+You're ready to work on your local copy of Abelujo. You can commit
+changes and push them to your gitlab repository. Hey, we are also
+working on it at the same time, so don't forget to *pull* the changes
+once in a while, and to work in a branch distinct from master, this
+will be easier.
+
+And when you want to suggest changes to the official repository, you
+press the button "Pull Request". We'll have a place to tchat about
+your changes, and when a maintainer feels like it's ok, he or she will
+merge your changes. We can also give you the right to do so.

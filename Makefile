@@ -59,6 +59,22 @@ gulp:
 run:
 	python manage.py runserver 8000
 
+run-wsgi:
+	# Run a development server using Apache and mod_wsgi, like in production.
+	# required: run collectstatic.
+	# see also --log-to-terminal, --enable-coverage, --profiler-
+	python manage.py runmodwsgi --reload-on-changes
+
+run-wsgi-prod:
+	# TODO: run as daemon.
+	# https://pypi.python.org/pypi/mod_wsgi#running-mod-wsgi-express-as-root
+	python manage.py runmodwsgi
+
+run-wsgi-debug:
+	# Allows: single thread, pdb, debug on exception
+	# Disables: auto code reloading, multithreading.
+	python manage.py runmodwsgi --debug-mode --enable-debugger
+
 # Run end to end tests only.
 e2e:
 	cd search/ && ./e2etests.sh

@@ -96,7 +96,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = 'static/collected/'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -162,7 +162,13 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'abelujo.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-# WSGI_APPLICATION = 'abelujo.wsgi.application'
+WSGI_APPLICATION = 'abelujo.wsgi.application'
+
+if os.environ.get('MOD_WSGI_DEBUGGER_ENABLED'):
+    # Useful to fall on a pdb prompt on an exception, whith debug-mode
+    # and enable-debugger options.
+    # http://blog.dscpl.com.au/2015/05/using-modwsgi-express-as-development.html
+    DEBUG_PROPAGATE_EXCEPTIONS = True
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, "templates"),
@@ -187,6 +193,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     # Custom:
     'djangular',
+    'mod_wsgi.server',
     'search',
 )
 

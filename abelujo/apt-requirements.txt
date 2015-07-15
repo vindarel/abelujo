@@ -1,5 +1,7 @@
 python-pip
 python-dev
+apache2
+apache2-dev
 nodejs
 nodejs-legacy
 npm

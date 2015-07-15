@@ -40,6 +40,8 @@ Werkzeug                  # runserver_plus: richer tracebacks and inline console
 django-autocomplete-light # ajax autocompletion without writing javascript.
 django-angular            # utilities to integrate django and angular
                           # (integrate forms, csrf protection, share templates,...).
+mod_wsgi==4.4             # apache server for development.
+# mod_wsgi-httpd           # discard the system's apache httpd server if needed.
 
 ### utils
 toolz                   # pure, lazy, composable functional programming.
