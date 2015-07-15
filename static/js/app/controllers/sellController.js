@@ -12,23 +12,23 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       //TODO: use django-angular to limit code duplication.
       $scope.card_types = [
           // WARNING duplication from dbfixture.json
-          {name: gettext("tout imprimé"), id:null},
-          {name: gettext("livre"), group: gettext("livre"), id:1},
-          {name: gettext("brochure"), group: gettext("livre"),id:2},
-          {name: gettext("périodique"), group: gettext("livre"), id:3},
-          {name: gettext("autre parution"), group: gettext("livre"), id:4},
+          {name: gettext("all publication"), id:null},
+          {name: gettext("book"), group: gettext("book"), id:1},
+          {name: gettext("booklet"), group: gettext("book"),id:2},
+          {name: gettext("periodical"), group: gettext("book"), id:3},
+          {name: gettext("other print"), group: gettext("book"), id:4},
           {name: gettext("CD"), group: gettext("CD"), id:5},
           {name: gettext("DVD"), group: gettext("CD"), id:6},
           {name: gettext("vinyl"), group: gettext("CD"), id:8},
-          {name: gettext("autres"), group: gettext("autres"), id:9},
+          {name: gettext("others"), group: gettext("others"), id:9},
       ];
 
       $scope.payment_means = [
-          {name: gettext("espèces"), id:1},
-          {name: gettext("chèque"), id:2},
-          {name: gettext("carte bancaire"), id:3},
-          {name: gettext("cadeau"), id:4},
-          {name: gettext("autre"), id:5},
+          {name: gettext("cash"), id:1},
+          {name: gettext("cheque"), id:2},
+          {name: gettext("visa card"), id:3},
+          {name: gettext("gift"), id:4},
+          {name: gettext("other"), id:5},
       ];
       $scope.payment = $scope.payment_means[0];
 

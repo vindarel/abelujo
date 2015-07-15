@@ -24,24 +24,24 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-a(href="/admin/search/deposit/{{deposit.name}}") modifier
+a(href="/admin/search/deposit/{{deposit.name}}") {% trans "edit" %}
 dl.dl-horizontal
-  dt {% trans "Dépôt" %}
+  dt {% trans "Deposit" %}
   dd {{ deposit.name }}
-  dt {% trans "Distributeur" %}
+  dt {% trans "Distributor" %}
   dd {{ deposit.distributor }}
-  dt {% trans "Type de dépôt" %}
+  dt {% trans "Deposit type" %}
   dd {{ deposit.deposit_type }}
-  dt {% trans "Réassort automatique" %}
+  dt {% trans "Auto command" %}
   dd {{ deposit.auto_command | yesno:"oui,non"}}
-  dt {% trans "Dernier état de dépôt" %}
+  dt {% trans "Last deposit state" %}
   dd {{ deposit.last_checkout }}
-  dt {% trans "Nombre d'alertes liées" %}
+  dt {% trans "Alerts" %}
   dd {{ nb_alerts }}
 if copies
-  b {% trans "Exemplaires en dépôt" %}:
+  b {% trans "Exemplaries in stock" %}:
 else
-  b.text-center.alert.alert-info {% trans "Ce dépôt ne contient aucune notice." %}
+  b.text-center.alert.alert-info {% trans "This deposit doesn't have any card." %}
 table.table.table-striped.table-hover
   for copy in copies
     tr
@@ -50,7 +50,7 @@ table.table.table-striped.table-hover
       td {{ copy.editor }}
       td {{ copy.price }} €
 
-{% trans "état de dépôt" as deposit_state %}
+{% trans "deposit state" as deposit_state %}
 {% blocktrans %}
 a(href="").btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
 {% endblocktrans %}

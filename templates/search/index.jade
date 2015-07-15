@@ -29,9 +29,9 @@ form(action="{% url 'card_search' %}")
   {% bootstrap_form searchForm %}
   // {{ form.as_p }}
   span
-    input.btn.btn-primary(type='submit', value='{% trans "Rechercher" %}')
-    span  {% trans "ou" %}: 
-    a(href="/admin/search/card/add") {% trans "Ajouter une fiche manuellement" %}
+    input.btn.btn-primary(type='submit', value='{% trans "Search" %}')
+    span  {% trans "or" %}: 
+    a(href="/admin/search/card/add") {% trans "Add a card manually" %}
 
 div.col-md-10
   {% block search_result %}

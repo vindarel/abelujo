@@ -28,16 +28,16 @@ angular.module('abelujo.controllers', [])
       //TODO: use django-angular to limit code duplication.
       $scope.deposit_types = [
           {
-              name: gettext("depôt fixe"),
-              target: gettext("dépôt de libraire")
+              name: gettext("fix deposit"),
+              target: gettext("bookshop deposit")
           },
           {
-              name: gettext("depôt libraire"),
-              target: gettext("dépôt de distributeur")
+              name: gettext("bookshop deposit"),
+              target: gettext("distributor deposit")
           },
           {
-              name: gettext("distributeur"),
-              target: gettext("dépôt de distributeur")
+              name: gettext("distributor"),
+              target: gettext("distributor deposit")
           }
       ];
 

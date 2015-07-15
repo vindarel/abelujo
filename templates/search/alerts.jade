@@ -26,9 +26,9 @@
 
 div(ng-controller="alertsController")
   div.list-group(ng-repeat="alert in alerts")
-    div.list-group-item(ng-class="{% verbatim %} {'list-group-item-success': true, 'list-group-item-danger': {{ alert.card.ambigous_sell }} } {% endverbatim %}") {% trans "Alerte du" %}  {% verbatim %} {{ alert.date_creation }} {% endverbatim %}
-        div {% trans "concernant la notice" %} "{% verbatim %} {{ alert.card.title}} {% endverbatim %}"
-        div {% trans "conflit" %} ? {% verbatim %} {{ alert.card.ambigous_sell }} {% endverbatim %}
-        div {% trans "depots concernés" %}: {% verbatim %} {{ alert.deposits_repr }} {% endverbatim %}
+    div.list-group-item(ng-class="{% verbatim %} {'list-group-item-success': true, 'list-group-item-danger': {{ alert.card.ambigous_sell }} } {% endverbatim %}") {% trans "Alert of the" %}  {% verbatim %} {{ alert.date_creation }} {% endverbatim %}
+        div {% trans "about the card" %} "{% verbatim %} {{ alert.card.title}} {% endverbatim %}"
+        div {% trans "conflict" %} ? {% verbatim %} {{ alert.card.ambigous_sell }} {% endverbatim %}
+        div {% trans "related deposits" %}: {% verbatim %} {{ alert.deposits_repr }} {% endverbatim %}
 
 {% endblock %}

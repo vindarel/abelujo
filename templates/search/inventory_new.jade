@@ -22,12 +22,12 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 {% trans "Inventaire en cours" %}
+h3 {% trans "Inventory ongoing" %}
 div(ng-controller="inventoryNewController")
   form(method="get")
     .row
       p.input-group
-          div {% trans "Chercher le stock" %}
+          div {% trans "Search in the stock" %}
           input.nullable.form-control(
             type='text'
             typeahead-loading="loadingCards"
@@ -45,7 +45,7 @@ div(ng-controller="inventoryNewController")
 
 
   h3(ng-show="cards_selected.length")
-    {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titres sélectionnés. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
+    {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
   div(ng-show="cards_selected", ng-repeat="card in cards_selected")
     h4
       a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
@@ -59,7 +59,7 @@ div(ng-controller="inventoryNewController")
      span
         .col-md-1
         p.input-group
-            label.sr-only {% trans "Quantité" %}
+            label.sr-only {% trans "Quantity" %}
             span.input-group-addon X
             input.form-control(
                 type="number", min=0, max=99

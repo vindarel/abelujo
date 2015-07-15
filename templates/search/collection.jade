@@ -32,7 +32,7 @@ form(action='{% url "card_collection" %}', method="post")
 
 
 unless book_list
-  p.bg-info {% trans "Aucun résultat" %}
+  p.bg-info {% trans "No results" %}
 
 span: span {{ nb_results }} {% trans "results" %}
       a(href="{% url 'card_collection' %}?format=text")
@@ -45,9 +45,9 @@ for b in book_list
         td: img(src="{{ b.img }}")
       td
         span
-          h3: a(href="{{ b.get_absolute_url }}", title='{% trans "Modifiez la notice" %}') {{b.title}}
+          h3: a(href="{{ b.get_absolute_url }}", title='{% trans "Edit the card" %}') {{b.title}}
           if b.details_url
-            a(target="_blank", href="{{ b.details_url }}") {% trans "Voir sur" %} {{ b.data_source }}
+            a(target="_blank", href="{{ b.details_url }}") {% trans "See on" %} {{ b.data_source }}
         if b.authors
           h4 {{b.authors}}
         table.table-condensed
@@ -55,7 +55,7 @@ for b in book_list
             if b.publishers
               td
                 span
-                  b(title="{{ b.publishers }}") {% trans "éditeur" %} 
+                  b(title="{{ b.publishers }}") {% trans "publisher" %} 
                   span(title="{{ b.publishers }}") {{ b.publishers | truncatewords:2}}
             td
               span
@@ -63,8 +63,8 @@ for b in book_list
                 span {{ b.isbn }}
             td
               span
-                b(title="{% if not collection %} collection inconnue {% endif%}") {% trans "collection" %} 
-                span(title="{% if not b.collection %} collection inconnue {% endif%}")
+                b(title="{% if not collection %} {% trans 'collection inconnue' %} {% endif%}") {% trans "collection" %} 
+                span(title="{% if not b.collection %} %{ trans 'collection inconnue' %} {% endif%}")
                   {% if not collection %}
                   span ---
                   {% else %}
@@ -76,19 +76,19 @@ for b in book_list
             if b.distributor
               td
                 span
-                  b {% trans "diffuseur" %} 
+                  b {% trans "distributor" %} 
                   span {{ b.distributor }}
             td
-              b {% trans "stockage" %} 
+              b {% trans "places" %} 
               span {{ b.places }}
             td
-              b {% trans "en stock" %} 
+              b {% trans "in stock" %} 
               span {{ b.quantity }}
 
   form.form-inline(action="{% url 'deposits_add_card' %}", method="post") {% csrf_token %}
     {% bootstrap_form AddToDepositForm %}
     input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
     input(type="hidden", value="{{ b.ean }}", name="ean")
-    input.btn.btn-primary(type="submit", value='{% trans "ajouter au dépôt" %}')
+    input.btn.btn-primary(type="submit", value='{% trans "add to deposit" %}')
 
 {% endblock content %}

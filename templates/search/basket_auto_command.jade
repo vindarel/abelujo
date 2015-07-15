@@ -25,13 +25,13 @@
 {% bootstrap_javascript %}
 
 unless cards
-  p {% trans "Aucune notice dans ce panier" %}.
+  p {% trans "No card is this basket" %}.
 table.table.table-condensed.table-striped
   tr
-    td {% trans "Titre" %}
-    td {% trans "Auteurs" %}
-    td {% trans "Diffuseur" %}
-    td {% trans "Quantité restante" %}
+    td {% trans "Title" %}
+    td {% trans "Authors" %}
+    td {% trans "Distributor" %}
+    td {% trans "Quantity left" %}
   for card in cards
     tr
       td: a(href="{{ card.get_absolute_url }}") {{ card.title }}

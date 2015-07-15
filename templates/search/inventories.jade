@@ -25,16 +25,16 @@
 {% bootstrap_javascript %}
 
 
-h3 {% trans "Inventaires en cours" %}
+h3 {% trans "Inventory started" %}
 table.table.table-striped.table-hover
   tr
-    td {% trans "Créé le" %}
-    td {% trans "Lieu concerné" %}
+    td {% trans "Created the" %}
+    td {% trans "On the place" %}
   for inv in inventories
     tr
       td {{ inv.created }}
       td {{ inv.place }}
 
-a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "Commencer un inventaire" %}
+a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "Start an inventory" %}
 
 {% endblock content %}

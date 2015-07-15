@@ -22,7 +22,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 {% trans "Effectuer une vente" %}
+h3 {% trans "Selling cards" %}
 div(ng-controller="sellController")
 
   div
@@ -34,7 +34,6 @@ div(ng-controller="sellController")
     )
       {% verbatim %} {{alert.message}} {% endverbatim %}
 
-  // form(action='/api/distributors', method='post')
   form(method='post')
 
       .row
@@ -92,7 +91,7 @@ div(ng-controller="sellController")
         span {% trans "Look for a" %} {% verbatim %} {{ card_type.name }} {% endverbatim %}
 
       h3(ng-show="cards_selected.length")
-        {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titres sélectionnés. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
+        {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
       div(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4
           a(target="_blank", href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
@@ -118,7 +117,7 @@ div(ng-controller="sellController")
 
           .col-md-3
             p.input-group
-                label.sr-only {% trans "Quantité" %}
+                label.sr-only {% trans "Quantity" %}
                 span.input-group-addon X
                 input.form-control(
                   type="number", min=0, max=99
@@ -127,9 +126,9 @@ div(ng-controller="sellController")
                 )
 
 
-      input.btn.btn-primary(id="validateButton", type="submit", value="{% trans 'Valider' %}", ng-click="sellCards()")
+      input.btn.btn-primary(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
       // input.btn.btn-primary(type="submit", value="Valider", ng-submit="sellCards()")
-      input.btn.btn(value="{% trans 'Annuler' %}", ng-click="cancelCurrentData()")
+      input.btn.btn(value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
 
 {% endblock content %}

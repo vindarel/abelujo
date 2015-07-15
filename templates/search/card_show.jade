@@ -24,42 +24,42 @@
 
 
 .row
-  a(href="/admin/search/card/{{object.pk}}", title="Modifier la fiche") {% trans "Éditer" %}
+  a(href="/admin/search/card/{{object.pk}}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
 .row
   .col-lg-3
     .row
       img.img-responsive(src="{{ object.img }}")
     .row
       h4 {{ object.price }} €  ({{ object.card_type }})
-      h4 {% trans "en stock" %}: {{ object.quantity }}
+      h4 {% trans "in stock" %}: {{ object.quantity }}
       div isbn: {{ object.isbn }}
       a(target="_blank", href="{{ object.details_url }}") {% trans "source" %}: {{ object.data_source }}
   .col-lg-9
     h3 {{ object.title }}
     h4 {{ object.display_authors }}
-    div {% trans "Éditeurs" %}:
+    div {% trans "Publishers" %}:
         ul.list-group
             for pub in object.get_publishers
                 li.list-group-item {{ pub.name }}
 
-    div {% trans "Diffuseur" %}:
+    div {% trans "Distributor" %}:
         ul.list-group
             for dist in object.get_distributors
                 li.list-group-item {{ dist.name }}
 
-    div {% trans "Présente dans" %}:
+    div {% trans "Presente in" %}:
       ul.list-group
         {% for place_copy in object.placecopies_set.all %}
         li.list-group-item {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
         {% endfor %}
 
-    div {% trans "Dépôts" %}: {{ object.depositcopies_set.count }}
+    div {% trans "Deposits" %}: {{ object.depositcopies_set.count }}
       ul.list-group
         {% for dep in object.depositcopies_set.all %}
         li.list-group-item {{ dep.deposit.name }}: {{ dep.nb }}
         {% endfor %}
 
-    div {% trans "Alertes" %}: {{ object.alert_set.count }}
+    div {% trans "Alerts" %}: {{ object.alert_set.count }}
 
 .row
   .col-lg-9

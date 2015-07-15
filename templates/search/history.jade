@@ -25,12 +25,12 @@
 
 
 div(ng-controller="historyController")
-    h3 {% trans "Historique des ventes" %}
+    h3 {% trans "History of sells" %}
     div(
       ng-repeat="hist in history"
     )
       div
-        a(href="{% verbatim %} {{ hist.item.details_url }} {% endverbatim %}") {% trans "Vente du" %} {% verbatim %} {{hist.item.date }}: {{hist.item.cards.length}} {% endverbatim %} {% trans "notices" %}
+        a(href="{% verbatim %} {{ hist.item.details_url }} {% endverbatim %}") {% trans "Sell of the" %} {% verbatim %} {{hist.item.date }}: {{hist.item.cards.length}} {% endverbatim %} {% trans "cards" %}
         div {% trans "total" %}: {% verbatim %} {{hist.item.total_price}} {% endverbatim %}
         div(ng-repeat="card in hist.item.cards")
           div {% verbatim %} {{ card.title }} {% endverbatim %}

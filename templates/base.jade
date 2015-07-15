@@ -30,8 +30,6 @@ html(ng-app="abelujo")
       div.navbar-collapse
         ul.nav.navbar-nav
           li.active(href="#") Abelujo
-          li
-            a.text-right(href="/#") {% trans "Accueil" %}
         url.nav.navbar-nav.navbar-right
           li
             a.text-right(href="/admin") {% trans "Admin" %}
@@ -41,23 +39,23 @@ html(ng-app="abelujo")
       div
         ul.nav.nav-pills.nav-stacked
           li
-            a(href='{% url "card_collection" %}') {% trans "Mon stock" %}
+            a(href='{% url "card_collection" %}') {% trans "My stock" %}
           li
-            a(href='{% url "card_sell" %}') {% trans "Vente" %}
+            a(href='{% url "card_sell" %}') {% trans "Sell" %}
           li
-            a(href='{% url "card_index" %}') {% trans "Nouvelle entrée" %}
+            a(href='{% url "card_index" %}') {% trans "New entry" %}
           li
-            a(href='{% url "deposits" %}') {% trans "Dépôts" %}
+            a(href='{% url "deposits" %}') {% trans "Deposits" %}
           li
-            a(href='{% url "inventories" %}') {% trans "Inventaires" %}
+            a(href='{% url "inventories" %}') {% trans "Inventories" %}
           li
-            a(href='{% url "basket_auto_command" %}') {% trans "A commander" %}
+            a(href='{% url "basket_auto_command" %}') {% trans "To command" %}
               span.badge {% verbatim %} {{auto_command_total}} {% endverbatim %}
           li
-            a(href='{% url "search_history" %}') {% trans "Historique" %}
+            a(href='{% url "search_history" %}') {% trans "History" %}
 
           li
-            a(href='{% url "search_alerts" %}') {% trans "Alertes" %}
+            a(href='{% url "search_alerts" %}') {% trans "Alerts" %}
               span.badge {% verbatim %} {{ alerts_open }} {% endverbatim %}
 
 

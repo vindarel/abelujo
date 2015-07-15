@@ -22,7 +22,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 {% trans "Nouveau dépôt" %}
+h3 {% trans "New deposit" %}
 div(ng-controller="DepositCreateController")
 
   div
@@ -31,28 +31,28 @@ div(ng-controller="DepositCreateController")
   // form(action='/api/distributors', method='post')
   form(method='post')
       b
-        div {% trans "Nom du dépôt" %}
+        div {% trans "Name of the deposit" %}
       input.form-control(type="text", ng-model="deposit_name", required)
       b
-        div {% trans "Type de dépôt" %}
+        div {% trans "Type" %}
       select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
       b
-        div {% trans "Nombre initial d'exemplaires" %}
+        div {% trans "Inital quantity" %}
       input.form-control(type="number", ng-model="initial_nb_copies")
       b
-        div {% trans "Nombre minimum d'exemplaires" %}
+        div {% trans "Minimum wanted quantity" %}
       input.form-control(type="number", ng-model="minimal_nb_copies")
       div.form-group
         div.checkbox
             input(type="checkbox", ng-model="auto_command")
-            | {% trans "Automatiquement marquer les fiches à commander" %}
+            | {% trans "Auto-command the cards" %}
       b
-        div {% trans "Distributeur" %}
+        div {% trans "Distributor" %}
       select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list', required)
         option(value="") ---
       div
-        span {% trans "Cherchez des notices" %} 
-        span(ng-show="distributor")  {% trans "dont le distributeur est" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
+        span {% trans "Look for cards" %} 
+        span(ng-show="distributor")  {% trans "whose distributor is" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
       input.nullable.form-control(
         type='text'
         typeahead-loading="loadingCards"
@@ -66,7 +66,7 @@ div(ng-controller="DepositCreateController")
         li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
           i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
 
-      input.btn.btn-primary(type="submit", value="{% trans 'Enregistrer' %}", ng-click="addDeposit()")
+      input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
       // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
 
 

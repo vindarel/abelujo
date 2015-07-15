@@ -80,17 +80,17 @@ class SearchForm(forms.Form):
     ean = forms.CharField(required=False)
 
 def get_card_type_choices():
-    return [(0, _(u"Tout"))] + [(typ.id, typ.name)
+    return [(0, _(u"All cards"))] + [(typ.id, typ.name)
                                for typ in CardType.objects.all()]
 
 class CollectionSearchForm(forms.Form):
     card_type = forms.ChoiceField(get_card_type_choices(),
-                                  label=_("Type de notice"),
+                                  label=_("Type of card"),
                                   required=False)
     q = forms.CharField(max_length=100,
                         required=False,
                         min_length=3,
-                        label=_(u"Mots-clefs"))
+                        label=_(u"Key-words"))
 
     ean = forms.CharField(required=False)
 
@@ -102,15 +102,15 @@ class MyNumberInput(TextInput):
 
 def get_basket_choices():
     # TODO: make list dynamic + query in class.
-    return [(0, _(u"Aucun panier"))] + [(basket.id, basket.name)
+    return [(0, _(u"No basket"))] + [(basket.id, basket.name)
                                     for basket in Basket.objects.all()]
 
 def get_distributor_choices():
     dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
     pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
-    choices = [(_(u"Diffuseurs"),
+    choices = [(_(u"Distributors"),
                 dists),
-               (_(u"Éditeurs"),
+               (_(u"Publishers"),
                 pubs)]
     return choices
 
@@ -127,10 +127,10 @@ class AddForm(forms.Form):
                                                                 'step':1, 'value':DEFAULT_NB_COPIES,
                                                                 'style':"width: 70px"}))
     distributor = forms.ChoiceField(choices=get_distributor_choices(),
-                                    label=_(u"Diffuseur"),
+                                    label=_(u"Distributor"),
                                     required=True)
     basket = forms.ChoiceField(choices=get_basket_choices(),
-                               label=_(u"Ajouter au panier"),
+                               label=_(u"Add to basket"),
                                required=False)
 
 
@@ -162,7 +162,7 @@ class AddToDepositForm(forms.Form):
     """When we view our stock, choose to add the card to a deposit.
     """
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                 label=_(u"Ajouter au dépôt:"),
+                                 label=_(u"Add to the deposit:"),
                                  required=False)
 
 
@@ -506,7 +506,7 @@ def deposits_add_card(request):
                 deposit_id = form.cleaned_data["deposit"]
                 # TODO: do the logic !
                 messages.add_message(request, messages.SUCCESS,
-                                     _(u'La notice a été ajoutée au dépôt.'))
+                                     _(u'The card were successfully added to the deposit.'))
 
     retlist = request.session.get("collection_search")
     redirect_to = req.get('redirect_to')
@@ -522,7 +522,7 @@ def deposits_view(request, depo_name):
         deposit = Deposit.objects.get(name=depo_name)
         copies = deposit.copies.all()
     except Deposit.DoesNotExist as e:
-        messages.add_message(request, messages.ERROR, _(u"Le dépôt demandé n'existe pas !"))
+        messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
         log.error("le depot demande (%s) n'existe pas: %s" % (depo_name, e))
 
     return render(request, template, {

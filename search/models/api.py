@@ -7,6 +7,7 @@ import logging
 
 from django.core import serializers
 from django.http import HttpResponse
+from django.utils.translation import ugettext as _
 
 from models import Alert
 from models import Card
@@ -129,7 +130,7 @@ def sell(request, **response_kwargs):
     """
     alerts = [] # list of dicts with "level" and "message".
     success_msg = [{"level": "success",
-                    "message": "Vente effectuée."}]
+                    "message": _("Sell successfull.")}]
 
     if request.method == "POST":
         params = request.POST.copy()

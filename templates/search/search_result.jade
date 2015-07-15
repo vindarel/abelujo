@@ -35,7 +35,7 @@ for b in result_list
 
         if b.details_url
           {% blocktrans with details=b.details_url source=data_source title=b.title%}
-          h3: a(target="_blank", href="{{ details }}", title="Voir la fiche complète sur {{ source }}") {{ title }}
+          h3: a(target="_blank", href="{{ details }}", title="See the complete card on {{ source }}") {{ title }}
           {% endblocktrans %}
         else
           h3 {{b.title}}
@@ -58,7 +58,7 @@ for b in result_list
             {% if b.isbn %}
             td
               span
-                b(title="l'isbn sera téléchargé à l'enregistrement de la notice.") isbn 
+                b(title='{% trans "The isbn will be downloaded when you press enter." %}') isbn 
                 span {{ b.isbn }}
             {% endif %}
             td
@@ -73,6 +73,6 @@ for b in result_list
     {% csrf_token %}
     {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
-    input.btn.btn-primary(type='submit', value='{% trans "Ajouter" %}', title="{% trans 'Ajouter cette notice au panier' %}")
+    input.btn.btn-primary(type='submit', value='{% trans "Add" %}', title="{% trans 'Add this card to the basket' %}")
 
 {% endblock search_result %}

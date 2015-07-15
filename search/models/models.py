@@ -906,7 +906,7 @@ class Deposit(TimeStampedModel):
         # Don't create it if it has no valid copies.
         if not copies_to_add:
             msgs.append({'level': messages.WARNING,
-                         'message': _(u"Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide.")})
+                         'message': _(u"The deposit wasn't created. It must contain at least one valid card")})
         else:
             if depo_dict.get("auto_command") == "true":
                 depo_dict["auto_command"] = True  # TODO: form validation beforehand.
@@ -914,7 +914,7 @@ class Deposit(TimeStampedModel):
                 dep = Deposit.objects.create(**depo_dict)
                 msgs += dep.add_copies(copies_to_add)
                 msgs.append({'level': "success",
-                             'message':_("Le dépôt a été créé avec succès.")})
+                             'message':_("The deposit was successfully created.")})
             except Exception as e:
                 log.error(u"Adding a Deposit from_dict error ! {}".format(e))
                 return msgs.append({'level': "danger",
@@ -939,7 +939,7 @@ class Deposit(TimeStampedModel):
         """Return the date at which we did the last checkout of this
         deposit."""
         # TODO to test
-        last_checkout_date = _("jamais")
+        last_checkout_date = _("never")
         try:
             last_checkout_obj = DepositState.objects.filter(deposit__name=self.name).order_by("created").last()
         except ObjectDoesNotExist as e:
@@ -1110,7 +1110,7 @@ class Sell(models.Model):
 
         # XXX: misleading names: alerts (messages) and Alert.
         if not alerts:
-            alerts.append({"message": _(u"La vente a été effectuée avec succès."),
+            alerts.append({"message": _(u"Sell successfull."),
                            "level": STATUS_SUCCESS})
 
         return (sell, status, alerts)
