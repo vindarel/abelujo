@@ -1,5 +1,5 @@
-Abelujo - free software to manage small and independent book (and records) shops.
-=================================================================================
+Abelujo - free software to manage independent book (and records) shops.
+=======================================================================
 
 français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr.md "README en français")
 
@@ -10,15 +10,13 @@ This project is at its debut stage. However it is already possible to:
     * german books(through [buch-wagner.de](http://www.buch-wagner.de))
     * spanish books (through [casadellibro.com](http://www.casadellibro.com))
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
-    * *Note: we have one for Foyles coming (from London)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
--   choose how many exemplaries you add to your stock, edit the cards,
-    search a book in your database
--   use many places
--   manage deposits and distributors
--   sell a book, resolve conflicts of distributors
--   register cards in baskets
+-   add exemplaries to your stock, set places, use baskets,
+-   manage deposits and distributors,
+-   sell books, see conflicts of distributors, see the history,
 -   **import data from a LibreOffice Calc file** (.ods). See the [user documentation](doc/user/index.rst "user doc").
+
+It is translated to english, french and spanish.
 
 We base our work on the software specifications from the Ruche project
 (to which we particpated):

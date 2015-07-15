@@ -6,13 +6,14 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 -   rechercher des **livres** par mots-clefs ou par n°ISBN/EAN. La recherche
     utilise les résultats de [la librairie Chapitre](https://www.chapitre.com),
 -   rechercher des **CDs** (via [discogs.com](http://www.discogs.com),
--   choisir combien d'exemplaires sont à ajouter dans le stock, les
-    bouger de lieu,
+-   chercher des notices espagnoles ou allemandes,
+- ajouter des exemplaires au stock, par lieu, utiliser des paniers,
 -   chercher dans son stock,
--   effectuer des ventes,
+-   effectuer des ventes, voir l'historique,
 -   créer des dépôts, gérer les conflits à la vente,
 -   **importer des données** depuis un fichier **LibreOffice Calc** (.ods). Voir la [documentation utilisateur](doc/french/index.rst "doc utilisateur").
 
+L'application est traduite en français, anglais et espagnol (castillan).
 
 Nous nous basons sur les spécifications fonctionnelles du projet Ruche,
 auxquelles nous avons participé:

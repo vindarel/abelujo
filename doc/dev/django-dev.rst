@@ -73,3 +73,51 @@ the logger `""` to catch all the undefined ones.
 https://docs.djangoproject.com/en/1.6/topics/logging/
 
 http://www.miximum.fr/an-effective-logging-strategy-with-django.html
+
+Internationalization, translations
+----------------------------------
+
+Django provides tools to translate our application in different languages: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/
+
+In python code, we enclose the translatable strings in "_()" where _
+is a shortcut for `ugettext`. The `gettext` family are unix tools.
+
+In templates, we use `{% trans "foo" %}` tags, or `blocktrans` for
+more complicated cases.
+
+Note::
+
+    The trans tag is in between quotes if the original string is ;)
+
+Django also provides a facility to translate strings in our javascript
+code. As explained in the docs, at our `base.jade` template we source
+to a javascript script provided by Django that offers a `gettext`
+function, and we include a `jsi18n` url which allows Django to ask for
+translations.
+
+There's a bit of `settings` too.
+
+We chose the solution to select the language by prepending its prefixe
+to every url (done automatically by Django).
+
+To translate the app we need to do the above, then to create
+translation files (`.po` files), to translate everything, and to
+compile the translation files.
+
+See our Makefile for `translation-` rules. To update all `.po` files
+(from python, html, jade and js sources), run::
+
+    make translation-files
+
+To compile the translations and see them in the application, run::
+
+    make translations-compile
+    # a shortcut for django-admin compilemessages
+
+To create a `.po` file for a new language, specify the `-l` (locale)::
+
+    python manage.py makemessages -e py,html,jade -l en
+
+
+See also how to translate urls, to pluralize nouns, to give context to
+the translators, to manually get or set the language, etc.
