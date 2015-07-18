@@ -20,11 +20,13 @@
 
 html(ng-app="abelujo")
   head
+    link(rel='stylesheet', type='text/css', href='{% static "search/style.css" %}')
     script(type='text/javascript', src="{% static 'bower_components/jquery/jquery.js' %}") // load jquery before django_bootstrap.
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
     script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')
       div {% block pagetitle %} {% endblock %}
+
   body.container
     nav.navbar.navbar-default(role="navigation")
       div.navbar-collapse
