@@ -10,10 +10,13 @@ from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 
 from models import Alert
+from models import Author
 from models import Card
+from models import CardType
 from models import Basket
 from models import Deposit
 from models import Distributor
+from models import Publisher
 from models import Sell
 from models import getHistory
 
@@ -39,9 +42,27 @@ def distributors(request, **response_kwargs):
     if request.method == "GET":
         query = request.GET.get("query")
         data = Distributor.search(query)
+def authors(request, **response_kwargs):
+    if request.method == "GET":
+        params = request.GET.copy()
+        response_kwargs["content_type"] = "application/json"
+        data = Author.search(params["query"])
         data = serializers.serialize("json", data)
-        log.info(u"we have json distributors: ", data)
+        return HttpResponse(data, **response_kwargs)
+
+def distributors(request, **response_kwargs):
+    if request.method == "GET":
+        query = request.GET.get("query")
+        data = Distributor.search(query, to_list=True)
+        data = json.dumps(data)
         response_kwargs['content_type'] = 'application/json'
+        return HttpResponse(data, **response_kwargs)
+
+def publishers(request, **response_kwargs):
+    if request.method == "GET":
+        query = request.GET.get("query")
+        data = Publisher.search(query)
+        data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
 
 def list_from_coma_separated_ints(str):

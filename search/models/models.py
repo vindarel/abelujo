@@ -80,6 +80,22 @@ class Author(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def search(query):
+        """Search for names containing "query", return a python list.
+        """
+        try:
+            data = Author.objects.filter(name__icontains=query)
+        except Exception as e:
+            log.error("Author.search error: {}".format(e))
+            data = [
+                {"alerts": {"level"STATUS_ERROR,
+                            "message": "error while searching for authors"}}
+            ]
+
+        # data = [auth.to_list() for auth in data]
+        return data
+
 
 class Distributor(TimeStampedModel):
     """The entity that distributes the copies (a publisher can be a
@@ -100,6 +116,14 @@ class Distributor(TimeStampedModel):
     def __unicode__(self):
         return self.name
 
+    def to_list(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "discount": self.discount,
+            "stars": self.stars,
+        }
+
     @staticmethod
     def get_from_kw(**kwargs):
         """Return a list of deposits.
@@ -109,9 +133,15 @@ class Distributor(TimeStampedModel):
         return Deposit.objects.order_by("name")
 
     @staticmethod
-    def search(query=None):
+    def search(query=None, to_list=False):
+        data = []
         if not query:
-            return Distributor.objects.all()
+            data = Distributor.objects.all()
+
+        if to_list:
+            data = [it.to_list() for it in data]
+
+        return data
 
 
 class Publisher (models.Model):
@@ -134,6 +164,18 @@ class Publisher (models.Model):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def search(query):
+        try:
+            data = Publisher.objects.filter(name__icontains=query)
+        except Exception as e:
+            log.error("Publisher.search error: {}".format(e))
+            data = [
+                {"alerts": {"level": STATUS_ERROR,
+                            "message": "error while searching for publishers"}}
+            ]
+
+        return data
 
 class Collection (models.Model):
     """A collection (or sub-collection) of books.
@@ -167,6 +209,23 @@ class CardType(models.Model):
 
     def __unicode__(self):
         return u"{}".format(self.name)
+
+    @staticmethod
+    def search(query):
+        if query == "":
+            log.info("CardType: we return everything")
+            return CardType.objects.all()
+
+        try:
+            data = CardType.objects.filter(name__icontains=query)
+        except Exception as e:
+            log.error("CardType.search error: {}".format(e))
+            data = [
+                {"alerts": {"level": STATUS_ERROR,
+                            "message": "error while searching for authors"}}
+            ]
+
+        return data
 
 
 class Card(TimeStampedModel):
