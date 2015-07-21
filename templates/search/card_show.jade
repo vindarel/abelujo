@@ -44,7 +44,7 @@
 
     div {% trans "Distributor" %}:
         ul.list-group
-            for dist in object.get_distributors
+            for dist in object.get_distributor
                 li.list-group-item {{ dist.name }}
 
     div {% trans "Presente in" %}:

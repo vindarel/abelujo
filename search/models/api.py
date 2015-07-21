@@ -22,6 +22,16 @@ from models import getHistory
 
 log = logging.getLogger(__name__)
 
+ALERT_SUCCESS = "success"
+ALERT_ERROR = "error"
+
+# To search objects and send them as json:
+# - call the search method of the model
+# - use django's serializer or manually transform the
+#   objects to a list and to json.
+# With serializer, the access to the dict properties is deeper (inside object.fields),
+# so it makes it not straightforward with js widgets, like ui-select.
+
 def cards(request, **response_kwargs):
     """return the json list of all cards.
     """
@@ -38,10 +48,57 @@ def cards(request, **response_kwargs):
     response_kwargs['content_type'] = 'application/json'
     return HttpResponse(json.dumps(data), **response_kwargs)
 
-def distributors(request, **response_kwargs):
+def card_create(request, **response_kwargs):
+    if request.method == "POST":
+        params = request.POST.copy()
+        response_kwargs["content_type"] = "application/json"
+        status = httplib.OK
+        alerts = []
+
+        isbn = params.get('isbn')
+        if params.get("has_isbn") == "true":
+            try:
+                isbn = int(isbn)
+            except TypeError:
+                isbn = None
+        else:
+            isbn = None
+
+        try:
+            card_dict = {
+                "title": params.get('title'),
+                "price": params.get('price'),
+                "card_type": params.get('type'),
+                "distributor": params.get("distributor"),
+                "publishers_ids": list_from_coma_separated_ints(params.get("publishers")),
+                "authors": [Author.objects.get(id=it) for it in list_from_coma_separated_ints(params.get('authors'))],
+                "isbn": isbn,
+                "has_isbn": True if params.get("has_isbn") == "true" else False,
+                "details_url": params.get("details_url"),
+                "year": params.get("year_published"),
+            }
+            card_obj, msg = Card.from_dict(card_dict)
+            alerts.append({"level": ALERT_SUCCESS,
+                           "message": msg})
+
+        except Exception as e:
+            log.error("Error adding a card: {}".format(e))
+            alerts.append({"level": ALERT_ERROR,
+                           "message":_("Woops, we can not create this card. This is a bug !")})
+
+        msgs = {"status": status, "alerts": alerts}
+        return HttpResponse(json.dumps(msgs), **response_kwargs)
+
+    else:
+        log.error("creating a card should be done with POST.")
+
+def cardtype(request, **response_kwargs):
     if request.method == "GET":
         query = request.GET.get("query")
-        data = Distributor.search(query)
+        data = CardType.search(query)
+        data = serializers.serialize("json", data)
+        return HttpResponse(data, **response_kwargs)
+
 def authors(request, **response_kwargs):
     if request.method == "GET":
         params = request.GET.copy()
@@ -67,7 +124,9 @@ def publishers(request, **response_kwargs):
 
 def list_from_coma_separated_ints(str):
     """Gets a string with coma-separated numbers (ints or floats), like
-    "1,2.2,3", returns a list with each number.
+    "1,2.2,3", returns a list with each number. Because on url
+    parameters we can get a list of ids like this.
+
     """
     def toIntOrFloat(nb):
         try:

@@ -71,7 +71,7 @@ class TimeStampedModel(models.Model):
 
 
 class Author(TimeStampedModel):
-    name = models.TextField(unique=True)
+    name = models.CharField(unique=True, max_length=200)
 
     class Meta:
         ordering = ('name',)
@@ -89,7 +89,7 @@ class Author(TimeStampedModel):
         except Exception as e:
             log.error("Author.search error: {}".format(e))
             data = [
-                {"alerts": {"level"STATUS_ERROR,
+                {"alerts": {"level": STATUS_ERROR,
                             "message": "error while searching for authors"}}
             ]
 
@@ -239,6 +239,8 @@ class Card(TimeStampedModel):
     #: ean/isbn (mandatory)
     ean = models.CharField(max_length=99, null=True, blank=True)
     isbn = models.CharField(max_length=99, null=True, blank=True)
+    #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
+    has_isbn = models.BooleanField(default=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
     price = models.FloatField(null=True, blank=True)
@@ -305,13 +307,13 @@ class Card(TimeStampedModel):
         """
         return "; ".join([aut.name for aut in self.authors.all()])
 
-    def get_distributors(self):
+    def get_distributor(self):
         """Get the list of distributors without an error in case it is
         self.distributor is null. To use in card_show template.
 
         """
         if self.distributor:
-            return self.distributor.all()
+            return [self.distributor]
         else:
             return []
 
@@ -476,6 +478,10 @@ class Card(TimeStampedModel):
             distributor: id of a Distributor
             publishers: list of names of publishers (create one on the fly, like with webscraping)
             publishers_ids: list of ids of publishers
+            has_isbn:   boolean
+            isbn:       int
+            details_url: url (string)
+            card_type:  name of the type (string)
             location:   string
             sortkey:    string of authors in the order they appear on
                         the cover
@@ -497,13 +503,13 @@ class Card(TimeStampedModel):
         try:
             int(year)
             year = date(year, 1, 1)
-        except TypeError:
+        except Exception:
             year = None
 
         # Make the card
         # Get authors or create
         card_authors = []
-        if "authors" in card:
+        if card.get('authors'):
             if type(card["authors"][0]) == type("string"):
                 for aut in card["authors"]:
                     author, created = Author.objects.get_or_create(name=aut)
@@ -553,6 +559,7 @@ class Card(TimeStampedModel):
             price_sold = card.get('price_sold',  0),
             ean = card.get('ean') or card.get('isbn'),
             isbn = card.get('isbn'),
+            has_isbn = card.get('has_isbn'),
             img = card.get('img', ""),
             details_url = card.get('details_url'),
             data_source = card.get('data_source'),

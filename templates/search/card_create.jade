@@ -1,0 +1,109 @@
+// Copyright 2014 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+h3 {% trans "New card" %}
+div.ng-cloak(ng-controller="cardCreateController")
+
+ div
+    alert(
+      ng-repeat="alert in alerts"
+      type="{% verbatim %} {{alert.level}} {% endverbatim %}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {% verbatim %} {{alert.message}} {% endverbatim %}
+
+ form
+  .row
+    .col-lg-12
+        div.form-group
+            label {% trans "Title" %}:
+            input.form-control(type="text", ng-model="title", required, id="input-title")
+
+  .row
+    .col-lg-4
+            div.form-group
+                label {% trans "Public price" %}:
+                input.form-control(type="number", step="0.1", min="0", ng-model="price")
+                label Type:
+                select.form-control(ng-model="type", ng-options="type.fields.name for type in card_types")
+
+    .col-lg-4
+      div.form-group
+        //- span(class="isbn-{%verbatim%}{{no_isbn}}{% endverbatim %}") isbn
+       div
+        label {% trans "this card has no isbn" %}
+        input(type="checkbox", ng-model="no_isbn")
+       label {% trans "isbn" %}
+       input.form-control(type="text", ng-model="isbn", ng-show="!no_isbn")
+
+    .col-lg-4
+        label {% trans "year of publication" %}:
+        input.form-control(type="number", min="1500", ng-model="year_published")
+        label {% trans "homepage" %}
+        input.form-control(type="url", ng-model="details_url")
+
+  h5 {% trans "Authors" %}:
+  span
+        input(
+            type="text",
+            ng-model="{% verbatim %} author_input {% endverbatim %}"
+            typeahead="{% verbatim %} author.fields.name for author in getItemsApi('/api/authors', $viewValue, 'authors_selected') {% endverbatim %}"
+            typeahead-min-length="3"
+            typeahead-on-select="add_selected_item($item, 'author_input', 'authors_selected')"
+        )
+        a(target="_blank", href="/admin/search/author/add")
+          i.glyphicon.glyphicon-plus-sign
+
+   span(ng-repeat="auth in authors_selected")
+    //- div {% verbatim %} {{ auth.name }} {% endverbatim %}
+    span {% verbatim %} {{ auth.fields.name }} {% endverbatim %}
+      i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index, 'authors_selected')")
+
+
+  h5 {% trans "Publishers" %}
+  span
+    input(
+        type="text",
+        ng-model="{% verbatim %} pub_input {% endverbatim %}"
+        typeahead="{% verbatim %} pub.fields.name for pub in getItemsApi('/api/publishers', $viewValue, 'pubs_selected') {% endverbatim %}"
+        typeahead-min-length="3"
+        typeahead-on-select="add_selected_item($item, 'pub_input', 'pubs_selected')"
+    )
+    a(target="_blank", href="/admin/search/publisher/add")
+      i.glyphicon.glyphicon-plus-sign
+
+  span(ng-repeat="pub in pubs_selected")
+    span {% verbatim %} {{ pub.fields.name }} {% endverbatim %}
+      i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index, 'pubs_selected')")
+
+  div
+    h5 {% trans "Distributor" %}
+    select(ng-model="distributor", ng-options="dist.name + ' (discount: ' + dist.discount + ' %)' for dist in distributor_list")
+    a(target="_blank", href="/admin/search/distributor/add")
+        i.glyphicon.glyphicon-plus-sign
+
+  input.btn.btn-primary(value="{% trans 'continue...' %}", ng-click="validate()")
+
+{% endblock content %}
