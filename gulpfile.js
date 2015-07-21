@@ -6,6 +6,7 @@ var rapyd = require("gulp-rapyd");
 var args   = require('yargs').argv;
 var gutil = require('gulp-util');
 var less = require('gulp-less');
+var minifyCss = require('gulp-minify-css');
 // var karma = require('gulp-karma');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
@@ -31,6 +32,10 @@ var appFiles = [
   'static/js/app/**/*.js'
 ];
 
+var vendorCSSFiles = [
+      'static/bower_components/angular-ui-select/dist/select.min.css',
+];
+
 // Include files to test with karma
 var testFiles = [
   'static/bower_components/angular/angular.js',
@@ -40,6 +45,13 @@ var testFiles = [
   'static/js/app/controllers/**/*.js',
   'static/js/test/unit/**/*.js'
 ];
+
+// Minify vendor css files
+gulp.task('css', function() {
+    return gulp.src(vendorCSSFiles)
+        .pipe(minifyCss())
+        .pipe(gulp.dest('static/css/'));
+});
 
 // Compile the Less files
 gulp.task('less', function() {
@@ -124,7 +136,7 @@ gulp.task('watch', function() {
 
 // Default Task
 // gulp.task('default', ['less', 'test', 'concat']);
-gulp.task('default', ['less', 'concat']);
+gulp.task('default', ['css', 'less', 'concat']);
 
 // compile only RapydScript files
-gulp.task('rapyd', ['less', 'compile:rapyd', 'concatjs:rapyd']);
+gulp.task('rapyd', ['css', 'less', 'compile:rapyd', 'concatjs:rapyd']);
