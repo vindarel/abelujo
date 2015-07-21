@@ -242,6 +242,8 @@ class Card(TimeStampedModel):
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
     price = models.FloatField(null=True, blank=True)
+    # price_sold is only used to generate an angular form, it is not
+    # stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
     quantity = models.IntegerField(null=False, default=1)
     #: Publisher of the card:
@@ -276,6 +278,9 @@ class Card(TimeStampedModel):
     class Meta:
         app_label = "search"
         ordering = ('sortkey', 'year_published', 'title')
+        # This unique field isn't enough (needing authors and
+        # publishers), but we can't add m2m relationships. Will check it manually.
+        unique_together = (("isbn", "title", "price"),)
 
     def __unicode__(self):
         """To pretty print a list of cards, see models.utils.ppcard.
@@ -467,16 +472,25 @@ class Card(TimeStampedModel):
         Format of dict:
             title:      string
             year:       int or None
-            authors:    list of authors names (list of str)
+            authors:    list of authors names (list of str) or list of Author objects.
+            distributor: id of a Distributor
+            publishers: list of names of publishers (create one on the fly, like with webscraping)
+            publishers_ids: list of ids of publishers
             location:   string
             sortkey:    string of authors in the order they appear on
                         the cover
             origkey:    (optional) original key, like an ISBN, or if
                         converting from another system
+
+
+        return: a tuple Card objec created or existing, message (str).
         """
         # Some books always go missing...
         # location_string = card.get('location', u'?')
         # location, _ = Location.objects.get_or_create(name=location_string)
+
+        msg_success = _("The card was created successfully.")
+        msg_exists = _("This card already exists.")
 
         # Unknown years is okay
         year = card.get('year', None)
@@ -490,18 +504,54 @@ class Card(TimeStampedModel):
         # Get authors or create
         card_authors = []
         if "authors" in card:
-            for aut in card["authors"]:
-                author, created = Author.objects.get_or_create(name=aut)
-                card_authors.append(author)
+            if type(card["authors"][0]) == type("string"):
+                for aut in card["authors"]:
+                    author, created = Author.objects.get_or_create(name=aut)
+                    card_authors.append(author)
+            else:
+                # We already have objects.
+                card_authors = card["authors"]
         else:
             log.warning(u"this card has no authors (ok for a CD): %s" % card['title'])
 
+        # Get the distributor:
+        card_distributor = Distributor.objects.get(id=card.get("distributor"))
+
+        # Get the publishers:
+        card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
+
+        # Check that a card doesn't already exist.
+        # A card already exists if:
+        # - same title, isbn (or ean)
+        # - same authors,
+        # - same publishers
+        # If the given distributor is different, add it.
+        try:
+            card_obj = Card.objects.filter(
+                title=card.get("title"),
+                isbn=card.get('isbn') or card.get('ean'),
+                )
+        except Exception as e:
+            log.error("checking if card is unique error: {}".format(e))
+
+        msgs = []
+        if card_obj:
+            obj = card_obj[0]
+            if set(obj.authors.all()) == set(card_authors) and \
+               set(obj.publishers.all()) == set(card_publishers):
+                msgs.append(msg_exists)
+                return obj, msgs
+            else:
+                pass # add dist and update other fields if needed.
+
+
+        # Create the card with its simple fields. Add the relationships afterwards.
         card_obj, created = Card.objects.get_or_create(
             title=card.get('title'),
             year_published=year,
             price = card.get('price',  0),
             price_sold = card.get('price_sold',  0),
-            ean = card.get('ean'),
+            ean = card.get('ean') or card.get('isbn'),
             isbn = card.get('isbn'),
             img = card.get('img', ""),
             details_url = card.get('details_url'),
@@ -512,6 +562,15 @@ class Card(TimeStampedModel):
         if card_authors:  # TODO: more tests !
             card_obj.authors.add(*card_authors)
 
+        # add the distributor
+        if card_distributor:
+            card_obj.distributor = card_distributor
+            card_obj.save()
+
+        # add many publishers
+        if card_publishers:
+            card_obj.publishers.add(*card_publishers)
+
         # add the quantity of exemplaries
         if not created:
             card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
@@ -521,15 +580,14 @@ class Card(TimeStampedModel):
             card_obj.save()
 
         # add the type of the card
-        if not card.get("card_type"):
-            typ = "unknown"
-        else:
+        typ = "unknown"
+        if card.get("card_type"):
             typ = card.get("card_type")
 
         try:
             type_obj = CardType.objects.get(name=typ)
-        except ObjectDoesNotExist, e:
-            type_obj = CardType.objects.get(name="unknown")
+        except Exception as e:
+            type_obj = CardType.objects.get(id=7) #XXX
 
         card_obj.card_type = type_obj
         card_obj.save()
@@ -571,7 +629,7 @@ class Card(TimeStampedModel):
         # except Exception, e:
         #     log.error(u"--- error while setting the default place: %s" % (e,))
 
-        return card_obj
+        return card_obj, msg_success
 
     def get_absolute_url(self):
         return reverse("card_show", args=(self.id,))
