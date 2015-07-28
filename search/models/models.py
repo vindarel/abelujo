@@ -644,7 +644,7 @@ class Card(TimeStampedModel):
         # except Exception, e:
         #     log.error(u"--- error while setting the default place: %s" % (e,))
 
-        return card_obj, msg_success
+        return card_obj, [msg_success]
 
     def get_absolute_url(self):
         return reverse("card_show", args=(self.id,))

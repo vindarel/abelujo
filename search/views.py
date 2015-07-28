@@ -101,11 +101,6 @@ class MyNumberInput(TextInput):
     input_type = 'number'
 
 
-def get_basket_choices():
-    # TODO: make list dynamic + query in class.
-    return [(0, _(u"No basket"))] + [(basket.id, basket.name)
-                                    for basket in Basket.objects.all()]
-
 def get_distributor_choices():
     dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
     pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
@@ -123,17 +118,12 @@ class AddForm(forms.Form):
     # without not writting it explicitely in the template.
     forloop_counter0 = forms.IntegerField(min_value=0,
                                           widget=forms.HiddenInput())
-    # How many copies ?
-    quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
-                                                                'step':1, 'value':DEFAULT_NB_COPIES,
-                                                                'style':"width: 70px"}))
     distributor = forms.ChoiceField(choices=get_distributor_choices(),
                                     label=_(u"Distributor"),
                                     required=True)
-    basket = forms.ChoiceField(choices=get_basket_choices(),
-                               label=_(u"Add to basket"),
-                               required=False)
-
+    quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
+                                                                'step':1, 'value':DEFAULT_NB_COPIES,
+                                                                'style':"width: 70px"}))
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
@@ -271,7 +261,7 @@ def search(request):
 
     return render(request, "search/search_result.jade", {
             "searchForm": form,
-            "addForm": AddForm(initial={"basket": get_basket_choices()[0]}),
+            "addForm": AddForm(),
             "result_list": retlist,
             "data_source": data_source,
             "page_title": page_title,
@@ -341,39 +331,17 @@ def add(request):
             for msg in msgs:
                 messages.add_message(request, messages.INFO, msg)
 
-            # Add a copy to a basket or to the default place ?
-            basket_id = form.cleaned_data.get("basket")
-            if basket_id and int(basket_id):
-                # add to the basket
-                basket_id = int(basket_id)
-                log.debug("adding card %s to basket %i" % (card['title'], basket_id))
-                basket = Basket.objects.get(id=basket_id)
-                basket.add_copy(card_obj)
-            else:
-                # add to the default place.
-                log.debug("adding card %s to default place" % (card['title'],))
-                Place.card_to_default_place(card_obj)
-
             messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
-        except Basket.DoesNotExist as e:
-            messages.add_message(request, messages.ERROR,
-                                 u"The basket n° %s was not found. The card could not be registered." % (form.cleaned_data["basket"],))
-            log.error("Error when fetching basket %s: %s" % (form.cleaned_data["basket"], e))
-            resp_status = 500
+
         except Exception, e:
             messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
             log.error("Error when trying to add card: {}".format(e))
             log.error(traceback.format_exc())
             resp_status = 500
 
-    return render(request, 'search/search_result.jade',
-                  {
-                  'searchForm': SearchForm(),
-                  'addForm': AddForm(),
-                  'result_list': cur_search_result,
-                  },
-                  status=resp_status,
-                  )
+    # the card_move view is used by two other views. Go back to the right one.
+    request.session["back_to"] = reverse("card_search")
+    return HttpResponseRedirect(reverse("card_move", args=(card_obj.id,)))
 
 class CardMoveForm(forms.Form):
     """We want to create a field for each Place and Basket object
@@ -445,8 +413,11 @@ def card_move(request, pk=None):
                     except Exception as e:
                         log.error("couldn't add copies to {}: {}".format(basket, e))
 
-            messages.add_message(request, messages.SUCCESS, _('The card "{}" was added successfully.'.format(card_obj.title)))
-            return HttpResponseRedirect(reverse("card_create"))
+            messages.add_message(request, messages.SUCCESS, _(u'The card "{}" was added successfully.'.format(card_obj.title)))
+            back_to = request.session.get("back_to", reverse("card_create"))
+            if request.session.get("back_to"):
+                del request.session["back_to"]
+            return HttpResponseRedirect(back_to)
 
 def collection(request):
     """Search our own collection and take actions.
