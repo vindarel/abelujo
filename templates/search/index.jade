@@ -31,7 +31,7 @@ form(action="{% url 'card_search' %}")
   span
     input.btn.btn-primary(type='submit', value='{% trans "Search" %}')
     span  {% trans "or" %}: 
-    a(href="/admin/search/card/add") {% trans "Add a card manually" %}
+    a(href="{% url 'card_create' %}") {% trans "Add a card manually" %}
 
 div.col-md-10
   {% block search_result %}
