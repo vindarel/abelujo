@@ -19,23 +19,25 @@ import logging
 import traceback
 import urllib
 
+import datasources.all.discogs.discogsConnector as discogs
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+
 from django import forms
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
-from django.http import HttpResponseRedirect
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+from djangular.forms import NgModelFormMixin
 
-import datasources.all.discogs.discogsConnector as discogs
-import datasources.frFR.chapitre.chapitreScraper as chapitre # same name as module's SOURCE_NAME
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
-import datasources.esES.casadellibro.casadellibroScraper as casadellibro
-
+import models
 from models import Basket
 from models import Card
 from models import CardType
@@ -45,7 +47,6 @@ from models import Distributor
 from models import Inventory
 from models import Place
 from models import Publisher
-
 from search.models.utils import ppcard
 
 log = logging.getLogger(__name__)
@@ -370,6 +371,79 @@ def add(request):
                   },
                   status=resp_status,
                   )
+
+class CardMoveForm(forms.Form):
+    """We want to create a field for each Place and Basket object
+
+    This approch is too much work to create a simple form. We want to
+    write our form directly in a template instead, using angularjs
+    calls to an api to fetch the places and baskets.
+    """
+    #TODO: replace these forms with a template and api calls.
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        model = "Place"
+        query = models.__dict__[model].objects.all()
+        for obj in query:
+            self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
+                attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
+                       'step':1, 'value': 0,
+                       'style': 'width: 70px'}))
+
+class CardMove2BasketForm(forms.Form):
+    # needs refacto etc… too complicating and unecessary.
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        model = "Basket"
+        query = models.__dict__[model].objects.all()
+        for obj in query:
+            self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
+                attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
+                       'step':1, 'value': 0,
+                       'style': 'width: 70px'}))
+
+class BuyForm(forms.Form):
+    buy = forms.BooleanField(required=False)
+
+def card_move(request, pk=None):
+    template = "search/card_move.jade"
+    PlacesForm = CardMoveForm()
+    BasketsForm = CardMove2BasketForm()
+    buyForm = BuyForm()
+
+    if request.method == 'GET':
+        return render(request, template, {
+            "PlacesForm": PlacesForm,
+            "BasketsForm": BasketsForm,
+            "BuyForm": buyForm,
+            "pk": pk,
+            })
+
+    if request.method == 'POST':
+        placeForm = CardMoveForm(request.POST)
+        basketForm = CardMove2BasketForm(request.POST)
+        # buyForm = BuyForm(request.POST)
+
+        if placeForm.is_valid() and basketForm.is_valid():
+            card_obj = Card.objects.get(pk=pk)
+            for (place, nb) in placeForm.cleaned_data.iteritems():
+                if nb:
+                    place_obj = Place.objects.get(name=place)
+                    try:
+                        place_obj.add_copies(card_obj, nb=nb)
+                    except Exception as e:
+                        log.error("couldn't add copies to {}: {}".format(place, e))
+
+            for (basket, nb) in basketForm.cleaned_data.iteritems():
+                if nb:
+                    basket_obj = Basket.objects.get(name=basket)
+                    try:
+                        basket_obj.add_copy(card_obj, nb=nb)
+                    except Exception as e:
+                        log.error("couldn't add copies to {}: {}".format(basket, e))
+
+            messages.add_message(request, messages.SUCCESS, _('The card "{}" was added successfully.'.format(card_obj.title)))
+            return HttpResponseRedirect(reverse("card_create"))
 
 def collection(request):
     """Search our own collection and take actions.

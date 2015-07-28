@@ -16,7 +16,6 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-from django.core.urlresolvers import reverse
 import operator
 import logging
 from datetime import date
@@ -741,12 +740,12 @@ class Place (models.Model):
 
         """
         try:
-            place_copy = self.placecopies_set.get(card=card)
+            place_copy, created = self.placecopies_set.get_or_create(card=card)
             place_copy.nb += nb
             place_copy.save()
             return place_copy.nb
         except Exception,e:
-            log.error(u"--- error while adding %s to the place %s" % (card.name, self.name))
+            log.error(u"--- error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
 
 class Preferences(models.Model):

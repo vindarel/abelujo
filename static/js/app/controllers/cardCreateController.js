@@ -15,7 +15,7 @@
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 angular.module('abelujo.controllers', [])
-    .controller('cardCreateController', ['$http', '$scope', 'utils', function ($http, $scope, utils) {
+    .controller('cardCreateController', ['$http', '$scope', 'utils', '$window', function ($http, $scope, utils, $window) {
 
         $scope.authors_selected = [];
         $scope.author_input = "";
@@ -34,6 +34,7 @@ angular.module('abelujo.controllers', [])
         $scope.card_types = [];
 
         $scope.alerts = [];
+        $scope.card_created_id = undefined;
 
         $scope.getItemsApi = function(api_url, query, model_selected){
             return $http.get(api_url, {
@@ -108,6 +109,8 @@ angular.module('abelujo.controllers', [])
             return $http.post("/api/cards/create", params)
                 .then(function(response){
                     $scope.alerts = response.data.alerts;
+                    $scope.card_created_id = response.data.card_id;
+                    $window.location.href = "/stock/card/"+$scope.card_created_id + "/move";
                     return response.data;
                 });
         };

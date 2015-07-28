@@ -6,14 +6,15 @@ import json
 import logging
 
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
-
 from models import Alert
 from models import Author
+from models import Basket
 from models import Card
 from models import CardType
-from models import Basket
 from models import Deposit
 from models import Distributor
 from models import Publisher
@@ -86,7 +87,10 @@ def card_create(request, **response_kwargs):
             alerts.append({"level": ALERT_ERROR,
                            "message":_("Woops, we can not create this card. This is a bug !")})
 
-        msgs = {"status": status, "alerts": alerts}
+        msgs = {"status": status, "alerts": alerts, "card_id": card_obj.id}
+        if card_obj:
+            return HttpResponse(json.dumps(msgs), **response_kwargs)
+
         return HttpResponse(json.dumps(msgs), **response_kwargs)
 
     else:
