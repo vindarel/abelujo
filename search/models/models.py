@@ -279,9 +279,6 @@ class Card(TimeStampedModel):
     class Meta:
         app_label = "search"
         ordering = ('sortkey', 'year_published', 'title')
-        # This unique field isn't enough (needing authors and
-        # publishers), but we can't add m2m relationships. Will check it manually.
-        unique_together = (("isbn", "title", "price"),)
 
     def __unicode__(self):
         """To pretty print a list of cards, see models.utils.ppcard.
@@ -509,7 +506,7 @@ class Card(TimeStampedModel):
         # Get authors or create
         card_authors = []
         if card.get('authors'):
-            if type(card["authors"][0]) == type("string"):
+            if type(card["authors"][0]) in [type("string"), type(u"unicode-str")]:
                 for aut in card["authors"]:
                     author, created = Author.objects.get_or_create(name=aut)
                     card_authors.append(author)
@@ -520,10 +517,17 @@ class Card(TimeStampedModel):
             log.warning(u"this card has no authors (ok for a CD): %s" % card['title'])
 
         # Get the distributor:
-        card_distributor = Distributor.objects.get(id=card.get("distributor"))
+        if card.get("distributor"):
+            try:
+                card_distributor = Distributor.objects.get(id=card.get("distributor"))
+            except Exception as e:
+                log.warning("couldn't get the distributor. This is not necessary a bug.")
+                card_distributor=None
 
         # Get the publishers:
-        card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
+        card_publishers = []
+        if card.get("publishers_ids"):
+            card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
 
         # Check that a card doesn't already exist.
         # A card already exists if:
@@ -541,14 +545,16 @@ class Card(TimeStampedModel):
 
         msgs = []
         if card_obj:
-            obj = card_obj[0]
-            if set(obj.authors.all()) == set(card_authors) and \
-               set(obj.publishers.all()) == set(card_publishers):
-                msgs.append(msg_exists)
-                return obj, msgs
-            else:
-                pass # add dist and update other fields if needed.
-
+            for obj in card_obj:
+            # obj = card_obj[0]
+                if set(obj.authors.all()) == set(card_authors) and \
+                set(obj.publishers.all()) == set(card_publishers):
+                    msgs.append(msg_exists)
+                    return obj, msgs
+                else:
+                    log.warning("we already have this card. Shall we update the fields ?")
+                    msgs.append("we already have this card. Shall we update the fields ?")
+                    pass #TODO: add distributor and update other fields if needed.
 
         # Create the card with its simple fields. Add the relationships afterwards.
         card_obj, created = Card.objects.get_or_create(
@@ -567,6 +573,7 @@ class Card(TimeStampedModel):
         # add the authors
         if card_authors:  # TODO: more tests !
             card_obj.authors.add(*card_authors)
+            card_obj.save()
 
         # add the distributor
         if card_distributor:

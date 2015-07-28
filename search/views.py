@@ -336,7 +336,10 @@ def add(request):
 
         try:
             # Add the card to the DB.
-            card_obj = Card.from_dict(card)
+            card["distributor"] = form.cleaned_data.get("distributor")
+            card_obj, msgs = Card.from_dict(card)
+            for msg in msgs:
+                messages.add_message(request, messages.INFO, msg)
 
             # Add a copy to a basket or to the default place ?
             basket_id = form.cleaned_data.get("basket")
@@ -359,7 +362,7 @@ def add(request):
             resp_status = 500
         except Exception, e:
             messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
-            log.error("Error when trying to add card ", e)
+            log.error("Error when trying to add card: {}".format(e))
             log.error(traceback.format_exc())
             resp_status = 500
 
