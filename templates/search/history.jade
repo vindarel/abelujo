@@ -25,14 +25,30 @@
 
 
 div(ng-controller="historyController")
-    h3 {% trans "History of sells" %}
+    h3 {% trans "History" %}
+    h5 {% trans "of new entries, sells and movements" %}
     div(
       ng-repeat="hist in history"
     )
       div.ng-cloak
-        a(href="{% verbatim %} {{ hist.item.details_url }} {% endverbatim %}") {% trans "Sell of the" %} {% verbatim %} {{hist.item.date }}: {{hist.item.cards.length}} {% endverbatim %} {% trans "cards" %}
-        div {% trans "total" %}: {% verbatim %} {{hist.item.total_price}} {% endverbatim %}
+
+       div(ng-if="hist.item.model === 'Sell'")
+        span {% verbatim %} {{hist.item.created }}: sold {{hist.item.cards.length}} {% endverbatim %} {% trans "cards" %}:  
+          {% verbatim %}
+          a(href="{{ hist.item.details_url }}") Sell {{ hist.item.id }}
+          {% endverbatim %}
+          span {% trans "total" %}: {% verbatim %} {{hist.item.total_price}} € {% endverbatim %}
         div(ng-repeat="card in hist.item.cards")
-          div {% verbatim %} {{ card.title }} {% endverbatim %}
+          {% verbatim %}
+          a(href="{{ card.get_absolute_url }}")  {{ card.title }}
+          {% endverbatim %}
+
+       div(ng-if="hist.item.model === 'Card')
+         span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "new card" %}: 
+         {% verbatim %}
+         a(href="{{ hist.item.get_absolute_url }}") {{ hist.item.title }}
+         {% endverbatim %}
+
+  a(href="") more...
 
 {% endblock content %}

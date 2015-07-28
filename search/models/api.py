@@ -252,7 +252,6 @@ def history(request, **response_kwargs):
         response_kwargs["content_type"] = "application/json"
         try:
             hist, status, alerts = getHistory()
-            hist = [it.to_list() for it in hist]
         except Exception as e:
             log.error(u"api/history error: {}".format(e))
             return HttpResponse(json.dumps(alerts), **response_kwargs)

@@ -11,6 +11,7 @@ angular.module("abelujo").controller('historyController', ['$http', '$scope', '$
             "query": null
         }})
         .then(function(response){ // "then", not "success"
+
             return response.data.data.map(function(item){
                 // give a string representation for each object (result)
                 // xxx: take the repr from django

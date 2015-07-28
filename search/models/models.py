@@ -239,7 +239,7 @@ class Card(TimeStampedModel):
     ean = models.CharField(max_length=99, null=True, blank=True)
     isbn = models.CharField(max_length=99, null=True, blank=True)
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
-    has_isbn = models.BooleanField(default=True)
+    has_isbn = models.NullBooleanField(default=True, blank=True, null=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
     price = models.FloatField(null=True, blank=True)
@@ -323,23 +323,25 @@ class Card(TimeStampedModel):
 
     def to_list(self):
         res = {
-            "title": self.title,
+            "ambigous_sell": self.ambigous_sell(),
             "authors": ", ".join([ca.name for ca in self.authors.all()]),
-            "price": self.price,
-            "price_sold": self.price_sold,
+            "collection": self.collection.name.capitalize() if self.collection else None,
+            "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
+            "data_source": self.data_source,
+            "details_url": self.details_url,
+            "distributor": self.distributor.name if self.distributor else None,
             "ean": self.ean,
-            "isbn": self.isbn if self.isbn else self.ean,
+            "get_absolute_url": self.get_absolute_url(),
             "id": self.id,
             "img": self.img,
-            "get_absolute_url": self.get_absolute_url(),
-            "quantity": self.quantity,
-            "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
-            "collection": self.collection.name.capitalize() if self.collection else None,
-            "details_url": self.details_url,
-            "data_source": self.data_source,
+            "isbn": self.isbn if self.isbn else self.ean,
+            "model": self.__class__.__name__, # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
-            "distributor": self.distributor.name if self.distributor else None,
-            "ambigous_sell": self.ambigous_sell(),
+            "price": self.price,
+            "price_sold": self.price_sold,
+            "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
+            "quantity": self.quantity,
+            "title": self.title,
         }
         return res
 
@@ -1117,7 +1119,7 @@ class Sell(models.Model):
     class Meta:
         app_label = "search"
 
-    date = models.DateField()
+    created = models.DateField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True, null=True)
     payment = models.CharField(choices=PAYMENT_CHOICES,
                                default=PAYMENT_CHOICES[0],
@@ -1129,7 +1131,7 @@ class Sell(models.Model):
     def __unicode__(self):
         return "Sell {} of {} copies at {}.".format(self.id,
                                                     self.soldcards_set.count(),
-                                                    self.date)
+                                                    self.created)
 
     def total_price(self):
         total = 0
@@ -1144,11 +1146,12 @@ class Sell(models.Model):
                   self.soldcards_set.all())
         ret = {
             "id": self.id,
-            "date": self.date.strftime(DATE_FORMAT), #YYYY-mm-dd
+            "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
             "cards": cards,
             # "payment": self.payment,
             "total_price": self.total_price(),
             "details_url": "/admin/search/{}/{}".format(self.__class__.__name__.lower(), self.id),
+            "model": self.__class__.__name__,
             }
 
         return ret
@@ -1207,7 +1210,7 @@ class Sell(models.Model):
 
         # Create the Sell.
         try:
-            sell = Sell(date=date, payment=payment)
+            sell = Sell(created=date, payment=payment)
             sell.save()
         except Exception as e:
             status = STATUS_ERROR
@@ -1246,15 +1249,20 @@ class Sell(models.Model):
         return (sell, status, alerts)
 
 def getHistory(to_list=False):
-    """return the last sells and inputs.
+    """return the last sells, card creations and movements.
 
     With pagination.
 
     returns: a tuple: (list of Sell objects, status, alerts).
     """
     alerts = []
-    sells = Sell.objects.order_by("-date")[:PAGE_SIZE]
-    return sells, STATUS_SUCCESS, alerts
+    sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
+    sells = [it.to_list() for it in sells]
+    entries = Card.objects.order_by("-created")[:PAGE_SIZE]
+    entries = [it.to_list() for it in entries]
+    toret = sells + entries
+    toret.sort(key= lambda it: it['created'], reverse=True)
+    return toret, STATUS_SUCCESS, alerts
 
 class Alert(models.Model):
     """An alert stores the information that a Sell is ambiguous. That
