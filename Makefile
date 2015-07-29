@@ -31,8 +31,8 @@ npm:
 	@echo "Installing gulp and rapydscript globally... (needs root)"
 	# Don't install protractor globally, we'll have permission pb with the webdriver.
 	@sudo npm install -g gulp rapydscript elementor
-	# Install or update Selenium etc
-	webdriver-manager update
+	# Install or update Selenium etc (XXX: development only).
+	./node_modules/protractor/bin/webdriver-manager update
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
