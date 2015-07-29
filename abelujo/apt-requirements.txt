@@ -1,4 +1,5 @@
 python-pip
+virtualenvwrapper
 python-dev
 apache2
 apache2-dev
