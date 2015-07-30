@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-15 13:45+0200\n"
+"POT-Creation-Date: 2015-07-30 17:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,49 +19,67 @@ msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:47
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:47
+#: static/collected/admin/js/SelectFilter2.js:45
+#: static/collected/collected/admin/js/SelectFilter2.js:45
 #, c-format
 msgid "Available %s"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:60
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:60
+#: static/collected/admin/js/SelectFilter2.js:57
+#: static/collected/collected/admin/js/SelectFilter2.js:57
 msgid "Filter"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:64
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:64
+#: static/collected/admin/js/SelectFilter2.js:61
+#: static/collected/collected/admin/js/SelectFilter2.js:61
 msgid "Choose all"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:64
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:64
+#: static/collected/admin/js/SelectFilter2.js:61
+#: static/collected/collected/admin/js/SelectFilter2.js:61
 #, c-format
 msgid "Click to choose all %s at once."
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:70
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:70
+#: static/collected/admin/js/SelectFilter2.js:67
+#: static/collected/collected/admin/js/SelectFilter2.js:67
 msgid "Choose"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:72
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:72
+#: static/collected/admin/js/SelectFilter2.js:69
+#: static/collected/collected/admin/js/SelectFilter2.js:69
 msgid "Remove"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:78
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:78
+#: static/collected/admin/js/SelectFilter2.js:75
+#: static/collected/collected/admin/js/SelectFilter2.js:75
 #, c-format
 msgid "Chosen %s"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:84
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:84
+#: static/collected/admin/js/SelectFilter2.js:80
+#: static/collected/collected/admin/js/SelectFilter2.js:80
 msgid "Remove all"
 msgstr ""
 
 #: ruche-web/admin/js/SelectFilter2.js:84
 #: ruche-web/rucheweb/admin/js/SelectFilter2.js:84
+#: static/collected/admin/js/SelectFilter2.js:80
+#: static/collected/collected/admin/js/SelectFilter2.js:80
 #, c-format
 msgid "Click to remove all chosen %s at once."
 msgstr ""
@@ -69,159 +87,418 @@ msgstr ""
 #: ruche-web/admin/js/actions.js:26 ruche-web/admin/js/actions.min.js:26
 #: ruche-web/rucheweb/admin/js/actions.js:26
 #: ruche-web/rucheweb/admin/js/actions.min.js:26
+#: static/collected/admin/js/actions.js:22
+#: static/collected/admin/js/actions.min.js:1
+#: static/collected/collected/admin/js/actions.js:22
+#: static/collected/collected/admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
 msgstr[0] ""
 msgstr[1] ""
 
+#: static/collected/admin/js/SelectFilter2.js:46
+#: static/collected/collected/admin/js/SelectFilter2.js:46
+#, c-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: static/collected/admin/js/SelectFilter2.js:53
+#: static/collected/collected/admin/js/SelectFilter2.js:53
+#, c-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static/collected/admin/js/SelectFilter2.js:76
+#: static/collected/collected/admin/js/SelectFilter2.js:76
+#, c-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: static/collected/admin/js/actions.js:114
+#: static/collected/admin/js/actions.min.js:4
+#: static/collected/collected/admin/js/actions.js:114
+#: static/collected/collected/admin/js/actions.min.js:4
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static/collected/admin/js/actions.js:126
+#: static/collected/admin/js/actions.min.js:5
+#: static/collected/collected/admin/js/actions.js:126
+#: static/collected/collected/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: static/collected/admin/js/actions.js:128
+#: static/collected/admin/js/actions.min.js:5
+#: static/collected/collected/admin/js/actions.js:128
+#: static/collected/collected/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:79
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:79
+#, c-format
+msgid "Note: You are %s hour ahead of server time."
+msgid_plural "Note: You are %s hours ahead of server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:87
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:87
+#, c-format
+msgid "Note: You are %s hour behind server time."
+msgid_plural "Note: You are %s hours behind server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:114
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:149
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:114
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:149
+msgid "Now"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:118
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:118
+msgid "Clock"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:146
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:146
+msgid "Choose a time"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:150
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:150
+msgid "Midnight"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:151
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:151
+msgid "6 a.m."
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:152
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:152
+msgid "Noon"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:156
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:276
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:156
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:276
+msgid "Cancel"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:216
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:269
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:216
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:269
+msgid "Today"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:220
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:220
+msgid "Calendar"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:267
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:267
+msgid "Yesterday"
+msgstr ""
+
+#: static/collected/admin/js/admin/DateTimeShortcuts.js:271
+#: static/collected/collected/admin/js/admin/DateTimeShortcuts.js:271
+msgid "Tomorrow"
+msgstr ""
+
+#: static/collected/admin/js/calendar.js:8
+#: static/collected/collected/admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: static/collected/admin/js/calendar.js:9
+#: static/collected/collected/admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: static/collected/admin/js/collapse.js:8
+#: static/collected/admin/js/collapse.js:19
+#: static/collected/admin/js/collapse.min.js:1
+#: static/collected/collected/admin/js/collapse.js:8
+#: static/collected/collected/admin/js/collapse.js:19
+#: static/collected/collected/admin/js/collapse.min.js:1
+msgid "Show"
+msgstr ""
+
+#: static/collected/admin/js/collapse.js:16
+#: static/collected/admin/js/collapse.min.js:1
+#: static/collected/collected/admin/js/collapse.js:16
+#: static/collected/collected/admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr ""
+
+#: static/collected/collected/js/app/controllers/DepositCreateController.js:31
+#: static/collected/collected/js/build/abelujo.js:51
+#: static/collected/js/app/controllers/DepositCreateController.js:31
+#: static/collected/js/build/abelujo.js:51
 #: static/js/app/controllers/DepositCreateController.js:31
+#: static/js/build/abelujo.js:51
 msgid "fix deposit"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/DepositCreateController.js:32
+#: static/collected/collected/js/app/controllers/DepositCreateController.js:35
+#: static/collected/collected/js/build/abelujo.js:52
+#: static/collected/collected/js/build/abelujo.js:55
+#: static/collected/js/app/controllers/DepositCreateController.js:32
+#: static/collected/js/app/controllers/DepositCreateController.js:35
+#: static/collected/js/build/abelujo.js:52
+#: static/collected/js/build/abelujo.js:55
 #: static/js/app/controllers/DepositCreateController.js:32
 #: static/js/app/controllers/DepositCreateController.js:35
+#: static/js/build/abelujo.js:52 static/js/build/abelujo.js.c:55
 msgid "bookshop deposit"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/DepositCreateController.js:36
+#: static/collected/collected/js/app/controllers/DepositCreateController.js:40
+#: static/collected/collected/js/build/abelujo.js:56
+#: static/collected/collected/js/build/abelujo.js:60
+#: static/collected/js/app/controllers/DepositCreateController.js:36
+#: static/collected/js/app/controllers/DepositCreateController.js:40
+#: static/collected/js/build/abelujo.js:56
+#: static/collected/js/build/abelujo.js:60
 #: static/js/app/controllers/DepositCreateController.js:36
 #: static/js/app/controllers/DepositCreateController.js:40
+#: static/js/build/abelujo.js:56 static/js/build/abelujo.js.c:60
 #, fuzzy
 #| msgid "distributeur"
 msgid "distributor deposit"
 msgstr "difusora"
 
+#: static/collected/collected/js/app/controllers/DepositCreateController.js:39
+#: static/collected/collected/js/build/abelujo.js:59
+#: static/collected/js/app/controllers/DepositCreateController.js:39
+#: static/collected/js/build/abelujo.js:59
 #: static/js/app/controllers/DepositCreateController.js:39
+#: static/js/build/abelujo.js:59
 #, fuzzy
 #| msgid "distributeur"
 msgid "distributor"
 msgstr "difusora"
 
+#: static/collected/collected/js/app/controllers/sellController.js:15
+#: static/collected/collected/js/build/abelujo.js:305
+#: static/collected/js/app/controllers/sellController.js:15
+#: static/collected/js/build/abelujo.js:305
 #: static/js/app/controllers/sellController.js:15
+#: static/js/build/abelujo.js:431
 msgid "all publication"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:16
+#: static/collected/collected/js/app/controllers/sellController.js:17
+#: static/collected/collected/js/app/controllers/sellController.js:18
+#: static/collected/collected/js/app/controllers/sellController.js:19
+#: static/collected/collected/js/build/abelujo.js:306
+#: static/collected/collected/js/build/abelujo.js:307
+#: static/collected/collected/js/build/abelujo.js:308
+#: static/collected/collected/js/build/abelujo.js:309
+#: static/collected/js/app/controllers/sellController.js:16
+#: static/collected/js/app/controllers/sellController.js:17
+#: static/collected/js/app/controllers/sellController.js:18
+#: static/collected/js/app/controllers/sellController.js:19
+#: static/collected/js/build/abelujo.js:306
+#: static/collected/js/build/abelujo.js:307
+#: static/collected/js/build/abelujo.js:308
+#: static/collected/js/build/abelujo.js:309
 #: static/js/app/controllers/sellController.js:16
 #: static/js/app/controllers/sellController.js:17
 #: static/js/app/controllers/sellController.js:18
 #: static/js/app/controllers/sellController.js:19
+#: static/js/build/abelujo.js:432 static/js/build/abelujo.js.c:433
+#: static/js/build/abelujo.js:434 static/js/build/abelujo.js.c:435
 msgid "book"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:17
+#: static/collected/collected/js/build/abelujo.js:307
+#: static/collected/js/app/controllers/sellController.js:17
+#: static/collected/js/build/abelujo.js:307
 #: static/js/app/controllers/sellController.js:17
+#: static/js/build/abelujo.js:433
 msgid "booklet"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:18
+#: static/collected/collected/js/build/abelujo.js:308
+#: static/collected/js/app/controllers/sellController.js:18
+#: static/collected/js/build/abelujo.js:308
 #: static/js/app/controllers/sellController.js:18
+#: static/js/build/abelujo.js:434
 msgid "periodical"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:19
+#: static/collected/collected/js/build/abelujo.js:309
+#: static/collected/js/app/controllers/sellController.js:19
+#: static/collected/js/build/abelujo.js:309
 #: static/js/app/controllers/sellController.js:19
+#: static/js/build/abelujo.js:435
 msgid "other print"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:20
+#: static/collected/collected/js/app/controllers/sellController.js:21
+#: static/collected/collected/js/app/controllers/sellController.js:22
+#: static/collected/collected/js/build/abelujo.js:310
+#: static/collected/collected/js/build/abelujo.js:311
+#: static/collected/collected/js/build/abelujo.js:312
+#: static/collected/js/app/controllers/sellController.js:20
+#: static/collected/js/app/controllers/sellController.js:21
+#: static/collected/js/app/controllers/sellController.js:22
+#: static/collected/js/build/abelujo.js:310
+#: static/collected/js/build/abelujo.js:311
+#: static/collected/js/build/abelujo.js:312
 #: static/js/app/controllers/sellController.js:20
 #: static/js/app/controllers/sellController.js:21
 #: static/js/app/controllers/sellController.js:22
-#: static/js/build/abelujo.js:293 static/js/build/abelujo.js.c:294
-#: static/js/build/abelujo.js:295
+#: static/js/build/abelujo.js:436 static/js/build/abelujo.js.c:437
+#: static/js/build/abelujo.js:438
 msgid "CD"
 msgstr "CD"
 
+#: static/collected/collected/js/app/controllers/sellController.js:21
+#: static/collected/collected/js/build/abelujo.js:311
+#: static/collected/js/app/controllers/sellController.js:21
+#: static/collected/js/build/abelujo.js:311
 #: static/js/app/controllers/sellController.js:21
-#: static/js/build/abelujo.js:294
+#: static/js/build/abelujo.js:437
 msgid "DVD"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:22
+#: static/collected/collected/js/build/abelujo.js:312
+#: static/collected/js/app/controllers/sellController.js:22
+#: static/collected/js/build/abelujo.js:312
 #: static/js/app/controllers/sellController.js:22
-#: static/js/build/abelujo.js:295
+#: static/js/build/abelujo.js:438
 msgid "vinyl"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:23
+#: static/collected/collected/js/build/abelujo.js:313
+#: static/collected/js/app/controllers/sellController.js:23
+#: static/collected/js/build/abelujo.js:313
 #: static/js/app/controllers/sellController.js:23
+#: static/js/build/abelujo.js:439
 msgid "others"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:27
+#: static/collected/collected/js/build/abelujo.js:317
+#: static/collected/js/app/controllers/sellController.js:27
+#: static/collected/js/build/abelujo.js:317
 #: static/js/app/controllers/sellController.js:27
+#: static/js/build/abelujo.js:443
 msgid "cash"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:28
+#: static/collected/collected/js/build/abelujo.js:318
+#: static/collected/js/app/controllers/sellController.js:28
+#: static/collected/js/build/abelujo.js:318
 #: static/js/app/controllers/sellController.js:28
+#: static/js/build/abelujo.js:444
 msgid "cheque"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:29
+#: static/collected/collected/js/build/abelujo.js:319
+#: static/collected/js/app/controllers/sellController.js:29
+#: static/collected/js/build/abelujo.js:319
 #: static/js/app/controllers/sellController.js:29
+#: static/js/build/abelujo.js:445
 msgid "visa card"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:30
+#: static/collected/collected/js/build/abelujo.js:320
+#: static/collected/js/app/controllers/sellController.js:30
+#: static/collected/js/build/abelujo.js:320
 #: static/js/app/controllers/sellController.js:30
+#: static/js/build/abelujo.js:446
 msgid "gift"
 msgstr ""
 
+#: static/collected/collected/js/app/controllers/sellController.js:31
+#: static/collected/collected/js/build/abelujo.js:321
+#: static/collected/js/app/controllers/sellController.js:31
+#: static/collected/js/build/abelujo.js:321
 #: static/js/app/controllers/sellController.js:31
+#: static/js/build/abelujo.js:447
 msgid "other"
 msgstr ""
 
-#: static/js/build/abelujo.js:34
-msgid "depôt fixe"
-msgstr "depósito fijo"
+#~ msgid "depôt fixe"
+#~ msgstr "depósito fijo"
 
-#: static/js/build/abelujo.js:35
-msgid "dépôt de libraire"
-msgstr "depósito de librería"
+#~ msgid "dépôt de libraire"
+#~ msgstr "depósito de librería"
 
-#: static/js/build/abelujo.js:38
-msgid "depôt libraire"
-msgstr "depôt librería"
+#~ msgid "depôt libraire"
+#~ msgstr "depôt librería"
 
-#: static/js/build/abelujo.js:39 static/js/build/abelujo.js.c:43
-msgid "dépôt de distributeur"
-msgstr "depôt de difusora"
+#~ msgid "dépôt de distributeur"
+#~ msgstr "depôt de difusora"
 
-#: static/js/build/abelujo.js:42
-msgid "distributeur"
-msgstr "difusora"
+#~ msgid "distributeur"
+#~ msgstr "difusora"
 
-#: static/js/build/abelujo.js:288
-msgid "tout imprimé"
-msgstr "todo de imprimido"
+#~ msgid "tout imprimé"
+#~ msgstr "todo de imprimido"
 
-#: static/js/build/abelujo.js:289 static/js/build/abelujo.js.c:290
-#: static/js/build/abelujo.js:291 static/js/build/abelujo.js.c:292
-msgid "livre"
-msgstr "libro"
+#~ msgid "livre"
+#~ msgstr "libro"
 
-#: static/js/build/abelujo.js:290
-msgid "brochure"
-msgstr "folleto"
+#~ msgid "brochure"
+#~ msgstr "folleto"
 
-#: static/js/build/abelujo.js:291
-msgid "périodique"
-msgstr "periódico"
+#~ msgid "périodique"
+#~ msgstr "periódico"
 
-#: static/js/build/abelujo.js:292
-msgid "autre parution"
-msgstr "otra publicación"
+#~ msgid "autre parution"
+#~ msgstr "otra publicación"
 
-#: static/js/build/abelujo.js:296
-msgid "autres"
-msgstr "otros"
+#~ msgid "autres"
+#~ msgstr "otros"
 
-#: static/js/build/abelujo.js:300
-msgid "espèces"
-msgstr "efectivo"
+#~ msgid "espèces"
+#~ msgstr "efectivo"
 
-#: static/js/build/abelujo.js:301
-msgid "chèque"
-msgstr "cheque"
+#~ msgid "chèque"
+#~ msgstr "cheque"
 
-#: static/js/build/abelujo.js:302
-msgid "carte bancaire"
-msgstr "visa"
+#~ msgid "carte bancaire"
+#~ msgstr "visa"
 
-#: static/js/build/abelujo.js:303
-msgid "cadeau"
-msgstr "presente"
+#~ msgid "cadeau"
+#~ msgstr "presente"
 
-#: static/js/build/abelujo.js:304
-msgid "autre"
-msgstr "otro"
+#~ msgid "autre"
+#~ msgstr "otro"

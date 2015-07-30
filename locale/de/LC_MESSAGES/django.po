@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-15 07:10-0500\n"
+"POT-Creation-Date: 2015-07-30 10:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,89 +50,99 @@ msgstr ""
 msgid "The card doesn't exist."
 msgstr ""
 
-#: search/models/api.py:133 search/models/models.py:1113
+#: search/models/api.py:88
+msgid "Woops, we can not create this card. This is a bug !"
+msgstr ""
+
+#: search/models/api.py:217 search/models/models.py:1246
 msgid "Sell successfull."
 msgstr ""
 
-#: search/models/models.py:909
+#: search/models/models.py:496
+msgid "The card was created successfully."
+msgstr ""
+
+#: search/models/models.py:497
+msgid "This card already exists."
+msgstr ""
+
+#: search/models/models.py:1041
 msgid "The deposit wasn't created. It must contain at least one valid card"
 msgstr ""
 
-#: search/models/models.py:917
+#: search/models/models.py:1049
 msgid "The deposit was successfully created."
 msgstr ""
 
-#: search/models/models.py:942
+#: search/models/models.py:1074
 msgid "never"
 msgstr ""
 
-#: search/models/models.py:1104
+#: search/models/models.py:1237
 msgid "Warning: we couldn't sell {}."
 msgstr ""
 
-#: search/views.py:77
+#: search/views.py:78
 msgid "Key words"
 msgstr ""
 
-#: search/views.py:78
+#: search/views.py:79
 msgid "Part of title, of author's name, etc."
 msgstr ""
 
-#: search/views.py:83
+#: search/views.py:84
 msgid "All cards"
 msgstr ""
 
-#: search/views.py:88
+#: search/views.py:89
 msgid "Type of card"
 msgstr ""
 
-#: search/views.py:93
+#: search/views.py:94
 msgid "Key-words"
 msgstr ""
 
-#: search/views.py:105
-msgid "No basket"
-msgstr ""
-
-#: search/views.py:111
+#: search/views.py:107
 msgid "Distributors"
 msgstr ""
 
-#: search/views.py:113 templates/search/card_show.jade:40
+#: search/views.py:109 templates/search/card_create.jade:85
+#: templates/search/card_show.jade:40
 msgid "Publishers"
 msgstr ""
 
-#: search/views.py:130 templates/search/basket_auto_command.jade:33
-#: templates/search/card_show.jade:45 templates/search/deposits_create.jade:50
+#: search/views.py:122 templates/search/basket_auto_command.jade:33
+#: templates/search/card_create.jade:102 templates/search/card_show.jade:45
+#: templates/search/deposits_create.jade:50
 #: templates/search/deposits_view.jade:31
 msgid "Distributor"
 msgstr ""
 
-#: search/views.py:133
-msgid "Add to basket"
-msgstr ""
-
-#: search/views.py:165
+#: search/views.py:156
 msgid "Add to the deposit:"
 msgstr ""
 
-#: search/views.py:387
+#: search/views.py:416
+msgid "The card \"{}\" was added successfully."
+msgstr ""
+
+#: search/views.py:435
 msgid "The search by ean isn't implemented yet."
 msgstr ""
 
-#: search/views.py:479
+#: search/views.py:527
 msgid "Error when adding the deposit"
 msgstr ""
 
-#: search/views.py:504
+#: search/views.py:552
 msgid "We could not add the card to the deposit: the given ean is null."
 msgstr ""
 
-#: search/views.py:509
+#: search/views.py:557
 msgid "The card were successfully added to the deposit."
 msgstr ""
 
-#: search/views.py:525
+#: search/views.py:573
 msgid "This deposit doesn't exist !"
 msgstr ""
 
@@ -144,56 +154,56 @@ msgstr ""
 msgid "Django (overriden) administration"
 msgstr ""
 
-#: templates/base.jade:35
+#: templates/base.jade:37
 msgid "Admin"
 msgstr ""
 
-#: templates/base.jade:42
+#: templates/base.jade:44
 msgid "My stock"
 msgstr "Stock"
 
-#: templates/base.jade:44
+#: templates/base.jade:46
 msgid "Sell"
 msgstr "Verkaufen"
 
-#: templates/base.jade:46
+#: templates/base.jade:48
 msgid "New entry"
 msgstr "Neu eingabe"
 
-#: templates/base.jade:48 templates/search/card_show.jade:56
+#: templates/base.jade:50 templates/search/card_show.jade:56
 msgid "Deposits"
 msgstr ""
 
-#: templates/base.jade:50
+#: templates/base.jade:52
 msgid "Inventories"
 msgstr ""
 
-#: templates/base.jade:52
+#: templates/base.jade:54
 msgid "To command"
 msgstr ""
 
-#: templates/base.jade:55
+#: templates/base.jade:57 templates/search/history.jade:28
 msgid "History"
 msgstr ""
 
-#: templates/base.jade:58 templates/search/card_show.jade:62
-#: templates/search/deposits_view.jade:39
+#: templates/base.jade:60 templates/search/alerts.jade:27
+#: templates/search/card_show.jade:62 templates/search/deposits_view.jade:39
 msgid "Alerts"
 msgstr ""
 
-#: templates/search/alerts.jade:29
+#: templates/search/alerts.jade:30
 msgid "Alert of the"
 msgstr ""
 
-#: templates/search/alerts.jade:30
+#: templates/search/alerts.jade:31
 msgid "about the card"
 msgstr ""
 
-#: templates/search/alerts.jade:31
+#: templates/search/alerts.jade:32
 msgid "conflict"
 msgstr ""
 
-#: templates/search/alerts.jade:32
+#: templates/search/alerts.jade:33
 msgid "related deposits"
 msgstr ""
 
@@ -202,15 +212,62 @@ msgid "No card is this basket"
 msgstr ""
 
 #: templates/search/basket_auto_command.jade:31
+#: templates/search/card_create.jade:41
 msgid "Title"
 msgstr ""
 
 #: templates/search/basket_auto_command.jade:32
+#: templates/search/card_create.jade:67
 msgid "Authors"
 msgstr ""
 
 #: templates/search/basket_auto_command.jade:34
 msgid "Quantity left"
+msgstr ""
+
+#: templates/search/card_create.jade:25
+msgid "New card"
+msgstr ""
+
+#: templates/search/card_create.jade:47
+msgid "Public price"
+msgstr ""
+
+#: templates/search/card_create.jade:56
+msgid "this card has no isbn"
+msgstr ""
+
+#: templates/search/card_create.jade:58
+msgid "isbn"
+msgstr ""
+
+#: templates/search/card_create.jade:62
+msgid "year of publication"
+msgstr ""
+
+#: templates/search/card_create.jade:64
+msgid "homepage"
+msgstr ""
+
+#: templates/search/card_create.jade:107
+msgid "continue..."
+msgstr ""
+
+#: templates/search/card_move.jade:28
+msgid "Add this card to your stock"
+msgstr ""
+
+#: templates/search/card_move.jade:29
+msgid "Places"
+msgstr ""
+
+#: templates/search/card_move.jade:31
+msgid "Baskets"
+msgstr ""
+
+#: templates/search/card_move.jade:36 templates/search/deposits_create.jade:69
+#: templates/search/sell_create.jade:129
+msgid "Validate"
 msgstr ""
 
 #: templates/search/card_show.jade:27 templates/search/collection.jade:48
@@ -341,11 +398,6 @@ msgstr ""
 msgid "whose distributor is"
 msgstr ""
 
-#: templates/search/deposits_create.jade:69
-#: templates/search/sell_create.jade:129
-msgid "Validate"
-msgstr ""
-
 #: templates/search/deposits_view.jade:27
 msgid "edit"
 msgstr ""
@@ -386,20 +438,20 @@ msgid ""
 "\"%(deposit_state)s\", type=\"submit\") %(deposit_state)s\n"
 msgstr ""
 
-#: templates/search/history.jade:28
-msgid "History of sells"
+#: templates/search/history.jade:29
+msgid "of new entries, sells and movements"
 msgstr ""
 
-#: templates/search/history.jade:33
-msgid "Sell of the"
-msgstr ""
-
-#: templates/search/history.jade:33
+#: templates/search/history.jade:36
 msgid "cards"
 msgstr ""
 
-#: templates/search/history.jade:34
+#: templates/search/history.jade:40
 msgid "total"
+msgstr ""
+
+#: templates/search/history.jade:47
+msgid "new card"
 msgstr ""
 
 #: templates/search/index.jade:32
@@ -470,7 +522,7 @@ msgid "The isbn will be downloaded when you press enter."
 msgstr ""
 
 #: templates/search/search_result.jade:76
-msgid "Add"
+msgid "Add to…"
 msgstr ""
 
 #: templates/search/search_result.jade:76

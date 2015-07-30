@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-15 06:44-0500\n"
+"POT-Creation-Date: 2015-07-30 10:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,23 +19,23 @@ msgstr ""
 
 #: abelujo/settings.py:63
 msgid "English"
-msgstr "Inglés"
+msgstr "Ingles"
 
 #: abelujo/settings.py:64
 msgid "Français"
-msgstr "Francés"
+msgstr "Frances"
 
 #: abelujo/settings.py:65
 msgid "German"
-msgstr "Alemán"
+msgstr "Alemano"
 
 #: abelujo/settings.py:66
 msgid "Castellano"
-msgstr "Castellano"
+msgstr ""
 
 #: abelujo/settings.py:67
 msgid "Catalan"
-msgstr "Catalán"
+msgstr "Catalan"
 
 #: ruche-web/search/chapitreScraper.py:22
 msgid "produit indisponible"
@@ -47,99 +47,101 @@ msgstr ""
 
 #: search/models.py:170
 msgid "The card doesn't exist."
-msgstr ""
+msgstr "Esta ficha no existe"
 
-#: search/models/api.py:133 search/models/models.py:1113
+#: search/models/api.py:88
+msgid "Woops, we can not create this card. This is a bug !"
+msgstr "Opa, no podemos crear esta ficha. Es un bug !"
+
+#: search/models/api.py:217 search/models/models.py:1246
 msgid "Sell successfull."
-msgstr ""
+msgstr "La venta sucedió"
 
-#: search/models/models.py:909
+#: search/models/models.py:496
+msgid "The card was created successfully."
+msgstr "La ficha fue creada con sucesso"
+
+#: search/models/models.py:497
+msgid "This card already exists."
+msgstr "Esta ficha ya existe."
+
+#: search/models/models.py:1041
 msgid "The deposit wasn't created. It must contain at least one valid card"
-msgstr ""
+msgstr "El depósito no fue creado. La fichas eleccionadas no estan validas"
 
-#: search/models/models.py:917
+#: search/models/models.py:1049
 msgid "The deposit was successfully created."
-msgstr ""
+msgstr "El depósito fue creado con sucesso"
 
-#: search/models/models.py:942
+#: search/models/models.py:1074
 msgid "never"
-msgstr ""
+msgstr "nunca"
 
-#: search/models/models.py:1104
+#: search/models/models.py:1237
 msgid "Warning: we couldn't sell {}."
-msgstr ""
-
-#: search/views.py:77
-msgid "Key words"
-msgstr "Palabras llaves"
+msgstr "Cuidada: no podemos vender {}"
 
 #: search/views.py:78
+msgid "Key words"
+msgstr "Palabras claves"
+
+#: search/views.py:79
 msgid "Part of title, of author's name, etc."
 msgstr "Parte del título, del autor, etc."
 
-#: search/views.py:83
+#: search/views.py:84
 msgid "All cards"
-msgstr ""
+msgstr "todas las fichas"
 
-#: search/views.py:88
+#: search/views.py:89
 msgid "Type of card"
-msgstr ""
+msgstr "Tipo de ficha"
 
-#: search/views.py:93
-#, fuzzy
-#| msgid "Key words"
+#: search/views.py:94
 msgid "Key-words"
-msgstr "Palabras llaves"
+msgstr "Palabras claves"
 
-#: search/views.py:105
-msgid "No basket"
-msgstr ""
-
-#: search/views.py:111
-#, fuzzy
-#| msgid "Distributeur"
+#: search/views.py:107
 msgid "Distributors"
 msgstr "Difusora"
 
-#: search/views.py:113 templates/search/card_show.jade:40
+#: search/views.py:109 templates/search/card_create.jade:85
+#: templates/search/card_show.jade:40
 msgid "Publishers"
-msgstr ""
+msgstr "Editoriales"
 
-#: search/views.py:130 templates/search/basket_auto_command.jade:33
-#: templates/search/card_show.jade:45 templates/search/deposits_create.jade:50
+#: search/views.py:122 templates/search/basket_auto_command.jade:33
+#: templates/search/card_create.jade:102 templates/search/card_show.jade:45
+#: templates/search/deposits_create.jade:50
 #: templates/search/deposits_view.jade:31
-#, fuzzy
-#| msgid "Distributeur"
 msgid "Distributor"
 msgstr "Difusora"
 
-#: search/views.py:133
-msgid "Add to basket"
-msgstr ""
-
-#: search/views.py:165
-#, fuzzy
-#| msgid "Ajouter au depot:"
+#: search/views.py:156
 msgid "Add to the deposit:"
-msgstr "Añadir al depósito:"
+msgstr "Añadir al depósito"
 
-#: search/views.py:387
+#: search/views.py:416
+msgid "The card \"{}\" was added successfully."
+msgstr "La ficha \"{}\" fue añadida con sucesso"
+
+#: search/views.py:435
 msgid "The search by ean isn't implemented yet."
-msgstr "La busqueda por isbn todavia no esta implementada."
+msgstr "Disculpe, todavia no se puede buscar con el número isbn. Solo preguntar ;)"
 
-#: search/views.py:479
+#: search/views.py:527
 msgid "Error when adding the deposit"
 msgstr ""
 
-#: search/views.py:504
+#: search/views.py:552
 msgid "We could not add the card to the deposit: the given ean is null."
 msgstr ""
 
-#: search/views.py:509
+#: search/views.py:557
 msgid "The card were successfully added to the deposit."
 msgstr ""
 
-#: search/views.py:525
+#: search/views.py:573
 msgid "This deposit doesn't exist !"
 msgstr ""
 
@@ -151,112 +153,139 @@ msgstr ""
 msgid "Django (overriden) administration"
 msgstr ""
 
-#: templates/base.jade:35
+#: templates/base.jade:37
 msgid "Admin"
-msgstr "Admin"
+msgstr ""
 
-#: templates/base.jade:42
-#, fuzzy
-#| msgid "Mon stock"
+#: templates/base.jade:44
 msgid "My stock"
 msgstr "Mi stock"
 
-#: templates/base.jade:44
-msgid "Sell"
-msgstr ""
-
 #: templates/base.jade:46
+msgid "Sell"
+msgstr "Vender"
+
+#: templates/base.jade:48
 msgid "New entry"
-msgstr ""
+msgstr "Nueva ficha"
 
-#: templates/base.jade:48 templates/search/card_show.jade:56
+#: templates/base.jade:50 templates/search/card_show.jade:56
 msgid "Deposits"
-msgstr ""
+msgstr "Depósitos"
 
-#: templates/base.jade:50
-#, fuzzy
-#| msgid "Inventaires"
+#: templates/base.jade:52
 msgid "Inventories"
 msgstr "Inventarios"
 
-#: templates/base.jade:52
-#, fuzzy
-#| msgid "A commander"
+#: templates/base.jade:54
 msgid "To command"
 msgstr "A pedir"
 
-#: templates/base.jade:55
-#, fuzzy
-#| msgid "Historique"
+#: templates/base.jade:57 templates/search/history.jade:28
 msgid "History"
 msgstr "Histórico"
 
-#: templates/base.jade:58 templates/search/card_show.jade:62
-#: templates/search/deposits_view.jade:39
-#, fuzzy
-#| msgid "Alertes"
+#: templates/base.jade:60 templates/search/alerts.jade:27
+#: templates/search/card_show.jade:62 templates/search/deposits_view.jade:39
 msgid "Alerts"
 msgstr "Alertas"
 
-#: templates/search/alerts.jade:29
-#, fuzzy
-#| msgid "Alertes"
-msgid "Alert of the"
-msgstr "Alertas"
-
 #: templates/search/alerts.jade:30
-msgid "about the card"
-msgstr ""
+msgid "Alert of the"
+msgstr "Alerta del"
 
 #: templates/search/alerts.jade:31
-#, fuzzy
-#| msgid "conflit"
+msgid "about the card"
+msgstr "a proposito de la ficha"
+
+#: templates/search/alerts.jade:32
 msgid "conflict"
 msgstr "conflicto"
 
-#: templates/search/alerts.jade:32
+#: templates/search/alerts.jade:33
 msgid "related deposits"
 msgstr ""
 
 #: templates/search/basket_auto_command.jade:28
 msgid "No card is this basket"
-msgstr ""
+msgstr "No hay ficha en esta cesta"
 
 #: templates/search/basket_auto_command.jade:31
+#: templates/search/card_create.jade:41
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: templates/search/basket_auto_command.jade:32
+#: templates/search/card_create.jade:67
 msgid "Authors"
-msgstr ""
+msgstr "Autores"
 
 #: templates/search/basket_auto_command.jade:34
-#, fuzzy
-#| msgid "Quantité restante"
 msgid "Quantity left"
-msgstr "Quantidad"
+msgstr "Sobrando"
+
+#: templates/search/card_create.jade:25
+msgid "New card"
+msgstr "Nueva ficha"
+
+#: templates/search/card_create.jade:47
+msgid "Public price"
+msgstr "Precio público"
+
+#: templates/search/card_create.jade:56
+msgid "this card has no isbn"
+msgstr "esta ficha no tiene isbn"
+
+#: templates/search/card_create.jade:58
+msgid "isbn"
+msgstr ""
+
+#: templates/search/card_create.jade:62
+msgid "year of publication"
+msgstr "año de publicación"
+
+#: templates/search/card_create.jade:64
+msgid "homepage"
+msgstr "sitio"
+
+#: templates/search/card_create.jade:107
+msgid "continue..."
+msgstr "seguir..."
+
+#: templates/search/card_move.jade:28
+msgid "Add this card to your stock"
+msgstr "Añadir esta ficha en tu stock"
+
+#: templates/search/card_move.jade:29
+msgid "Places"
+msgstr "Lugares"
+
+#: templates/search/card_move.jade:31
+msgid "Baskets"
+msgstr "Cestas"
+
+#: templates/search/card_move.jade:36 templates/search/deposits_create.jade:69
+#: templates/search/sell_create.jade:129
+msgid "Validate"
+msgstr "Validar"
 
 #: templates/search/card_show.jade:27 templates/search/collection.jade:48
 msgid "Edit the card"
-msgstr ""
+msgstr "Editar la ficha"
 
 #: templates/search/card_show.jade:27
 msgid "Edit"
 msgstr ""
 
 #: templates/search/card_show.jade:34 templates/search/collection.jade:85
-#, fuzzy
-#| msgid "en stock"
 msgid "in stock"
 msgstr "en el stock"
 
 #: templates/search/card_show.jade:36
 msgid "source"
-msgstr ""
+msgstr "fuente"
 
 #: templates/search/card_show.jade:50
-#, fuzzy
-#| msgid "Présente dans"
 msgid "Presente in"
 msgstr "Presente en"
 
@@ -265,10 +294,8 @@ msgid "valider"
 msgstr "validar"
 
 #: templates/search/collection.jade:35
-#, fuzzy
-#| msgid "results"
 msgid "No results"
-msgstr "resultados"
+msgstr "No resultados"
 
 #: templates/search/collection.jade:37
 msgid "results"
@@ -276,39 +303,35 @@ msgstr "resultados"
 
 #: templates/search/collection.jade:39
 msgid "voir en texte"
-msgstr "ver como txt"
+msgstr "ver como texto"
 
 #: templates/search/collection.jade:50
 msgid "See on"
-msgstr ""
+msgstr "Ver en"
 
 #: templates/search/collection.jade:58
 msgid "publisher"
-msgstr ""
+msgstr "editorial"
 
 #: templates/search/collection.jade:66
-#, fuzzy
-#| msgid "collection"
 msgid "collection inconnue"
-msgstr "colección"
+msgstr ""
 
 #: templates/search/collection.jade:66
 msgid "collection"
-msgstr "colección"
+msgstr ""
 
 #: templates/search/collection.jade:79
-#, fuzzy
-#| msgid "Distributeur"
 msgid "distributor"
-msgstr "Difusora"
+msgstr "difusora"
 
 #: templates/search/collection.jade:82
 msgid "places"
-msgstr ""
+msgstr "lugares"
 
 #: templates/search/collection.jade:92
 msgid "add to deposit"
-msgstr ""
+msgstr "añadir al depósito"
 
 #: templates/search/deposits.jade:28
 msgid "Dépôts existants"
@@ -316,7 +339,7 @@ msgstr "Depósitos existantes"
 
 #: templates/search/deposits.jade:30
 msgid "Aucun dépôt existant"
-msgstr "No existe ningun depósito"
+msgstr "No existe depósitos"
 
 #: templates/search/deposits.jade:33
 msgid "Nom du dépot"
@@ -328,7 +351,7 @@ msgstr "Difusora"
 
 #: templates/search/deposits.jade:35
 msgid "Dernier état de dépôt"
-msgstr "Ultimo balance de depósito"
+msgstr "Último balance de depósito"
 
 #: templates/search/deposits.jade:36
 msgid "Alertes"
@@ -336,17 +359,15 @@ msgstr "Alertas"
 
 #: templates/search/deposits.jade:37
 msgid "Exemplaires restants"
-msgstr "Ejemplares que sobran"
+msgstr "Ejemplares sobrando"
 
 #: templates/search/deposits.jade:47
-#, fuzzy
-#| msgid "Ajouter au depot:"
 msgid "Nouveau dépôt"
-msgstr "Añadir al depósito:"
+msgstr "Nuevo depósito"
 
 #: templates/search/deposits_create.jade:25
 msgid "New deposit"
-msgstr ""
+msgstr "Nuevo depósito"
 
 #: templates/search/deposits_create.jade:34
 msgid "Name of the deposit"
@@ -354,40 +375,27 @@ msgstr ""
 
 #: templates/search/deposits_create.jade:37
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: templates/search/deposits_create.jade:40
 msgid "Inital quantity"
-msgstr ""
+msgstr "Quantidad inicial"
 
 #: templates/search/deposits_create.jade:43
 msgid "Minimum wanted quantity"
-msgstr ""
+msgstr "Quantidad mínima"
 
 #: templates/search/deposits_create.jade:48
-#, fuzzy
-#| msgid "A commander"
 msgid "Auto-command the cards"
-msgstr "A pedir"
+msgstr "Pedir automaticamente"
 
 #: templates/search/deposits_create.jade:54
-#, fuzzy
-#| msgid "Look for a"
 msgid "Look for cards"
-msgstr "Buscar para un"
+msgstr "Buscar para fichas"
 
 #: templates/search/deposits_create.jade:55
-#, fuzzy
-#| msgid "dont le distributeur est"
 msgid "whose distributor is"
 msgstr "cuya difusora es"
-
-#: templates/search/deposits_create.jade:69
-#: templates/search/sell_create.jade:129
-#, fuzzy
-#| msgid "Valider"
-msgid "Validate"
-msgstr "Validar"
 
 #: templates/search/deposits_view.jade:27
 msgid "edit"
@@ -395,27 +403,23 @@ msgstr ""
 
 #: templates/search/deposits_view.jade:29
 msgid "Deposit"
-msgstr ""
+msgstr "Depósito"
 
 #: templates/search/deposits_view.jade:33
 msgid "Deposit type"
 msgstr ""
 
 #: templates/search/deposits_view.jade:35
-#, fuzzy
-#| msgid "A commander"
 msgid "Auto command"
-msgstr "A pedir"
+msgstr "Pedida auto"
 
 #: templates/search/deposits_view.jade:37
 msgid "Last deposit state"
-msgstr ""
+msgstr "Ultimo balance de depósito"
 
 #: templates/search/deposits_view.jade:42
-#, fuzzy
-#| msgid "Exemplaires en dépôt"
 msgid "Exemplaries in stock"
-msgstr "Ejemplares en depósito"
+msgstr "Ejemplares en el stock"
 
 #: templates/search/deposits_view.jade:44
 msgid "This deposit doesn't have any card."
@@ -423,7 +427,7 @@ msgstr ""
 
 #: templates/search/deposits_view.jade:53
 msgid "deposit state"
-msgstr ""
+msgstr "balance de depósito"
 
 #: templates/search/deposits_view.jade:54
 #, python-format
@@ -433,59 +437,55 @@ msgid ""
 "\"%(deposit_state)s\", type=\"submit\") %(deposit_state)s\n"
 msgstr ""
 
-#: templates/search/history.jade:28
-msgid "History of sells"
-msgstr ""
+#: templates/search/history.jade:29
+msgid "of new entries, sells and movements"
+msgstr "de nuevas entradas, ventas y movimientos"
 
-#: templates/search/history.jade:33
-msgid "Sell of the"
-msgstr ""
-
-#: templates/search/history.jade:33
+#: templates/search/history.jade:36
 msgid "cards"
+msgstr "fichas"
+
+#: templates/search/history.jade:40
+msgid "total"
 msgstr ""
 
-#: templates/search/history.jade:34
-msgid "total"
-msgstr "total"
+#: templates/search/history.jade:47
+msgid "new card"
+msgstr "nueva ficha"
 
 #: templates/search/index.jade:32
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: templates/search/index.jade:33
 msgid "or"
-msgstr ""
+msgstr "o"
 
 #: templates/search/index.jade:34
 msgid "Add a card manually"
-msgstr ""
+msgstr "Añadir una ficha manualmente"
 
 #: templates/search/inventories.jade:28
-#, fuzzy
-#| msgid "Inventaires"
 msgid "Inventory started"
-msgstr "Inventarios"
+msgstr ""
 
 #: templates/search/inventories.jade:31
 msgid "Created the"
-msgstr ""
+msgstr "Creada el"
 
 #: templates/search/inventories.jade:32
 msgid "On the place"
-msgstr ""
+msgstr "En el lugar"
 
 #: templates/search/inventories.jade:38
 msgid "Start an inventory"
-msgstr ""
+msgstr "Iniciar un inventario"
 
 #: templates/search/inventory_new.jade:25
 msgid "Inventory ongoing"
 msgstr ""
 
 #: templates/search/inventory_new.jade:30
-#, fuzzy
-#| msgid "Chercher le stock"
 msgid "Search in the stock"
 msgstr "Buscar en el stock"
 
@@ -494,20 +494,16 @@ msgid "Use TAB to validate your choice, Enter to proceed."
 msgstr "Usa TAB para seleccionar, Enter para validar la venta"
 
 #: templates/search/inventory_new.jade:48 templates/search/sell_create.jade:94
-#, fuzzy
-#| msgid "titres sélectionnés. Total:"
 msgid "titles selected. Total:"
 msgstr "títulos seleccionados. Total:"
 
 #: templates/search/inventory_new.jade:55
 #: templates/search/sell_create.jade:101
 msgid "There is a conflict with deposits."
-msgstr "Hay un conflicto de depósitos"
+msgstr ""
 
 #: templates/search/inventory_new.jade:62
 #: templates/search/sell_create.jade:120
-#, fuzzy
-#| msgid "Quantité"
 msgid "Quantity"
 msgstr "Quantidad"
 
@@ -525,222 +521,21 @@ msgid "The isbn will be downloaded when you press enter."
 msgstr ""
 
 #: templates/search/search_result.jade:76
-msgid "Add"
-msgstr ""
+msgid "Add to…"
+msgstr "Añadir en…"
 
 #: templates/search/search_result.jade:76
 msgid "Add this card to the basket"
-msgstr ""
+msgstr "Añadir esta ficha en la cesta"
 
 #: templates/search/sell_create.jade:25
 msgid "Selling cards"
-msgstr ""
+msgstr "Vendendo"
 
 #: templates/search/sell_create.jade:91
 msgid "Look for a"
-msgstr "Buscar para un"
+msgstr "Buscar para: "
 
 #: templates/search/sell_create.jade:131
 msgid "Cancel"
-msgstr ""
-
-#~ msgid "Accueil"
-#~ msgstr "Inicio"
-
-#~ msgid "Vente"
-#~ msgstr "Venta"
-
-#~ msgid "Nouvelle entrée"
-#~ msgstr "Nueva entrada"
-
-#~ msgid "Dépôts"
-#~ msgstr "Depósitos"
-
-#~ msgid "A commander"
-#~ msgstr "A pedir"
-
-#~ msgid ""
-#~ "Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide."
-#~ msgstr ""
-#~ "El depósito no fue creado. Debe contener por lo menos una ficha valida."
-
-#~ msgid "Le dépôt a été créé avec succès."
-#~ msgstr "El depósito fue creado con succeso."
-
-#~ msgid "jamais"
-#~ msgstr "nunca"
-
-#~ msgid "Tout"
-#~ msgstr "Todo"
-
-#~ msgid "Type de notice"
-#~ msgstr "Tipo de ficha"
-
-#~ msgid "Mots-clefs"
-#~ msgstr "Palabras llaves"
-
-#~ msgid "Aucun panier"
-#~ msgstr "No cesta"
-
-#~ msgid "Diffuseurs"
-#~ msgstr "Difusoras"
-
-#~ msgid "Éditeurs"
-#~ msgstr "Éditoriales"
-
-#~ msgid "Ajouter au panier"
-#~ msgstr "Añadir a la cesta"
-
-#, fuzzy
-#~| msgid "Ajouter au depot:"
-#~ msgid "Ajouter au dépôt:"
-#~ msgstr "Añadir al depósito:"
-
-#~ msgid "La notice a été ajoutée au dépôt."
-#~ msgstr "La ficha fue añadida al depósito."
-
-#~ msgid "Le dépôt demandé n'existe pas !"
-#~ msgstr "El depósito que pidió no existe !"
-
-#~ msgid "Alerte du"
-#~ msgstr "Alerta del"
-
-#~ msgid "concernant la notice"
-#~ msgstr "para la ficha"
-
-#~ msgid "depots concernés"
-#~ msgstr "depósitos ligados"
-
-#, fuzzy
-#~| msgid "Aucun panier"
-#~ msgid "Aucune notice dans ce panier"
-#~ msgstr "No cesta"
-
-#~ msgid "Titre"
-#~ msgstr "Título"
-
-#, fuzzy
-#~| msgid "Éditeurs"
-#~ msgid "Auteurs"
-#~ msgstr "Autores"
-
-#, fuzzy
-#~| msgid "Aucun dépôt existant"
-#~ msgid "Aucun résultat"
-#~ msgstr "No existe ningun depósito"
-
-#~ msgid "Modifiez la notice"
-#~ msgstr "Editar la ficha"
-
-#~ msgid "Voir sur"
-#~ msgstr "Ver en"
-
-#, fuzzy
-#~| msgid "Éditeurs"
-#~ msgid "éditeur"
-#~ msgstr "Éditoriales"
-
-#, fuzzy
-#~| msgid "Diffuseur"
-#~ msgid "diffuseur"
-#~ msgstr "Difusora"
-
-#~ msgid "stockage"
-#~ msgstr "stock"
-
-#~ msgid "Vendre"
-#~ msgstr "Vender"
-
-#, fuzzy
-#~| msgid "Ajouter au depot:"
-#~ msgid "ajouter au dépôt"
-#~ msgstr "Añadir al depósito:"
-
-#~ msgid "Nom du dépôt"
-#~ msgstr "Nome del depósito"
-
-#, fuzzy
-#~| msgid "Type de notice"
-#~ msgid "Type de dépôt"
-#~ msgstr "Tipo de depósito"
-
-#~ msgid "Nombre initial d'exemplaires"
-#~ msgstr "Número inicio de ejemplares"
-
-#~ msgid "Nombre minimum d'exemplaires"
-#~ msgstr "Número mínimo de ejemplares"
-
-#~ msgid "Automatiquement marquer les fiches à commander"
-#~ msgstr "Pedir las fichas automaticamente"
-
-#, fuzzy
-#~| msgid "Type de notice"
-#~ msgid "Cherchez des notices"
-#~ msgstr "Buscad fichas"
-
-#~ msgid "Enregistrer"
-#~ msgstr "Registrar"
-
-#~ msgid "Dépôt"
-#~ msgstr "Depósito"
-
-#~ msgid "Réassort automatique"
-#~ msgstr "Pedida automática"
-
-#~ msgid "Nombre d'alertes liées"
-#~ msgstr "Número de alertas relacionadas"
-
-#~ msgid "Ce dépôt ne contient aucune notice."
-#~ msgstr "Este depósito no tiene ninguna ficha."
-
-#~ msgid "état de dépôt"
-#~ msgstr "balance de depósito"
-
-#~ msgid "Historique des ventes"
-#~ msgstr "Histórico de ventas"
-
-#~ msgid "Vente du"
-#~ msgstr "Venta del"
-
-#~ msgid "notices"
-#~ msgstr "fichas"
-
-#~ msgid "Rechercher"
-#~ msgstr "Buscar"
-
-#, fuzzy
-#~| msgid "Tout"
-#~ msgid "ou"
-#~ msgstr "Todo"
-
-#~ msgid "Ajouter une fiche manuellement"
-#~ msgstr "Añadir una ficha a la mano"
-
-#~ msgid "Inventaires en cours"
-#~ msgstr "Inventarios occoriendo"
-
-#~ msgid "Créé le"
-#~ msgstr "Creado el"
-
-#~ msgid "Lieu concerné"
-#~ msgstr "Lugar relacionado"
-
-#~ msgid "Commencer un inventaire"
-#~ msgstr "Iniciar un inventario"
-
-#~ msgid "Inventaire en cours"
-#~ msgstr "Inventario occuriendo"
-
-#~ msgid "Ajouter"
-#~ msgstr "Añadir"
-
-#, fuzzy
-#~| msgid "Ajouter au panier"
-#~ msgid "Ajouter cette notice au panier"
-#~ msgstr "Añadir a la cesta"
-
-#~ msgid "Effectuer une vente"
-#~ msgstr "Hacer la venta"
-
-#~ msgid "Annuler"
-#~ msgstr "Cancelar"
+msgstr "Cancelar"
