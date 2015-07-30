@@ -22,7 +22,7 @@ db:
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  deps db npm gulp
+install:  deps db npm gulp translation-compile
 
 # Install npm and bower packages
 npm:
