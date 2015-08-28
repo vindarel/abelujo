@@ -83,7 +83,7 @@ e2e:
 unit:
 	#TODO: use django-nose or move datasources.
 	# With this pattern we don't run the tests from "datasources".
-	./manage.py test search --pattern="tests*.py"
+	./manage.py test search --pattern="tests_*.py"
 
 # Run test of an independent module.
 ods:
