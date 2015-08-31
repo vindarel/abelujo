@@ -158,13 +158,20 @@ class AddToDepositForm(forms.Form):
 
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
-    """ Get the reverse url with the query parameters taken from the form's cleaned data.
+    """Get the reverse url with the query parameters taken from the
+    form's cleaned data.
+
+    query parameters:
+    - source
+    - q
+    - ean
 
     type cleaned_data: dict
     return: the complete url with query params
 
     >>> get_reverse_url({"source": "chapitre", "q": u"emma goldman"})
     /search?q=emma+goldman&source=chapitre
+
     """
 
     qparam = {}
