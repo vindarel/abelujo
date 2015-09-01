@@ -170,6 +170,9 @@ class TestAddView(TestCase):
         self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
+        # Create a distributor
+        self.dist = Distributor(name="dist test")
+        self.dist.save()
         # mandatory: unknown card type
         typ = CardType(name="unknown")
         typ.save()
@@ -184,10 +187,10 @@ class TestAddView(TestCase):
     def test_addview_nominal(self, mock_data_source, fake_session):
         data = {"forloop_counter0": [0,],
                 "quantity": [5,],
-                "basket": [0,],
+                "distributor": [1,],
         }
         resp = self.c.post(reverse("card_add"), data)
-        self.assertEqual(200, resp.status_code)
+        self.assertEqual(302, resp.status_code)
         # our fixture is registered to the DB:
         all_cards = Card.objects.all()
         self.assertEqual(2, len(all_cards))
@@ -195,11 +198,15 @@ class TestAddView(TestCase):
         self.assertEqual(fixture_search_datasource[0]["title"], all_cards[0].title, "title are not equal")
         self.assertEqual(fixture_search_datasource[0]["quantity"], all_cards[0].quantity, "quantities are not equal")
 
+    def test_add_and_move(self, mock_data_source):
+        # test "card_move" view, adding the card to places and baskets.
+        pass
+
     @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
     def test_form_not_valid(self, mock_data_source, fake_session):
         data = {"forloop_counter0": "not valid",
                 "quantity": [1,],
-                "basket": [0,],
+                "distributor": [1,],
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(400, resp.status_code)
@@ -209,7 +216,7 @@ class TestAddView(TestCase):
     def test_call_postSearch_no_ean(self, mock_postSearch, fake_session, mock_data_source):
         data = {"forloop_counter0": [0,],
                 "quantity": [1,],
-                "basket": [0,],
+                "distributor": [1,],
         }
         resp = self.c.post(reverse("card_add"), data)
         mock_postSearch.assert_called_once_with(fixture_no_ean[0]["data_source"],

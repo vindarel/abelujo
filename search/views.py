@@ -304,8 +304,12 @@ def add(request):
     cur_search_result = _request_session_get(request, "search_result")
     req = request.POST.copy()
     form = AddForm(req)
+
     if not form.is_valid():
         resp_status = 400
+        log.error("Addform isn't valid.")
+        return HttpResponse(status=resp_status)
+
     else:
         # Get the last search results of the session:
         cur_search_result = _request_session_get(request, "search_result")
@@ -346,9 +350,9 @@ def add(request):
             log.error(traceback.format_exc())
             resp_status = 500
 
-    # the card_move view is used by two other views. Go back to the right one.
-    request.session["back_to"] = reverse("card_search")
-    return HttpResponseRedirect(reverse("card_move", args=(card_obj.id,)))
+        # the card_move view is used by two other views. Go back to the right one.
+        request.session["back_to"] = reverse("card_search")
+        return HttpResponseRedirect(reverse("card_move", args=(card_obj.id,)))
 
 class CardMoveForm(forms.Form):
     """We want to create a field for each Place and Basket object
