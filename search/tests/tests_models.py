@@ -87,7 +87,7 @@ class TestCards(TestCase):
     def test_from_dict(self):
         TITLE = "Foo bar"
         ZINN = "zinn"
-        to_add = Card.from_dict({"title":TITLE,
+        to_add, msgs = Card.from_dict({"title":TITLE,
                                  "authors":[self.GOLDMAN, ZINN],
                                  "location":"here"})
         self.assertTrue(to_add)
@@ -101,27 +101,27 @@ class TestCards(TestCase):
 
     def test_from_dict_no_authors(self):
         TITLE = "I am a CD without authors"
-        to_add = Card.from_dict({"title":TITLE})
+        to_add, msgs = Card.from_dict({"title":TITLE})
         self.assertTrue(to_add)
 
     def test_increment_quantity(self):
-        obj = Card.from_dict({"title": self.fixture_title,
+        obj, msgs = Card.from_dict({"title": self.fixture_title,
                               "ean": self.fixture_ean,})
         self.assertEqual(1, obj.quantity)
 
-        obj = Card.from_dict({"title": self.fixture_title,
+        obj, msgs = Card.from_dict({"title": self.fixture_title,
                               "ean": self.fixture_ean,
                               "quantity": 2})
         self.assertEqual(3, obj.quantity)
 
-        obj = Card.from_dict({"title": self.fixture_title,
+        obj, msgs = Card.from_dict({"title": self.fixture_title,
                               "ean": self.fixture_ean,
                               # quantity: one by default
                           })
         self.assertEqual(4, obj.quantity)
 
     def test_quantity_new(self):
-        obj = Card.from_dict({"title": "New quantity test",
+        obj, msgs = Card.from_dict({"title": "New quantity test",
                               "ean": "111",
                               "quantity": 2})
         self.assertEqual(2, obj.quantity)
@@ -152,23 +152,23 @@ class TestCards(TestCase):
         self.assertEqual(Card.objects.get(id=self.autobio.id).quantity, -1)
 
     def test_add_good_type(self):
-        obj = Card.from_dict({"title": "living",
+        obj, msgs = Card.from_dict({"title": "living",
                               "card_type": self.type_book})
         self.assertEqual(self.type_book, obj.card_type.name)
 
     def test_add_bad_type(self):
         badtype = "badtype"
-        obj = Card.from_dict({"title": "living",
+        obj, msgs = Card.from_dict({"title": "living",
                               "card_type": badtype})
         self.assertEqual(obj.title, "living")
         self.assertEqual(obj.card_type.name, "unknown")
 
     def test_type_unknown(self):
-        obj = Card.from_dict({"title": "living",
+        obj, msgs = Card.from_dict({"title": "living",
                               "card_type": None})
         self.assertEqual(obj.card_type.name, "unknown")
 
-        obj = Card.from_dict({"title": "living"})
+        obj, msgs = Card.from_dict({"title": "living"})
         self.assertEqual(obj.card_type.name, "unknown")
 
     def test_get_from_id_list(self):
@@ -204,21 +204,21 @@ class TestPublisher(TestCase):
 
     def test_publisher_existing(self):
         pub = "agone"
-        obj = Card.from_dict({"title": "living", "publishers": [pub]})
+        obj, msgs = Card.from_dict({"title": "living", "publishers": [pub]})
         all_pubs = obj.publishers.all()
         self.assertEqual(1, len(all_pubs))
         self.assertEqual(pub.lower(), all_pubs[0].name)
 
     def test_many_publishers(self):
         pub = ["agone", "maspero"]
-        obj = Card.from_dict({"title": "living", "publishers": pub})
+        obj, msgs = Card.from_dict({"title": "living", "publishers": pub})
         all_pubs = obj.publishers.all()
         self.assertEqual(len(pub), len(all_pubs))
         self.assertEqual(pub[0].lower(), all_pubs[0].name)
 
     def test_publisher_non_existing(self):
         pub = "Foo"
-        obj = Card.from_dict({"title": "living", "publishers": [pub]})
+        obj, msgs = Card.from_dict({"title": "living", "publishers": [pub]})
         self.assertEqual(pub.lower(), obj.publishers.all()[0].name)
         publishers = Publisher.objects.all()
         self.assertEqual(2, len(publishers))
@@ -241,12 +241,12 @@ class TestCollection(TestCase):
         self.collection.save()
 
     def test_collection_existing(self):
-        obj = Card.from_dict({"title": "living", "collection": self.collection_name})
+        obj, msgs = Card.from_dict({"title": "living", "collection": self.collection_name})
         self.assertEqual(self.collection_name.lower(), obj.collection.name)
 
     def test_collection_non_existing(self):
         collection = "new collection"
-        obj = Card.from_dict({"title": "living", "collection": collection})
+        obj, msgs = Card.from_dict({"title": "living", "collection": collection})
         self.assertEqual(collection.lower(), obj.collection.name)
         collections = Collection.objects.all()
         self.assertEqual(2, len(collections))
@@ -484,7 +484,7 @@ class SellsFactory(DjangoModelFactory):
     class Meta:
         model = Sell
 
-    date = datetime.date.today()
+    created = datetime.date.today()
 
 class CardFactory(DjangoModelFactory):
     class Meta:
@@ -515,7 +515,7 @@ class TestHistory(TestCase):
 
     def test_history(self):
         hist, status, alerts = getHistory()
-        self.assertEqual(2, len(hist)) # one is created without cards sold.
+        self.assertEqual(3, len(hist)) # a Sell is created without any cards sold.
         self.assertEqual(STATUS_SUCCESS, status)
 
 class TestAlerts(TestCase):

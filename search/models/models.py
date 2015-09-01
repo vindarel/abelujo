@@ -519,12 +519,12 @@ class Card(TimeStampedModel):
             log.warning(u"this card has no authors (ok for a CD): %s" % card['title'])
 
         # Get the distributor:
+        card_distributor=None
         if card.get("distributor"):
             try:
                 card_distributor = Distributor.objects.get(id=card.get("distributor"))
             except Exception as e:
                 log.warning("couldn't get the distributor. This is not necessary a bug.")
-                card_distributor=None
 
         # Get the publishers:
         card_publishers = []
@@ -602,7 +602,7 @@ class Card(TimeStampedModel):
         try:
             type_obj = CardType.objects.get(name=typ)
         except Exception as e:
-            type_obj = CardType.objects.get(id=7) #XXX
+            type_obj = CardType.objects.filter(name="unknown")[0]
 
         card_obj.card_type = type_obj
         card_obj.save()
@@ -1253,7 +1253,7 @@ def getHistory(to_list=False):
 
     With pagination.
 
-    returns: a tuple: (list of Sell objects, status, alerts).
+    returns: a tuple: (list of Sell or Card as dicts, status, alerts).
     """
     alerts = []
     sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
