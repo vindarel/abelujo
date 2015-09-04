@@ -31,16 +31,38 @@ from search.models import Preferences
 from search.models import Publisher
 from search.views import get_reverse_url
 
-fixture_search_datasource = [{"title":'fixture',
-                         "ean": "111",
-                         "details_url": "http://fake_url.com",
-                         "data_source": "chapitre"
-                     }]
+fixture_search_datasource = {
+    "test search":
+    [{"title":'fixture',
+      "ean": "111",
+      "details_url": "http://fake_url.com",
+      "data_source": "chapitre"
+  }],
+    "éé":
+    [{"title": "éé",
+      "ean": "222",
+  }]
+}
 
-fixture_no_ean = [{"title": "fixture no ean",
-                   "details_url": "http://fake_url",
-                   "data_source": "chapitre"  # must fetch module's name
-               }]
+session_mock_data = {
+    "search_result": {
+     "emma gold":
+     [{"title":'fixture',
+       "ean": "111",
+       "details_url": "http://fake_url.com",
+       "data_source": "chapitre"
+   }],
+     "éé":
+     [{"title": "éé",
+       "ean": "222",
+   }]
+ }}
+
+fixture_no_ean = {"test search":
+                  [{"title": "fixture no ean",
+                    "details_url": "http://fake_url",
+                    "data_source": "chapitre"  # must fetch module's name
+                }]}
 
 fake_postSearch = {"ean": "111"}
 
@@ -116,20 +138,19 @@ class TestViews(TestCase):
         resp = self.post_to_view()
         self.assertTrue(resp)
 
-
 @mock.patch('search.views.search_on_data_source', return_value=(fixture_search_datasource, []))
 class TestSearchView(TestCase):
 
     def setUp(self):
         self.c = Client()
 
-    def get_for_view(self, cleaned_data):
+    def get_for_view(self, cleaned_data, url_name="card_search"):
         """Use our view utility to get the reverse url with encoded query parameters.
         """
         cleaned_data["source"] = "chapitre"
         # get the reverse url with encoded paramaters
         return self.c.get(get_reverse_url(cleaned_data,
-                                          url_name="card_search"))
+                                          url_name))
 
     def test_search_no_query_params(self, search_mock):
         resp = self.get_for_view({})
@@ -153,8 +174,20 @@ class TestSearchView(TestCase):
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    def test_search_with_session(self, search_mock):
-        pass
+    @mock.patch('search.views._session_result_set')
+    @mock.patch('search.views._request_session_get', return_value=session_mock_data)
+    def test_search_with_session(self, search_mock, session_mock, session_set_mock):
+        data = {"q":"emma gold"}
+        resp = self.get_for_view(data)
+        # TODO: test multiple searches in parallel.
+        # The search method stores data in the session.
+        # We mock every call to the session, set or get, so we dont have one...
+        # self.assertTrue(resp.client.session.get("search_result")) # key error
+        # self.assertEqual(resp.client.session.get("search_result")['emma gold']['test search'][0]['ean'], u"111")
+
+        # Let's fire another search in parallel (like in another tab)
+        r2 = self.get_for_view({'q': 'ééé'})
+
 
 @mock.patch('search.views.search_on_data_source', return_value=fixture_search_datasource)
 class TestAddView(TestCase):
@@ -188,15 +221,20 @@ class TestAddView(TestCase):
         data = {"forloop_counter0": [0,],
                 "quantity": [5,],
                 "distributor": [1,],
+                "q": "test search", # same as fixture
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(302, resp.status_code)
         # our fixture is registered to the DB:
         all_cards = Card.objects.all()
         self.assertEqual(2, len(all_cards))
-        self.assertEqual(fixture_search_datasource[0]["ean"], all_cards[0].ean, "ean are not equal")
-        self.assertEqual(fixture_search_datasource[0]["title"], all_cards[0].title, "title are not equal")
-        self.assertEqual(fixture_search_datasource[0]["quantity"], all_cards[0].quantity, "quantities are not equal")
+        fixture_result = fixture_search_datasource["test search"][0]
+        self.assertEqual(fixture_result["ean"], all_cards[0].ean, "ean are not equal")
+        self.assertEqual(fixture_result["title"], all_cards[0].title, "title are not equal")
+        self.assertEqual(fixture_result["quantity"], all_cards[0].quantity, "quantities are not equal")
+        # We are redirected to the "move" view,
+        # to add the card to places and baskets.
+        self.assertEqual(resp.url, "http://testserver/en/stock/card/2/move?q=test+search&ean=None")
 
     def test_add_and_move(self, mock_data_source):
         # test "card_move" view, adding the card to places and baskets.
@@ -207,6 +245,7 @@ class TestAddView(TestCase):
         data = {"forloop_counter0": "not valid",
                 "quantity": [1,],
                 "distributor": [1,],
+                "q": "test search",
         }
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(400, resp.status_code)
@@ -217,11 +256,11 @@ class TestAddView(TestCase):
         data = {"forloop_counter0": [0,],
                 "quantity": [1,],
                 "distributor": [1,],
+                "q": "test search",
         }
         resp = self.c.post(reverse("card_add"), data)
-        mock_postSearch.assert_called_once_with(fixture_no_ean[0]["data_source"],
-                                                fixture_no_ean[0]["details_url"])
-
+        mock_postSearch.assert_called_once_with(fixture_no_ean["test search"][0]["data_source"],
+                                                fixture_no_ean["test search"][0]["details_url"])
 
 class TestCollectionView(TestCase, DBFixture):
 

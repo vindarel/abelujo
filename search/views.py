@@ -18,11 +18,7 @@
 import logging
 import traceback
 import urllib
-
-import datasources.all.discogs.discogsConnector as discogs
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
-import datasources.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+import urlparse
 
 from django import forms
 from django.contrib import messages
@@ -36,7 +32,12 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from djangular.forms import NgModelFormMixin
+from unidecode import unidecode
 
+import datasources.all.discogs.discogsConnector as discogs
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
 import models
 from models import Basket
 from models import Card
@@ -70,7 +71,7 @@ SCRAPER_CHOICES = [
 
 class SearchForm(forms.Form):
     source = forms.ChoiceField(choices=SCRAPER_CHOICES,
-                                        label='Data source',
+                                        label=_(u'Data source'),
                                         # help_text='choose the data source for your query',
                                         )
     q = forms.CharField(max_length=100, required=False,
@@ -178,7 +179,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     qparam['source'] = cleaned_data.get("source")
     if "q" in cleaned_data.keys():
         qparam['q'] = cleaned_data["q"]
-    if "ean" in cleaned_data.keys():
+    if ("ean" in cleaned_data.keys()) and cleaned_data.get('ean'):
         qparam['ean'] = cleaned_data["ean"]
     log.debug("on recherche: ", qparam)
     # construct the query parameters of the form
@@ -214,7 +215,7 @@ def postSearch(data_source, details_url):
 def index(request):
     form = SearchForm()
     page_title = ""
-    data_source = SCRAPER_CHOICES[0][0][0]
+    data_source = SCRAPER_CHOICES[0][1][0][0]
     retlist = []
     if request.method == "POST":
         form = SearchForm(request.POST)
@@ -233,12 +234,26 @@ def index(request):
             "page_title": page_title,
             })
 
+def _session_result_set(request, key, val):
+    """Set request.session['search_result'][key] to val.
+
+    Needed to mock for unit tests. Otherwise, during a test, the
+    session remains a void list and we have a key error in the code below.
+    """
+    request.session['search_result'][key] = val
+
 def search(request):
     retlist = []
     page_title = ""
-    data_source = SCRAPER_CHOICES[0][0][0]
+    data_source = SCRAPER_CHOICES[0][1][0][0]
+    query = ""
+    ean_param = ""
 
-    form = SearchForm(request.GET)
+    req = request.GET.copy()
+    if not req.get('data_source'):
+        req['data_source'] = data_source
+    form = SearchForm(req)
+
     if request.method == 'GET' and form.is_valid():
         data_source = form.cleaned_data['source']
         query = form.cleaned_data.get('q')
@@ -254,25 +269,41 @@ def search(request):
             retlist, traces = search_on_data_source(data_source, search_terms)
             if not retlist:
                 messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
-            request.session["search_result"] = retlist
+            # if not request.session.get("search_result"):
+            if not _request_session_get(request, "search_result"):
+                request.session["search_result"] = {}
+            # unidecode: transliteration from unicode to ascii (query will be in url)
+            _session_result_set(request, unidecode(query), retlist)
+            # request.session["search_result"][unidecode(query)] = retlist
+            # This too, otherwise it doesn't stick in session["search_result"].
+            # request.session[unidecode(query)] = retlist
+            _session_result_set(request, unidecode(query), retlist)
         else:
             # Uncomplete form (specify we need ean or q).
             log.error("form not complete")
 
     else:
-        # POST or form not valid.
+        # POST or form not valid
         form = SearchForm()
+        query = None
+        ean_param = None
         # Re-display results of previous search.
         if "search_result" in request.session:
-            retlist = request.session["search_result"]
+            url = request.META['HTTP_REFERER']
+            qparams = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
+            query = qparams['q']
+            # Get the last query of this page (case of parallell searches)
+            retlist = request.session["search_result"][qparams['q']]
 
     return render(request, "search/search_result.jade", {
-            "searchForm": form,
-            "addForm": AddForm(),
-            "result_list": retlist,
-            "data_source": data_source,
-            "page_title": page_title,
-            })
+        "searchForm": form,
+        "addForm": AddForm(),
+        "result_list": retlist,
+        "data_source": data_source,
+        "page_title": page_title,
+        "q": query,
+        "ean": ean_param,
+    })
 
 def _request_session_get(request, key):
     """Gets the session's key.
@@ -298,7 +329,6 @@ def add(request):
     The list of cards is stored in the session. The template only returns the list's indice.
 
     """
-
     card = {}
     resp_status = 200
     cur_search_result = _request_session_get(request, "search_result")
@@ -313,10 +343,18 @@ def add(request):
     else:
         # Get the last search results of the session:
         cur_search_result = _request_session_get(request, "search_result")
+        # Get the results of the corresponding search.
+        if req.get('q'):
+            cur_search_result = cur_search_result.get(req.get('q'))
+        elif req.get('ean'):
+            cur_search_result = cur_search_result.get(req.get('ean'))
+        else:
+            # The "q" should be following along, hidden in template or as url param.
+            cur_search_result = cur_search_result.get(cur_search_result.keys()[-1])
         if not cur_search_result:
             log.debug("Error: the session has no search_result.")
-        card = cur_search_result[form.cleaned_data["forloop_counter0"]]
 
+        card = cur_search_result[form.cleaned_data["forloop_counter0"]]
         card['quantity'] = form.cleaned_data["quantity"]
         data_source = card["data_source"]
 
@@ -325,7 +363,7 @@ def add(request):
             if not data_source:
                 log.debug("Error: the data source is unknown.")
                 resp_status = 500
-                # return an error page
+                # XXX return an error page
             else:
                 # fire a new http request to get the ean (or other missing informations):
                 complements = postSearch(data_source, card['details_url'])
@@ -352,7 +390,15 @@ def add(request):
 
         # the card_move view is used by two other views. Go back to the right one.
         request.session["back_to"] = reverse("card_search")
-        return HttpResponseRedirect(reverse("card_move", args=(card_obj.id,)))
+        url = reverse("card_move", args=(card_obj.id,))
+        # Doesn't Django have an automatic way, really ?
+        # see also our get_reverse_url(qparams, url=)
+        # unidecode: transliterate unicode to ascii (unicode protection).
+        qparams = {"q": unidecode(req.get('q')),
+                   "ean": req.get('ean') }
+        url = url + "?" + urllib.urlencode(qparams)
+
+        return HttpResponseRedirect(url)
 
 class CardMoveForm(forms.Form):
     """We want to create a field for each Place and Basket object
@@ -399,6 +445,8 @@ def card_move(request, pk=None):
             "BasketsForm": BasketsForm,
             "BuyForm": buyForm,
             "pk": pk,
+            "q": request.GET.get('q'),
+            "ean": request.GET.get('ean'),
             })
 
     if request.method == 'POST':
@@ -425,7 +473,14 @@ def card_move(request, pk=None):
                         log.error("couldn't add copies to {}: {}".format(basket, e))
 
             messages.add_message(request, messages.SUCCESS, _(u'The card "{}" was added successfully.'.format(card_obj.title)))
-            back_to = request.session.get("back_to", reverse("card_create"))
+            # We can also retrieve the query parameters from the url:
+            # url = request.META['HTTP_REFERER']
+            # qparams = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
+            qparams = {'q': request.POST.get('q')}
+            back_to = request.session.get("back_to", reverse("card_search"))
+            # back_to += "?" + urlparse.urlsplit(url).query
+            back_to += "?" + urllib.urlencode(qparams)
+            # XXX back_to should be set more than once, per-search.
             if request.session.get("back_to"):
                 del request.session["back_to"]
             return HttpResponseRedirect(back_to)

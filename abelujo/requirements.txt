@@ -48,3 +48,5 @@ toolz                   # pure, lazy, composable functional programming.
 sphinx==1.2.3           # documentation system.
 tabulate                # pretty print tabular data.
 addict                  # dotted notation to dict attributes and more.
+
+unidecode               # ASCII transliteration of unicode text.

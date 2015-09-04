@@ -73,6 +73,8 @@ for b in result_list
     {% csrf_token %}
     {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
+    input(type='hidden', value="{{ q }}", name="q")
+    input(type='hidden', value="{{ ean }}", name="ean")
     input.btn.btn-primary(type='submit', value='{% trans "Add to…" %}', title="{% trans 'Add this card to the basket' %}")
 
 {% endblock search_result %}
