@@ -231,13 +231,12 @@ class TestAddView(TestCase):
         fixture_result = fixture_search_datasource["test search"][0]
         self.assertEqual(fixture_result["ean"], all_cards[0].ean, "ean are not equal")
         self.assertEqual(fixture_result["title"], all_cards[0].title, "title are not equal")
-        self.assertEqual(fixture_result["quantity"], all_cards[0].quantity, "quantities are not equal")
         # We are redirected to the "move" view,
         # to add the card to places and baskets.
         self.assertEqual(resp.url, "http://testserver/en/stock/card/2/move?q=test+search&ean=None")
 
     def test_add_and_move(self, mock_data_source):
-        # test "card_move" view, adding the card to places and baskets.
+        # TODO: test "card_move" view, adding the card to places and baskets.
         pass
 
     @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)

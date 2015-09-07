@@ -122,9 +122,6 @@ class AddForm(forms.Form):
     distributor = forms.ChoiceField(choices=get_distributor_choices(),
                                     label=_(u"Distributor"),
                                     required=True)
-    quantity = forms.IntegerField(widget = MyNumberInput(attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
-                                                                'step':1, 'value':DEFAULT_NB_COPIES,
-                                                                'style':"width: 70px"}))
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
@@ -355,7 +352,6 @@ def add(request):
             log.debug("Error: the session has no search_result.")
 
         card = cur_search_result[form.cleaned_data["forloop_counter0"]]
-        card['quantity'] = form.cleaned_data["quantity"]
         data_source = card["data_source"]
 
         # Call the postSearch method of the datasource module.
@@ -374,7 +370,7 @@ def add(request):
                     card[k] = v
 
         try:
-            # Add the card to the DB.
+            # Create the card. No quantity yet.
             card["distributor"] = form.cleaned_data.get("distributor")
             card_obj, msgs = Card.from_dict(card)
             for msg in msgs:
@@ -415,7 +411,7 @@ class CardMoveForm(forms.Form):
         for obj in query:
             self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
                 attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
-                       'step':1, 'value': 0,
+                       'step':1, 'value': 1,
                        'style': 'width: 70px'}))
 
 class CardMove2BasketForm(forms.Form):

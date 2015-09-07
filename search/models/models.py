@@ -588,10 +588,10 @@ class Card(TimeStampedModel):
 
         # add the quantity of exemplaries
         if not created:
-            card_obj.quantity = card_obj.quantity + card.get('quantity', 1)
+            card_obj.quantity = card_obj.quantity + card.get('quantity', 0)
             card_obj.save()
         else:
-            card_obj.quantity = card.get('quantity', 1)
+            card_obj.quantity = card.get('quantity', 0)
             card_obj.save()
 
         # add the type of the card
