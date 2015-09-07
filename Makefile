@@ -36,6 +36,13 @@ npm:
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
+update:
+	# Get code, install new packages, run DB migrations, compile JS.
+	git pull --rebase
+	pip install -r abelujo/requirements.txt
+	gulp
+	echo "recall: without migrations, may need to delete the database"
+
 # Run the tests of the UI in a browser.
 NODEBIN=./node_modules/.bin/
 PROTRACTOR_CMD=$(NODEBIN)protractor
