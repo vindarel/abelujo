@@ -246,7 +246,7 @@ class Card(TimeStampedModel):
     # price_sold is only used to generate an angular form, it is not
     # stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
-    quantity = models.IntegerField(null=False, default=1)
+    # quantity: a property, accessible like a field. The sum of quantities in each place.
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
     year_published = models.DateField(blank=True, null=True)
@@ -303,6 +303,14 @@ class Card(TimeStampedModel):
         """
         return "; ".join([aut.name for aut in self.authors.all()])
 
+    @property
+    def quantity(self):
+        quantity = 0
+        if self.placecopies_set.count():
+            quantity = sum([pl.nb for pl in self.placecopies_set.all()])
+        return quantity
+
+    # XXX: carry on using @property instead of getter.
     def get_distributor(self):
         """Get the list of distributors without an error in case it is
         self.distributor is null. To use in card_show template.
