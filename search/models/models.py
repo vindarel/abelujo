@@ -444,8 +444,8 @@ class Card(TimeStampedModel):
         return res
 
     @staticmethod
-    def sell(id=None, quantity=1):
-        """Sell a card. Decreases its quantity.
+    def sell(id=None, quantity=1, place_id=None):
+        """Sell a card. Decreases its quantity in the given place.
 
         Warning: this is a static method, use it like this:
         >>> import models.Card; Card.sell(the_card_id)
@@ -460,8 +460,22 @@ class Card(TimeStampedModel):
         # django serialization instead).
         try:
             card = Card.objects.get(id=id)
-            card.quantity = card.quantity - quantity
-            card.save()
+
+            # Get the place from where we sell it.
+            if place_id:
+                place_obj = card.placecopies_set.get(id=place_id)
+            else:
+                if card.placecopies_set.count():
+                    # XXX: get the default place
+                    log.warning("selling: select the place: to finish")
+                    place_obj = card.placecopies_set.first()
+                else:
+                    return False, "We can not sell card {}: it is not associated with any place.".format(card.title)
+
+            place_obj.nb = place_obj.nb - quantity
+            place_obj.save()
+            # card.quantity = card.quantity - quantity
+            # card.save()
         except ObjectDoesNotExist as e:
             log.warning(u"Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")

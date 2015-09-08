@@ -76,6 +76,9 @@ class TestCards(TestCase):
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
+        place_copy, created = PlaceCopies.objects.get_or_create(card=self.autobio, place=self.place)
+        place_copy.nb = 1
+        place_copy.save()
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
 
