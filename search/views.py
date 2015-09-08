@@ -273,7 +273,7 @@ def search(request):
             _session_result_set(request, unidecode(query), retlist)
             # request.session["search_result"][unidecode(query)] = retlist
             # This too, otherwise it doesn't stick in session["search_result"].
-            # request.session[unidecode(query)] = retlist
+            request.session[unidecode(query)] = retlist
             _session_result_set(request, unidecode(query), retlist)
         else:
             # Uncomplete form (specify we need ean or q).
@@ -342,7 +342,7 @@ def add(request):
         cur_search_result = _request_session_get(request, "search_result")
         # Get the results of the corresponding search.
         if req.get('q'):
-            cur_search_result = cur_search_result.get(req.get('q'))
+            cur_search_result = cur_search_result.get(unidecode(req.get('q')))
         elif req.get('ean'):
             cur_search_result = cur_search_result.get(req.get('ean'))
         else:
