@@ -57,6 +57,10 @@ class TestCards(TestCase):
         self.type_book = "book"
         typ = CardType(name=self.type_book)
         typ.save()
+        # a Publisher
+        self.pub_name = "pub test"
+        self.publisher = Publisher(name=self.pub_name)
+        self.publisher.save()
         # create an author
         self.GOLDMAN = "Emma Goldman"
         self.goldman = Author(name=self.GOLDMAN)
@@ -66,9 +70,11 @@ class TestCards(TestCase):
         self.fixture_title = "living my life"
         self.autobio = Card(title=self.fixture_title,
                             ean=self.fixture_ean,
+                            isbn=self.fixture_ean,
                             card_type=typ)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
+        self.autobio.publishers.add(self.publisher)
         # mandatory: unknown card type
         typ = CardType(name="unknown")
         typ.save()
@@ -76,9 +82,7 @@ class TestCards(TestCase):
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
-        place_copy, created = PlaceCopies.objects.get_or_create(card=self.autobio, place=self.place)
-        place_copy.nb = 1
-        place_copy.save()
+        self.place.add_copies(self.autobio, nb=1)
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
 
@@ -91,8 +95,9 @@ class TestCards(TestCase):
         TITLE = "Foo bar"
         ZINN = "zinn"
         to_add, msgs = Card.from_dict({"title":TITLE,
-                                 "authors":[self.GOLDMAN, ZINN],
-                                 "location":"here"})
+                                       "authors":[self.GOLDMAN, ZINN],
+                                       "isbn": "foobar",
+                                       "location":"here"})
         self.assertTrue(to_add)
         self.assertEqual(to_add.title, TITLE)
         self.assertEqual(len(Author.objects.all()), 2)
@@ -102,32 +107,48 @@ class TestCards(TestCase):
         # Check that the author was created
         self.assertTrue(Author.objects.get(name=ZINN))
 
+    def test_already_exists(self):
+        # Card exists but add a distributor.
+        added, msgs = Card.from_dict({"isbn":self.fixture_ean})
+        # ONGOING: TODO:
+
+    def test_exists(self):
+        """Card.exists unit test.
+        """
+        exists = Card.exists({'isbn': self.fixture_ean})
+        self.assertTrue(exists)
+        doesnt_exist, msgs = Card.exists({"isbn": "whatever",
+                                               "title":"a different title"})
+        self.assertFalse(doesnt_exist)
+        same_title, msgs = Card.exists({"title": self.fixture_title})
+        self.assertTrue(same_title)
+        good_authors, msgs = Card.exists({"title": self.fixture_title,
+                                          "authors": [self.GOLDMAN]})
+        self.assertTrue(good_authors)
+        good_publishers, msgs = Card.exists({"title": self.fixture_title,
+                                             "authors": [self.GOLDMAN],
+                                             "publishers": [self.pub_name]})
+        self.assertTrue(good_publishers)
+        bad_authors, msgs = Card.exists({"title": self.fixture_title,
+                                         "authors": "bad author"})
+        self.assertFalse(bad_authors)
+        bad_publishers, msgs = Card.exists({"title": self.fixture_title,
+                                            "authors": [self.GOLDMAN],
+                                            "publishers": ["not a pub"]})
+        self.assertFalse(bad_publishers)
+        # TODO: and collection
+
     def test_from_dict_no_authors(self):
         TITLE = "I am a CD without authors"
         to_add, msgs = Card.from_dict({"title":TITLE})
         self.assertTrue(to_add)
 
-    def test_increment_quantity(self):
-        obj, msgs = Card.from_dict({"title": self.fixture_title,
-                              "ean": self.fixture_ean,})
-        self.assertEqual(1, obj.quantity)
-
-        obj, msgs = Card.from_dict({"title": self.fixture_title,
-                              "ean": self.fixture_ean,
-                              "quantity": 2})
-        self.assertEqual(3, obj.quantity)
-
-        obj, msgs = Card.from_dict({"title": self.fixture_title,
-                              "ean": self.fixture_ean,
-                              # quantity: one by default
-                          })
-        self.assertEqual(4, obj.quantity)
-
-    def test_quantity_new(self):
-        obj, msgs = Card.from_dict({"title": "New quantity test",
-                              "ean": "111",
-                              "quantity": 2})
-        self.assertEqual(2, obj.quantity)
+    # def test_quantity_new(self):
+    # TODO: put in test_move
+    #     obj, msgs = Card.from_dict({"title": "New quantity test",
+    #                           "ean": "111",
+    #                           "quantity": 2})
+    #     self.assertEqual(2, obj.quantity)
 
     def test_search(self):
         # Should search with way more cards.
@@ -407,6 +428,8 @@ class TestSells(TestCase):
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
+        self.place.add_copies(self.autobio, nb=1)
+        self.place.add_copies(self.secondcard, nb=1)
         # a Distributor:
         self.dist = Distributor(name="dist test")
         self.dist.save()

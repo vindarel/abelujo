@@ -310,11 +310,9 @@ class Card(TimeStampedModel):
             quantity = sum([pl.nb for pl in self.placecopies_set.all()])
         return quantity
 
-    # XXX: carry on using @property instead of getter.
     def get_distributor(self):
         """Get the list of distributors without an error in case it is
-        self.distributor is null. To use in card_show template.
-
+        null. To use in card_show template.
         """
         if self.distributor:
             return [self.distributor]
@@ -488,6 +486,55 @@ class Card(TimeStampedModel):
         return (True, "")
 
     @staticmethod
+    def exists(card_dict):
+        """Check if the given card already exists in the database.
+
+        We have the same card if:
+        - same isbn
+        - if it has no isbn: same title, same authors and same publisher(s).
+
+        After this check, we can add a distributor, add exemplaries, etc.
+
+        card_dict: dictionnary
+
+        returns: a tuple (the card object if it already exists, None oterwise / list of messages (str)).
+        """
+        msgs = []
+        # Look for the same isbn/ean
+        if card_dict.get('isbn') or card_dict.get('ean'):
+            if card_dict.get('isbn'):
+                clist = Card.objects.filter(isbn=card_dict.get('isbn'))
+            elif card_dict.get('ean'):
+                clist = Card.objects.filter(ean=card_dict.get('ean'))
+            if clist:
+                return clist, msgs
+
+        # Get the title.
+        if not card_dict.get('title'):
+            return None, ["Error: this card has no title."]
+        clist = Card.objects.filter(title=card_dict.get('title'))
+        if clist:
+            for obj in clist:
+                if card_dict.get('publishers'):
+                    set_obj = set([it.name for it in obj.publishers.all()])
+                    set_dict = set(card_dict.get('publishers'))
+                    if not set_obj == set_dict:
+                        msgs.append("A card with isbn exists, but it has a different publisher")
+                        return None, msgs
+
+                if card_dict.get('authors'):
+                    set_obj = set([it.name for it in obj.authors.all()])
+                    set_dict = set(card_dict.get('authors'))
+                    if not set_obj == set_dict:
+                        msgs.append("A card with same isbn exists, but it has different authors.")
+                        return None, msgs
+
+            # What to do about not uniq result ?
+            return clist, msgs
+
+        return None, msgs
+
+    @staticmethod
     def from_dict(card):
         """Add a card from a dict.
 
@@ -538,7 +585,7 @@ class Card(TimeStampedModel):
                 # We already have objects.
                 card_authors = card["authors"]
         else:
-            log.warning(u"this card has no authors (ok for a CD): %s" % card['title'])
+            log.warning(u"this card has no authors (ok for a CD): %s" % card.get('title'))
 
         # Get the distributor:
         card_distributor=None
@@ -553,111 +600,89 @@ class Card(TimeStampedModel):
         if card.get("publishers_ids"):
             card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
 
-        # Check that a card doesn't already exist.
-        # A card already exists if:
-        # - same title, isbn (or ean)
-        # - same authors,
-        # - same publishers
-        # If the given distributor is different, add it.
-        try:
-            card_obj = Card.objects.filter(
-                title=card.get("title"),
-                isbn=card.get('isbn') or card.get('ean'),
-                )
-        except Exception as e:
-            log.error("checking if card is unique error: {}".format(e))
+        exists_list, _msgs = Card.exists(card)
+        created = False
+        if exists_list:
+            if len(exists_list) > 1:
+                log.warning("checking existence: found {} many similar cards of title {}.".format(len(exists_list), card.get('title')))
 
-        msgs = []
-        if card_obj:
-            for obj in card_obj:
-            # obj = card_obj[0]
-                if set(obj.authors.all()) == set(card_authors) and \
-                set(obj.publishers.all()) == set(card_publishers):
-                    msgs.append(msg_exists)
-                    return obj, msgs
-                else:
-                    log.warning("we already have this card. Shall we update the fields ?")
-                    msgs.append("we already have this card. Shall we update the fields ?")
-                    pass #TODO: add distributor and update other fields if needed.
+            card_obj = exists_list[0]
 
-        # Create the card with its simple fields. Add the relationships afterwards.
-        card_obj, created = Card.objects.get_or_create(
-            title=card.get('title'),
-            year_published=year,
-            price = card.get('price',  0),
-            price_sold = card.get('price_sold',  0),
-            ean = card.get('ean') or card.get('isbn'),
-            isbn = card.get('isbn'),
-            has_isbn = card.get('has_isbn'),
-            img = card.get('img', ""),
-            details_url = card.get('details_url'),
-            data_source = card.get('data_source'),
-        )
-
-        # add the authors
-        if card_authors:  # TODO: more tests !
-            card_obj.authors.add(*card_authors)
-            card_obj.save()
-
-        # add the distributor
-        if card_distributor:
-            card_obj.distributor = card_distributor
-            card_obj.save()
-
-        # add many publishers
-        if card_publishers:
-            card_obj.publishers.add(*card_publishers)
-
-        # add the quantity of exemplaries
-        if not created:
-            card_obj.quantity = card_obj.quantity + card.get('quantity', 0)
-            card_obj.save()
         else:
-            card_obj.quantity = card.get('quantity', 0)
+            # Create the card with its simple fields.
+            # Add the relationships afterwards.
+            card_obj, created = Card.objects.get_or_create(
+                title=card.get('title'),
+                year_published=year,
+                price = card.get('price',  0),
+                price_sold = card.get('price_sold',  0),
+                ean = card.get('ean') or card.get('isbn'),
+                isbn = card.get('isbn'),
+                has_isbn = card.get('has_isbn'),
+                img = card.get('img', ""),
+                details_url = card.get('details_url'),
+                data_source = card.get('data_source'),
+            )
+
+            # add the authors
+            if card_authors:  # TODO: more tests !
+                card_obj.authors.add(*card_authors)
+                card_obj.save()
+
+            # add the distributor
+            if card_distributor:
+                card_obj.distributor = card_distributor
+                card_obj.save()
+
+            # add many publishers
+            if card_publishers:
+                card_obj.publishers.add(*card_publishers)
+
+            # add the collection
+            collection = card.get("collection")
+            if collection:
+                collection = collection.lower()
+                try:
+                    collection_obj, created = Collection.objects.get_or_create(name=collection)
+                    card_obj.collection = collection_obj
+                    card_obj.save()
+                    if created:
+                        log.debug("--- new collection created: %s" % (collection,))
+                except Exception, e:
+                    log.error(u"--- error while adding the collection: %s" % (e,))
+
+            # add the type of the card
+            typ = "unknown"
+            if card.get("card_type"):
+                typ = card.get("card_type")
+
+            try:
+                type_obj = CardType.objects.get(name=typ)
+            except Exception as e:
+                type_obj = CardType.objects.filter(name="unknown")[0]
+
+            card_obj.card_type = type_obj
             card_obj.save()
 
-        # add the type of the card
-        typ = "unknown"
-        if card.get("card_type"):
-            typ = card.get("card_type")
+            # add the publishers
+            pubs = card.get("publishers")
+            if pubs:
+                try:
+                    for pub in pubs:
+                        pub = pub.lower()
+                        pub_obj, created = Publisher.objects.get_or_create(name=pub)
+                        card_obj.publishers.add(pub_obj)
+                        if created:
+                            log.debug("--- new publisher created: %s" % (pub,))
 
-        try:
-            type_obj = CardType.objects.get(name=typ)
-        except Exception as e:
-            type_obj = CardType.objects.filter(name="unknown")[0]
+                    card_obj.save()
+                except Exception, e:
+                    log.error(u"--- error while adding the publisher: %s" % (e,))
 
-        card_obj.card_type = type_obj
-        card_obj.save()
+        # Update fields of new or existing card.
+        # add the quantity of exemplaries: in "move" view.
 
-        # add the publishers
-        pubs = card.get("publishers")
-        if pubs:
-            try:
-                for pub in pubs:
-                    pub = pub.lower()
-                    pub_obj, created = Publisher.objects.get_or_create(name=pub)
-                    card_obj.publishers.add(pub_obj)
-                    if created:
-                        log.debug("--- new publisher created: %s" % (pub,))
-
-                card_obj.save()
-            except Exception, e:
-                log.error(u"--- error while adding the publisher: %s" % (e,))
-
-        # add the collection
-        collection = card.get("collection")
-        if collection:
-            collection = collection.lower()
-            try:
-                collection_obj, created = Collection.objects.get_or_create(name=collection)
-                card_obj.collection = collection_obj
-                card_obj.save()
-                if created:
-                    log.debug("--- new collection created: %s" % (collection,))
-            except Exception, e:
-                log.error(u"--- error while adding the collection: %s" % (e,))
-
-        # Add the default place (to the intermediate table).
+        # # Add the default place (to the intermediate table).
         # try:
         #     default_place = Preferences.objects.all()[0].default_place
         #     place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)

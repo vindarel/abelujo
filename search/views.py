@@ -355,7 +355,7 @@ def add(request):
         data_source = card["data_source"]
 
         # Call the postSearch method of the datasource module.
-        if not card.get('ean'):
+        if not card.get('ean') and not card.get('isbn'):
             if not data_source:
                 log.debug("Error: the data source is unknown.")
                 resp_status = 500
