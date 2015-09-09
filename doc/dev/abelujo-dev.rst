@@ -291,6 +291,10 @@ terminal windows:
 - at last, run the tests: `make protractor`. We also have a debugger
   mode with `make protractor-debug` (requires Chrome >= 39).
 
+.. note::
+
+   Some tests rely on the testing data that we load with `make data`.
+
 About Protractor:
 
 - https://angular.github.io/protractor/#/getting-started
