@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module('abelujo.controllers', [])
-  .controller('DepositCreateController', ['$http', '$scope', 'utils', function ($http, $scope, utils) {
+angular.module('abelujo').controller('DepositCreateController', ['$http', '$scope', 'utils', function ($http, $scope, utils) {
       // set the xsrf token via cookies.
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
@@ -54,7 +53,7 @@ angular.module('abelujo.controllers', [])
           .then(function(response){ // "then", not "success"
               return response.data.map(function(item){
                   // give a string representation for each object (result)
-                  $scope.dist_list.push(item.fields.name);
+                  $scope.dist_list.push(item.name);
               });
 
           });
