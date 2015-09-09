@@ -129,7 +129,7 @@ def get_places_choices():
     return ret
 
 def get_distributor_choices():
-    choices = [(dist.id, dist.name) for dist in Distributor.get_from_kw()]
+    choices = [(dist.id, dist.name) for dist in Distributor.get_all()]
     return choices
 
 class DepositForm(forms.ModelForm):

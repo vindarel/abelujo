@@ -124,7 +124,7 @@ class Distributor(TimeStampedModel):
         }
 
     @staticmethod
-    def get_from_kw(**kwargs):
+    def get_all(**kwargs):
         """Return a list of deposits.
 
         No arguments: return all.
@@ -411,16 +411,6 @@ class Card(TimeStampedModel):
             cards = Card.obj_to_list(cards)
 
         return cards[:SIZE_LIMIT]
-
-    @staticmethod
-    def get_from_kw(words, to_list=False):
-        """search some card: quick to test
-        """
-        log.debug("TODO: search the collection on all keywords")
-        res = Card.objects.filter(title__icontains=words[0])
-        if to_list:
-            res = Card.obj_to_list(res)
-        return res
 
     @staticmethod
     def get_from_id_list(cards_id):

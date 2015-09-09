@@ -107,11 +107,6 @@ class TestCards(TestCase):
         # Check that the author was created
         self.assertTrue(Author.objects.get(name=ZINN))
 
-    def test_already_exists(self):
-        # Card exists but add a distributor.
-        added, msgs = Card.from_dict({"isbn":self.fixture_ean})
-        # ONGOING: TODO:
-
     def test_exists(self):
         """Card.exists unit test.
         """

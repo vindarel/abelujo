@@ -310,5 +310,5 @@ class TestDeposit(TestCase, DBFixture):
         self.assertEqual(resp.status_code, 200)
 
     def test_create(self):
-        # TODO !
+        # TODO: test deposit creation.
         pass
