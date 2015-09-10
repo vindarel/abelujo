@@ -706,7 +706,7 @@ class Card(TimeStampedModel):
     def ambigous_sell(self):
         in_deposits = self.quantity_deposits()
         log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
-        return self.is_in_deposits() and (in_deposits > 0) and (self.quantity >= in_deposits)
+        return self.is_in_deposits() and (in_deposits > 0) and (self.quantity > in_deposits)
 
 class PlaceCopies (models.Model):
     """Copies of a card present in a place.
