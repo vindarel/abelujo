@@ -50,6 +50,42 @@ from search.models import STATUS_ERROR
 from search.models import STATUS_SUCCESS
 from search.models import STATUS_WARNING
 
+from search.models.utils import hist
+
+class SellsFactory(DjangoModelFactory):
+    class Meta:
+        model = Sell
+
+    created = datetime.date.today()
+
+class DepositFactory(DjangoModelFactory):
+    class Meta:
+        model = Deposit
+    name = factory.Sequence(lambda n: "deposit test %d" % n)
+    distributor = None
+
+class DistributorFactory(DjangoModelFactory):
+    class Meta:
+        model = Distributor
+    name = factory.Sequence(lambda n: "distributor test %s" % n)
+
+class PlaceFactory(DjangoModelFactory):
+    class Meta:
+        model = Place
+    name = factory.Sequence(lambda n: "place test %s" % n)
+    is_stand = False
+    can_sell = True
+
+class CardFactory(DjangoModelFactory):
+    class Meta:
+        model = Card
+
+    title = factory.Sequence(lambda n: 'card title %d' % n)
+    isbn = factory.Sequence(lambda n: "%d" %n)
+    card_type = None
+    # distributor = factory.SubFactory(DistributorFactory)
+    distributor = None
+    price = 9.99
 
 class TestCards(TestCase):
     def setUp(self):
@@ -82,7 +118,7 @@ class TestCards(TestCase):
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
-        self.place.add_copies(self.autobio, nb=1)
+        self.place.add_copy(self.autobio, nb=1)
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
 
@@ -290,10 +326,10 @@ class TestPlaceCopies(TestCase):
         pass
 
     def test_add_copies(self):
-        self.place.add_copies(self.card)
+        self.place.add_copy(self.card)
         new_nb = self.place.placecopies_set.get(card=self.card).nb
         self.assertEqual(self.nb_copies + 1, new_nb)
-        self.place.add_copies(self.card, 10)
+        self.place.add_copy(self.card, 10)
         new_nb = self.place.placecopies_set.get(card=self.card).nb
         self.assertEqual(self.nb_copies + 1 + 10, new_nb)
 
@@ -332,16 +368,19 @@ class TestBaskets(TestCase):
 class TestDeposits(TestCase):
 
     def setUp(self):
-        self.distributor = Distributor(name="my dist")
+        self.distributor = DistributorFactory()
         self.distributor.save()
         self.goldman = Author(name="goldman")
         self.goldman.save()
-        self.card = Card(title="test card"); self.card.save()
+        self.card = CardFactory()
         self.card.authors.add(self.goldman)
-        self.card2 = Card(title="test card2"); self.card2.save()
+        self.card2 = CardFactory(distributor=self.distributor)
         self.card2.authors.add(self.goldman)
-        self.deposit = Deposit(name="deposit nominal",
-                               distributor=self.distributor,)
+        self.deposit = DepositFactory(distributor=self.distributor)
+        self.place = PlaceFactory()
+        self.place.add_copy(self.card2)
+        self.sell = SellsFactory()
+        self.sell.sell_cards(None, cards=[self.card2])
 
     def test_nominal(self):
         self.card.distributor = self.distributor
@@ -350,7 +389,6 @@ class TestDeposits(TestCase):
         self.assertEqual(1, self.card.quantity_deposits())
         self.deposit.add_copies([self.card])
         self.assertEqual(2, self.card.quantity_deposits())
-
 
     def test_no_distributor(self):
         self.card.distributor = None
@@ -393,6 +431,24 @@ class TestDeposits(TestCase):
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], messages.WARNING)
 
+    def test_depostate_first(self):
+        ret, msgs = self.deposit.checkout_create()
+        # The deposit has no copies. Do nothing.
+        self.assertEqual(-1, ret)
+
+        # Add cards to it.
+        self.deposit.add_copies([self.card2])
+        co, _ = self.deposit.checkout_create()
+        # If it isn't ambiguous we can close it
+        self.assertEqual(co.ambiguous, False)
+        # Check figures: how many copies we sold, how many we have
+        balance = co.balance()
+        self.assertEqual(balance[self.card2.id].nb_current, 0)
+        self.assertEqual(balance[self.card2.id].nb_initial, 1)
+        self.assertEqual(balance[self.card2.id].nb_sells, 1)
+        self.assertEqual(balance[self.card2.id].nb_to_command, 1)
+        self.assertEqual(balance[self.card2.id].nb_wanted, 1)
+
 class TestSells(TestCase):
 
     def setUp(self):
@@ -405,17 +461,10 @@ class TestSells(TestCase):
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
         # create a Card
-        self.fixture_ean = "987"
-        self.fixture_title = "living my life"
-        self.autobio = Card(title=self.fixture_title,
-                            ean=self.fixture_ean,
-                            card_type=typ)
-        self.autobio.save()
+        self.autobio = CardFactory(card_type=typ)
         self.autobio.authors.add(self.goldman)
         # a second card:
-        self.secondcard = Card(title="second card",
-                               ean="123")
-        self.secondcard.save()
+        self.secondcard = CardFactory()
         # mandatory: unknown card type
         typ = CardType(name="unknown")
         typ.save()
@@ -423,8 +472,8 @@ class TestSells(TestCase):
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
-        self.place.add_copies(self.autobio, nb=1)
-        self.place.add_copies(self.secondcard, nb=1)
+        self.place.add_copy(self.autobio, nb=1)
+        self.place.add_copy(self.secondcard, nb=1)
         # a Distributor:
         self.dist = Distributor(name="dist test")
         self.dist.save()
@@ -483,7 +532,7 @@ class TestSells(TestCase):
 
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
-        self.autobio.quantity = 2 # 1 in deposit, 1 not: ambigous.
+        self.place.add_copy(self.autobio) # 1 in deposit, 1 not: ambiguous
         # add a copy to the deposit:
         self.autobio.distributor = self.dist
         self.autobio.save()
@@ -500,29 +549,6 @@ class TestSells(TestCase):
         sell, status, msgs = Sell.sell_cards(to_sell)
         self.assertEqual(Alert.objects.count(), 1)
 
-
-class SellsFactory(DjangoModelFactory):
-    class Meta:
-        model = Sell
-
-    created = datetime.date.today()
-
-class CardFactory(DjangoModelFactory):
-    class Meta:
-        model = Card
-
-    title = factory.Sequence(lambda n: 'card title %d' % n)
-    # distributor = factory.SubFactory(DistributorFactory)
-
-class DepositFactory(DjangoModelFactory):
-    class Meta:
-        model = Deposit
-    name = factory.Sequence(lambda n: "deposit test %d" % n)
-
-class DistributorFactory(DjangoModelFactory):
-    class Meta:
-        model = Distributor
-    name = factory.Sequence(lambda n: "distributor test %s" % n)
 
 class TestHistory(TestCase):
 

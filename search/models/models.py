@@ -329,7 +329,7 @@ class Card(TimeStampedModel):
 
     def to_list(self):
         res = {
-            "ambigous_sell": self.ambigous_sell(),
+            "ambiguous_sell": self.ambiguous_sell(),
             "authors": ", ".join([ca.name for ca in self.authors.all()]),
             "collection": self.collection.name.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
@@ -701,9 +701,10 @@ class Card(TimeStampedModel):
         return self.deposit_set.count() > 0
 
     def quantity_deposits(self):
+        #TODO: sum()
         return reduce(operator.add, [it.nb for it in self.depositcopies_set.all()], 0)
 
-    def ambigous_sell(self):
+    def ambiguous_sell(self):
         in_deposits = self.quantity_deposits()
         log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
         return self.is_in_deposits() and (in_deposits > 0) and (self.quantity > in_deposits)
@@ -774,7 +775,7 @@ class Place (models.Model):
         except Exception, e:
             log.error(u"--- error while setting the default place: %s" % (e,))
 
-    def add_copies(self, card, nb=1):
+    def add_copy(self, card, nb=1):
         """Adds the given number of copies (1 by default) of the given card to
         this place.
 
@@ -903,19 +904,58 @@ class DepositStateCopies(models.Model):
 
     card = models.ForeignKey(Card)
     deposit_state = models.ForeignKey("DepositState")
-    #: the initial number of that card in stock.
-    nb_initial = models.IntegerField(default=1)
-    #: the current number (at the date of the deposit state).
+    sells = models.ManyToManyField("Sell")
+    #: the current quantity of the card (at the date of the deposit state).
     nb_current = models.IntegerField(default=1)
-    #: the quantity of sold cards since the last deposit state.
-    nb_sells = models.IntegerField(default=1)
     #: number of wanted copies.
-    nb_wanted = models.IntegerField(default=1)
+    # nb_wanted = models.IntegerField(default=1)
     #: quantity to command to the distributor.
-    nb_to_command = models.IntegerField(default=1)
+    # nb_to_command = models.IntegerField(default=1)
     #: quantity to return. (beware, some distributors ask a card not
     # to stay longer than a certain time in a deposit)
     nb_to_return = models.IntegerField(default=1)
+
+    def __unicode__(self):
+        return "card {}, initial: {}, current: {}, sells: {}, etc".format(
+            self.card.id, self.nb_initial, self.nb_current, self.nb_sells)
+
+    @property
+    def nb_sells(self):
+        """the quantity of sold cards since the last deposit state.
+        """
+        return self.sells.count()
+
+    @property
+    def nb_initial(self):
+        """the initial number of that card in stock: current + nb of sells
+        """
+        return self.nb_current + self.nb_sells
+
+    @property
+    def nb_to_command(self):
+        """nb of this card to command: the quantity missing to reach the number wanted.
+        """
+        return self.nb_wanted - self.nb_current
+
+    @property
+    def nb_wanted(self):
+        try:
+            ret = self.deposit_state.deposit.depositcopies_set.filter(card__id=2)
+        except Exception as e:
+            log.error(e)
+            return -1
+
+        if len(ret) > 1:
+            log.warning("a deposit has not a unique result for the intermediate table of a card")
+        return ret[0].threshold
+
+    def add_sells(self, sells):
+        for sell in sells:
+            try:
+                self.sells.add(sell)
+            except Exception as e:
+                log.error("adding sells to {}: ".format(self.id), e)
+
 
 class DepositState(TimeStampedModel):
     """Deposit states. We do a deposit state to know what cards have been
@@ -938,6 +978,71 @@ class DepositState(TimeStampedModel):
     copies = models.ManyToManyField(Card, through="DepositStateCopies", blank=True, null=True)
     closed = models.BooleanField(default=False, blank=True)
 
+    def __unicode__(self):
+        ret = "deposit '{}' with {} copies. Closed ? {}".format(self.deposit, self.copies.count(), self.closed)
+        return ret
+
+    @property
+    def ambiguous(self):
+        for card in self.copies.all():
+            if card.ambiguous_sell():
+                return True
+        return False
+
+    def add_copies(self, cards_sells):
+        """Add cards to this deposit state.
+
+        - cards_sells: list of dict: "card": card object, "sells": list of Sell objects of this card.
+        """
+        msgs = []
+        try:
+            for it in cards_sells:
+                card = it.get('card')
+                sells = it.get('sells')
+                depostate_copy = self.depositstatecopies_set.create(card=card)
+                depostate_copy.save()
+                depostate_copy.add_sells(sells)
+                depostate_copy.nb_current = card.quantity
+                depostate_copy.nb_to_return = -1 #TODO: see DepositCopies due_date
+                depostate_copy.save()
+
+        except Exception as e:
+            log.error(u"adding cards to the DepositState: {}".format(e))
+            return msgs.append({'level': messages.ERROR,
+                                'message': _("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !")})
+
+        return True, msgs
+
+    def card_balance(self, card_id):
+        """Get the balance of the given card. For each card sold, get:
+        - its current quantity,
+        - the number of sells,
+        - the wanted quantity,
+        - etc (see DepositStateCopies)
+
+        card_id: int
+
+        return: a DepositStateCopies object.
+        """
+        try:
+            states = self.depositstatecopies_set.filter(card__id=card_id)
+        except Exception as e:
+            log.error(e)
+
+        if len(states) > 1:
+            log.warning("The card {} has more than one entry in the intermediate table.".format(card_id))
+        return states[0]
+
+    def balance(self):
+        """Get the balance of all cards of the deposit.
+
+        return: a dict. Key=the card id, value: a DepositStateCopies object.
+        """
+        balance = {}
+        for card in self.copies.all():
+            balance[card.id] = self.card_balance(card.id)
+
+        return balance
 
 class DepositCopies(TimeStampedModel):
     """doc
@@ -951,7 +1056,7 @@ class DepositCopies(TimeStampedModel):
     #: Number of copies now present in the stock.
     nb = models.IntegerField(default=1)
     #: Minimum of copies we want to have.
-    threshold = models.IntegerField(blank=True, null=True, default=0)
+    threshold = models.IntegerField(blank=True, null=True, default=1)
     #: Do we have a limit of time to pay ?
     due_date = models.DateField(blank=True, null=True)
 
@@ -1025,11 +1130,13 @@ class Deposit(TimeStampedModel):
         return quote(self.name)
 
     def add_copies(self, copies, nb=1):
-        """Add the given list of copies objects to this deposit.
+        """Add the given list of copies objects to this deposit (if their
+        distributor matches).
 
         copies: list of Card objects.
 
         return: []
+
         """
         msgs = []
         try:
@@ -1043,9 +1150,9 @@ class Deposit(TimeStampedModel):
             return []
 
         except Exception as e:
-            log.error(u"Error while adding a card to the deposit.", e)
+            log.error(u"Error while adding a card to the deposit: {}".format(e))
             return msgs.append({'level': messages.ERROR,
-                                'message': e})  # don't add this error in prod.
+                                'message': _("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !")})
 
     @staticmethod
     def get_from_kw(**kwargs):
@@ -1108,7 +1215,7 @@ class Deposit(TimeStampedModel):
         """Return the date at which we did the last checkout of this
         deposit."""
         # TODO to test
-        last_checkout_date = _("never")
+        last_checkout_date = None
         try:
             last_checkout_obj = DepositState.objects.filter(deposit__name=self.name).order_by("created").last()
         except ObjectDoesNotExist as e:
@@ -1124,6 +1231,38 @@ class Deposit(TimeStampedModel):
         """
         pass #ONGOING
 
+    def checkout_create(self):
+        """Do a deposit checkout:
+        - register it
+        - record all the cards of the deposit that have been sold since the last checkout,
+        - if there are alerts (ambiguous sold cards): don't close it
+        - when no more alerts, close it.
+
+        return: tuple (XXX, list of messages (str))
+        """
+        if not self.copies.count():
+            return -1, [_("this deposit has no cards. Impossible to do a checkout.")]
+
+        existing = DepositState.objects.filter(deposit=self)
+        if existing and not existing.closed:
+            return None, [_("Hey oh, a deposit state of this deposit already exists. Please close before opening a new one.")]
+
+        last_checkout_date = self.last_checkout()
+        sold_cards = [] # list of dict card, list of sell objects
+        checkout = None
+        for card in self.copies.all():
+            sells = Sell.search(card_id=card.id, date_min=last_checkout_date)
+            if sells:
+                sold_cards.append({"card": card, "sells": sells})
+
+        if sold_cards:
+            checkout = DepositState(deposit=self)
+            checkout.save()
+            # import ipdb; ipdb.set_trace()
+            checkout.add_copies(sold_cards)
+
+
+        return checkout, []
 
 class SoldCards(models.Model):
 
@@ -1138,6 +1277,10 @@ class SoldCards(models.Model):
     # price_init = models.FloatField()
     #: Price sold:
     price_sold = models.FloatField()
+
+    def __unicode__(self):
+        ret = "card id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
+        return ret
 
 class Sell(models.Model):
     """A sell represents a set of one or more cards that are sold:
@@ -1169,6 +1312,23 @@ class Sell(models.Model):
         return "Sell {} of {} copies at {}.".format(self.id,
                                                     self.soldcards_set.count(),
                                                     self.created)
+    @staticmethod
+    def search(card_id=None, date_min=None):
+        """Search for the given card id in sells more recent than "date_min".
+
+        - card_id: int
+        - date_min: date obj
+
+        return: a list of Sell objects.
+        """
+        sells = []
+        try:
+            #TODO: ONGOING: search with minimal date
+            sells = Sell.objects.filter(copies__id=card_id)
+        except Exception as e:
+            log.error("search for sells of card id {}: ".format(card_id), e)
+
+        return sells
 
     def total_price(self):
         total = 0
@@ -1194,12 +1354,14 @@ class Sell(models.Model):
         return ret
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None):
+    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[]):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
         quantity is 1. No error is returned, only a log (it's supposed
         not to happen, to be checked before calling this method).
+
+        - cards: can be used as a shortcut to write tests. Price and quantity will be default.
 
         return: a 3-tuple (the Sell object, the global status, a list of messages).
 
@@ -1208,6 +1370,12 @@ class Sell(models.Model):
         status = STATUS_SUCCESS
         cards_obj = []
         sell = None
+
+        TEST_DEFAULT_QUANTITY = 1
+        if cards:
+            ids_prices_nb = []
+            for it in cards:
+                ids_prices_nb.append({'id': it.id, 'price': it.price, "quantity": TEST_DEFAULT_QUANTITY})
 
         if not ids_prices_nb:
             log.warning(u"Sell: no cards are passed on. That shouldn't happen.")
@@ -1226,7 +1394,7 @@ class Sell(models.Model):
             cards_obj.append(card)
 
             # Create an alert ?
-            if card.ambigous_sell():
+            if card.ambiguous_sell():
                 alert = Alert(card=card); alert.save()
                 alert.add_deposits_of_card(card)
                 #TODO: ajouter les messages pour la UI
@@ -1285,7 +1453,16 @@ class Sell(models.Model):
 
         return (sell, status, alerts)
 
-def getHistory(to_list=False):
+    def get_soldcard(self, card_id):
+        """Get informations about this card that was sold: how many, how much etc.
+        """
+        if not card_id:
+            return None
+
+        return self.soldcards_set.filter(card__id=card_id)
+
+
+def getHistory(to_list=False, sells=False):
     """return the last sells, card creations and movements.
 
     With pagination.
@@ -1295,11 +1472,13 @@ def getHistory(to_list=False):
     alerts = []
     sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
     sells = [it.to_list() for it in sells]
-    entries = Card.objects.order_by("-created")[:PAGE_SIZE]
-    entries = [it.to_list() for it in entries]
-    toret = sells + entries
+    if sells:
+        entries = Card.objects.order_by("-created")[:PAGE_SIZE]
+        entries = [it.to_list() for it in entries]
+        toret = sells + entries
     toret.sort(key= lambda it: it['created'], reverse=True)
     return toret, STATUS_SUCCESS, alerts
+
 
 class Alert(models.Model):
     """An alert stores the information that a Sell is ambiguous. That

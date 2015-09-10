@@ -17,6 +17,7 @@
 
 import addict
 
+from models import getHistory
 from tabulate import tabulate
 
 MAX_CELL=30
@@ -112,3 +113,10 @@ def ppcard(cards):
     tab = tabulate(tab, headers=headers)
     tab += "\n\ntotal: {} titles, {} exemplaries.".format(tablength, total)
     return tab
+
+def hist():
+    """Print a recent history.
+    """
+    hist, status, alerts = getHistory(sells=True)
+    print "Sells:"
+    print hist
