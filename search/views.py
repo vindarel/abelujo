@@ -521,7 +521,7 @@ def collection(request):
     else:
         # GET
         # Get the last new cards of the database.
-        cards = Card.first_cards(5)
+        cards = Card.first_cards(50)
         cards = Card.obj_to_list(cards)
 
         if request.GET.get("format") == "text":
@@ -532,6 +532,7 @@ def collection(request):
     return render(request, "search/collection.jade", {
             "searchForm": form,
             "nb_results": len(cards),
+            "total_results": Card.objects.count(),
             "book_list": cards,
             "AddToDepositForm": AddToDepositForm,
             })
