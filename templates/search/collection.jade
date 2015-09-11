@@ -42,7 +42,7 @@ for b in book_list
   table.table.table-condensed
     tr
       if b.img
-        td: img(src="{{ b.img }}")
+        td: img(src="{{ b.img }}", style="height: 150px;")
       td
         span
           h3: a(href="{{ b.get_absolute_url }}", title='{% trans "Edit the card" %}') {{b.title}}

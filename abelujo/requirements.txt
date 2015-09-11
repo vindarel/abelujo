@@ -32,7 +32,8 @@ tox==1.9                # test in a fresh venv, against multiple python versions
 ### web scrapers:
 requests
 requests_cache          # set up a cache in 2 loc
-beautifulsoup4
+beautifulsoup4          # html parser
+lxml                    # html parser (like beautifulsoup4, but for xpath)
 
 ### Django extensions
 django_extensions==1.3.3  # more useful commands to manage.py (shell_plus).
@@ -48,5 +49,4 @@ toolz                   # pure, lazy, composable functional programming.
 sphinx==1.2.3           # documentation system.
 tabulate                # pretty print tabular data.
 addict                  # dotted notation to dict attributes and more.
-
 unidecode               # ASCII transliteration of unicode text.

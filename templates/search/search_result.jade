@@ -30,7 +30,7 @@ for b in result_list
   table.table.table-condensed
     tr
       if b.img
-        td: img(src="{{ b.img }}")
+        td: img(src="{{ b.img }}", style="height: 150px;")
       td
 
         if b.details_url

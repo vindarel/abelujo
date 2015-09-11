@@ -34,7 +34,8 @@ from django.views.generic.detail import DetailView
 from djangular.forms import NgModelFormMixin
 from unidecode import unidecode
 
-import datasources.all.discogs.discogsConnector as discogs
+# import datasources.all.discogs.discogsConnector as discogs
+import datasources.all.discogs.discogsScraper as discogs
 import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
 import datasources.esES.casadellibro.casadellibroScraper as casadellibro
 import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
@@ -206,8 +207,16 @@ def postSearch(data_source, details_url):
 
     data_source: a scraper name, containing a function postSearch
     details_url: url of the card's details.
+
+    return: a dict of results (for books, must have the isbn/ean).
     """
-    return getattr(globals()[data_source], "postSearch")(details_url)
+    try:
+        # Allow a scraper not to have the postSearch method.
+        res =  getattr(globals()[data_source], "postSearch")(details_url)
+    except Exception as e:
+        log.warning(e)
+        res = {}
+    return res
 
 def index(request):
     form = SearchForm()
