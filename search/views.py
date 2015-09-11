@@ -465,7 +465,7 @@ def card_move(request, pk=None):
                 if nb:
                     place_obj = Place.objects.get(name=place)
                     try:
-                        place_obj.add_copies(card_obj, nb=nb)
+                        place_obj.add_copy(card_obj, nb=nb)
                     except Exception as e:
                         log.error("couldn't add copies to {}: {}".format(place, e))
 

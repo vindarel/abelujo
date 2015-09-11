@@ -1788,7 +1788,7 @@
         "fields": {
             "card": 39,
             "created": "2014-10-30T18:20:17.439Z",
-            "deposit": "libertalia, default distributor",
+            "deposit": 1,
             "due_date": null,
             "modified": "2014-10-30T18:20:17.581Z",
             "nb": 0,
@@ -1808,7 +1808,7 @@
             "modified": "2014-10-30T18:20:17.212Z"
         },
         "model": "search.deposit",
-        "pk": "libertalia, default distributor"
+        "pk": 1
     },
     {
         "fields": {
@@ -1821,7 +1821,7 @@
             "modified": "2014-11-24T15:32:22.109Z"
         },
         "model": "search.deposit",
-        "pk": "ng depo"
+        "pk": 2
     },
     {
         "fields": {
@@ -1834,7 +1834,7 @@
             "modified": "2014-11-24T15:30:59.682Z"
         },
         "model": "search.deposit",
-        "pk": "undefined"
+        "pk": 3
     },
     {
         "fields": {

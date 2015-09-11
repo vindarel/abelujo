@@ -380,7 +380,7 @@ class TestDeposits(TestCase):
         self.place = PlaceFactory()
         self.place.add_copy(self.card2)
         self.sell = SellsFactory()
-        self.sell.sell_cards(None, cards=[self.card2])
+        # self.sell.sell_cards(None, cards=[self.card2])
 
     def test_nominal(self):
         self.card.distributor = self.distributor
@@ -434,20 +434,71 @@ class TestDeposits(TestCase):
     def test_depostate_first(self):
         ret, msgs = self.deposit.checkout_create()
         # The deposit has no copies. Do nothing.
-        self.assertEqual(-1, ret)
+        self.assertEqual(None, ret)
+
 
         # Add cards to it.
         self.deposit.add_copies([self.card2])
         co, _ = self.deposit.checkout_create()
         # If it isn't ambiguous we can close it
-        self.assertEqual(co.ambiguous, False)
+        self.assertFalse(co.ambiguous)
+        # We didn't sell anything yet but still should see the balance.
+        bal = co.balance()
+        self.assertEqual(0, bal["cards"][2].nb_sells)
+        self.assertEqual(1, bal["cards"][2].nb_initial)
+        self.assertEqual(1, bal["cards"][2].nb_current)
+
+        # Sell a copy.
+        self.sell.sell_cards(None, cards=[self.card2])
+
         # Check figures: how many copies we sold, how many we have
+        co.update()
         balance = co.balance()
-        self.assertEqual(balance[self.card2.id].nb_current, 0)
-        self.assertEqual(balance[self.card2.id].nb_initial, 1)
-        self.assertEqual(balance[self.card2.id].nb_sells, 1)
-        self.assertEqual(balance[self.card2.id].nb_to_command, 1)
-        self.assertEqual(balance[self.card2.id].nb_wanted, 1)
+        self.assertFalse(co.closed)
+        self.assertEqual(balance["cards"][self.card2.id].nb_current, 0)
+        self.assertEqual(balance["cards"][self.card2.id].nb_initial, 1)
+        self.assertEqual(balance["cards"][self.card2.id].nb_sells, 1)
+        self.assertEqual(balance["cards"][self.card2.id].nb_to_command, 1)
+        self.assertEqual(balance["cards"][self.card2.id].nb_wanted, 1)
+        co.close()
+        self.assertTrue(co.closed)
+        ret, msgs = co.add_copies([{'cards': [self.card2], 'sells': None}])
+        self.assertFalse(ret)
+        self.assertTrue(msgs)
+
+    def test_depostate_second(self):
+        Sell.sell_cards(None, cards=[self.card2])
+        # Create a depositState, add copies, close it.
+        self.deposit.add_copies([self.card2])
+        co, msgs = self.deposit.checkout_create()
+        co.close()
+        self.assertTrue(co.closed)
+        # Now test everythings' fine with a second depositState.
+        # Let's sell another card.
+        Sell.sell_cards(None, cards=[self.card2])
+        # The deposit state should exist and show good information.
+        checkout, msgs = self.deposit.checkout_create()
+        self.assertEqual([], msgs)
+        balance = checkout.balance()
+        self.assertEqual(1, balance["cards"][2].nb_sells)
+        self.assertEqual(-1, balance["cards"][2].nb_current)
+
+        co, msgs = self.deposit.checkout_create()
+        self.assertFalse(co)
+        checkout.close()
+        co, msgs = self.deposit.checkout_create()
+        self.assertTrue(co)
+
+    def test_depostate_dates(self):
+        """Don't count sells anterior from the creation of the deposit.
+        """
+        Sell.sell_cards(None, cards=[self.card2])
+        depo = DepositFactory(distributor=self.distributor)
+        depo.add_copies([self.card2])
+        co, msgs = depo.checkout_create()
+        balance = co.balance()
+        self.assertEqual(0, balance["cards"][self.card2.id].nb_current)
+        self.assertEqual(0, balance["cards"][self.card2.id].nb_sells)
 
 class TestSells(TestCase):
 
