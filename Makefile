@@ -40,8 +40,11 @@ update:
 	# Get code, install new packages, run DB migrations, compile JS.
 	git pull --rebase
 	pip install -r abelujo/requirements.txt
+	python manage.py migrate
 	gulp
-	echo "recall: without migrations, may need to delete the database"
+
+migrate:
+	python manage.py migrate
 
 # Run the tests of the UI in a browser.
 NODEBIN=./node_modules/.bin/
