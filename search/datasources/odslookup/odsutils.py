@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from unidecode import unidecode
 from toolz import keymap
 
 
@@ -27,16 +28,16 @@ def translateHeader(tag, lang="frFR", to="enEN"):
     takes a tag and returns its translation (english by default).
     """
     def cleanText(tag):
-        return tag.strip().strip(":")
+        return unidecode(tag.strip().strip(":"))
 
     if lang == "frFR":
-        if cleanText(tag.upper()) in ["TITRE",]:
+        if "TITRE" in cleanText(tag.upper()):
             return "title"
-        elif tag.upper() in ["PRIX",]:
+        elif "PRIX" in tag.upper():
             return "price"
         elif cleanText(tag.upper()) in ["AUTEUR",]:
             return "authors"  # mind the plurial
-        elif cleanText(tag) in ["editeur", "EDITEUR", "ÉDITEUR", u"\xe9diteur"]: # warning utf8 !
+        elif cleanText(tag).upper() in ["EDITEUR", "ÉDITEUR", u"ÉDITEUR"]: # warning utf8 !
             return "publisher"
         else:
             # print "translation to finish for ", tag

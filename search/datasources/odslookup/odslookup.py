@@ -20,15 +20,18 @@ import logging
 import os
 import sys
 import time
+from pprint import pprint
 
 import ods2csv2py
+
 # Relative imports inside a package using __main__ don't work. Need
 # a sys.path trick or a setup.py entrypoint for the script.
 common_dir = os.path.dirname(os.path.abspath(__file__))
 cdp, _ = os.path.split(common_dir)
 sys.path.append(cdp)
-from frFR.chapitre.chapitreScraper import postSearch
+
 from frFR.chapitre.chapitreScraper import Scraper
+from frFR.chapitre.chapitreScraper import postSearch
 
 
 """Workflow is as follow:
@@ -41,7 +44,12 @@ from frFR.chapitre.chapitreScraper import Scraper
   - a list of cards not found
 
 The price is the one from the ods sheet. TODO:
+
 """
+# Observations: fnac.com is better than chapitre or decitre. These two
+# won't find nothing with a long title and sub-title like "nanterre 68
+# vers le mouvement du 22 mars acratie".
+
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -49,7 +57,9 @@ log = logging.getLogger(__name__)
 TIMEOUT = 0.2
 
 def filterResults(cards, odsrow):
-    """:param list_of_dicts cards: list of dicts with cards informations
+    """
+
+    :param list_of_dicts cards: list of dicts with cards informations
     (list of authors, title, list of publishers, ean, etc.). See the
     scrapers documentation.
 
@@ -67,7 +77,7 @@ def filterResults(cards, odsrow):
             post_search = postSearch(card["details_url"])
             for key in post_search.keys():
                 card[key] = post_search[key]
-            if not card["ean"]:
+            if not card.get("ean") or not card.get("isbn"):
                 card_no_ean = card
             else:
                 card_found = card
@@ -132,6 +142,8 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     """
     Look for the desired cards on remote datasources.
 
+    "Authors" are optionnal.
+
     :param list_of_dict data: list of dict with names of columns, generally author, title, etc.
     :parama str datasource: the scraper to use ("chapitre", "discogs", etc).
 
@@ -144,10 +156,17 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     #: catch the names of the ods columns.
     ODS_AUTHORS = "authors"
     ODS_PUBLISHER = "publisher"
-    for row in odsdata:
-        search_terms = row["title"] + " " + row[ODS_AUTHORS] + row[ODS_PUBLISHER]
-        log.debug("Searching %s for '%s'..." % (datasource, search_terms))
-        cards, stacktraces = search_on_datasource(search_terms)
+
+    for i, row in enumerate(odsdata):
+        search_terms = row["title"] + " " + row.get(ODS_AUTHORS, "") + row[ODS_PUBLISHER]
+        log.debug("item %d/%d: Searching %s for '%s'..." % (
+            i, len(odsdata), datasource, search_terms))
+        try:
+            cards, stacktraces = search_on_datasource(search_terms)
+        except Exception as e:
+            log.error(e)
+            import ipdb; ipdb.set_trace()
+            return 1
         log.debug("found %s cards.\n" % len(cards))
         if stacktraces:
             log.debug("warning: found errors:", stacktraces)
@@ -173,6 +192,9 @@ def run(odsfile, datasource, timeout=TIMEOUT):
               "messages": None,
               "status": 0}
     odsdata = ods2csv2py.run(odsfile)
+    if not odsdata:
+        log.error("No data. See previous logs. Do nothing.")
+        return 1
     if odsdata.get("status") == 1:
         # TODO: propagate the error
         return odsdata
@@ -180,18 +202,20 @@ def run(odsfile, datasource, timeout=TIMEOUT):
     log.debug("ods sheet data: %i results\n" % (len(odsdata["data"]),))
     cards_found, cards_no_ean, cards_not_found = lookupCards(odsdata["data"], datasource=datasource, timeout=timeout)
     # TODO: check that the total corresponds.
+    if not sum([cards_found, cards_not_found, cards_no_ean]) == len(odsdata):
+        log.warning("The sum of everything doesn't match ;)")
     # TODO: make a list to confront the result to the ods value.
     log.debug("\nThe following cards will be added to the database: %i results\n" % (len(cards_found),))
     for card in cards_found:
-        log.debug("- " + card['title'])
-        log.debug("\t" , card)
-    log.debug("\nCards without ean: %i results\n" % (len(cards_no_ean),))
-    log.debug(cards_no_ean)
-    log.debug("\nCards not found: %i results\n" % (len(cards_not_found,)))
-    log.debug(cards_not_found)
-    log.debug("\nResults: %i cards found, %i without ean, %i not found" % (len(cards_found),
+        print "- " + card['title']
+        pprint("\t" , card)
+    print "\nCards without ean: %i results\n" % (len(cards_no_ean),)
+    pprint(cards_no_ean)
+    print "\nCards not found: %i results\n" % (len(cards_not_found,))
+    pprint(cards_not_found)
+    print "\nResults: %i cards found, %i without ean, %i not found" % (len(cards_found),
                                                                        len(cards_no_ean),
-                                                                       len(cards_not_found)))
+                                                                       len(cards_not_found))
     to_ret["found"]     = cards_found
     to_ret["no_ean"]    = cards_no_ean
     to_ret["not_found"] = cards_not_found

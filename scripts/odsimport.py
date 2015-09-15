@@ -25,10 +25,17 @@ def run(*args):
     arguments from the command line by passing a comma-separated list
     of values with --script-args.
 
+    Usage:
+    : python manage.py runscript odsimport
+
+    So with a Makefile target:
+    : make odsimport odsfile=myfile.ods
+
     documentation of runscript: http://django-extensions.readthedocs.org/en/latest/runscript.html
     """
     print "script args:", args
     ADD_NO_EAN = True
+    ADD_NOT_FOUND = True
     odsfile = args[0]
     if not os.path.exists(odsfile):
         print "error: file %s doesn't exist." % (odsfile,)
@@ -38,16 +45,26 @@ def run(*args):
     if cards["status"] == 1:
         print "Error - todo"
         return 1
-    if len(cards["odsdata"]) != cards["found"]:
-        cont = raw_input("Nb of cards found VS rows in ods file differ. Continue ? ([y]/n) ")
-        if cont.lower().startswith("n"):
-            return 0
+    # if len(cards["odsdata"]) != cards["found"]: # and no_ean etc
+        # cont = raw_input("Nb of cards found VS rows in ods file differ. Continue ? ([y]/n) ")
+        # if cont.lower().startswith("n"):
+            # return 0
     print "Adding cards to the database..."
     for card in cards["found"]:
         card_obj = Card.from_dict(card)
     print "...done."
+
     if ADD_NO_EAN:
         print "Adding cards without ean..."
         for card in cards["no_ean"]:
             obj = Card.from_dict(card)
         print "...done."
+
+    if ADD_NOT_FOUND:
+        print "Adding cards not found, without much info..."
+        for card in cards["not_found"]:
+            try:
+                obj = Card.from_dict(card)
+            except Exception as e:
+                print "Error adding card {}: {}".format(card.get('title'), e)
+        print "...done"

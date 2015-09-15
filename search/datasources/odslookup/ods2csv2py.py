@@ -17,6 +17,8 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import csv
+from unidecode import unidecode
+import logging
 import os
 import sys
 from subprocess import call
@@ -49,6 +51,9 @@ Different solutions:
 
 """
 
+# logging.basicConfig(format='%(levelname)s [%(funcName)s] %(message)s', level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
 def convert2csv(odsfile):
     """Convert an ods file (LibreOffice Calc) to csv.
     """
@@ -61,10 +66,18 @@ def convert2csv(odsfile):
         return None
 
 def replaceAccentsInStr(string):
-    # This is aweful.
-    # We could ignore remaining ones with encode("utf8", "ignore").
-    return string.replace("é","Ã©").replace("ç", "Ã§")\
-        .replace("’", "'").replace("à", "Ã ").replace("ê", "Ã¨").replace("è", "Ãª")
+    """Replace non printable utf-8 characters with their printable
+    equivalent. Because the csv module doesn't fully support utf8
+    input ! All input should be utf8 printable.
+
+    Fortunately, a web query to our datasources will still return the
+    right result, they deal corretly with accent issues.
+
+    cf https://docs.python.org/2/library/csv.html
+
+    """
+    string = string.strip('?') # do also some cleanup
+    return unidecode(string)
 
 def fieldNames(csvfile):
     """Return the field names of the file.
@@ -81,7 +94,7 @@ def fieldNames(csvfile):
             fieldnames = [translateHeader(orig_fieldnames.split(",")[ind]) for ind in range(len(orig_fieldnames.split(",")))]
             fieldnames = map(lambda x: x.upper(), fieldnames)
             return orig_fieldnames, fieldnames
-    print "warning: no fieldnames found in file {}.".format(csvfile)
+    log.info("warning: no fieldnames found in file {}.".format(csvfile))
     return [], []
 
 def extractCardData(csvfile, lang="frFR"):
@@ -141,12 +154,13 @@ def run(odsfile):
             print "results found: ", len(csvdata["data"])
         else:
             if csvdata["messages"]:
-                print "\n".join(msg["message"] for msg in csvdata["messages"])
+                log.info("\n".join(msg["message"] for msg in csvdata["messages"]))
             else:
-                print "warning: no suitable data was found in file. Do nothing."
+                log.info("warning: no suitable data was found in file. Do nothing.")
 
     else:
-        print "error with csv conversion."
+        log.error("The csv file doesn't exist, there was an error with its conversion.\
+        Hint: close all LibreOffice windows before continuing.")
     return csvdata
 
 def main():

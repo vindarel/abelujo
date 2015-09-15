@@ -305,7 +305,7 @@ class Scraper:
             price = priceStr2Float(price)
             return price
 
-        except Exception, e:
+        except Exception as e:
             log.debug('Error getting price', e)
 
 
