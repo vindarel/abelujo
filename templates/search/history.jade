@@ -37,7 +37,7 @@ div(ng-controller="historyController")
           {% verbatim %}
           a(href="{{ hist.item.details_url }}") Sell {{ hist.item.id }}
           {% endverbatim %}
-          span {% trans "total" %}: {% verbatim %} {{hist.item.total_price}} € {% endverbatim %}
+          span {% trans "total sold" %}: {% verbatim %} {{hist.item.total_price_sold}} € {% endverbatim %}
         div(ng-repeat="card in hist.item.cards")
           {% verbatim %}
           a(href="{{ card.get_absolute_url }}")  {{ card.title }}

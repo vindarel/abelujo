@@ -24,7 +24,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-a(href="/admin/search/deposit/{{deposit.name}}") {% trans "edit" %}
+a(href="/admin/search/deposit/{{deposit.id}}") {% trans "edit" %}
 dl.dl-horizontal
   dt {% trans "Deposit" %}
   dd {{ deposit.name }}
@@ -35,7 +35,7 @@ dl.dl-horizontal
   dt {% trans "Auto command" %}
   dd {{ deposit.auto_command | yesno:"oui,non"}}
   dt {% trans "Last deposit state" %}
-  dd {{ deposit.last_checkout }}
+  dd {{ deposit.last_checkout_date }}
   dt {% trans "Alerts" %}
   dd {{ nb_alerts }}
 if copies
@@ -51,8 +51,6 @@ table.table.table-striped.table-hover
       td {{ copy.price }} €
 
 {% trans "deposit state" as deposit_state %}
-{% blocktrans %}
-a(href="").btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
-{% endblocktrans %}
+a(href='{% url "deposit_checkout" deposit.id %}').btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
 
 {% endblock content %}

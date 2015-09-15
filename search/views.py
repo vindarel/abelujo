@@ -639,7 +639,7 @@ def deposits_view(request, depo_name):
     copies = []
     template = "search/deposits_view.jade"
     try:
-        deposit = Deposit.objects.get(name=depo_name)
+        deposit = Deposit.objects.get(pk=depo_name)
         copies = deposit.copies.all()
     except Deposit.DoesNotExist as e:
         messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
@@ -650,6 +650,27 @@ def deposits_view(request, depo_name):
         "copies": copies,
     })
 
+def deposits_checkout(request, pk):
+    """Create a DepositState for the given deposit (of id "pk).
+    """
+    template = "search/deposits_checkout.jade"
+    checkout = None
+
+    if request.method == 'GET':
+        deposit = Deposit.objects.get(id=pk)
+        checkout, msgs = deposit.checkout_create()
+        if not checkout:
+            # Could do in a "get or create" method.
+            checkout = deposit.last_checkout()
+        if not checkout.closed:
+            checkout.update()
+        balance = checkout.balance()
+    return render(request, "search/deposit_checkout.jade", {
+        "cards_balance": balance["cards"],
+        "total": balance["total"],
+        "created": checkout.created,
+        "distributor": checkout.deposit.distributor,
+        })
 
 def basket_auto_command(request):
     template = "search/basket_auto_command.jade"

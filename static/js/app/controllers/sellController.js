@@ -206,8 +206,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         startingDay: 1
     };
 
-    // We use it for datejs.
-    $scope.formats = ['yyyy-MM-dd', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    // Usable datejs format for Django.
+    // Django will throw a warning: Sell.created received a naive datetime
+    // while time zone support is active.
+    $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
     $scope.format = $scope.formats[0];
 
   }]);
