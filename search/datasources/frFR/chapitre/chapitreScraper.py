@@ -352,7 +352,7 @@ class Scraper:
             log.debug("Error while getting the type %s" % e)
 
     def search(self, *args, **kwargs): # rename in getBooks ?
-        """Searches books. Returns a couple (list of books, stachktraces of
+        """Searches books. Returns a couple (list of books, stacktraces of
         errors).
 
         From keywords, fires a query on decitre and parses the list of
@@ -373,6 +373,8 @@ class Scraper:
             b["data_source"] = DATA_SOURCE_NAME
             b["title"] = self._title(dom_product)
             b["details_url"] = self._details_url(dom_product)
+            b["search_url"] = self.url
+            b["search_terms"] = self.query
             b["authors"] = self._authors(dom_product)
 
             b["price"] = self._price(dom_product)

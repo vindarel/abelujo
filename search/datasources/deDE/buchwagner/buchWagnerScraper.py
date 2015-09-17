@@ -191,6 +191,8 @@ class Scraper:
             b["ean"] = self._ean(product) # missing
             b["title"] = self._title(product)
             b["details_url"] = self._details_url(product)
+            b["search_url"] = self.url
+            b["search_terms"] = self.query
             b["authors"] = self._authors(product)
             b["price"] = self._price(product)
             b["description"] = self._description(product)
