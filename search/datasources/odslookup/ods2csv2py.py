@@ -150,8 +150,8 @@ def run(odsfile):
     if os.path.exists(csvfile):
         csvdata = extractCardData(csvfile)
         if csvdata["data"]:
-            print "found data:", csvdata["data"]
-            print "results found: ", len(csvdata["data"])
+            # print "found data:", csvdata["data"]
+            print "results found in CSV: ", len(csvdata["data"])
         else:
             if csvdata["messages"]:
                 log.info("\n".join(msg["message"] for msg in csvdata["messages"]))

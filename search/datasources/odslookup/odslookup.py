@@ -16,13 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import clize
+import distance
+import json
 import logging
 import os
 import sys
 import time
+from datetime import datetime
 from pprint import pprint
-
-import ods2csv2py
+from sigtools.modifiers import kwoargs
 
 # Relative imports inside a package using __main__ don't work. Need
 # a sys.path trick or a setup.py entrypoint for the script.
@@ -30,6 +33,7 @@ common_dir = os.path.dirname(os.path.abspath(__file__))
 cdp, _ = os.path.split(common_dir)
 sys.path.append(cdp)
 
+import ods2csv2py
 from frFR.chapitre.chapitreScraper import Scraper
 from frFR.chapitre.chapitreScraper import postSearch
 
@@ -77,7 +81,7 @@ def filterResults(cards, odsrow):
             post_search = postSearch(card["details_url"])
             for key in post_search.keys():
                 card[key] = post_search[key]
-            if not card.get("ean") or not card.get("isbn"):
+            if not card.get("ean") and not card.get("isbn"):
                 card_no_ean = card
             else:
                 card_found = card
@@ -138,7 +142,7 @@ def search_on_scraper(search_terms):
     return Scraper(search_terms).search()
 
 def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=search_on_scraper,
-                level="DEBUG"):
+                level="DEBUG", debugfile=None):
     """
     Look for the desired cards on remote datasources.
 
@@ -157,16 +161,27 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     ODS_AUTHORS = "authors"
     ODS_PUBLISHER = "publisher"
 
+    start = datetime.now()
+
+    if os.path.isfile(debugfile):
+        with open(debugfile, "r") as f:
+            data = f.read()
+        if data:
+            cards = json.loads(data)
+            return cards['cards_found'], cards['cards_no_ean'], cards['cards_not_found']
+
     for i, row in enumerate(odsdata):
         search_terms = row["title"] + " " + row.get(ODS_AUTHORS, "") + row[ODS_PUBLISHER]
         log.debug("item %d/%d: Searching %s for '%s'..." % (
             i, len(odsdata), datasource, search_terms))
+
+        # Fire the search:
         try:
             cards, stacktraces = search_on_datasource(search_terms)
         except Exception as e:
             log.error(e)
-            import ipdb; ipdb.set_trace()
             return 1
+
         log.debug("found %s cards.\n" % len(cards))
         if stacktraces:
             log.debug("warning: found errors:", stacktraces)
@@ -183,32 +198,48 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             cards_not_found.append(not_found)
         time.sleep(timeout)              # be gentle with the remote server...
 
+    ended = datetime.now()
+    print "Search on {} lasted: {}".format(datasource, ended - start)
     return (cards_found, cards_no_ean, cards_not_found)
 
-def run(odsfile, datasource, timeout=TIMEOUT):
+def run(odsfile, datasource, timeout=TIMEOUT, debugfile=None):
     cards_found = cards_no_ean = cards_not_found = None
     to_ret = {"found": cards_found, "no_ean": None, "not_found": None,
               "odsdata": None,
               "messages": None,
               "status": 0}
-    odsdata = ods2csv2py.run(odsfile)
-    if not odsdata:
+    odsdata = {}
+    if not debugfile:
+        odsdata = ods2csv2py.run(odsfile)
+    if not odsdata and not debugfile:
         log.error("No data. See previous logs. Do nothing.")
         return 1
     if odsdata.get("status") == 1:
         # TODO: propagate the error
         return odsdata
-    log.debug("\n".join(res['title'] for res in odsdata["data"]))
-    log.debug("ods sheet data: %i results\n" % (len(odsdata["data"]),))
-    cards_found, cards_no_ean, cards_not_found = lookupCards(odsdata["data"], datasource=datasource, timeout=timeout)
+    if odsdata:
+        print "\n".join(res['title'] for res in odsdata.get("data"))
+        log.debug("ods sheet data: %i results\n" % (len(odsdata.get("data")),))
+
+    # Look up for cards on our datasource
+    cards_found, cards_no_ean, cards_not_found = lookupCards(odsdata.get("data"),
+                                                             datasource=datasource, timeout=timeout,
+                                                             debugfile=debugfile)
+
     # TODO: check that the total corresponds.
-    if not sum([cards_found, cards_not_found, cards_no_ean]) == len(odsdata):
+    if not sum([len(cards_found), len(cards_not_found), len(cards_no_ean)]) == len(odsdata):
         log.warning("The sum of everything doesn't match ;)")
     # TODO: make a list to confront the result to the ods value.
     log.debug("\nThe following cards will be added to the database: %i results\n" % (len(cards_found),))
-    for card in cards_found:
-        print "- " + card['title']
-        pprint("\t" , card)
+
+    with open("testdata.json", "wb") as f:
+        towrite = {"cards_found": cards_found,
+                   "cards_no_ean": cards_no_ean,
+                   "cards_not_found": cards_not_found}
+        f.write(json.dumps(towrite))
+
+    print "\nCards found, complete: "
+    pprint(cards_found)
     print "\nCards without ean: %i results\n" % (len(cards_no_ean),)
     pprint(cards_no_ean)
     print "\nCards not found: %i results\n" % (len(cards_not_found,))
@@ -222,17 +253,18 @@ def run(odsfile, datasource, timeout=TIMEOUT):
     to_ret["odsdata"]   = odsdata
     return to_ret
 
-def main():
-    datasource = "chapitre"
-    if len(sys.argv) > 1 and sys.argv[1]:
-        odsfile = sys.argv[1]
-        odsdata = run(odsfile, datasource, timeout=TIMEOUT)
-        if odsdata["messages"]:
-            log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
-        return odsdata["status"]
+@kwoargs("ods", "json")
+def main(ods=None, json=None):
+    """
+    ods: the ods file
 
-    else:
-        log.debug("usage: python ods2abelujo.py odsfile.ods")
+    json: a json file (debug only)
+    """
+    datasource = "chapitre"
+    odsdata = run(ods, datasource, timeout=TIMEOUT, debugfile=json)
+    if odsdata["messages"]:
+        log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
+    return odsdata["status"]
 
 if __name__ == '__main__':
-    exit(main())
+    clize.run(main)
