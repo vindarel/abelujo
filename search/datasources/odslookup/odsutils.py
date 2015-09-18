@@ -68,3 +68,17 @@ def removeVoidRows(data):
     """
     data = filter(lambda line: (line["title"] != "") and (line["publisher"] != ""), data)
     return data
+
+def replaceAccentsInStr(string):
+    """Replace non printable utf-8 characters with their printable
+    equivalent. Because the csv module doesn't fully support utf8
+    input ! All input should be utf8 printable.
+
+    Fortunately, a web query to our datasources will still return the
+    right result, they deal corretly with accent issues.
+
+    cf https://docs.python.org/2/library/csv.html
+
+    """
+    string = string.strip('?') # do also some cleanup: see rmPunctuation
+    return unidecode(string)

@@ -26,6 +26,8 @@ cdpp, _ = os.path.split(cdp)
 sys.path.append(cdpp)
 
 from odslookup.odslookup import lookupCards
+from odslookup.odslookup import cardCorresponds
+from odslookup.odslookup import DISTANCE_ACCEPTED
 
 card_bourgeois = {'authors': [u'Daniel Gu\xe9rin'],
   'card_type': 'book',
@@ -76,7 +78,7 @@ class testOdsUtils(unittest.TestCase):
                          'authors': '',
                          'price': '18',
                          'publisher': 'libertalia',
-                         'title': 'Bourgeois et bras nus'},
+                         'title': u'Bourgeois et bras nus ; guerre sociale durant le R\xe9volution fran\xe7aise (1793-1795)'},
                         {'NB VENDUS': '',
                          'PRIX DU': '0',
                          'PRIX TOTAL': '0',
@@ -85,7 +87,10 @@ class testOdsUtils(unittest.TestCase):
                          'authors': '',
                          'price': '20',
                          'publisher': 'libertalia',
-                         'title': 'Crack capitalism'}]
+                         'title': u'Crack Capitalism - 33 Theses Contre Le Capital'}]
+
+        self.card = {"title": "title test",}
+        self.odsrow = {"title": "title test 1",}
 
     def tearDown(self):
         pass
@@ -98,5 +103,44 @@ class testOdsUtils(unittest.TestCase):
         self.assertTrue(found[0].has_key("title"))
         self.assertFalse(no_ean)
 
+    def testCardCorreponds(self):
+        self.assertTrue(cardCorresponds(self.card, self.odsrow))
+
+        self.card['title'] = u"""Introduction \u00e0\u00a0l'histoire\u00a0moderne, g\u00e9n\u00e9rale
+et\u00a0politique de\u00a0l'univers.\u00a0Empire d'Alexandre. Histoire
+des\u00a0peuples\u00a0orientaux. Histoire
+des\u00a0Croisades.\u00a0Empire ottoman. Asie / commenc\u00e9e
+par\u00a0le\u00a0baron\u00a0de\u00a0Pufendorff,\u00a0augment\u00e9e
+par\u00a0M.\u00a0Bruzen de\u00a0La\u00a0Martini\u00e8re. Nouvelle
+\u00e9dition continu\u00e9e jusqu'en mil sept cent cinquante,
+par\u00a0M.\u00a0de\u00a0Grace [Edition de 1753-1759]"""
+        self.odsrow['title'] = u"introduction a qq chose d'autre"
+        self.assertFalse(cardCorresponds(self.card, self.odsrow))
+
+        self.card['title'] = u"Petit Parisien Sixieme Derniere (Le) N°23009 du 28/02/1940"
+        self.odsrow['title'] = u"La sueur du burnous"
+        self.assertFalse(cardCorresponds(self.card, self.odsrow))
+
+        # Titles included in a longer title + subtitle must pass.
+        self.card['title'] = u"Sexe, opium et charleston t.1 ; les vies surréalistes des prémices à 1920"
+        self.odsrow['title'] = u"Sexe, opium et charleston, 3"
+        self.assertTrue(cardCorresponds(self.card, self.odsrow))
+
+        self.card['title'] = u"Anthologie Vol.1 De La Connerie Militariste D'Expression Francaise"
+        self.odsrow['title'] = u'Anthologie de la connerie militariste, 1'
+        self.assertTrue(cardCorresponds(self.card, self.odsrow))
+        #Results: 297 cards found, 73 without ean, 62 not found
+
+    def testAccents(self):
+        self.card['title'] = u"De mémoire t.1 ; les jours du début : un automne 1970 à toulouse"
+        self.odsrow['title'] = u"De memoire, 1"
+        self.assertTrue(cardCorresponds(self.card, self.odsrow))
+
+    def testParenthesisUppercase(self):
+        self.card['title'] = u"Chair A Canon...(De La)"
+        self.odsrow['title'] = u"La chair a canon"
+        self.assertTrue(cardCorresponds(self.card, self.odsrow))
+
+        # accept: explsions de liberte, guerre au vivant, putain d'usine, etc
 if __name__ == '__main__':
     unittest.main()

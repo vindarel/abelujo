@@ -21,6 +21,7 @@ import distance
 import json
 import logging
 import os
+import string
 import sys
 import time
 from datetime import datetime
@@ -34,18 +35,23 @@ cdp, _ = os.path.split(common_dir)
 sys.path.append(cdp)
 
 import ods2csv2py
+from odsutils import replaceAccentsInStr
 from frFR.chapitre.chapitreScraper import Scraper
 from frFR.chapitre.chapitreScraper import postSearch
-
 
 """Workflow is as follow:
 - get the list of rows from the ods file (with ods2csv2py)
 - fire a search on a datasource for each card
-- find a good matching result inside the result list
+- find a good matching result inside the result list (because we may have falso positives)
+    - i.e., we have to check that the titles are /similar/. That takes time and is computational heavy.
+      They can differ by details. See method "cardCorresponds".
 - we return:
   - a list of matches
   - a list of matches but with ean not found
-  - a list of cards not found
+  - a list of cards not found on the data source.
+- to add cards to abelujo, use scripts/odsimport.py
+
+Because of the remote search and checking similarities, this will take like 15min for 400 cards.
 
 The price is the one from the ods sheet. TODO:
 
@@ -58,27 +64,37 @@ The price is the one from the ods sheet. TODO:
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
+#: Timeout for searc queries
 TIMEOUT = 0.2
+#: levenstein's normalized distance to consider two strings corresponding.
+#: the smaller the nearer.
+DISTANCE_ACCEPTED = 0.4
 
 def filterResults(cards, odsrow):
-    """
+    """Filter a list of candidates against the ods row.
+    Check that a card correponds to a row and look for its ean with the
+    postSearch scraper method.
 
     :param list_of_dicts cards: list of dicts with cards informations
     (list of authors, title, list of publishers, ean, etc.). See the
     scrapers documentation.
 
     returns one card.
+
     """
     card_not_found = None
     card_no_ean    = None
     card_found     = None
+    accepted = False
+    # idea: remove very similar candidates to spare computational time.
     for card in cards:
         if not cards:
             card_not_found = card
             continue
         # check the publisher, the price, etc
         if cardCorresponds(card, odsrow):
-            post_search = postSearch(card["details_url"])
+            accepted = True
+            post_search = postSearch(card.get("details_url"))
             for key in post_search.keys():
                 card[key] = post_search[key]
             if not card.get("ean") and not card.get("isbn"):
@@ -87,12 +103,76 @@ def filterResults(cards, odsrow):
                 card_found = card
             break
 
+    if not accepted:
+        card_not_found = odsrow
+
     return (card_found, card_no_ean, card_not_found)
 
-def cardCorresponds(card, odsrow):
-    """check if the card found with a scraper corresponds to what was in the user's ods file.
-    """
+def long_substr(data):
+    substr = ''
+    if len(data) > 1 and len(data[0]) > 0:
+        for i in range(len(data[0])):
+            for j in range(len(data[0])-i+1):
+                if j > len(substr) and is_substr(data[0][i:i+j], data):
+                    substr = data[0][i:i+j]
+    return substr
+
+def is_substr(find, data):
+    if len(data) < 1 and len(find) < 1:
+        return False
+    for i in range(len(data)):
+        if find not in data[i]:
+            return False
     return True
+
+def rmPunctuation(it):
+    """Remove all punctuation from the string.
+
+    return: str
+    """
+    # https://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string-in-python
+    # ret = it.translate(None, string.punctuation) # faster, not with unicode
+    exclude = set(string.punctuation)
+    st = ''.join(ch for ch in it if ch not in exclude)
+    return st
+
+
+def cardCorresponds(card, odsrow):
+    """Check if the card found with a scraper corresponds to what was in the user's ods file.
+    Some titles are totally eronous.
+
+    False negatives are possible (see comments).
+
+    return: Boolean
+    """
+    t1 = rmPunctuation(card.get('title'))
+    t1 = replaceAccentsInStr(t1)
+    t1 = t1.upper()
+    t2 = rmPunctuation(odsrow.get('title')) # already unidecoded.
+    t2 = t2.upper()
+    dist = distance.levenshtein(t1, t2, normalized=True)
+    accept = dist < DISTANCE_ACCEPTED
+    if not accept:
+        # Here we can have a title that includes the sub-title, thus
+        # the two strings will be very different. False negative. We
+        # will find the longest common substring and check its
+        # distance with the odsrow title.
+        log.info(u"Titles are very different. Check the common substring of '{}' and '{}'".format(
+            card.get('title'), odsrow.get('title')))
+        # idea: remove everything in ( ) and [ ], we sometimes see "title (the)".
+        # idea: remove vol.x, t.x
+        sub = long_substr([t1, t2])
+        dist = distance.levenshtein(sub, t2, normalized=True)
+        accept = dist < DISTANCE_ACCEPTED
+        if not accept:
+            log.info(u"Rejecting two title with distance {}: common substring {} VS {}".format(
+                dist, sub, t2))
+        else:
+            log.info(u"Accepting two titles with distance {}: common substring '{}' VS '{}'.".format(
+                dist, sub, t2))
+
+    return accept
+
 
     #: list of important rows of the user file to check. Typically,
     # the title and the publisher. The price is questionnable because the
@@ -103,37 +183,6 @@ def cardCorresponds(card, odsrow):
         "publisher",
         ]
 
-    check_price = False
-    #: messages of warnings, successes or errors: list of dicts with
-    # "level":warning, "message": "foo", "field": field
-    messages = []
-    status = True
-    for row in rows_to_check:
-        if row == "authors":
-            log.debug("warning: ensure rows are named the same (both authors with an s for instance).")
-            res, msg = check_authors(card["authors"], odsrow["authors"])
-            if msg:
-                messages.append(msg)
-            status = status and res
-        elif row == "title":
-            res, msg = check_title(card["title"], odsrow["title"])
-
-    return status, messages
-
-def check_title(from_search, from_ods):
-    """check the titles look the same.
-    Returns a tuple (status, messages).
-    """
-    return True, None
-
-def check_authors(from_search, from_ods):
-    """check if the two authors/list of authors are the same.
-    Returns a tupel (status, message dict).
-    """
-    # from_s = ", ".join([aut.lower() for aut  in from_card])
-    # print "caution: authors not checked."
-    return True, None
-
 def search_on_scraper(search_terms):
     """Fire the search.
 
@@ -142,7 +191,7 @@ def search_on_scraper(search_terms):
     return Scraper(search_terms).search()
 
 def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=search_on_scraper,
-                level="DEBUG", debugfile=None):
+                level="DEBUG", debugfile=""):
     """
     Look for the desired cards on remote datasources.
 
@@ -154,6 +203,8 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     return a tuple (cards found, cards without ean, cards not found on remote sources).
     """
     log.setLevel(level.upper())
+    cards = []
+    stacktraces = []
     cards_not_found = []
     cards_no_ean    = []
     cards_found     = []
@@ -168,6 +219,7 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             data = f.read()
         if data:
             cards = json.loads(data)
+            # cards = cards.get('cards_found') + cards.get('cards_no_ean') + cards.get('cards_not_found')
             return cards['cards_found'], cards['cards_no_ean'], cards['cards_not_found']
 
     for i, row in enumerate(odsdata):
@@ -187,30 +239,29 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             log.debug("warning: found errors:", stacktraces)
         if cards:
             found, no_ean, not_found = filterResults(cards, row)
+            if found:
+                log.debug("found a valid result: {}".format(found))
+                cards_found.append(found)
+            if no_ean:
+                cards_no_ean.append(no_ean)
+            if not_found:  # TODO: useless
+                cards_not_found.append(not_found)
         else:
             cards_not_found.append(row)
-        if found:
-            log.debug("found a valid result: {}".format(found))
-            cards_found.append(found)
-        if no_ean:
-            cards_no_ean.append(no_ean)
-        if not_found:  # TODO: useless
-            cards_not_found.append(not_found)
         time.sleep(timeout)              # be gentle with the remote server...
 
     ended = datetime.now()
     print "Search on {} lasted: {}".format(datasource, ended - start)
     return (cards_found, cards_no_ean, cards_not_found)
 
-def run(odsfile, datasource, timeout=TIMEOUT, debugfile=None):
+def run(odsfile, datasource, timeout=TIMEOUT, debugfile=""):
     cards_found = cards_no_ean = cards_not_found = None
     to_ret = {"found": cards_found, "no_ean": None, "not_found": None,
               "odsdata": None,
               "messages": None,
               "status": 0}
     odsdata = {}
-    if not debugfile:
-        odsdata = ods2csv2py.run(odsfile)
+    odsdata = ods2csv2py.run(odsfile)
     if not odsdata and not debugfile:
         log.error("No data. See previous logs. Do nothing.")
         return 1
@@ -226,7 +277,6 @@ def run(odsfile, datasource, timeout=TIMEOUT, debugfile=None):
                                                              datasource=datasource, timeout=timeout,
                                                              debugfile=debugfile)
 
-    # TODO: check that the total corresponds.
     if not sum([len(cards_found), len(cards_not_found), len(cards_no_ean)]) == len(odsdata):
         log.warning("The sum of everything doesn't match ;)")
     # TODO: make a list to confront the result to the ods value.
@@ -254,11 +304,11 @@ def run(odsfile, datasource, timeout=TIMEOUT, debugfile=None):
     return to_ret
 
 @kwoargs("ods", "json")
-def main(ods=None, json=None):
+def main(ods="", json=""):
     """
     ods: the ods file
 
-    json: a json file (debug only)
+    json: a json file to replace the remote search of the ods file (debug purposes)
     """
     datasource = "chapitre"
     odsdata = run(ods, datasource, timeout=TIMEOUT, debugfile=json)

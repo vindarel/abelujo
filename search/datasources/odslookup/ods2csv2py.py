@@ -28,6 +28,7 @@ from odsutils import keysEqualValues
 from odsutils import translateHeader
 from odsutils import translateAllKeys
 from odsutils import removeVoidRows
+from odsutils import replaceAccentsInStr
 
 
 """
@@ -64,20 +65,6 @@ def convert2csv(odsfile):
         return os.path.splitext(odsfile)[0] + ".csv"
     else:
         return None
-
-def replaceAccentsInStr(string):
-    """Replace non printable utf-8 characters with their printable
-    equivalent. Because the csv module doesn't fully support utf8
-    input ! All input should be utf8 printable.
-
-    Fortunately, a web query to our datasources will still return the
-    right result, they deal corretly with accent issues.
-
-    cf https://docs.python.org/2/library/csv.html
-
-    """
-    string = string.strip('?') # do also some cleanup
-    return unidecode(string)
 
 def fieldNames(csvfile):
     """Return the field names of the file.

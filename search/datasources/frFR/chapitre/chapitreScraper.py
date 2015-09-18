@@ -399,6 +399,8 @@ def postSearch(url):
 
     returns: a dict
     """
+    if not url:
+        return {}
     if not url.startswith('http'):
         log.debug("warning: url must start with http ;)")
     req = requests.get(url)
