@@ -117,6 +117,6 @@ def ppcard(cards):
 def hist():
     """Print a recent history.
     """
-    hist, status, alerts = getHistory(sells=True)
+    hist, status, alerts = getHistory(sells_only=True)
     print "Sells:"
     print hist

@@ -1539,7 +1539,7 @@ class Sell(models.Model):
         return self.soldcards_set.filter(card__id=card_id)
 
 
-def getHistory(to_list=False, sells=False):
+def getHistory(to_list=False, sells_only=False):
     """return the last sells, card creations and movements.
 
     With pagination.
@@ -1549,10 +1549,11 @@ def getHistory(to_list=False, sells=False):
     alerts = []
     sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
     sells = [it.to_list() for it in sells]
-    if sells:
+    if sells_only:
         entries = Card.objects.order_by("-created")[:PAGE_SIZE]
         entries = [it.to_list() for it in entries]
-        toret = sells + entries
+
+    toret = sells + entries
     toret.sort(key= lambda it: it['created'], reverse=True)
     return toret, STATUS_SUCCESS, alerts
 
