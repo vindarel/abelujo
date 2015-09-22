@@ -119,6 +119,7 @@ ci:
 # Load sample data, for testing purposes.
 data:
 	./manage.py loaddata dumpdata-big
+	@echo "Loaded 400 cards in the database."
 
 # Code coverage analysis:
 cov:
