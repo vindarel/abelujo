@@ -582,9 +582,9 @@ class Card(TimeStampedModel):
         card_distributor=None
         if card.get("distributor"):
             try:
-                card_distributor = Distributor.objects.get(id=card.get("distributor"))
+                card_distributor, created = Distributor.objects.get_or_create(name=card.get("distributor"))
             except Exception as e:
-                log.warning("couldn't get the distributor. This is not necessary a bug.")
+                log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
 
         # Get the publishers:
         card_publishers = []
@@ -1461,8 +1461,6 @@ class Sell(models.Model):
 
         if not date:
             date = datetime.datetime.now()
-        else:
-            log.warning("TODO: check the date format. We want .now())")
 
         for it in ids_prices_nb:
             # "sell" a card.

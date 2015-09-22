@@ -159,6 +159,7 @@ def cardCorresponds(card, odsrow):
         # distance with the odsrow title.
         log.info(u"Titles are very different. Check the common substring of '{}' and '{}'".format(
             card.get('title'), odsrow.get('title')))
+        # idea: check publisher, authors
         # idea: remove everything in ( ) and [ ], we sometimes see "title (the)".
         # idea: remove vol.x, t.x
         sub = long_substr([t1, t2])

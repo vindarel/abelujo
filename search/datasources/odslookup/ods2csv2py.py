@@ -24,7 +24,9 @@ import sys
 from subprocess import call
 from toolz import valmap
 
+from odsutils import getMissingData
 from odsutils import keysEqualValues
+from odsutils import setRowTypes
 from odsutils import translateHeader
 from odsutils import translateAllKeys
 from odsutils import removeVoidRows
@@ -49,6 +51,8 @@ Different solutions:
   soffice. [method adopted]
   - pro: simple. Very little code required.
   - cons: LibreOffice dependency. How bad is it for a server ?
+
+If in the csv column the distributor isn't set, it is supposed to be the publisher.
 
 """
 
@@ -122,10 +126,12 @@ def extractCardData(csvfile, lang="frFR"):
     rest = [line for line in reader]
     # Translate all keys to english. How to do it before ? We prefer not to rewrite the csv file.
     data = translateAllKeys(rest)
-    # TODO: manage lower/upper case
     data = removeVoidRows(data)
     # replace accents bad encoding.
     data = map(lambda dic: valmap(replaceAccentsInStr, dic), data)
+    data = setRowTypes(data)
+    # Usually, if distributor is not set then it is the publisher.
+    data = getMissingData(data)
     return {"fieldnames": fieldnames, "data": data, "messages": messages}
 
 def run(odsfile):

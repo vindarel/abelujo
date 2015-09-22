@@ -17,6 +17,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 from unidecode import unidecode
+from toolz import itemmap
 from toolz import keymap
 
 
@@ -28,7 +29,7 @@ def translateHeader(tag, lang="frFR", to="enEN"):
     takes a tag and returns its translation (english by default).
     """
     def cleanText(tag):
-        return unidecode(tag.strip().strip(":"))
+        return unidecode(tag.strip().strip(":")) # see rmPunctuation
 
     if lang == "frFR":
         if "TITRE" in cleanText(tag.upper()):
@@ -39,6 +40,10 @@ def translateHeader(tag, lang="frFR", to="enEN"):
             return "authors"  # mind the plurial
         elif cleanText(tag).upper() in ["EDITEUR", "ÉDITEUR", u"ÉDITEUR"]: # warning utf8 !
             return "publisher"
+        elif "DIFFUSEUR" in cleanText(tag).upper():
+            return "distributor"
+        elif "REMISE" in cleanText(tag).upper():
+            return "discount"
         else:
             # print "translation to finish for ", tag
             return tag
@@ -56,6 +61,47 @@ def translateAllKeys(data):
     """
     # keymap: apply function to keys of dictionnary.
     return map(lambda dic: keymap(translateHeader, dic), data)
+
+def toFloat(val):
+    """safely cast to float."
+    """
+    # can't django accept strings ?
+    try:
+        val = val.replace(',', '.')
+        val = float(val)
+    except Exception as e:
+        # print "Error getting an int of {}: {}".format(val, e)
+        return 0
+    return val
+
+def giveTagType(item):
+    key = item[0]
+    val = item[1]
+    if key.upper() == "PRICE":
+        val = toFloat(val)
+    elif key.upper() == "DISCOUNT":
+        val = val.strip('%')
+        val = toFloat(val)
+
+    return key, val
+
+def setRowTypes(data):
+    """
+    :param list of dict data:
+    """
+    return map(lambda dic: itemmap(giveTagType, dic), data)
+
+def _getMissingData(dic):
+    if dic.get('publisher') and not dic.get('distributor'):
+        dic['distributor'] = dic.get('publisher')
+
+    return dic
+
+def getMissingData(data):
+    """
+    :param list of dict
+    """
+    return map(_getMissingData, data)
 
 def keysEqualValues(dic):
     """check that all keys are equal to their value.
