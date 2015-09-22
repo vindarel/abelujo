@@ -1547,11 +1547,12 @@ def getHistory(to_list=False, sells_only=False):
     alerts = []
     sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
     sells = [it.to_list() for it in sells]
+    entries = Card.objects.order_by("-created")[:PAGE_SIZE]
+    entries = [it.to_list() for it in entries]
     if sells_only:
-        entries = Card.objects.order_by("-created")[:PAGE_SIZE]
-        entries = [it.to_list() for it in entries]
-
-    toret = sells + entries
+        toret = entries
+    else:
+        toret = sells + entries
     toret.sort(key= lambda it: it['created'], reverse=True)
     return toret, STATUS_SUCCESS, alerts
 
