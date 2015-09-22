@@ -12,9 +12,9 @@ This project is at its debut stage. However it is already possible to:
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
 -   add exemplaries to your stock, set places, use baskets,
--   manage deposits and distributors,
+-   manage deposits and distributors, see **the balance of your deposits**,
 -   sell books, see conflicts of distributors, see the history,
--   **import data from a LibreOffice Calc file** (.ods). See the [user documentation](doc/user/index.rst "user doc").
+-   import data from a LibreOffice Calc file (.ods). See the [user documentation](doc/user/index.rst "user doc").
 
 It is translated to english, french and spanish.
 
@@ -84,11 +84,14 @@ Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 How to update
 -------------
 
-For now, when you update the sources (`git pull`), you certainly will have
-to run the installation process again. We may have updated some python
-packages and the database is very likely to change too (and we didn't
-set up some DB schema migration yet, so you'll have to delete it first,
-meaning you'll loose your data).
+To update, you need to: pull the sources (`git pull --rebase`),
+install new packages (system and python-wide), run the database
+migrations, build the static assets and, in production, collect the
+static files.
+
+In the virtual env, run:
+
+    make update
 
 Development
 ===========
@@ -110,22 +113,23 @@ distributors, …).
 We get the data about books with some webscraping (discogs provides an
 api).
 
-You can have a look at the existing scrapers at [search/datasources](search/datasources/). Some
-abstraction work remains to be done. And shall we use [scrapy](http://doc.scrapy.org/en/latest/intro/overview.html) ?
+You can have a look at the existing scrapers at
+[search/datasources](search/datasources/). Some abstraction work
+remains to be done. To implement your own, see the base class at
+`datasources/utils/baseScraper.py`. It's actually very simple, you
+just need to find a couple of xpath selectors.
 
 
 Load testing data
 -----------------
 
-For the moment, we have to delete the current database if the models
-change, so we loose our data, but it is possible to load a small set
-of testing data::
+It is possible to load a set of testing data::
 
     make data
     # a shortcut for
     # ./manage.py loaddata dumpdata.json
 
-this will load a handful of Cards, Authors, Publishers and
+this will load aprroximately 400 Cards, Authors, Publishers and
 Baskets. There are already a default Place and Distributor.
 
 Troubleshooting
@@ -136,5 +140,9 @@ If you get:
     OperationalError: no such column: search_card.card_type_id
 
 it is probably because you pulled the sources and didn't update your
-DB. As explained, at the moment you need to delete your current DB and
-run `make install` again.
+DB. Use database migrations (`make migrate`).
+
+Documentation
+-------------
+
+We have developer documentation: http://dev.abelujo.cc/
