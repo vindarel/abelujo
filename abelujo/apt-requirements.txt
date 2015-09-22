@@ -1,6 +1,9 @@
 python-pip
 virtualenvwrapper
 python-dev
+# for lxml:
+libxml2-dev
+libxslt1-dev
 apache2
 apache2-dev
 nodejs

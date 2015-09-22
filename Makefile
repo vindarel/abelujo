@@ -39,6 +39,7 @@ npm:
 update:
 	# Get code, install new packages, run DB migrations, compile JS.
 	git pull --rebase
+	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	pip install -r abelujo/requirements.txt
 	python manage.py migrate
 	gulp
