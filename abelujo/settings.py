@@ -195,6 +195,8 @@ INSTALLED_APPS = (
     # Custom:
     'djangular',
     'mod_wsgi.server',
+    'underwear',
+
     'search',
 )
 
