@@ -31,14 +31,18 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
               target: gettext("bookshop deposit")
           },
           {
-              name: gettext("bookshop deposit"),
-              target: gettext("distributor deposit")
-          },
-          {
-              name: gettext("distributor"),
-              target: gettext("distributor deposit")
+              name: gettext("editor deposit"),
+              target: gettext("editor deposit")
           }
       ];
+
+    $scope.places = [
+        {
+            name: "first place example"
+        }
+    ];
+    $scope.dest_place = $scope.places[0];
+
 
       $scope.deposit_type = $scope.deposit_types[0];
       $scope.deposit_name = undefined;
@@ -48,6 +52,10 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
       // messages for ui feedback: list of couple level/message
       $scope.messages = undefined;
+
+    $scope.isDistributorDeposit = function(dep_name) {
+        return dep_name === $scope.deposit_types[1].name;
+    };
 
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
