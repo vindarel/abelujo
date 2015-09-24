@@ -30,31 +30,41 @@ div(ng-controller="DepositCreateController")
 
   // form(action='/api/distributors', method='post')
   form(method='post')
-      b
-        div {% trans "Name of the deposit" %}
+      b: div {% trans "Name of the deposit" %}
       input.form-control(type="text", ng-model="deposit_name", required)
 
-      b
-        div {% trans "Type" %}
+      b: div {% trans "Type" %}
       select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
 
       div(ng-show="{% verbatim %} isDistributorDeposit(deposit_type.name) {% endverbatim %}")
-        b Destination place
+        b {% trans "Destination place" %}
         select.form-control(ng-model="dest_place", ng-options="elt.name for elt in places")
 
-      b
-        div {% trans "Inital quantity" %}
+      b: div {% trans "Due date" %}
+      p.input-group
+        input.form-control(
+              type='text'
+              datepicker-popup='{{format}}'
+              ng-model='date'
+              is-open='opened'
+              datepicker-options='dateOptions'
+              ng-required='true'
+              close-text='Close'
+            )
+        span.input-group-btn
+              button.btn.btn-default(type='button', ng-click='open($event)')
+                i.glyphicon.glyphicon-calendar
+
+      b: div {% trans "Inital quantity" %}
       input.form-control(type="number", ng-model="initial_nb_copies")
 
-      b
-        div {% trans "Minimum wanted quantity" %}
+      b: div {% trans "Minimum wanted quantity" %}
       input.form-control(type="number", ng-model="minimal_nb_copies")
       div.form-group
         div.checkbox
             input(type="checkbox", ng-model="auto_command")
             | {% trans "Auto-command the cards" %}
-      b
-        div {% trans "Distributor" %}
+      b: div {% trans "Distributor" %}
       select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list', required)
         option(value="") ---
       div

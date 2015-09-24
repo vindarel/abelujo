@@ -43,6 +43,30 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     ];
     $scope.dest_place = $scope.places[0];
 
+    //// TODO: refacto with Sell controller and view.
+    $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    $scope.format = $scope.formats[0];
+    $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+    };
+   // The date picker:
+
+    $scope.today = function() {
+        $scope.date = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function () {
+        $scope.date = null;
+    };
+
+    $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+    };
 
     $scope.deposit_type = $scope.deposit_types[0];
     $scope.deposit_name = undefined;
