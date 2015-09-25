@@ -36,14 +36,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
         }
     ];
 
-    $scope.places = [
-        {
-            name: "first place example"
-        }
-    ];
-    $scope.dest_place = $scope.places[0];
-
-
     $scope.deposit_type = $scope.deposit_types[0];
     $scope.deposit_name = undefined;
     $scope.initial_nb_copies = 1;
@@ -112,8 +104,8 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             "initial_nb_copies" : $scope.initial_nb_copies,
             "minimal_nb_copies" : $scope.minimal_nb_copies,
             "auto_command"      : $scope.auto_command,
-            "due_date"          : $scope.date,
             "dest_place"        : $scope.dest_place.id,
+            "due_date"          : $scope.due_date.toString($scope.format)
         };
         // needed for Django to process the params to its request.POST dict.
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -128,14 +120,22 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
         return $http.post("/api/deposits", params)
             .then(function(response){
-                $scope.messages = response.data.messages;
+                $scope.messages = response.data.alerts;
+                $scope.cancelCurrentData();
                 return response.data;
             });
     };
 
+    $scope.cancelCurrentData = function(){
+        $scope.deposit_name = "";
+        $scope.cards_selected = [];
+        $scope.distributor = "";
+    };
+
     $scope.add_selected_card = function(card_repr){
         $scope.cards_selected.push(card_repr);
-        $scope.copy_selected = "";
+        $scope.cards_fetched = [];
+        $scope.copy_selected = undefined;
     };
 
     $scope.remove_from_selection = function(index_to_rm){
@@ -178,7 +178,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     $scope.today();
 
     $scope.clear = function () {
-        $scope.date = null;
+        $scope.due_date = null;
     };
 
     $scope.open = function($event) {

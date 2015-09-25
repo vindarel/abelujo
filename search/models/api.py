@@ -204,7 +204,7 @@ def deposits(request, **response_kwargs):
             msgs["messages"].append(e)
             return HttpResponse(json.dumps(msgs), **response_kwargs)
         msgs = {"status": httplib.OK,
-                "data": depo_msgs}
+                "alerts": depo_msgs}
 
         return HttpResponse(json.dumps(msgs), **response_kwargs)
 
