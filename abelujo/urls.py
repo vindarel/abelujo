@@ -95,6 +95,7 @@ urlpatterns += patterns("",
     url(r'^api/history$', 'search.models.api.history', name="api_history"),
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),
     url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),
+    url(r'^api/places$', 'search.models.api.places', name="api_places"),
     # url(r'^api/inventory$', 'search.models.api.inventory', name="api_alerts_open"),
 
     # Examples:

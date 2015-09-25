@@ -290,7 +290,7 @@ class Card(TimeStampedModel):
         publishers = ", ".join([pub.name for pub in self.publishers.all()])
         if len(publishers) > MAX_LENGTH:
             publishers = publishers[0:MAX_LENGTH] + "..."
-        distributor = self.distributor.name if self.distributor else "aucun"
+        distributor = self.distributor.name if self.distributor else _("aucun")
         return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     def display_authors(self):
@@ -776,6 +776,19 @@ class Place (models.Model):
         except Exception, e:
             log.error(u"--- error while setting the default place: %s" % (e,))
 
+    def to_dict(self):
+        # Could (should?) do with django serializers but its output is a bit too much.
+        return {
+            "id": self.id,
+            "name": self.name,
+            "date_creation": self.date_creation.isoformat(),
+            "date_deletion": self.date_deletion.isoformat() if self.date_deletion else None,
+            "is_stand": self.is_stand,
+            "can_sell": self.can_sell,
+            "inventory_ongoing": self.inventory_ongoing,
+            "comment": self.comment,
+            }
+
     def add_copy(self, card, nb=1):
         """Adds the given number of copies (1 by default) of the given card to
         this place.
@@ -795,6 +808,7 @@ class Place (models.Model):
         except Exception,e:
             log.error(u"--- error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
+
 
 class Preferences(models.Model):
     """
@@ -1118,6 +1132,7 @@ class DepositCopies(TimeStampedModel):
     #: Do we have a limit of time to pay ?
     due_date = models.DateField(blank=True, null=True)
 
+
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from
     a distributor but didn't pay them yet.
@@ -1134,6 +1149,11 @@ class Deposit(TimeStampedModel):
                                     default=DEPOSIT_TYPES_CHOICES[0],
                                     max_length=CHAR_LENGTH)
 
+    #: in case of a deposit for a publisher, the place (client?) who
+    #: we send our cards to.
+    dest_place = models.ForeignKey(Place, blank=True, null=True)
+    #: due date for payment (optional)
+    due_date = models.DateField(blank=True, null=True)
     #: initial number of all cards for that deposit (create another deposit if you need it).
     initial_nb_copies = models.IntegerField(blank=True, null=True, default=0,
                                             verbose_name="Nombre initial d'exemplaires pour ce dépôt:")

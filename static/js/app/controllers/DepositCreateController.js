@@ -43,30 +43,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     ];
     $scope.dest_place = $scope.places[0];
 
-    //// TODO: refacto with Sell controller and view.
-    $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
-    $scope.format = $scope.formats[0];
-    $scope.dateOptions = {
-        formatYear: 'yy',
-        startingDay: 1
-    };
-   // The date picker:
-
-    $scope.today = function() {
-        $scope.date = new Date();
-    };
-    $scope.today();
-
-    $scope.clear = function () {
-        $scope.date = null;
-    };
-
-    $scope.open = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-
-        $scope.opened = true;
-    };
 
     $scope.deposit_type = $scope.deposit_types[0];
     $scope.deposit_name = undefined;
@@ -109,6 +85,17 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             });
     };
 
+    $scope.getPlaces = function() {
+        return $http.get("/api/places")
+            .then(function(response) {
+                $scope.places = response.data;
+                $scope.dest_place = $scope.places[0];
+                return response.data;
+            });
+    };
+
+    $scope.getPlaces();
+
     $scope.addDeposit = function() {
         var cards_id = [];
         // get the selected card's id TODO:
@@ -125,6 +112,8 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             "initial_nb_copies" : $scope.initial_nb_copies,
             "minimal_nb_copies" : $scope.minimal_nb_copies,
             "auto_command"      : $scope.auto_command,
+            "due_date"          : $scope.date,
+            "dest_place"        : $scope.dest_place,
         };
         // needed for Django to process the params to its request.POST dict.
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -173,4 +162,29 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
         // So let's just erase the card list.
         $scope.cards_selected = [];
     });
+
+    //// TODO: refacto with Sell controller and view.
+    $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    $scope.format = $scope.formats[0];
+    $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+    };
+   // The date picker:
+
+    $scope.today = function() {
+        $scope.date = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function () {
+        $scope.date = null;
+    };
+
+    $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+    };
 }]);

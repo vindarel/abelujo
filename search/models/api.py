@@ -17,6 +17,7 @@ from models import Card
 from models import CardType
 from models import Deposit
 from models import Distributor
+from models import Place
 from models import Publisher
 from models import Sell
 from models import getHistory
@@ -301,3 +302,16 @@ def alerts_open(request, **response_kwargs):
             pass
 
     return HttpResponse(json.dumps(total), **response_kwargs)
+
+def places(request, **response_kwargs):
+    obj = []
+    if request.method == "GET":
+        params = request.GET.copy()
+        response_kwargs["content_type"] = "application/json"
+        try:
+            obj = Place.objects.all()
+        except Exception as e:
+            log.error("api error while getting places: {}".format(e))
+
+    data = [it.to_dict() for it in obj]
+    return HttpResponse(json.dumps(data), **response_kwargs)
