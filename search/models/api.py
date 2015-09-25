@@ -184,6 +184,7 @@ def deposits(request, **response_kwargs):
             #ONGOING: form the dict to send to Deposit.from_dict,
             cards_obj = Card.get_from_id_list(cards_id)
             distributor_obj = Distributor.objects.get(name=params.get("distributor"))
+
             deposit_dict = {
                 "name"              : params.get("name"),
                 "distributor"       : distributor_obj,
@@ -192,15 +193,19 @@ def deposits(request, **response_kwargs):
                 "initial_nb_copies" : params.get("initial_nb_copies"),
                 "minimal_nb_copies" : params.get("minimal_nb_copies"),
                 "auto_command"      : params.get("auto_command"),
+                "due_date"          : params.get("due_date"),
+                "dest_place"        : params.get("dest_place"),
             }
             depo_msgs = Deposit.from_dict(deposit_dict)
+
         except Exception as e:
-            log.error(u"api/deposit error:", e)
+            log.error(u"api/deposit error: {}".format(e))
             msgs["status"] = httplib.INTERNAL_SERVER_ERROR
             msgs["messages"].append(e)
             return HttpResponse(json.dumps(msgs), **response_kwargs)
         msgs = {"status": httplib.OK,
                 "data": depo_msgs}
+
         return HttpResponse(json.dumps(msgs), **response_kwargs)
 
 

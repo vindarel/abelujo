@@ -63,6 +63,8 @@ class DepositFactory(DjangoModelFactory):
         model = Deposit
     name = factory.Sequence(lambda n: "deposit test %d" % n)
     distributor = None
+    dest_place = None
+    due_date = None
 
 class DistributorFactory(DjangoModelFactory):
     class Meta:
@@ -411,6 +413,38 @@ class TestDeposits(TestCase):
                                   })
         self.assertEqual(len(msgs), 1, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], "success")
+
+
+    def test_type_pub(self):
+        """Of type "publisher", we set a due_date and a dest_place.
+        """
+        self.card.distributor = self.distributor
+        due_date = datetime.date.today().isoformat() # getting it as str from JS
+        dest_place = PlaceFactory.create()
+        msgs = Deposit.from_dict({'name': 'test',
+                                  'copies': [self.card,],
+                                  'distributor': self.distributor,
+                                  'due_date': due_date,
+                                  'dest_place': dest_place.id,
+                                  'deposit_type': "publisher",
+                                  })
+        self.assertEqual(msgs[0]['level'], "success")
+        dep = Deposit.objects.order_by("created").last()
+        self.assertEqual(dep.dest_place.name, dest_place.name)
+        self.assertEqual(dep.deposit_type, "publisher")
+
+    def test_no_due_date(self):
+        self.card.distributor = self.distributor
+        dest_place = PlaceFactory.create()
+        msgs = Deposit.from_dict({'name': 'test',
+                                  'due_date': None,
+                                  'copies': [self.card,],
+                                  'distributor': self.distributor,
+                                  'dest_place': dest_place.id,
+                                  'deposit_type': "publisher",
+                                  })
+        self.assertEqual(msgs[0]['level'], "success")
+
 
     def test_from_dict_bad_deposit(self):
         self.card.distributor = None

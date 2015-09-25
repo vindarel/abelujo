@@ -113,7 +113,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             "minimal_nb_copies" : $scope.minimal_nb_copies,
             "auto_command"      : $scope.auto_command,
             "due_date"          : $scope.date,
-            "dest_place"        : $scope.dest_place,
+            "dest_place"        : $scope.dest_place.id,
         };
         // needed for Django to process the params to its request.POST dict.
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -164,7 +164,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     });
 
     //// TODO: refacto with Sell controller and view.
-    $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    $scope.formats = ['yyyy-MM-dd', 'yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
     $scope.format = $scope.formats[0];
     $scope.dateOptions = {
         formatYear: 'yy',
