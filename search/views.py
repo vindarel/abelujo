@@ -576,8 +576,9 @@ class DepositsListView(ListView):
         context = super(DepositsListView, self).get_context_data(**kwargs)
         pubtype = Deposit.objects.filter(deposit_type="publisher").all()
         context["depo_pubtype"] = pubtype
-        fixtype = pubtype = Deposit.objects.filter(deposit_type="fix").all()
+        fixtype = Deposit.objects.filter(deposit_type="fix").all()
         context["depo_fix"] = fixtype
+        context["total_price_fix"] = sum([it.total_init_price for it in fixtype])
         return context
 
 #  # for a comparison:

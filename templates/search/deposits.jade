@@ -55,9 +55,11 @@ if depo_fix
         td {% trans "Nom du dépot" %}
         td {% trans "Diffuseur" %}
         td {% trans "Dernier état de dépôt" %}
+
         td {% trans "Alertes" %}
         td {% trans "Initial qty" %}
         td {% trans "Total price" %}
+
         td {% trans "Due date" %}
 
     for dep in depo_fix
@@ -66,10 +68,22 @@ if depo_fix
             a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
         td {{ dep.distributor.name }}
         td {{ dep.last_checkout_date }}
+
         td {{ dep.nb_alerts }}
         td {{ dep.init_qty }}
         td {{ dep.total_init_price }}
+
         td {{ dep.due_date }}
+
+    td
+    td
+    td
+
+    td
+    td
+    td {{total_price_fix}}
+
+    td
 
 else
   h4 {% trans "Aucun dépôt de librairie" %}
