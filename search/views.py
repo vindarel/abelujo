@@ -570,6 +570,17 @@ class DepositsListView(ListView):
     template_name = "search/deposits.jade"
     context_object_name = "deposits"
 
+    def get_context_data(self, **kwargs):
+        """Give more context objects to the template.
+        """
+        context = super(DepositsListView, self).get_context_data(**kwargs)
+        pubtype = Deposit.objects.filter(deposit_type="publisher").all()
+        context["depo_pubtype"] = pubtype
+        fixtype = pubtype = Deposit.objects.filter(deposit_type="fix").all()
+        context["depo_fix"] = fixtype
+        #TODO: ONGOING: get prochaine échéance
+        return context
+
 #  # for a comparison:
 # def deposits(request):
     # deposits = Deposit.objects.all()

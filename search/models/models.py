@@ -1171,7 +1171,8 @@ class Deposit(TimeStampedModel):
         ordering = ("name",)
 
     def __unicode__(self):
-        return u"Deposit '%s' with distributor: %s" % (self.name, self.distributor)
+        return u"Deposit '{}' with distributor: {} (type: {})".format(
+            self.name, self.distributor, self.deposit_type)
 
     @property
     def last_checkout_date(self):
@@ -1180,6 +1181,30 @@ class Deposit(TimeStampedModel):
             return obj.created
 
         return None
+
+    @property
+    def total_init_price(self):
+        """Get the total value of the initial stock.
+        """
+        res = "undefined"
+        try:
+            res = sum([it.card.price for it in self.depositcopies_set.all()])
+        except Exception as e:
+            log.error(e)
+
+        return res
+
+    @property
+    def init_qty(self):
+        #XXX: qty of copies
+        #XXX: use decorator to encapsulate exception.
+        res = "undefined"
+        try:
+            res = sum([it.nb for it in self.depositcopies_set.all()])
+        except Exception as e:
+            log.error(e)
+
+        return res
 
     def get_absolute_url(self):
         return self.id

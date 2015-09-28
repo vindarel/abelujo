@@ -28,11 +28,13 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     $scope.deposit_types = [
         {
             name: gettext("fix deposit"),
-            target: gettext("bookshop deposit")
+            target: gettext("deposit of bookshops"),
+            type: "fix"
         },
         {
-            name: gettext("editor deposit"),
-            target: gettext("editor deposit")
+            name: gettext("external deposit (for publisher)"),
+            target: gettext("publisher deposit"),
+            type: "publisher"
         }
     ];
 
@@ -100,7 +102,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             "name"              : $scope.deposit_name,
             "distributor"       : $scope.distributor,
             "cards_id"          : cards_id,
-            "deposit_type"      : $scope.deposit_type.name, //xxx: use sthg else than the name
+            "deposit_type"      : $scope.deposit_type.type, //xxx: use sthg else than the name
             "initial_nb_copies" : $scope.initial_nb_copies,
             "minimal_nb_copies" : $scope.minimal_nb_copies,
             "auto_command"      : $scope.auto_command,
