@@ -1129,9 +1129,6 @@ class DepositCopies(TimeStampedModel):
     nb = models.IntegerField(default=1)
     #: Minimum of copies we want to have.
     threshold = models.IntegerField(blank=True, null=True, default=1)
-    #: Do we have a limit of time to pay ?
-    due_date = models.DateField(blank=True, null=True)
-
 
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (from different cards) from

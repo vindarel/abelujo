@@ -578,7 +578,6 @@ class DepositsListView(ListView):
         context["depo_pubtype"] = pubtype
         fixtype = pubtype = Deposit.objects.filter(deposit_type="fix").all()
         context["depo_fix"] = fixtype
-        #TODO: ONGOING: get prochaine échéance
         return context
 
 #  # for a comparison:

@@ -58,6 +58,7 @@ if depo_fix
         td {% trans "Alertes" %}
         td {% trans "Initial qty" %}
         td {% trans "Total price" %}
+        td {% trans "Due date" %}
 
     for dep in depo_fix
       tr
@@ -68,6 +69,7 @@ if depo_fix
         td {{ dep.nb_alerts }}
         td {{ dep.init_qty }}
         td {{ dep.total_init_price }}
+        td {{ dep.due_date }}
 
 else
   h4 {% trans "Aucun dépôt de librairie" %}
