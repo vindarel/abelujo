@@ -1077,10 +1077,10 @@ class DepositState(models.Model):
         "cards": a dict: the card id, value: a DepositStateCopies object.
         "total": a dict with: total_price_init, total_price_sold, discount, total_to_pay, margin.
         """
-        balance = {"cards": {},
+        balance = {"cards": [],
                    "total": {}}
         for card in self.copies.all():
-            balance["cards"][card.id] = self.card_balance(card.id)
+            balance["cards"].append((card, self.card_balance(card.id)))
             depostate = self.depositstatecopies_set.first()
             sells = depostate.sells.all()
             total_price_init = sum([it.total_price_init for it in sells])

@@ -478,9 +478,9 @@ class TestDeposits(TestCase):
         self.assertFalse(co.ambiguous)
         # We didn't sell anything yet but still should see the balance.
         bal = co.balance()
-        self.assertEqual(0, bal["cards"][2].nb_sells)
-        self.assertEqual(1, bal["cards"][2].nb_initial)
-        self.assertEqual(1, bal["cards"][2].nb_current)
+        self.assertEqual(0, bal["cards"][0][1].nb_sells)
+        self.assertEqual(1, bal["cards"][0][1].nb_initial)
+        self.assertEqual(1, bal["cards"][0][1].nb_current)
 
         # Sell a copy.
         self.sell.sell_cards(None, cards=[self.card2])
@@ -489,11 +489,11 @@ class TestDeposits(TestCase):
         co.update()
         balance = co.balance()
         self.assertFalse(co.closed)
-        self.assertEqual(balance["cards"][self.card2.id].nb_current, 0)
-        self.assertEqual(balance["cards"][self.card2.id].nb_initial, 1)
-        self.assertEqual(balance["cards"][self.card2.id].nb_sells, 1)
-        self.assertEqual(balance["cards"][self.card2.id].nb_to_command, 1)
-        self.assertEqual(balance["cards"][self.card2.id].nb_wanted, 1)
+        self.assertEqual(balance["cards"][0][1].nb_current, 0)
+        self.assertEqual(balance["cards"][0][1].nb_initial, 1)
+        self.assertEqual(balance["cards"][0][1].nb_sells, 1)
+        self.assertEqual(balance["cards"][0][1].nb_to_command, 1)
+        self.assertEqual(balance["cards"][0][1].nb_wanted, 1)
         co.close()
         self.assertTrue(co.closed)
         ret, msgs = co.add_copies([{'cards': [self.card2], 'sells': None}])
@@ -514,8 +514,8 @@ class TestDeposits(TestCase):
         checkout, msgs = self.deposit.checkout_create()
         self.assertEqual([], msgs)
         balance = checkout.balance()
-        self.assertEqual(1, balance["cards"][2].nb_sells)
-        self.assertEqual(-1, balance["cards"][2].nb_current)
+        self.assertEqual(1, balance["cards"][0][1].nb_sells)
+        self.assertEqual(-1, balance["cards"][0][1].nb_current)
 
         co, msgs = self.deposit.checkout_create()
         self.assertFalse(co)
@@ -531,8 +531,8 @@ class TestDeposits(TestCase):
         depo.add_copies([self.card2])
         co, msgs = depo.checkout_create()
         balance = co.balance()
-        self.assertEqual(0, balance["cards"][self.card2.id].nb_current)
-        self.assertEqual(0, balance["cards"][self.card2.id].nb_sells)
+        self.assertEqual(0, balance["cards"][0][1].nb_current)
+        self.assertEqual(0, balance["cards"][0][1].nb_sells)
 
 class TestSells(TestCase):
 
