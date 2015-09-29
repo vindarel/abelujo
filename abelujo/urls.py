@@ -21,7 +21,6 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
-from search.views import CardDetailView
 from search.views import DepositsListView
 from search.views import InventoriesListView
 
@@ -36,7 +35,7 @@ urlpatterns = i18n_patterns('',
     url(r'^search/$', 'search.views.index', name="card_index"),
     url(r'^search$', 'search.views.search', name="card_search"),
     url(r'^search', 'search.views.search'),
-    url(r'^stock/card/(?P<pk>\d+)/$', CardDetailView.as_view(),
+    url(r'^stock/card/(?P<pk>\d+)/$', 'search.views.card_show',
         name="card_show"),
     url(r'^stock/card/create/$', TemplateView.as_view(template_name="search/card_create.jade"),
         name="card_create"),

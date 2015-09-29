@@ -49,6 +49,7 @@ from models import Distributor
 from models import Inventory
 from models import Place
 from models import Publisher
+from models import Sell
 from search.models.utils import ppcard
 
 log = logging.getLogger(__name__)
@@ -327,10 +328,19 @@ def _request_session_get(request, key):
     """
     return request.session.get(key)
 
-class CardDetailView(DetailView):
+def card_show(request, pk):
+    template = "search/card_show.jade"
+    card = None
+    sells = []
+    if request.method == 'GET':
+        card = Card.objects.get(id=pk)
+        sells = Sell.search(card.id, date_min=card.modified).order_by("-created")
 
-    model = Card
-    template_name = "search/card_show.jade"
+    return render(request, template, {
+        "object": card,
+        "sells": sells,
+        })
+
 
 def add(request):
     """Add the requested Card to the DB.

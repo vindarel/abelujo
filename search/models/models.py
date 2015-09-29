@@ -829,7 +829,7 @@ class Preferences(models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return "Place: %s" % (self.default_place.name,)
+        return "default place: %s" % (self.default_place.name,)
 
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).
@@ -1638,6 +1638,10 @@ class Alert(models.Model):
 
     def __unicode__(self):
         return "alert for card {}, created {}".format(self.card.id, self.date_creation)
+
+    def get_absolute_url(self):
+        # return reverse("sell_view", args=(self.id,))
+        return "not_implemented" #TODO: view a sell
 
     def obj_to_list(self):
         resolution = self.date_resolution
