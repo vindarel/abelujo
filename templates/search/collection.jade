@@ -24,12 +24,12 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
+h3 {% trans "Search in the stock" %}
+
 form(action='{% url "card_collection" %}', method="post")
   {% csrf_token %}
-  {% bootstrap_form searchForm %}
-  // {{ form.as_p }}
+  {% bootstrap_form searchForm layout="horizontal" %}
   input.btn.btn-primary(type='submit', value="{% trans 'valider' %}")
-
 
 unless book_list
   p.bg-info {% trans "No results" %}
