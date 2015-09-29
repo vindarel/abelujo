@@ -86,14 +86,22 @@ def get_card_type_choices():
     return [(0, _(u"All cards"))] + [(typ.id, typ.name)
                                for typ in CardType.objects.all()]
 
+def get_publisher_choices():
+    return [(0, _("All"))] + [(pub.id, pub.name)
+                              for pub in Publisher.objects.all()]
+
 class CollectionSearchForm(forms.Form):
     card_type = forms.ChoiceField(get_card_type_choices(),
                                   label=_("Type of card"),
                                   required=False)
+    publisher = forms.ChoiceField(get_publisher_choices(),
+                                  label=_("Publisher"),
+                                  required=False)
+
     q = forms.CharField(max_length=100,
                         required=False,
                         min_length=3,
-                        label=_(u"Key-words"))
+                        label=_(u"Search on title and authors."))
 
     ean = forms.CharField(required=False)
 
@@ -510,9 +518,13 @@ def collection(request):
                 card_type_id = form.cleaned_data.get("card_type")
                 if card_type_id:
                     card_type_id = int(card_type_id)
+                publisher_id = form.cleaned_data.get("publisher")
+                if publisher_id:
+                    publisher_id = int(publisher_id)
                 words = form.cleaned_data.get("q").split()
                 cards = Card.search(words,
                                     card_type_id=card_type_id,
+                                    publisher_id=publisher_id,
                                     to_list=True)
                 # store results in session for later re-use
                 request.session["collection_search"] = cards

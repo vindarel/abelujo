@@ -373,7 +373,8 @@ class Card(TimeStampedModel):
         return ret
 
     @staticmethod
-    def search(words, card_type_id=None, distributor=None, to_list=False):
+    def search(words, card_type_id=None, distributor=None, to_list=False,
+               publisher_id=None):
         """Search a card on its title and its authors' names.
 
         SIZE_LIMIT = 100
@@ -407,6 +408,13 @@ class Card(TimeStampedModel):
 
         if cards and card_type_id:
             cards = cards.filter(card_type=card_type_id)
+
+        if cards and publisher_id:
+            try:
+                pub = Publisher.objects.get(id=publisher_id)
+                cards = cards.filter(publishers=pub)
+            except Exception as e:
+                log.error("we won't search for a publisher that doesn't exist: {}".format(e))
 
         if to_list:
             cards = Card.obj_to_list(cards)
