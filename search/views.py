@@ -582,6 +582,32 @@ def collection(request):
 def sell(request):
     return render(request, "search/sell_create.jade")
 
+def sell_details(request, pk):
+    template = "search/sell_details.jade"
+    sell = None
+    soldcards = []
+    total_sell = None
+    total_price_init = None
+
+    if request.method == 'GET':
+        try:
+            sell = Sell.objects.get(id=pk)
+        except Exception as e:
+            log.error(e)
+            #XXX return a 404
+
+        if sell:
+            soldcards = sell.soldcards_set.all()
+            total_sell = sum([it.price_sold for it in soldcards])
+            total_price_init = sum([it.price_init for it in soldcards])
+
+    return render(request, template, {
+        "sell": sell,
+        "soldcards": soldcards,
+        "total_sell": total_sell,
+        "total_price_init": total_price_init,
+        })
+
 class InventoriesListView(ListView):
     model = Inventory
     template_name = "search/inventories.jade"

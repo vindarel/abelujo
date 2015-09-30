@@ -29,7 +29,10 @@ from search.models import Distributor
 from search.models import Place
 from search.models import Preferences
 from search.models import Publisher
+from search.models import Sell
 from search.views import get_reverse_url
+
+from tests_models import CardFactory
 
 fixture_search_datasource = {
     "test search":
@@ -137,6 +140,31 @@ class TestViews(TestCase):
     def test_sell_no_ean_in_post(self):
         resp = self.post_to_view()
         self.assertTrue(resp)
+
+class TestSells(TestCase):
+    def setUp(self):
+        self.c = Client()
+
+    def populate(self):
+        self.card = CardFactory.create()
+        p1 = 7.7
+        to_sell = [{"id": self.card.id,
+                    "quantity": 1,
+                    "price_sold": p1},
+                  ]
+        sell, status, msgs = Sell.sell_cards(to_sell)
+
+
+    def test_sell_details_no_sell(self):
+        resp = self.c.get(reverse("sell_details", args=(1,)))
+        self.assertTrue(resp)
+
+    def test_sell_details(self):
+        self.populate()
+        resp = self.c.get(reverse("sell_details", args=(self.card.id,)))
+        self.assertTrue(resp.status_code, "200")
+        self.assertTrue(self.card.title in resp.content)
+
 
 @mock.patch('search.views.search_on_data_source', return_value=(fixture_search_datasource, []))
 class TestSearchView(TestCase):

@@ -42,8 +42,12 @@ urlpatterns = i18n_patterns('',
     url(r'^stock/card/(?P<pk>\d+)/move', 'search.views.card_move',
         name="card_move"),
     url(r'^add/', 'search.views.add', name="card_add"),
-    url(r'^sell', 'search.views.sell',
+
+    url(r'^sell$', 'search.views.sell',
         name="card_sell"),
+    url(r'^sell/(?P<pk>\d+)', 'search.views.sell_details',
+        name="sell_details"),
+
     url(r'^collection/', 'search.views.collection',
         name="card_collection"),
 
