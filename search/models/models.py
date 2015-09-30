@@ -1454,6 +1454,9 @@ class Sell(models.Model):
             total += card.price_init * card.quantity
         return total
 
+    def get_absolute_url(self):
+        return reverse("sell_details", args=(self.id,))
+
     @staticmethod
     def search(card_id=None, date_min=None):
         """Search for the given card id in sells more recent than "date_min".
