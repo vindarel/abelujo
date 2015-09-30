@@ -18,6 +18,8 @@
 
 import os
 from search.models.models import Card
+from search.models.models import Place
+from search.models.models import Preferences
 import search.datasources.odslookup.odslookup as odslookup
 
 def run(*args):
@@ -50,14 +52,28 @@ def run(*args):
         # if cont.lower().startswith("n"):
             # return 0
     print "Adding cards to the database..."
+    pref = Preferences.object.first()
+    if pref and pref.default_place:
+        place = pref.default_place
+    else:
+        if not Place.objects.count() == 0:
+            place = Place.objects.first()
+        else:
+            place = Place(name="default place")
+            place.save()
+
+    import ipdb; ipdb.set_trace()
+    qty = 1 #TODO: get quantity from ods
     for card in cards["found"]:
         card_obj = Card.from_dict(card)
+        place.add_copy(card_obj, nb=qty)
     print "...done."
 
     if ADD_NO_EAN:
         print "Adding cards without ean..."
         for card in cards["no_ean"]:
             obj = Card.from_dict(card)
+            place.add_copy(card_obj, nb=qty)
         print "...done."
 
     if ADD_NOT_FOUND:
@@ -65,6 +81,7 @@ def run(*args):
         for card in cards["not_found"]:
             try:
                 obj = Card.from_dict(card)
+                place.add_copy(card_obj, nb=qty)
             except Exception as e:
                 print "Error adding card {}: {}".format(card.get('title'), e)
         print "...done"
