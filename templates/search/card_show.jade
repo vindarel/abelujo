@@ -75,10 +75,14 @@
           div {{last_entry.created }}
         span {{ last_entry.created }}
 
-    div {% trans "Last sells" %}
-      ul.list-group
-        for sell in sells
-          a(href="{{ sell.get_absolute_url }}")
-            li.list-group-item {{ sell.created }}
+    div {% trans "Sells since the last entry" %}: {{ total_sold }}
+      if sells
+
+        ul.list-group
+          for sell in sells
+            a(href="{{ sell.get_absolute_url }}")
+                li.list-group-item {{ sell.created }}
+      else
+        span ---
 
 {% endblock content %}

@@ -333,17 +333,24 @@ def card_show(request, pk):
     template = "search/card_show.jade"
     card = None
     sells = []
+    total_sold = "---"
     if request.method == 'GET':
         card = Card.objects.get(id=pk)
-        sells = Sell.search(card.id, date_min=card.modified).order_by("-created")
 
         # Last time we entered this item
         last_entry = EntryCopies.last_entry(card)
+
+        # Sells since the last entry
+        if last_entry:
+            sells = Sell.search(card.id, date_min=last_entry.created).order_by("-created")
+            if sells and card:
+                total_sold = Sell.nb_card_sold_in_sells(sells, card)
 
     return render(request, template, {
         "object": card,
         "sells": sells,
         "last_entry": last_entry,
+        "total_sold": total_sold,
         })
 
 

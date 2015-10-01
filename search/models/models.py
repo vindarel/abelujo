@@ -1483,6 +1483,19 @@ class Sell(models.Model):
 
         return sells.all()
 
+    @staticmethod
+    def nb_card_sold_in_sells(sells, card):
+        """We may have a list of sells in which one card was sold, among
+        others. Now we want to know how many of this given card were sold.
+
+        - sells: list of Sell objects
+        - card: Card object
+
+        return: int
+
+        """
+        return sum([len(se.soldcards_set.filter(card__id=card.id)) for se in sells])
+
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
         json-ified."""
