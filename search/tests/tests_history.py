@@ -16,15 +16,31 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Common classes to use in different model files.
-Avoid circular imports.
-"""
-from django.db import models
+import mock
+from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.test.client import Client
+from search.models import Author
+from search.models import Basket
+from search.models import Card
+from search.models import CardType
+from search.models import Deposit
+from search.models import Distributor
+from search.models import Place
+from search.models import Preferences
+from search.models import Publisher
+from search.models import Sell
+from search.models import Entry
 
-class TimeStampedModel(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+from search.views import get_reverse_url
 
-    class Meta:
-        abstract = True
-        app_label = "search"
+from tests_models import CardFactory
+
+class TestEntry(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory()
+
+    def test_entry(self):
+        en, created = Entry.new([self.card])
+        self.assertTrue(created)

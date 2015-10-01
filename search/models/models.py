@@ -16,8 +16,8 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import operator
 import logging
+import operator
 from datetime import date
 from textwrap import dedent
 
@@ -814,9 +814,13 @@ class Place (models.Model):
             place_copy, created = self.placecopies_set.get_or_create(card=card)
             place_copy.nb += nb
             place_copy.save()
+
+            # Add a log to the Entry history
+            history.Entry.new([card])
+
             return place_copy.nb
         except Exception,e:
-            log.error(u"--- error while adding %s to the place %s" % (card.title, self.name))
+            log.error(u"Error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
 
 
