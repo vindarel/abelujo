@@ -9,9 +9,9 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 -   chercher des notices espagnoles ou allemandes,
 - ajouter des exemplaires au stock, par lieu, utiliser des paniers,
 -   chercher dans son stock,
--   effectuer des ventes, voir l'historique,
--   créer des dépôts, gérer les conflits à la vente,
--   **importer des données** depuis un fichier **LibreOffice Calc** (.ods). Voir la [documentation utilisateur](doc/french/index.rst "doc utilisateur").
+-   effectuer des ventes, voir les conflits à la vente, voir l'historique (global, par notice),
+-   créer des dépôts, **faire un état de dépôt**,
+-   importer des données depuis un fichier **LibreOffice Calc** (.ods). (expérimental. Voir la [documentation utilisateur](doc/french/index.rst "doc utilisateur")).
 
 L'application est traduite en français, anglais et espagnol (castillan).
 
