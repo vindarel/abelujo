@@ -28,6 +28,8 @@ from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
 from django.utils.translation import ugettext as _
+from search.models import history
+from search.models.common import TimeStampedModel
 
 CHAR_LENGTH = 200
 PAGE_SIZE = 50
