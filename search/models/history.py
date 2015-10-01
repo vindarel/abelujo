@@ -42,21 +42,44 @@ log = logging.getLogger(__name__)
 #     name = models.CharField()
 
 
-class EntryCopies(models.Model):
+class EntryCopies(TimeStampedModel):
+    card = models.ForeignKey("search.Card", db_index=True)
     entry = models.ForeignKey("Entry")
-    card = models.ForeignKey("search.Card")
     #: we may want to remember the price of the card at this time.
     price_init = models
+
+    @staticmethod
+    def last_entry(card):
+        """Get informations about the last entry of the given card.
+
+        return: EntryCopies object
+        """
+        try:
+            last = EntryCopies.objects.filter(card__id=card.id)\
+                                         .order_by("-created").first()
+        except Exception as e:
+            log.error(e)
+            return None
+
+        return last
 
 class EntryTypes:
     purchase = 1
     deposit = 2
     gift = 3
 
+
 class Entry(TimeStampedModel):
-    """An entry
+    """An entry. Can be for many cards at once.
+    We record the original price.
 
     """
+
+    ENTRY_TYPES_CHOICES = (
+    (1, "purchase"),
+    (2, "deposit"),
+    (3, "gift"),
+    )
 
     class Meta:
         app_label = "search"
@@ -65,10 +88,16 @@ class Entry(TimeStampedModel):
     #: through the attribute entrycopies_set
     # entrycopies_set
     #: Type of this entry (a purchase by default).
-    typ = models.IntegerField(default=EntryTypes.purchase)
+    typ = models.IntegerField(default=EntryTypes.purchase,
+                              choices=ENTRY_TYPES_CHOICES)
 
     def __unicode__(self):
         return "type {}, created at {}".format(self.typ, self.created)
+
+    def get_absolute_url(self):
+        """Actually, return the url of the related Entry.
+        """
+        return reverse("history_entry", args=(self.id,))
 
     def add_copies(self, copies):
         """Add the given list of copies.

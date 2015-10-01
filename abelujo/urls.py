@@ -73,6 +73,9 @@ urlpatterns = i18n_patterns('',
     url(r'^alerts/', TemplateView.as_view(template_name="search/alerts.jade"),
         name="search_alerts"),
 
+    url(r'^history/entries/(?P<pk>\d+)', 'search.history_views.entry_details',
+        name="history_entry"),
+
     url(r'^inventories/$', InventoriesListView.as_view(),
         name="inventories"),
     url(r'^inventories/new$', TemplateView.as_view(template_name="search/inventory_new.jade"),

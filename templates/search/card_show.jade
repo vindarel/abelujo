@@ -67,7 +67,13 @@
 
     div {% trans "Alerts" %}: {{ object.alert_set.count }}
 
-    div {% trans "Last entry" %}: not implemented
+    div {% trans "Last entry" %}:
+      if not last_entry
+        span {% trans "unknown" %}
+      else
+        //- a(href="{{ last_entry.get_absolute_url }}")
+          div {{last_entry.created }}
+        span {{ last_entry.created }}
 
     div {% trans "Last sells" %}
       ul.list-group

@@ -51,6 +51,7 @@ from models import Place
 from models import Publisher
 from models import Sell
 from search.models.utils import ppcard
+from search.models import EntryCopies
 
 log = logging.getLogger(__name__)
 
@@ -336,9 +337,13 @@ def card_show(request, pk):
         card = Card.objects.get(id=pk)
         sells = Sell.search(card.id, date_min=card.modified).order_by("-created")
 
+        # Last time we entered this item
+        last_entry = EntryCopies.last_entry(card)
+
     return render(request, template, {
         "object": card,
         "sells": sells,
+        "last_entry": last_entry,
         })
 
 
