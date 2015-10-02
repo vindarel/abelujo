@@ -36,7 +36,37 @@ angular.module('abelujo.controllers', [])
         $scope.alerts = [];
         $scope.card_created_id = undefined;
 
+        // If url ends with an id, we must fetch this card and prefill the "form".
+        $scope.ready = false;
+        var path = $window.location.pathname;
+        // XXX: warning, manual reverse url
+        var re = /edit\/(\d+)/;
+        var match = path.match(re);
+
+        if (match.length == 2) {
+            // get the card, populate the form.
+            var card_id = match[1];
+            $http.get("/api/card/" + card_id, {
+                params: {}
+            }).then(function(response){
+                $scope.card = response.data.data;
+                $scope.title = $scope.card.title;
+                $scope.price = $scope.card.price;
+                $scope.authors_selected = $scope.card.authors;
+                $scope.distributor = $scope.card.distributor;
+                $scope.isbn = $scope.card.isbn;
+                $scope.details_url = $scope.card.details_url;
+                $scope.pubs_selected = $scope.card.publishers;
+
+                $scope.alerts = response.data.alerts;
+                $scope.ready = true; // don't load the form if not ready
+            });
+
+        }
+
         $scope.getItemsApi = function(api_url, query, model_selected){
+            // fetch the api to api_url with query, store results in
+            // model_selected
             return $http.get(api_url, {
                 params: {
                     "query": query

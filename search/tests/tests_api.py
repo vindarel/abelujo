@@ -76,6 +76,12 @@ class ApiTest(TestCase):
     def tearDown(self):
         pass
 
+    def test_get_card(self):
+        resp = self.c.get(reverse("api_card", args=(1,)))
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        self.assertEqual(data['data']["id"], 1)
+
     def test_deposits_add(self):
         """Test a deposit creation with data coming from the client (i.e., can be wrong).
         """

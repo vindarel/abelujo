@@ -130,18 +130,11 @@ class AddForm(forms.Form):
     # without not writting it explicitely in the template.
     forloop_counter0 = forms.IntegerField(min_value=0,
                                           widget=forms.HiddenInput())
-    distributor = forms.ChoiceField(choices=get_distributor_choices(),
-                                    label=_(u"Distributor"),
-                                    required=True)
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
     ret = [ (p.name, p.name) for p in not_stands]
     return ret
-
-def get_distributor_choices():
-    choices = [(dist.id, dist.name) for dist in Distributor.get_all()]
-    return choices
 
 class DepositForm(forms.ModelForm):
     """Create a new deposit.
@@ -164,7 +157,6 @@ class AddToDepositForm(forms.Form):
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
                                  label=_(u"Add to the deposit:"),
                                  required=False)
-
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """Get the reverse url with the query parameters taken from the

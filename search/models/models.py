@@ -331,24 +331,37 @@ class Card(TimeStampedModel):
             return []
 
     def to_list(self):
+        authors = self.authors.all()
+        # comply to JS format (needs harmonization!)
+        auth = [{"fields": {'name': it.name}} for it in authors]
+        publishers = self.publishers.all()
+        pubs = [{'fields': {'name': it.name}} for it in publishers]
+
+        if self.distributor:
+            dist = self.distributor.to_list()
+        else:
+            dist = {}
+
         res = {
+            "id": self.id,
             "ambiguous_sell": self.ambiguous_sell(),
-            "authors": ", ".join([ca.name for ca in self.authors.all()]),
+            # "authors": [auth.name for auth in self.authors.all()],
+            "authors": auth,
             "collection": self.collection.name.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
             "data_source": self.data_source,
             "details_url": self.details_url,
-            "distributor": self.distributor.name if self.distributor else None,
+            "distributor": dist,
             "ean": self.ean,
             "get_absolute_url": self.get_absolute_url(),
-            "id": self.id,
             "img": self.img,
             "isbn": self.isbn if self.isbn else self.ean,
             "model": self.__class__.__name__, # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
             "price_sold": self.price_sold,
-            "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
+            # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
+            "publishers": pubs,
             "quantity": self.quantity,
             "title": self.title,
         }

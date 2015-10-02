@@ -35,7 +35,9 @@ ALERT_ERROR = "error"
 # so it makes it not straightforward with js widgets, like ui-select.
 
 def cards(request, **response_kwargs):
-    """return the json list of all cards.
+    """search for cards with the given query, or return all of them (with
+    a limit).
+
     """
     data = []
     query = request.GET.get("query")
@@ -49,6 +51,29 @@ def cards(request, **response_kwargs):
     log.info(u"we have json distributors: ", data)
     response_kwargs['content_type'] = 'application/json'
     return HttpResponse(json.dumps(data), **response_kwargs)
+
+def card(request, **kwargs):
+    """Get a card by id.
+    """
+    ret = {"data": []}
+    msgs = []
+    if request.method == 'GET':
+        pk = kwargs.pop('pk')
+        try:
+            card = Card.objects.get(id=pk)
+            card = card.to_list()
+            ret['data'] = card
+            ret['alerts'] = msgs
+            ret = json.dumps(ret)
+            log.info("found card {}".format(pk))
+
+        except Exception as e:
+            msg = "couldn't find card of id {}".format(pk)
+            log.warning(msg, e)
+            msgs.append({"message": msg, "level": ALERT_ERROR})
+
+    kwargs['content_type'] = "application/json"
+    return HttpResponse(ret, **kwargs)
 
 def card_create(request, **response_kwargs):
     if request.method == "POST":

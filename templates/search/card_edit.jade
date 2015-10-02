@@ -22,8 +22,8 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 {% trans "New card" %}
-div.ng-cloak(ng-controller="cardCreateController")
+h3 {% trans "Card" %}
+div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
 
  div
     alert(
