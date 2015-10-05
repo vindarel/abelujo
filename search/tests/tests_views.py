@@ -259,9 +259,8 @@ class TestAddView(TestCase):
         fixture_result = fixture_search_datasource["test search"][0]
         self.assertEqual(fixture_result["ean"], all_cards[0].ean, "ean are not equal")
         self.assertEqual(fixture_result["title"], all_cards[0].title, "title are not equal")
-        # We are redirected to the "move" view,
-        # to add the card to places and baskets.
-        self.assertEqual(resp.url, "http://testserver/en/stock/card/2/move?q=test+search&ean=None")
+        # We are redirected to the "edit" view,
+        self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search&ean=None")
 
     def test_add_and_move(self, mock_data_source):
         # TODO: test "card_move" view, adding the card to places and baskets.
@@ -324,7 +323,7 @@ class TestCollectionView(TestCase, DBFixture):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue("living" in resp.content)
         self.assertTrue("Goldman" in resp.content)
-        self.assertTrue("1 titles, 1 exemplaries" in resp.content)
+        self.assertTrue("1 titles, 0 exemplaries" in resp.content)
 
 
 class TestDeposit(TestCase, DBFixture):

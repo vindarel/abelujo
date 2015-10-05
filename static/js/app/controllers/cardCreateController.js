@@ -53,7 +53,8 @@ angular.module('abelujo.controllers', [])
                 $scope.title = $scope.card.title;
                 $scope.price = $scope.card.price;
                 $scope.authors_selected = $scope.card.authors;
-                $scope.distributor = $scope.card.distributor;
+                $scope.distributor_list = [$scope.card.distributor];
+                $scope.distributor = $scope.distributor_list[0];
                 $scope.isbn = $scope.card.isbn;
                 $scope.details_url = $scope.card.details_url;
                 $scope.pubs_selected = $scope.card.publishers;

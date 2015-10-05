@@ -417,7 +417,7 @@ def add(request):
 
         # the card_move view is used by two other views. Go back to the right one.
         request.session["back_to"] = reverse("card_search")
-        url = reverse("card_move", args=(card_obj.id,))
+        url = reverse("card_edit", args=(card_obj.id,))
         # Doesn't Django have an automatic way, really ?
         # see also our get_reverse_url(qparams, url=)
         # unidecode: transliterate unicode to ascii (unicode protection).

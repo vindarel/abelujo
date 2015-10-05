@@ -622,6 +622,10 @@ class Card(TimeStampedModel):
 
             card_obj = exists_list[0]
 
+            # Update fields, except isbn (as with "else" below)
+            card_obj.distributor = card_distributor
+            card_obj.save()
+
         else:
             # Create the card with its simple fields.
             # Add the relationships afterwards.
@@ -637,6 +641,8 @@ class Card(TimeStampedModel):
                 details_url = card.get('details_url'),
                 data_source = card.get('data_source'),
             )
+
+            #TODO: we can also update every field for the existing card.
 
             # add the authors
             if card_authors:  # TODO: more tests !

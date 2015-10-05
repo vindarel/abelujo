@@ -69,12 +69,14 @@ for b in result_list
         if b.description
           div {{b.description}}
 
-  form.form-inline(action="{% url 'card_edit' %}", method='post')
+  //- form.form-inline(action="{% url 'card_edit' %}", method='post')
+  form.form-inline(action="{% url 'card_add' %}", method='post')
     {% csrf_token %}
     {% bootstrap_form addForm %}
     input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
     input(type='hidden', value="{{ q }}", name="q")
     input(type='hidden', value="{{ ean }}", name="ean")
-    input.btn.btn-primary(type='submit', value='{% trans "Add to…" %}', title="{% trans 'Add this card to the basket' %}")
+    input(type='hidden', values="card_search", name="origin")
+    input.btn.btn-primary(type='submit', value='{% trans "Add to…" %}')
 
 {% endblock search_result %}

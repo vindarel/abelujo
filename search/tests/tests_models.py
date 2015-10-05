@@ -176,6 +176,11 @@ class TestCards(TestCase):
         to_add, msgs = Card.from_dict({"title":TITLE})
         self.assertTrue(to_add)
 
+    def test_update(self):
+        #TODO: test that we update fields of the card when we use
+        #from_dict but the card alreay exists.
+        pass
+
     # def test_quantity_new(self):
     # TODO: put in test_move
     #     obj, msgs = Card.from_dict({"title": "New quantity test",
