@@ -299,9 +299,10 @@ def search(request):
         if "search_result" in request.session:
             url = request.META['HTTP_REFERER']
             qparams = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
-            query = qparams['q']
+            query = qparams.get('q')
             # Get the last query of this page (case of parallell searches)
-            retlist = request.session["search_result"][qparams['q']]
+            if query:
+                retlist = request.session["search_result"][qparams['q']]
 
     return render(request, "search/search_result.jade", {
         "searchForm": form,
@@ -422,7 +423,7 @@ def add(request):
         # see also our get_reverse_url(qparams, url=)
         # unidecode: transliterate unicode to ascii (unicode protection).
         qparams = {"q": unidecode(req.get('q')),
-                   "ean": req.get('ean') }
+                   "ean": req.get('ean'),}
         url = url + "?" + urllib.urlencode(qparams)
 
         return HttpResponseRedirect(url)
@@ -434,7 +435,7 @@ class CardMoveForm(forms.Form):
     write our form directly in a template instead, using angularjs
     calls to an api to fetch the places and baskets.
     """
-    #TODO: replace these forms with a template and api calls.
+    #XXX: replace these forms with a template and api calls.
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         model = "Place"
@@ -457,23 +458,85 @@ class CardMove2BasketForm(forms.Form):
                        'step':1, 'value': 0,
                        'style': 'width: 70px'}))
 
+class CardMoveTypeForm(forms.Form):
+    choices = [(1, "Pay these cards"),
+               (2, "Add to a deposit"),
+               (3, "Internal movement"),
+               ]
+    typ = forms.ChoiceField(choices=choices)
+PAYMENT_MEANS = [
+    (1, "cash"),
+    (2, "credit card"),
+    (3, "cheque"),
+    (4, "gift"),
+    (5, "lost"),
+    ]
+
 class BuyForm(forms.Form):
-    buy = forms.BooleanField(required=False)
+    payment = forms.ChoiceField(choices=PAYMENT_MEANS)
+    quantity = forms.FloatField(label=_("quantity"))
+    place  = forms.ChoiceField(choices=get_places_choices())
+
+class MoveDepositForm(forms.Form):
+    choices = forms.ChoiceField(choices=get_deposits_choices())
+
+class MoveInternalForm(forms.Form):
+    origin = forms.ChoiceField(choices=get_places_choices())
+    destination  = forms.ChoiceField(choices=get_places_choices())
+    nb = forms.IntegerField()
+
+class moveType:
+    payment = "payment"
+    deposit = "deposit"
+    move = "move"
+
+def card_buy(request, pk=None):
+    form = BuyForm()
+    template = "search/card_buy.jade"
+    card = Card.objects.get(id=pk)
+    buying_price = card.price - (card.price * card.distributor.discount / 100)
+    if request.method == 'GET':
+        return render(request, template, {
+            "form": form,
+            "card": card,
+            "buying_price": buying_price,
+            })
+
+    if request.method == 'POST':
+        # buying the card
+        form = BuyForm(request.POST)
+        if form.is_valid():
+            print "we buy: ", card.id
+
+            return HttpResponseRedirect(reverse("card_search"))
+
+    return render(request, template, {
+            "form": form,
+            "card": card,
+            "buying_price": buying_price,
+            })
 
 def card_move(request, pk=None):
     template = "search/card_move.jade"
     PlacesForm = CardMoveForm()
     BasketsForm = CardMove2BasketForm()
-    buyForm = BuyForm()
+    moveTypeForm = MoveInternalForm()
 
     if request.method == 'GET':
+        params = request.GET
+        if params.get('type') == moveType.payment:
+            moveTypeForm = BuyForm()
+        elif params.get('type') == moveType.deposit:
+            moveTypeForm = MoveDepositForm()
+
         return render(request, template, {
             "PlacesForm": PlacesForm,
             "BasketsForm": BasketsForm,
-            "BuyForm": buyForm,
+            "moveTypeForm": moveTypeForm,
             "pk": pk,
             "q": request.GET.get('q'),
             "ean": request.GET.get('ean'),
+            "type": params.get('type'),
             })
 
     if request.method == 'POST':

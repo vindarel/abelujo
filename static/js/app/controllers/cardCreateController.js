@@ -43,7 +43,7 @@ angular.module('abelujo.controllers', [])
         var re = /edit\/(\d+)/;
         var match = path.match(re);
 
-        if (match.length == 2) {
+        if (match && match.length == 2) {
             // get the card, populate the form.
             var card_id = match[1];
             $http.get("/api/card/" + card_id, {
@@ -63,6 +63,9 @@ angular.module('abelujo.controllers', [])
                 $scope.ready = true; // don't load the form if not ready
             });
 
+        } else {
+
+            $scope.ready = true;
         }
 
         $scope.getItemsApi = function(api_url, query, model_selected){
@@ -112,7 +115,7 @@ angular.module('abelujo.controllers', [])
             $scope[model_list].splice(index_to_rm, 1);
       };
 
-        $scope.validate = function(){
+        $scope.validate = function(next_view){
             console.log("validate clicked");
             var params = {
                 "title": $scope.title,
@@ -141,7 +144,12 @@ angular.module('abelujo.controllers', [])
                 .then(function(response){
                     $scope.alerts = response.data.alerts;
                     $scope.card_created_id = response.data.card_id;
-                    $window.location.href = "/stock/card/"+$scope.card_created_id + "/move";
+                    // $window.location.href = "/stock/card/"+$scope.card_created_id + "/" + $scope.next_view;
+                    if (next_view == "view"){
+                        $window.location.href = "/stock/card/" + $scope.card_created_id;
+                    }else if (next_view == "buy") {
+                        $window.location.href = "/stock/card/" + $scope.card_created_id + "/buy";
+                    }
                     return response.data;
                 });
         };
