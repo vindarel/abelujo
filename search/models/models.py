@@ -29,6 +29,7 @@ from django.db.models import Q
 from django.utils.http import quote
 from django.utils.translation import ugettext as _
 from search.models import history
+from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
 
@@ -36,7 +37,6 @@ CHAR_LENGTH = 200
 PAGE_SIZE = 50
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
 # and the ui in general (datejs).
-DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_PRICE = 0
 
 log = logging.getLogger(__name__)
@@ -1677,7 +1677,7 @@ def getHistory(to_list=False, sells_only=False):
     alerts = []
     sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
     sells = [it.to_list() for it in sells]
-    entries = Card.objects.order_by("-created")[:PAGE_SIZE]
+    entries = history.Entry.objects.order_by("-created")[:PAGE_SIZE]
     entries = [it.to_list() for it in entries]
     if sells_only:
         toret = entries

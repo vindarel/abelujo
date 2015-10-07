@@ -21,6 +21,8 @@ Avoid circular imports.
 """
 from django.db import models
 
+DATE_FORMAT = "%Y-%m-%d"
+
 PAYMENT_CHOICES = [
     (0, "cash"),
     (1, "check"),

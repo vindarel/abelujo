@@ -28,6 +28,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
+from search.models.common import DATE_FORMAT
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class EntryCopies(TimeStampedModel):
     card = models.ForeignKey("search.Card", db_index=True)
     entry = models.ForeignKey("Entry")
     #: we may want to remember the price of the card at this time.
-    price_init = models
+    price_init = models.FloatField(null=True, blank=True)
 
     @staticmethod
     def last_entry(card):
@@ -107,6 +108,25 @@ class Entry(TimeStampedModel):
         """
         return reverse("history_entry", args=(self.id,))
 
+    def to_list(self):
+        """
+        """
+        ec = self.entrycopies_set.all()
+        payment = self.payment
+        if isinstance(self.payment, unicode):
+            payment = int(self.payment)
+
+        copies = [{
+            "price_init": it.price_init,
+            "card": it.card.to_list(),
+        } for it in ec]
+        ret = {"created": self.created.strftime(DATE_FORMAT),
+               "model": "Entry",
+               "type": self.ENTRY_TYPES_CHOICES[self.typ - 1][1],
+               "payment": PAYMENT_CHOICES[payment - 1][1],
+               "copies": copies}
+        return ret
+
     def add_copies(self, copies):
         """Add the given list of copies.
 
@@ -131,10 +151,13 @@ class Entry(TimeStampedModel):
         """Create a new record for the given list of copies.
 
         - copies: list
+        - payment: int
 
         return: a tuple Entry object, boolean
         """
         try:
+            if isinstance(payment, unicode) or isinstance(payment, str):
+                payment = int(payment)
             en = Entry(payment=payment)
             en.save()
             en.add_copies(copies)

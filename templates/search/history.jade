@@ -35,7 +35,7 @@ div(ng-controller="historyController")
        div(ng-if="hist.item.model === 'Sell'")
         span {% verbatim %} {{hist.item.created }}: sold {{hist.item.cards.length}} {% endverbatim %} {% trans "cards" %}:  
           {% verbatim %}
-          a(href="{{ hist.item.details_url }}") Sell {{ hist.item.id }}
+          a(href="{{ hist.item.details_url }}") Details
           {% endverbatim %}
           span {% trans "total sold" %}: {% verbatim %} {{hist.item.total_price_sold}} € {% endverbatim %}
         div(ng-repeat="card in hist.item.cards")
@@ -43,11 +43,12 @@ div(ng-controller="historyController")
           a(href="{{ card.get_absolute_url }}")  {{ card.title }}
           {% endverbatim %}
 
-       div(ng-if="hist.item.model === 'Card')
-         span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "new card" %}: 
-         {% verbatim %}
-         a(href="{{ hist.item.get_absolute_url }}") {{ hist.item.title }}
-         {% endverbatim %}
+       div(ng-if="hist.item.model === 'Entry'")
+         span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "New entry" %}: ({% verbatim %} {{ hist.item.payment }} {% endverbatim %})
+         div(ng-repeat="item in hist.item.copies")
+               {% verbatim %}
+               a(href="{{ item.card.get_absolute_url }}") {{ item.card.title }}
+               {% endverbatim %}
 
   a(href="") more...
 
