@@ -26,13 +26,19 @@
 
 div(ng-controller="historyController")
     h3 {% trans "History" %}
-    h5 {% trans "of new entries, sells and movements" %}
+
+    span
+      input.btn.btn-default(value="Entries", ng-click="filterModel='Entry'")
+      input.btn.btn-default(value="Sells", ng-click="filterModel='Sell'"))
+      input.btn.btn-default(value="Movements", ng-click="filterModel='InternalMovement'"))
+      input.btn.btn-default(value="All", ng-click="filterModel='All'"))
+
     div(
       ng-repeat="hist in history"
     )
-      div.ng-cloak
+      ul.ng-cloak.list-group
 
-       div(ng-if="hist.item.model === 'Sell'")
+       div.list-group-item(ng-if="hist.item.model === 'Sell'", ng-show="showModel('Sell')")
         span {% verbatim %} {{hist.item.created }}: sold {{hist.item.cards.length}} {% endverbatim %} {% trans "cards" %}:  
           {% verbatim %}
           a(href="{{ hist.item.details_url }}") Details
@@ -43,7 +49,7 @@ div(ng-controller="historyController")
           a(href="{{ card.get_absolute_url }}")  {{ card.title }}
           {% endverbatim %}
 
-       div.list-group-item(ng-if="hist.item.model === 'Entry'")
+       div.list-group-item(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")
          span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "New entry" %}: ({% verbatim %} {{ hist.item.payment }} {% endverbatim %})
          div(ng-repeat="item in hist.item.copies")
                {% verbatim %}
@@ -51,7 +57,7 @@ div(ng-controller="historyController")
                {% endverbatim %}
 
        // horrible mess of tags !
-       div.list-group-item(ng-if="hist.item.model === 'InternalMovement'")
+       div.list-group-item(ng-if="hist.item.model === 'InternalMovement'", ng-show="showModel('InternalMovement')")
          span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "Movement" %}: {% trans "Moved" %} {% verbatim %} {{ hist.item.nb }} {% endverbatim %} {% trans "copies" %} {% trans "from" %} {% verbatim %} {{ hist.item.origin.name }} {% endverbatim %} {% trans "to" %} {% verbatim %} {{ hist.item.dest.name }} {% endverbatim %}
          a(href="hist.item.card.get_absolute_url")
            div {% verbatim %} {{ hist.item.card.title }} {% endverbatim %}

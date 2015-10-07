@@ -5,6 +5,7 @@ angular.module("abelujo").controller('historyController', ['$http', '$scope', '$
     // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
     $scope.history = [];
+    $scope.filterModel = 'All';
 
     $http.get("/api/history", {
         params: {
@@ -24,6 +25,12 @@ angular.module("abelujo").controller('historyController', ['$http', '$scope', '$
             });
         });
 
+    $scope.showModel = function(model) {
+        if ((model === $scope.filterModel) || ($scope.filterModel === "All")) {
+            return true;
+        }
 
+        return false;
+    };
 
 }]);
