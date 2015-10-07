@@ -51,6 +51,7 @@ from models import Place
 from models import Publisher
 from models import Sell
 from search.models.utils import ppcard
+from search.models import Entry
 from search.models import EntryCopies
 
 log = logging.getLogger(__name__)
@@ -485,11 +486,6 @@ class MoveInternalForm(forms.Form):
     destination  = forms.ChoiceField(choices=get_places_choices())
     nb = forms.IntegerField()
 
-class moveType:
-    payment = "payment"
-    deposit = "deposit"
-    move = "move"
-
 def card_buy(request, pk=None):
     form = BuyForm()
     template = "search/card_buy.jade"
@@ -506,7 +502,22 @@ def card_buy(request, pk=None):
         # buying the card
         form = BuyForm(request.POST)
         if form.is_valid():
-            print "we buy: ", card.id
+            place = form.cleaned_data['place']
+            nb = form.cleaned_data['quantity']
+            payment = form.cleaned_data['payment']
+            place_obj = Place.objects.get(name=place)
+
+            # Add to the place
+            try:
+                place_obj.add_copy(card, nb=nb)
+            except Exception as e:
+                log.error("couldn't add copies to {}: {}".format(place, e))
+
+            # Log in History:
+            try:
+                entry, created = Entry.new([card], payment=payment)
+            except Exception as e:
+                log.error("couldn't add Entry in history: {}".format(e))
 
             return HttpResponseRedirect(reverse("card_search"))
 
@@ -518,41 +529,24 @@ def card_buy(request, pk=None):
 
 def card_move(request, pk=None):
     template = "search/card_move.jade"
-    PlacesForm = CardMoveForm()
     BasketsForm = CardMove2BasketForm()
-    moveTypeForm = MoveInternalForm()
-
-    if request.method == 'GET':
-        params = request.GET
-        if params.get('type') == moveType.payment:
-            moveTypeForm = BuyForm()
-        elif params.get('type') == moveType.deposit:
-            moveTypeForm = MoveDepositForm()
-
-        return render(request, template, {
-            "PlacesForm": PlacesForm,
-            "BasketsForm": BasketsForm,
-            "moveTypeForm": moveTypeForm,
-            "pk": pk,
-            "q": request.GET.get('q'),
-            "ean": request.GET.get('ean'),
-            "type": params.get('type'),
-            })
+    internalForm = MoveInternalForm()
+    params = request.GET
 
     if request.method == 'POST':
-        placeForm = CardMoveForm(request.POST)
+        placeForm = MoveInternalForm(request.POST)
         basketForm = CardMove2BasketForm(request.POST)
-        # buyForm = BuyForm(request.POST)
 
         if placeForm.is_valid() and basketForm.is_valid():
             card_obj = Card.objects.get(pk=pk)
-            for (place, nb) in placeForm.cleaned_data.iteritems():
-                if nb:
-                    place_obj = Place.objects.get(name=place)
-                    try:
-                        place_obj.add_copy(card_obj, nb=nb)
-                    except Exception as e:
-                        log.error("couldn't add copies to {}: {}".format(place, e))
+            data = placeForm.cleaned_data
+            if data['nb']:
+                orig_obj = Place.objects.get(name=data['origin'])
+                dest_obj = Place.objects.get(name=data['destination'])
+                try:
+                    orig_obj.move(dest_obj, card_obj, data['nb'])
+                except Exception as e:
+                    log.error("couldn't move copies from {} to {}: {}".format(data['origin'], data['destination'], e))
 
             for (basket, nb) in basketForm.cleaned_data.iteritems():
                 if nb:
@@ -574,6 +568,21 @@ def card_move(request, pk=None):
             if request.session.get("back_to"):
                 del request.session["back_to"]
             return HttpResponseRedirect(back_to)
+
+        else:
+            # form not valid
+            internalForm = MoveInternalForm(request.POST)
+
+        # method: GET
+        return render(request, template, {
+            "BasketsForm": BasketsForm,
+            "internalForm": internalForm,
+            "pk": pk,
+            "q": request.GET.get('q'),
+            "ean": request.GET.get('ean'),
+            "type": params.get('type'),
+            })
+
 
 def collection(request):
     """Search our own collection and take actions.

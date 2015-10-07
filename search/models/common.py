@@ -21,6 +21,14 @@ Avoid circular imports.
 """
 from django.db import models
 
+PAYMENT_CHOICES = [
+    (0, "cash"),
+    (1, "check"),
+    (2, "credit card"),
+    (3, "gift"),
+    (4, "other"),
+    ]
+
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

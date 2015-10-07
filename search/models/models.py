@@ -29,6 +29,7 @@ from django.db.models import Q
 from django.utils.http import quote
 from django.utils.translation import ugettext as _
 from search.models import history
+from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
 
 CHAR_LENGTH = 200
@@ -39,14 +40,6 @@ DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_PRICE = 0
 
 log = logging.getLogger(__name__)
-
-PAYMENT_CHOICES = [
-    (0, "cash"),
-    (1, "check"),
-    (2, "credit card"),
-    (3, "gift"),
-    (4, "other"),
-    ]
 
 DEPOSIT_TYPES_CHOICES = [
     ("Dépôt de libraire", (
@@ -805,6 +798,30 @@ class Place (models.Model):
         except Exception, e:
             log.error(u"--- error while setting the default place: %s" % (e,))
 
+    def move(self, dest, card, nb):
+        """Move the given card from this place to "dest" and create an history
+        movement.
+
+        - dest: Place object
+        - nb: quantity (int)
+
+        return: Boolean
+
+        """
+        try:
+            pc = self.placecopies_set.filter(card__id=card.id).first()
+            pc.nb = pc.nb - nb
+            pc.save()
+            dest_copies = dest.placecopies_set.filter(card__id=card.id).first()
+            dest_copies.nb += nb
+            dest_copies.save()
+            mvt = history.InternalMovement(origin=self, dest=dest, card=card, nb=nb)
+            mvt.save()
+            return True
+        except Exception as e:
+            log.error(e)
+            return False
+
     def to_dict(self):
         # Could (should?) do with django serializers but its output is a bit too much.
         return {
@@ -841,6 +858,16 @@ class Place (models.Model):
         except Exception,e:
             log.error(u"Error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
+
+    def quantity_of(self, card):
+        """How many copies of this card do we have ?
+        """
+        try:
+            place_copies = self.placecopies_set.filter(card__id=card.id).first()
+            return place_copies.nb
+        except Exception as e:
+            log.error(e)
+            return None
 
 
 class Preferences(models.Model):
@@ -1454,7 +1481,7 @@ class Sell(models.Model):
 
     created = models.DateTimeField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True, null=True)
-    payment = models.CharField(choices=PAYMENT_CHOICES,
+    payment = models.CharField(choices=PAYMENT_CHOICES, #XXX: table
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
                                blank=True, null=True)

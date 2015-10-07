@@ -25,13 +25,10 @@
 
 form(method='post', action="{% url 'card_move' pk %}")
   {% csrf_token %}
-  h3 {% trans "Add this card to your stock" %}
-  h4 {% trans "Places" %}:
-  {{ PlacesForm.as_p }}
-  h4 {% trans "Baskets" %}:
+  h4 {% trans "Move copies" %}
+  {{ internalForm }}
+  h4 {% trans "and add some to baskets" %}:
   {{ BasketsForm.as_p }}
-  //- h4 Buy ?
-  //- {{ BuyForm.as_p }}
 
   input(type='hidden', value="{{ q }}", name="q")
   input(type='hidden', value="{{ ean }}", name="ean")

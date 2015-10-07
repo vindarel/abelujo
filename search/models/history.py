@@ -19,28 +19,34 @@ import datetime
 import logging
 from datetime import date
 
+from common import PAYMENT_CHOICES
+from common import TimeStampedModel
+from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
-from django.apps import apps
-
-from common import TimeStampedModel
 
 log = logging.getLogger(__name__)
 
-# class MovementType(models.Model):
-#     """Different movements:
-#     - an entry
-#     - an exit
-#     - an internal movement
-#     """
-#     class Meta:
-#         app_label = "search"
+class InternalMovement(TimeStampedModel):
+    """An internal movement
+    For a single Card (or a Basket).
+    """
+    class Meta:
+        app_label = "search"
 
-#     name = models.CharField()
+    origin = models.ForeignKey("search.Place", related_name="mvt_origin")
+    dest = models.ForeignKey("search.Place", related_name="mvt_dest")
+    card = models.ForeignKey("search.Card")
+    basket = models.ForeignKey("search.Basket", null=True, blank=True)
+    nb = models.IntegerField()
 
+    def __unicode__(self):
+        return "move card {} from '{}' to '{}', x{}, at {}".format(
+            self.card.id, self.origin.name, self.dest.name, self.nb, self.created)
 
 class EntryCopies(TimeStampedModel):
     card = models.ForeignKey("search.Card", db_index=True)
@@ -90,6 +96,8 @@ class Entry(TimeStampedModel):
     #: Type of this entry (a purchase by default).
     typ = models.IntegerField(default=EntryTypes.purchase,
                               choices=ENTRY_TYPES_CHOICES)
+    payment = models.CharField(choices=PAYMENT_CHOICES,
+                               max_length=200, blank=True, null=True)
 
     def __unicode__(self):
         return "type {}, created at {}".format(self.typ, self.created)
@@ -119,7 +127,7 @@ class Entry(TimeStampedModel):
         return True
 
     @staticmethod
-    def new(copies):
+    def new(copies, payment=None):
         """Create a new record for the given list of copies.
 
         - copies: list
@@ -127,7 +135,7 @@ class Entry(TimeStampedModel):
         return: a tuple Entry object, boolean
         """
         try:
-            en = Entry()
+            en = Entry(payment=payment)
             en.save()
             en.add_copies(copies)
 
