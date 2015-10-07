@@ -1679,10 +1679,12 @@ def getHistory(to_list=False, sells_only=False):
     sells = [it.to_list() for it in sells]
     entries = history.Entry.objects.order_by("-created")[:PAGE_SIZE]
     entries = [it.to_list() for it in entries]
+    moves = history.InternalMovement.objects.order_by("-created")[:PAGE_SIZE]
+    moves = [it.to_dict() for it in moves]
     if sells_only:
         toret = entries
     else:
-        toret = sells + entries
+        toret = sells + entries + moves
     toret.sort(key= lambda it: it['created'], reverse=True)
     return toret, STATUS_SUCCESS, alerts
 

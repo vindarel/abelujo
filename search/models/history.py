@@ -49,6 +49,19 @@ class InternalMovement(TimeStampedModel):
         return "move card {} from '{}' to '{}', x{}, at {}".format(
             self.card.id, self.origin.name, self.dest.name, self.nb, self.created)
 
+    def to_dict(self):
+        """
+        return: a Dict
+        """
+        ret = {"card": self.card.to_list(),
+               "origin": self.origin.to_dict(),
+               "dest": self.dest.to_dict(),
+               "nb": self.nb,
+               "created": self.created.strftime(DATE_FORMAT),
+               "model": self.__class__.__name__,
+               }
+        return ret
+
 class EntryCopies(TimeStampedModel):
     card = models.ForeignKey("search.Card", db_index=True)
     entry = models.ForeignKey("Entry")
