@@ -49,14 +49,16 @@ for b in book_list
           if b.details_url
             a(target="_blank", href="{{ b.details_url }}") {% trans "See on" %} {{ b.data_source }}
         if b.authors
-          h4 {{b.authors}}
+          for aut in b.authors
+            div {{aut.fields.name}}
         table.table-condensed
           tr
             if b.publishers
               td
                 span
-                  b(title="{{ b.publishers }}") {% trans "publisher" %} 
-                  span(title="{{ b.publishers }}") {{ b.publishers | truncatewords:2}}
+                  for pub in b.publishers
+                    b(title="{{ pub.fields.name }}") {% trans "publisher" %} 
+                    span(title="{{ pub.fields.name }}") {{ pub.fields.name | truncatewords:2}}
             td
               span
                 b isbn 
@@ -77,7 +79,7 @@ for b in book_list
               td
                 span
                   b {% trans "distributor" %} 
-                  span {{ b.distributor }}
+                  span {{ b.distributor.name }}
             td
               b {% trans "places" %} 
               span {{ b.places }}
