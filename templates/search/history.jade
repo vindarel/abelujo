@@ -59,8 +59,10 @@ div(ng-controller="historyController")
        // horrible mess of tags !
        div.list-group-item(ng-if="hist.item.model === 'InternalMovement'", ng-show="showModel('InternalMovement')")
          span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "Movement" %}: {% trans "Moved" %} {% verbatim %} {{ hist.item.nb }} {% endverbatim %} {% trans "copies" %} {% trans "from" %} {% verbatim %} {{ hist.item.origin.name }} {% endverbatim %} {% trans "to" %} {% verbatim %} {{ hist.item.dest.name }} {% endverbatim %}
-         a(href="hist.item.card.get_absolute_url")
-           div {% verbatim %} {{ hist.item.card.title }} {% endverbatim %}
+         {% verbatim %}
+         a(href="{{ hist.item.card.get_absolute_url }}")
+           div  {{ hist.item.card.title }}
+         {% endverbatim %}
 
   a(href="") more...
 
