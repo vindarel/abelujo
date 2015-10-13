@@ -133,11 +133,16 @@ class Entry(TimeStampedModel):
             "price_init": it.price_init,
             "card": it.card.to_list(),
         } for it in ec]
-        ret = {"created": self.created.strftime(DATE_FORMAT),
-               "model": "Entry",
-               "type": self.ENTRY_TYPES_CHOICES[self.typ - 1][1],
-               "payment": PAYMENT_CHOICES[payment - 1][1],
-               "copies": copies}
+        try:
+            ret = {"created": self.created.strftime(DATE_FORMAT),
+                "model": self.__class__.__name__,
+                "type": self.ENTRY_TYPES_CHOICES[self.typ - 1][1],
+                   "payment": PAYMENT_CHOICES[payment - 1][1] if payment else "",
+                "copies": copies}
+        except Exception as e:
+            log.error(e)
+            return {}
+
         return ret
 
     def add_copies(self, copies):
