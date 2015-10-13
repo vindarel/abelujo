@@ -135,9 +135,13 @@ class AddForm(forms.Form):
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
-    default_place = Preferences.objects.first().default_place
-    ret = [ (default_place.id, default_place.name) ] + [ (p.id, p.name) for p in not_stands \
-                                                         if not p.id == default_place.id]
+    ret = []
+    try:
+        default_place = Preferences.objects.first().default_place
+        ret = [ (default_place.id, default_place.name) ]
+    except Exception as e:
+        log.error(e)
+    ret += [ (p.id, p.name) for p in not_stands if not p.id == default_place.id]
     return ret
 
 class DepositForm(forms.ModelForm):
@@ -478,6 +482,10 @@ PAYMENT_MEANS = [
 
 class BuyForm(forms.Form):
     payment = forms.ChoiceField(choices=PAYMENT_MEANS)
+    buying_price = forms.FloatField(widget=forms.NumberInput(attrs={'min':0, 'max':10000,
+                                           'step':0.1, 'value': 1,
+                                           'style': 'width: 70px'}))
+
     quantity = forms.FloatField(label=_("quantity"))
     place  = forms.ChoiceField(choices=get_places_choices())
 
@@ -490,10 +498,10 @@ class MoveInternalForm(forms.Form):
     nb = forms.IntegerField()
 
 def card_buy(request, pk=None):
-    form = BuyForm()
     template = "search/card_buy.jade"
     card = Card.objects.get(id=pk)
     buying_price = card.price - (card.price * card.distributor.discount / 100)
+    form = BuyForm(initial={"buying_price": buying_price})
     if request.method == 'GET':
         return render(request, template, {
             "form": form,
@@ -508,7 +516,7 @@ def card_buy(request, pk=None):
             place = form.cleaned_data['place']
             nb = form.cleaned_data['quantity']
             payment = form.cleaned_data['payment']
-            place_obj = Place.objects.get(name=place)
+            place_obj = Place.objects.get(id=place)
 
             # Add to the place
             try:
