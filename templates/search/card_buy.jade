@@ -25,11 +25,16 @@
 
 form(method='post', action="{% url 'card_buy' card.id %}")
   {% csrf_token %}
-  h4 {% trans "Buy cards" %}
-  div {% trans "public price" %}: {{ card.price }}
-  div {% trans "discount" %}: {{ card.distributor.discount }} %
-  div {{ form.as_p }}
+  .row
+    .col-lg-9
+      h4 {% trans "Buy cards" %}
+      div {% trans "public price" %}: {{ card.price }}
+      div {% trans "discount" %}: {{ card.distributor.discount }} %
+    .col-lg-3
+      a(href="/admin/search/bill/add")
+        div {% trans "create a Bill" %}
 
+  div {{ form.as_p }}
   input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
 
 {% endblock content %}

@@ -41,6 +41,7 @@ import datasources.esES.casadellibro.casadellibroScraper as casadellibro
 import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
 import models
 from models import Basket
+from models import Bill
 from models import Card
 from models import CardType
 from models import Deposit
@@ -165,6 +166,11 @@ class AddToDepositForm(forms.Form):
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
                                  label=_(u"Add to the deposit:"),
                                  required=False)
+
+def get_bills_choices():
+    bills = Bill.objects.all()
+    ret = [(0, "---")] + [ (it.id, it.long_name) for it in bills]
+    return ret
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """Get the reverse url with the query parameters taken from the
@@ -481,13 +487,15 @@ PAYMENT_MEANS = [
     ]
 
 class BuyForm(forms.Form):
-    payment = forms.ChoiceField(choices=PAYMENT_MEANS)
+    payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
+    bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
     buying_price = forms.FloatField(widget=forms.NumberInput(attrs={'min':0, 'max':10000,
                                            'step':0.1, 'value': 1,
-                                           'style': 'width: 70px'}))
+                                                                    'style': 'width: 70px'}),
+                                    label=_("Buying price"))
 
-    quantity = forms.FloatField(label=_("quantity"))
-    place  = forms.ChoiceField(choices=get_places_choices())
+    quantity = forms.FloatField(label=_("Quantity"))
+    place  = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
 
 class MoveDepositForm(forms.Form):
     choices = forms.ChoiceField(choices=get_deposits_choices())
@@ -501,7 +509,7 @@ def card_buy(request, pk=None):
     template = "search/card_buy.jade"
     card = Card.objects.get(id=pk)
     buying_price = card.price - (card.price * card.distributor.discount / 100)
-    form = BuyForm(initial={"buying_price": buying_price})
+    form = BuyForm(initial={"buying_price": buying_price, "quantity": 1})
     if request.method == 'GET':
         return render(request, template, {
             "form": form,
@@ -515,8 +523,16 @@ def card_buy(request, pk=None):
         if form.is_valid():
             place = form.cleaned_data['place']
             nb = form.cleaned_data['quantity']
+            bill = form.cleaned_data['bill']
             payment = form.cleaned_data['payment']
             place_obj = Place.objects.get(id=place)
+            if bill and bill != "0":
+                bill_obj = Bill.objects.get(id=bill)
+                # Link to the bill:
+                try:
+                    bill_obj.add_copy(card,nb=nb)
+                except Exception as e:
+                    log.error(e)
 
             # Add to the place
             try:
@@ -529,6 +545,7 @@ def card_buy(request, pk=None):
                 entry, created = Entry.new([card], payment=payment)
             except Exception as e:
                 log.error("couldn't add Entry in history: {}".format(e))
+
 
             return HttpResponseRedirect(reverse("card_search"))
 
