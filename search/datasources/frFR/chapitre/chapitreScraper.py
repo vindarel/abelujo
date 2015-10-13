@@ -226,7 +226,7 @@ class Scraper:
 
     def _nbr_results(self):
         try:
-            nbr_result_list = self.soup.find('div', class_='nb_results')
+            nbr_result_list = self.soup.find('div', class_='nb-results')
             res = nbr_result_list.find('strong').text
             if not res:
                 log.warning('Error matching nbr_result')
@@ -366,7 +366,6 @@ class Scraper:
         stacktraces = []
         product_list = self._product_list()
         nbr_results = self._nbr_results()
-        # log.debug("nbr_results: "+ nbr_results)
         for product in product_list:
             dom_product = DomProduct(product)
             b = {}
@@ -394,6 +393,7 @@ def postSearch(url):
 
     - isbn (mandatory)
     - collection
+    - summary (back cover text)
 
     url: the url to the details of the product where we can get the isbn (fiche produit)
 
@@ -408,7 +408,9 @@ def postSearch(url):
     details = soup.find_all(class_="productDetails-items-content")
     # The complementary information we need to return. Isbn is compulsory.
     to_ret = {"isbn": None,
-              "collection": None}
+              "collection": None,
+              "summary": "",
+    }
     COLLECTION_LABEL = u"collection"  # lower case
     collection_id = "ctl00_PHCenter_productTop_productDetail_rpDetails_ctl03_rpLinks_ctl00_hlLabel"
 
@@ -417,8 +419,13 @@ def postSearch(url):
         to_ret["collection"] = soup.find(id=collection_id).text
         log.debug("postSearch of chapitre for {}: found {}".format(url, to_ret))
 
-    except Exception, e:
-        log.debug("Error while getting the isbn of %s :" % (url,))
-        log.debug(e)
+    except Exception as e:
+        log.debug("Error while getting the isbn of {} : {}".format(url, e))
+
+    try:
+        node = soup.find(itemprop="description")
+        to_ret["summary"] = node.span.text.strip() + node.find(class_="cutedText").text.strip()
+    except Exception as e:
+        log.debug("Could not get the summary of {}: {}".format(url, e))
 
     return to_ret

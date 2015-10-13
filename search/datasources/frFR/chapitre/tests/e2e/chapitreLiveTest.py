@@ -94,6 +94,7 @@ class TestChapitrePostSearch(unittest.TestCase):
 
     def test_postSearch(self):
         complements = postSearch(self.details_url)
+        self.assertTrue("un couvert de plus" in complements['summary'])
 
 
 if __name__ == '__main__':

@@ -42,6 +42,11 @@
       div.panel.panel-default {% trans "Comment" %}
        div.panel-heading
         div.panel-content {{ object.comment }}
+
+      div.panel.panel-default {% trans "Summary" %}
+        div.panel-heading
+          div.panel-content {{ object.summary }}
+
   .col-lg-9
     h3 {{ object.title }}
     h4 {{ object.display_authors }}

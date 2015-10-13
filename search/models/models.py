@@ -239,8 +239,8 @@ class Card(TimeStampedModel):
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
     price = models.FloatField(null=True, blank=True)
-    # price_sold is only used to generate an angular form, it is not
-    # stored here in the db.
+    #: price_sold is only used to generate an angular form, it is not
+    #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
     # quantity: a property, accessible like a field. The sum of quantities in each place.
     #: Publisher of the card:
@@ -261,6 +261,9 @@ class Card(TimeStampedModel):
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: link to the card's data source
     details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True)
+    #: the summary (of the back cover)
+    summary = models.TextField(null=True, blank=True)
+    #: a user's comment
     comment = models.TextField(blank=True)
 
 
@@ -633,6 +636,7 @@ class Card(TimeStampedModel):
                 img = card.get('img', ""),
                 details_url = card.get('details_url'),
                 data_source = card.get('data_source'),
+                summary = card.get('summary'),
             )
 
             #TODO: we can also update every field for the existing card.
