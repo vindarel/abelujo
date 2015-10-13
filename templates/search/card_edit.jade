@@ -48,6 +48,8 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
                 input.form-control(type="number", step="0.1", min="0", ng-model="price")
                 label Type:
                 select.form-control(ng-model="type", ng-options="type.fields.name for type in card_types")
+                label Category:
+                select.form-control(ng-model="category", ng-options="cat.fields.name for cat in categories")
 
     .col-lg-4
       div.form-group

@@ -33,6 +33,9 @@ angular.module('abelujo.controllers', [])
         $scope.type = "";
         $scope.card_types = [];
 
+        $scope.category = {"fields": {"pk": 0}};
+        $scope.categories = [];
+
         $scope.alerts = [];
         $scope.card_created_id = undefined;
 
@@ -95,6 +98,15 @@ angular.module('abelujo.controllers', [])
                 return response.data;
             });
 
+        $http.get("/api/categories", {
+                params: {
+                    "query": ""}
+            }).then(function(response){
+                $scope.categories = response.data;
+                // $scope.category = $scope.categories[0];
+                return response.data;
+            });
+
         $http.get("/api/distributors", {
                 params: {
                     "query": ""}
@@ -121,6 +133,7 @@ angular.module('abelujo.controllers', [])
                 "title": $scope.title,
                 "price": $scope.price,
                 "type": $scope.type.fields.name,
+                "category": $scope.category.pk,
                 "authors": _.map($scope.authors_selected, function(it){ return it.pk;}),
                 "publishers": _.map($scope.pubs_selected, function(it){ return it.pk;}),
                 "distributor": $scope.distributor.id,

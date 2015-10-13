@@ -194,6 +194,24 @@ class Collection (models.Model):
     def __unicode__(self):
         return self.name
 
+class Category(models.Model):
+    """Categories:
+
+    - ...
+
+    For now, a Card has only one category.
+    """
+    class Meta:
+        app_label = "search"
+
+    #: Name of the category
+    name = models.CharField(max_length=CHAR_LENGTH)
+
+    def __unicode__(self):
+        #idea: show the nb of cards with that category.
+        return "{}".format(self.name)
+
+
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
@@ -250,6 +268,8 @@ class Card(TimeStampedModel):
     distributor = models.ForeignKey("Distributor", blank=True, null=True)
     #: Collection
     collection = models.ForeignKey(Collection, blank=True, null=True)
+    #: Category (for now, only one category).
+    category = models.ForeignKey(Category, blank=True, null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
@@ -552,6 +572,7 @@ class Card(TimeStampedModel):
             title:      string
             year:       int or None
             authors:    list of authors names (list of str) or list of Author objects.
+            category:   id (int)
             distributor: id of a Distributor
             publishers: list of names of publishers (create one on the fly, like with webscraping)
             publishers_ids: list of ids of publishers
@@ -665,8 +686,18 @@ class Card(TimeStampedModel):
                     card_obj.save()
                     if created:
                         log.debug("--- new collection created: %s" % (collection,))
-                except Exception, e:
+                except Exception as e:
                     log.error(u"--- error while adding the collection: %s" % (e,))
+
+            # add the category
+            category = card.get('category')
+            if category and category != "0":
+                try:
+                    cat_obj = Category.objects.get(id=category)
+                    card_obj.category = cat_obj
+                    card_obj.save()
+                except Exception as e:
+                    log.error(e)
 
             # add the type of the card
             typ = "unknown"

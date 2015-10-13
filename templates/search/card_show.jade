@@ -39,6 +39,8 @@
       div isbn: {{ object.isbn }}
       a(target="_blank", href="{{ object.details_url }}") {% trans "source" %}: {{ object.data_source }}
 
+      div {% trans "Category" %}: {{ object.category }}
+
       div.panel.panel-default {% trans "Comment" %}
        div.panel-heading
         div.panel-content {{ object.comment }}

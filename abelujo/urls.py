@@ -101,6 +101,8 @@ urlpatterns += patterns("",
     url(r'^api/card/(?P<pk>\d+)', 'search.models.api.card', name="api_card"),
     url(r'^api/cardtype$', 'search.models.api.cardtype', name="api_cardtype"),
 
+    url(r'^api/categories', 'search.models.api.categories', name="api_categories"),
+
     url(r'^api/authors$', 'search.models.api.authors', name="api_authors"),
     url(r'^api/distributors$', 'search.models.api.distributors', name="api_distributors"),
     url(r'^api/publishers$', 'search.models.api.publishers', name="api_publishers"),

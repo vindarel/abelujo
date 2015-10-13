@@ -15,6 +15,7 @@ from models import Author
 from models import Basket
 from models import Card
 from models import CardType
+from models import Category
 from models import Deposit
 from models import Distributor
 from models import Place
@@ -22,6 +23,7 @@ from models import Publisher
 from models import Sell
 from models import getHistory
 
+logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 ALERT_SUCCESS = "success"
@@ -91,6 +93,8 @@ def card_create(request, **response_kwargs):
         else:
             isbn = None
 
+        category = params.get('category')
+
         try:
             card_dict = {
                 "title": params.get('title'),
@@ -104,6 +108,10 @@ def card_create(request, **response_kwargs):
                 "details_url": params.get("details_url"),
                 "year": params.get("year_published"),
             }
+
+            if category:
+                card_dict['category'] = category
+
             card_obj, msg = Card.from_dict(card_dict)
             alerts.append({"level": ALERT_SUCCESS,
                            "message": msg})
@@ -128,6 +136,15 @@ def cardtype(request, **response_kwargs):
         data = CardType.search(query)
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
+
+def categories(request, **response_kwargs):
+    if request.method == 'GET':
+        data = Category.objects.all()
+        data = serializers.serialize("json", data)
+        return HttpResponse(data, **response_kwargs)
+
+    else:
+        return HttpResponse(json.dumps({"404"}), **response_kwargs)
 
 def authors(request, **response_kwargs):
     if request.method == "GET":
