@@ -23,6 +23,8 @@ from django.db import models
 
 DATE_FORMAT = "%Y-%m-%d"
 
+CHAR_LENGTH = 200
+
 PAYMENT_CHOICES = [
     (0, "cash"),
     (1, "check"),

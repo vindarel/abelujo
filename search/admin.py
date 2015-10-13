@@ -18,6 +18,7 @@ from django.contrib import admin
 from search.models import Author
 from search.models import Basket
 from search.models import BasketCopies
+from search.models import Bill
 from search.models import Card
 from search.models import Distributor
 from search.models import Deposit
@@ -42,9 +43,16 @@ class DistributorAdmin(admin.ModelAdmin):
     list_display = ("name", "discount", "stars")
     list_editable = ("discount", "stars")
 
+class BillAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Bill
+
+    list_display = ("name", "ref", "distributor", "total")
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
+admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Deposit)
 admin.site.register(Distributor, DistributorAdmin)
