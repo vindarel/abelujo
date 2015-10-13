@@ -94,8 +94,9 @@ div.ng-cloak(ng-controller="sellController")
         {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
       div(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4
-          a(target="_blank", href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
-          span {% verbatim %} {{card.authors}} {% endverbatim %}
+          a(target="_blank", href="{% verbatim %} {{ card.get_absolute_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
+          span(ng-repeat="auth in card.authors")
+            span {% verbatim %} {{auth.fields.name}} {% endverbatim %}
           i.glyphicon.glyphicon-warning-sign(
             ng-show="{% verbatim %} cards_selected[$index].ambiguous_sell {% endverbatim %}"
             title="{% trans 'There is a conflict with deposits.' %}")
