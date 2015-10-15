@@ -622,7 +622,7 @@ class Card(TimeStampedModel):
         card_distributor=None
         if card.get("distributor"):
             try:
-                card_distributor, created = Distributor.objects.get_or_create(name=card.get("distributor"))
+                card_distributor = Distributor.objects.get(id=card.get("distributor"))
             except Exception as e:
                 log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
 
