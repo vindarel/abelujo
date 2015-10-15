@@ -490,7 +490,7 @@ class BuyForm(forms.Form):
     payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
     bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
     buying_price = forms.FloatField(widget=forms.NumberInput(attrs={'min':0, 'max':10000,
-                                           'step':0.1, 'value': 1,
+                                           'step':0.01, 'value': 1,
                                                                     'style': 'width: 70px'}),
                                     label=_("Buying price"))
 
