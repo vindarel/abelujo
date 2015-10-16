@@ -56,7 +56,12 @@ PROTRACTOR_CONF=search/tests/integration-tests/conf.js
 webdriver-start:
 	$(NODEBIN)webdriver-manager start
 
-protractor:
+livescript: search/tests/integration-tests/*.ls
+	# compile livescript files
+	cd search/tests/integration-tests/ && lsc -c *.ls
+
+protractor: livescript
+	# you need: make run and make webdriver-start
 	$(PROTRACTOR_CMD) $(PROTRACTOR_CONF)
 
 protractor-debug:
