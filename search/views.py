@@ -569,8 +569,8 @@ def card_move(request, pk=None):
             card_obj = Card.objects.get(pk=pk)
             data = placeForm.cleaned_data
             if data['nb']:
-                orig_obj = Place.objects.get(name=data['origin'])
-                dest_obj = Place.objects.get(name=data['destination'])
+                orig_obj = Place.objects.get(id=data['origin'])
+                dest_obj = Place.objects.get(id=data['destination'])
                 try:
                     orig_obj.move(dest_obj, card_obj, data['nb'])
                 except Exception as e:
@@ -601,15 +601,15 @@ def card_move(request, pk=None):
             # form not valid
             internalForm = MoveInternalForm(request.POST)
 
-        # method: GET
-        return render(request, template, {
-            "BasketsForm": BasketsForm,
-            "internalForm": internalForm,
-            "pk": pk,
-            "q": request.GET.get('q'),
-            "ean": request.GET.get('ean'),
-            "type": params.get('type'),
-            })
+    # method: GET
+    return render(request, template, {
+        "BasketsForm": BasketsForm,
+        "internalForm": internalForm,
+        "pk": pk,
+        "q": request.GET.get('q'),
+        "ean": request.GET.get('ean'),
+        "type": params.get('type'),
+        })
 
 
 def collection(request):
