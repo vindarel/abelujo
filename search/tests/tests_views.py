@@ -33,6 +33,7 @@ from search.models import Sell
 from search.views import get_reverse_url
 
 from tests_models import CardFactory
+from tests_models import PlaceFactory
 
 fixture_search_datasource = {
     "test search":
@@ -241,6 +242,10 @@ class TestAddView(TestCase):
         self.type_book = "book"
         typ = CardType(name=self.type_book)
         typ.save()
+        # create places and add copies (to Move)
+        self.place = PlaceFactory.create()
+        self.place2 = PlaceFactory.create()
+        self.place.add_copy(self.autobio)
 
         self.c = Client()
 
@@ -262,9 +267,17 @@ class TestAddView(TestCase):
         # We are redirected to the "edit" view,
         self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search&ean=None")
 
-    def test_add_and_move(self, mock_data_source):
-        # TODO: test "card_move" view, adding the card to places and baskets.
-        pass
+    def test_move(self, mock_data_source):
+        resp = self.c.get(reverse("card_move", args=(1,)))
+        self.assertEqual(resp.status_code, 200)
+        resp = self.c.post(reverse("card_move", args=(1,)), data={
+            "origin": 1,
+            "destination": 2,
+            "nb": 2,
+        })
+        self.assertEqual(resp.status_code, 302)
+        # we've been redirected:
+        self.assertTrue("search" in resp.url)
 
     @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
     def test_form_not_valid(self, mock_data_source, fake_session):
