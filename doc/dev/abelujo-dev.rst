@@ -295,11 +295,20 @@ terminal windows:
 
    Some tests rely on the testing data that we load with `make data`.
 
+We have also a Chrome extension to help us write Protractor tests:
+https://github.com/andresdominguez/elementor (requires Chrome >= 39).
+ Once we launch it::
+
+     elementor # <url, i.e. http://localhost:8000/en/sell >
+
+ we have a Chrome window open with a new extension installed (the red
+ icon next to the url bar) where we can enter protractor selectors and
+ see the result.
+
 About Protractor:
 
 - https://angular.github.io/protractor/#/getting-started
-- an extension: https://github.com/andresdominguez/elementor (requires
-  Chrome >= 39)
+- api documentation: https://angular.github.io/protractor/#/api
 
 
 Tests coverage

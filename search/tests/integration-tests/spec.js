@@ -4,7 +4,7 @@
         webdriver = require("selenium-webdriver");
         // Requires: testing data (make data),
         // starting selenium (make wedriver-manager).
-        testUrl = "http://localhost:8000/sell/";
+        testUrl = "http://localhost:8000/en/sell";
         validateButton = element(by.id("validateButton"));
         input = element(by.model("copy_selected"));
         selectedCards = element.all(by.repeater("cards_selected"));
