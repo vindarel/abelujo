@@ -44,7 +44,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           .then(function(response){ // "then", not "success"
               return response.data.map(function(item){
                   // give a string representation for each object (result)
-                  $scope.dist_list.push(item.fields.name);
+                  $scope.dist_list.push(item.name);
               });
 
           });
@@ -60,7 +60,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                       // give a string representation for each object (result)
                       // xxx: take the repr from django
                       // return item.title + ", " + item.authors + ", éd. " + item.publishers;
-                      var repr = item.title + ", " + item.authors + ", éd. " + item.publishers;
+                      var repr = item.title + ", " + item.authors_repr + ", éd. " + item.pubs_repr;
                       item.quantity = 1;
                       $scope.cards_fetched.push({"repr": repr,
                                                  "id": item.id,

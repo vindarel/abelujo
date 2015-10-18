@@ -350,8 +350,10 @@ class Card(TimeStampedModel):
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
         auth = [{"fields": {'name': it.name}} for it in authors]
+        authors_repr = [", ".join(it.name for it in authors)]
         publishers = self.publishers.all()
         pubs = [{'fields': {'name': it.name}} for it in publishers]
+        pubs_repr = [", ".join(it.name for it in publishers)]
 
         if self.distributor:
             dist = self.distributor.to_list()
@@ -363,6 +365,7 @@ class Card(TimeStampedModel):
             "ambiguous_sell": self.ambiguous_sell(),
             # "authors": [auth.name for auth in self.authors.all()],
             "authors": auth,
+            "authors_repr": authors_repr,
             "collection": self.collection.name.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
             "data_source": self.data_source,
@@ -378,6 +381,7 @@ class Card(TimeStampedModel):
             "price_sold": self.price_sold,
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
+            "pubs_repr": pubs_repr,
             "quantity": self.quantity,
             "title": self.title,
         }
