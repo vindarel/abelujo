@@ -136,13 +136,9 @@ class AddForm(forms.Form):
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
-    ret = []
-    try:
-        default_place = Preferences.objects.first().default_place
-        ret = [ (default_place.id, default_place.name) ]
-    except Exception as e:
-        log.error(e)
-    ret += [ (p.id, p.name) for p in not_stands if not p.id == default_place.id]
+    default_place = Preferences.objects.first().default_place
+    ret = [ (default_place.id, default_place.name) ] + [ (p.id, p.name) for p in not_stands \
+                                                         if not p.id == default_place.id]
     return ret
 
 class DepositForm(forms.ModelForm):
@@ -489,11 +485,6 @@ PAYMENT_MEANS = [
 class BuyForm(forms.Form):
     payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
     bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
-    buying_price = forms.FloatField(widget=forms.NumberInput(attrs={'min':0, 'max':10000,
-                                           'step':0.01, 'value': 1,
-                                                                    'style': 'width: 70px'}),
-                                    label=_("Buying price"))
-
     quantity = forms.FloatField(label=_("Quantity"))
     place  = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
 
@@ -506,11 +497,16 @@ class MoveInternalForm(forms.Form):
     nb = forms.IntegerField()
 
 def card_buy(request, pk=None):
+    form = BuyForm()
     template = "search/card_buy.jade"
     card = Card.objects.get(id=pk)
-    buying_price = card.price - (card.price * card.distributor.discount / 100)
-    form = BuyForm(initial={"buying_price": buying_price, "quantity": 1})
+    form = BuyForm(initial={"quantity": 1})
     if request.method == 'GET':
+        try:
+            buying_price = card.price - (card.price * card.distributor.discount)
+        except Exception as e:
+            buying_price = card.price
+
         return render(request, template, {
             "form": form,
             "card": card,
