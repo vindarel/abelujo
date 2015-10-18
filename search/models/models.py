@@ -409,7 +409,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, to_list=False,
-               publisher_id=None):
+               publisher_id=None, place_id=None):
         """Search a card on its title and its authors' names.
 
         SIZE_LIMIT = 100
@@ -437,6 +437,12 @@ class Card(TimeStampedModel):
                                          Q(authors__name__icontains=elt))
         else:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
+
+        if cards and place_id:
+            try:
+                cards = cards.filter(placecopies__place__id=place_id)
+            except Exception as e:
+                log.error(e)
 
         if distributor and cards:
             cards = cards.filter(distributor__name__exact=distributor)

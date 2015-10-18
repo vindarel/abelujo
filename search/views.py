@@ -95,6 +95,10 @@ def get_publisher_choices():
     return [(0, _("All"))] + [(pub.id, pub.name)
                               for pub in Publisher.objects.all()]
 
+def get_places_choices():
+    return [(0, _("All"))] + [(it.id, it.name)
+                               for it in Place.objects.all()]
+
 class CollectionSearchForm(forms.Form):
     card_type = forms.ChoiceField(get_card_type_choices(),
                                   label=_("Type of card"),
@@ -109,6 +113,10 @@ class CollectionSearchForm(forms.Form):
                         label=_(u"Search on title and authors."))
 
     ean = forms.CharField(required=False)
+
+    place = forms.ChoiceField(get_places_choices(),
+                              label=_("Places"),
+                              required=False)
 
 
 class MyNumberInput(TextInput):
@@ -631,10 +639,14 @@ def collection(request):
                 publisher_id = form.cleaned_data.get("publisher")
                 if publisher_id:
                     publisher_id = int(publisher_id)
+                place_id = form.cleaned_data.get("place")
+                if place_id:
+                    place_id = int(place_id)
                 words = form.cleaned_data.get("q").split()
                 cards = Card.search(words,
                                     card_type_id=card_type_id,
                                     publisher_id=publisher_id,
+                                    place_id=place_id,
                                     to_list=True)
                 # store results in session for later re-use
                 request.session["collection_search"] = cards
