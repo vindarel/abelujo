@@ -36,7 +36,7 @@ unless book_list
 
 span: span {{ nb_results }} {% trans "results" %} / {{ total_results }}
       a(href="{% url 'card_collection' %}?format=text")
-        input.btn.btn-primary(type="submit", value="{% trans 'voir en texte' %}", style="float: right;")
+        input.btn(type="submit", value="{% trans 'voir en texte' %}", style="float: right;")
 
 for b in book_list
   table.table.table-condensed

@@ -312,8 +312,6 @@ class Card(TimeStampedModel):
         return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     def display_authors(self):
-        if self.sortkey:
-            return self.sortkey
         return u', '.join([a.name for a in self.authors.all()])
 
     def getAuthorsString(self):
@@ -350,10 +348,10 @@ class Card(TimeStampedModel):
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
         auth = [{"fields": {'name': it.name}} for it in authors]
-        authors_repr = [", ".join(it.name for it in authors)]
+        authors_repr = ", ".join(it.name for it in authors)
         publishers = self.publishers.all()
         pubs = [{'fields': {'name': it.name}} for it in publishers]
-        pubs_repr = [", ".join(it.name for it in publishers)]
+        pubs_repr = ", ".join(it.name for it in publishers)
 
         if self.distributor:
             dist = self.distributor.to_list()
@@ -363,7 +361,6 @@ class Card(TimeStampedModel):
         res = {
             "id": self.id,
             "ambiguous_sell": self.ambiguous_sell(),
-            # "authors": [auth.name for auth in self.authors.all()],
             "authors": auth,
             "authors_repr": authors_repr,
             "collection": self.collection.name.capitalize() if self.collection else None,

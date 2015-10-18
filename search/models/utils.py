@@ -44,14 +44,13 @@ def _ppcard_listofdicts(cards):
 
     """
     ncards = [addict.Dict(it) for it in cards]
-    # Allows dotted notation to attributes (and more).
-    # The code would be the same with @properties, wouldn't it ?
+    # addict allows dotted notation to the dict's attributes.
     tab = [
         [
             elt.title,
-            elt.authors,
-            elt.publishers,
-            elt.distributor,
+            elt.authors_repr,
+            elt.pubs_repr,
+            elt.distributor.name if elt.distributor else "-",
             # elt.ean,
             elt.price,
             elt.quantity,
@@ -68,7 +67,7 @@ def total_quantity(cards):
 def ppcard(cards):
     """Pretty Print a list of Card objects OR list of dicts.
 
-    args: a list of Card objects.
+    args: a list of Card objects or list of dicts.
 
     returns: a tabular representation
 
@@ -87,7 +86,7 @@ def ppcard(cards):
 
             [
                 elt.title,
-                ", ".join(aut.name for aut in elt.authors.all()),
+                elt.display_authors(),
                 elt.publishers.all()[0].name if elt.publishers.all() else "",
                 elt.distributor.name if elt.distributor else "",
                 # elt.ean,

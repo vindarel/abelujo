@@ -654,14 +654,17 @@ def collection(request):
 
     else:
         # GET
-        # Get the last new cards of the database.
-        cards = Card.first_cards(50)
-        cards = Card.obj_to_list(cards)
-
         if request.GET.get("format") == "text":
+            if request.session.get("collection_search"):
+                cards = request.session["collection_search"]
+            else:
+                cards = Card.first_cards(50)
             response = HttpResponse(ppcard(cards),
                                     content_type="text/plain;charset=utf-8")
             return response
+
+        cards = Card.first_cards(50)
+        cards = Card.obj_to_list(cards)
 
     return render(request, "search/collection.jade", {
             "searchForm": form,

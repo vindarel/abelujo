@@ -337,7 +337,10 @@ class TestCollectionView(TestCase, DBFixture):
         self.assertTrue("living" in resp.content)
         self.assertTrue("Goldman" in resp.content)
         self.assertTrue("1 titles, 0 exemplaries" in resp.content)
-
+        self.assertTrue("[{'fields" not in resp.content)
+        self.assertTrue("'isoformat':" not in resp.content)
+        self.assertTrue("u''" not in resp.content)
+        self.assertTrue("{}" not in resp.content)
 
 class TestDeposit(TestCase, DBFixture):
 
