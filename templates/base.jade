@@ -32,9 +32,11 @@ html(ng-app="abelujo")
       div.navbar-collapse
         ul.nav.navbar-nav
           li.active(href="#") Abelujo
-        url.nav.navbar-nav.navbar-right
+        ul.nav.navbar-nav.navbar-right
           li
-            a.text-right(href="/admin") {% trans "Admin" %}
+           span
+            a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
+            a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px") {% trans "Logout" %}
 
   body.container(ng-controller="baseController")
     div.col-md-2(id="menu")

@@ -124,3 +124,16 @@ urlpatterns += patterns("",
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
+
+# Authentication
+urlpatterns += [
+    url("^login/", "django.contrib.auth.views.login",
+        {"template_name": "registration/login.jade"},
+        name="login"),
+    url("^logout/", "django.contrib.auth.views.logout",
+        {"template_name": "registration/logout.jade",},
+        name="logout"),
+    ]
+
+# the following does include a login/ too, but the first one will match.
+urlpatterns += [ url('^', include('django.contrib.auth.urls'))]
