@@ -15,81 +15,22 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 from django.conf.urls import include
 from django.conf.urls import patterns
-from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls import url
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-
 from search.views import DepositsListView
 from search.views import InventoriesListView
 
 js_info_dict = { 'packages': ('search', '',), }
 
-#XXX: include the url patterns from the app.
-urlpatterns = i18n_patterns('',
-    # Access to the translations in javascript code:
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict,),
+urlpatterns = i18n_patterns("",
+    url("^", include("search.urls")),
+)
 
-    url(r'^$', RedirectView.as_view(url='search/')),
-    url(r'^search/$', 'search.views.index', name="card_index"),
-    url(r'^search$', 'search.views.search', name="card_search"),
-    url(r'^search', 'search.views.search'),
-
-    url(r'^stock/card/(?P<pk>\d+)/$', 'search.views.card_show',
-        name="card_show"),
-    # works to edit a card with /edit/\d+. JS will fetch the existing info.
-    url(r'^stock/card/edit/', TemplateView.as_view(template_name="search/card_edit.jade"),
-        name="card_create"),
-    url(r'^stock/card/edit/(?P<pk>\d)', TemplateView.as_view(template_name="search/card_edit.jade"),
-        name="card_edit"),
-    url(r'^stock/card/(?P<pk>\d+)/move', 'search.views.card_move',
-        name="card_move"),
-    url(r'^add/', 'search.views.add', name="card_add"),
-    url(r'^stock/card/(?P<pk>\d+)/buy', 'search.views.card_buy',
-        name="card_buy"),
-
-    url(r'^sell$', 'search.views.sell',
-        name="card_sell"),
-    url(r'^sell/(?P<pk>\d+)', 'search.views.sell_details',
-        name="sell_details"),
-
-    url(r'^collection/', 'search.views.collection',
-        name="card_collection"),
-
-    url(r'^deposits/$', DepositsListView.as_view(),
-        name="deposits"),
-    url(r'^deposits/addcard', "search.views.deposits_add_card",
-        name="deposits_add_card"),
-    url(r'^deposits/new', 'search.views.deposits_new',
-        name="deposits_new"),
-    url(r'^deposits/create', 'search.views.deposits_create',
-        name="deposits_create"),
-    url(r'^deposits/(?P<pk>\d+)/checkout', 'search.views.deposits_checkout',
-        name="deposit_checkout"),
-    url(r'^deposits/(\d)', 'search.views.deposits_view',
-        name="deposits_view"),
-
-    url(r'^commands/', 'search.views.basket_auto_command',
-        name="basket_auto_command"),
-
-    url(r'^history/', TemplateView.as_view(template_name="search/history.jade"),
-        name="search_history"),
-
-    url(r'^alerts/', TemplateView.as_view(template_name="search/alerts.jade"),
-        name="search_alerts"),
-
-    url(r'^history/entries/(?P<pk>\d+)', 'search.history_views.entry_details',
-        name="history_entry"),
-
-    url(r'^inventories/$', InventoriesListView.as_view(),
-        name="inventories"),
-    url(r'^inventories/new$', TemplateView.as_view(template_name="search/inventory_new.jade"),
-        name="inventory_new"),
-
-                    )
-
-urlpatterns += patterns("",
+apipatterns = patterns("",
     # Exclude /api/ from i18n so than we
     # don't bother of the language prefix in
     # js code.
@@ -124,6 +65,8 @@ urlpatterns += patterns("",
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
+
+urlpatterns += apipatterns
 
 # Authentication
 urlpatterns += [

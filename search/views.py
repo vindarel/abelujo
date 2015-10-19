@@ -20,8 +20,16 @@ import traceback
 import urllib
 import urlparse
 
+from unidecode import unidecode
+
+import datasources.all.discogs.discogsScraper as discogs
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+import models
 from django import forms
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
 from django.http import HttpResponse
@@ -32,14 +40,6 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from djangular.forms import NgModelFormMixin
-from unidecode import unidecode
-
-# import datasources.all.discogs.discogsConnector as discogs
-import datasources.all.discogs.discogsScraper as discogs
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
-import datasources.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
-import models
 from models import Basket
 from models import Bill
 from models import Card
@@ -52,9 +52,9 @@ from models import Place
 from models import Preferences
 from models import Publisher
 from models import Sell
-from search.models.utils import ppcard
 from search.models import Entry
 from search.models import EntryCopies
+from search.models.utils import ppcard
 
 log = logging.getLogger(__name__)
 
@@ -238,6 +238,7 @@ def postSearch(data_source, details_url):
         res = {}
     return res
 
+@login_required
 def index(request):
     form = SearchForm()
     page_title = ""
@@ -268,6 +269,7 @@ def _session_result_set(request, key, val):
     """
     request.session['search_result'][key] = val
 
+@login_required
 def search(request):
     retlist = []
     page_title = ""
@@ -340,6 +342,7 @@ def _request_session_get(request, key):
     """
     return request.session.get(key)
 
+@login_required
 def card_show(request, pk):
     template = "search/card_show.jade"
     card = None
@@ -365,6 +368,7 @@ def card_show(request, pk):
         })
 
 
+@login_required
 def add(request):
     """Add the requested Card to the DB.
 
@@ -504,6 +508,7 @@ class MoveInternalForm(forms.Form):
     destination  = forms.ChoiceField(choices=get_places_choices())
     nb = forms.IntegerField()
 
+@login_required
 def card_buy(request, pk=None):
     form = BuyForm()
     template = "search/card_buy.jade"
@@ -559,6 +564,7 @@ def card_buy(request, pk=None):
             "buying_price": buying_price,
             })
 
+@login_required
 def card_move(request, pk=None):
     template = "search/card_move.jade"
     BasketsForm = CardMove2BasketForm()
@@ -616,6 +622,7 @@ def card_move(request, pk=None):
         })
 
 
+@login_required
 def collection(request):
     """Search our own collection and take actions.
     """
@@ -694,9 +701,11 @@ def collection(request):
 #                   'searchForm': form
 #                   })
 
+@login_required
 def sell(request):
     return render(request, "search/sell_create.jade")
 
+@login_required
 def sell_details(request, pk):
     template = "search/sell_details.jade"
     sell = None
@@ -727,6 +736,7 @@ class InventoriesListView(ListView):
     model = Inventory
     template_name = "search/inventories.jade"
     context_object_name = "inventories"
+    #TODO: class based views (CBV) need login_required too.
 
 class DepositsListView(ListView):
     model = Deposit
@@ -750,11 +760,13 @@ class DepositsListView(ListView):
     # return render(request, "search/deposits.jade", {
         # "deposits": deposits})
 
+@login_required
 def deposits_new(request):
     return render(request, "search/deposits_create.jade", {
         "DepositForm": DepositForm(),
         })
 
+@login_required
 def deposits_create(request):
     results = 200
     if request.method == "POST":
@@ -779,6 +791,7 @@ def deposits_create(request):
 
     return redirect("/deposits/")  # should make status follow
 
+@login_required
 def deposits_add_card(request):
     """Add the given card (post) to the given deposit (in the form).
     """
@@ -807,6 +820,7 @@ def deposits_add_card(request):
     return redirect(redirect_to, status=resp_status)
 
 
+@login_required
 def deposits_view(request, depo_name):
     """Display the given deposit."""
     deposit = None
@@ -824,6 +838,7 @@ def deposits_view(request, depo_name):
         "copies": copies,
     })
 
+@login_required
 def deposits_checkout(request, pk):
     """Create a DepositState for the given deposit (of id "pk).
     """
@@ -846,6 +861,7 @@ def deposits_checkout(request, pk):
         "distributor": checkout.deposit.distributor,
         })
 
+@login_required
 def basket_auto_command(request):
     template = "search/basket_auto_command.jade"
     auto_command_nb = Basket.auto_command_nb()
@@ -858,6 +874,7 @@ def basket_auto_command(request):
             "auto_command_nb": auto_command_nb,
         })
 
+@login_required
 def inventory_list(request):
     """Display all the ongoing inventories.
 

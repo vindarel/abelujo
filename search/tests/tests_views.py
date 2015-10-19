@@ -30,10 +30,12 @@ from search.models import Place
 from search.models import Preferences
 from search.models import Publisher
 from search.models import Sell
+from search import urls as search_urls
 from search.views import get_reverse_url
 
 from tests_models import CardFactory
 from tests_models import PlaceFactory
+from django.contrib import auth
 
 fixture_search_datasource = {
     "test search":
@@ -113,6 +115,39 @@ class DBFixture():
         self.distributor = Distributor(name=self.distributor_name).save()
         self.deposit = Deposit(name="deposit test").save()
 
+class TestLogin(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+
+    def test_login_no_user(self):
+        resp = self.c.get(reverse("card_search"))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_login(self):
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
+        resp = self.c.get(reverse("card_search"))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_logout(self):
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
+        out = self.c.get(reverse("logout"))
+        resp = self.c.get(reverse("card_search"))
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue("login/?next" in resp.url)
+
+    # def test_login_required(self):
+    #     """Login is required for all the views of the "search" app.
+    #     """
+    #     for pattern in search_urls.urlpatterns:
+    #         if pattern.name:
+    #             # this approach doesn't work cause some views require
+    #             # arguments. Still, we might do sthg about it.
+    #             resp = self.c.get(reverse(pattern.name))
+    #             self.assertEqual(resp.status_code, 302)
+
 class TestViews(TestCase):
     def setUp(self):
         self.c = Client()
@@ -122,6 +157,10 @@ class TestViews(TestCase):
         self.autobio = Card(title="Living my Life", ean="123")
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
+
+        # see also test fixtures https://docs.djangoproject.com/en/1.7/topics/testing/tools/#django.test.TransactionTestCase.fixtures
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
 
     def post_to_view(self, ean=None):
         post_params = {}
@@ -145,6 +184,8 @@ class TestViews(TestCase):
 class TestSells(TestCase):
     def setUp(self):
         self.c = Client()
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
 
     def populate(self):
         self.card = CardFactory.create()
@@ -172,6 +213,8 @@ class TestSearchView(TestCase):
 
     def setUp(self):
         self.c = Client()
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
 
     def get_for_view(self, cleaned_data, url_name="card_search"):
         """Use our view utility to get the reverse url with encoded query parameters.
@@ -249,6 +292,9 @@ class TestAddView(TestCase):
 
         self.c = Client()
 
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
+
     @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
     def test_addview_nominal(self, mock_data_source, fake_session):
         data = {"forloop_counter0": [0,],
@@ -306,6 +352,8 @@ class TestCollectionView(TestCase, DBFixture):
     def setUp(self):
         DBFixture.__init__(self)
         self.c = Client()
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
 
     def test_nominal(self):
         resp = self.c.get(reverse("card_collection"))  # get the 5th first cards
@@ -347,6 +395,8 @@ class TestDeposit(TestCase, DBFixture):
     def setUp(self):
         DBFixture.__init__(self)
         self.c = Client()
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
 
     def test_new_nominal(self):
         resp = self.c.get(reverse("deposits_new"))
