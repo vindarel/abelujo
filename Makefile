@@ -92,6 +92,20 @@ run-wsgi-debug:
 	# Disables: auto code reloading, multithreading.
 	python manage.py runmodwsgi --debug-mode --enable-debugger
 
+run-gunicorn:
+	# and static files are served by whitenoise.
+	# get the server ip: (only server, not localhost)
+	MAINIP=$(ip addr show dev eth0 | grep "inet" | awk 'NR==1{print $2}' | cut -d'/' -f 1)
+	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=$MAINIP:8001 --daemon
+	@echo "server running on port 8001"
+
+gunicorn: run-gunicorn
+
+gunicorn-localhost:
+	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=127.0.0.1:8001
+	echo "server running on port 8001"
+
+
 # Run end to end tests only.
 e2e:
 	cd search/ && ./e2etests.sh
