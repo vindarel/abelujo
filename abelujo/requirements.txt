@@ -56,3 +56,4 @@ clize                   # build command line arguments
 # deployment
 underwear
 fabric
+whitenoise              # serve static files. Easily, efficiently.
