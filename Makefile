@@ -43,7 +43,7 @@ update:
 	pip install -r abelujo/requirements.txt
 	python manage.py migrate
 	gulp
-	@python manage.py collectstatic
+	@python manage.py collectstatic --noinput
 
 migrate:
 	python manage.py migrate
