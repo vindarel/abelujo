@@ -89,8 +89,8 @@ class testOdsUtils(unittest.TestCase):
                          'publisher': 'libertalia',
                          'title': u'Crack Capitalism - 33 Theses Contre Le Capital'}]
 
-        self.card = {"title": "title test",}
-        self.odsrow = {"title": "title test 1",}
+        self.card = {"title": "title test"}
+        self.odsrow = {"title": "title test 1"}
 
     def tearDown(self):
         pass
@@ -103,7 +103,13 @@ class testOdsUtils(unittest.TestCase):
         self.assertTrue(found[0].has_key("title"))
         self.assertFalse(no_ean)
 
-    def testCardCorreponds(self):
+    def testPubsCorrespond(self):
+        self.card['publisher'] = "aael"
+        self.odsrow['publisher'] = "aaaa"
+        self.assertFalse(cardCorresponds(self.card, self.odsrow))
+        #TODO: tester les 3 faux positifs ONGOING:
+
+    def testTitlesCorrespond(self):
         self.assertTrue(cardCorresponds(self.card, self.odsrow))
 
         self.card['title'] = u"""Introduction \u00e0\u00a0l'histoire\u00a0moderne, g\u00e9n\u00e9rale
@@ -115,7 +121,25 @@ par\u00a0M.\u00a0Bruzen de\u00a0La\u00a0Martini\u00e8re. Nouvelle
 \u00e9dition continu\u00e9e jusqu'en mil sept cent cinquante,
 par\u00a0M.\u00a0de\u00a0Grace [Edition de 1753-1759]"""
         self.odsrow['title'] = u"introduction a qq chose d'autre"
+        # with different publishers, it's easy to reject:
+        self.card['publishers'] = ["aael",]
+        self.odsrow['publisher'] = "aaaa"
         self.assertFalse(cardCorresponds(self.card, self.odsrow))
+
+        # other false positive example
+        self.card['title'] = u"Recueil d'instructions et\u00a0m\u00e9moires diplomatiques. I-III \u00ab Histoire politique de\u00a0ce\u00a0qui s'est pass\u00e9 l'an mil six cens vingt-sept \u00bb jusqu'en 1633 [Edition de 1601-1700]"
+        self.odsrow['title'] = u"Le MIL, une histoire politique"
+        # these are quite similar : Accepting two titles with distance
+        # 0.344827586207: common substring ' HISTOIRE POLITIQUE' VS
+        # 'LE MIL UNE HISTOIRE POLITIQUE'.
+        self.card['publishers'] = ["chapitre",]
+        self.odsrow['publisher'] = "acratie"
+        # without different publishers they would be similar enough.
+        self.assertFalse(cardCorresponds(self.card, self.odsrow))
+
+        # Now with same publishers, check titles
+        self.card['publishers'] = ["aael",]
+        self.odsrow['publisher'] = "aael"
 
         self.card['title'] = u"Petit Parisien Sixieme Derniere (Le) N°23009 du 28/02/1940"
         self.odsrow['title'] = u"La sueur du burnous"

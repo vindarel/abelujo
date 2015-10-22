@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright 2014 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
@@ -91,7 +91,7 @@ def filterResults(cards, odsrow):
         if not cards:
             card_not_found = card
             continue
-        # check the publisher, the price, etc
+        # Check the titles, the publishers, authors if available, etc.
         if cardCorresponds(card, odsrow):
             accepted = True
             post_search = postSearch(card.get("details_url"))
@@ -132,24 +132,47 @@ def rmPunctuation(it):
     """
     # https://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string-in-python
     # ret = it.translate(None, string.punctuation) # faster, not with unicode
+    if not it:
+        return it
     exclude = set(string.punctuation)
     st = ''.join(ch for ch in it if ch not in exclude)
     return st
 
 
 def cardCorresponds(card, odsrow):
-    """Check if the card found with a scraper corresponds to what was in the user's ods file.
-    Some titles are totally eronous.
+    """Check if the card found with a scraper corresponds to what was in
+    the user's ods file.  Some titles are totally eronous.
 
-    False negatives are possible (see comments).
+    - odsrow must have: a title
+    - to avoid a lot of false positive, odsrow should have a publisher.
+
+    - card: dictionnary coming from a scraper. See its type there.
+      - title: uicode str
+      - publishers: list of strings
+
+    False negatives are also possible (see comments).
 
     return: Boolean
+
     """
     t1 = rmPunctuation(card.get('title'))
     t1 = replaceAccentsInStr(t1)
     t1 = t1.upper()
     t2 = rmPunctuation(odsrow.get('title')) # already unidecoded.
     t2 = t2.upper()
+    if card.get('publishers'):
+        p1 = rmPunctuation(card.get('publishers')[0])
+        p2 = rmPunctuation(odsrow.get('publisher'))
+        pdist = distance.levenshtein(p1, p2, normalized=True)
+        accept = pdist < DISTANCE_ACCEPTED
+        # import ipdb; ipdb.set_trace()
+        if not accept:
+            log.info(u"Rejecting two titles because of too different publishers: {} VS {}".format(p1, p2))
+            return accept
+
+    # Publishers seem quite similar. Our only option left (depending
+    # on the ods input though) is to check the titles' similarity.
+
     dist = distance.levenshtein(t1, t2, normalized=True)
     accept = dist < DISTANCE_ACCEPTED
     if not accept:
@@ -159,7 +182,11 @@ def cardCorresponds(card, odsrow):
         # distance with the odsrow title.
         log.info(u"Titles are very different. Check the common substring of '{}' and '{}'".format(
             card.get('title'), odsrow.get('title')))
-        # idea: check publisher, authors
+        # Of course the common substring can match well but the two
+        # titles be totally different. Normally the cards will
+        # mismatch by their publisher.
+
+        # check authors, if available in ods.
         # idea: remove everything in ( ) and [ ], we sometimes see "title (the)".
         # idea: remove vol.x, t.x
         sub = long_substr([t1, t2])
@@ -192,7 +219,7 @@ def search_on_scraper(search_terms):
     return Scraper(search_terms).search()
 
 def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=search_on_scraper,
-                level="DEBUG", debugfile=""):
+                level="DEBUG", odsfile=""):
     """
     Look for the desired cards on remote datasources.
 
@@ -215,6 +242,8 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
 
     start = datetime.now()
 
+    basename, ext = os.path.splitext(os.path.basename(odsfile))
+    debugfile = basename + ".json"
     if os.path.isfile(debugfile):
         with open(debugfile, "r") as f:
             data = f.read()
@@ -255,7 +284,7 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     print "Search on {} lasted: {}".format(datasource, ended - start)
     return (cards_found, cards_no_ean, cards_not_found)
 
-def run(odsfile, datasource, timeout=TIMEOUT, debugfile=""):
+def run(odsfile, datasource, timeout=TIMEOUT):
     cards_found = cards_no_ean = cards_not_found = None
     to_ret = {"found": cards_found, "no_ean": None, "not_found": None,
               "odsdata": None,
@@ -263,7 +292,7 @@ def run(odsfile, datasource, timeout=TIMEOUT, debugfile=""):
               "status": 0}
     odsdata = {}
     odsdata = ods2csv2py.run(odsfile)
-    if not odsdata and not debugfile:
+    if not odsdata:
         log.error("No data. See previous logs. Do nothing.")
         return 1
     if odsdata.get("status") == 1:
@@ -276,14 +305,16 @@ def run(odsfile, datasource, timeout=TIMEOUT, debugfile=""):
     # Look up for cards on our datasource
     cards_found, cards_no_ean, cards_not_found = lookupCards(odsdata.get("data"),
                                                              datasource=datasource, timeout=timeout,
-                                                             debugfile=debugfile)
+                                                             odsfile=odsfile)
 
     if not sum([len(cards_found), len(cards_not_found), len(cards_no_ean)]) == len(odsdata):
         log.warning("The sum of everything doesn't match ;)")
     # TODO: make a list to confront the result to the ods value.
     log.debug("\nThe following cards will be added to the database: %i results\n" % (len(cards_found),))
 
-    with open("testdata.json", "wb") as f:
+    basename, ext = os.path.splitext(os.path.basename(odsfile))
+    jsonfile = basename + ".json"
+    with open(jsonfile, "wb") as f:
         towrite = {"cards_found": cards_found,
                    "cards_no_ean": cards_no_ean,
                    "cards_not_found": cards_not_found}
@@ -304,15 +335,17 @@ def run(odsfile, datasource, timeout=TIMEOUT, debugfile=""):
     to_ret["odsdata"]   = odsdata
     return to_ret
 
-@kwoargs("ods", "json")
-def main(ods="", json=""):
-    """
-    ods: the ods file
+@kwoargs()
+def main(*args):
+    """args: the ods file
 
-    json: a json file to replace the remote search of the ods file (debug purposes)
+    If we find a find with the same basename and ending in json, we'll
+    use that data to replace the remote search of the ods file (debug
+    purposes). If we don't find one we'll create one.
+
     """
     datasource = "chapitre"
-    odsdata = run(ods, datasource, timeout=TIMEOUT, debugfile=json)
+    odsdata = run(args[0], datasource, timeout=TIMEOUT)
     if odsdata["messages"]:
         log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
     return odsdata["status"]

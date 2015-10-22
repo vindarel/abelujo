@@ -138,3 +138,45 @@ Study how ``xpath`` can help shorten the code and scrapers creation.
 Make a library of its own so that in can be used in other projects.
 
 Test with continuous integration on GitlabCI.
+
+How to import an ods LibreOffice sheet
+--------------------------------------
+
+It's on the command line only and is still a work in progress.
+
+In short::
+
+    make odsimport odsfile=myfile.ods
+
+This functionnality relies on 2 scripts:
+
+* `search/datasources/odslookup/odslookup.py` is responsible for
+  extracting the data from your ods and fetching the data for each
+  row. It returns a big list of dictionnaries with, supposedly, all
+  the information we need to register a Card to the database. When it
+  fetches results it must check if they are accurate. Beware the false
+  positives !
+
+* `scripts/odsimport.py` calls the script above and adds everything in
+  the database. It adds the cards with their quantity, and creates
+  places, editors and distributors if needed.
+
+There's more info in them if you want to develop (and want to cache
+http requests or store and retrieve a set of results).
+
+The ods file needs at least the following information with the
+corresponding english or french label (case is not important):
+
+* the card's title ("title", "titre"),
+* the publisher ("éditeur"),
+* the distributor (will be the publisher by default),
+* its discount ("remise"),
+* the public price (first column with "price" or "prix" in it) ,
+* the quantity ("stock", "quantité").
+
+There's a little test suite::
+
+    cd search/datasources/odslookup
+    make test
+
+ Upcoming infos: the category and historical information.
