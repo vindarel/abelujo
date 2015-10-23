@@ -153,9 +153,9 @@ cov:
 
 # Import from an ods file (LibreOffice Calc)
 # usage: make odsimport odsfile=myfile.ods
-src = ""
+odsfile = ""
 odsimport:
-	python manage.py runscript odsimport --script-args $(src)
+	python manage.py runscript odsimport --script-args=$(odsfile)
 
 doc:
 	@cd doc/dev/ && make html

@@ -52,6 +52,7 @@ addict                  # dotted notation to dict attributes and more.
 unidecode               # ASCII transliteration of unicode text.
 distance                # between two strings.
 clize                   # build command line arguments
+tqdm                    # progress bar
 
 # deployment
 underwear

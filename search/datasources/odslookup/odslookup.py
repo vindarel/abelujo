@@ -35,6 +35,7 @@ cdp, _ = os.path.split(common_dir)
 sys.path.append(cdp)
 
 import ods2csv2py
+from odsutils import toInt
 from odsutils import replaceAccentsInStr
 from frFR.chapitre.chapitreScraper import Scraper
 from frFR.chapitre.chapitreScraper import postSearch
@@ -218,10 +219,23 @@ def search_on_scraper(search_terms):
     """
     return Scraper(search_terms).search()
 
+def addStockInfo(card, row):
+    """Add some info to the card, mostly the quantity.
+    """
+    if not card:
+        print "card is None. that shouldn't happen."
+        return card
+    if row.get('quantity'):
+        card['quantity'] = toInt(row.get('quantity'))
+
+    return card
+
 def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=search_on_scraper,
                 level="DEBUG", odsfile=""):
     """
     Look for the desired cards on remote datasources.
+
+    Use the "cached" json if any. Create it at the first run.
 
     "Authors" are optionnal.
 
@@ -242,6 +256,7 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
 
     start = datetime.now()
 
+    # Get the json "cache", if any.
     basename, ext = os.path.splitext(os.path.basename(odsfile))
     debugfile = basename + ".json"
     if os.path.isfile(debugfile):
@@ -271,10 +286,13 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             found, no_ean, not_found = filterResults(cards, row)
             if found:
                 log.debug("found a valid result: {}".format(found))
+                found = addStockInfo(found, row)
                 cards_found.append(found)
             if no_ean:
+                no_ean = addStockInfo(no_ean, row)
                 cards_no_ean.append(no_ean)
-            if not_found:  # TODO: useless
+            if not_found:
+                not_found = addStockInfo(not_found, row)
                 cards_not_found.append(not_found)
         else:
             cards_not_found.append(row)

@@ -21,6 +21,9 @@ from toolz import itemmap
 from toolz import keymap
 
 
+def cleanText(tag):
+    return unidecode(tag.strip().strip(":")) # see rmPunctuation
+
 def translateHeader(tag, lang="frFR", to="enEN"):
     """The ods file will be in whatever language possible and the data
     retrieved from the scrapers are dictionnaries with english field
@@ -28,9 +31,6 @@ def translateHeader(tag, lang="frFR", to="enEN"):
 
     takes a tag and returns its translation (english by default).
     """
-    def cleanText(tag):
-        return unidecode(tag.strip().strip(":")) # see rmPunctuation
-
     if lang == "frFR":
         if "TITRE" in cleanText(tag.upper()):
             return "title"
@@ -44,6 +44,8 @@ def translateHeader(tag, lang="frFR", to="enEN"):
             return "distributor"
         elif "REMISE" in cleanText(tag).upper():
             return "discount"
+        elif "STOCK" in cleanText(tag).upper():
+            return "quantity"
         else:
             # print "translation to finish for ", tag
             return tag
@@ -61,6 +63,15 @@ def translateAllKeys(data):
     """
     # keymap: apply function to keys of dictionnary.
     return map(lambda dic: keymap(translateHeader, dic), data)
+
+def toInt(val):
+    """
+    """
+    try:
+        val = int(val)
+    except Exception as e:
+        return 0
+    return val
 
 def toFloat(val):
     """safely cast to float."

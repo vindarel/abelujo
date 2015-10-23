@@ -881,7 +881,7 @@ class Place (models.Model):
         """Adds the given number of copies (1 by default) of the given card to
         this place.
 
-        - card: a card objects
+        - card: a card object
         - nb: the number of copies to add (optional)
 
         returns:

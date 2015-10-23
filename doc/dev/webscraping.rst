@@ -180,3 +180,9 @@ There's a little test suite::
     make test
 
  Upcoming infos: the category and historical information.
+
+.. Note:: Known limitations:
+
+          * the script will include a few false positive results.  It
+            can not make the difference between "a title t.1" and "a
+            title t.2".

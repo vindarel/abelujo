@@ -16,11 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import os
+
+import search.datasources.odslookup.odslookup as odslookup
+from tqdm import tqdm
 from search.models.models import Card
 from search.models.models import Place
 from search.models.models import Preferences
-import search.datasources.odslookup.odslookup as odslookup
+
 
 def run(*args):
     """This method is needed by the runscript command. We can pass
@@ -40,11 +44,29 @@ def run(*args):
     ADD_NOT_FOUND = True
     odsfile = args[0]
     if not os.path.exists(odsfile):
-        print "error: file %s doesn't exist." % (odsfile,)
+        print "Error: file '%s' doesn't exist. Give it as argument with odsfile=..." % (odsfile,)
         return 1
     datasource = "chapitre"
-    cards = odslookup.run(odsfile, datasource)
-    if cards["status"] == 1:
+
+    basename, ext = os.path.splitext(odsfile)
+    jsonfile = basename + ".json"
+    cards = []
+    jsonfile = os.path.join(os.path.abspath("./"), jsonfile)
+    if os.path.isfile(jsonfile):
+        with open(jsonfile, "r") as f:
+            data = f.read()
+        try:
+            print "Reading cards data from the saved json file…"
+            cards = json.loads(data)
+        except Exception as e:
+            print "json error. Will read the ods file instead. {}".format(e)
+            cards = []
+
+    if not cards:
+        import ipdb; ipdb.set_trace()
+        cards = odslookup.run(odsfile, datasource)
+
+    if cards.get("status") == 1: # XXX deprecated
         print "Error - todo"
         return 1
     # if len(cards["odsdata"]) != cards["found"]: # and no_ean etc
@@ -52,7 +74,9 @@ def run(*args):
         # if cont.lower().startswith("n"):
             # return 0
     print "Adding cards to the database..."
-    pref = Preferences.object.first()
+
+    # Create a place if needed.
+    pref = Preferences.objects.first()
     if pref and pref.default_place:
         place = pref.default_place
     else:
@@ -62,26 +86,30 @@ def run(*args):
             place = Place(name="default place")
             place.save()
 
-    import ipdb; ipdb.set_trace()
-    qty = 1 #TODO: get quantity from ods
-    for card in cards["found"]:
-        card_obj = Card.from_dict(card)
+    # Add the cards with all info.
+    print "Adding cards with ean..."
+    for card in tqdm(cards["cards_found"]): # tqdm: progress bar
+        qty = card.get('quantity')
+        card_obj, msgs = Card.from_dict(card)
         place.add_copy(card_obj, nb=qty)
     print "...done."
 
+    # Add all other cards (even with uncomplete info).
     if ADD_NO_EAN:
         print "Adding cards without ean..."
-        for card in cards["no_ean"]:
-            obj = Card.from_dict(card)
+        for card in tqdm(cards["cards_no_ean"]):
+            #XXX the logs will thrash stdout.
+            card_obj, msgs = Card.from_dict(card)
             place.add_copy(card_obj, nb=qty)
         print "...done."
 
     if ADD_NOT_FOUND:
         print "Adding cards not found, without much info..."
-        for card in cards["not_found"]:
+        for card in tqdm(cards["cards_not_found"]):
             try:
-                obj = Card.from_dict(card)
+                card_obj, msgs = Card.from_dict(card)
                 place.add_copy(card_obj, nb=qty)
             except Exception as e:
                 print "Error adding card {}: {}".format(card.get('title'), e)
-        print "...done"
+
+    print "All done."
