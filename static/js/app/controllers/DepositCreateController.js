@@ -71,7 +71,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
                     // give a string representation for each object (result)
                     // xxx: take the repr from django
                     // return item.title + ", " + item.authors + ", éd. " + item.publishers;
-                    var repr = item.title + ", " + item.authors + ", éd. " + item.publishers;
+                    var repr = item.title + ", " + item.authors_repr + ", éd. " + item.pubs_repr;
                     $scope.cards_fetched.push({"repr": repr, "id": item.id});
                     return {"repr": repr,
                             "id": item.id};
