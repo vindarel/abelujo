@@ -516,7 +516,7 @@ def card_buy(request, pk=None):
     form = BuyForm(initial={"quantity": 1})
     if request.method == 'GET':
         try:
-            buying_price = card.price - (card.price * card.distributor.discount)
+            buying_price = card.price - (card.price * card.distributor.discount / 100)
         except Exception as e:
             buying_price = card.price
 
