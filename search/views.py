@@ -44,6 +44,7 @@ from models import Basket
 from models import Bill
 from models import Card
 from models import CardType
+from models import Category
 from models import Deposit
 from models import DepositState
 from models import Distributor
@@ -99,6 +100,10 @@ def get_places_choices():
     return [(0, _("All"))] + [(it.id, it.name)
                                for it in Place.objects.all()]
 
+def get_category_choices():
+    return [(0, _("All"))] + [(it.id, it.name)
+                              for it in Category.objects.all()]
+
 class CollectionSearchForm(forms.Form):
     card_type = forms.ChoiceField(get_card_type_choices(),
                                   label=_("Type of card"),
@@ -117,6 +122,10 @@ class CollectionSearchForm(forms.Form):
     place = forms.ChoiceField(get_places_choices(),
                               label=_("Places"),
                               required=False)
+
+    category = forms.ChoiceField(get_category_choices(),
+                                 label=_("Category"),
+                                 required=False)
 
 
 class MyNumberInput(TextInput):
@@ -630,7 +639,7 @@ def collection(request):
     retlist = []
     cards = []
 
-    if request.method == "POST":
+    if request.method == "POST": #XXX that should be a GET
         form = CollectionSearchForm(request.POST)
         if form.is_valid():
             if request.POST.has_key("ean") and \
@@ -649,11 +658,15 @@ def collection(request):
                 place_id = form.cleaned_data.get("place")
                 if place_id:
                     place_id = int(place_id)
+                cat_id = form.cleaned_data.get("category")
+                if cat_id:
+                    cat_id = int(cat_id)
                 words = form.cleaned_data.get("q").split()
                 cards = Card.search(words,
                                     card_type_id=card_type_id,
                                     publisher_id=publisher_id,
                                     place_id=place_id,
+                                    category_id=cat_id,
                                     to_list=True)
                 # store results in session for later re-use
                 request.session["collection_search"] = cards
