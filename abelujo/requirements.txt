@@ -55,7 +55,7 @@ clize                   # build command line arguments
 tqdm                    # progress bar
 
 # deployment
-underwear
-fabric
+underwear               # easy deployment
+fabric                  # remote execution
 whitenoise              # serve static files. Easily, efficiently.
 gunicorn                # wsgi server

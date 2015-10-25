@@ -41,6 +41,7 @@ update:
 	git pull --rebase
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	pip install -r abelujo/requirements.txt
+	make npm
 	python manage.py migrate
 	gulp
 	@python manage.py collectstatic --noinput
