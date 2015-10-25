@@ -3,6 +3,7 @@ var gulp = require('gulp');
 
 // Include Our Plugins
 var rapyd = require("gulp-rapyd");
+var livescript = require("gulp-ls");
 var args   = require('yargs').argv;
 var gutil = require('gulp-util');
 var less = require('gulp-less');
@@ -29,7 +30,8 @@ var vendorJsFiles = [
 ];
 
 var appFiles = [
-  'static/js/app/**/*.js'
+    'static/js/app/**/*.js',
+    'static/js/build/livescript/**/*.js'
 ];
 
 var vendorCSSFiles = [
@@ -60,10 +62,11 @@ gulp.task('less', function() {
         .pipe(gulp.dest('static/css'));
 });
 
+// Compile RapydScript
 gulp.task('compile:rapyd', function() {
   gulp.src('static/js/app/**/*.pyj')
-    .pipe(rapyd({bare: true}).on('error', gutil.log))
-    .pipe(gulp.dest('static/js/build/rapyd/'))
+        .pipe(rapyd({bare: true}).on('error', gutil.log))
+        .pipe(gulp.dest('static/js/build/rapyd/'));
 });
 
 // Concatenate pyj compiled files
@@ -74,6 +77,19 @@ gulp.task('concatjs:rapyd', function () {
     .pipe(gulp.dest('static/js/build'));
 });
 
+// Compile livescript
+gulp.task('compile:livescript', function () {
+    gulp.src('static/js/app/**/*.ls')
+        .pipe(livescript({bare: true}))
+        .pipe(gulp.dest('static/js/build/livescript/'));
+})
+
+// gulp.task('concat:livescript', function () {
+//     return gulp.src("static/js/build/livescript/**/*js")
+//         .pipe(concat("abelujo.js"))
+//         .pipe(gulp.dest('static/js/build'));
+// })
+
 // Concatenate js vendor files
 gulp.task('concatjs:vendor', function () {
   return gulp.src(vendorJsFiles)
@@ -81,6 +97,7 @@ gulp.task('concatjs:vendor', function () {
     // .pipe(uglify())
     .pipe(gulp.dest('static/js/build'));
 });
+
 
 // Concatenate js app files
 gulp.task('concatjs:app', function () {
@@ -124,7 +141,8 @@ gulp.task('test', ['karma']);
 
 // Serve django project
 var port = args.port || '8000';
-gulp.task("server", bg("bin/django-manage", "runserver", "0.0.0.0:"+port));
+// gulp.task("server", bg("bin/django-manage", "runserver", "0.0.0.0:"+port));
+gulp.task("server", bg("./manage.py", "runserver", "0.0.0.0:"+port));
 gulp.task("run", bg("bin/django-manage", "runserver", "0.0.0.0:"+port));
 
 // Watch Files For Changes
@@ -134,9 +152,12 @@ gulp.task('watch', function() {
     gulp.watch(appFiles, ['concatjs:app']);
 });
 
+gulp.task('livescript', ['compile:livescript']);
+
 // Default Task
 // gulp.task('default', ['less', 'test', 'concat']);
-gulp.task('default', ['css', 'less', 'concat']);
+//XXX warning of mixing ls and js for same file.
+gulp.task('default', ['css', 'less', 'livescript', 'concat',]);
 
 // compile only RapydScript files
 gulp.task('rapyd', ['css', 'less', 'compile:rapyd', 'concatjs:rapyd']);
