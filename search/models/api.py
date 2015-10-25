@@ -320,6 +320,42 @@ def auto_command_total(request, **response_kwargs):
             pass
     return HttpResponse(json.dumps(total), **response_kwargs)
 
+def baskets(request, **kwargs):
+    """Get the list of basket names. If a pk is given as argument, return
+    the list of its copies.
+
+    """
+    if request.method == "GET":
+        params = request.GET.copy()
+        msgs = []
+        status = httplib.OK
+        kwargs["content_type"] = "application/json"
+        if kwargs.get('pk'):
+            pk = kwargs.pop('pk')
+            try:
+                data = Basket.objects.get(id=int(pk))
+                data = data.copies.all()
+            except Exception as e:
+                log.error(e)
+
+        else:
+            try:
+                data = Basket.objects.all()
+            except Exception as e:
+                log.error(e)
+                status = httplib.INTERNAL_SERVER_ERROR
+                msgs.append({"level": "error",
+                            "msg": "There was an error. We can not load the baskets, sorry."
+                            })
+
+        data = [it.to_dict() for it in data]
+        # we can't mix serializers and a custom to_ret
+        to_ret = {"status": status,
+                  "alerts": msgs,
+                  "data": data,}
+        return HttpResponse(json.dumps(to_ret), **kwargs)
+
+
 def alerts(request, **response_kwargs):
     msgs = []
     alerts = []

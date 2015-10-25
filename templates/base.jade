@@ -56,6 +56,8 @@ html(ng-app="abelujo")
             a(href='{% url "basket_auto_command" %}') {% trans "To command" %}
               span.badge.ng-cloak {% verbatim %} {{auto_command_total}} {% endverbatim %}
           li
+            a(href='{% url "baskets" %}') {% trans "Baskets" %}
+          li
             a(href='{% url "search_history" %}') {% trans "History" %}
 
           li

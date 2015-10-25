@@ -344,6 +344,9 @@ class Card(TimeStampedModel):
         else:
             return []
 
+    def to_dict(self):
+        return self.to_list()
+
     def to_list(self):
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
@@ -968,6 +971,12 @@ class Basket(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def to_dict(self):
+        return {"name": self.name,
+                "id": self.id,
+                "length": self.copies.count(),
+                }
 
     @staticmethod
     def auto_command_nb():

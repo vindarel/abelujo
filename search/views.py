@@ -888,6 +888,12 @@ def basket_auto_command(request):
         })
 
 @login_required
+def baskets(request):
+    template = "search/baskets.jade"
+    if request.method == "GET":
+        return render(request, template)
+
+@login_required
 def inventory_list(request):
     """Display all the ongoing inventories.
 
