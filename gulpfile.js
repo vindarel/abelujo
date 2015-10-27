@@ -25,6 +25,8 @@ var vendorJsFiles = [
   'static/bower_components/angular-cookies/angular-cookies.min.js',
   'static/bower_components/angular-ui-router/release/angular-ui-router.min.js',
   'static/bower_components/underscore/underscore-min.js',
+  'static/bower_components/underscore/underscore-min.js',
+  'static/bower_components/prelude-ls/browser/prelude-browser-min.js',
   // 'static/bower_components/bootstrap/**/*.js',
     'static/bower_components/datejs/build/production/date.min.js',
 ];
@@ -77,12 +79,12 @@ gulp.task('concatjs:rapyd', function () {
     .pipe(gulp.dest('static/js/build'));
 });
 
-// Compile livescript
+// Compile livescript TODO: it needs two passes. Fix.
 gulp.task('compile:livescript', function () {
-    gulp.src('static/js/app/**/*.ls')
+    return gulp.src('static/js/app/**/*.ls')
         .pipe(livescript({bare: true}))
         .pipe(gulp.dest('static/js/build/livescript/'));
-})
+});
 
 // gulp.task('concat:livescript', function () {
 //     return gulp.src("static/js/build/livescript/**/*js")

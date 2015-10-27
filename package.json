@@ -24,6 +24,7 @@
         "livescript": "latest",
         "gulp-ls": "~2.4"
     },
+
     "name": "abelujo",
     "private": true,
     "scripts": {
