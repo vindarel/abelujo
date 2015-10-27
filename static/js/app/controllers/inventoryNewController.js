@@ -61,5 +61,7 @@ angular.module("abelujo").controller('inventoryNewController', ['$http', '$scope
         $scope.updateTotalPrice();
     };
 
+    // Set focus:
+    angular.element('#default-input').trigger('focus');
 
 }]);

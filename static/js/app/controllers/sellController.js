@@ -212,4 +212,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd.MM.yyyy', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
     $scope.format = $scope.formats[0];
 
+    // Set focus:
+    angular.element('#default-input').trigger('focus');
   }]);

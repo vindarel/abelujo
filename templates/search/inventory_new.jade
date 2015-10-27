@@ -36,6 +36,7 @@ div(ng-controller="inventoryNewController")
             typeahead-min-length="3"
             typeahead-on-select="add_selected_card($item)"
             title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
+            id="default-input"
           )
           i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
 
