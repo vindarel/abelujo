@@ -4,6 +4,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
+    {sum, map, filter, lines} = require 'prelude-ls'
+
     $scope.copy_selected = undefined
     $scope.history = []
     $scope.cards_selected = []
@@ -36,10 +38,13 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
         if not _.contains $scope.selected_ids, $scope.tmpcard.id
             $scope.cards_selected.push $scope.tmpcard
+            $scope.selected_ids.push $scope.tmpcard.id
 
         else
             existing_card = _.filter $scope.cards_selected, (it) ->
                 it.id == $scope.tmpcard.id
+            existing_card = existing_card[0]
+            existing_card.quantity += 1
 
         $scope.copy_selected = undefined
 
@@ -48,6 +53,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $scope.cards_selected.splice(index_to_rm, 1)
         $scope.updateTotalPrice()
 
+    $scope.getTotalCopies = ->
+        map (.quantity), $scope.cards_selected
+        |> sum
 
     # Set focus:
     angular.element('#default-input').trigger('focus');
