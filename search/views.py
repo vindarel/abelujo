@@ -900,3 +900,14 @@ def inventory_list(request):
     An inventory can happen for a place or for a shelf.
     """
     pass
+
+def inventories(request, pk):
+    template = "search/inventory_view.jade"
+    if request.method == "GET":
+        if pk:
+            try:
+                inv = Inventory.objects.get(id=pk)
+            except Exception as e:
+                log.error(e)
+            # state = inv.state()
+            return render(request, template)

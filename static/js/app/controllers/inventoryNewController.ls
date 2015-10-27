@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope', '$timeout', 'utils', '$filter', ($http, $scope, $timeout, utils, $filter) !->
+angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
@@ -13,6 +13,22 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.tmpcard = undefined
     $scope.selected_ids = []
     existing_card = undefined
+
+    #XXX use angular routing
+    re = /inventories\/(\d+)/
+    res = $window.location.pathname.match(re)
+    if res and res.length == 2
+        id = res[1]
+
+        $http.get "/api/inventories/#{id}/"
+        .then (response) ->
+            response.data.data
+            $scope.state = response.data.data
+            $scope.cards_fetched = $scope.state.copies
+            $scope.selected_ids = map (.id), $scope.state.copies
+            $scope.total_missing = $scope.state.total_missing
+            $scope.progress_current = $scope.state.total_copies / ($scope.total_missing + $scope.state.total_copies) * 100
+            return
 
     $scope.getCards = (val) ->
         $http.get "/api/cards", do
@@ -56,6 +72,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.getTotalCopies = ->
         map (.quantity), $scope.cards_selected
         |> sum
+
+    ## $scope.save = ->
+        ## ids_qties = map (.id),
 
     # Set focus:
     angular.element('#default-input').trigger('focus');

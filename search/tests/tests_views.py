@@ -405,3 +405,16 @@ class TestDeposit(TestCase, DBFixture):
     def test_create(self):
         # TODO: test deposit creation.
         pass
+
+class TestInventories(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.c.login(username="admin", password="admin")
+
+        self.place = PlaceFactory()
+
+    def test_create_inventory(self):
+        form = {"place_id": 1}
+        resp = self.c.post(reverse("api_inventories"), data=form)
+        self.assertEqual(resp.status_code, 200)

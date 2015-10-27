@@ -35,6 +35,22 @@ table.table.table-striped.table-hover
       td {{ inv.created }}
       td {{ inv.place }}
 
-a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "Start an inventory" %}
+
+//- a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "New..." %}
+
+div(ng-controller="InventoryModalController")
+  script(type="text/ng-template", id="modalContent.html")
+    div.modal-header
+      h3.modal-title {% trans "What place are you doing the inventory of ?" %}
+
+    div.modal-body
+      //- div {% verbatim %} {{ items }} {% endverbatim %}
+      //- div {% verbatim %} {{ item.name }} {% endverbatim %}
+      form.form-inline
+        select.form-control(ng-model="place", ng-options="it.name for it in items", required)
+        button.btn.btn-primary(ng-click="ok()") Ok
+        button.btn.btn-cancel Cancel
+
+  button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}
 
 {% endblock content %}

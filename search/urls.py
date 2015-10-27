@@ -87,7 +87,9 @@ urlpatterns = patterns('',
 
     url(r'^inventories/$', login_required(InventoriesListView.as_view()),
         name="inventories"),
-    url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_new.jade")),
+    url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.jade")),
         name="inventory_new"),
+    url(r'^inventories/(?P<pk>\d+)/', 'search.views.inventories',
+        name="inventory_view"),
 
 )

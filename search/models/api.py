@@ -18,6 +18,7 @@ from models import CardType
 from models import Category
 from models import Deposit
 from models import Distributor
+from models import Inventory
 from models import Place
 from models import Publisher
 from models import Sell
@@ -398,3 +399,38 @@ def places(request, **response_kwargs):
 
     data = [it.to_dict() for it in obj]
     return HttpResponse(json.dumps(data), **response_kwargs)
+
+def inventories(request, **kwargs):
+    to_ret = {
+        "data": None,
+    }
+    if request.method == "POST":
+        params = request.POST.copy()
+        place_id = params.get("place_id")
+        if place_id:
+            try:
+                inv = Inventory()
+                inv.place = Place.objects.get(id=place_id)
+                inv.save()
+            except Exception as e:
+                log.error(e)
+
+            to_ret = {"data":
+                      {
+                          "inventory_id": inv.id,
+                      }
+            }
+            return HttpResponse(json.dumps(to_ret), **kwargs)
+
+    elif request.method == "GET":
+        if kwargs.get("pk"):
+            pk = kwargs.pop("pk")
+            try:
+                inv = Inventory.objects.get(id=pk)
+            except Exception as e:
+                log.error(e)
+                # and return error msg
+            state = inv.state()
+            to_ret['data'] = state
+
+    return HttpResponse(json.dumps(to_ret), **kwargs)
