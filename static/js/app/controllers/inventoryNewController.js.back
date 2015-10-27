@@ -8,8 +8,8 @@ angular.module("abelujo").controller('inventoryNewController', ['$http', '$scope
     $scope.history = [];
     $scope.cards_selected = [];
     $scope.cards_fetched = [];
-      $scope.tmpcard = undefined;
-      $scope.selected_ids = [];
+    $scope.tmpcard = undefined;
+    $scope.selected_ids = [];
     var existing_card = undefined;
 
     $scope.getCards = function(val){
@@ -59,6 +59,10 @@ angular.module("abelujo").controller('inventoryNewController', ['$http', '$scope
         $scope.selected_ids.splice(index_to_rm, 1);
         $scope.cards_selected.splice(index_to_rm, 1);
         $scope.updateTotalPrice();
+    };
+
+    $scope.getTotalCopies = function() {
+        return _.sum($scope.cards_selected, "quantity");
     };
 
     // Set focus:
