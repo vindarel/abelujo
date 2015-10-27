@@ -361,6 +361,12 @@ class Card(TimeStampedModel):
         else:
             dist = {}
 
+        try:
+            get_absolute_url = self.get_absolute_url()
+        except Exception as e:
+            log.error(e)
+            get_absolute_url = ""
+
         res = {
             "id": self.id,
             "ambiguous_sell": self.ambiguous_sell(),
@@ -372,7 +378,7 @@ class Card(TimeStampedModel):
             "details_url": self.details_url,
             "distributor": dist,
             "ean": self.ean,
-            "get_absolute_url": self.get_absolute_url(),
+            "get_absolute_url": get_absolute_url,
             "img": self.img,
             "isbn": self.isbn if self.isbn else self.ean,
             "model": self.__class__.__name__, # useful to sort history.
@@ -1807,7 +1813,13 @@ class InventoryCards(models.Model):
     card = models.ForeignKey(Card)
     inventory = models.ForeignKey("Inventory")
     #: How many copies of it did we find in our stock ?
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField(default=0)
+
+    def to_dict(self):
+        return {
+            "card": self.card.to_dict(),
+            "quantity": self.quantity,
+            }
 
 class Inventory(TimeStampedModel):
     """An inventory can happen for a place or a shelf. Once we begin it we
@@ -1818,5 +1830,45 @@ class Inventory(TimeStampedModel):
     class Meta:
         app_label = "search"
 
+    #: List of cards and their quantities already "inventored".
     copies = models.ManyToManyField(Card, through="InventoryCards", blank=True, null=True)
-    place = models.OneToOneField("Place", blank=True, null=True)
+    #: Place we are doing the inventory in.
+    place = models.ForeignKey("Place", blank=True, null=True)
+
+    def add_copy(self, copy, nb=1, not_found=False):
+        if not not_found:
+            try:
+                inv_copies, created = self.inventorycards_set.get_or_create(card=copy)
+                inv_copies.quantity += nb
+                inv_copies.save()
+            except Exception as e:
+                log.error(e)
+                return None
+        else:
+            try:
+                inv_copies, created = self.inventorycards_set.get_or_create(card=copy)
+                inv_copies.quantity += nb
+                inv_copies.save()
+            except Exception as e:
+                log.error(e)
+                return None
+
+        return inv_copies.quantity
+
+    def state(self):
+        """Get the current state:
+        - list of copies already inventored and their quantities,
+        - list of copies not found te be searched for (and their quantities)
+
+        """
+        copies = [it.to_dict() for it in self.inventorycards_set.all()]
+        total = len(copies)
+        missing = self.place.placecopies_set.count() - total
+        ret = {
+            "copies": copies,
+            "total_copies": total,
+            "total_missing": missing,
+            "place": self.place.to_dict(),
+        }
+
+        return ret

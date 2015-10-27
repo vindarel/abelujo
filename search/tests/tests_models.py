@@ -41,6 +41,7 @@ from search.models import Deposit
 from search.models import DepositCopies
 from search.models import Distributor
 from search.models import getHistory
+from search.models import Inventory
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Preferences
@@ -77,6 +78,10 @@ class PlaceFactory(DjangoModelFactory):
     name = factory.Sequence(lambda n: "place test %s" % n)
     is_stand = False
     can_sell = True
+
+class InventoryFactory(DjangoModelFactory):
+    class Meta:
+        model = Inventory
 
 class CardFactory(DjangoModelFactory):
     class Meta:
@@ -680,3 +685,24 @@ class TestAlerts(TestCase):
     def test_add_deposits_of_card(self):
         self.alert.add_deposits_of_card(self.card)
         self.assertEqual(1, len(self.card.deposit_set.all()))
+
+class TestInventory(TestCase):
+
+    def setUp(self):
+        self.place = PlaceFactory()
+        self.card = CardFactory()
+        self.place.add_copy(self.card)
+        self.inv = InventoryFactory()
+        self.inv.place = self.place
+
+    def test_inventory_state(self):
+        res = self.inv.add_copy(self.card, nb=2)
+        state = self.inv.state()
+        self.assertEqual(state['total_missing'], 0)
+        self.assertEqual(state['total_copies'], 1)
+
+    def test_add_copy(self):
+        res = self.inv.add_copy(self.card, nb=2)
+        self.assertTrue(res)
+        ic = self.inv.inventorycards_set.get(card_id=self.card.id)
+        self.assertEqual(ic.quantity, 2)
