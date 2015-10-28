@@ -43,8 +43,18 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.selected_ids = map (.card.id), $scope.state.copies
             $scope.total_missing = $scope.state.total_missing
             #XXX update the progress bar on the fly
+            $scope.total_copies = $scope.state.total_copies
+            $scope.total_missing = $scope.state.total_missing
             $scope.progress_current = $scope.state.total_copies / ($scope.total_missing + $scope.state.total_copies) * 100
+            $scope.updateProgress($scope.total_copies, $scope.total_missing)
+            $scope.progressStyle = do
+                min-width: 4em
+                width: $scope.progress_current + "%"
             return
+
+    $scope.updateProgress = (current, missing) !->
+        $scope.progress_current = current / (current + missing) * 100
+        $scope.progress_current = $scope.progress_current.toFixed(1)
 
     $scope.getCards = (val) ->
         $http.get "/api/cards", do
@@ -119,9 +129,12 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $http.post "/api/inventories/#{$scope.inv_id}/update/", params
         .then (response) !->
             $scope.alerts = response.data.msgs
+            # Update the progress bar.
+            $scope.total_missing -= $scope.cards_selected.length
+            $scope.total_copies += $scope.cards_selected.length
+            $scope.updateProgress($scope.total_copies, $scope.total_missing)
             # Reset the cards to display
             $scope.cards_selected = []
-            # XXX update progress
             return response.data.status
 
     # Set focus:

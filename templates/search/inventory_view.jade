@@ -29,10 +29,16 @@ div(ng-controller="inventoryNewController")
     h4 {% trans "Search in the stock" %}
     .row
       .col-md-9
-        div total missing: {% verbatim %} {{ total_missing }} {{ progress_current }} % {% endverbatim %}
+        div remaining: {% verbatim %} {{ total_missing }} {{ progress_current }} % {% endverbatim %}
+
         div.progress
-          div.progress-bar(role="progress-bar", ariavaluenow="{{ progress_current }}", ariavaluemin="0", ariavaluemax="100", style="width: {{ progress_current }}%;", title="Inventory: {{ progress_current }}% done")
-          span.sr-only 60% complete
+          div.progress-bar.progress-bar-info(role="progress-bar"
+            aria-valuenow="{{ progress_current }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            ng-style="progressStyle"
+            title="Inventory: {{ progress_current }}% done") {% verbatim %} {{ progress_current }} {% endverbatim %}
+            span.sr-only {% verbatim %} {{ progress_current }} {% endverbatim %}
 
        .col-md-3
          btn.btn.btn-primary(ng-click="save()") Save
