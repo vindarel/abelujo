@@ -706,3 +706,14 @@ class TestInventory(TestCase):
         self.assertTrue(res)
         ic = self.inv.inventorycards_set.get(card_id=self.card.id)
         self.assertEqual(ic.quantity, 2)
+
+    def test_add_pairs(self):
+        pairs = []
+        status, msgs = self.inv.add_pairs(pairs)
+        pairs = [[1, 3]]
+        status, msgs = self.inv.add_pairs(pairs)
+        pairs = [[1, 1]]
+        status, msgs = self.inv.add_pairs(pairs)
+        # add_pairs *sets* the quantities
+        state = self.inv.state()
+        self.assertEqual(state['total_copies'], 1)

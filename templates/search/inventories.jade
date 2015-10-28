@@ -34,7 +34,9 @@ table.table.table-striped.table-hover
     tr
       td {{ inv.created }}
       td {{ inv.place }}
-
+      td
+        a(href="{{ inv.id }}")
+          button.btn.btn-primary Continuer
 
 //- a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "New..." %}
 

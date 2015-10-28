@@ -1835,23 +1835,25 @@ class Inventory(TimeStampedModel):
     #: Place we are doing the inventory in.
     place = models.ForeignKey("Place", blank=True, null=True)
 
-    def add_copy(self, copy, nb=1, not_found=False):
-        if not not_found:
-            try:
-                inv_copies, created = self.inventorycards_set.get_or_create(card=copy)
+    def add_copy(self, copy, nb=1, add=True):
+        """copy: a Card object.
+
+        Add the quantities only if 'add' is True (the clientside may
+        ask to *set* the quantity, not add them).
+
+        """
+        if type(nb) == type("str"):
+            nb = int(nb)
+        try:
+            inv_copies, created = self.inventorycards_set.get_or_create(card=copy)
+            if add:
                 inv_copies.quantity += nb
-                inv_copies.save()
-            except Exception as e:
-                log.error(e)
-                return None
-        else:
-            try:
-                inv_copies, created = self.inventorycards_set.get_or_create(card=copy)
-                inv_copies.quantity += nb
-                inv_copies.save()
-            except Exception as e:
-                log.error(e)
-                return None
+            else:
+                inv_copies.quantity = nb
+            inv_copies.save()
+        except Exception as e:
+            log.error(e)
+            return None
 
         return inv_copies.quantity
 
@@ -1872,3 +1874,29 @@ class Inventory(TimeStampedModel):
         }
 
         return ret
+
+    def add_pairs(self, pairs, add=False):
+        """Save the given copies.
+
+        - pairs: list of pairs (lists) with an id and its quantity
+        - add: bool. If True, add the quantities. If False, just set it (client side need).
+
+        return: tuple status, messages
+        """
+        status = "success"
+        msgs = []
+        for pair in pairs:
+            if not pair:
+                # beware void lists
+                continue
+            id, qty = pair
+            try:
+                card = Card.objects.get(id=id)
+                self.add_copy(card, nb=int(qty), add=add)
+            except Exception as e:
+                log.error(e)
+                msgs.append(e)
+                status = "error"
+                return None
+
+        return (status, msgs)

@@ -24,9 +24,20 @@
 
 h3 {% trans "Inventory ongoing" %}
 div(ng-controller="inventoryNewController")
+  div {% verbatim %} {{ alerts }} {% endverbatim %}
   form(method="get")
+    h4 {% trans "Search in the stock" %}
     .row
-      h4 {% trans "Search in the stock" %}
+      .col-md-9
+        div total missing: {% verbatim %} {{ total_missing }} {{ progress_current }} % {% endverbatim %}
+        div.progress
+          div.progress-bar(role="progress-bar", ariavaluenow="{{ progress_current }}", ariavaluemin="0", ariavaluemax="100", style="width: {{ progress_current }}%;", title="Inventory: {{ progress_current }}% done")
+          span.sr-only 60% complete
+
+       .col-md-3
+         btn.btn.btn-primary(ng-click="save()") Save
+
+    .row
       p.input-group
           input.nullable.form-control(
             type='text'

@@ -434,3 +434,39 @@ def inventories(request, **kwargs):
             to_ret['data'] = state
 
     return HttpResponse(json.dumps(to_ret), **kwargs)
+
+def inventories_update(request, **kwargs):
+    """Save copies and their quantities.
+    """
+    msgs = []
+    to_ret = {
+        "data": None,
+        "msgs": msgs,
+    }
+
+    if request.method == "POST":
+        if kwargs.get('pk'):
+            pk = kwargs.pop('pk')
+            try:
+                inv = Inventory.objects.get(id=pk)
+            except Exception as e:
+                log.error(e)
+                msgs.append(_("Internal error. We couldn't save the inventory"))
+                return # XXX return 400 error
+
+            params = request.POST.copy()
+            # We don't receive a well formatted json.
+            # We receive this:
+            # {u'ids_qties': [u'185, 1;,50, 1;']}
+            # a string with ids an their quantities.
+            ids = params.get('ids_qties')
+            together = ids.split(';')
+            pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
+
+            status, _msgs = inv.add_pairs(pairs)
+
+            to_ret['status'] = status
+            if status == "success": # XXX import satuses from models
+                to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
+
+    return HttpResponse(json.dumps(to_ret), **kwargs)

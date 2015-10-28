@@ -58,7 +58,8 @@ apipatterns = patterns("",
     url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),
     url(r'^api/places$', 'search.models.api.places', name="api_places"),
     url(r'^api/inventories/create$', 'search.models.api.inventories', name="api_inventories"),
-    url(r'^api/inventories/(?P<pk>\d+)/', 'search.models.api.inventories', name="api_inventories"),
+    url(r'^api/inventories/(?P<pk>\d+)/update/', 'search.models.api.inventories_update', name="api_inventories_update"),
+    url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
 
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),

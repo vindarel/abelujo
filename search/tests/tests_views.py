@@ -34,6 +34,7 @@ from search import urls as search_urls
 from search.views import get_reverse_url
 
 from tests_models import CardFactory
+from tests_models import InventoryFactory
 from tests_models import PlaceFactory
 from django.contrib import auth
 
@@ -413,8 +414,19 @@ class TestInventories(TestCase):
         self.c.login(username="admin", password="admin")
 
         self.place = PlaceFactory()
+        self.card = CardFactory()
+        self.card2 = CardFactory()
 
     def test_create_inventory(self):
         form = {"place_id": 1}
         resp = self.c.post(reverse("api_inventories"), data=form)
         self.assertEqual(resp.status_code, 200)
+
+    def test_update(self):
+        self.inv = InventoryFactory()
+        self.inv.place = self.place
+        data = {"ids_qties": [u'1, 2;, 2, 2;']}
+        resp = self.c.post(reverse("api_inventories_update", args=(1,)), data=data)
+        state = self.inv.state()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(state['total_copies'], 2)
