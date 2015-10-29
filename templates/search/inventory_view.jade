@@ -64,7 +64,7 @@ div(ng-controller="inventoryNewController")
 
   h4.ng-cloak(ng-show="cards_selected.length")
     {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected." %}
-  div(ng-cloak, ng-show="cards_selected", ng-repeat="card in cards_selected")
+  div(ng-cloak, ng-show="cards_selected", ng-repeat="card in cards_selected.reverse()")
     div
      .col-md-9
       a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
