@@ -33,7 +33,7 @@
         td {{ form.password }}
 
     input.btn.btn-lg.btn-primary.btn-block(type="submit", value='{% trans "login" %}')
-    input(type="hidden", name="next", value="/")
+    input(type="hidden", name="next", value="{{ next }}")
     {% if form.errors %}
     p {% trans "Your username and password didn't match. Please try again." %}
   {% endif %}
