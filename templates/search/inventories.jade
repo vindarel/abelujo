@@ -30,13 +30,17 @@ table.table.table-striped.table-hover
   tr
     td {% trans "Created the" %}
     td {% trans "On the place" %}
+    td
+
   for inv in inventories
     tr
       td {{ inv.created }}
       td {{ inv.place }}
       td
         a(href="{{ inv.id }}")
-          button.btn.btn-primary Continuer
+          button.btn.btn-primary {% trans "Continue" %}
+        a(href="{{ inv.id }}/delete")
+          button.btn.btn-danger {% trans "Delete" %}
 
 //- a.btn.btn-primary(href="{% url 'inventory_new' %}") {% trans "New..." %}
 

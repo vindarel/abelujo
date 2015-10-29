@@ -901,6 +901,7 @@ def inventory_list(request):
     """
     pass
 
+@login_required
 def inventories(request, pk):
     template = "search/inventory_view.jade"
     if request.method == "GET":
@@ -911,3 +912,16 @@ def inventories(request, pk):
                 log.error(e)
             # state = inv.state()
             return render(request, template)
+
+@login_required
+def inventory_delete(request, pk):
+    #XXX should be a post, but we're doing it from a button...
+    if request.method == "GET":
+        if pk:
+            try:
+                inv = Inventory.objects.get(id=pk)
+                inv.delete()
+            except Exception as e:
+                log.error(e)
+
+    return HttpResponseRedirect(reverse("inventories"))

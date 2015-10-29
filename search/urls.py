@@ -89,7 +89,8 @@ urlpatterns = patterns('',
         name="inventories"),
     url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.jade")),
         name="inventory_new"),
-    url(r'^inventories/(?P<pk>\d+)/', 'search.views.inventories',
+    url(r'^inventories/(?P<pk>\d+)/?$', 'search.views.inventories',
         name="inventory_view"),
-
+    url(r'^inventories/(?P<pk>\d+)/delete', 'search.views.inventory_delete',
+        name="inventory_delete")
 )
