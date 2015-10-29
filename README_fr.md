@@ -11,6 +11,7 @@ Projet actuellement en chantier. Il est néanmoins possible de:
 -   chercher dans son stock,
 -   effectuer des ventes, voir les conflits à la vente, voir l'historique (global, par notice),
 -   créer des dépôts, **faire un état de dépôt**,
+- lancer un **inventaire** par lieu,
 -   importer des données depuis un fichier **LibreOffice Calc** (.ods). (expérimental. Voir la [documentation utilisateur](doc/french/index.rst "doc utilisateur")).
 
 L'application est traduite en français, anglais et espagnol (castillan).

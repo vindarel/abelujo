@@ -14,7 +14,8 @@ This project is at its debut stage. However it is already possible to:
 -   add exemplaries to your stock, set places, use baskets,
 -   manage deposits and distributors, see **the balance of your deposits**,
 -   sell books, see conflicts of distributors, see the history,
--   import data from a LibreOffice Calc file (.ods). See the [user documentation](doc/user/index.rst "user doc").
+-   do an **inventory** per place,
+-   import data from a LibreOffice Calc file (.ods) (experimental, cli only. See the [user documentation](doc/user/index.rst "user doc")).
 
 It is translated to english, french and spanish.
 
