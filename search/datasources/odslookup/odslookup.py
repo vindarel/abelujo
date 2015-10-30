@@ -24,9 +24,11 @@ import os
 import string
 import sys
 import time
+
 from datetime import datetime
 from pprint import pprint
 from sigtools.modifiers import kwoargs
+from tqdm import tqdm
 
 # Relative imports inside a package using __main__ don't work. Need
 # a sys.path trick or a setup.py entrypoint for the script.
@@ -163,7 +165,7 @@ def cardCorresponds(card, odsrow):
     t2 = t2.upper()
     if card.get('publishers'):
         p1 = rmPunctuation(card.get('publishers')[0])
-        p2 = rmPunctuation(odsrow.get('publisher'))
+        p2 = rmPunctuation(odsrow.get('publishers'))
         pdist = distance.levenshtein(p1, p2, normalized=True)
         accept = pdist < DISTANCE_ACCEPTED
         # import ipdb; ipdb.set_trace()
@@ -202,16 +204,6 @@ def cardCorresponds(card, odsrow):
 
     return accept
 
-
-    #: list of important rows of the user file to check. Typically,
-    # the title and the publisher. The price is questionnable because the
-    # bookshop may sell it cheaper for some reasons.
-    rows_to_check = [
-        "title",
-        "authors",  # on the ods side, they are comma-separated.
-        "publisher",
-        ]
-
 def search_on_scraper(search_terms):
     """Fire the search.
 
@@ -220,13 +212,31 @@ def search_on_scraper(search_terms):
     return Scraper(search_terms).search()
 
 def addStockInfo(card, row):
-    """Add some info to the card, mostly the quantity.
+    """Add some info to the card coming from the ods row.
+
+    - the quantity,
+    - the discount of the publisher
+    - the distributor (warning, specific use case).
+
+    return: the card (dict).
     """
     if not card:
         print "card is None. that shouldn't happen."
         return card
     if row.get('quantity'):
         card['quantity'] = toInt(row.get('quantity'))
+
+    if row.get('discount') and not card.get('discount'):
+        card['discount'] = row.get('discount')
+
+    # Warning, this is a specific use case:
+    # if the column "distributor" is blank, we say it's the publisher.
+    # It may not be the case in someone else's ods file.
+    if not card.get('distributor'):
+        if row.get('distributor'):
+            card['distributor'] = row.get('distributor')
+        else:
+            card['distributor'] = row.get('publisher')
 
     return card
 
@@ -252,7 +262,7 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     cards_found     = []
     #: catch the names of the ods columns.
     ODS_AUTHORS = "authors"
-    ODS_PUBLISHER = "publisher"
+    ODS_PUBLISHER = "publishers"
 
     start = datetime.now()
 
@@ -267,10 +277,9 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             # cards = cards.get('cards_found') + cards.get('cards_no_ean') + cards.get('cards_not_found')
             return cards['cards_found'], cards['cards_no_ean'], cards['cards_not_found']
 
-    for i, row in enumerate(odsdata):
+    for i, row in tqdm(enumerate(odsdata)):
         search_terms = row["title"] + " " + row.get(ODS_AUTHORS, "") + row[ODS_PUBLISHER]
-        log.debug("item %d/%d: Searching %s for '%s'..." % (
-            i, len(odsdata), datasource, search_terms))
+        # log.debug("item %d/%d: Searching %s for '%s'..." % (i, len(odsdata), datasource, search_terms))
 
         # Fire the search:
         try:
@@ -279,13 +288,13 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             log.error(e)
             return 1
 
-        log.debug("found %s cards.\n" % len(cards))
+        # log.debug("found %s cards.\n" % len(cards))
         if stacktraces:
             log.debug("warning: found errors:", stacktraces)
         if cards:
             found, no_ean, not_found = filterResults(cards, row)
             if found:
-                log.debug("found a valid result: {}".format(found))
+                # log.debug("found a valid result: {}".format(found))
                 found = addStockInfo(found, row)
                 cards_found.append(found)
             if no_ean:
@@ -293,7 +302,9 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
                 cards_no_ean.append(no_ean)
             if not_found:
                 not_found = addStockInfo(not_found, row)
+                not_found['publishers'] = [not_found['publishers']]
                 cards_not_found.append(not_found)
+
         else:
             cards_not_found.append(row)
         time.sleep(timeout)              # be gentle with the remote server...
@@ -311,8 +322,7 @@ def run(odsfile, datasource, timeout=TIMEOUT):
     odsdata = {}
     odsdata = ods2csv2py.run(odsfile)
     if not odsdata:
-        log.error("No data. See previous logs. Do nothing.")
-        return 1
+        exit(1)
     if odsdata.get("status") == 1:
         # TODO: propagate the error
         return odsdata
@@ -364,7 +374,7 @@ def main(*args):
     """
     datasource = "chapitre"
     odsdata = run(args[0], datasource, timeout=TIMEOUT)
-    if odsdata["messages"]:
+    if odsdata.get("messages"):
         log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
     return odsdata["status"]
 

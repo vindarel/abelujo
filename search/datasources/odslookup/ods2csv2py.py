@@ -112,7 +112,7 @@ def extractCardData(csvfile, lang="frFR"):
         msg = "Erreur: nous n'avons pas trouvé la colomne %s" % ("TITRE",)  # TODO translate
         to_ret["messages"].append({"message": msg, "level": "error"})
         to_ret["status"] = 1
-    if "PUBLISHER" not in fieldnames:
+    if "PUBLISHERS" not in fieldnames:
         msg = "Erreur: nous n'avons pas trouvé la colomne %s" % ("EDITEUR",)
         to_ret["messages"].append({"message": msg, "level": "error"})
         to_ret["status"] = 1

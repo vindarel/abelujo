@@ -38,8 +38,8 @@ def translateHeader(tag, lang="frFR", to="enEN"):
             return "price"
         elif cleanText(tag.upper()) in ["AUTEUR",]:
             return "authors"  # mind the plurial
-        elif cleanText(tag).upper() in ["EDITEUR", "ÉDITEUR", u"ÉDITEUR"]: # warning utf8 !
-            return "publisher"
+        elif cleanText(tag).upper() in ["EDITEUR", "ÉDITEUR", u"ÉDITEUR", "EDITION"]: # warning utf8 !
+            return "publishers"
         elif "DIFFUSEUR" in cleanText(tag).upper():
             return "distributor"
         elif "REMISE" in cleanText(tag).upper():
@@ -103,8 +103,8 @@ def setRowTypes(data):
     return map(lambda dic: itemmap(giveTagType, dic), data)
 
 def _getMissingData(dic):
-    if dic.get('publisher') and not dic.get('distributor'):
-        dic['distributor'] = dic.get('publisher')
+    if dic.get('publishers') and not dic.get('distributor'):
+        dic['distributor'] = dic.get('publishers')
 
     return dic
 
@@ -123,7 +123,7 @@ def keysEqualValues(dic):
 def removeVoidRows(data):
     """Remove rows for which the title or the publisher is the null string.
     """
-    data = filter(lambda line: (line["title"] != "") and (line["publisher"] != ""), data)
+    data = filter(lambda line: (line["title"] != "") and (line["publishers"] != ""), data)
     return data
 
 def replaceAccentsInStr(string):

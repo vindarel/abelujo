@@ -21,9 +21,12 @@ import os
 
 import search.datasources.odslookup.odslookup as odslookup
 from tqdm import tqdm
+
 from search.models.models import Card
+from search.models.models import Distributor
 from search.models.models import Place
 from search.models.models import Preferences
+from search.models.models import Publisher
 
 
 def run(*args):
@@ -48,6 +51,7 @@ def run(*args):
         return 1
     datasource = "chapitre"
 
+    ### Get the json data, if any.
     basename, ext = os.path.splitext(odsfile)
     jsonfile = basename + ".json"
     cards = []
@@ -62,20 +66,42 @@ def run(*args):
             print "json error. Will read the ods file instead. {}".format(e)
             cards = []
 
+    ### Run: lookup cards from the ods.
     if not cards:
-        import ipdb; ipdb.set_trace()
         cards = odslookup.run(odsfile, datasource)
 
-    if cards.get("status") == 1: # XXX deprecated
-        print "Error - todo"
-        return 1
-    # if len(cards["odsdata"]) != cards["found"]: # and no_ean etc
-        # cont = raw_input("Nb of cards found VS rows in ods file differ. Continue ? ([y]/n) ")
-        # if cont.lower().startswith("n"):
-            # return 0
-    print "Adding cards to the database..."
+    ### Get all publishers and create them OR do it in Card.from_dict ?
+    pubs = []
+    for key, val in cards.iteritems():
+        if val:
+            for dic in val:
+                if dic.get('publisher') not in pubs:
+                    pubs.append(dic.get('publishers'))
+    pubs = filter(lambda it: it is not None, pubs)
 
-    # Create a place if needed.
+    print "Creating publishers..."
+    for pub in tqdm(pubs):
+        _, _ = Publisher.objects.get_or_create(name=pub)
+    print "...done."
+
+    ### Get all distributors and their discount
+    dists = []
+    for key, val in cards.iteritems():
+        if val:
+            for dic in val:
+                if (dic.get('distributor') not in dists) and\
+                   dic.get('discount'):
+                    dists.append((dic.get('distributor'), dic.get('discount')))
+
+    print "Creating distributors..."
+    for tup in tqdm(dists):
+        obj, _ = Distributor.objects.get_or_create(name=tup[0])
+        obj.discount = tup[1]
+        obj.save()
+    print "...done."
+
+    import ipdb; ipdb.set_trace()
+    ### Create a default place if needed.
     pref = Preferences.objects.first()
     if pref and pref.default_place:
         place = pref.default_place
@@ -86,7 +112,9 @@ def run(*args):
             place = Place(name="default place")
             place.save()
 
+    ### Add cards
     # Add the cards with all info.
+    print "Adding cards to the database..."
     print "Adding cards with ean..."
     for card in tqdm(cards["cards_found"]): # tqdm: progress bar
         qty = card.get('quantity')

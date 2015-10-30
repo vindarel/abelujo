@@ -646,7 +646,11 @@ class Card(TimeStampedModel):
             try:
                 card_distributor = Distributor.objects.get(id=card.get("distributor"))
             except Exception as e:
-                log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
+                # XXX use distributor_id and distributor
+                try:
+                    card_distributor = Distributor.objects.get(name=card.get("distributor"))
+                except Exception as e:
+                    log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
 
         # Get the publishers:
         card_publishers = []
