@@ -55,10 +55,12 @@ See: http://wikemacs.org/wiki/JavaScript
 
 - js2-mode: http://wikemacs.org/wiki/Js2-mode
 
-RapydScript
+LiveScript
 ~~~~~~~~~~~
 
-- Our `rapyd-mode`: https://gitlab.com/emacs-stuff/rapyd-mode
+- A basic but decent `livescript-mode`:
+  https://github.com/bdowning/livescript-mode (this is not the one in
+  MELPA) It deals correctly with indentation.
 
 
 Django mode

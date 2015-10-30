@@ -101,10 +101,11 @@ Django project (1.7), in python (2.7), with AngularJS (1.2)
 
 We use:
 
+- the [AngularJS](https://angularjs.org/) javascript framework with
+    [LiveScript](http://livescript.net)
 -   [jade templates](http://jade-lang.com/), which compile to html,
     and pyjade for the Django integration
 -   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
--   the [AngularJS](https://angularjs.org/) javascript framework.
 
 See the developer documentation: http://dev.abelujo.cc/
 

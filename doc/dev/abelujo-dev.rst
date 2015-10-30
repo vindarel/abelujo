@@ -134,43 +134,6 @@ to::
 
     local all all trust
 
-Install and work on the Docker image
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Why Docker ?
-
-Before Docker came along, virtualenv was pretty much the tool of
-choice for Python developers as it allows you to separate package
-dependencies for different applications you're working on without
-having to create separate virtual machines for each one. It worked
-very well for me.
-
-However, there are still some annoying things the developers will have
-to deal with. Such things include having to install additional
-applications and services required by the project such as PostgreSQL,
-RabbitMQ, and Solr, for example. Also, some Python packages won't
-install/compile properly without additional libraries installed on the
-developer's machine. Pillow and lxml are just two that come to
-mind. There is also the issue of predictability when you deploy to
-production. You may be developing on a Mac but your production server
-runs Ubuntu 12.04. Features that worked fine locally may have issues
-when deployed to the servers.
-
-Of course, virtual machines can solve these issues. But VMs are heavy,
-take some time to start up, and if you like to separate services (say
-a different VM for PostgreSQL), that could use up quite a bit of
-system resources and if you use a laptop for development you will see
-a pretty significant reduction in battery life.
-
-With Docker, these issues go away. You can have all these services in
-isolated Docker containers that are lightweight and start up very
-quickly. You can use base images for different Linux distros,
-preferably the same distro and version you use in production.
-
-read more:
-
-* tutorial: https://www.calazan.com/using-docker-and-docker-compose-for-local-django-development-replacing-virtualenv/
-* Docker: https://docker.com/
 
 Populate the DB with testing data
 ---------------------------------
@@ -183,30 +146,47 @@ This will add cards, publishers and everything to the database so than
 you can test it for real.
 
 
-Try out RapydScript, the pythonic javascript
---------------------------------------------
+Write JavaScript in Livescript
+------------------------------
 
-First install RapydScript:::
+Livescript is awesome::
 
-    npm install rapydscript -g
+    * http://livescript.net
 
-Now to compile RapydScript files you could do it manually, but to do
-it with gulp you need the ``gulp-rapyd`` extension. Install it with::
+You have livescript installed and configured if you ran `make install`
+(or `make npm`), but nevertheless this is how you would do it
+manually.
 
-    npm install git://github.com/vindarel/gulp-rapyd
+To install LiveScript and its main library:::
 
-Now you can run `gulp rapyd`. This will compile all ``pyj`` files
-found in ``static/js/app/`` and concatenate them in
-``static/js/build/abelujo.js`` (check in the gulpfile.js) which is
-loaded in the html template ``base.jade`` in a `script` tag::
+    npm install livescript prelude-ls -g
 
-    script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
+The LiveScript executable and repl is `lsc`.
 
- which is necessary for the browser to load and run our javascript application.
+Now to compile LiveScript files you could do it manually, but to
+automate the process we use gulp so we need the ``gulp-livescript``
+extension. It is installed with the `make install` (which calls `make
+npm`) command.
 
-You can recompile everything on every change with::
+We wrote a target in the gulpfile. Now you can run `gulp livescript`
+to compile all the ``*.ls`` files found in ``static/js/app/`` and
+concatenate them *with the other javascript sources* in
+``static/js/build/abelujo.js``. This file is loaded in the html
+template ``base.jade`` in a `script` tag::
 
-  gulp watch
+      script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
+
+   which is necessary for the browser to load and run our javascript application.
+
+  You can recompile everything on every change with::
+
+    gulp watch
+
+.. note::
+
+   If you have the same file with both a js and a ls extension, the
+   javascript will take precedence (it is appended first in
+   ``abelujo.js`` so it is read first by angularjs).
 
 
 Testing strategy
@@ -393,3 +373,41 @@ And when you want to suggest changes to the official repository, you
 press the button "Pull Request". We'll have a place to tchat about
 your changes, and when a maintainer feels like it's ok, he or she will
 merge your changes. We can also give you the right to do so.
+
+Install and work on the Docker image (ongoing work)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Why Docker ?
+
+Before Docker came along, virtualenv was pretty much the tool of
+choice for Python developers as it allows you to separate package
+dependencies for different applications you're working on without
+having to create separate virtual machines for each one. It worked
+very well for me.
+
+However, there are still some annoying things the developers will have
+to deal with. Such things include having to install additional
+applications and services required by the project such as PostgreSQL,
+RabbitMQ, and Solr, for example. Also, some Python packages won't
+install/compile properly without additional libraries installed on the
+developer's machine. Pillow and lxml are just two that come to
+mind. There is also the issue of predictability when you deploy to
+production. You may be developing on a Mac but your production server
+runs Ubuntu 12.04. Features that worked fine locally may have issues
+when deployed to the servers.
+
+Of course, virtual machines can solve these issues. But VMs are heavy,
+take some time to start up, and if you like to separate services (say
+a different VM for PostgreSQL), that could use up quite a bit of
+system resources and if you use a laptop for development you will see
+a pretty significant reduction in battery life.
+
+With Docker, these issues go away. You can have all these services in
+isolated Docker containers that are lightweight and start up very
+quickly. You can use base images for different Linux distros,
+preferably the same distro and version you use in production.
+
+read more:
+
+* tutorial: https://www.calazan.com/using-docker-and-docker-compose-for-local-django-development-replacing-virtualenv/
+* Docker: https://docker.com/

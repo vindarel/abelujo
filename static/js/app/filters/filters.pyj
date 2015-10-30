@@ -1,4 +1,0 @@
-angular.module('abelujo.filters', []).filter('interpolate', ['version', def(version):
-    return def(text):
-      return String(text).replace(/\%VERSION\%/mg, version)
-])

@@ -113,37 +113,21 @@ The defined actions are (see ``gulpfile.js``):
 - ``gulp run``
 - ``gulp watch``: auto browser reload.
 
-RapydScript
------------
+LiveScript
+----------
 
 A browser understands javascript, so the front end of a web app must
 be written in js. However, it is a very unconsistent language with
 many pitfalls, and a bit of a pain to write because of its many
 parenthesis and brackets, especially for a python developer.
 
-Many alternatives exist and `RapydScript
-<https://github.com/atsepkov/RapydScript>`_ is one of them, with a
-little community at the moment. It is a little language that
-transpiles to javascript. It solves many inconsistencies of js,
-doesn't get in our way (it `is` javascript after all) and adds a few
-more features. We'll give it a try because **RapydScript is very, very
-pythonic**. It is not python, there are a few differences, but it does
-reduce the gap and context-switching when editing backend (py) and
-frontend files (pyj).
+Many alternatives exist and `LiveScript <http://livescript.net>`_ is a
+fantastic one. It is a little language that transpiles to
+javascript. It solves many inconsistencies of js, it doesn't get in
+our way, it is indentation-aware like Python, it is very concise, it
+greatly encourages functional programming and it has a good tooling
+and community. See what's possible to do in very few lines of code
+with its `prelude library <http://livescript.net/#prelude-ls>`_.
 
-We use our `gulp-rapyd <https://gitlab.com/vindarel/gulp-rapyd>`_
-package to build the rapydscript files.
-
-A big drawback at the moment is the lack of tools. We only found a
-decent `editing mode
-<https://github.com/tgienger/language-rapydscript>`_ for the Atom
-editor :/
-
-
-Why not CoffeeScript ?
-~~~~~~~~~~~~~~~~~~~~~~
-
-CoffeeScript is a popular little language that transpiles to
-javascript, just like RapydScript, but it ressembles more of Ruby,
-with some weird syntactic sugar that is not very explicit. We'll give
-the pythonic alternative our preference.
+Livescript has many more to offer than other alternatives like
+Coffeescript or RapydScript (the "pythonic" javascript).

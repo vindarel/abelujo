@@ -1,5 +1,0 @@
-angular.module('abelujo.directives', [])
-.directive('appVersion', ['version', def(version):
-    return def(scope, elm, attrs):
-      elm.text(version)
-  ])
