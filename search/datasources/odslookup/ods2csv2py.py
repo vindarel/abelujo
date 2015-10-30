@@ -29,6 +29,7 @@ from odsutils import keysEqualValues
 from odsutils import setRowTypes
 from odsutils import translateHeader
 from odsutils import translateAllKeys
+from odsutils import removeDuplicates
 from odsutils import removeVoidRows
 from odsutils import replaceAccentsInStr
 
@@ -127,6 +128,7 @@ def extractCardData(csvfile, lang="frFR"):
     # Translate all keys to english. How to do it before ? We prefer not to rewrite the csv file.
     data = translateAllKeys(rest)
     data = removeVoidRows(data)
+    data = removeDuplicates(data)
     # replace accents bad encoding.
     data = map(lambda dic: valmap(replaceAccentsInStr, dic), data)
     data = setRowTypes(data)

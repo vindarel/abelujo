@@ -36,7 +36,7 @@ def translateHeader(tag, lang="frFR", to="enEN"):
             return "title"
         elif "PRIX" in tag.upper():
             return "price"
-        elif cleanText(tag.upper()) in ["AUTEUR",]:
+        elif cleanText(tag.upper()) in ["AUTEUR", "NOM"]:
             return "authors"  # mind the plurial
         elif cleanText(tag).upper() in ["EDITEUR", "ÉDITEUR", u"ÉDITEUR", "EDITION"]: # warning utf8 !
             return "publishers"
@@ -125,6 +125,25 @@ def removeVoidRows(data):
     """
     data = filter(lambda line: (line["title"] != "") and (line["publishers"] != ""), data)
     return data
+
+def removeDuplicates(data):
+    """Remove rows with same title AND same author(s) AND same
+    publisher(s).
+
+    """
+    res = []
+    seen = set()
+    for dic in data:
+        copy = {"title": dic.get('title'),
+                "authors": dic.get('authors'),
+                "publishers": dic.get('publishers')
+                }
+        copy = tuple(copy.items())
+        if copy not in seen:
+            res.append(dic)
+            seen.add(copy)
+
+    return res
 
 def replaceAccentsInStr(string):
     """Replace non printable utf-8 characters with their printable
