@@ -55,7 +55,7 @@ class Scraper(baseScraper):
         super(Scraper, self).__init__(*args, **kwargs)
 
     def _product_list(self):
-        plist = self.soup.find_all('div', class_='product_detail')
+        plist = self.soup.find_all(class_='fiche-produit')
         if not plist:
             logging.info('Warning: product list is null :/')
         return plist
@@ -98,22 +98,11 @@ class Scraper(baseScraper):
         logging.info('authors: '+ ', '.join(a for a in authors))
         return authors
 
+    @catch_errors
     def _img(self, product):
-        try:
-            details_soup = product.getDetailsSoup()
-            img_elt = details_soup.find('p', class_='product-image').find('a')
-            img_url = img_elt.attrs['href']
+        img = product.find('img').attrs['data-src']
+        return img
 
-            if not img_url:
-                logging.warning("img url is null")
-
-            logging.info("img url: " + img_url)
-            return img_url
-
-        except Exception, e:
-            logging.exception("Error getting the image's url")
-            print e
-            return ""
 
     def _price(self, product):
         "the real price, without -5%"
