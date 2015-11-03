@@ -26,6 +26,7 @@ import datasources.all.discogs.discogsScraper as discogs
 import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
 import datasources.esES.casadellibro.casadellibroScraper as casadellibro
 import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+import datasources.frFR.decitre.decitreScraper as decitre
 import models
 from django import forms
 from django.contrib import messages
@@ -65,16 +66,17 @@ DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 # scraper names are the name of the imported module.
 SCRAPER_CHOICES = [
     ("Book shops", (
-            ("chapitre", "chapitre.com - fr"),
-            ("buchWagner", "buchWagner Munchen - de"),
-            ("casadellibro", "casa del libro, Madrid - es"),
-            )
-     ),
+        ("decitre", "decitre.fr"),
+        ("chapitre", "chapitre.com - fr"),
+        ("buchWagner", "buchWagner Munchen - de"),
+        ("casadellibro", "casa del libro, Madrid - es"),
+    )
+ ),
     ("CDs", (
-            ("discogs", "discogs.com"),
-            )
-     )
-    ]
+        ("discogs", "discogs.com"),
+    )
+ )
+]
 
 class SearchForm(forms.Form):
     source = forms.ChoiceField(choices=SCRAPER_CHOICES,

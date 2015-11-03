@@ -37,7 +37,7 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
-from datasources.utils.baseScraper import baseScraper
+from datasources.utils.baseScraper import Scraper as baseScraper
 from datasources.utils.baseScraper import postSearch
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
