@@ -39,8 +39,8 @@ sys.path.append(cdp)
 import ods2csv2py
 from odsutils import toInt
 from odsutils import replaceAccentsInStr
-from frFR.chapitre.chapitreScraper import Scraper
-from frFR.chapitre.chapitreScraper import postSearch
+from frFR.decitre.decitreScraper import Scraper
+from frFR.decitre.decitreScraper import postSearch
 
 """Workflow is as follow:
 - get the list of rows from the ods file (with ods2csv2py). The row titles must not contain non-utf8 characters.
@@ -97,9 +97,7 @@ def filterResults(cards, odsrow):
         # Check the titles, the publishers, authors if available, etc.
         if cardCorresponds(card, odsrow):
             accepted = True
-            post_search = postSearch(card.get("details_url"))
-            for key in post_search.keys():
-                card[key] = post_search[key]
+            card = postSearch(card)
             if not card.get("ean") and not card.get("isbn"):
                 card_no_ean = card
             else:
@@ -169,7 +167,6 @@ def cardCorresponds(card, odsrow):
         if not p2 in p1:
             pdist = distance.levenshtein(p1, p2, normalized=True)
             accept = pdist < DISTANCE_ACCEPTED
-            # import ipdb; ipdb.set_trace()
             if not accept:
                 log.info(u"Rejecting two titles because of too different publishers: {} VS {}".format(p1, p2))
                 return accept
@@ -279,7 +276,8 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             return cards['cards_found'], cards['cards_no_ean'], cards['cards_not_found']
 
     for i, row in tqdm(enumerate(odsdata)):
-        search_terms = row["title"] + " " + row.get(ODS_AUTHORS, "") + row[ODS_PUBLISHER]
+        search_terms = "{} {} {}".format(row["title"], row.get(ODS_AUTHORS, ""), row[ODS_PUBLISHER])
+        row['search_terms'] = search_terms
         # log.debug("item %d/%d: Searching %s for '%s'..." % (i, len(odsdata), datasource, search_terms))
 
         # Fire the search:
