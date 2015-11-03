@@ -166,12 +166,13 @@ def cardCorresponds(card, odsrow):
     if card.get('publishers'):
         p1 = rmPunctuation(card.get('publishers')[0])
         p2 = rmPunctuation(odsrow.get('publishers'))
-        pdist = distance.levenshtein(p1, p2, normalized=True)
-        accept = pdist < DISTANCE_ACCEPTED
-        # import ipdb; ipdb.set_trace()
-        if not accept:
-            log.info(u"Rejecting two titles because of too different publishers: {} VS {}".format(p1, p2))
-            return accept
+        if not p2 in p1:
+            pdist = distance.levenshtein(p1, p2, normalized=True)
+            accept = pdist < DISTANCE_ACCEPTED
+            # import ipdb; ipdb.set_trace()
+            if not accept:
+                log.info(u"Rejecting two titles because of too different publishers: {} VS {}".format(p1, p2))
+                return accept
 
     # Publishers seem quite similar. Our only option left (depending
     # on the ods input though) is to check the titles' similarity.
