@@ -1,9 +1,8 @@
 {
     "description": "abelujo",
-    "comment": "These are local dependencies. Run them like this: ./node_modules/.bin/protractor. selenium-webdriver is required to access the 'wedriver' object in a protractor test. It is tempting to install modules (like protractor) globally but don't do it, it creates permission problems with dependencies like the webdriver. Exception for rapydscript... it's easier to interact with our editor.",
+    "comment": "These are local dependencies. Run them like this: ./node_modules/.bin/protractor. selenium-webdriver is required to access the 'wedriver' object in a protractor test. It is tempting to install modules (like protractor) globally but don't do it, it creates permission problems with dependencies like the webdriver. Exception for livescript... it's easier to interact with our editor.",
     "devDependencies": {
         "bower": "~1.3.1",
-        "rapydscript": "latest",
         "gulp": "~3.6.2",
         "gulp-bg": "0.0.5",
         "gulp-concat": "~2.2.0",
@@ -28,7 +27,7 @@
     "name": "abelujo",
     "private": true,
     "scripts": {
-        "postinstall": "npm install git+https://gitlab.com/vindarel/gulp-rapyd.git ; bower install",
+        "postinstall": "bower install",
         "update-index-async": "node -e \"require('shelljs/global'); sed('-i', /\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/, '//@@NG_LOADER_START@@\\n' + cat('bower_components/angular-loader/angular-loader.min.js') + '\\n//@@NG_LOADER_END@@', 'app/index-async.html');\""
     },
     "version": "0.0.0"

@@ -2,7 +2,6 @@
 var gulp = require('gulp');
 
 // Include Our Plugins
-var rapyd = require("gulp-rapyd");
 var livescript = require("gulp-ls");
 var args   = require('yargs').argv;
 var gutil = require('gulp-util');
@@ -62,21 +61,6 @@ gulp.task('less', function() {
     return gulp.src('static/css/*.less')
         .pipe(less())
         .pipe(gulp.dest('static/css'));
-});
-
-// Compile RapydScript
-gulp.task('compile:rapyd', function() {
-  gulp.src('static/js/app/**/*.pyj')
-        .pipe(rapyd({bare: true}).on('error', gutil.log))
-        .pipe(gulp.dest('static/js/build/rapyd/'));
-});
-
-// Concatenate pyj compiled files
-gulp.task('concatjs:rapyd', function () {
-  return gulp.src("static/js/build/rapyd/**/*js")
-    .pipe(concat('abelujo.js'))
-    // .pipe(uglify())
-    .pipe(gulp.dest('static/js/build'));
 });
 
 // Compile livescript TODO: it needs two passes. Fix.
@@ -160,6 +144,3 @@ gulp.task('livescript', ['compile:livescript']);
 // gulp.task('default', ['less', 'test', 'concat']);
 //XXX warning of mixing ls and js for same file.
 gulp.task('default', ['css', 'less', 'livescript', 'concat',]);
-
-// compile only RapydScript files
-gulp.task('rapyd', ['css', 'less', 'compile:rapyd', 'concatjs:rapyd']);
