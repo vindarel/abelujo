@@ -43,7 +43,7 @@ from frFR.chapitre.chapitreScraper import Scraper
 from frFR.chapitre.chapitreScraper import postSearch
 
 """Workflow is as follow:
-- get the list of rows from the ods file (with ods2csv2py)
+- get the list of rows from the ods file (with ods2csv2py). The row titles must not contain non-utf8 characters.
 - fire a search on a datasource for each card
 - find a good matching result inside the result list (because we may have falso positives)
     - i.e., we have to check that the titles are /similar/. That takes time and is computational heavy.

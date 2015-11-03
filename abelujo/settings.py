@@ -254,11 +254,11 @@ LOGIN_URL = "/login/"
 
 # Don't get bootstrap and jquery from a CDN (a step towards offline work).
 BOOTSTRAP3 = {
-    'include_jquery': False,
-    'jquery_url': '/static/bower_components/jquery/jquery.min.js',
-    'base_url': '/static/',
-    'css_url': '/static/lib/bootstrap/css/bootstrap.min.css',
-    'theme_url': '/static/lib/bootstrap/css/bootstrap-theme.min.css',
-    'javascript_url': '/static/lib/bootstrap/js/bootstrap.min.js',
+   'include_jquery': False,
+   'jquery_url': '/static/bower_components/jquery/jquery.min.js',
+   'base_url': '/static/',
+   'css_url': '/static/lib/bootstrap/css/bootstrap.min.css',
+   'theme_url': '/static/lib/bootstrap/css/bootstrap-theme.min.css',
+   'javascript_url': '/static/lib/bootstrap/js/bootstrap.min.js',
 }
 BOOTSTRAP_BASE_URL = '/static/'
