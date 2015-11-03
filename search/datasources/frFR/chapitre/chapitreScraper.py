@@ -331,17 +331,20 @@ class Scraper:
         return bk_list, stacktraces
 
 
-def postSearch(url):
+def postSearch(card):
     """gets the complementary informations of that product:
 
     - isbn (mandatory)
     - collection
     - summary (back cover text)
 
-    url: the url to the details of the product where we can get the isbn (fiche produit)
+    card: a dict, with key 'details_url', the url to the details of
+    the product where we can get the isbn (fiche produit)
 
     returns: a dict
+
     """
+    url = card.get('details_url')
     if not url:
         return {}
     if not url.startswith('http'):
@@ -358,8 +361,8 @@ def postSearch(url):
     collection_id = "ctl00_PHCenter_productTop_productDetail_rpDetails_ctl03_rpLinks_ctl00_hlLabel"
 
     try:
-        to_ret["isbn"] = soup.find(itemprop="isbn").text
-        to_ret["collection"] = soup.find(id=collection_id).text
+        card["isbn"] = soup.find(itemprop="isbn").text
+        card["collection"] = soup.find(id=collection_id).text
         log.debug("postSearch of chapitre for {}: found {}".format(url, to_ret))
 
     except Exception as e:
@@ -367,8 +370,8 @@ def postSearch(url):
 
     try:
         node = soup.find(itemprop="description")
-        to_ret["summary"] = node.span.text.strip() + node.find(class_="cutedText").text.strip()
+        card["summary"] = node.span.text.strip() + node.find(class_="cutedText").text.strip()
     except Exception as e:
         log.debug("Could not get the summary of {}: {}".format(url, e))
 
-    return to_ret
+    return card

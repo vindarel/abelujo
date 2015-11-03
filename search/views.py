@@ -425,12 +425,9 @@ def add(request):
                 # XXX return an error page
             else:
                 # fire a new http request to get the ean (or other missing informations):
-                complements = postSearch(data_source, card['details_url'])
-                if not complements.get("isbn"):
+                card = postSearch(data_source, card)
+                if not card.get("isbn"):
                     log.warning("warning: postSearch couldnt get the isbn.")
-                for k, v in complements.iteritems():
-                    log.debug("postSearch: found %s: %s" % (k,v))
-                    card[k] = v
 
         try:
             # Create the card. No quantity yet.

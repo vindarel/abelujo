@@ -131,8 +131,9 @@ class Scraper(baseScraper):
     def _ean(self, product):
         pass
 
-def postSearch(url):
+def postSearch(card):
     """Get the ean/isbn."""
+    url = card.get('details_url') or card.get('url')
     if not url:
         log.error("postSearch error: url is False ! ({}).".format(url))
         return None
@@ -144,13 +145,13 @@ def postSearch(url):
     try:
         ean = soup.find(class_="book-header-2-subtitle-isbn").text
         ean = ean.replace("ISBN", "").strip()
-        to_ret["ean"] = ean
-        to_ret["isbn"] = ean
+        card["ean"] = ean
+        card["isbn"] = ean
         log.debug("postSearch of {}: we got ean {}.".format(url, ean))
     except Exception as e:
         log.debug("postSearch: error while getting the ean of {}: {}".format(url, e))
 
-    return to_ret
+    return card
 
 if __name__=="__main__":
     import pprint

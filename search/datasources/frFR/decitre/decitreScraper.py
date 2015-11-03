@@ -195,10 +195,19 @@ class Scraper(baseScraper):
 
         return bk_list, stacktraces
 
-def postSearch(url):
+def postSearch(card):
+    """Get a card (dictionnary) with 'details_url'.
+
+    Scrapes data, with selenium if needed and get the needed information.
+
+    Return a dict with new attributes.
+    """
+    url = card.get('details_url') or card.get('url')
     if not url:
+        log.error("postSearch: we must find a key 'details_url' or 'url'")
         return None
 
+    #: the needed attributes to populate
     to_ret = {
         "isbn": None,
         "price": None
@@ -209,11 +218,18 @@ def postSearch(url):
     try:
         info = soup.find_all(class_="information")
         isbn = info[3].text.split('\n')[-1].strip()
-        to_ret['isbn'] = isbn
+        card['isbn'] = isbn
     except Exception as e:
-        log.debug("postSearch: error while getting the isbn of {}: {}".format(url, e))
+        log.error("postSearch: error while getting the isbn of {}: {}".format(url, e))
 
-    return to_ret
+    try:
+        product = soup.find(class_="product-main-information")
+        price = product.find(class_="final-price").span.attrs['content']
+        card['price'] = priceStr2Float(price)
+    except Exception as e:
+        log.error("postSearch: error while getting price of {}: {}".format(url, e))
+
+    return card
 
 
 @kwoargs()

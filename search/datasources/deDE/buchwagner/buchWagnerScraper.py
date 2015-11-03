@@ -204,12 +204,13 @@ class Scraper:
 
         return bk_list, stacktraces
 
-def postSearch(url):
+def postSearch(card):
     """Complementary informations to fetch on a details' page.
 
     - isbn (compulsory)
     - description
     """
+    url = card.get('details_url') or card.get('url')
     if not url:
         log.error("postSearch error: url is {} !".format(url))
         return None
@@ -223,8 +224,8 @@ def postSearch(url):
     try:
         ean = soup.find(class_="floatRight")
         ean = ean.find_all("p")[2].text.strip().split(":")[1].strip()
-        to_ret["ean"] = ean
-        to_ret["isbn"] = ean
+        card["ean"] = ean
+        card["isbn"] = ean
         log.debug("postSearch of {}: we got ean {}.".format(url, ean))
 
     except Exception, e:
@@ -233,11 +234,11 @@ def postSearch(url):
 
     try:
         description = soup.find(class_="alt_content").p.text.strip()
-        to_ret["description"] = description
+        card["description"] = description
     except Exception as e:
         log.debug("Error while getting the description of {}: {}".format(url, e))
 
-    return to_ret
+    return card
 
 
 if __name__=="__main__":
