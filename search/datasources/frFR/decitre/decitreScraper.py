@@ -12,6 +12,7 @@ import clize
 import requests
 import requests_cache
 from bs4 import BeautifulSoup
+from sigtools.modifiers import annotate
 from sigtools.modifiers import kwoargs
 
 logging.basicConfig(level=logging.INFO) #to manage with ruche
@@ -24,7 +25,7 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
-from datasources.utils.baseScraper import baseScraper
+from datasources.utils.baseScraper import Scraper as baseScraper
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
 from datasources.utils.decorators import catch_errors
@@ -103,6 +104,10 @@ class Scraper(baseScraper):
         img = product.find('img').attrs['data-src']
         return img
 
+    @catch_errors
+    def _publisher(self, product):
+        pub = product.find(class_="first").text.strip()
+        return pub
 
     def _price(self, product):
         "the real price, without -5%"
@@ -122,19 +127,14 @@ class Scraper(baseScraper):
             print 'Erreur getting price', e
 
 
+    @catch_errors
     def _description(self, product):
-        try:
-            details_soup = product.getDetailsSoup()
-            description = details_soup.find(id="description").text.strip()
-            if not description:
-                logging.info('the description is null :/')
-
-            logging.info('description: ' + description)
-            return description
-
-        except Exception, e:
-            print 'Erreur getting the description', e
-
+        """Get the description with an ajax call. Adds a little bit of overhead.
+        """
+        pid = product.find(attrs={"data-infobulle-product-id":True}).attrs["data-infobulle-product-id"]
+        req = requests.get("http://www.decitre.fr/catalog/ajax/loadProductAttribute/?product={}&attribute=description".format(pid))
+        description = req.content
+        return description
 
     def _details(self, product):
         try:
@@ -179,17 +179,18 @@ class Scraper(baseScraper):
         nbr_results = self._nbr_results()
         for product in product_list:
             b = addict.Dict()
+            b.search_terms = self.query
+            b.data_source = self.SOURCE_NAME
+            b.search_url = self.url
+
             b.details_url = self._details_url(product)
             b.title = self._title(product)
             b.authors = self._authors(product)
             b.price = self._price(product)
-
-            # Summary (4e de couv ?)
-            b.description = self._description(product)
+            b.publishers = [self._publisher(product)]
+            b.card_type = self.TYPE_BOOK
             b.img = self._img(product)
-            # Technical details: ean, editor,…
-            # details_dict = self._details(product)
-            # b.set_properties(**details_dict)
+            b.summary = self._description(product)
 
             bk_list.append(b.to_dict())
 
@@ -198,7 +199,9 @@ class Scraper(baseScraper):
 def postSearch(card):
     """Get a card (dictionnary) with 'details_url'.
 
-    Scrapes data, with selenium if needed and get the needed information.
+    Gets additional data:
+    - isbn
+    - price
 
     Return a dict with new attributes.
     """
@@ -232,19 +235,19 @@ def postSearch(card):
     return card
 
 
+@annotate(args=clize.Parameter.REQUIRED)
 @kwoargs()
 def main(*args):
-    """args: the ods file
-
+    """
+    args: keywords to search
     """
     import pprint
-    scrap = Scraper("emma", "goldman")
+    scrap = Scraper(*args)
     bklist, errors = scrap.search()
-    map(pprint.pprint, bklist)
     print "Nb results: {}".format(len(bklist))
-    print "1st book postSearch:"
-    post = postSearch(bklist[0].get("details_url"))
-    print post
+    bklist = [postSearch(it) for it in bklist]
+    print "cards after postSearch:"
+    map(pprint.pprint, bklist)
 
 if __name__ == '__main__':
     clize.run(main)

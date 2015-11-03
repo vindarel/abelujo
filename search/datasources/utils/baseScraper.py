@@ -21,12 +21,12 @@
 Base scraper to build new ones.
 """
 
-from bs4 import BeautifulSoup
 import logging
 import os
+import sys
 import requests
 import requests_cache
-import sys
+from bs4 import BeautifulSoup
 
 # Add "datasources" to sys.path (independant from Django project,
 # to clean up for own module).
@@ -61,7 +61,7 @@ post-processing (cleanup, transformation to list, etc).
 """
 
 
-class baseScraper(object):
+class Scraper(object):
     """Base class to build scrapers. Mostly used for the __init__ and
     postSearch methods. A subclass will redefine the methods used to
     really extract the data.
@@ -78,6 +78,8 @@ class baseScraper(object):
     query = ""
 
     def set_constants(self):
+        """Call before __init__.
+        """
         self.SOURCE_NAME = "name"
         self.SOURCE_URL_BASE = u"http//url-base"
         self.SOURCE_URL_SEARCH = u"url-search"
@@ -85,7 +87,7 @@ class baseScraper(object):
         self.TYPE_BOOK = "book"
         self.TYPE_DVD = "dvd"
         # there is no comic type.
-        self.TYPE_DEFAULT = TYPE_BOOK
+        self.TYPE_DEFAULT = self.TYPE_BOOK
 
 
     def __init__(self, *args, **kwargs):
@@ -101,8 +103,6 @@ class baseScraper(object):
         the same as decitre (without the dctr_ prefix).
 
         """
-
-        self.set_constants()
 
         if not args and not kwargs:
             print 'Error: give args to the query'
@@ -130,9 +130,9 @@ class baseScraper(object):
 
         log.debug('search url: %s' % self.url)
         self.url += self.URL_END
-        self.r = requests.get(self.url)
+        self.req = requests.get(self.url)
+        self.soup = BeautifulSoup(self.req.content)
         #TODO: to be continued
-        self.soup = BeautifulSoup(self.r.text)
 
     def _product_list(self):
         """The css class that every block of book has in common.
