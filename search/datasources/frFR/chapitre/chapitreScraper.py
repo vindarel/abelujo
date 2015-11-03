@@ -74,63 +74,6 @@ TYPE_DVD = "dvd"
 # there is no comic type.
 TYPE_DEFAULT = TYPE_BOOK
 
-class Book(object):
-    """A title, list of authors,…
-
-    The following fields are not available in the search results page
-    but in the book's own page. So when the user wants to add a book
-    or get more informations about one, abelujo calls the postSearch
-    method which gets those complementary fields.
-
-    - ean
-    - collection
-
-    """
-    title = u""
-    authors = []
-
-    def __init__(self, *args, **kwargs):
-        """
-        """
-        self.authors = []
-        self.ean = u""
-        self.isbn = u""
-        self.publishers = u""
-        self.price = 0
-        self.img = u""
-        #: name of the source
-        self.data_source = u""
-        #: link to the product's page
-        self.details_url = u""
-        self.description = u"" # null with chapitre
-
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
-
-    def __print__(self):
-        """Pretty output"""
-        print '"' + self.title + '", ' + " ".join([a for a in self.authors])
-        print "\t" + self.publishers + " " + self.price + " ean: " + self.ean
-        print "\tcover: " + self.img
-        print "\n"
-
-    def __todict__(self):
-        res = {}
-        for attr in dir(self):
-            if not attr.startswith('_'):
-                res[attr] = getattr(self, attr)
-
-        return res
-
-    def __json__(self):
-        """Returns a json representation of the object's attributes"""
-        res = {}
-        for attr in dir(self):
-            if not attr.startswith('_'):
-                res[attr] = getattr(self, attr)
-
-        return json.dumps(res, indent=4) #TODO:remove indent for prod
-
 
 class DomProduct:
     """factorize the request for the sources of the details; be able to call
