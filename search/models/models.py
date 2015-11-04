@@ -724,14 +724,14 @@ class Card(TimeStampedModel):
                     log.error(u"--- error while adding the collection: %s" % (e,))
 
             # add the category
-            category = card.get('category')
-            if category and category != "0":
+            category_id = card.get('category_id')
+            if category_id and category_id != "0":
                 try:
-                    cat_obj = Category.objects.get(id=category)
+                    cat_obj = Category.objects.get(id=category_id)
                     card_obj.category = cat_obj
                     card_obj.save()
                 except Exception as e:
-                    log.error(e)
+                    log.error("error adding category {}: {}".format(category_id, e))
 
             # add the type of the card
             typ = "unknown"
@@ -775,8 +775,11 @@ class Card(TimeStampedModel):
 
         # add the category
         if card_category:
-            card_obj.category = card_category
-            card_obj.save()
+            try:
+                card_obj.category = card_category
+                card_obj.save()
+            except Exception as e:
+                log.error(e)
 
         return card_obj, [msg_success]
 
