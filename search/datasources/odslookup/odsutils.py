@@ -130,18 +130,24 @@ def removeDuplicates(data):
     """Remove rows with same title AND same author(s) AND same
     publisher(s).
 
+    Take the row with a "category" if any (that row is supposed to come last).
+
     """
     res = []
     seen = set()
     for dic in data:
-        copy = {"title": dic.get('title'),
+        _copy = {"title": dic.get('title'),
                 "authors": dic.get('authors'),
                 "publishers": dic.get('publishers')
                 }
-        copy = tuple(copy.items())
+        copy = tuple(_copy.items())
         if copy not in seen:
             res.append(dic)
             seen.add(copy)
+        else:
+            if dic.get('category'):
+                res.pop() # warning rows are supposed to be ordered
+                res.append(dic)
 
     return res
 

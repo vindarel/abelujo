@@ -209,7 +209,7 @@ def search_on_scraper(search_terms):
     """
     return Scraper(search_terms).search()
 
-def addStockInfo(card, row):
+def addRowInfo(card, row):
     """Add some info to the card coming from the ods row.
 
     - the quantity,
@@ -235,6 +235,9 @@ def addStockInfo(card, row):
             card['distributor'] = row.get('distributor')
         else:
             card['distributor'] = row.get('publisher')
+
+    if row.get('category'):
+        card['category'] = row.get('category')
 
     return card
 
@@ -294,13 +297,13 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             found, no_ean, not_found = filterResults(cards, row)
             if found:
                 # log.debug("found a valid result: {}".format(found))
-                found = addStockInfo(found, row)
+                found = addRowInfo(found, row)
                 cards_found.append(found)
             if no_ean:
-                no_ean = addStockInfo(no_ean, row)
+                no_ean = addRowInfo(no_ean, row)
                 cards_no_ean.append(no_ean)
             if not_found:
-                not_found = addStockInfo(not_found, row)
+                not_found = addRowInfo(not_found, row)
                 not_found['publishers'] = [not_found['publishers']]
                 cards_not_found.append(not_found)
 

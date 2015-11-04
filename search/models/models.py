@@ -652,6 +652,14 @@ class Card(TimeStampedModel):
                 except Exception as e:
                     log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
 
+        # Get the category
+        card_category = None
+        if card.get('category'):
+            try:
+                card_category, created = Category.objects.get_or_create(name=card.get('category'))
+            except Exception as e:
+                log.warning("couldn't get or create the category {}.".format(card.get('category')))
+
         # Get the publishers:
         card_publishers = []
         if card.get("publishers_ids"):
@@ -764,6 +772,11 @@ class Card(TimeStampedModel):
         #     place_copy.save()
         # except Exception, e:
         #     log.error(u"--- error while setting the default place: %s" % (e,))
+
+        # add the category
+        if card_category:
+            card_obj.category = card_category
+            card_obj.save()
 
         return card_obj, [msg_success]
 

@@ -23,11 +23,26 @@ import search.datasources.odslookup.odslookup as odslookup
 from tqdm import tqdm
 
 from search.models.models import Card
+from search.models.models import Category
 from search.models.models import Distributor
 from search.models.models import Place
 from search.models.models import Preferences
 from search.models.models import Publisher
 
+
+def getAllKeys(cards, key):
+    """From the list of dicts "cards", get all the values of "key".
+
+    return: a list
+    """
+    its = []
+    for _, val in cards.iteritems():
+        if val:
+            for dic in val:
+                if dic.get(key) not in its:
+                    its.append(dic.get(key))
+    its = filter(lambda it: it is not None, its)
+    return its
 
 def run(*args):
     """This method is needed by the runscript command. We can pass
@@ -98,6 +113,14 @@ def run(*args):
         obj, _ = Distributor.objects.get_or_create(name=tup[0])
         obj.discount = tup[1]
         obj.save()
+    print "...done."
+
+    ### Get and create all categories
+    print "Creating categories..."
+    cats = []
+    cats = getAllKeys(cards, "category")
+    for it in tqdm(cats):
+        Category.objects.get_or_create(name=it)
     print "...done."
 
     import ipdb; ipdb.set_trace()
