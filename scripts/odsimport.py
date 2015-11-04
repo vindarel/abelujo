@@ -101,18 +101,24 @@ def run(*args):
 
     ### Get all distributors and their discount
     dists = []
+    seen = []
     for key, val in cards.iteritems():
         if val:
             for dic in val:
-                if (dic.get('distributor') not in dists) and\
-                   dic.get('discount'):
-                    dists.append((dic.get('distributor'), dic.get('discount')))
+                dist = dic.get('distributor')
+                if dist and dist not in seen:
+                   discount = dic.get('discount', 0)
+                   seen.append(dist)
+                   dists.append((dist, discount))
 
     print "Creating distributors..."
     for tup in tqdm(dists):
-        obj, _ = Distributor.objects.get_or_create(name=tup[0])
-        obj.discount = tup[1]
-        obj.save()
+        try:
+            obj, _ = Distributor.objects.get_or_create(name=tup[0])
+            obj.discount = tup[1]
+            obj.save()
+        except Exception as e:
+            print e
     print "...done."
 
     ### Get and create all categories

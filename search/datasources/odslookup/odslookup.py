@@ -374,7 +374,7 @@ def main(*args):
     purposes). If we don't find one we'll create one.
 
     """
-    datasource = "chapitre"
+    datasource = "decitre"
     odsdata = run(args[0], datasource, timeout=TIMEOUT)
     if odsdata.get("messages"):
         log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
