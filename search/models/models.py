@@ -630,8 +630,11 @@ class Card(TimeStampedModel):
         # Get authors or create
         card_authors = []
         if card.get('authors'):
-            if type(card["authors"][0]) in [type("string"), type(u"unicode-str")]:
-                for aut in card["authors"]:
+            auts = card.get('authors')
+            if type(auts) != type([]):
+                auts = [auts]
+            if type(auts[0]) in [type("string"), type(u"unicode-str")]:
+                for aut in auts:
                     author, created = Author.objects.get_or_create(name=aut)
                     card_authors.append(author)
             else:
