@@ -86,7 +86,7 @@ gulp.task('concatjs:vendor', function () {
 
 
 // Concatenate js app files
-gulp.task('concatjs:app', function () {
+gulp.task('concatjs:app', ['compile:livescript'], function () {
   return gulp.src(appFiles)
     .pipe(jshint('.jshintrc'))
     .pipe(jshint.reporter('default'))
@@ -143,4 +143,4 @@ gulp.task('livescript', ['compile:livescript']);
 // Default Task
 // gulp.task('default', ['less', 'test', 'concat']);
 //XXX warning of mixing ls and js for same file.
-gulp.task('default', ['css', 'less', 'livescript', 'concat',]);
+gulp.task('default', ['css', 'less', 'concat',]);
