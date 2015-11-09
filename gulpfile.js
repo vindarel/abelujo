@@ -23,6 +23,7 @@ var vendorJsFiles = [
   'static/bower_components/angular-sanitize/angular-sanitize.min.js',
   'static/bower_components/angular-cookies/angular-cookies.min.js',
   'static/bower_components/angular-ui-router/release/angular-ui-router.min.js',
+  'static/bower_components/ui-select/dist/select.js',
   'static/bower_components/underscore/underscore-min.js',
   'static/bower_components/underscore/underscore-min.js',
   'static/bower_components/prelude-ls/browser/prelude-browser-min.js',

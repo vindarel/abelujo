@@ -8,6 +8,7 @@
         "angular-route": "latest",
         "angular-sanitize": "latest",
         "angular-ui-router": "latest",
+        "angular-ui-select": "*",
         "bootstrap": "3.3",
         "jquery"   : "~1.9",
         "underscore": "latest",
