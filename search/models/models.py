@@ -209,7 +209,7 @@ class Category(models.Model):
 
     def __unicode__(self):
         #idea: show the nb of cards with that category.
-        return "{}".format(self.name)
+        return u"{}".format(self.name)
 
 
 class CardType(models.Model):
