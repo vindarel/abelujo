@@ -438,10 +438,10 @@ def add(request):
             for msg in msgs:
                 messages.add_message(request, messages.INFO, msg)
 
-            messages.add_message(request, messages.SUCCESS, u'«%s» a été ajouté avec succès' % (card['title'],))
+            messages.add_message(request, messages.SUCCESS, u'"{}" has been added succesfully.'.format(card.get('title'),))
 
         except Exception, e:
-            messages.add_message(request, messages.ERROR, u'"%s" could not be registered.' % (card['title'],))
+            messages.add_message(request, messages.ERROR, u'"{}" could not be registered.'.format(card.get('title'),))
             log.error("Error when trying to add card: {}".format(e))
             log.error(traceback.format_exc())
             resp_status = 500
