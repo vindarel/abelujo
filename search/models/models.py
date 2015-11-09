@@ -73,7 +73,7 @@ class Author(TimeStampedModel):
         app_label = "search"
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
     @staticmethod
     def search(query):
@@ -109,7 +109,7 @@ class Distributor(TimeStampedModel):
         ordering = ("name",)
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
     def to_list(self):
         return {
@@ -157,7 +157,7 @@ class Publisher (models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
     @staticmethod
     def search(query):
@@ -192,7 +192,7 @@ class Collection (models.Model):
         ordering = ("name",)
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 class Category(models.Model):
     """Categories:
@@ -831,7 +831,7 @@ class PlaceCopies (models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return "%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
+        return u"%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
 
 class Place (models.Model):
@@ -865,7 +865,7 @@ class Place (models.Model):
         ordering = ("name",)
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
     @staticmethod
     def card_to_default_place(card_obj, nb=1):
@@ -961,7 +961,7 @@ class Preferences(models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return "default place: %s" % (self.default_place.name,)
+        return u"default place: %s" % (self.default_place.name,)
 
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).
@@ -974,7 +974,7 @@ class BasketCopies(models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return "Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
+        return u"Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
 
 class Basket(models.Model):
     """A basket is a set of copies that are put in it for later use. Its
@@ -999,7 +999,7 @@ class Basket(models.Model):
         ordering = ("name",)
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
     def to_dict(self):
         return {"name": self.name,
@@ -1052,7 +1052,7 @@ class BasketType (models.Model):
         ordering = ("name",)
 
     def __unicode__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 class DepositStateCopies(models.Model):
     """For each card of the deposit state, remember:
@@ -1077,7 +1077,7 @@ class DepositStateCopies(models.Model):
     nb_to_return = models.IntegerField(default=1)
 
     def __unicode__(self):
-        return "card {}, initial: {}, current: {}, sells: {}, etc".format(
+        return u"card {}, initial: {}, current: {}, sells: {}, etc".format(
             self.card.id, self.nb_initial, self.nb_current, self.nb_sells)
 
     @property
@@ -1142,7 +1142,7 @@ class DepositState(models.Model):
     closed = models.DateField(default=None, blank=True, null=True)
 
     def __unicode__(self):
-        ret = "deposit '{}' with {} copies. Closed ? {}".format(self.deposit, self.copies.count(), self.closed)
+        ret = u"deposit '{}' with {} copies. Closed ? {}".format(self.deposit, self.copies.count(), self.closed)
         return ret
 
     @property
@@ -1545,7 +1545,7 @@ class SoldCards(models.Model):
     price_sold = models.FloatField(default=DEFAULT_PRICE)
 
     def __unicode__(self):
-        ret = "card id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
+        ret = u"card id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
         return ret
 
 class Sell(models.Model):
@@ -1575,9 +1575,9 @@ class Sell(models.Model):
     # client
 
     def __unicode__(self):
-        return "Sell {} of {} copies at {}.".format(self.id,
-                                                    self.soldcards_set.count(),
-                                                    self.created)
+        return u"Sell {} of {} copies at {}.".format(self.id,
+                                                     self.soldcards_set.count(),
+                                                     self.created)
     @property
     def total_price_sold(self):
         total = 0
@@ -1793,7 +1793,7 @@ class Alert(models.Model):
     comment = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return "alert for card {}, created {}".format(self.card.id, self.date_creation)
+        return u"alert for card {}, created {}".format(self.card.id, self.date_creation)
 
     def get_absolute_url(self):
         # return reverse("sell_view", args=(self.id,))
