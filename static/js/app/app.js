@@ -9,7 +9,7 @@ angular.module('abelujo', [
     'ngResource',
     'ngSanitize',
     'ui.router',
-    'ui.select',
+    // 'ui.select',
     'ui.bootstrap',
 
     // application level:

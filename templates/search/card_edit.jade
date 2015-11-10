@@ -103,15 +103,17 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
 
   div
     h5 {% trans "Distributor" %}
-    //- select(ng-model="distributor", ng-options="dist.name + ' (discount: ' + dist.discount + ' %)' for dist in distributor_list")
-    //- a(target="_blank", href="/admin/search/distributor/add")
-    //-     i.glyphicon.glyphicon-plus-sign
+    select(ng-model="distributor", ng-options="dist.name + ' (discount: ' + dist.discount + ' %)' for dist in distributor_list")
+    a(target="_blank", href="/admin/search/distributor/add")
+        i.glyphicon.glyphicon-plus-sign
 
-    ui-select(ng-model="distributor")
-      ui-select-match
-        span(ng-bind="$select.selected.name")
-      ui-select-choices(repeat="item in (distributor_list | filter: $select.search) track by item.id")
-        span(ng-bind="item.name")
+    //- ui-select(ng-model="distributor")
+      //- ui-select-match
+        //- span(ng-bind="$select.selected.name")
+      //- ui-select-choices(repeat="item in (getItemsApi('/api/distributors/', $null, 'distributor_list') | filter: $select.search) track by item.id")
+        //- span(ng-bind="item.name")
+    //- a(target="_blank", href="/admin/search/distributor/add")
+        //- i.glyphicon.glyphicon-plus-sign
 
   input.btn.btn-primary(value="{% trans 'View card' %}", ng-click="validate('view')")
   input.btn.btn-primary(value="{% trans 'Buy...' %}", ng-click="validate('buy')")
