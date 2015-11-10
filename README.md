@@ -6,7 +6,7 @@ français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr
 This project is at its debut stage. However it is already possible to:
 
 -   look up for **books**, either by keywords or by isbn/ean. You can currently search for:
-    * french books (through [chapitre.com](http://www.chapitre.com/))
+    * french books (through [decitre.fr](http://www.decitre.fr/)), or chapitre.com
     * german books(through [buch-wagner.de](http://www.buch-wagner.de))
     * spanish books (through [casadellibro.com](http://www.casadellibro.com))
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
@@ -108,9 +108,6 @@ We use:
 -   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
 
 See the developer documentation: http://dev.abelujo.cc/
-
-We are currently working at expanding the database (adding deposits,
-distributors, …).
 
 We get the data about books with some webscraping (discogs provides an
 api).

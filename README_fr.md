@@ -4,8 +4,8 @@ Abelujo - logiciel libre de gestion de petite librairie indépendante (et disqua
 Projet actuellement en chantier. Il est néanmoins possible de:
 
 -   rechercher des **livres** par mots-clefs ou par n°ISBN/EAN. La recherche
-    utilise les résultats de [la librairie Chapitre](https://www.chapitre.com),
--   rechercher des **CDs** (via [discogs.com](http://www.discogs.com),
+    utilise les résultats de [la librairie Decitre](https://www.decitre.fr), ou bien Chapitre.com,
+-   rechercher des **CDs** (via [discogs.com](http://www.discogs.com)),
 -   chercher des notices espagnoles ou allemandes,
 - ajouter des exemplaires au stock, par lieu, utiliser des paniers,
 -   chercher dans son stock,
