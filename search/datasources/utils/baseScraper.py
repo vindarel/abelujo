@@ -53,11 +53,10 @@ informations about one). We call the postSearch method, defined
 above, which gets those complementary fields, if any.
 
 Shall we use xpath ?
----
+--------------------
 
-Using xpath expressions would allow to further factorize code.  We
-prefer not to use them as of today since many elements need
-post-processing (cleanup, transformation to list, etc).
+You can use xpath expressions to get information.
+Xpath expressions are terse, they allow to further factorize code.
 """
 
 
@@ -209,6 +208,10 @@ class Scraper(object):
         bk_list = []
         stacktraces = []
         product_list = self._product_list()
+        status = self.req.status_code
+        if (status / 100) in [4,5]: # get 400 and 500 errors
+            stacktraces.append("The remote source has a problem, we can not connect to it.")
+
         for product in product_list:
             b = {}
             b["data_source"] = self.SOURCE_NAME

@@ -116,9 +116,9 @@ class Scraper:
             self.url = SOURCE_URL_SEARCH + self.query
             log.debug('search url: %s' % self.url)
 
-        self.r = requests.get(self.url)
+        self.req = requests.get(self.url)
         #TODO: to be continued
-        self.soup = BeautifulSoup(self.r.text)
+        self.soup = BeautifulSoup(self.req.text)
 
     def _product_list(self):
         items = self.soup.find_all(class_="categorySummary")
@@ -185,6 +185,10 @@ class Scraper:
         bk_list = []
         stacktraces = []
         product_list = self._product_list()
+        status = self.req.status_code
+        if (status / 100) in [4,5]: # get 400 and 500 errors
+            stacktraces.append("The remote source has a problem, we can not connect to it.")
+
         for product in product_list:
             b = {}
             b["data_source"] = SOURCE_NAME
@@ -246,6 +250,7 @@ if __name__=="__main__":
     scrap = Scraper("emma", "goldman")
     bklist, errors = scrap.search()
     map(pprint.pprint, bklist)
+    print "Messages: ", errors
     print "Nb results: {}".format(len(bklist))
     print "1st book postSearch:"
     post = postSearch(bklist[0]["details_url"])

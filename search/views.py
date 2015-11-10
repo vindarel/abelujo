@@ -308,6 +308,9 @@ def search(request):
             retlist, traces = search_on_data_source(data_source, search_terms)
             if not retlist:
                 messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
+                for trace in traces:
+                    messages.add_message(request, messages.INFO, trace)
+
             # if not request.session.get("search_result"):
             if not _request_session_get(request, "search_result"):
                 request.session["search_result"] = {}
