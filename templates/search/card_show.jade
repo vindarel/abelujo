@@ -51,12 +51,14 @@
     div {% trans "Publishers" %}:
         ul.list-group
             for pub in object.get_publishers
-                li.list-group-item {{ pub.name }}
+                li.list-group-item
+                  a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
 
     div {% trans "Distributor" %}:
         ul.list-group
             for dist in object.get_distributor
-                li.list-group-item {{ dist.name }}
+                li.list-group-item
+                  a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
 
     div {% trans "Presente in" %}:
       ul.list-group

@@ -111,6 +111,10 @@ class Distributor(TimeStampedModel):
     def __unicode__(self):
         return u"{}".format(self.name)
 
+    def get_absolute_url(self):
+        return "/admin/search/{}/{}".format(self.__class__.__name__.lower(),
+                                            self.id)
+
     def to_list(self):
         return {
             "id": self.id,
@@ -157,7 +161,10 @@ class Publisher (models.Model):
         app_label = "search"
 
     def __unicode__(self):
-        return u"{}".format(self.name)
+        return u"{}, {}".format(self.id, self.name)
+
+    def get_absolute_url(self):
+        return "/admin/search/publisher/{}".format(self.id)
 
     @staticmethod
     def search(query):
