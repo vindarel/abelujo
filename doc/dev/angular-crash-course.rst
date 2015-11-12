@@ -1,8 +1,8 @@
-Angular crash course
-====================
+AngularJS crash course
+======================
 
-Add Angular to a web (Django) project
--------------------------------------
+How to add AngularJS to a web (Django) project
+----------------------------------------------
 
 Reference the sources
 ~~~~~~~~~~~~~~~~~~~~~
@@ -33,8 +33,8 @@ the ``STATIC_ROOT`` variable. Now we'll reference to it with the ``{% static %}`
 
 
 
-Include Angular in the template
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Call AngularJS functions from within the html
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See this simple example: https://angularjs.org#add-some-control
 
@@ -54,8 +54,8 @@ And we need to call a controller where we want Angular to take action, like:
       div Hello {% verbatim %} {{yourName}} {% endverbatim %} !
 
 
-Build the js sources
---------------------
+Build the javascript sources
+----------------------------
 
 ``Gulp``, as introduced in the tool choices section, is responsible for
 concatenating every js and css files into a single one, ``abelujo.js``
@@ -68,8 +68,8 @@ When you modify the js, re-build with gulp::
 see the gulpfile for the other actions.
 
 
-What happens and when ?
------------------------
+What happens when we load a page ?
+----------------------------------
 
 When we access our root html page:
 
@@ -85,3 +85,24 @@ When we access our root html page:
   one, so it is called.
 * Angular evaluates the other directives included in the DOM and
   executes the logic of the controllers, like our "IndexController".
+
+How to add a javascript package to the project
+----------------------------------------------
+
+There are a lot of javascript packages out there, on `npm <
+https://www.npmjs.com >`_ or `bower < https://libraries.io/bower/ >`_,
+and also `a lot for AngularJS modules < http://ngmodules.org/ >`_.
+
+To install a package check those steps:
+
+* add the package dependency in package.json for npm or bower.json for
+  bower,
+* add the needed js file(s) into our ``gulpfile.js`` (see vendor
+  sources),
+* add the (optional) needed css file(s) in the header of our
+  ``base.jade``,
+* declare the module as a dependence of our angularjs app, in
+  ``app.js`` (if needed),
+* declare the module as a dependency of the controller,
+
+and recompile (`gulp`).
