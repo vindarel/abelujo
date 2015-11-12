@@ -23,7 +23,8 @@ angular.module('abelujo.controllers', [])
         $scope.pub_input = "";
         $scope.pubs_selected = [];
         $scope.distributor = null;
-        $scope.distributor_list = [];
+        // $scope.distributor_list = [];
+        $scope.distributor_list = null;
         $scope.distributors_selected = [];
         $scope.has_isbn = false;
         $scope.isbn = null;
@@ -31,6 +32,7 @@ angular.module('abelujo.controllers', [])
         $scope.details_url = undefined;
 
         $scope.type = "";
+        $scope.card = {};
         $scope.card_types = [];
 
         $scope.category = {"fields": {"pk": 0}};
@@ -136,11 +138,11 @@ angular.module('abelujo.controllers', [])
                 "category": $scope.category.pk,
                 "authors": _.map($scope.authors_selected, function(it){ return it.pk;}),
                 "publishers": _.map($scope.pubs_selected, function(it){ return it.pk;}),
-                "distributor": $scope.distributor.id,
+                "distributor": $scope.distributor.selected.id, // selected: from ui-select
                 "year_published": $scope.year_published,
                 "details_url": $scope.details_url,
                 "has_isbn": $scope.has_isbn,
-                "isbn": $scope.isbn,
+                "isbn": $scope.isbn
             };
           // This is needed for Django to process the params to its
           // request.POST dictionnary:
