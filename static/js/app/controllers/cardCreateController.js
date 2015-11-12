@@ -23,8 +23,7 @@ angular.module('abelujo.controllers', [])
         $scope.pub_input = "";
         $scope.pubs_selected = [];
         $scope.distributor = null;
-        // $scope.distributor_list = [];
-        $scope.distributor_list = null;
+        $scope.distributor_list = [];
         $scope.distributors_selected = [];
         $scope.has_isbn = false;
         $scope.isbn = null;
@@ -59,7 +58,9 @@ angular.module('abelujo.controllers', [])
                 $scope.price = $scope.card.price;
                 $scope.authors_selected = $scope.card.authors;
                 $scope.distributor_list = [$scope.card.distributor];
-                $scope.distributor = $scope.distributor_list[0];
+                // $scope.distributor = $scope.distributor_list[0];
+                $scope.distributor = $scope.card.distributor;
+                // $scope.distributor.selected = $scope.card.distributor;
                 $scope.isbn = $scope.card.isbn;
                 $scope.details_url = $scope.card.details_url;
                 $scope.pubs_selected = $scope.card.publishers;
@@ -109,14 +110,18 @@ angular.module('abelujo.controllers', [])
                 return response.data;
             });
 
-        $http.get("/api/distributors", {
+        var getDistributors = function() {
+            $http.get("/api/distributors", {
                 params: {
                     "query": ""}
             }).then(function(response){
                 $scope.distributor_list = response.data;
-                $scope.distributor = $scope.distributor_list[0];
+                // $scope.distributor = $scope.distributor_list[0];
                 return response.data;
             });
+        };
+        getDistributors();
+        // $scope.distributor.selected = $scope.distributor; // don't ask… ui-select stuff.
 
         $scope.add_selected_item = function(item, model_input, model_list){
             // item: object selected
@@ -128,6 +133,12 @@ angular.module('abelujo.controllers', [])
         $scope.remove_from_selection = function(index_to_rm, model_list){
             $scope[model_list].splice(index_to_rm, 1);
       };
+
+        $scope.refreshDistributors = function(search, select) {
+            getDistributors();
+            console.log("refreshed distributors list in ui-select");
+            select.refreshItems();
+        };
 
         $scope.validate = function(next_view){
             console.log("validate clicked");

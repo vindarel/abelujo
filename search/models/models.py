@@ -115,12 +115,18 @@ class Distributor(TimeStampedModel):
         return "/admin/search/{}/{}".format(self.__class__.__name__.lower(),
                                             self.id)
 
+    def __repr__(self):
+        """Representation for json/javascript.
+        """
+        return "{} ({} %)".format(self.name, self.discount)
+
     def to_list(self):
         return {
             "id": self.id,
             "name": self.name,
             "discount": self.discount,
             "stars": self.stars,
+            "repr": self.__repr__(),
         }
 
     @staticmethod
