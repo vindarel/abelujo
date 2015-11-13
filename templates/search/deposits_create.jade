@@ -25,66 +25,68 @@
 h3 {% trans "New deposit" %}
 div(ng-controller="DepositCreateController")
 
-  div
-    alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
+ .row
+   .col-lg-6
+    div
+      alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
 
-  // form(action='/api/distributors', method='post')
-  form(method='post')
-      b: div {% trans "Name of the deposit" %}
-      input.form-control(type="text", ng-model="deposit_name", required)
+    // form(action='/api/distributors', method='post')
+    form(method='post')
+        b: div {% trans "Name of the deposit" %}
+        input.form-control(type="text", ng-model="deposit_name", required)
 
-      b: div {% trans "Type" %}
-      select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
+        b: div {% trans "Type" %}
+        select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
 
-      div(ng-show="{% verbatim %} isDistributorDeposit(deposit_type.name) {% endverbatim %}")
-        b {% trans "Destination place" %}
-        select.form-control(ng-model="dest_place", ng-options="elt.name for elt in places")
+        div(ng-show="{% verbatim %} isDistributorDeposit(deposit_type.name) {% endverbatim %}")
+          b {% trans "Destination place" %}
+          select.form-control(ng-model="dest_place", ng-options="elt.name for elt in places")
 
-      b: div {% trans "Due date" %}
-      p.input-group
-        input.form-control(
-              type='text'
-              datepicker-popup='{{format}}'
-              ng-model='due_date'
-              is-open='opened'
-              datepicker-options='dateOptions'
-              ng-required='true'
-              close-text='Close'
-            )
-        span.input-group-btn
-              button.btn.btn-default(type='button', ng-click='open($event)')
-                i.glyphicon.glyphicon-calendar
+        b: div {% trans "Due date" %}
+        p.input-group
+          input.form-control(
+                type='text'
+                datepicker-popup='{{format}}'
+                ng-model='due_date'
+                is-open='opened'
+                datepicker-options='dateOptions'
+                ng-required='true'
+                close-text='Close'
+              )
+          span.input-group-btn
+                button.btn.btn-default(type='button', ng-click='open($event)')
+                  i.glyphicon.glyphicon-calendar
 
-      b: div {% trans "Inital quantity" %}
-      input.form-control(type="number", ng-model="initial_nb_copies")
+        b: div {% trans "Inital quantity" %}
+        input.form-control(type="number", ng-model="initial_nb_copies")
 
-      b: div {% trans "Minimum wanted quantity" %}
-      input.form-control(type="number", ng-model="minimal_nb_copies")
-      div.form-group
-        div.checkbox
-            input(type="checkbox", ng-model="auto_command")
-            | {% trans "Auto-command the cards" %}
-      b: div {% trans "Distributor" %}
-      select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list', required)
-        option(value="") ---
-      div
-        span {% trans "Look for cards" %} 
-        span.ng-cloak(ng-show="distributor")  {% trans "whose distributor is" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
-      input.nullable.form-control(
-        type='text'
-        typeahead-loading="loadingCards"
-        ng-model='{% verbatim %} copy_selected {% endverbatim %}'
-        typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}'
-        typeahead-min-length="3"
-        typeahead-on-select="add_selected_card($item)"
-      )
-      i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
-      ul.list-group.ng-cloak(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
-        li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
-          i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
+        b: div {% trans "Minimum wanted quantity" %}
+        input.form-control(type="number", ng-model="minimal_nb_copies")
+        div.form-group
+          div.checkbox
+              input(type="checkbox", ng-model="auto_command")
+              | {% trans "Auto-command the cards" %}
+        b: div {% trans "Distributor" %}
+        select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list', required)
+          option(value="") ---
+        div
+          span {% trans "Look for cards" %} 
+          span.ng-cloak(ng-show="distributor")  {% trans "whose distributor is" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
+        input.nullable.form-control(
+          type='text'
+          typeahead-loading="loadingCards"
+          ng-model='{% verbatim %} copy_selected {% endverbatim %}'
+          typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}'
+          typeahead-min-length="3"
+          typeahead-on-select="add_selected_card($item)"
+        )
+        i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
+        ul.list-group.ng-cloak(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
+          li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
+            i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
 
-      input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
-      // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
+        input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
+        // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
 
 
 {% endblock content %}
