@@ -26,10 +26,11 @@ h3 {% trans "New deposit" %}
 div(ng-controller="DepositCreateController")
 
  .row
-   .col-lg-6
     div
       alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
 
+ .row
+   .col-lg-6
     // form(action='/api/distributors', method='post')
     form(method='post')
         b: div {% trans "Name of the deposit" %}
@@ -52,6 +53,7 @@ div(ng-controller="DepositCreateController")
                 datepicker-options='dateOptions'
                 ng-required='true'
                 close-text='Close'
+                required
               )
           span.input-group-btn
                 button.btn.btn-default(type='button', ng-click='open($event)')
@@ -81,11 +83,28 @@ div(ng-controller="DepositCreateController")
           typeahead-on-select="add_selected_card($item)"
         )
         i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
-        ul.list-group.ng-cloak(ng-show="cards_selected", ng-repeat=" card in cards_selected ")
-          li.list-group-item.list-group-item-info {% verbatim %} {{card.repr}} {% endverbatim %}
-            i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
 
-        input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
+  .row
+    div {% verbatim %} {{ cards_selected }} {% endverbatim %}
+    div.list-group.ng-cloak(ng-show="cards_selected", ng-repeat="card in cards_selected ")
+     .col-lg-9
+          div {% verbatim %} {{card.repr}} {% endverbatim %}
+
+     .col-lg-2
+            p.input-group
+                label.sr-only {% trans "Quantity" %}
+                span.input-group-addon X
+                input.form-control(
+                  type="number", min=0, max=99
+                  //- ng-model="{% verbatim %} cards_selected[$index].quantity {% endverbatim %}"
+                  ng-model="{% verbatim %} card.quantity {% endverbatim %}"
+                  ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
+                )
+
+     .col-lg-1
+            i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
+  .row
+    input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
         // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
 
 

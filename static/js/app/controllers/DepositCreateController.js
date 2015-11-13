@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module('abelujo').controller('DepositCreateController', ['$http', '$scope', 'utils', function ($http, $scope, utils) {
+angular.module('abelujo').controller('DepositCreateController', ['$http', '$scope', 'utils', '$window', function ($http, $scope, utils, $window) {
     // set the xsrf token via cookies.
     // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     $scope.dist_list = [];
@@ -72,9 +72,12 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
                     // xxx: take the repr from django
                     // return item.title + ", " + item.authors + ", éd. " + item.publishers;
                     var repr = item.title + ", " + item.authors_repr + ", éd. " + item.pubs_repr;
-                    $scope.cards_fetched.push({"repr": repr, "id": item.id});
+                    $scope.cards_fetched.push({"repr": repr,
+                                               "id": item.id,
+                                               "quantity": 1});
                     return {"repr": repr,
-                            "id": item.id};
+                            "id": item.id,
+                            "quantity": 1};
                 });
             });
     };
@@ -92,16 +95,23 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
     $scope.addDeposit = function() {
         var cards_id = [];
-        // get the selected card's id TODO:
+        var cards_qty = [];
+
         if ($scope.cards_selected.length > 0) {
+            // Get the selected card's id,
             cards_id = _.map($scope.cards_selected, function(card) {
                 return card.id;
+            });
+            // and their respective quantities in another array.
+            cards_qty = _.map($scope.cards_selected, function(card) {
+                return card.quantity;
             });
         }
         var params = {
             "name"              : $scope.deposit_name,
             "distributor"       : $scope.distributor,
             "cards_id"          : cards_id,
+            "cards_qty"         : cards_qty,
             "deposit_type"      : $scope.deposit_type.type, //xxx: use sthg else than the name
             "initial_nb_copies" : $scope.initial_nb_copies,
             "minimal_nb_copies" : $scope.minimal_nb_copies,
@@ -124,6 +134,8 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             .then(function(response){
                 $scope.messages = response.data.alerts;
                 $scope.cancelCurrentData();
+                // TODO: redirect to depo's view and display success message
+                $window.location.href = "/deposits/";
                 return response.data;
             });
     };

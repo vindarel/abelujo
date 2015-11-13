@@ -240,16 +240,16 @@ class TestCards(TestCase):
 
     def test_get_from_id_list(self):
         cards_id = [1]
-        res = Card.get_from_id_list(cards_id)
-        self.assertTrue(res["result"])
-        self.assertEqual(res["result"][0].title, self.fixture_title)
+        res, msgs = Card.get_from_id_list(cards_id)
+        self.assertTrue(res)
+        self.assertEqual(res[0].title, self.fixture_title)
 
     def test_get_from_id_list_non_existent(self):
         cards_id = [1,2]
-        res = Card.get_from_id_list(cards_id)
-        self.assertTrue(res["result"])
-        self.assertTrue(res["messages"])
-        self.assertEqual(res["messages"][0]["message"], "the card of id 2 doesn't exist.")
+        res, msgs = Card.get_from_id_list(cards_id)
+        self.assertTrue(res)
+        self.assertTrue(msgs)
+        self.assertEqual(msgs[0]["message"], "the card of id 2 doesn't exist.")
 
     def test_placecopies(self):
         pass

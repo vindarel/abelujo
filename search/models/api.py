@@ -224,14 +224,17 @@ def deposits(request, **response_kwargs):
         response_kwargs['content_type'] = 'application/json'
         try:
             cards_id = list_from_coma_separated_ints(params.get("cards_id"))
-            #ONGOING: form the dict to send to Deposit.from_dict,
-            cards_obj = Card.get_from_id_list(cards_id)
+            cards_qty = list_from_coma_separated_ints(params.get("cards_qty"))
+            if len(cards_qty) != len(cards_id):
+                log.error("Creating deposit: the length of card ids and their qties is different.")
+            cards_obj, card_msgs = Card.get_from_id_list(cards_id)
             distributor_obj = Distributor.objects.get(name=params.get("distributor"))
 
             deposit_dict = {
                 "name"              : params.get("name"),
                 "distributor"       : distributor_obj,
-                "copies"            : cards_obj.get("result"),
+                "copies"            : cards_obj,
+                "quantities"        : cards_qty,
                 "deposit_type"      : params.get("deposit_type"),
                 "initial_nb_copies" : params.get("initial_nb_copies"),
                 "minimal_nb_copies" : params.get("minimal_nb_copies"),

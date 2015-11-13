@@ -491,26 +491,26 @@ class Card(TimeStampedModel):
     def get_from_id_list(cards_id):
         """cards_id: list of card ids
 
-        returns: a dictionnary "messages", "results" with a list of
-        error messages and the list of Card object.
+        returns: a tuple Card objects, messages.
         """
-        res = {"result": [],
-               "messages": []}
+        result = []
+        msgs = []
+
         for id in cards_id:
             try:
                 card = Card.objects.get(id=id)
-                res["result"].append(card)
+                result.append(card)
             except ObjectDoesNotExist:
                 msg = "the card of id {} doesn't exist.".format(id)
                 log.debug(msg)
-                res["messages"].append({"level": messages.WARNING, "message": msg})
-        return res
+                msgs.append({"level": messages.WARNING, "message": msg})
+        return result, msgs
 
     @staticmethod
     def sell(id=None, quantity=1, place_id=None):
         """Sell a card. Decreases its quantity in the given place.
 
-        Warning: this is a static method, use it like this:
+        This is a static method, use it like this:
         >>> import models.Card; Card.sell(the_card_id)
 
         :param int id: the id of the card to sell.
@@ -1395,20 +1395,25 @@ class Deposit(TimeStampedModel):
 
         return filtered, msgs
 
-    def add_copies(self, copies, nb=1):
+    def add_copies(self, copies, nb=1, quantities=[]):
         """Add the given list of copies objects to this deposit (if their
         distributor matches).
 
-        copies: list of Card objects.
+        - copies: list of Card objects.
+        - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
 
         return: []
 
         """
         msgs = []
         try:
-            for copy in copies:
+            for (i, copy) in enumerate(copies):
                 if copy.distributor and (copy.distributor.name == self.distributor.name):
-                    deposit_copy = self.depositcopies_set.create(card=copy, nb=nb)
+                    if len(quantities) == len(copies):
+                        qty = quantities[i]
+                    else:
+                        qty = nb
+                    deposit_copy = self.depositcopies_set.create(card=copy, nb=qty)
                     deposit_copy.save()
                 else:
                     log.error(dedent(u"""Error: the distributor names do not match.
@@ -1436,6 +1441,8 @@ class Deposit(TimeStampedModel):
 
         depo_dict: dictionnary with the required Deposit
         fields. Copies and Distributor are objects.
+        - copies: a list of Card objects
+        - quantities: a list of their respective quantities (int)
 
         returns: a list of messages which are dictionnaries:
         level: success/danger/warning (angular-bootstrap labels),
@@ -1457,8 +1464,9 @@ class Deposit(TimeStampedModel):
             if depo_dict.get("auto_command") == "true":
                 depo_dict["auto_command"] = True  # TODO: form validation beforehand.
             try:
+                qties = depo_dict.pop('quantities', [])
                 dep = Deposit.objects.create(**depo_dict)
-                msgs += dep.add_copies(copies_to_add)
+                msgs += dep.add_copies(copies_to_add, quantities=qties)
                 msgs.append({'level': "success",
                              'message':_("The deposit was successfully created.")})
             except Exception as e:
