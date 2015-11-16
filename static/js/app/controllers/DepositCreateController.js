@@ -201,4 +201,8 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
         $scope.opened = true;
     };
+
+    // Focus:
+    angular.element('#default-input').trigger('focus');
+
 }]);

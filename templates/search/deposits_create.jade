@@ -34,7 +34,7 @@ div(ng-controller="DepositCreateController")
     // form(action='/api/distributors', method='post')
     form(method='post')
         b: div {% trans "Name of the deposit" %}
-        input.form-control(type="text", ng-model="deposit_name", required)
+        input.form-control(type="text", ng-model="deposit_name", required, id="default-input")
 
         b: div {% trans "Type" %}
         select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
