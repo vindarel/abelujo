@@ -134,8 +134,9 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             .then(function(response){
                 $scope.messages = response.data.alerts;
                 $scope.cancelCurrentData();
-                // TODO: redirect to depo's view and display success message
-                $window.location.href = "/deposits/";
+                if (response.data.status == 200) {
+                    $window.location.href = "/deposits/";
+                };
                 return response.data;
             });
     };

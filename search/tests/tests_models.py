@@ -396,11 +396,22 @@ class TestDeposits(TestCase):
 
     def test_nominal(self):
         self.card.distributor = self.distributor
-        msgs = self.deposit.add_copies([self.card,])
+        msgs = self.deposit.add_copies([self.card,], quantities=[3])
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
-        self.assertEqual(1, self.card.quantity_deposits())
+        self.assertEqual(3, self.card.quantity_deposits())
         self.deposit.add_copies([self.card])
-        self.assertEqual(2, self.card.quantity_deposits())
+        self.assertEqual(4, self.card.quantity_deposits())
+        # Bad length of 'quantities', will add 1 by default.
+        self.deposit.add_copies([self.card], quantities=[10,11,12])
+        self.assertEqual(5, self.card.quantity_deposits())
+
+    def test_one_depo_per_card(self):
+        self.card.distributor = self.distributor
+        msgs = self.deposit.add_copies([self.card,])
+        status, msgs = Deposit.from_dict({'name': 'new',
+                                           'copies': [self.card],
+                                           'distributor': self.distributor})
+        self.assertEqual(status, STATUS_ERROR)
 
     def test_no_distributor(self):
         self.card.distributor = None
@@ -417,7 +428,7 @@ class TestDeposits(TestCase):
 
     def test_from_dict_nominal(self):
         self.card.distributor = self.distributor
-        msgs = Deposit.from_dict({'name': 'test',
+        status, msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card,],
                                   'distributor': self.distributor,
                                   })
@@ -431,7 +442,7 @@ class TestDeposits(TestCase):
         self.card.distributor = self.distributor
         due_date = datetime.date.today().isoformat() # getting it as str from JS
         dest_place = PlaceFactory.create()
-        msgs = Deposit.from_dict({'name': 'test',
+        status, msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card,],
                                   'distributor': self.distributor,
                                   'due_date': due_date,
@@ -446,7 +457,7 @@ class TestDeposits(TestCase):
     def test_no_due_date(self):
         self.card.distributor = self.distributor
         dest_place = PlaceFactory.create()
-        msgs = Deposit.from_dict({'name': 'test',
+        status, msgs = Deposit.from_dict({'name': 'test',
                                   'due_date': None,
                                   'copies': [self.card,],
                                   'distributor': self.distributor,
@@ -458,7 +469,7 @@ class TestDeposits(TestCase):
 
     def test_from_dict_bad_deposit(self):
         self.card.distributor = None
-        msgs = Deposit.from_dict({'name': 'test',
+        status, msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card,],
                                   'distributor': self.distributor,
                                   })
@@ -468,7 +479,7 @@ class TestDeposits(TestCase):
     def test_from_dict_bad_deposit_one_good(self):
         self.card.distributor = None
         self.card2.distributor = self.distributor
-        msgs = Deposit.from_dict({'name': 'test',
+        status, msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card, self.card2],
                                   'distributor': self.distributor,
                                   })
@@ -479,7 +490,6 @@ class TestDeposits(TestCase):
         ret, msgs = self.deposit.checkout_create()
         # The deposit has no copies. Do nothing.
         self.assertEqual(None, ret)
-
 
         # Add cards to it.
         self.deposit.add_copies([self.card2])

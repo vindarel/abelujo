@@ -1444,45 +1444,64 @@ class Deposit(TimeStampedModel):
         - copies: a list of Card objects
         - quantities: a list of their respective quantities (int)
 
-        returns: a list of messages which are dictionnaries:
-        level: success/danger/warning (angular-bootstrap labels),
-        message: string
+        returns: a tuple status, list of messages. The messages are dictionnaries:
+            - level: STATUS_{SUCCESS, ERROR, WARNING}
+            - message: string
 
         """
         msgs = []
+        status = STATUS_SUCCESS
         dep = None
         copies = depo_dict.pop('copies')  # add the copies after deposit creation.
         copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
+
         # Don't create it if it has no valid copies.
         if not copies_to_add:
             msgs.append({'level': messages.WARNING,
                          'message': _(u"The deposit wasn't created. It must contain at least one valid card")})
-        else:
-            dest_place_id = None
-            if depo_dict.get("dest_place"):
-                dest_place_id = depo_dict.pop('dest_place')
-            if depo_dict.get("auto_command") == "true":
-                depo_dict["auto_command"] = True  # TODO: form validation beforehand.
+            return STATUS_WARNING, msgs
+
+        # Check the cards are not already in a deposit.
+        for copy in copies_to_add:
+            copy_depos = copy.deposit_set.all()
+            if copy_depos:
+                message=_(dedent(u"""Hey ! We won't create this deposit
+                because the card '{}' is already in the
+                deposit '{}'""".format(
+                    copy.title, copy_depos[0].name)))
+                if len(copy_depos) > 1:
+                    message += " (and {} others)".format(len(copy_depos) - 1)
+                message += "."
+                msgs.append(dict(level=messages.INFO, message=message))
+
+                return STATUS_ERROR, msgs
+
+        # Normal case.
+        dest_place_id = None
+        if depo_dict.get("dest_place"):
+            dest_place_id = depo_dict.pop('dest_place')
+        if depo_dict.get("auto_command") == "true":
+            depo_dict["auto_command"] = True  # TODO: form validation beforehand.
+        try:
+            qties = depo_dict.pop('quantities', [])
+            dep = Deposit.objects.create(**depo_dict)
+            msgs += dep.add_copies(copies_to_add, quantities=qties)
+            msgs.append({'level': "success",
+                            'message':_("The deposit was successfully created.")})
+        except Exception as e:
+            log.error(u"Adding a Deposit from_dict error ! {}".format(e))
+            return STATUS_ERROR, msgs.append({'level': "danger",
+                                              'message': e})
+
+        # Link to the destination place, if any.
+        if dep and dest_place_id:
             try:
-                qties = depo_dict.pop('quantities', [])
-                dep = Deposit.objects.create(**depo_dict)
-                msgs += dep.add_copies(copies_to_add, quantities=qties)
-                msgs.append({'level': "success",
-                             'message':_("The deposit was successfully created.")})
+                dep.dest_place = Place.objects.get(id=dest_place_id)
+                dep.save()
             except Exception as e:
-                log.error(u"Adding a Deposit from_dict error ! {}".format(e))
-                return msgs.append({'level': "danger",
-                                    'message': e})
+                log.error(u"{}".format(e))
 
-            # Link to the destination place, if any.
-            if dep and dest_place_id:
-                try:
-                    dep.dest_place = Place.objects.get(id=dest_place_id)
-                    dep.save()
-                except Exception as e:
-                    log.error(u"{}".format(e))
-
-        return  msgs
+        return status, msgs
 
     def nb_alerts(self):
         """Is the distributor of this deposit concerned by open alerts ? If

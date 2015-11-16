@@ -242,14 +242,14 @@ def deposits(request, **response_kwargs):
                 "due_date"          : params.get("due_date"),
                 "dest_place"        : params.get("dest_place"),
             }
-            depo_msgs = Deposit.from_dict(deposit_dict)
+            status, depo_msgs = Deposit.from_dict(deposit_dict)
 
         except Exception as e:
             log.error(u"api/deposit error: {}".format(e))
             msgs["status"] = httplib.INTERNAL_SERVER_ERROR
             msgs["messages"].append(e)
             return HttpResponse(json.dumps(msgs), **response_kwargs)
-        msgs = {"status": httplib.OK,
+        msgs = {"status": status,
                 "alerts": depo_msgs}
 
         return HttpResponse(json.dumps(msgs), **response_kwargs)
