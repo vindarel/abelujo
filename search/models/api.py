@@ -67,14 +67,15 @@ def card(request, **kwargs):
             card = card.to_list()
             ret['data'] = card
             ret['alerts'] = msgs
-            ret = json.dumps(ret)
             log.info("found card {}".format(pk))
 
         except Exception as e:
-            msg = "couldn't find card of id {}".format(pk)
-            log.warning(msg, e)
+            msg = "couldn't find card of id {}: {}".format(pk, e)
+            log.warning(msg)
             msgs.append({"message": msg, "level": ALERT_ERROR})
 
+    ret["alerts"] = msgs
+    ret = json.dumps(ret)
     kwargs['content_type'] = "application/json"
     return HttpResponse(ret, **kwargs)
 
@@ -158,7 +159,11 @@ def authors(request, **response_kwargs):
 def distributors(request, **response_kwargs):
     if request.method == "GET":
         query = request.GET.get("query")
-        data = Distributor.search(query, to_list=True)
+        if query:
+            data = Distributor.search(query, to_list=True)
+        else:
+            data = Distributor.objects.all()
+            data = [it.to_list() for it in data]
         data = json.dumps(data)
         response_kwargs['content_type'] = 'application/json'
         return HttpResponse(data, **response_kwargs)
