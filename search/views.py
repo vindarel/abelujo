@@ -836,31 +836,15 @@ def deposits_add_card(request):
 
 
 @login_required
-def deposits_view(request, depo_name):
+def deposits_view(request, pk):
     """Display the given deposit."""
     deposit = None
     copies = []
     template = "search/deposits_view.jade"
     try:
-        deposit = Deposit.objects.get(pk=depo_name)
+        deposit = Deposit.objects.get(pk=pk)
         copies = deposit.copies.all()
-    except Deposit.DoesNotExist as e:
-        messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
-        log.error("le depot demande (%s) n'existe pas: %s" % (depo_name, e))
 
-    return render(request, template, {
-        "deposit": deposit,
-        "copies": copies,
-    })
-
-@login_required
-def deposits_checkout(request, pk):
-    """Create a DepositState for the given deposit (of id "pk).
-    """
-    template = "search/deposits_checkout.jade"
-    checkout = None
-
-    if request.method == 'GET':
         deposit = Deposit.objects.get(id=pk)
         checkout, msgs = deposit.checkout_create()
         if not checkout:
@@ -869,12 +853,26 @@ def deposits_checkout(request, pk):
         if not checkout.closed:
             checkout.update()
         balance = checkout.balance()
-    return render(request, "search/deposit_checkout.jade", {
+
+    except Deposit.DoesNotExist as e:
+        messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
+        log.error("le depot demande (%s) n'existe pas: %s" % (pk, e))
+        return HttpResponseRedirect(reverse("deposits"))
+
+    return render(request, template, {
+        "deposit": deposit,
+        "copies": copies,
         "cards_balance": balance["cards"],
         "total": balance["total"],
         "created": checkout.created,
         "distributor": checkout.deposit.distributor,
-        })
+    })
+
+@login_required
+def deposits_checkout(request, pk):
+    """
+    """
+    pass
 
 @login_required
 def basket_auto_command(request):

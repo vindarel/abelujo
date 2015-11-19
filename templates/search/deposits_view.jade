@@ -30,6 +30,8 @@ dl.dl-horizontal
   dd {{ deposit.name }}
   dt {% trans "Distributor" %}
   dd {{ deposit.distributor }}
+  dt {% trans "discount" %}
+  dd {{ distributor.discount }} %
   dt {% trans "Deposit type" %}
   dd {{ deposit.deposit_type }}
   dt {% trans "Auto command" %}
@@ -38,19 +40,32 @@ dl.dl-horizontal
   dd {{ deposit.last_checkout_date }}
   dt {% trans "Alerts" %}
   dd {{ nb_alerts }}
-if copies
-  b {% trans "Exemplaries in stock" %}:
-else
-  b.text-center.alert.alert-info {% trans "This deposit doesn't have any card." %}
-table.table.table-striped.table-hover
-  for copy in copies
-    tr
-      td {{ copy.title }}
-      td {{ copy.getAuthorsString }}
-      td {{ copy.editor }}
-      td {{ copy.price }} €
 
-{% trans "deposit state" as deposit_state %}
+div {% trans "total init" %}: {{ total.total_price_init }}
+div {% trans "total sold" %}: {{ total.total_price_sold }}
+div {% trans "discount" %}: {{ total.discount }} %
+h4  {% trans "to pay" %}: {{ total.total_to_pay }}
+div {% trans "margin" %}: {{ total.margin }}
+
+table.table.table-striped.table-hover
+    tr
+        th {% trans "Title" %}
+        th {% trans "price" %}
+        th {% trans "qty init" %}
+        th {% trans "nb sold" %}
+        th {% trans "current qty" %}
+    {% if card_balance|length = 0 %}
+    div nop !
+    {% endif %}
+    for key, bal in cards_balance
+      tr
+        td  {{ key.title }}
+        td  {{ key.price }}
+        td  {{ bal.nb_initial }}
+        td  {{ bal.nb_sells }}
+        td  {{ bal.nb_current }}
+
+{% trans "Record deposit state" as deposit_state %}
 a(href='{% url "deposit_checkout" deposit.id %}').btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
 
 {% endblock content %}
