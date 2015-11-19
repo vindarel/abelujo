@@ -1130,7 +1130,6 @@ class DepositStateCopies(models.Model):
             except Exception as e:
                 log.error("adding sells to {}: ".format(self.id), e)
 
-
 class DepositState(models.Model):
     """Deposit states. We do a deposit state to know what cards have been
     sold since the last deposit state, so what sum do we need to pay to
@@ -1179,7 +1178,34 @@ class DepositState(models.Model):
 
         return ex
 
-    def add_copies(self, cards_sells):
+    def add_copies(self, copies, nb=1, quantities=[]):
+        """Add the given list of copies objects to this deposit state.
+
+        - copies: list of Card objects.
+        - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
+
+        return: (status, msgs)
+
+        """
+        msgs = []
+        status = True
+        try:
+            for (i, copy) in enumerate(copies):
+                if len(quantities) == len(copies):
+                    qty = quantities[i]
+                else:
+                    qty = nb
+                depositstate_copy = self.depositstatecopies_set.create(card=copy, nb_current=qty)
+                depositstate_copy.save()
+            return status, msgs
+
+        except Exception as e:
+            log.error(u"Error while adding a card to the deposit state: {}".format(e))
+            msgs.append({'level': messages.ERROR,
+                                'message': _("An error occured while adding a card to the deposit state.")})
+            return None, msgs
+
+    def add_soldcards(self, cards_sells):
         """Add cards to this deposit state.
         Updates the sells if the card is already registered.
 
@@ -1198,7 +1224,7 @@ class DepositState(models.Model):
                 if created:
                     depostate_copy.save()
                 depostate_copy.add_sells(sells)
-                depostate_copy.nb_current = card.quantity
+                depostate_copy.nb_current -= len(sells)
                 depostate_copy.nb_to_return = -1 #TODO: see DepositCopies due_date
                 depostate_copy.save()
 
@@ -1262,7 +1288,7 @@ class DepositState(models.Model):
             sells = Sell.search(card_id=card.id, date_min=self.created).all()
             sold_cards.append({"card": card, "sells": sells})
 
-        self.add_copies(sold_cards)
+        self.add_soldcards(sold_cards)
 
     def close(self):
         """
@@ -1516,8 +1542,11 @@ class Deposit(TimeStampedModel):
         return alerts_found
 
     def last_checkout(self):
-        """Return the date at which we did the last checkout of this
-        deposit."""
+        """Return the last checkout at which we did the last checkout of this
+        deposit.
+
+        return: a depositstate object.
+        """
         # TODO to test
         try:
             last_checkout_obj = DepositState.objects.filter(deposit__name=self.name).order_by("created").last()
@@ -1563,12 +1592,32 @@ class Deposit(TimeStampedModel):
 
         checkout = DepositState(deposit=self, created=datetime.datetime.now())
         checkout.save()
+        quantities = [it.nb for it in self.depositcopies_set.all()]
+        status, msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
         if sold_cards:
-            checkout.add_copies(sold_cards)
+            checkout.add_soldcards(sold_cards)
         else:
             msgs.append(_("No cards were sold since the last deposit state."))
 
         return checkout, msgs
+
+    def checkout_balance(self):
+        """Get the balance of the ongoing checkout.
+
+        return: depositstate.balance(), i.e. a dict.
+        """
+        balance = {}
+        state = self.depositstate_set.last()
+        if not state or state.closed:
+            # Create new checkout.
+            co = DepositState(deposit=self, created=datetime.datetime.now())
+            co.save()
+            quantities = [it.nb for it in self.depositstate_set.all()]
+            co.add_copies(self.copies.all(), quantities=quantities)
+            return co.balance()
+
+        return state.balance()
+
 
 class SoldCards(models.Model):
 
