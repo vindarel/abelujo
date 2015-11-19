@@ -67,7 +67,7 @@ urlpatterns = patterns('',
         name="deposits_create"),
     url(r'^deposits/(?P<pk>\d+)/checkout', 'search.views.deposits_checkout',
         name="deposit_checkout"),
-    url(r'^deposits/(\d)', 'search.views.deposits_view',
+    url(r'^deposits/(\d+)', 'search.views.deposits_view',
         name="deposits_view"),
 
     url(r'^commands/', 'search.views.basket_auto_command',
