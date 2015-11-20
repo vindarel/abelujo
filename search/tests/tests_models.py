@@ -26,6 +26,7 @@ import datetime
 
 from django.contrib import messages
 from django.test import TestCase
+from django.utils import timezone
 
 import factory
 from factory.django import DjangoModelFactory

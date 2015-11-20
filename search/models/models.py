@@ -27,6 +27,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from search.models import history
 from search.models.common import DATE_FORMAT
@@ -1590,7 +1591,7 @@ class Deposit(TimeStampedModel):
             sells = Sell.search(card_id=card.id, date_min=last_checkout_date).all()
             sold_cards.append({"card": card, "sells": sells})
 
-        checkout = DepositState(deposit=self, created=datetime.datetime.now())
+        checkout = DepositState(deposit=self, created=timezone.now())
         checkout.save()
         quantities = [it.nb for it in self.depositcopies_set.all()]
         status, msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
@@ -1697,7 +1698,7 @@ class Sell(models.Model):
         try:
             sells = Sell.objects.filter(copies__id=card_id)
             if date_min:
-                # dates must be datetime.datetime.now() for precision.
+                # dates must be timezone.now() for precision.
                 sells = sells.filter(created__gt=date_min)
         except Exception as e:
             log.error("search for sells of card id {}: ".format(card_id), e)
@@ -1765,7 +1766,7 @@ class Sell(models.Model):
             return sell, status, alerts
 
         if not date:
-            date = datetime.datetime.now()
+            date = timezone.now()
 
         for it in ids_prices_nb:
             # "sell" a card.

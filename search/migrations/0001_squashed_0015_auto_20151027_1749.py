@@ -2,8 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import datetime
-
+from django.utils import timezone
 
 class Migration(migrations.Migration):
 
@@ -459,8 +458,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('card', models.ForeignKey(to='search.Card')),
                 ('entry', models.ForeignKey(to='search.Entry')),
-                ('created', models.DateTimeField(default=datetime.date(2015, 10, 1), auto_now_add=True)),
-                ('modified', models.DateTimeField(default=datetime.date(2015, 10, 1), auto_now=True)),
+                ('created', models.DateTimeField(default=timezone.now(), auto_now_add=True)),
+                ('modified', models.DateTimeField(default=timezone.now(), auto_now=True)),
                 ('price_init', models.FloatField(null=True, blank=True)),
             ],
             options={
