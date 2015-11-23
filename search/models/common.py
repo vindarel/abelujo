@@ -21,7 +21,7 @@ Avoid circular imports.
 """
 from django.db import models
 
-DATE_FORMAT = "%Y-%m-%d"
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 CHAR_LENGTH = 200
 

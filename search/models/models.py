@@ -21,6 +21,8 @@ import operator
 from datetime import date
 from textwrap import dedent
 
+import pytz
+
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -1149,13 +1151,15 @@ class DepositState(models.Model):
 
     deposit = models.ForeignKey("Deposit")
     # "created" could be inherited with TimeStampedModel but we want
-    # it to be more precise (datetime.datetime.now())
+    # it to be more precise (timezone.now())
     created = models.DateTimeField(blank=True, null=True)
     copies = models.ManyToManyField(Card, through="DepositStateCopies", blank=True, null=True)
-    closed = models.DateField(default=None, blank=True, null=True)
+    closed = models.DateTimeField(blank=True, null=True)
+    # closed = models.DateField(default=None, blank=True, null=True)
 
     def __unicode__(self):
-        ret = u"deposit '{}' with {} copies. Closed ? {}".format(self.deposit, self.copies.count(), self.closed)
+        ret = u"{}, deposit '{}' with {} copies. Closed ? {}".format(
+            self.id, self.deposit, self.copies.count(), self.closed)
         return ret
 
     @property
@@ -1296,7 +1300,8 @@ class DepositState(models.Model):
         return: a tuple status / list of messages (str).
         """
         if not self.ambiguous:
-            self.closed = datetime.datetime.now()
+            self.closed = timezone.now()
+            # self.closed = datetime.datetime.now()
             self.save()
             return True, []
         else:
@@ -1767,6 +1772,10 @@ class Sell(models.Model):
 
         if not date:
             date = timezone.now()
+        else:
+            # create a timezone aware date
+            date = datetime.datetime.strptime(date, DATE_FORMAT)
+            date = pytz.utc.localize(date, pytz.UTC)
 
         for it in ids_prices_nb:
             # "sell" a card.
