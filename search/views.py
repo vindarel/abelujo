@@ -872,7 +872,20 @@ def deposits_view(request, pk):
 def deposits_checkout(request, pk):
     """
     """
-    pass
+    template = "search/deposits_view.jade"
+    deposit = Deposit.objects.get(pk=pk)
+    msgs = []
+    try:
+        status, msgs = deposit.checkout_close()
+        for msg in msgs:
+            messages.add_message(request, messages.INFO, msg)
+    except Exception as e:
+        log.error("Error while closing deposing state: {}".format(e))
+        messages.add_message(request, messages.ERROR,
+                             _(u"Woops, there was an error :S we can't close this deposit state."))
+        return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
+
+    return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
 
 @login_required
 def basket_auto_command(request):

@@ -65,7 +65,7 @@ table.table.table-striped.table-hover
         td  {{ bal.nb_sells }}
         td  {{ bal.nb_current }}
 
-{% trans "Record deposit state" as deposit_state %}
+{% trans "Close deposit state" as deposit_state %}
 a(href='{% url "deposit_checkout" deposit.id %}').btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
 
 {% endblock content %}

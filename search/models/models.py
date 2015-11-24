@@ -1228,8 +1228,11 @@ class DepositState(models.Model):
                 depostate_copy, created = self.depositstatecopies_set.get_or_create(card=card)
                 if created:
                     depostate_copy.save()
-                depostate_copy.add_sells(sells)
-                depostate_copy.nb_current -= len(sells)
+                # Keep sells that are not already registered
+                ids = [it.id for it in depostate_copy.sells.all()]
+                to_add = filter(lambda it: it.id not in ids, sells)
+                depostate_copy.add_sells(to_add)
+                depostate_copy.nb_current -= len(to_add)
                 depostate_copy.nb_to_return = -1 #TODO: see DepositCopies due_date
                 depostate_copy.save()
 
@@ -1301,7 +1304,6 @@ class DepositState(models.Model):
         """
         if not self.ambiguous:
             self.closed = timezone.now()
-            # self.closed = datetime.datetime.now()
             self.save()
             return True, []
         else:
@@ -1322,8 +1324,34 @@ class DepositCopies(TimeStampedModel):
     threshold = models.IntegerField(blank=True, null=True, default=1)
 
 class Deposit(TimeStampedModel):
-    """Deposits. The bookshop received copies (from different cards) from
+    """Deposits. The bookshop received copies (of many cards) from
     a distributor but didn't pay them yet.
+
+    Implementation details
+    ---
+
+    When we create the deposit, we must remember the original quantity
+    of each card.
+
+    There are two important classes to work with: Deposit and
+    DepositState. Each take count of variables for each Card in
+    intermediate classes ("...Copies").
+
+    To create a Deposit:
+    - create the base object
+    - add copies to it with deposit.add_copies
+    - add sells with add_soldcards
+
+
+    Sometimes we want to see the actual state of the deposit: how many
+    cards did we sell, how many are there left, how much shall I pay
+    the distributor ? The DepositState tracks those information. After
+    an update(), we can call for a balance() (or directly
+    checkout_balance() from a deposit).
+
+    At a moment, we will freeze the deposit state. We can pay the
+    distributor and carry on using the deposit and seeing balances.
+
     """
     name = models.CharField(unique=True, max_length=CHAR_LENGTH)
     #: the distributor (or person) we have the copies from.
@@ -1552,10 +1580,10 @@ class Deposit(TimeStampedModel):
         deposit.
 
         return: a depositstate object.
+
         """
-        # TODO to test
         try:
-            last_checkout_obj = DepositState.objects.filter(deposit__name=self.name).order_by("created").last()
+            last_checkout_obj = self.depositstate_set.order_by("created").last()
         except ObjectDoesNotExist as e:
             log.error("Error looking for DepositState of {}: {}".format(self.name, e))
             return None
@@ -1612,17 +1640,23 @@ class Deposit(TimeStampedModel):
 
         return: depositstate.balance(), i.e. a dict.
         """
-        balance = {}
-        state = self.depositstate_set.last()
+        # state = self.depositstate_set.last()
+        state = self.last_checkout()
         if not state or state.closed:
-            # Create new checkout.
-            co = DepositState(deposit=self, created=datetime.datetime.now())
-            co.save()
-            quantities = [it.nb for it in self.depositstate_set.all()]
-            co.add_copies(self.copies.all(), quantities=quantities)
-            return co.balance()
+            state, _ = self.checkout_create()
 
         return state.balance()
+
+    def checkout_close(self):
+        """Close this state of the deposit (before to pay the
+        distributor).
+
+        The following checkouts will start from this date.
+        """
+        state = self.last_checkout()
+        closed, msg = state.close()
+        state.save()
+        return (closed, msg)
 
 
 class SoldCards(models.Model):
@@ -1750,6 +1784,7 @@ class Sell(models.Model):
         not to happen, to be checked before calling this method).
 
         - cards: can be used as a shortcut to write tests. Price and quantity will be default.
+        - date: a str (from javascript) which complies to the DATE_FORMAT.
 
         return: a 3-tuple (the Sell object, the global status, a list of messages).
 
@@ -1792,12 +1827,12 @@ class Sell(models.Model):
                 alert.add_deposits_of_card(card)
                 #TODO: ajouter les messages pour la UI
                 # msgs.append
-                log.info("Alert created for card {}".format(card.title))
+                log.info(u"Alert created for card {}".format(card.title))
 
             try:
                 Card.sell(id, quantity=quantity)
             except ObjectDoesNotExist:
-                msg = "Error: the card of id {} doesn't exist.".format(id)
+                msg = u"Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
                 alerts.append({"level": STATUS_ERROR, "message": msg})
                 status = STATUS_WARNING
@@ -1816,7 +1851,10 @@ class Sell(models.Model):
         for i, card in enumerate(cards_obj):
             price_sold = ids_prices_nb[i].get("price_sold", card.price)
             if not price_sold:
-                log.error(u"Error: the price_sold of card {} wasn't set and the card's price is None.".format(card.__unicode__()))
+                msg = u"We can not sell the card '{}' because the price_sold wasn't set and the card's price is None.".format(card.title)
+                log.error(msg)
+                alerts.append({"message": msg,
+                               "level": STATUS_WARNING,})
                 status = STATUS_WARNING
                 continue
             quantity = ids_prices_nb[i].get("quantity", 1)
@@ -1829,9 +1867,9 @@ class Sell(models.Model):
                                                  quantity=quantity)
                 sold.save()
             except Exception as e:
-                alerts.append({"message": _("Warning: we couldn't sell {}.".format(card.id)),
+                alerts.append({"message": _(u"Warning: we couldn't sell {}.".format(card.id)),
                               "level": STATUS_WARNING})
-                log.error(u"Error on adding the card {} to the sell {}: {}".format(card.__unicode__(),
+                log.error(u"Error on adding the card {} to the sell {}: {}".format(card.id,
                                                                                    sell.id,
                                                                                    e))
                 status = STATUS_ERROR
