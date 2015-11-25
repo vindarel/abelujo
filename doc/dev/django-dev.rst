@@ -121,3 +121,31 @@ To create a `.po` file for a new language, specify the `-l` (locale)::
 
 See also how to translate urls, to pluralize nouns, to give context to
 the translators, to manually get or set the language, etc.
+
+Working with dates and time
+---------------------------
+
+We have many models that store dates in fields like "created",
+"closed", etc. Be aware of the following.
+
+In almost all cases we want a ``DateTimeField`` instead of only a
+``DateField``, because the time (hour, minute, seconds) is important
+too.
+
+Our app needs to be aware of the timezone (in the settings, it is set
+to `UTC`). So to instantiate a datetime in python, don't use python's
+``datetime.datetime`` but django's ``timezone`` instead::
+
+    from django.utils import timezone
+    my_datetime = timezone.now()
+
+Don't forget, the client also needs to set its datetimes to UTC (when
+using a date picker for instance), or back to local time. In
+Angularjs, we can use the date filter.
+
+.. note:: More information:
+
+          - https://docs.djangoproject.com/en/1.7/topics/i18n/timezones/
+          - https://docs.python.org/2/library/datetime.html
+          - https://code.angularjs.org/1.3.19/docs/api/ng/filter/date
+          - and grep the code
