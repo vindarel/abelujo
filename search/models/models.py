@@ -1083,14 +1083,14 @@ class DepositStateCopies(models.Model):
     deposit_state = models.ForeignKey("DepositState")
     sells = models.ManyToManyField("Sell")
     #: the current quantity of the card (at the date of the deposit state).
-    nb_current = models.IntegerField(default=1)
+    nb_current = models.IntegerField(default=0)
     #: number of wanted copies.
     # nb_wanted = models.IntegerField(default=1)
     #: quantity to command to the distributor.
     # nb_to_command = models.IntegerField(default=1)
     #: quantity to return. (beware, some distributors ask a card not
     # to stay longer than a certain time in a deposit)
-    nb_to_return = models.IntegerField(default=1)
+    nb_to_return = models.IntegerField(default=0)
 
     def __unicode__(self):
         return u"card {}, initial: {}, current: {}, sells: {}, etc".format(
@@ -1290,6 +1290,8 @@ class DepositState(models.Model):
 
     def update(self):
         """Update the cards associated and their corresponding sells.
+
+        return: self, the updated DepositState object
         """
         sold_cards = []
         for card in self.deposit.copies.all():
@@ -1297,6 +1299,7 @@ class DepositState(models.Model):
             sold_cards.append({"card": card, "sells": sells})
 
         self.add_soldcards(sold_cards)
+        return self
 
     def close(self):
         """
@@ -1319,9 +1322,14 @@ class DepositCopies(TimeStampedModel):
     card = models.ForeignKey(Card)
     deposit = models.ForeignKey("Deposit")
     #: Number of copies now present in the stock.
-    nb = models.IntegerField(default=1)
+    nb = models.IntegerField(default=0)
     #: Minimum of copies we want to have.
     threshold = models.IntegerField(blank=True, null=True, default=1)
+
+    def __unicode__(self):
+        return u"card {}, deposit {}, nb {}".format(self.card.id,
+                                                    self.deposit.id,
+                                                    self.nb)
 
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (of many cards) from
@@ -1612,21 +1620,27 @@ class Deposit(TimeStampedModel):
             Please close it before opening a new one.")]
 
         last_checkout = self.last_checkout()
-        if last_checkout:
-            last_checkout_date = last_checkout.created
-        else:
-            last_checkout_date = self.created
 
         sold_cards = [] # list of dict card, list of sell objects
         # Register the cards associated with the deposit at that time
         # and their corresponding sells.
+        now = timezone.now()
+        checkout = DepositState(deposit=self, created=now)
+        checkout.save()
         for card in self.copies.all():
-            sells = Sell.search(card_id=card.id, date_min=last_checkout_date).all()
+            sells = Sell.search(card_id=card.id, date_min=now).all() # few chances we sell cards between now() and now
             sold_cards.append({"card": card, "sells": sells})
 
-        checkout = DepositState(deposit=self, created=timezone.now())
-        checkout.save()
-        quantities = [it.nb for it in self.depositcopies_set.all()]
+        quantities = []
+        if last_checkout:
+            # Get the previous quantities of the cards.
+            balance = last_checkout.balance()
+            for card_tuple in balance['cards']:
+                # card_obj = card_tuple[0]
+                depostate_copy = card_tuple[1]
+                nb_current = depostate_copy.nb_current
+                quantities.append(nb_current)
+
         status, msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
         if sold_cards:
             checkout.add_soldcards(sold_cards)
@@ -1640,7 +1654,6 @@ class Deposit(TimeStampedModel):
 
         return: depositstate.balance(), i.e. a dict.
         """
-        # state = self.depositstate_set.last()
         state = self.last_checkout()
         if not state or state.closed:
             state, _ = self.checkout_create()
