@@ -147,7 +147,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
         var params = {
             "to_sell": [ids, prices, quantities],
-            "date": $scope.date.toString($scope.format)
+            "date": $filter('date')($scope.date, $scope.format, 'UTC')
+                .toString($scope.format)
         };
 
           // This is needed for Django to process the params to its
