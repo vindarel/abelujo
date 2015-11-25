@@ -1192,6 +1192,7 @@ class DepositState(models.Model):
         return: (status, msgs)
 
         """
+        # note: use this method only at the beginning, then use add_soldcard
         msgs = []
         status = True
         try:
@@ -1214,7 +1215,8 @@ class DepositState(models.Model):
         """Add cards to this deposit state.
         Updates the sells if the card is already registered.
 
-        - cards_sells: list of dict: "card": card object, "sells": list of Sell objects of this card.
+        - card_sells: list of dicts to associate a card to a list of sells:
+            "card": card object, "sells": list of Sell objects of this card.
         """
         if self.closed:
             log.debug("This deposit state is closed.")
@@ -1613,8 +1615,8 @@ class Deposit(TimeStampedModel):
             return None, [_("this deposit has no cards. Impossible to do a checkout.")]
 
         msgs = []
-        existing = DepositState.existing(self)
-        if existing and not existing.closed:
+        cur_depostate = DepositState.existing(self)
+        if cur_depostate and not cur_depostate.closed:
             log.debug("a depositState already exists and is not closed.")
             return None, [_("Hey oh, a deposit state for this deposit already exists. \
             Please close it before opening a new one.")]
@@ -1640,6 +1642,11 @@ class Deposit(TimeStampedModel):
                 depostate_copy = card_tuple[1]
                 nb_current = depostate_copy.nb_current
                 quantities.append(nb_current)
+        else:
+            # Initialize the checkout with the initial values.
+            dep_copies = self.depositcopies_set.all()
+            for it in dep_copies:
+                quantities.append(it.nb)
 
         status, msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
         if sold_cards:
@@ -1680,7 +1687,7 @@ class SoldCards(models.Model):
     card = models.ForeignKey(Card)
     sell = models.ForeignKey("Sell")
     #: Number of this card sold:
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField(default=0)
     #: Initial price
     price_init = models.FloatField(default=DEFAULT_PRICE)
     #: Price sold:
@@ -1754,6 +1761,7 @@ class Sell(models.Model):
                 sells = sells.filter(created__gt=date_min)
         except Exception as e:
             log.error("search for sells of card id {}: ".format(card_id), e)
+            return sells
 
         return sells.all()
 
@@ -1797,7 +1805,8 @@ class Sell(models.Model):
         not to happen, to be checked before calling this method).
 
         - cards: can be used as a shortcut to write tests. Price and quantity will be default.
-        - date: a str (from javascript) which complies to the DATE_FORMAT.
+        - date: a str (from javascript) which complies to the DATE_FORMAT,
+          or a timezone.datetime object.
 
         return: a 3-tuple (the Sell object, the global status, a list of messages).
 
@@ -1822,8 +1831,9 @@ class Sell(models.Model):
             date = timezone.now()
         else:
             # create a timezone aware date
-            date = datetime.datetime.strptime(date, DATE_FORMAT)
-            date = pytz.utc.localize(date, pytz.UTC)
+            if type(date) == type('str'):
+                date = datetime.datetime.strptime(date, DATE_FORMAT)
+                date = pytz.utc.localize(date, pytz.UTC)
 
         for it in ids_prices_nb:
             # "sell" a card.
