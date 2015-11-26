@@ -820,11 +820,15 @@ class Card(TimeStampedModel):
         return self.deposit_set.count() > 0
 
     def quantity_deposits(self):
-        #TODO: sum()
-        return reduce(operator.add, [it.nb for it in self.depositcopies_set.all()], 0)
+        """Only the original quantity. Use a deposit.balance() for the
+        accureta number.
+
+        """
+        # XXX not accurate. Dig in depositstates' nb_current
+        return sum([it.nb for it in self.depositcopies_set.all()])
 
     def ambiguous_sell(self):
-        in_deposits = self.quantity_deposits()
+        in_deposits = self.quantity_deposits() # XXX not accurate TODO:
         log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
         return self.is_in_deposits() and (in_deposits > 0) and (self.quantity > in_deposits)
 
@@ -1133,6 +1137,7 @@ class DepositStateCopies(models.Model):
             except Exception as e:
                 log.error("adding sells to {}: ".format(self.id), e)
 
+
 class DepositState(models.Model):
     """Deposit states. We do a deposit state to know what cards have been
     sold since the last deposit state, so what sum do we need to pay to
@@ -1186,7 +1191,7 @@ class DepositState(models.Model):
     def add_copies(self, copies, nb=1, quantities=[]):
         """Add the given list of copies objects to this deposit state.
 
-        - copies: list of Card objects.
+        - copies: list of Card objects, or ids
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
 
         return: (status, msgs)
@@ -1201,8 +1206,14 @@ class DepositState(models.Model):
                     qty = quantities[i]
                 else:
                     qty = nb
-                depositstate_copy = self.depositstatecopies_set.create(card=copy, nb_current=qty)
+
+                if type(copy) == type('str'):
+                    copy = Card.objects.get(id=copy)
+
+                depositstate_copy, created = self.depositstatecopies_set.get_or_create(card=copy)
+                depositstate_copy.nb_current += qty
                 depositstate_copy.save()
+
             return status, msgs
 
         except Exception as e:
@@ -1469,7 +1480,7 @@ class Deposit(TimeStampedModel):
         """Add the given list of copies objects to this deposit (if their
         distributor matches).
 
-        - copies: list of Card objects.
+        - copies: list of Card objects or ids.
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
 
         return: []
@@ -1478,13 +1489,23 @@ class Deposit(TimeStampedModel):
         msgs = []
         try:
             for (i, copy) in enumerate(copies):
+                if type(copy) == type('str'):
+                    copy = Card.objects.get(id=copy)
+
                 if copy.distributor and (copy.distributor.name == self.distributor.name):
                     if len(quantities) == len(copies):
                         qty = quantities[i]
                     else:
                         qty = nb
-                    deposit_copy = self.depositcopies_set.create(card=copy, nb=qty)
-                    deposit_copy.save()
+                    deposit_copy, created = self.depositcopies_set.get_or_create(card=copy)
+                    if created:
+                        deposit_copy.nb = qty
+                        deposit_copy.save()
+                    else:
+                        # Update the ongoing checkout
+                        checkout = self.checkout_current()
+                        checkout.add_copies(copies, quantities=quantities)
+
                 else:
                     log.error(dedent(u"""Error: the distributor names do not match.
                     We should have filtered the copies before."""))
@@ -1584,6 +1605,16 @@ class Deposit(TimeStampedModel):
         except ObjectDoesNotExist as e:
             log.error("Error looking for alerts of deposit {}: {}".format(self.name, e))
         return alerts_found
+
+    def checkout_current(self):
+        """
+        return: a DepositState object.
+        """
+        checkout = self.last_checkout()
+        if not checkout:
+            checkout, msgs = self.checkout_create()
+
+        return checkout
 
     def last_checkout(self):
         """Return the last checkout at which we did the last checkout of this

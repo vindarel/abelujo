@@ -171,6 +171,22 @@ class DepositForm(forms.ModelForm):
         fields = "__all__"
         # exclude = ["copies",]
 
+class DepositAddCopiesForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        pk = kwargs.pop('pk')
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+        # Build fields depending on the deposit existing cards.
+        dep = Deposit.objects.get(id=pk)
+        cards = dep.copies.all()
+        for card in cards:
+            self.fields[str(card.id)] = forms.IntegerField(widget=MyNumberInput(
+                attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
+                       'step':1, 'value': 0,
+                       'style': 'width: 70px'}),
+                                                           label=card.title)
+
+
 def get_deposits_choices():
     choices = [(depo.name, depo.name) for depo in Deposit.objects.all()]
     return choices
@@ -886,6 +902,36 @@ def deposits_checkout(request, pk):
         return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
 
     return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
+
+@login_required
+def deposit_delete(request, pk):
+    """
+    """
+    pass
+
+@login_required
+def deposit_add_copies(request, pk):
+    """Add copies to this deposit. (only ones that already exist)
+    """
+    template = "search/deposit_add_copies.jade"
+    form = DepositAddCopiesForm(pk=pk)
+    if request.method == "GET":
+        pass
+
+    if request.method == "POST":
+        form = DepositAddCopiesForm(request.POST, pk=pk)
+        if form.is_valid():
+            data = form.cleaned_data
+            dep = Deposit.objects.get(id=pk)
+            for id, qty in data.iteritems():
+                dep.add_copies([id], quantities=[qty])
+
+            return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
+
+    return render(request, template, {
+        "form": form,
+        "pk": pk,
+        })
 
 @login_required
 def basket_auto_command(request):

@@ -65,7 +65,13 @@ table.table.table-striped.table-hover
         td  {{ bal.nb_sells }}
         td  {{ bal.nb_current }}
 
-{% trans "Close deposit state" as deposit_state %}
+{% trans "Save this deposit state" as deposit_state %}
 a(href='{% url "deposit_checkout" deposit.id %}').btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
+
+{% trans "Add copies…" as deposit_add %}
+a(href='{% url "deposit_add_copies" deposit.id %}').btn.btn-default(title="{{ deposit_add }}", value="{{ deposit_add }}", type="submit") {{ deposit_add }}
+
+//- {% trans "Delete this deposit" as deposit_delete %}
+//- a(href="{% url 'deposit_delete' deposit.id %}").btn.btn-danger(title="{{ deposit_delete }}", value="{{ deposit_delete }}", type="submit", on-click="alert('not implemented!');") {{ deposit_delete }}
 
 {% endblock content %}

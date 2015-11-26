@@ -403,10 +403,11 @@ class TestDeposits(TestCase):
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
         self.assertEqual(3, self.card.quantity_deposits())
         self.deposit.add_copies([self.card])
-        self.assertEqual(4, self.card.quantity_deposits())
+        balance = self.deposit.checkout_balance()
         # Bad length of 'quantities', will add 1 by default.
         self.deposit.add_copies([self.card], quantities=[10,11,12])
-        self.assertEqual(5, self.card.quantity_deposits())
+        balance = self.deposit.checkout_balance()
+        self.assertEqual(5, balance['cards'][0][1].nb_current)
 
     def test_one_depo_per_card(self):
         self.card.distributor = self.distributor
