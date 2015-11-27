@@ -1391,10 +1391,6 @@ class Deposit(TimeStampedModel):
     dest_place = models.ForeignKey(Place, blank=True, null=True)
     #: due date for payment (optional)
     due_date = models.DateField(blank=True, null=True)
-    #: initial number of all cards for that deposit (create another deposit if you need it).
-    initial_nb_copies = models.IntegerField(blank=True, null=True, default=0,
-                                            verbose_name="Nombre initial d'exemplaires pour ce dépôt:")
-
     #: minimal number of copies to have in stock. When not, do an action (raise an alert).
     minimal_nb_copies = models.IntegerField(blank=True, null=True, default=0,
                                         verbose_name="Nombre minimun d'exemplaires")

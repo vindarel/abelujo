@@ -40,7 +40,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
     $scope.deposit_type = $scope.deposit_types[0];
     $scope.deposit_name = undefined;
-    $scope.initial_nb_copies = 1;
     $scope.minimal_nb_copies = 1;
     $scope.auto_command = undefined;
 
@@ -113,7 +112,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             "cards_id"          : cards_id,
             "cards_qty"         : cards_qty,
             "deposit_type"      : $scope.deposit_type.type, //xxx: use sthg else than the name
-            "initial_nb_copies" : $scope.initial_nb_copies,
             "minimal_nb_copies" : $scope.minimal_nb_copies,
             "auto_command"      : $scope.auto_command,
             "dest_place"        : $scope.dest_place.id,

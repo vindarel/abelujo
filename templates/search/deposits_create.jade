@@ -59,11 +59,9 @@ div(ng-controller="DepositCreateController")
                 button.btn.btn-default(type='button', ng-click='open($event)')
                   i.glyphicon.glyphicon-calendar
 
-        b: div {% trans "Inital quantity" %}
-        input.form-control(type="number", ng-model="initial_nb_copies")
-
         b: div {% trans "Minimum wanted quantity" %}
-        input.form-control(type="number", ng-model="minimal_nb_copies")
+        input.form-control(type="number", ng-model="minimal_nb_copies",
+          title='{% trans "This number can also be specified card-wise" %}')
         div.form-group
           div.checkbox
               input(type="checkbox", ng-model="auto_command")

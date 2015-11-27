@@ -241,7 +241,6 @@ def deposits(request, **response_kwargs):
                 "copies"            : cards_obj,
                 "quantities"        : cards_qty,
                 "deposit_type"      : params.get("deposit_type"),
-                "initial_nb_copies" : params.get("initial_nb_copies"),
                 "minimal_nb_copies" : params.get("minimal_nb_copies"),
                 "auto_command"      : params.get("auto_command"),
                 "due_date"          : params.get("due_date"),
