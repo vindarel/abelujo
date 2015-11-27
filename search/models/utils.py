@@ -17,7 +17,7 @@
 
 import addict
 
-from models import getHistory
+# from models import getHistory # don't import model here-> circular
 from tabulate import tabulate
 
 MAX_CELL=30
@@ -113,9 +113,23 @@ def ppcard(cards):
     tab += "\n\ntotal: {} titles, {} exemplaries.".format(tablength, total)
     return tab
 
-def hist():
-    """Print a recent history.
+# def hist():
+#     """Print a recent history.
+#     """
+#     hist, status, alerts = getHistory(sells_only=True)
+#     print "Sells:"
+#     print hist
+
+def is_isbn(it):
+    """Return True is the given string is an ean or an isbn, i.e:
+
+    - type: str
+    - length of 13 or _
     """
-    hist, status, alerts = getHistory(sells_only=True)
-    print "Sells:"
-    print hist
+    ISBN_ALLOWED_LENGTHS = [13]
+    res = False
+    if (type(it) == type(u'u') or type(it) == type('str'))and \
+       len(it) in ISBN_ALLOWED_LENGTHS:
+        res = True
+
+    return res

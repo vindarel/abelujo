@@ -432,22 +432,31 @@ class Card(TimeStampedModel):
     @staticmethod
     def search(words, card_type_id=None, distributor=None, to_list=False,
                publisher_id=None, place_id=None, category_id=None):
-        """Search a card on its title and its authors' names.
+        """Search a card (by title, authors' names, ean/isbn).
 
         SIZE_LIMIT = 100
 
-        words: (list of strings) a list of key words
+        - words: (list of strings) a list of key words or eans/isbns
 
-        card_type_id: id referencing to CardType
+        - card_type_id: id referencing to CardType
 
-        to_list: if True, we return a list of dicts, not Card
-        objects. Used to store the search result into the session,
-        which doesn't know how to store Card objects.
+        - to_list: if True, we return a list of dicts, not Card
+          objects. Used to store the search result into the session,
+          which doesn't know how to store Card objects.
 
         returns: a list of objects or a list of dicts if to_list is
         specified.
         """
         SIZE_LIMIT = 100 #TODO: pagination
+        isbns = []
+        # Get all isbns, eans.
+        if words:
+            isbns = filter(is_isbn, words)
+
+        # Get a clean list of search keywords.
+        words = list(set(words) - set(isbns))
+
+        cards = []
         if words:
             # Doesn't pass data validation of the view.
             head = words[0]
@@ -457,7 +466,8 @@ class Card(TimeStampedModel):
                 for elt in words[1:]:
                     cards = cards.filter(Q(title__icontains=elt)|
                                          Q(authors__name__icontains=elt))
-        else:
+
+        elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
 
         if cards and category_id:
@@ -484,6 +494,16 @@ class Card(TimeStampedModel):
                 cards = cards.filter(publishers=pub)
             except Exception as e:
                 log.error("we won't search for a publisher that doesn't exist: {}".format(e))
+
+        # Search for the requested ean(s).
+        if isbns:
+            for isbn in isbns:
+                try:
+                    card = Card.objects.get(ean=isbn)
+                    cards.append(card)
+                except Exception as e:
+                    log.error("Error searching for isbn {}: {}".format(isbn, e))
+                    # XXX we can return messages !
 
         if to_list:
             cards = Card.obj_to_list(cards)

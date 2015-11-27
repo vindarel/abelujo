@@ -652,6 +652,8 @@ def card_move(request, pk=None):
 @login_required
 def collection(request):
     """Search our own collection and take actions.
+
+    - return: a list (of card dicts)
     """
     form = CollectionSearchForm()
     retlist = []
@@ -662,9 +664,7 @@ def collection(request):
         if form.is_valid():
             if request.POST.has_key("ean") and \
                form.cleaned_data.get("ean"):
-                messages.add_message(request, messages.INFO,
-                                     _(u"The search by ean isn't implemented yet."))
-                log.debug("TODO: search on ean")
+                cards = Card.search([form.cleaned_data.get('ean')], to_list=True)
 
             else:
                 card_type_id = form.cleaned_data.get("card_type")
