@@ -85,7 +85,6 @@ div(ng-controller="DepositCreateController")
         i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
 
   .row
-    div {% verbatim %} {{ cards_selected }} {% endverbatim %}
     div.list-group.ng-cloak(ng-show="cards_selected", ng-repeat="card in cards_selected ")
      .col-lg-9
           div {% verbatim %} {{card.repr}} {% endverbatim %}
