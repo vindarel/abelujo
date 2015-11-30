@@ -54,6 +54,7 @@ from models import Place
 from models import Preferences
 from models import Publisher
 from models import Sell
+from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
 from search.models.utils import ppcard
@@ -984,3 +985,12 @@ def inventory_delete(request, pk):
                 log.error(e)
 
     return HttpResponseRedirect(reverse("inventories"))
+
+@login_required
+def dashboard(request):
+    template = "search/dashboard.jade"
+    stats = Stats()
+    stock = stats.stock()
+    return render(request, template, {
+        "stats_stock": stock,
+        })

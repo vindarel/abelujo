@@ -278,6 +278,9 @@ class Card(TimeStampedModel):
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
     # quantity: a property, accessible like a field. The sum of quantities in each place.
+    # XXX: we need to get the current quantity (for stats by instance).
+    # Save it in DB using django signals or custom save() instead of
+    # calculating it with a property.
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
     year_published = models.DateField(blank=True, null=True)
@@ -2131,3 +2134,59 @@ class Inventory(TimeStampedModel):
                 return None
 
         return (status, msgs)
+
+class Stats(object):
+
+    def stock(self):
+        """Simple figures about our stock:
+        - how many cards
+        - how many exemplaries
+        - cost of the stock
+        - idem for stock in deposits
+
+        return:
+        """
+        type_book = CardType.objects.get(name="book")
+        type_unknown = CardType.objects.get(name="unknown")
+        res = {}
+        res['nb_cards'] = {'label': _("total nb of cards"),
+                           'value': Card.objects.count()}
+        res['nb_books'] = {'label': _("nb of books"),
+                           'value': Card.objects.filter(card_type=type_book).count()}
+        res['nb_unknown'] = {'label': _("cards of unknown type"),
+                             'value': Card.objects.filter(card_type=type_unknown).count()}
+        # the ones we bought
+        # impossible atm
+        res['nb_bought'] = {'label': _("nb of cards we bought and their cost"),
+                            'value': "<soon>"}
+
+        # Stock of deposits
+        in_deposits = 0
+        deposits_cost = 0.0
+        for dep in Deposit.objects.all():
+            balance = dep.checkout_balance()
+            for card_tuple in balance['cards']:
+                deposits_cost += card_tuple[0].price
+                nb_current = card_tuple[1].nb_current
+                if nb_current > 0:
+                    in_deposits += nb_current
+
+        res['in_deposits'] = {'label': _("nb of cards in deposits"),
+                              'value': in_deposits}
+        # xxx: percentage cards we bought / in deposit / in both
+
+        # Cost
+        res['deposits_cost'] = {'label': _("cost of the deposits"),
+                                'value': deposits_cost}
+        # XXX: long query ! See comments for Card.quantity
+        res['total_cost'] = {'label': _("total cost"),
+                             'value': sum([it.price * it.quantity for it in Card.objects.all()])}
+
+        # Next appointments
+        # xxx: transform to strings and associate with the deposit.
+        # dates = [it.due_date for it in Deposit.objects.order_by("due_date").all()]
+        res['next_deposits_dates'] = {'label': _('next appointments'),
+                                      # 'value': dates}
+                                      'value': "<soon>"}
+
+        return res

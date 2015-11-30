@@ -31,7 +31,8 @@ urlpatterns = patterns('',
     # Access to the translations in javascript code:
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict,),
 
-    url(r'^$', RedirectView.as_view(url='search/')),
+    # url(r'^$', RedirectView.as_view(url='search/')),
+    url(r'^$', 'search.views.dashboard', name="dashboard"),
     url(r'^search/$', 'search.views.index', name="card_index"),
     url(r'^search$', 'search.views.search', name="card_search"),
     url(r'^search', 'search.views.search'),
