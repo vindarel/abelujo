@@ -30,5 +30,18 @@ for key, it in stats_stock.iteritems
     span  {{ it.value }}
 
 div beautiful graphs… soon !
+div(ng-controller="dashboardController")
+  .row
+    .col-lg-6
+      h3 awesome graph on the right
+    .col-lg-6
+      div(id="chart")
+
+  .row
+    .col-lg-6
+      div(id="chart2")
+    .col-lg-6
+      h3 another graph on the left
+
 
 {% endblock content %}
