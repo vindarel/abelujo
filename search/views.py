@@ -88,7 +88,7 @@ class SearchForm(forms.Form):
                         label=_("Key words"),
                         help_text=_("Part of title, of author's name, etc."),
                     )
-    ean = forms.CharField(required=False)
+    # ean = forms.CharField(required=False)
 
 def get_card_type_choices():
     return [(0, _(u"All cards"))] + [(typ.id, typ.name)
