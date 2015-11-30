@@ -13,7 +13,8 @@
         "jquery"   : "~1.9",
         "underscore": "latest",
         "prelude-ls": "1.1.2",
-        "datejs": "latest"
+        "datejs": "latest",
+        "c3": "latest"
     },
 
     "description": "abelujo",
