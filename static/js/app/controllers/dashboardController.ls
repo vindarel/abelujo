@@ -1,32 +1,33 @@
-angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
-    # utils: in services.js
-
-    # set the xsrf token via cookies.
-    # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', '$timeout', ($http, $scope, $timeout) !->
 
     {sum, map, filter, lines} = require 'prelude-ls'
 
+    $scope.stats = undefined
+
+    $http.get "/api/stats/"
+    .then (response) ->
+        response.data.data
+        $scope.stats = response.data
+
+        chart = c3.generate do
+            bindto: \#chart
+            data: do
+                type: "pie"
+                columns: [
+                    [$scope.stats.nb_books.label, $scope.stats.nb_books.value]
+                    [$scope.stats.nb_unknown.label, $scope.stats.nb_unknown.value]
+                ]
 
 
-    chart = c3.generate do
-        bindto: \#chart
-        data: do
-            type: "pie"
-            columns: [
-                ['data1', 10]
-                ['data2', 40]
-            ]
-
-
-    chart2 = c3.generate do
-        bindto: \#chart2
-        data: do
-            type: "pie"
-            columns: [
-                ['data1', 223]
-                ['data2', 618]
-            ]
-        color: do
-             pattern: ['#0000cd', '#ffd700']
+        chart2 = c3.generate do
+            bindto: \#chart2
+            data: do
+                type: "pie"
+                columns: [
+                    [$scope.stats.total_cost.label, $scope.stats.total_cost.value]
+                    [$scope.stats.deposits_cost.label, $scope.stats.deposits_cost.value]
+                ]
+            color: do
+                pattern: ['#0000cd', '#ffd700']
 
 ]

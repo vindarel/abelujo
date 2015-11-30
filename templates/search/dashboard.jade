@@ -22,18 +22,16 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-h3 {% trans "Simple stats" %}
+h3 {% trans "Abelujo's dashboard" %}
+div (We'll add more stats soon)
 
-for key, it in stats_stock.iteritems
-  div
-    b {{ it.label }}: 
-    span  {{ it.value }}
-
-div beautiful graphs… soon !
 div(ng-controller="dashboardController")
   .row
     .col-lg-6
-      h3 awesome graph on the right
+      h3 {% trans "Composition of the stock" %}
+      div(ng-show="stats")
+        div {% verbatim %} {{stats.nb_cards.label}}: {{stats.nb_cards.value}} {% endverbatim %}
+        div {% verbatim %} {{ stats.nb_books.label}}: {{stats.nb_books.value }} {% endverbatim %}
     .col-lg-6
       div(id="chart")
 
@@ -41,7 +39,7 @@ div(ng-controller="dashboardController")
     .col-lg-6
       div(id="chart2")
     .col-lg-6
-      h3 another graph on the left
+      h3 {% trans "Cost of the stock VS deposits" %}
 
 
 {% endblock content %}

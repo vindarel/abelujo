@@ -22,6 +22,7 @@ from models import Inventory
 from models import Place
 from models import Publisher
 from models import Sell
+from models import Stats
 from models import getHistory
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
@@ -477,3 +478,12 @@ def inventories_update(request, **kwargs):
                 to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
 
     return HttpResponse(json.dumps(to_ret), **kwargs)
+
+def stats(request, **kwargs):
+    """Return stats about the stock.
+    """
+    stats = Stats()
+    stock = stats.stock()
+    kwargs["content_type"] = "application/json"
+
+    return HttpResponse(stock, **kwargs)

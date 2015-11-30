@@ -16,6 +16,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import json
 import logging
 import operator
 from datetime import date
@@ -2137,7 +2138,7 @@ class Inventory(TimeStampedModel):
 
 class Stats(object):
 
-    def stock(self):
+    def stock(self, to_json=True):
         """Simple figures about our stock:
         - how many cards
         - how many exemplaries
@@ -2188,5 +2189,8 @@ class Stats(object):
         res['next_deposits_dates'] = {'label': _('next appointments'),
                                       # 'value': dates}
                                       'value': "<soon>"}
+
+        if to_json:
+            res = json.dumps(res)
 
         return res

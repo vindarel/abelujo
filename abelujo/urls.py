@@ -61,6 +61,8 @@ apipatterns = patterns("",
     url(r'^api/inventories/(?P<pk>\d+)/update/', 'search.models.api.inventories_update', name="api_inventories_update"),
     url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
 
+    url(r'^api/stats/', 'search.models.api.stats', name='api_stats'),
+
     # Examples:
     # url(r'^$', 'abelujo.views.home', name='home'),
     # url(r'^abelujo/', include('abelujo.foo.urls')),
