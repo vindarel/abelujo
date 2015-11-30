@@ -35,6 +35,7 @@ from search.models import history
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
+from search.models.utils import is_isbn
 
 CHAR_LENGTH = 200
 PAGE_SIZE = 50
