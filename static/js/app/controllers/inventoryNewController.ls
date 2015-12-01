@@ -12,14 +12,24 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.copy_selected = undefined
     $scope.history = []
     # The cards "inventoried" of the current session: the ones
-    # displayed. They must be saved.
+    # displayed. They must be saved in DB.
     $scope.cards_selected = []
     # All the cards inventoried, even the ones we don't want to show anymore.
     $scope.all = []
+    # Boolean to show or hide all the cards (hide by default)
+    $scope.showAll = false
+
     $scope.tmpcard = undefined
     # A list of already selected cards' ids
     $scope.selected_ids = []
     existing_card = undefined
+
+    $scope.toggleShowAll = !->
+        " Show all the cards inventoried, or the current ones. "
+        if $scope.showAll
+            $scope.cards_to_show = $scope.all
+        else
+            $scope.cards_to_show = $scope.cards_selected
 
     # If we're on page /../inventories/XX/, get info of inventory XX.
     #XXX use angular routing
