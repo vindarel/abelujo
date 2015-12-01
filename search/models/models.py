@@ -278,10 +278,9 @@ class Card(TimeStampedModel):
     #: price_sold is only used to generate an angular form, it is not
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
-    # quantity: a property, accessible like a field. The sum of quantities in each place.
-    # XXX: we need to get the current quantity (for stats by instance).
-    # Save it in DB using django signals or custom save() instead of
-    # calculating it with a property.
+    #: The current quantity of this card in Places. It is equal to the sum of quantities in each place.
+    # It may seem redundant but it's needed for effective queries.
+    quantity = models.IntegerField(null=True, blank=True, default=0)
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
     year_published = models.DateField(blank=True, null=True)
@@ -341,8 +340,14 @@ class Card(TimeStampedModel):
         """
         return "; ".join([aut.name for aut in self.authors.all()])
 
-    @property
-    def quantity(self):
+    def quantity_compute(self):
+        """Return the quantity of this card in all places (not deposits).
+
+        Utility function, primarily used for a data migration. Use the
+        Card.quantity field to query the db.
+
+        return: int
+        """
         quantity = 0
         if self.placecopies_set.count():
             quantity = sum([pl.nb for pl in self.placecopies_set.all()])
@@ -961,8 +966,8 @@ class Place (models.Model):
             }
 
     def add_copy(self, card, nb=1):
-        """Adds the given number of copies (1 by default) of the given card to
-        this place.
+        """Adds the given number of copies (1 by default) of the given
+        card to this place.
 
         - card: a card object
         - nb: the number of copies to add (optional)
@@ -976,13 +981,22 @@ class Place (models.Model):
             place_copy.nb += nb
             place_copy.save()
 
-            # Add a log to the Entry history
-            history.Entry.new([card])
+            # Keep in sync the card's quantity field.
+            card.quantity += nb
+            card.save()
 
-            return place_copy.nb
         except Exception,e:
             log.error(u"Error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
+            return 0
+
+        # Add a log to the Entry history
+        try:
+            history.Entry.new([card])
+        except Exception as e:
+            log.error(u"Error while adding an Entry to the history for card {}:{}".format(card.id, e))
+
+        return place_copy.nb
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?
