@@ -109,11 +109,10 @@ class TestCards(TestCase):
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
         # create a Card
-        self.fixture_ean = "987"
+        self.fixture_isbn = "987"
         self.fixture_title = "living my life"
         self.autobio = Card(title=self.fixture_title,
-                            ean=self.fixture_ean,
-                            isbn=self.fixture_ean,
+                            isbn=self.fixture_isbn,
                             card_type=typ)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
@@ -153,7 +152,7 @@ class TestCards(TestCase):
     def test_exists(self):
         """Card.exists unit test.
         """
-        exists = Card.exists({'isbn': self.fixture_ean})
+        exists = Card.exists({'isbn': self.fixture_isbn})
         self.assertTrue(exists)
         doesnt_exist, msgs = Card.exists({"isbn": "whatever",
                                                "title":"a different title"})
@@ -189,7 +188,7 @@ class TestCards(TestCase):
     # def test_quantity_new(self):
     # TODO: put in test_move
     #     obj, msgs = Card.from_dict({"title": "New quantity test",
-    #                           "ean": "111",
+    #                           "isbn": "111",
     #                           "quantity": 2})
     #     self.assertEqual(2, obj.quantity)
 
@@ -260,7 +259,7 @@ class TestPublisher(TestCase):
 
     def setUp(self):
         # create a Card
-        self.autobio = Card(title="Living my Life", ean="987")
+        self.autobio = Card(title="Living my Life", isbn="987")
         self.autobio.save()
         # mandatory: unknown card type
         typ = CardType(name="unknown")
@@ -297,7 +296,7 @@ class TestCollection(TestCase):
 
     def setUp(self):
         # create a Card
-        self.autobio = Card(title="Living my Life", ean="987")
+        self.autobio = Card(title="Living my Life", isbn="987")
         self.autobio.save()
         # mandatory: unknown card type
         typ = CardType(name="unknown")

@@ -128,7 +128,7 @@ class Scraper(baseScraper):
         return date
 
     @catch_errors
-    def _ean(self, product):
+    def _isbn(self, product):
         pass
 
 def postSearch(card):
@@ -138,18 +138,17 @@ def postSearch(card):
         log.error("postSearch error: url is False ! ({}).".format(url))
         return None
 
-    to_ret = {"ean": None}
+    to_ret = {"isbn": None}
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
 
     try:
-        ean = soup.find(class_="book-header-2-subtitle-isbn").text
-        ean = ean.replace("ISBN", "").strip()
-        card["ean"] = ean
-        card["isbn"] = ean
-        log.debug("postSearch of {}: we got ean {}.".format(url, ean))
+        isbn = soup.find(class_="book-header-2-subtitle-isbn").text
+        isbn = isbn.replace("ISBN", "").strip()
+        card["isbn"] = isbn
+        log.debug("postSearch of {}: we got isbn {}.".format(url, isbn))
     except Exception as e:
-        log.debug("postSearch: error while getting the ean of {}: {}".format(url, e))
+        log.debug("postSearch: error while getting the isbn of {}: {}".format(url, e))
 
     return card
 

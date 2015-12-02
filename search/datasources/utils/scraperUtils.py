@@ -18,6 +18,8 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import string
+
 
 def priceFromText(text):
     """Extract the price from text with regexp.
@@ -35,3 +37,22 @@ def priceStr2Float(str):
     returns: Float
     """
     return float(str.replace(",", "."))
+
+def isbn_cleanup(isbn):
+    """Clean the string and return only digits. (actually, remove all
+    punctuation, most of all the dash).
+
+    Because a bar code scanner only prints digits, that's the format
+    we want in the database.
+
+    - isbn: a str / unicode
+    - return: a string, with only [0-9] digits.
+
+    """
+    # note: we duplicated this function in models.utils
+    res = isbn
+    if isbn:
+        punctuation = set(string.punctuation)
+        res = "".join([it for it in isbn if it not in punctuation])
+
+    return res

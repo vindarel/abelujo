@@ -41,13 +41,13 @@ from django.contrib import auth
 fixture_search_datasource = {
     "test search":
     [{"title":'fixture',
-      "ean": "111",
+      "isbn": "111",
       "details_url": "http://fake_url.com",
       "data_source": "chapitre"
   }],
     "éé":
     [{"title": "éé",
-      "ean": "222",
+      "isbn": "222",
   }]
 }
 
@@ -55,23 +55,23 @@ session_mock_data = {
     "search_result": {
      "emma gold":
      [{"title":'fixture',
-       "ean": "111",
+       "isbn": "111",
        "details_url": "http://fake_url.com",
        "data_source": "chapitre"
    }],
      "éé":
      [{"title": "éé",
-       "ean": "222",
+       "isbn": "222",
    }]
  }}
 
-fixture_no_ean = {"test search":
-                  [{"title": "fixture no ean",
+fixture_no_isbn = {"test search":
+                  [{"title": "fixture no isbn",
                     "details_url": "http://fake_url",
                     "data_source": "chapitre"  # must fetch module's name
                 }]}
 
-fake_postSearch = {"ean": "111"}
+fake_postSearch = {"isbn": "111"}
 
 class DBFixture():
     """Create a card and required DB entries.
@@ -85,9 +85,9 @@ class DBFixture():
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
         # create a Card
-        self.fixture_ean = "987"
+        self.fixture_isbn = "987"
         self.fixture_title = "living my life"
-        self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
+        self.autobio = Card(title=self.fixture_title, isbn=self.fixture_isbn)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
         # mandatory: unknown card type
@@ -155,7 +155,7 @@ class TestViews(TestCase):
         self.GOLDMAN = "Emma Goldman"
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
-        self.autobio = Card(title="Living my Life", ean="123")
+        self.autobio = Card(title="Living my Life", isbn="123")
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
 
@@ -163,22 +163,22 @@ class TestViews(TestCase):
         self.user = auth.models.User.objects.create_user(username="admin", password="admin")
         self.c.login(username="admin", password="admin")
 
-    def post_to_view(self, ean=None):
+    def post_to_view(self, isbn=None):
         post_params = {}
-        if ean:
-            post_params["ean"] = ean
+        if isbn:
+            post_params["isbn"] = isbn
         return self.c.post(reverse("card_sell"), post_params)
 
-    def test_sell_ean_doesnt_exist(self):
-        resp = self.post_to_view(ean="9876")
+    def test_sell_isbn_doesnt_exist(self):
+        resp = self.post_to_view(isbn="9876")
         self.assertTrue(resp)
         pass # test views with RequestFactory
 
-    def test_sell_ean(self):
-        resp = self.post_to_view(ean="123")
+    def test_sell_isbn(self):
+        resp = self.post_to_view(isbn="123")
         self.assertTrue(resp)
 
-    def test_sell_no_ean_in_post(self):
+    def test_sell_no_isbn_in_post(self):
         resp = self.post_to_view()
         self.assertTrue(resp)
 
@@ -230,8 +230,8 @@ class TestSearchView(TestCase):
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    def test_search_with_ean(self, search_mock):
-        resp = self.get_for_view({"ean":"123"})
+    def test_search_with_isbn(self, search_mock):
+        resp = self.get_for_view({"isbn":"123"})
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
@@ -256,7 +256,7 @@ class TestSearchView(TestCase):
         # The search method stores data in the session.
         # We mock every call to the session, set or get, so we dont have one...
         # self.assertTrue(resp.client.session.get("search_result")) # key error
-        # self.assertEqual(resp.client.session.get("search_result")['emma gold']['test search'][0]['ean'], u"111")
+        # self.assertEqual(resp.client.session.get("search_result")['emma gold']['test search'][0]['isbn'], u"111")
 
         # Let's fire another search in parallel (like in another tab)
         r2 = self.get_for_view({'q': 'ééé'})
@@ -271,9 +271,9 @@ class TestAddView(TestCase):
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
         # create a Card
-        self.fixture_ean = "987"
+        self.fixture_isbn = "987"
         self.fixture_title = "living my life"
-        self.autobio = Card(title=self.fixture_title, ean=self.fixture_ean)
+        self.autobio = Card(title=self.fixture_title, isbn=self.fixture_isbn)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
         # Create a distributor
@@ -309,10 +309,10 @@ class TestAddView(TestCase):
         all_cards = Card.objects.all()
         self.assertEqual(2, len(all_cards))
         fixture_result = fixture_search_datasource["test search"][0]
-        self.assertEqual(fixture_result["ean"], all_cards[0].ean, "ean are not equal")
+        self.assertEqual(fixture_result["isbn"], all_cards[0].isbn, "isbn are not equal")
         self.assertEqual(fixture_result["title"], all_cards[0].title, "title are not equal")
         # We are redirected to the "edit" view,
-        self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search&ean=None")
+        self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search&isbn=None")
 
     def test_move(self, mock_data_source):
         resp = self.c.get(reverse("card_move", args=(1,)))
@@ -336,17 +336,17 @@ class TestAddView(TestCase):
         resp = self.c.post(reverse("card_add"), data)
         self.assertEqual(400, resp.status_code)
 
-    @mock.patch('search.views._request_session_get', return_value=fixture_no_ean)
+    @mock.patch('search.views._request_session_get', return_value=fixture_no_isbn)
     @mock.patch('search.views.postSearch', return_value=fake_postSearch)
-    def test_call_postSearch_no_ean(self, mock_postSearch, fake_session, mock_data_source):
+    def test_call_postSearch_no_isbn(self, mock_postSearch, fake_session, mock_data_source):
         data = {"forloop_counter0": [0,],
                 "quantity": [1,],
                 "distributor": [1,],
                 "q": "test search",
         }
         resp = self.c.post(reverse("card_add"), data)
-        mock_postSearch.assert_called_once_with(fixture_no_ean["test search"][0]["data_source"],
-                                                fixture_no_ean["test search"][0]["details_url"])
+        mock_postSearch.assert_called_once_with(fixture_no_isbn["test search"][0]["data_source"],
+                                                fixture_no_isbn["test search"][0]["details_url"])
 
 class TestCollectionView(TestCase, DBFixture):
 
@@ -375,8 +375,8 @@ class TestCollectionView(TestCase, DBFixture):
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
 
-    def test_search_ean(self):
-        form = {"ean": self.fixture_ean,}
+    def test_search_isbn(self):
+        form = {"isbn": self.fixture_isbn,}
         resp = self.c.post(reverse("card_collection"), data=form)
         self.assertEqual(resp.status_code, 200)
 

@@ -34,7 +34,7 @@ card_bourgeois = {'authors': [u'Daniel Gu\xe9rin'],
   'data_source': 'Chapitre.com',
   'description': u'',
   'details_url': 'http://www.chapitre.com/CHAPITRE/fr/BOOK/guerin-daniel/bourgeois-et-bras-nus-guerre-sociale-durant-le-revolution-francaise-1793-1795,54748482.aspx',
-  'ean': u'',
+  'isbn': u'',
   'img': 'http://www.images-chapitre.com/ima1/newnormal/482/54748482_10852487.jpg',
   'isbn': u'',
   'price': 'produit indisponible',
@@ -46,7 +46,7 @@ card_crack = {'authors': [u'John Holloway'],
   'data_source': 'Chapitre.com',
   'description': u'',
   'details_url': 'http://www.chapitre.com/CHAPITRE/fr/BOOK/holloway-john/crack-capitalism-33-theses-contre-le-capital,41626741.aspx',
-  'ean': u'',
+  'isbn': u'',
   'img': 'http://www.images-chapitre.com/indispo/newnormal.png',
   'isbn': u'',
   'price': 'produit indisponible',
@@ -97,11 +97,11 @@ class testOdsUtils(unittest.TestCase):
 
     def testLookupCards(self):
         # Augment the tests when module is stabilized.
-        found, no_ean, not_found = lookupCards(self.odsdata, datasource="chapitre", level="ERROR",
+        found, no_isbn, not_found = lookupCards(self.odsdata, datasource="chapitre", level="ERROR",
                                                search_on_datasource=search_on_datasource_fixture)
         self.assertEqual(len(found), 2)
         self.assertTrue(found[0].has_key("title"))
-        self.assertFalse(no_ean)
+        self.assertFalse(no_isbn)
 
     def testPubsCorrespond(self):
         self.card['publisher'] = "aael"
@@ -153,7 +153,7 @@ par\u00a0M.\u00a0de\u00a0Grace [Edition de 1753-1759]"""
         self.card['title'] = u"Anthologie Vol.1 De La Connerie Militariste D'Expression Francaise"
         self.odsrow['title'] = u'Anthologie de la connerie militariste, 1'
         self.assertTrue(cardCorresponds(self.card, self.odsrow))
-        #Results: 297 cards found, 73 without ean, 62 not found
+        #Results: 297 cards found, 73 without isbn, 62 not found
 
     def testAccents(self):
         self.card['title'] = u"De mémoire t.1 ; les jours du début : un automne 1970 à toulouse"

@@ -80,13 +80,13 @@ class Scraper:
     def __init__(self, *args, **kwargs):
         """Constructs the query url with the given parameters, retrieves the
         page and parses it through BeautifulSoup. Then we can call
-        search() to get a list of results, or specific methods (_ean,
+        search() to get a list of results, or specific methods (_isbn,
         _authors, _title, …).
 
         parameters: either a list of words (fires a global search) or
         keywords arguments (key/values pairs, values being lists).
 
-        Keys can be: label (for title), author_names,publisher, ean, …
+        Keys can be: label (for title), author_names,publisher, isbn, …
         the same as decitre (without the dctr_ prefix).
 
         """
@@ -99,10 +99,10 @@ class Scraper:
                    # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 
         if kwargs:
-            if 'ean' in kwargs:
-                # the name of ean for the search is "reference"
-                kwargs['reference'] = kwargs['ean']
-                kwargs.pop('ean')
+            if 'isbn' in kwargs:
+                # the name of isbn for the search is "reference"
+                kwargs['reference'] = kwargs['isbn']
+                kwargs.pop('isbn')
             self.url = SOURCE_URL_SEARCH  # ready to add query+args+parameters
             q = ""
             for k, v in kwargs.iteritems():
@@ -174,7 +174,7 @@ class Scraper:
         return date
 
     @catch_errors
-    def _ean(self, product):
+    def _isbn(self, product):
         pass
 
     def search(self, *args, **kwargs):
@@ -192,7 +192,7 @@ class Scraper:
         for product in product_list:
             b = {}
             b["data_source"] = SOURCE_NAME
-            b["ean"] = self._ean(product) # missing
+            b["isbn"] = self._isbn(product) # missing
             b["title"] = self._title(product)
             b["details_url"] = self._details_url(product)
             b["search_url"] = self.url
@@ -222,18 +222,18 @@ def postSearch(card):
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
     details = soup.find_all(class_="productDetails-items-content")
-    # The complementary information we need to return. Ean is compulsory.
-    to_ret = {"ean": None}
+    # The complementary information we need to return. Isbn is compulsory.
+    to_ret = {"isbn": None}
 
     try:
-        ean = soup.find(class_="floatRight")
-        ean = ean.find_all("p")[2].text.strip().split(":")[1].strip()
-        card["ean"] = ean
-        card["isbn"] = ean
-        log.debug("postSearch of {}: we got ean {}.".format(url, ean))
+        isbn = soup.find(class_="floatRight")
+        isbn = isbn.find_all("p")[2].text.strip().split(":")[1].strip()
+        card["isbn"] = isbn
+        card["isbn"] = isbn
+        log.debug("postSearch of {}: we got isbn {}.".format(url, isbn))
 
     except Exception, e:
-        log.debug("Error while getting the ean of {} : {}".format(url, e))
+        log.debug("Error while getting the isbn of {} : {}".format(url, e))
         log.debug(e)
 
     try:

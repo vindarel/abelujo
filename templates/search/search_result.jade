@@ -77,7 +77,7 @@ for b in result_list
           {% bootstrap_form addForm %}
           input(type='hidden', value="{{ forloop.counter0 }}", name='forloop_counter0')
           input(type='hidden', value="{{ q }}", name="q")
-          input(type='hidden', value="{{ ean }}", name="ean")
+          input(type='hidden', value="{{ isbn }}", name="isbn")
           input(type='hidden', values="card_search", name="origin")
           input.btn.btn-primary(type='submit', value='{% trans "Add to…" %}')
 

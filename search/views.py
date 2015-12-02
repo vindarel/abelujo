@@ -89,7 +89,7 @@ class SearchForm(forms.Form):
                         label=_("Key words"),
                         help_text=_("Part of title, of author's name, etc."),
                     )
-    # ean = forms.CharField(required=False)
+    # isbn = forms.CharField(required=False)
 
 def get_card_type_choices():
     return [(0, _(u"All cards"))] + [(typ.id, typ.name)
@@ -120,7 +120,7 @@ class CollectionSearchForm(forms.Form):
                         min_length=3,
                         label=_(u"Search on title and authors."))
 
-    ean = forms.CharField(required=False)
+    isbn = forms.CharField(required=False)
 
     place = forms.ChoiceField(get_places_choices(),
                               label=_("Places"),
@@ -211,7 +211,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     query parameters:
     - source
     - q
-    - ean
+    - isbn
 
     type cleaned_data: dict
     return: the complete url with query params
@@ -225,8 +225,8 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     qparam['source'] = cleaned_data.get("source")
     if "q" in cleaned_data.keys():
         qparam['q'] = cleaned_data["q"]
-    if ("ean" in cleaned_data.keys()) and cleaned_data.get('ean'):
-        qparam['ean'] = cleaned_data["ean"]
+    if ("isbn" in cleaned_data.keys()) and cleaned_data.get('isbn'):
+        qparam['isbn'] = cleaned_data["isbn"]
     log.debug("on recherche: ", qparam)
     # construct the query parameters of the form
     # q=query+param&source=discogs
@@ -313,10 +313,10 @@ def search(request):
     if request.method == 'GET' and form.is_valid():
         data_source = form.cleaned_data['source']
         query = form.cleaned_data.get('q')
-        ean_param = form.cleaned_data.get('ean')
+        ean_param = form.cleaned_data.get('isbn')
         if ean_param or query:
             if ean_param:
-                search_terms = {"ean": ean_param}
+                search_terms = {"isbn": ean_param}
                 page_title = "search for %s on %s" % (ean_param, data_source)
             elif query:
                 page_title = query[:50]
@@ -338,7 +338,7 @@ def search(request):
             request.session[unidecode(query)] = retlist
             _session_result_set(request, unidecode(query), retlist)
         else:
-            # Uncomplete form (specify we need ean or q).
+            # Uncomplete form (specify we need isbn or q).
             log.error("form not complete")
 
     else:
@@ -362,7 +362,7 @@ def search(request):
         "data_source": data_source,
         "page_title": page_title,
         "q": query,
-        "ean": ean_param,
+        "isbn": ean_param,
     })
 
 def _request_session_get(request, key):
@@ -406,7 +406,7 @@ def add(request):
     Before adding it, we need to get the last information about the
     Card, the ones we couldn't get at the first scraping. We call the
     `postSearch` method of the scraper module. Sometimes it is the
-    only way to get the ean (with only two http requests).
+    only way to get the isbn (with only two http requests).
 
     The list of cards is stored in the session. The template only returns the list's indice.
 
@@ -428,8 +428,8 @@ def add(request):
         # Get the results of the corresponding search.
         if req.get('q'):
             cur_search_result = cur_search_result.get(unidecode(req.get('q')))
-        elif req.get('ean'):
-            cur_search_result = cur_search_result.get(req.get('ean'))
+        elif req.get('isbn'):
+            cur_search_result = cur_search_result.get(req.get('isbn'))
         else:
             # The "q" should be following along, hidden in template or as url param.
             cur_search_result = cur_search_result.get(cur_search_result.keys()[-1])
@@ -440,13 +440,13 @@ def add(request):
         data_source = card["data_source"]
 
         # Call the postSearch method of the datasource module.
-        if not card.get('ean') and not card.get('isbn'):
+        if not card.get('isbn') and not card.get('isbn'):
             if not data_source:
                 log.debug("Error: the data source is unknown.")
                 resp_status = 500
                 # XXX return an error page
             else:
-                # fire a new http request to get the ean (or other missing informations):
+                # fire a new http request to get the isbn (or other missing informations):
                 card = postSearch(data_source, card)
                 if not card.get("isbn"):
                     log.warning("warning: postSearch couldnt get the isbn.")
@@ -473,7 +473,7 @@ def add(request):
         # see also our get_reverse_url(qparams, url=)
         # unidecode: transliterate unicode to ascii (unicode protection).
         qparams = {"q": unidecode(req.get('q')),
-                   "ean": req.get('ean'),}
+                   "isbn": req.get('isbn'),}
         url = url + "?" + urllib.urlencode(qparams)
 
         return HttpResponseRedirect(url)
@@ -645,7 +645,7 @@ def card_move(request, pk=None):
         "internalForm": internalForm,
         "pk": pk,
         "q": request.GET.get('q'),
-        "ean": request.GET.get('ean'),
+        "isbn": request.GET.get('isbn'),
         "type": params.get('type'),
         })
 
@@ -663,9 +663,9 @@ def collection(request):
     if request.method == "POST": #XXX that should be a GET
         form = CollectionSearchForm(request.POST)
         if form.is_valid():
-            if request.POST.has_key("ean") and \
-               form.cleaned_data.get("ean"):
-                cards = Card.search([form.cleaned_data.get('ean')], to_list=True)
+            if request.POST.has_key("isbn") and \
+               form.cleaned_data.get("isbn"):
+                cards = Card.search([form.cleaned_data.get('isbn')], to_list=True)
 
             else:
                 card_type_id = form.cleaned_data.get("card_type")
@@ -835,12 +835,12 @@ def deposits_add_card(request):
             log.debug("deposits_add_card: form is not valid")
             resp_status = 500
         else:
-            card_ean = req["ean"]
-            if not card_ean:
-                log.debug("deposits_add_card: the ean is null. That should not happen !")
+            card_isbn = req["isbn"]
+            if not card_isbn:
+                log.debug("deposits_add_card: the isbn is null. That should not happen !")
                 resp_status = 400
                 messages.add_message(request, messages.ERROR,
-                                     _(u"We could not add the card to the deposit: the given ean is null."))
+                                     _(u"We could not add the card to the deposit: the given isbn is null."))
             else:
                 deposit_id = form.cleaned_data["deposit"]
                 # TODO: do the logic !

@@ -37,6 +37,7 @@ from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
 from search.models.utils import is_isbn
+from search.models.utils import isbn_cleanup
 
 CHAR_LENGTH = 200
 PAGE_SIZE = 50
@@ -267,8 +268,7 @@ class Card(TimeStampedModel):
     title = models.CharField(max_length=CHAR_LENGTH)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True)
-    #: ean/isbn (mandatory)
-    ean = models.CharField(max_length=99, null=True, blank=True)
+    #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
     isbn = models.CharField(max_length=99, null=True, blank=True)
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
     has_isbn = models.NullBooleanField(default=True, blank=True, null=True)
@@ -306,6 +306,11 @@ class Card(TimeStampedModel):
     #: a user's comment
     comment = models.TextField(blank=True)
 
+    @property
+    def ean(self):
+        """Can't be used in queries, use isbn.
+        """
+        return self.isbn
 
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
@@ -403,10 +408,10 @@ class Card(TimeStampedModel):
             "data_source": self.data_source,
             "details_url": self.details_url,
             "distributor": dist,
-            "ean": self.ean,
+            "isbn": self.isbn,
             "get_absolute_url": get_absolute_url,
             "img": self.img,
-            "isbn": self.isbn if self.isbn else self.ean,
+            "isbn": self.isbn if self.isbn else u"",
             "model": self.__class__.__name__, # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
@@ -509,7 +514,7 @@ class Card(TimeStampedModel):
         if isbns:
             for isbn in isbns:
                 try:
-                    card = Card.objects.get(ean=isbn)
+                    card = Card.objects.get(isbn=isbn)
                     cards.append(card)
                 except Exception as e:
                     log.error("Error searching for isbn {}: {}".format(isbn, e))
@@ -600,10 +605,8 @@ class Card(TimeStampedModel):
         msgs = []
         # Look for the same isbn/ean
         if card_dict.get('isbn') or card_dict.get('ean'):
-            if card_dict.get('isbn'):
-                clist = Card.objects.filter(isbn=card_dict.get('isbn'))
-            elif card_dict.get('ean'):
-                clist = Card.objects.filter(ean=card_dict.get('ean'))
+            isbn = card_dict.get('isbn', card_dict.get('ean'))
+            clist = Card.objects.filter(isbn=isbn)
             if clist:
                 return clist, msgs
 
@@ -689,6 +692,11 @@ class Card(TimeStampedModel):
         else:
             log.warning(u"this card has no authors (ok for a CD): %s" % card.get('title'))
 
+        # Get and clean the ean/isbn (beware of form data)
+        isbn = card.get("isbn", card.get("ean", ""))
+        if isbn:
+            isbn = isbn_cleanup(isbn)
+
         # Get the distributor:
         card_distributor=None
         if card.get("distributor"):
@@ -734,8 +742,7 @@ class Card(TimeStampedModel):
                 year_published=year,
                 price = card.get('price',  0),
                 price_sold = card.get('price_sold',  0),
-                ean = card.get('ean') or card.get('isbn'),
-                isbn = card.get('isbn'),
+                isbn = isbn,
                 has_isbn = card.get('has_isbn'),
                 img = card.get('img', ""),
                 details_url = card.get('details_url'),
@@ -2059,6 +2066,10 @@ class InventoryCards(models.Model):
     """The list of cards of an inventory, plus other information:
     - the quantity of them
     """
+
+    class Meta:
+        app_label = "search"
+
     card = models.ForeignKey(Card)
     inventory = models.ForeignKey("Inventory")
     #: How many copies of it did we find in our stock ?
@@ -2151,6 +2162,9 @@ class Inventory(TimeStampedModel):
         return (status, msgs)
 
 class Stats(object):
+
+    class Meta:
+        app_label = "search"
 
     def stock(self, to_json=True):
         """Simple figures about our stock:

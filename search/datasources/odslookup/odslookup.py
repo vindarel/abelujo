@@ -50,7 +50,7 @@ from frFR.decitre.decitreScraper import postSearch
       They can differ by details. See method "cardCorresponds".
 - we return:
   - a list of matches
-  - a list of matches but with ean not found
+  - a list of matches but with isbn not found
   - a list of cards not found on the data source.
 - to add cards to abelujo, use scripts/odsimport.py
 
@@ -75,18 +75,18 @@ DISTANCE_ACCEPTED = 0.4
 
 def filterResults(cards, odsrow):
     """Filter a list of candidates against the ods row.
-    Check that a card correponds to a row and look for its ean with the
+    Check that a card correponds to a row and look for its isbn with the
     postSearch scraper method.
 
     :param list_of_dicts cards: list of dicts with cards informations
-    (list of authors, title, list of publishers, ean, etc.). See the
+    (list of authors, title, list of publishers, isbn, etc.). See the
     scrapers documentation.
 
     returns one card.
 
     """
     card_not_found = None
-    card_no_ean    = None
+    card_no_isbn    = None
     card_found     = None
     accepted = False
     # idea: remove very similar candidates to spare computational time.
@@ -99,7 +99,7 @@ def filterResults(cards, odsrow):
             accepted = True
             card = postSearch(card)
             if not card.get("ean") and not card.get("isbn"):
-                card_no_ean = card
+                card_no_isbn = card
             else:
                 card_found = card
             break
@@ -107,7 +107,7 @@ def filterResults(cards, odsrow):
     if not accepted:
         card_not_found = odsrow
 
-    return (card_found, card_no_ean, card_not_found)
+    return (card_found, card_no_isbn, card_not_found)
 
 def long_substr(data):
     substr = ''
@@ -253,13 +253,13 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     :param list_of_dict data: list of dict with names of columns, generally author, title, etc.
     :parama str datasource: the scraper to use ("chapitre", "discogs", etc).
 
-    return a tuple (cards found, cards without ean, cards not found on remote sources).
+    return a tuple (cards found, cards without isbn, cards not found on remote sources).
     """
     log.setLevel(level.upper())
     cards = []
     stacktraces = []
     cards_not_found = []
-    cards_no_ean    = []
+    cards_no_isbn    = []
     cards_found     = []
     #: catch the names of the ods columns.
     ODS_AUTHORS = "authors"
@@ -275,8 +275,8 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             data = f.read()
         if data:
             cards = json.loads(data)
-            # cards = cards.get('cards_found') + cards.get('cards_no_ean') + cards.get('cards_not_found')
-            return cards['cards_found'], cards['cards_no_ean'], cards['cards_not_found']
+            # cards = cards.get('cards_found') + cards.get('cards_no_isbn') + cards.get('cards_not_found')
+            return cards['cards_found'], cards['cards_no_isbn'], cards['cards_not_found']
 
     for i, row in tqdm(enumerate(odsdata)):
         search_terms = "{} {} {}".format(row["title"], row.get(ODS_AUTHORS, ""), row[ODS_PUBLISHER])
@@ -294,14 +294,14 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
         if stacktraces:
             log.debug("warning: found errors:", stacktraces)
         if cards:
-            found, no_ean, not_found = filterResults(cards, row)
+            found, no_isbn, not_found = filterResults(cards, row)
             if found:
                 # log.debug("found a valid result: {}".format(found))
                 found = addRowInfo(found, row)
                 cards_found.append(found)
-            if no_ean:
-                no_ean = addRowInfo(no_ean, row)
-                cards_no_ean.append(no_ean)
+            if no_isbn:
+                no_isbn = addRowInfo(no_isbn, row)
+                cards_no_isbn.append(no_isbn)
             if not_found:
                 not_found = addRowInfo(not_found, row)
                 not_found['publishers'] = [not_found['publishers']]
@@ -313,11 +313,11 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
 
     ended = datetime.now()
     print "Search on {} lasted: {}".format(datasource, ended - start)
-    return (cards_found, cards_no_ean, cards_not_found)
+    return (cards_found, cards_no_isbn, cards_not_found)
 
 def run(odsfile, datasource, timeout=TIMEOUT):
-    cards_found = cards_no_ean = cards_not_found = None
-    to_ret = {"found": cards_found, "no_ean": None, "not_found": None,
+    cards_found = cards_no_isbn = cards_not_found = None
+    to_ret = {"found": cards_found, "no_isbn": None, "not_found": None,
               "odsdata": None,
               "messages": None,
               "status": 0}
@@ -333,11 +333,11 @@ def run(odsfile, datasource, timeout=TIMEOUT):
         log.debug("ods sheet data: %i results\n" % (len(odsdata.get("data")),))
 
     # Look up for cards on our datasource
-    cards_found, cards_no_ean, cards_not_found = lookupCards(odsdata.get("data"),
+    cards_found, cards_no_isbn, cards_not_found = lookupCards(odsdata.get("data"),
                                                              datasource=datasource, timeout=timeout,
                                                              odsfile=odsfile)
 
-    if not sum([len(cards_found), len(cards_not_found), len(cards_no_ean)]) == len(odsdata):
+    if not sum([len(cards_found), len(cards_not_found), len(cards_no_isbn)]) == len(odsdata):
         log.warning("The sum of everything doesn't match ;)")
     # TODO: make a list to confront the result to the ods value.
     log.debug("\nThe following cards will be added to the database: %i results\n" % (len(cards_found),))
@@ -346,21 +346,21 @@ def run(odsfile, datasource, timeout=TIMEOUT):
     jsonfile = basename + ".json"
     with open(jsonfile, "wb") as f:
         towrite = {"cards_found": cards_found,
-                   "cards_no_ean": cards_no_ean,
+                   "cards_no_isbn": cards_no_isbn,
                    "cards_not_found": cards_not_found}
         f.write(json.dumps(towrite))
 
     print "\nCards found, complete: "
     pprint(cards_found)
-    print "\nCards without ean: %i results\n" % (len(cards_no_ean),)
-    pprint(cards_no_ean)
+    print "\nCards without isbn: %i results\n" % (len(cards_no_isbn),)
+    pprint(cards_no_isbn)
     print "\nCards not found: %i results\n" % (len(cards_not_found,))
     pprint(cards_not_found)
-    print "\nResults: %i cards found, %i without ean, %i not found" % (len(cards_found),
-                                                                       len(cards_no_ean),
+    print "\nResults: %i cards found, %i without isbn, %i not found" % (len(cards_found),
+                                                                       len(cards_no_isbn),
                                                                        len(cards_not_found))
     to_ret["found"]     = cards_found
-    to_ret["no_ean"]    = cards_no_ean
+    to_ret["no_isbn"]   = cards_no_isbn
     to_ret["not_found"] = cards_not_found
     to_ret["odsdata"]   = odsdata
     return to_ret

@@ -31,7 +31,7 @@ form(method='post', action="{% url 'card_move' pk %}")
   {{ BasketsForm.as_p }}
 
   input(type='hidden', value="{{ q }}", name="q")
-  input(type='hidden', value="{{ ean }}", name="ean")
+  input(type='hidden', value="{{ isbn }}", name="isbn")
   input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
 
 {% endblock content %}

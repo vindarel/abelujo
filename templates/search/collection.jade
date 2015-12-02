@@ -90,7 +90,7 @@ for b in book_list
   form.form-inline(action="{% url 'deposits_add_card' %}", method="post") {% csrf_token %}
     {% bootstrap_form AddToDepositForm %}
     input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
-    input(type="hidden", value="{{ b.ean }}", name="ean")
+    input(type="hidden", value="{{ b.isbn }}", name="isbn")
     input.btn.btn-primary(type="submit", value='{% trans "add to deposit" %}')
 
 {% endblock content %}

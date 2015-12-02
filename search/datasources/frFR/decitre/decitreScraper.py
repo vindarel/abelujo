@@ -26,6 +26,7 @@ cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
 from datasources.utils.baseScraper import Scraper as baseScraper
+from datasources.utils.scraperUtils import isbn_cleanup
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
 from datasources.utils.decorators import catch_errors
@@ -146,8 +147,8 @@ class Scraper(baseScraper):
             for k in li:
                 key = k.contents[0].strip().lower()
                 if key == 'ean :':
-                    details['ean'] = k.em.text.strip()
-                    logging.info('ean: ' + details['ean'])
+                    details['isbn'] = k.em.text.strip()
+                    logging.info('isbn: ' + details['isbn'])
                 elif key == 'editeur :':
                     details['editor'] = k.em.text.strip()
                     logging.info('editor: ' + details['editor'])
@@ -156,8 +157,7 @@ class Scraper(baseScraper):
                     logging.info('isbn: '+ details['isbn'])
 
             if not details:
-                logging.warning("Warning: we didn't get any details (ean,…) about the book" +
-                             title)
+                logging.warning("Warning: we didn't get any details (isbn,…) about the book")
             return details
 
         except Exception, e:
@@ -221,6 +221,7 @@ def postSearch(card):
     try:
         info = soup.find_all(class_="information")
         isbn = info[3].text.split('\n')[-1].strip()
+        isbn = isbn_cleanup(isbn)
         card['isbn'] = isbn
     except Exception as e:
         log.error("postSearch: error while getting the isbn of {}: {}".format(url, e))

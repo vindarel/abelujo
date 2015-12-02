@@ -17,7 +17,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 """Program responsible to find books on chapitre.com. The search is
-based on key words or on the ean.
+based on key words or on the isbn.
 
 The search works in 2 steps:
 
@@ -27,10 +27,10 @@ The search works in 2 steps:
   UI.
 
 - but some important information may be missing from this page and be
-  only available from the detailed book's page (like the ean, in the
-  case of chapitre.com). But we MUST fetch the ean and register it to
+  only available from the detailed book's page (like the isbn, in the
+  case of chapitre.com). But we MUST fetch the isbn and register it to
   the database. So we first display the information we have, and when
-  the user clicks "add this book", then we look for the ean on this
+  the user clicks "add this book", then we look for the isbn on this
   book's details page. That way we don't do it for every book of the
   search result, that would be too long.
 
@@ -115,13 +115,13 @@ class Scraper:
     def __init__(self, *args, **kwargs):
         """Constructs the query url with the given parameters, retrieves the
         page and parses it through BeautifulSoup. Then we can call
-        search() to get a list of results, or specific methods (_ean,
+        search() to get a list of results, or specific methods (_isbn,
         _authors, _title, …).
 
         parameters: either a list of words (fires a global search) or
         keywords arguments (key/values pairs, values being lists).
 
-        Keys can be: label (for title), author_names,publisher, ean, …
+        Keys can be: label (for title), author_names,publisher, isbn, …
         the same as decitre (without the dctr_ prefix).
 
         """
@@ -134,16 +134,16 @@ class Scraper:
                    # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 
         if kwargs:
-            if 'ean' in kwargs:
-                # the name of ean for the search is "reference"
-                kwargs['reference'] = kwargs['ean']
-                kwargs.pop('ean')
+            if 'isbn' in kwargs:
+                # the name of isbn for the search is "reference"
+                kwargs['reference'] = kwargs['isbn']
+                kwargs.pop('isbn')
             # http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam=&titre=&ne=&n=0&auteur=&peopleId=&quicksearch=victor+hugo&editeur=&reference=&plng=&optSearch=ALL&beginDate=&endDate=&mot_cle=&prix=&themeId=&collection=&subquicksearch=&page=1
             self.url = "http://www.chapitre.com/CHAPITRE/fr/search/Default.aspx?cleanparam="
             q = ""
             for k, v in kwargs.iteritems():
                 urlend = "+".join(val for val in v)
-                q += "&%s=%s" % (k, urlend) # working for ean 8-1-14
+                q += "&%s=%s" % (k, urlend)
 
             self.url += q
 

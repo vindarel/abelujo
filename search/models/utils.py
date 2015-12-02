@@ -15,8 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import addict
+import string
 
+import addict
 # from models import getHistory # don't import model here-> circular
 from tabulate import tabulate
 
@@ -125,4 +126,24 @@ def is_isbn(it):
        len(it) in ISBN_ALLOWED_LENGTHS:
         res = True
 
+    return res
+
+def isbn_cleanup(isbn):
+    """Clean the string and return only digits. (actually, remove all
+    punctuation, most of all the dash).
+
+
+    Because a bar code scanner only prints digits, that's the format
+    we want in the database.
+
+    - isbn: a str / unicode
+    - return: a string, with only [0-9] digits.
+
+    """
+    # WARNING: code duplicated from datasources.utils.scraperUtils,
+    # because the modules should be independant. Still, beware.
+    res = isbn
+    if isbn:
+        punctuation = set(string.punctuation)
+        res = "".join([it for it in isbn if it not in punctuation])
     return res
