@@ -40,10 +40,6 @@ class SimpleTest(TestCase):
     def setUp(self):
         self.c = Client()
 
-    def test_root_redirection(self):
-        res = self.c.get("/", follow=True)
-        self.assertRedirects(res, reverse("card_index"), status_code=302) # or 301: permanent redirection
-
     @mock.patch('search.views.search_on_data_source', return_value=search_on_data_source_fixture)
     def test_templates_used(self, mymock):
 

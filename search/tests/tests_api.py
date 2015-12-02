@@ -88,7 +88,7 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], httplib.OK)
+        self.assertEqual(resp_data["status"], "success")
 
     def test_deposits_add_pubtype(self):
         due_date = datetime.date.today()
@@ -97,7 +97,7 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], httplib.OK)
+        self.assertEqual(resp_data["status"], "success")
         dep = models.Deposit.objects.order_by("created").first()
         self.assertEqual(dep.due_date, due_date)
         self.assertEqual(dep.dest_place.name, models.Place.objects.get(id=1).name)

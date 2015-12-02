@@ -53,8 +53,6 @@ from search.models import STATUS_ERROR
 from search.models import STATUS_SUCCESS
 from search.models import STATUS_WARNING
 
-from search.models.utils import hist
-
 class SellsFactory(DjangoModelFactory):
     class Meta:
         model = Sell

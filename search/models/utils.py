@@ -113,13 +113,6 @@ def ppcard(cards):
     tab += "\n\ntotal: {} titles, {} exemplaries.".format(tablength, total)
     return tab
 
-# def hist():
-#     """Print a recent history.
-#     """
-#     hist, status, alerts = getHistory(sells_only=True)
-#     print "Sells:"
-#     print hist
-
 def is_isbn(it):
     """Return True is the given string is an ean or an isbn, i.e:
 

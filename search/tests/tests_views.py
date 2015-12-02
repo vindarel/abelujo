@@ -322,7 +322,7 @@ class TestAddView(TestCase):
             "destination": 2,
             "nb": 2,
         })
-        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 200)
         # we've been redirected:
         self.assertTrue("search" in resp.url)
 

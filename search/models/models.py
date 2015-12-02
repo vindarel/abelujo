@@ -544,7 +544,7 @@ class Card(TimeStampedModel):
         """Sell a card. Decreases its quantity in the given place.
 
         This is a static method, use it like this:
-        >>> import models.Card; Card.sell(the_card_id)
+        >>> Card.sell(id=<id>)
 
         :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")
@@ -570,8 +570,8 @@ class Card(TimeStampedModel):
 
             place_obj.nb = place_obj.nb - quantity
             place_obj.save()
-            # card.quantity = card.quantity - quantity
-            # card.save()
+            card.quantity = card.quantity - quantity
+            card.save()
         except ObjectDoesNotExist as e:
             log.warning(u"Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")
@@ -1919,7 +1919,7 @@ class Sell(models.Model):
                 log.info(u"Alert created for card {}".format(card.title))
 
             try:
-                Card.sell(id, quantity=quantity)
+                Card.sell(id=id, quantity=quantity)
             except ObjectDoesNotExist:
                 msg = u"Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
