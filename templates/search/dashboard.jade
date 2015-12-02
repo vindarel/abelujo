@@ -25,7 +25,7 @@
 h3 {% trans "Abelujo's dashboard" %}
 div (We'll add more stats soon)
 
-div(ng-controller="dashboardController")
+div(ng-controller="dashboardController", ng-cloak="stats")
   .row
     .col-lg-6
       h3 {% trans "Composition of the stock" %}
@@ -37,9 +37,18 @@ div(ng-controller="dashboardController")
 
   .row
     .col-lg-6
-      div(id="chart2")
+      div(id="chartNoStock")
+    .col-lg-6
+      h3 {% trans "Comfort of the stock" %}
+      div(ng-show="stats")
+        div {% verbatim %} {{stats.nb_cards_no_stock.label}}: {{stats.nb_cards_no_stock.value}} {% endverbatim %}
+        div {% verbatim %} {{ stats.nb_cards_one_copy.label}}: {{stats.nb_cards_one_copy.value }} {% endverbatim %}
+
+  .row
     .col-lg-6
       h3 {% trans "Cost of the stock VS deposits" %}
+    .col-lg-6
+      div(id="chart2")
 
 
 {% endblock content %}

@@ -5,7 +5,7 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     $scope.stats = undefined
 
     $http.get "/api/stats/"
-    .then (response) ->
+    .then (response) !->
         response.data.data
         $scope.stats = response.data
 
@@ -29,5 +29,18 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
                 ]
             color: do
                 pattern: ['#0000cd', '#ffd700']
+
+        chart-no-stock = c3.generate do
+            bindto: \#chartNoStock
+            data: do
+                type: "pie"
+                columns: [
+                    [$scope.stats.nb_cards_no_stock.label, $scope.stats.nb_cards_no_stock.value]
+                    [$scope.stats.nb_cards_one_copy.label, $scope.stats.nb_cards_one_copy.value]
+                    [$scope.stats.nb_books.label, $scope.stats.nb_books.value]
+                ]
+            color: do
+                pattern: ['#ff8c00', '#ffd700', '#6495ed']
+
 
 ]

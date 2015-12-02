@@ -2159,7 +2159,9 @@ class Stats(object):
         - cost of the stock
         - idem for stock in deposits
 
-        return:
+        return: json by default, or a dict if to_json is set to False.
+
+        Everything below needs unit tests.
         """
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
@@ -2174,6 +2176,12 @@ class Stats(object):
         # impossible atm
         res['nb_bought'] = {'label': _("nb of cards we bought and their cost"),
                             'value': "<soon>"}
+
+        # Cleanlyness: nb of cards with stock <= 0
+        res['nb_cards_no_stock'] = {'label': "nb of cards with no copies",
+                                    'value': Card.objects.filter(quantity__lte=0).count()}
+        res['nb_cards_one_copy'] = {'label': "cards with one copy",
+                                    'value': Card.objects.filter(quantity=1).count()}
 
         # Stock of deposits
         in_deposits = 0
