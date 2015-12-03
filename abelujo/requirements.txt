@@ -54,6 +54,7 @@ unidecode               # ASCII transliteration of unicode text.
 distance                # between two strings.
 clize                   # build command line arguments
 tqdm                    # progress bar
+termcolor               # colorful terminal output
 
 # deployment
 underwear               # easy deployment
