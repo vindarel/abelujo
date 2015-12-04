@@ -28,19 +28,20 @@ html(ng-app="abelujo")
     script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')
       div {% block pagetitle %} {% endblock %}
 
-  body.container
+  body.container-fluid
     nav.navbar.navbar-default(role="navigation")
       div.navbar-collapse
         ul.nav.navbar-nav
           li.active(href="#")
             a(href='{% url "dashboard" %}') Abelujo
+              i.glyphicon.glyphicon-home
         ul.nav.navbar-nav.navbar-right
           li
            span
             a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
             a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px") {% trans "Logout" %}
 
-  body.container(ng-controller="baseController")
+  body.container-fluid(ng-controller="baseController")
     div.col-md-2(id="menu")
       div
         ul.nav.nav-pills.nav-stacked
