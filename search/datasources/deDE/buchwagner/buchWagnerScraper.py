@@ -36,6 +36,7 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
+from datasources.utils.scraperUtils import isbn_cleanup
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
 from datasources.utils.decorators import catch_errors
@@ -228,6 +229,7 @@ def postSearch(card):
     try:
         isbn = soup.find(class_="floatRight")
         isbn = isbn.find_all("p")[2].text.strip().split(":")[1].strip()
+        isbn = isbn_cleanup(isbn)
         card["isbn"] = isbn
         card["isbn"] = isbn
         log.debug("postSearch of {}: we got isbn {}.".format(url, isbn))

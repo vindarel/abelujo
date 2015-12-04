@@ -58,6 +58,7 @@ cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
 
+from datasources.utils.scraperUtils import isbn_cleanup
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
 
@@ -361,7 +362,9 @@ def postSearch(card):
     collection_id = "ctl00_PHCenter_productTop_productDetail_rpDetails_ctl03_rpLinks_ctl00_hlLabel"
 
     try:
-        card["isbn"] = soup.find(itemprop="isbn").text
+        isbn = soup.find(itemprop="isbn").text
+        isbn = isbn_cleanup(isbn)
+        card["isbn"] = isbn
         card["collection"] = soup.find(id=collection_id).text
         log.debug("postSearch of chapitre for {}: found {}".format(url, to_ret))
 

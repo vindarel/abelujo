@@ -39,6 +39,7 @@ cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
 from datasources.utils.baseScraper import Scraper as baseScraper
 from datasources.utils.baseScraper import postSearch
+from datasources.utils.scraperUtils import isbn_cleanup
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
 from datasources.utils.decorators import catch_errors
@@ -145,6 +146,7 @@ def postSearch(card):
     try:
         isbn = soup.find(class_="book-header-2-subtitle-isbn").text
         isbn = isbn.replace("ISBN", "").strip()
+        isbn = isbn_cleanup(isbn)
         card["isbn"] = isbn
         log.debug("postSearch of {}: we got isbn {}.".format(url, isbn))
     except Exception as e:
