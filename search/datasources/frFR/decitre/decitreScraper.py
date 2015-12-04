@@ -26,6 +26,7 @@ cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
 from datasources.utils.baseScraper import Scraper as baseScraper
+from datasources.utils.scraperUtils import is_isbn
 from datasources.utils.scraperUtils import isbn_cleanup
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
@@ -46,9 +47,13 @@ class Scraper(baseScraper):
         self.SOURCE_URL_BASE = u"http://www.decitre.fr"
         #: Url to which we just have to add url parameters to run the search
         self.SOURCE_URL_SEARCH = u"http://www.decitre.fr/rechercher/result/?q="
+        #: advanced url
+        self.SOURCE_URL_ADVANCED_SEARCH = u"http://www.decitre.fr/rechercher/advanced/result/?"
         #: Optional suffix to the search url (may help to filter types, i.e. don't show e-books).
         self.TYPE_BOOK = "book"
-        self.URL_END = u"&search-scope=0"
+        self.URL_END = u"&search-scope=0&product_type=3" # search books
+        #: Query parameter to search for the ean/isbn
+        self.ISBN_QPARAM = "dctr_ean"
 
     def __init__(self, *args, **kwargs):
         """

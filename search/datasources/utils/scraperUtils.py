@@ -52,7 +52,26 @@ def isbn_cleanup(isbn):
     # note: we duplicated this function in models.utils
     res = isbn
     if isbn:
+        # note: punctuation is just punctuation, not all fancy characters like « or @
         punctuation = set(string.punctuation)
         res = "".join([it for it in isbn if it not in punctuation])
+
+    return res
+
+def is_isbn(it):
+    """Return True is the given string is an ean or an isbn, i.e:
+
+    - is of type str (or unicode). The string must contain only
+      alpha-numerical characters.
+    - length of 13 or 10
+    """
+    # note: method duplicated from models.utils
+    ISBN_ALLOWED_LENGTHS = [13, 10]
+    res = False
+    pattern = re.compile("[0-9]+")
+    if (type(it) == type(u'u') or type(it) == type('str'))and \
+       len(it) in ISBN_ALLOWED_LENGTHS and \
+       pattern.match(it):
+        res = True
 
     return res

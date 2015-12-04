@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright 2014 The Abelujo Developers
@@ -35,6 +35,8 @@ cdp, _ = os.path.split(common_dir)
 cdpp, _ = os.path.split(cdp)
 cdppp, _ = os.path.split(cdpp)
 sys.path.append(cdppp)
+from datasources.utils.scraperUtils import is_isbn
+from datasources.utils.scraperUtils import isbn_cleanup
 from datasources.utils.scraperUtils import priceFromText
 from datasources.utils.scraperUtils import priceStr2Float
 from datasources.utils.decorators import catch_errors
@@ -82,23 +84,27 @@ class Scraper(object):
         self.SOURCE_NAME = "name"
         self.SOURCE_URL_BASE = u"http//url-base"
         self.SOURCE_URL_SEARCH = u"url-search"
+        self.SOURCE_URL_ADVANCED_SEARCH = u""
         ERR_OUTOFSTOCK = u"product out of stock"
         self.TYPE_BOOK = "book"
         self.TYPE_DVD = "dvd"
         # there is no comic type.
         self.TYPE_DEFAULT = self.TYPE_BOOK
 
+        #: Query parameter to search for the ean/isbn
+        #: for example, "dctr_ean", without & nor =
+        self.ISBN_QPARAM = ""
 
     def __init__(self, *args, **kwargs):
         """Constructs the query url with the given parameters, retrieves the
         page and parses it through BeautifulSoup. Then we can call
-        search() to get a list of results, or specific methods (_ean,
+        search() to get a list of results, or specific methods (_isbn,
         _authors, _title, …).
 
         parameters: either a list of words (fires a global search) or
         keywords arguments (key/values pairs, values being lists).
 
-        Keys can be: label (for title), author_names,publisher, ean, …
+        Keys can be: label (for title), author_names,publisher, isbn, …
         the same as decitre (without the dctr_ prefix).
 
         """
@@ -110,11 +116,18 @@ class Scraper(object):
                    # 'Host':'www.decitre.fr',
                    # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 
+        # Get the search terms that are isbn
+        # (we only search for one atm)
+        if args:
+            isbns = filter(is_isbn, args)
+
+        # Get the search keywords without isbns
+        words = list(set(args) - set(isbns))
+
         if kwargs:
-            if 'ean' in kwargs:
-                # the name of ean for the search is "reference"
-                kwargs['reference'] = kwargs['ean']
-                kwargs.pop('ean')
+            if 'isbn' in kwargs:
+                kwargs[self.ISBN_QPARAM] = kwargs['isbn']
+                kwargs.pop('isbn')
             self.url = self.SOURCE_URL_SEARCH  # ready to add query+args+parameters
             q = ""
             for k, v in kwargs.iteritems():
@@ -124,8 +137,16 @@ class Scraper(object):
             self.url += q
 
         else:
-            self.query = "+".join(args)
-            self.url = self.SOURCE_URL_SEARCH + self.query
+
+            # If a isbn is given, search for it
+            if isbns:
+                query = "&{}={}".format(self.ISBN_QPARAM, isbns[0])
+                self.url = self.SOURCE_URL_ADVANCED_SEARCH + query
+
+            # otherwise search the keywords.
+            else:
+                self.query = "+".join(words)
+                self.url = self.SOURCE_URL_SEARCH + self.query
 
         log.debug('search url: %s' % self.url)
         self.url += self.URL_END
@@ -197,7 +218,7 @@ class Scraper(object):
         return date
 
     @catch_errors
-    def _ean(self, product):
+    def _isbn(self, product):
         pass
 
     def search(self, *args, **kwargs):
@@ -215,7 +236,7 @@ class Scraper(object):
         for product in product_list:
             b = {}
             b["data_source"] = self.SOURCE_NAME
-            b["ean"] = self._ean(product) # missing
+            b["isbn"] = self._isbn(product) # missing
             b["title"] = self._title(product)
             b["details_url"] = self._details_url(product)
             b["search_url"] = self.url
@@ -234,7 +255,7 @@ class Scraper(object):
 def postSearch(card):
     """Complementary informations to fetch on a details' page.
 
-    - ean (compulsory)
+    - isbn (compulsory): a str with alpha-num digits only (use isbn_cleanup())
     - description
     """
     url = card.get('details_url') or card.get('url')
@@ -245,18 +266,17 @@ def postSearch(card):
     req = requests.get(url)
     soup = BeautifulSoup(req.text)
     details = soup.find_all(class_="productDetails-items-content")
-    # The complementary information we need to return. Ean is compulsory.
-    to_ret = {"ean": None}
+    # The complementary information we need to return. Isbn is compulsory.
+    to_ret = {"isbn": None}
 
     try:
-        ean = soup.find(class_="floatRight")
-        ean = ean.find_all("p")[2].text.strip().split(":")[1].strip()
-        card["ean"] = ean
-        card["isbn-13"] = ean
-        log.debug("postSearch of {}: we got ean {}.".format(url, ean))
+        isbn = soup.find(class_="floatRight")
+        isbn = isbn.find_all("p")[2].text.strip().split(":")[1].strip()
+        card["isbn"] = isbn_cleanup(isbn)
+        log.debug("postSearch of {}: we got isbn {}.".format(url, isbn))
 
     except Exception, e:
-        log.debug("Error while getting the ean of {} : {}".format(url, e))
+        log.debug("Error while getting the isbn of {} : {}".format(url, e))
         log.debug(e)
 
     try:

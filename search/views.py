@@ -86,10 +86,9 @@ class SearchForm(forms.Form):
                                         )
     q = forms.CharField(max_length=100, required=False,
                         min_length=4,
-                        label=_("Key words"),
-                        help_text=_("Part of title, of author's name, etc."),
+                        label=_("Key words, or ean/isbn"),
+                        help_text=_("Part of title, of author's name, or isbn"),
                     )
-    # isbn = forms.CharField(required=False)
 
 def get_card_type_choices():
     return [(0, _(u"All cards"))] + [(typ.id, typ.name)

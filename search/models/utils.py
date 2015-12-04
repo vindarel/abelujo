@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import string
 
 import addict
@@ -120,10 +121,13 @@ def is_isbn(it):
     - type: str
     - length of 13 or _
     """
+    # caution: method duplicate in scraperUtils
     ISBN_ALLOWED_LENGTHS = [13]
     res = False
+    pattern = re.compile("[0-9]+")
     if (type(it) == type(u'u') or type(it) == type('str'))and \
-       len(it) in ISBN_ALLOWED_LENGTHS:
+       len(it) in ISBN_ALLOWED_LENGTHS and \
+       pattern.match(it):
         res = True
 
     return res
