@@ -117,9 +117,7 @@ class CollectionSearchForm(forms.Form):
     q = forms.CharField(max_length=100,
                         required=False,
                         min_length=3,
-                        label=_(u"Search on title and authors."))
-
-    isbn = forms.CharField(required=False)
+                        label=_(u"Search on title, authors or isbn."))
 
     place = forms.ChoiceField(get_places_choices(),
                               label=_("Places"),
@@ -662,32 +660,27 @@ def collection(request):
     if request.method == "POST": #XXX that should be a GET
         form = CollectionSearchForm(request.POST)
         if form.is_valid():
-            if request.POST.has_key("isbn") and \
-               form.cleaned_data.get("isbn"):
-                cards = Card.search([form.cleaned_data.get('isbn')], to_list=True)
-
-            else:
-                card_type_id = form.cleaned_data.get("card_type")
-                if card_type_id:
-                    card_type_id = int(card_type_id)
-                publisher_id = form.cleaned_data.get("publisher")
-                if publisher_id:
-                    publisher_id = int(publisher_id)
-                place_id = form.cleaned_data.get("place")
-                if place_id:
-                    place_id = int(place_id)
-                cat_id = form.cleaned_data.get("category")
-                if cat_id:
-                    cat_id = int(cat_id)
-                words = form.cleaned_data.get("q").split()
-                cards = Card.search(words,
-                                    card_type_id=card_type_id,
-                                    publisher_id=publisher_id,
-                                    place_id=place_id,
-                                    category_id=cat_id,
-                                    to_list=True)
-                # store results in session for later re-use
-                request.session["collection_search"] = cards
+            card_type_id = form.cleaned_data.get("card_type")
+            if card_type_id:
+                card_type_id = int(card_type_id)
+            publisher_id = form.cleaned_data.get("publisher")
+            if publisher_id:
+                publisher_id = int(publisher_id)
+            place_id = form.cleaned_data.get("place")
+            if place_id:
+                place_id = int(place_id)
+            cat_id = form.cleaned_data.get("category")
+            if cat_id:
+                cat_id = int(cat_id)
+            words = form.cleaned_data.get("q").split()
+            cards = Card.search(words,
+                                card_type_id=card_type_id,
+                                publisher_id=publisher_id,
+                                place_id=place_id,
+                                category_id=cat_id,
+                                to_list=True)
+            # store results in session for later re-use
+            request.session["collection_search"] = cards
 
 
     else:
