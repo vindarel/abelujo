@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import json
@@ -225,7 +225,7 @@ def postSearch(card):
 
     try:
         info = soup.find_all(class_="information")
-        isbn = info[3].text.split('\n')[-1].strip()
+        isbn = info[4].text.split('\n')[-1].strip()
         isbn = isbn_cleanup(isbn)
         card['isbn'] = isbn
     except Exception as e:
