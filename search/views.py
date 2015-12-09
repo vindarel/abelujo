@@ -208,7 +208,6 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     query parameters:
     - source
     - q
-    - isbn
 
     type cleaned_data: dict
     return: the complete url with query params
@@ -222,8 +221,6 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     qparam['source'] = cleaned_data.get("source")
     if "q" in cleaned_data.keys():
         qparam['q'] = cleaned_data["q"]
-    if ("isbn" in cleaned_data.keys()) and cleaned_data.get('isbn'):
-        qparam['isbn'] = cleaned_data["isbn"]
     log.debug("on recherche: ", qparam)
     # construct the query parameters of the form
     # q=query+param&source=discogs
@@ -300,7 +297,6 @@ def search(request):
     page_title = ""
     data_source = SCRAPER_CHOICES[0][1][0][0]
     query = ""
-    ean_param = ""
 
     req = request.GET.copy()
     if not req.get('data_source'):
@@ -310,14 +306,9 @@ def search(request):
     if request.method == 'GET' and form.is_valid():
         data_source = form.cleaned_data['source']
         query = form.cleaned_data.get('q')
-        ean_param = form.cleaned_data.get('isbn')
-        if ean_param or query:
-            if ean_param:
-                search_terms = {"isbn": ean_param}
-                page_title = "search for %s on %s" % (ean_param, data_source)
-            elif query:
-                page_title = query[:50]
-                search_terms = [q for q in query.split()]
+        if query:
+            page_title = query[:50]
+            search_terms = [q for q in query.split()]
 
             retlist, traces = search_on_data_source(data_source, search_terms)
             if not retlist:
@@ -342,7 +333,6 @@ def search(request):
         # POST or form not valid
         form = SearchForm()
         query = None
-        ean_param = None
         # Re-display results of previous search.
         if "search_result" in request.session:
             url = request.META['HTTP_REFERER']
@@ -359,7 +349,6 @@ def search(request):
         "data_source": data_source,
         "page_title": page_title,
         "q": query,
-        "isbn": ean_param,
     })
 
 def _request_session_get(request, key):
@@ -469,8 +458,7 @@ def add(request):
         # Doesn't Django have an automatic way, really ?
         # see also our get_reverse_url(qparams, url=)
         # unidecode: transliterate unicode to ascii (unicode protection).
-        qparams = {"q": unidecode(req.get('q')),
-                   "isbn": req.get('isbn'),}
+        qparams = {"q": unidecode(req.get('q')),}
         url = url + "?" + urllib.urlencode(qparams)
 
         return HttpResponseRedirect(url)
@@ -642,7 +630,6 @@ def card_move(request, pk=None):
         "internalForm": internalForm,
         "pk": pk,
         "q": request.GET.get('q'),
-        "isbn": request.GET.get('isbn'),
         "type": params.get('type'),
         })
 
