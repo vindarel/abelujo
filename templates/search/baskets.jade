@@ -22,6 +22,8 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
+{% load ngfilter %}
+
 div(ng-controller="basketsController")
  h1 Baskets
  .col-md-3
@@ -29,12 +31,12 @@ div(ng-controller="basketsController")
      i.glyphicon.glyphicon-plus
    ul.list-group
      div(ng-repeat="it in baskets")
-        li.list-group-item(ng-click="showBasket($index)") {% verbatim %} {{ it.name }} {% endverbatim %}
-            span.badge {% verbatim %} {{ it.length }} {% endverbatim %}
+        li.list-group-item(ng-click="showBasket($index)") {{ " it.name " | ng }}
+            span.badge {{ " it.length " | ng }}
 
 
  .col-md-9
     div(ng-repeat="it in copies")
-      div {% verbatim %} {{ it.title }} {% endverbatim %}
+      div {{ " it.title " | ng }}
 
 {% endblock content %}

@@ -21,6 +21,7 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load ngfilter %}
 
 h3 {% trans "Selling cards" %}
 div.ng-cloak(ng-controller="sellController")
@@ -28,11 +29,11 @@ div.ng-cloak(ng-controller="sellController")
   div
     alert(
       ng-repeat="alert in alerts"
-      type="{% verbatim %} {{alert.level}} {% endverbatim %}"
+      type="{{ 'alert.level' | ng }}"
       close="closeAlert($item)"
       ng-click="closeAlert($item)"
     )
-      {% verbatim %} {{alert.message}} {% endverbatim %}
+      {{ 'alert.message' | ng }}
 
   form(method='post')
 
@@ -89,15 +90,15 @@ div.ng-cloak(ng-controller="sellController")
                 i.glyphicon.glyphicon-refresh
 
       div
-        span {% trans "Look for a" %} {% verbatim %} {{ card_type.name }} {% endverbatim %}
+        span {% trans "Look for a" %} {{ 'card_type.name ' | ng }}
 
       h3(ng-show="cards_selected.length")
-        {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected. Total:" %} {% verbatim %} {{ total_price }} {% endverbatim %}
+        {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }}
       div(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4
-          a(target="_blank", href="{% verbatim %} {{ card.get_absolute_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
+          a(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
           span(ng-repeat="auth in card.authors")
-            span {% verbatim %} {{auth.fields.name}} {% endverbatim %}
+            span {{ 'auth.fields.name' | ng }}
           i.glyphicon.glyphicon-warning-sign(
             ng-show="{% verbatim %} cards_selected[$index].ambiguous_sell {% endverbatim %}"
             title="{% trans 'There is a conflict with deposits.' %}")
@@ -111,7 +112,7 @@ div.ng-cloak(ng-controller="sellController")
                 label.sr-only Prix
                 input.form-control(
                   type="number", step="0.1", min=0
-                  value="{% verbatim %} {{card.price_sold}} {% endverbatim %}"
+                  value="{{ 'card.price_sold' | ng }}"
                   ng-model="{% verbatim %} cards_selected[$index].price_sold {% endverbatim %}"
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )

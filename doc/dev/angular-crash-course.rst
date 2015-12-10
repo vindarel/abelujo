@@ -86,6 +86,35 @@ When we access our root html page:
 * Angular evaluates the other directives included in the DOM and
   executes the logic of the controllers, like our "IndexController".
 
+Angularjs variable interpolation inside Django templates with ng filter
+-----------------------------------------------------------------------
+
+Angularjs and Django both use double brackets (`{{ xy }}`) for
+variable interpolation in templates. So if we leave it like that,
+Django will try to evaluate everything.
+
+A first solution is to use the `verbatim` template tag::
+
+    div {% verbatim %} {{ angularVar }} and {{ another }} {% endverbatim %}
+
+It's a bit verbose but can still be useful.
+
+We created a custom Django filter called `ngfilter` which passes the
+representation of the variable through the filter to feed it as is to
+Angularjs::
+
+      {% load ngfilter %}
+      div {{ "angularVar" | ng }} and {{ "another" | ng }}
+
+(note the quotes).
+
+A nice way would be to change Angularjs' syntax from `{{` to something
+else like `<<`, but doing so will break the directives of other
+Angularjs modules (like an angular-ui bootstrap calendar).
+
+There are more `ways < https://stackoverflow.com/questions/8302928/angularjs-with-django-conflicting-template-tags>`_ and `tricks <https://stackoverflow.com/questions/7772001/how-to-escape-or-in-django-template>`_.
+
+
 How to add a javascript package to the project
 ----------------------------------------------
 

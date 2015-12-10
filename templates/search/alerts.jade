@@ -23,13 +23,14 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load ngfilter %}
 
 h3 {% trans "Alerts" %}
 div(ng-controller="alertsController")
   div.ng-cloak.list-group(ng-repeat="alert in alerts")
-    div.list-group-item(ng-class="{% verbatim %} {'list-group-item-success': true, 'list-group-item-danger': {{ alert.card.ambiguous_sell }} } {% endverbatim %}") {% trans "Alert of the" %}  {% verbatim %} {{ alert.date_creation }} {% endverbatim %}
-        div {% trans "about the card" %} "{% verbatim %} {{ alert.card.title}} {% endverbatim %}"
-        div {% trans "conflict" %} ? {% verbatim %} {{ alert.card.ambiguous_sell }} {% endverbatim %}
-        div {% trans "related deposits" %}: {% verbatim %} {{ alert.deposits_repr }} {% endverbatim %}
+    div.list-group-item(ng-class="{{ 'alert.card.ambiguous_sell' | ng }}") {% trans "Alert of the" %}  {{ "alert.date_creation" | ng }}
+        div {% trans "about the card" %} "{{ "alert.card.title" | ng }}"
+        div {% trans "conflict" %} ? {{ "alert.card.ambiguous_sell " | ng }}
+        div {% trans "related deposits" %}: {{ "alert.deposits_repr " | ng }}
 
 {% endblock %}

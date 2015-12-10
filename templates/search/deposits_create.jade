@@ -21,13 +21,14 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load ngfilter %}
 
 h3 {% trans "New deposit" %}
 div(ng-controller="DepositCreateController")
 
  .row
     div
-      alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {% verbatim %} {{alert.message}} {% endverbatim %}
+      alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {{ 'alert.message' | ng }}
 
  .row
    .col-lg-6
@@ -71,7 +72,7 @@ div(ng-controller="DepositCreateController")
           option(value="") ---
         div
           span {% trans "Look for cards" %} 
-          span.ng-cloak(ng-show="distributor")  {% trans "whose distributor is" %} {% verbatim %} {{ distributor }} {% endverbatim %}:
+          span.ng-cloak(ng-show="distributor")  {% trans "whose distributor is" %} {{ 'distributor ' | ng }}:
         input.nullable.form-control(
           type='text'
           typeahead-loading="loadingCards"
@@ -85,7 +86,7 @@ div(ng-controller="DepositCreateController")
   .row
     div.list-group.ng-cloak(ng-show="cards_selected", ng-repeat="card in cards_selected ")
      .col-lg-9
-          div {% verbatim %} {{card.repr}} {% endverbatim %}
+          div {{ 'card.repr' | ng }}
 
      .col-lg-2
             p.input-group

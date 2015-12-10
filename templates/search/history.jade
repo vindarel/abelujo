@@ -22,6 +22,7 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load ngfilter %}
 
 
 div(ng-controller="historyController")
@@ -43,14 +44,14 @@ div(ng-controller="historyController")
           {% verbatim %}
           a(href="{{ hist.item.details_url }}") Details
           {% endverbatim %}
-          span {% trans "total sold" %}: {% verbatim %} {{hist.item.total_price_sold}} € {% endverbatim %}
+          span {% trans "total sold" %}: {{ 'hist.item.total_price_sold' | ng }}
         div(ng-repeat="card in hist.item.cards")
           {% verbatim %}
           a(href="{{ card.get_absolute_url }}")  {{ card.title }}
           {% endverbatim %}
 
        div.list-group-item(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")
-         span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "New entry" %}: ({% verbatim %} {{ hist.item.payment }} {% endverbatim %})
+         span {{ 'hist.item.created ' | ng }} {% trans "New entry" %}: ({{ 'hist.item.payment ' | ng }})
          div(ng-repeat="item in hist.item.copies")
                {% verbatim %}
                a(href="{{ item.card.get_absolute_url }}") {{ item.card.title }}
@@ -58,7 +59,7 @@ div(ng-controller="historyController")
 
        // horrible mess of tags !
        div.list-group-item(ng-if="hist.item.model === 'InternalMovement'", ng-show="showModel('InternalMovement')")
-         span {% verbatim %} {{ hist.item.created }}: {% endverbatim %} {% trans "Movement" %}: {% trans "Moved" %} {% verbatim %} {{ hist.item.nb }} {% endverbatim %} {% trans "copies" %} {% trans "from" %} {% verbatim %} {{ hist.item.origin.name }} {% endverbatim %} {% trans "to" %} {% verbatim %} {{ hist.item.dest.name }} {% endverbatim %}
+         span {{ 'hist.item.created ' | ng }} {% trans "Movement" %}: {% trans "Moved" %} {{ 'hist.item.nb ' | ng }} {% trans "copies" %} {% trans "from" %} {{ 'hist.item.origin.name ' | ng }} {% trans "to" %} {{ 'hist.item.dest.name ' | ng }}
          {% verbatim %}
          a(href="{{ hist.item.card.get_absolute_url }}")
            div  {{ hist.item.card.title }}

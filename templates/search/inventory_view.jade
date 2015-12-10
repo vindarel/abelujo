@@ -21,10 +21,11 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load ngfilter %}
 
 h3 {% trans "Inventory ongoing" %}
 div(ng-controller="inventoryNewController")
-  div {% verbatim %} {{ alerts }} {% endverbatim %}
+  div {{ 'alerts ' | ng }}
   form(method="get")
     h4 {% trans "Search in the stock" %}
     .row
@@ -37,8 +38,8 @@ div(ng-controller="inventoryNewController")
             aria-valuemin="0"
             aria-valuemax="100"
             ng-style="progressStyle"
-            title="Inventory: {{ progress_current }}% done") {% verbatim %} {{ progress_current }} {% endverbatim %}
-            span.sr-only {% verbatim %} {{ progress_current }} {% endverbatim %}
+            title="Inventory: {{ progress_current }}% done") {{ 'progress_current ' | ng }}
+            span.sr-only {{ 'progress_current ' | ng }}
 
        .col-md-3
          btn.btn.btn-primary(ng-click="save()") Save
@@ -68,12 +69,12 @@ div(ng-controller="inventoryNewController")
         span {% trans "Show all cards inventoried" %}
 
   h4.ng-cloak(ng-show="cards_to_show.length")
-    {% verbatim %} {{ getTotalCopies() }} {% endverbatim %} {% trans "titles selected." %}
+    {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
   div(ng-cloak, ng-show="cards_to_show", ng-repeat="card in cards_to_show.reverse()")
     div
      .col-md-9
-      a(href="{% verbatim %} {{ card.details_url }} {% endverbatim %}") {% verbatim %} {{card.title}} {% endverbatim %}
-      span {% verbatim %} {{card.authors_repr}} {% endverbatim %}
+      a(href="{{ 'card.details_url ' | ng }}") {{ 'card.title' | ng }}
+      span {{ 'card.authors_repr' | ng }}
       i.glyphicon.glyphicon-warning-sign(
         ng-show="{% verbatim %} cards_to_show[$index].ambiguous_sell {% endverbatim %}"
         title="{% trans 'There is a conflict with deposits.' %}")

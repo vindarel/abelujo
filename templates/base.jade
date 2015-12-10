@@ -17,6 +17,7 @@
 
 {% load i18n %}
 {% load staticfiles %}
+{% load ngfilter %}
 
 html(ng-app="abelujo")
   head
@@ -57,7 +58,7 @@ html(ng-app="abelujo")
             a(href='{% url "inventories" %}') {% trans "Inventories" %}
           li
             a(href='{% url "basket_auto_command" %}') {% trans "To command" %}
-              span.badge.ng-cloak {% verbatim %} {{auto_command_total}} {% endverbatim %}
+              span.badge.ng-cloak {{ "auto_command_total" | ng }}
           li
             a(href='{% url "baskets" %}') {% trans "Baskets" %}
           li
@@ -65,7 +66,7 @@ html(ng-app="abelujo")
 
           li
             a(href='{% url "search_alerts" %}') {% trans "Alerts" %}
-              span.badge.ng-cloak {% verbatim %} {{ alerts_open }} {% endverbatim %}
+              span.badge.ng-cloak {{ "alerts_open" | ng }}
 
 
   div.col-md-10(id="content")
