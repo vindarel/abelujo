@@ -119,19 +119,87 @@ def card_create(request, **response_kwargs):
             alerts.append({"level": ALERT_SUCCESS,
                            "message": msg})
 
+            msgs = {"status": status, "alerts": alerts, "card_id": card_obj.id}
+            if card_obj:
+                return HttpResponse(json.dumps(msgs), **response_kwargs)
+
         except Exception as e:
             log.error("Error adding a card: {}".format(e))
             alerts.append({"level": ALERT_ERROR,
                            "message":_("Woops, we can not create this card. This is a bug !")})
 
-        msgs = {"status": status, "alerts": alerts, "card_id": card_obj.id}
-        if card_obj:
-            return HttpResponse(json.dumps(msgs), **response_kwargs)
 
         return HttpResponse(json.dumps(msgs), **response_kwargs)
 
     else:
         log.error("creating a card should be done with POST.")
+
+def list_to_pairs(ll):
+    """Get a list of ints: [1, 0, 2, 0]
+
+    return a list of pairs: [ (1, 0), (2,0) ]
+
+    why ? to deal with url parameters when django and angularjs don't
+    work so well together. (card_add)
+
+    """
+    res = []
+    for i in range(len(ll) - 1):
+        if i % 2 == 0:
+            res.append( (ll[i],ll[i+1]) )
+    return res
+
+def card_add(request, **response_kwargs):
+    """Add the given card to places (=buy it), deposits and baskets.
+
+    - card_id
+    - places_ids_qties:
+    """
+    if request.method == "POST":
+        params = request.POST.copy()
+        response_kwargs["content_type"] = "application/json"
+        status = httplib.OK
+        alerts = []
+        data = []
+
+        pk = response_kwargs.pop("pk")
+        card_obj = Card.objects.get(id=pk)
+
+        distributor_id = params.get('distributor_id')
+        category_id = params.get("category_id")
+        deposits_ids_qties = params.get('deposits_ids_qties')
+        baskets_ids_qties = params.get('baskets_ids_qties')
+        places_ids_qties = params.get('places_ids_qties')
+
+        # list of tuples (id, qty to add)
+        d_tups = list_to_pairs(list_from_coma_separated_ints(deposits_ids_qties))
+        b_tups = list_to_pairs(list_from_coma_separated_ints(baskets_ids_qties))
+        p_tups = list_to_pairs(list_from_coma_separated_ints(places_ids_qties))
+
+        # distributor_obj = Distributor.objects.get(id=distributor_id)
+
+
+        for id, qty in d_tups:
+            if qty:
+                obj = Deposit.objects.get(id=id)
+                obj.add_copy(card_obj, nb=qty)
+
+        for id, qty in b_tups:
+            if qty:
+                obj = Basket.objects.get(id=id)
+                obj.add_copy(card_obj, nb=qty)
+
+        for id, qty in p_tups:
+            if qty:
+                obj = Place.objects.get(id=id)
+                obj.add_copy(card_obj, nb=qty)
+
+        if category_id:
+            cat = Category.objects.get(id=category_id)
+            card_obj.category = cat
+            card_obj.save()
+
+        return HttpResponse(json.dumps(status), **response_kwargs)
 
 def cardtype(request, **response_kwargs):
     if request.method == "GET":
@@ -221,13 +289,14 @@ def deposits(request, **response_kwargs):
     {level: int, messages: str}
     """
     msgs = {"status": httplib.OK, "messages": []}
+    response_kwargs['content_type'] = 'application/json'
+
     if request.method == "POST":
         params = request.POST.copy()
         # TODO: validation. Use django-angular.
         if params.get("distributor") == "null":
             pass #return validation error
 
-        response_kwargs['content_type'] = 'application/json'
         try:
             cards_id = list_from_coma_separated_ints(params.get("cards_id"))
             cards_qty = list_from_coma_separated_ints(params.get("cards_qty"))
@@ -259,6 +328,15 @@ def deposits(request, **response_kwargs):
 
         return HttpResponse(json.dumps(msgs), **response_kwargs)
 
+    # GET
+    else:
+        depos = Deposit.objects.all()
+        depos_list = [it.to_list() for it in depos]
+        res = {"data": depos_list,
+               "msgs": msgs,
+               "status": httplib.OK,
+               }
+        return HttpResponse(json.dumps(res), **response_kwargs)
 
 def sell(request, **response_kwargs):
 

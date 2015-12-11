@@ -16,6 +16,7 @@ from factory.django import DjangoModelFactory
 from search import models
 from search.models.api import getSellDict
 from search.models.api import list_from_coma_separated_ints
+from search.models.api import list_to_pairs
 from tests_models import SellsFactory
 from tests_models import PlaceFactory
 from tests_views import DBFixture
@@ -153,6 +154,11 @@ class ApiTest(TestCase):
         data = json.loads(resp.content)
         self.assertTrue(data[0]["name"] == self.place.name)
 
+
+class TestUtils(TestCase):
+
+    def test_list_to_pairs(self):
+        self.assertEqual(list_to_pairs([1,0,2,0]), [(1,0), (2,0)])
 
 if __name__ == '__main__':
     exit(unittest.main())

@@ -3,3 +3,16 @@
     text-decoration: line-through;
     color: grey:
 }
+
+/* small input in tables  */
+.my-table-narrow input {
+    width: 50px;
+}
+
+.my-narrow {
+    width: 250px;
+}
+
+.text-left {
+    text-align: left;
+}

@@ -1491,6 +1491,7 @@ class Deposit(TimeStampedModel):
 
     def to_list(self):
         ret = {
+            "id": self.id,
             "name": self.name,
             "distributor": self.distributor.name if self.distributor else "",
         }
@@ -1557,6 +1558,11 @@ class Deposit(TimeStampedModel):
             log.error(u"Error while adding a card to the deposit: {}".format(e))
             return msgs.append({'level': messages.ERROR,
                                 'message': _("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !")})
+
+    def add_copy(self, card_obj, nb=1):
+        """Add a card object to this deposit.
+        """
+        self.add_copies([card_obj], nb=nb)
 
     @staticmethod
     def get_from_kw(**kwargs):
