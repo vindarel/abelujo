@@ -39,7 +39,8 @@ var appFiles = [
 ];
 
 var vendorCSSFiles = [
-      'static/bower_components/angular-ui-select/dist/select.min.css',
+    // set headers in base.jade !
+    'static/bower_components/angular-ui-select/dist/select.min.css',
     'static/bower_components/c3/c3.min.css',
 ];
 
