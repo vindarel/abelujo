@@ -14,6 +14,13 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.total_places_discount = 0
     $scope.total_deposits = 0
 
+    # Current language ? for url redirection.
+    $scope.language = "en"
+    re = /\/([a-z][a-z])\//
+    res = $window.location.pathname.match(re)
+    if res
+        $scope.language = res[1]
+
     $scope.update_total_places = !->
         # total withOUT discount
         $scope.total_places = ($scope.places |> map (.quantity) |> sum ) * $scope.card.price
@@ -117,13 +124,15 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
             places_ids_qties: places_ids_qties
             deposits_ids_qties: deposits_ids_qties
             baskets_ids_qties: baskets_ids_qties
-            category_id: $scope.category.pk
+
+        if $scope.category.pk
+            params.category_id = $scope.category.pk
 
         $http.post "/api/card/#{$scope.card.id}/add/", params
         .then (response) !->
             # $scope.alerts = response.data.alerts
             if response.status == 200
-                $window.location.href = "/en/search/"
+                $window.location.href = "/#{$scope.language}/search#{$window.location.search}"
 
     # Set focus:
     angular.element('#default-input').trigger('focus');
