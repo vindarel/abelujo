@@ -172,12 +172,10 @@ def card_add(request, **response_kwargs):
         places_ids_qties = params.get('places_ids_qties')
 
         # list of tuples (id, qty to add)
+        # those params are ints separated by comas.
         d_tups = list_to_pairs(list_from_coma_separated_ints(deposits_ids_qties))
         b_tups = list_to_pairs(list_from_coma_separated_ints(baskets_ids_qties))
         p_tups = list_to_pairs(list_from_coma_separated_ints(places_ids_qties))
-
-        # distributor_obj = Distributor.objects.get(id=distributor_id)
-
 
         for id, qty in d_tups:
             if qty:

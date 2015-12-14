@@ -15,11 +15,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.total_deposits = 0
 
     # Current language ? for url redirection.
-    $scope.language = "en"
-    re = /\/([a-z][a-z])\//
-    res = $window.location.pathname.match(re)
-    if res
-        $scope.language = res[1]
+    $scope.language = utils.url_language($window.location.pathname)
 
     $scope.update_total_places = !->
         # total withOUT discount

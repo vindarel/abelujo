@@ -10,8 +10,15 @@ utils.factory 'utils', ->
         # Encode them like url parameters.
 
         transformRequestAsFormPost: (obj) ->
-            # obj: a list of simple types, not dicts
+            # obj: with simple types, not dicts
             str = []
-            for p of obj #of / in breaking inventory or ok ? TODO:
+            for p of obj
                 str.push encodeURIComponent(p) + "=" + encodeURIComponent obj[p]
             str.join("&")
+
+        url_language: (url) ->
+            re = /\/([a-z][a-z])\//
+            res = url.match(re)
+            if res
+                return res[1]
+            "en"
