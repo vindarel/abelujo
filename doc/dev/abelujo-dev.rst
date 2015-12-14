@@ -145,6 +145,21 @@ Run:::
 This will add cards, publishers and everything to the database so than
 you can test it for real.
 
+Populate the DB with real initial data
+--------------------------------------
+
+We may enjoy some initial data to start working with Abelujo: typical
+book categories, default places and basket(s), etc. They will be
+different depending on the user's needs and language.
+
+We wrote a command to help define these in the most simple text file,
+and create them in the database. The usage is::
+
+    ./manage.py runscript add_objects --script-args=scripts/categories_fr.yaml
+
+This tool isn't considered finished. For more info, see the sources !
+
+
 Write custom CSS
 ----------------
 

@@ -1,0 +1,2 @@
+model: Category
+from_string: "Histoire Economie Philosophie Sociologie Neurosciences"
