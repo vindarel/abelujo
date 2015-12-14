@@ -23,3 +23,11 @@ utils.factory 'utils', ->
             if res
                 return res[1]
             "en"
+
+        url_id: (url) ->
+            # extract an id
+            re = /\/(\d+)/
+            res = url.match(re)
+            if res and res.length == 2
+                return res[1]
+            null
