@@ -17,6 +17,7 @@ utils.factory 'utils', ->
             str.join("&")
 
         url_language: (url) ->
+            # extract the language from an url like /fr/foo/bar
             re = /\/([a-z][a-z])\//
             res = url.match(re)
             if res

@@ -24,7 +24,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-div(ng-controller="cardAddController")
+div.ng-cloak(ng-controller="cardAddController")
   h3 {{ "card.title" | ng}} ({{ "card.price" | ng }}€)
   .row
     table
@@ -47,6 +47,19 @@ div(ng-controller="cardAddController")
           a(target="_blank", href="/admin/search/distributor/add")
                 i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a distributor" %}')
 
+  .row(ng-show="filtered_deposits.length")
+      div {% trans "Add to following deposits" %}:
+      table.table.table-condensed.table-striped.my-table-narrow
+        tr(ng-repeat="it in filtered_deposits")
+         td.my-narrow {{ "it.name" | ng }} ({{ "it.distributor" | ng }})
+         td
+           input(type="number", min=0
+            ng-model="deposits[$index].quantity"
+            ng-change="update_total_deposits()")
+        tr
+          td
+          td {% trans "total" %}: {{ "total_deposits" | ng }}
+
   .row
       div {% trans "Achat d'exemplaires pour chaque lieu:" %}
       table.table.table-condensed.my-table-narrow
@@ -61,24 +74,14 @@ div(ng-controller="cardAddController")
           td
           td.text-left {% trans "with discount" %}: {{ "total_places_discount" | ng }}
 
-      div {% trans "Add to following deposits" %} ({{ "distributor.selected.name" | ng }}):
-      table.table.table-condensed.table-striped.my-table-narrow
-        tr(ng-repeat="it in filtered_deposits")
-         td.my-narrow {{ "it.name" | ng }} ({{ "it.distributor" | ng }})
-         td
-           input(type="number", min=0
-            ng-model="deposits[$index].quantity"
-            ng-change="update_total_deposits()")
-        tr
-          td
-          td {% trans "total" %}: {{ "total_deposits" | ng }}
-
+  .row
       div {% trans "Add to baskets" %}:
       table.table.table-condensed.table-striped.my-table-narrow
         tr(ng-repeat="it in baskets")
           td.my-narrow {{ "it.name" | ng }}
           td
             input(type="number", min=0, ng-model="baskets[$index].quantity")
+
 
   input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate()")
 
