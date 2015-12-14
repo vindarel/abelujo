@@ -35,12 +35,14 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
     )
       {{ 'alert.message' | ng }}
 
- form(ng-show="card")
+ form(ng-show="card", name="form")
   .row
     .col-lg-12
         div.form-group
             label {% trans "Title" %}:
-            input.form-control(type="text", ng-model="title", required, id="input-title")
+            input.form-control(type="text", ng-model="title", required="", id="input-title", name="title")
+            div.form-control(ng-show="form.$submitted || form.title.$touched")
+              span.help-block(ng-show="form.title.$error.required") {% trans "The title is required" %}
 
   .row
     .col-lg-4
@@ -121,7 +123,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
                 i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a distributor" %}')
 
 
-  input.btn.btn-primary(value="{% trans 'View card' %}", ng-click="validate('view')")
-  input.btn.btn-primary(value="{% trans 'Buy...' %}", ng-click="validate('buy')")
+  input.btn.btn-primary(value="{% trans 'View card' %}", ng-click="validate('view')", type="submit", ng-disabled="form.$invalid")
+  input.btn.btn-primary(value="{% trans 'Buy...' %}", ng-click="validate('buy')", type="submit", ng-disabled="form.$invalid")
 
 {% endblock content %}

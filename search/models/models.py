@@ -244,6 +244,8 @@ class CardType(models.Model):
 
     @staticmethod
     def search(query):
+        if not query:
+            query=""
         if query == "":
             log.info("CardType: we return everything")
             return CardType.objects.all()
@@ -732,6 +734,9 @@ class Card(TimeStampedModel):
 
             # Update fields, except isbn (as with "else" below)
             card_obj.distributor = card_distributor
+            card_obj.save()
+
+            card_obj.isbn = isbn
             card_obj.save()
 
         else:
