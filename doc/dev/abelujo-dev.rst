@@ -145,6 +145,15 @@ Run:::
 This will add cards, publishers and everything to the database so than
 you can test it for real.
 
+Write custom CSS
+----------------
+
+To customize the look of Abelujo, you can set your CSS rules in each
+app ``<name of the app>/static/<name of the app>/style.css`` file,
+i.e. in ``search/static/search/style.css``. This file will be loaded
+automatically by Django, and collected when we run `collectstatic`
+command.
+
 
 Write JavaScript in Livescript
 ------------------------------
