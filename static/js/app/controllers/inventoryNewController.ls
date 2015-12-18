@@ -17,14 +17,16 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # All the cards inventoried, even the ones we don't want to show anymore.
     $scope.all = []
     # Boolean to show or hide all the cards (hide by default)
-    $scope.showAll = false
+    $scope.showAll = false  # toggled by the checkbox itself.
+    $scope.cards_to_show = []
+
 
     $scope.tmpcard = undefined
     # A list of already selected cards' ids
     $scope.selected_ids = []
     existing_card = undefined
 
-    $scope.toggleShowAll = !->
+    $scope.setCardsToShow = !->
         " Show all the cards inventoried, or the current ones. "
         if $scope.showAll
             $scope.cards_to_show = $scope.all
@@ -85,7 +87,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
     # Add the choice of the autocomplete.
     # card_repr: the string representation.
-    $scope.add_selected_card = (card_repr) ->
+    $scope.add_selected_card = (card_repr) !->
         $scope.tmpcard = _.filter $scope.cards_fetched, (it) ->
             it.repr == card_repr.repr
         $scope.tmpcard = $scope.tmpcard[0].item
@@ -107,8 +109,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
                 $scope.cards_selected.push existing_card
 
         $scope.copy_selected = undefined
+        $scope.setCardsToShow() # needed for init
 
-    $scope.remove_from_selection = (index_to_rm) ->
+    $scope.remove_from_selection = (index_to_rm) !->
         $scope.selected_ids.splice(index_to_rm, 1)
         $scope.cards_selected.splice(index_to_rm, 1)
         $scope.all.splice(index_to_rm, 1)

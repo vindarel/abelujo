@@ -65,7 +65,7 @@ div(ng-controller="inventoryNewController")
 
      .col-lg-3
 
-        input(type="checkbox", ng-model="showAll", ng-change="toggleShowAll()")
+        input(type="checkbox", ng-model="showAll", ng-change="setCardsToShow()")
         span {% trans "Show all cards inventoried" %}
 
   h4.ng-cloak(ng-show="cards_to_show.length")
