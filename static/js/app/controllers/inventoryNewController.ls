@@ -115,6 +115,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $scope.selected_ids.splice(index_to_rm, 1)
         $scope.cards_selected.splice(index_to_rm, 1)
         $scope.all.splice(index_to_rm, 1)
+        focus()
 
     $scope.getTotalCopies = ->
         map (.quantity), $scope.cards_selected
@@ -151,6 +152,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             return response.data.status
 
     # Set focus:
-    angular.element('#default-input').trigger('focus');
-
+    focus = !->
+        angular.element('#default-input').trigger('focus');
+    focus()
 ]
