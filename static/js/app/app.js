@@ -11,6 +11,7 @@ angular.module('abelujo', [
     'ui.router',
     'ui.select',
     'ui.bootstrap',
+    'smart-table',
 
     // application level:
     'abelujo.filters',
