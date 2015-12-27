@@ -14,6 +14,6 @@ angular.module("abelujo").controller('alertsController', ['$http', '$scope', '$t
         return gettext("yes");
     };
 
-    $window.parent.document.title = "Abelujo - " + gettext("Sells");
+    $window.document.title = "Abelujo - " + gettext("Alerts");
 
   }]);

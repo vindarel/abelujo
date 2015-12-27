@@ -155,4 +155,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     focus = !->
         angular.element('#default-input').trigger('focus');
     focus()
+
+    $window.document.title = "Abelujo - " + gettext("Inventory")
+
 ]

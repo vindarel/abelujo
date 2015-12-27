@@ -1,4 +1,4 @@
-angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', '$filter', function ($http, $scope, $timeout, utils, $filter) {
+angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', function ($http, $scope, $timeout, utils, $filter, $window) {
     // utils: in services.js
 
       // set the xsrf token via cookies.
@@ -215,4 +215,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
     // Set focus:
     angular.element('#default-input').trigger('focus');
+
+    $window.document.title = "Abelujo - " + gettext("Sell");
+
   }]);

@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', '$timeout', ($http, $scope, $timeout) !->
+angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', '$timeout', '$window', ($http, $scope, $timeout, $window) !->
 
     {sum, map, filter, lines} = require 'prelude-ls'
 
@@ -42,5 +42,6 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
             color: do
                 pattern: ['#ff8c00', '#ffd700', '#6495ed']
 
+    $window.document.title = "Abelujo"
 
 ]

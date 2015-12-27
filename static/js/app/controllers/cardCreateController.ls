@@ -143,4 +143,6 @@ angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$
     # Set focus:
     angular.element('#default-input').trigger('focus')
 
+    $window.document.title = "Abelujo - " + gettext("new card")
+
 ]

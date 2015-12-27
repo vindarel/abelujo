@@ -204,4 +204,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     // Focus:
     angular.element('#default-input').trigger('focus');
 
+    $window.document.title = "Abelujo - " + gettext("Deposits")
+
 }]);

@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', ($http, $scope, $timeout, $filter) !->
+angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', ($http, $scope, $timeout, $filter, $window) !->
 
     $scope.baskets = []
     $scope.copies = []
@@ -20,4 +20,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
         else
             $scope.copies = cur.copies
+
+    $window.document.title = "Abelujo - " + gettext("Baskets")
+
 ]

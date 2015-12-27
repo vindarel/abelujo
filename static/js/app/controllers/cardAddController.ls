@@ -133,4 +133,6 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     # Set focus:
     angular.element('#default-input').trigger('focus');
 
+    $window.document.title = "Abelujo - " + gettext("Add a card")
+
 ]

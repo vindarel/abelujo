@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', ($http, $scope, $timeout, $filter) !->
+angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', ($http, $scope, $timeout, $filter, $window) !->
 
     $scope.history = []
     $scope.filterModel = 'All'
@@ -22,5 +22,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             return true
         return false
 
+
+    $window.document.title = "Abelujo - " + gettext("History")
 
 ]
