@@ -29,41 +29,49 @@ div(ng-controller="historyController")
     h3 {% trans "History" %}
 
     span
+      input.btn.btn-default(value="All", ng-click="filterModel='All'"))
       input.btn.btn-default(value="Entries", ng-click="filterModel='Entry'")
       input.btn.btn-default(value="Sells", ng-click="filterModel='Sell'"))
       input.btn.btn-default(value="Movements", ng-click="filterModel='InternalMovement'"))
-      input.btn.btn-default(value="All", ng-click="filterModel='All'"))
 
-    div(
-      ng-repeat="hist in history"
-    )
-      ul.ng-cloak.list-group
 
-       div.list-group-item(ng-if="hist.item.model === 'Sell'", ng-show="showModel('Sell')")
-        span {% verbatim %} {{hist.item.created }}: sold {{hist.item.cards.length}} {% endverbatim %} {% trans "cards" %}:  
-          {% verbatim %}
-          a(href="{{ hist.item.details_url }}") Details
-          {% endverbatim %}
-          span {% trans "total sold" %}: {{ 'hist.item.total_price_sold' | ng }}
-        div(ng-repeat="card in hist.item.cards")
-          {% verbatim %}
-          a(href="{{ card.get_absolute_url }}")  {{ card.title }}
-          {% endverbatim %}
+    div(ng-repeat="hist in history")
+      .row.ng-cloak
 
-       div.list-group-item(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")
-         span {{ 'hist.item.created ' | ng }} {% trans "New entry" %}: ({{ 'hist.item.payment ' | ng }})
-         div(ng-repeat="item in hist.item.copies")
+       div(ng-if="hist.item.model === 'Sell'", ng-show="showModel('Sell')")
+        .col-md-2
+          span {{ 'hist.item.created' | ng }}
+        .col-md-2
+           span {% trans "Sell" %}
+        .col-md-8
+          span sold {{ 'hist.item.cards.length' | ng }} {% trans "cards" %}:  
+            span {% trans "total sold" %}: {{ 'hist.item.total_price_sold' | ng }}
+            a(href="{{ hist.item.details_url }}") Details
+          div(ng-repeat="card in hist.item.cards")
+            a(href="{{ card.get_absolute_url }}")  {{ 'card.title' | ng }}
+
+       div(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")
+         .col-md-2
+           span {{ 'hist.item.created ' | ng }}
+         .col-md-2
+           span {% trans "Entry" %}
+         .col-md-8
+            div(ng-repeat="item in hist.item.copies")
                {% verbatim %}
                a(href="{{ item.card.get_absolute_url }}") {{ item.card.title }}
                {% endverbatim %}
 
-       // horrible mess of tags !
-       div.list-group-item(ng-if="hist.item.model === 'InternalMovement'", ng-show="showModel('InternalMovement')")
-         span {{ 'hist.item.created ' | ng }} {% trans "Movement" %}: {% trans "Moved" %} {{ 'hist.item.nb ' | ng }} {% trans "copies" %} {% trans "from" %} {{ 'hist.item.origin.name ' | ng }} {% trans "to" %} {{ 'hist.item.dest.name ' | ng }}
-         {% verbatim %}
-         a(href="{{ hist.item.card.get_absolute_url }}")
+       div(ng-if="hist.item.model === 'InternalMovement'", ng-show="showModel('InternalMovement')")
+        .col-md-2
+           span {{ 'hist.item.created ' | ng }}
+        .col-md-2
+          span {% trans "Movement" %}
+        .col-md-8
+          span {% trans "Moved" %} {{ 'hist.item.nb ' | ng }} {% trans "copies" %} {% trans "from" %} {{ 'hist.item.origin.name ' | ng }} {% trans "to" %} {{ 'hist.item.dest.name ' | ng }}
+          {% verbatim %}
+          a(href="{{ hist.item.card.get_absolute_url }}")
            div  {{ hist.item.card.title }}
-         {% endverbatim %}
+          {% endverbatim %}
 
   a(href="") more...
 
