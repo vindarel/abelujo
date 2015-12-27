@@ -27,10 +27,19 @@
 
 h3 {% trans "Alerts" %}
 div(ng-controller="alertsController")
-  div.ng-cloak.list-group(ng-repeat="alert in alerts")
-    div.list-group-item(ng-class="{{ 'alert.card.ambiguous_sell' | ng }}") {% trans "Alert of the" %}  {{ "alert.date_creation" | ng }}
-        div {% trans "about the card" %} "{{ "alert.card.title" | ng }}"
-        div {% trans "conflict" %} ? {{ "alert.card.ambiguous_sell " | ng }}
-        div {% trans "related deposits" %}: {{ "alert.deposits_repr " | ng }}
+  // with smart-table:
+  table.table.table-striped(st-table="alerts")
+    thead
+      th {% trans "Date" %}
+      th {% trans "Title" %}
+      th {% trans "Conflict" %}
+      th {% trans "Related deposit" %}
+
+    tbody
+      tr(ng-repeat="alert in alerts")
+        td {{ "alert.date_creation" | ng }}
+        td {{ "alert.card.title" | ng }}
+        td {{ "print_ambiguous($index)" | ng }}
+        td {{ "alert.deposits_repr " | ng }}
 
 {% endblock %}

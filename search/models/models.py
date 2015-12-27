@@ -2063,6 +2063,7 @@ class Alert(models.Model):
         Return: a 3-tuple (list of alerts, status, list of messages).
         """
         alerts = Alert.objects.all().order_by("-date_creation")
+        # todo: the alert may be resolved if we sold the remaining copies.
         msgs = []
         status = STATUS_SUCCESS
         if to_list:

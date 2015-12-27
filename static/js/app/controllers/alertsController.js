@@ -1,4 +1,4 @@
-angular.module("abelujo").controller('alertsController', ['$http', '$scope', '$timeout', 'utils', '$filter', function ($http, $scope, $timeout, utils, $filter) {
+angular.module("abelujo").controller('alertsController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', function ($http, $scope, $timeout, utils, $filter, $window) {
     // utils: in services.js
 
     $http.get("/api/alerts")
@@ -6,5 +6,14 @@ angular.module("abelujo").controller('alertsController', ['$http', '$scope', '$t
             $scope.alerts = response.data.data;
             return response.data.data;
         });
+
+    $scope.print_ambiguous = function(i) {
+        if ($scope.alerts[i].card.ambiguous_sell == false) {
+            return gettext("not any more");
+        }
+        return gettext("yes");
+    };
+
+    $window.parent.document.title = "Abelujo - " + gettext("Sells");
 
   }]);
