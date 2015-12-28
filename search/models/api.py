@@ -561,5 +561,14 @@ def stats(request, **kwargs):
     stats = Stats()
     stock = stats.stock()
     kwargs["content_type"] = "application/json"
-
     return HttpResponse(stock, **kwargs)
+
+def stats_sells_month(request, **kwargs):
+    """Return the 10 best sells of this month.
+    """
+    LIMIT = 10
+    kwargs["content_type"] = "application/json"
+    stats = Stats()
+    res = stats.best_sells_month()[:LIMIT]
+
+    return HttpResponse(json.dumps(res), **kwargs)

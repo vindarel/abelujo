@@ -63,6 +63,7 @@ apipatterns = patterns("",
     url(r'^api/inventories/(?P<pk>\d+)/update/', 'search.models.api.inventories_update', name="api_inventories_update"),
     url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
 
+    url(r'^api/stats/sells/month', 'search.models.api.stats_sells_month', name='api_stats_sells_month'),
     url(r'^api/stats/', 'search.models.api.stats', name='api_stats'),
 
     # Examples:

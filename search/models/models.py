@@ -1829,23 +1829,30 @@ class Sell(models.Model):
         return reverse("sell_details", args=(self.id,))
 
     @staticmethod
-    def search(card_id=None, date_min=None):
+    def search(card_id=None, date_min=None, count=False):
         """Search for the given card id in sells more recent than "date_min".
 
-        - card_id: int
+        - card_id: int. If not given, searches in all.
         - date_min: date obj
+        - count: if True, only return the count() of the result, not the result list.
 
         return: a list of Sell objects.
         """
         sells = []
         try:
-            sells = Sell.objects.filter(copies__id=card_id)
+            if card_id:
+                sells = Sell.objects.filter(copies__id=card_id)
+            else:
+                sells = Sell.objects.all()
             if date_min:
                 # dates must be timezone.now() for precision.
                 sells = sells.filter(created__gt=date_min)
         except Exception as e:
             log.error("search for sells of card id {}: ".format(card_id), e)
             return sells
+
+        if count:
+            return sells.count()
 
         return sells.all()
 
@@ -2240,5 +2247,34 @@ class Stats(object):
 
         if to_json:
             res = json.dumps(res)
+
+        return res
+
+    def best_sells_month(self):
+        """Best sells of the current month.
+        """
+        # Get the sells since the beginning of this month
+        now = timezone.now()
+        month_beg = now - timezone.timedelta(days=now.day - 1)
+        sells_obj = Sell.search(date_min=month_beg)
+
+        # Add the quantity sold of each card.
+        best_sells = {} # title -> qty
+        for sell in sells_obj:
+            soldcards = sell.soldcards_set.all()
+            for soldcard in soldcards:
+                title = soldcard.card.title
+                qty = soldcard.quantity
+                if not best_sells.get("title"):
+                    best_sells[title] = 0
+                best_sells[title] += qty
+
+        # Put into a list.
+        res = []
+        for (title, qty) in best_sells.iteritems():
+            res.append({'title': title, 'quantity': qty})
+
+        # Sort by decreasing qty
+        res = sorted(res, key=lambda it: it['quantity'], reverse=True)
 
         return res

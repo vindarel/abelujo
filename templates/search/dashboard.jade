@@ -33,8 +33,23 @@ div(ng-controller="dashboardController", ng-cloak="stats")
       div(ng-show="stats")
         div {% verbatim %} {{stats.nb_cards.label}}: {{stats.nb_cards.value}} {% endverbatim %}
         div {% verbatim %} {{ stats.nb_books.label}}: {{stats.nb_books.value }} {% endverbatim %}
-    .col-lg-6
       div(id="chart")
+
+    .col-lg-6
+      h3 {% trans "Best 10 sells of this month" %}
+      table.table.table-striped(st-table="sells_month")
+        thead
+          tr
+            th {% trans "Title" %}
+            th {% trans "Quantity sold" %}
+        tbody
+          tr(ng-repeat="sell in sells_month")
+            th {{ 'sell.title' | ng }}
+            th {{ 'sell.quantity' | ng }}
+        tfoot
+          tr
+            td.text-center(colspan="5")
+              div(st-pagination="", st-items-by-page="10")
 
   .row
     .col-lg-6

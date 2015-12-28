@@ -3,6 +3,8 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     {sum, map, filter, lines} = require 'prelude-ls'
 
     $scope.stats = undefined
+    $scope.sells_month = {}
+
 
     $http.get "/api/stats/"
     .then (response) !->
@@ -41,6 +43,10 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
                 ]
             color: do
                 pattern: ['#ff8c00', '#ffd700', '#6495ed']
+
+    $http.get "/api/stats/sells/month"
+    .then (response) !->
+        $scope.sells_month = response.data
 
     $window.document.title = "Abelujo"
 
