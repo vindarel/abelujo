@@ -65,7 +65,7 @@ class DepositFactory(DjangoModelFactory):
     name = factory.Sequence(lambda n: "deposit test %d" % n)
     distributor = None
     dest_place = None
-    due_date = None
+    due_date = datetime.date.today() + datetime.timedelta(days=30)
 
 class DistributorFactory(DjangoModelFactory):
     class Meta:
@@ -380,14 +380,17 @@ class TestBaskets(TestCase):
 class TestDeposits(TestCase):
 
     def setUp(self):
+        # a distributor
         self.distributor = DistributorFactory()
         self.distributor.save()
         self.goldman = Author(name="goldman")
         self.goldman.save()
+        # two cards, one with the distributor
         self.card = CardFactory()
         self.card.authors.add(self.goldman)
         self.card2 = CardFactory(distributor=self.distributor)
         self.card2.authors.add(self.goldman)
+        # a deposit with the distributor
         self.deposit = DepositFactory(distributor=self.distributor)
         self.place = PlaceFactory()
         self.place.add_copy(self.card2)
@@ -583,6 +586,13 @@ class TestDeposits(TestCase):
         balance = co.balance()
         self.assertEqual(1, balance["cards"][0][1].nb_current)
         self.assertEqual(0, balance["cards"][0][1].nb_sells)
+
+    def test_next_due_dates(self):
+        """Get which deposits we have to pay soon.
+        """
+        next = Deposit.next_due_dates(to_list=True)
+        self.assertEqual(next[0]['id'], self.deposit.id)
+        self.assertEqual(next[0]['due_date'], self.deposit.due_date.isoformat())
 
 class TestSells(TestCase):
 

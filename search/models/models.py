@@ -1495,10 +1495,14 @@ class Deposit(TimeStampedModel):
         # return quote(self.name)
 
     def to_list(self):
+        return self.to_dict()
+
+    def to_dict(self):
         ret = {
             "id": self.id,
             "name": self.name,
             "distributor": self.distributor.name if self.distributor else "",
+            "due_date": self.due_date.isoformat() if self.due_date else "",
         }
         return ret
 
@@ -1523,6 +1527,28 @@ class Deposit(TimeStampedModel):
                              (copy.title, cur_dist, distributor)})
 
         return filtered, msgs
+
+    @staticmethod
+    def next_due_dates(to_list=False, count=None):
+        """What are the deposits we have to pay soon ?
+
+        - count: number of results to return, all by default.
+        - to_list: if True, return a python list of dicts, not Deposit objects
+
+        return: a list of Deposit objects, or a list of dict.
+        """
+        today = datetime.date.today()
+        next = Deposit.objects.filter(due_date__gt=today).order_by('due_date')
+
+        if count:
+            next = next[:count]
+        else:
+            next = next.all()
+
+        if to_list:
+            next = [it.to_dict() for it in next]
+
+        return next
 
     def add_copies(self, copies, nb=1, quantities=[]):
         """Add the given list of copies objects to this deposit (if their
