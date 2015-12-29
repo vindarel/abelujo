@@ -336,6 +336,20 @@ def deposits(request, **response_kwargs):
                }
         return HttpResponse(json.dumps(res), **response_kwargs)
 
+def deposits_due_dates(request, **response_kwargs):
+    """Get which deposits are to be paid in a (near) future.
+    """
+    if request.method == 'GET':
+        response_kwargs["content_type"] = "application/json"
+
+        try:
+            depos = Deposit.next_due_dates(to_list=True)
+        except Exception as e:
+            log.error(e)
+
+        res = json.dumps(depos)
+        return HttpResponse(res, **response_kwargs)
+
 def sell(request, **response_kwargs):
 
     """requested data: a list of dictionnaries with "id", "price_sold",

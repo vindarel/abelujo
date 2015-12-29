@@ -53,12 +53,25 @@ div(ng-controller="dashboardController", ng-cloak="stats")
 
   .row
     .col-lg-6
-      div(id="chartNoStock")
+      h3 {% trans "Next deposits to pay" %}
+      table.table.table-striped
+        thead
+          tr
+            th {% trans "Deposit" %}
+            th {% trans "Distributor" %}
+            th {% trans "due date" %}
+        tbody
+          tr(ng-repeat="depo in deposits")
+            th {{ 'depo.name' | ng }}
+            th {{ 'depo.distributor' | ng }}
+            th {{ 'depo.due_date' | ng }}
+
     .col-lg-6
       h3 {% trans "Comfort of the stock" %}
       div(ng-show="stats")
         div {% verbatim %} {{stats.nb_cards_no_stock.label}}: {{stats.nb_cards_no_stock.value}} {% endverbatim %}
         div {% verbatim %} {{ stats.nb_cards_one_copy.label}}: {{stats.nb_cards_one_copy.value }} {% endverbatim %}
+      div(id="chartNoStock")
 
   .row
     .col-lg-6

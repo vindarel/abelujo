@@ -53,6 +53,7 @@ apipatterns = patterns("",
 
     url(r'^api/distributors', 'search.models.api.distributors', name="api_distributors"),
     url(r'^api/publishers$', 'search.models.api.publishers', name="api_publishers"),
+    url(r'^api/deposits/due_dates/$', 'search.models.api.deposits_due_dates', name="api_deposits_due_dates"),
     url(r'^api/deposits/?$', 'search.models.api.deposits', name="api_deposits"),
     url(r'^api/sell$', 'search.models.api.sell', name="api_sell"),
     url(r'^api/history$', 'search.models.api.history', name="api_history"),
