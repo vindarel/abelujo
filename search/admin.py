@@ -50,13 +50,19 @@ class BillAdmin(admin.ModelAdmin):
 
     list_display = ("name", "ref", "distributor", "total")
 
+class DepositAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Deposit
+
+    list_display = ("name", "distributor", "dest_place", "due_date", "auto_command")
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Category)
-admin.site.register(Deposit)
+admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
 admin.site.register(Place)
 admin.site.register(PlaceCopies)
