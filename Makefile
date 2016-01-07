@@ -45,6 +45,7 @@ update:
 	python manage.py migrate
 	gulp
 	@python manage.py collectstatic --noinput
+	make translation-compile 	# gunicorn needs a restart
 
 migrate:
 	python manage.py migrate
@@ -180,7 +181,7 @@ translation-files:
 	django-admin.py makemessages -d djangojs --ignore="static/bower_components/*" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
 
 translation-compile:
-	django-admin.py compilemessages
+	django-admin.py compilemessages 	# gunicorn needs a restart
 
 clean:
 	find . -name "*.pyc" -exec rm {} +
