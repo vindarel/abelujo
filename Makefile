@@ -174,10 +174,10 @@ html: doc
 # doc: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#localization-how-to-create-language-files
 translation-files:
 	# py, html, jade files and all locales:
-	python manage.py makemessages -a -e py,html,jade
+	python manage.py makemessages --ignore="collectedstatic/*" --ignore="node_modules/*" -a -e py,html,jade
 	# Same for js files:
 	# (we may want to translate js in admin/)
-	django-admin.py makemessages -d djangojs --ignore="static/bower_components/*" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" -a
+	django-admin.py makemessages -d djangojs --ignore="static/bower_components/*" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
 
 translation-compile:
 	django-admin.py compilemessages

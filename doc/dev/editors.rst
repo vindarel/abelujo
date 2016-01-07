@@ -6,7 +6,7 @@ Here we share tips on our favorite(s) editors. Indeed, it must assist
 you in many areas: development in python and javascript (syntax
 highlighting, code checker, ...), development with AngularJS,
 documentation writing, json editing, project management, and why not
-test runner and shell interface.
+as a test runner and a shell.
 
 
 Emacs
@@ -99,6 +99,15 @@ Shell interaction
 ~~~~~~~~~~~~~~~~~
 
 See http://wikemacs.org/wiki/shell
+
+Translating po files
+~~~~~~~~~~~~~~~~~~~~
+
+See the
+[po-mode](https://raw.githubusercontent.com/andialbrecht/emacs-config/master/vendor/po-mode.el)
+and [its
+documentation](https://www.gnu.org/software/gettext/manual/html_node/Installation.html). When
+activated, press `u` to go to the next unread entry and type Enter to edit it.
 
 
 See also
