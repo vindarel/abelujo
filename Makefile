@@ -163,9 +163,10 @@ odsimport:
 	python manage.py runscript odsimport --script-args=$(odsfile)
 
 doc:
-	@cd doc/dev/ && make html
+	# the chmod is for the host server to serve the files.
+	@cd doc/dev/ && make html && chmod 777 -R _build/html/
 
-publish:
+publish: doc
 	# publish on dev.abelujo.cc
 	@rsync -avzr doc/dev/_build/html/ $(ABELUJO_USER)@$(ABELUJO_SERVER):$(ABELUJO_HTDOCS)
 
