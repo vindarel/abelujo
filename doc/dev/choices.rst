@@ -1,36 +1,21 @@
 Technical choices
 =================
 
-Tox
----
 
-`Tox <https://testrun.org/tox/latest/>`_ is a generic virtualenv
-management and test command line tool we can use for:
-
-- checking our package installs correctly with different Python
-  versions and interpreters
-- running our tests in each of the environments, configuring our
-   test tool of choice
-- acting as a frontend to Continuous Integration servers, greatly
-    reducing boilerplate and merging CI and shell-based testing.
-
-Abelujo only runs on python2.7 at the moment. Tox helps us test that
-our application installs and runs correctly in a fresh virtual
-environment.
-
-
-Why AngularJS and not JQuery/Ember/<project xxx> ?
---------------------------------------------------
+Why AngularJS ?
+---------------
 
 `AngularJS <https://angularjs.org/>`_ is a Model-View-Controller
 framework to build dynamic user interfaces. It does double-data
 binding at its core.
 
+Why not JQuery, Ember or <anothe popular JS framework> ?
+
 Angular isn't comparable with JQuery. See the basics: https://angularjs.org/#the-basics
 
 Why not a simple library that does double data binding (like view.js)
 ? Because we will use all the power of Angular (we need js functions
-as controllers and the like).
+as controllers, unit tests, end to end tests, and the like).
 
 Ember has a similar scope. But besides technical details, it appears
 we already have significant experience with Angular.
@@ -131,3 +116,35 @@ with its `prelude library <http://livescript.net/#prelude-ls>`_.
 
 Livescript has many more to offer than other alternatives like
 Coffeescript or RapydScript (the "pythonic" javascript).
+
+Fabric
+------
+
+`Fabric < http://docs.fabfile.org/en/latest/ >`_ helps to run remote
+management commands to instances through ssh. See the ``fabfile.py``.
+
+Deployment: Gunicorn and Whitenoise
+-----------------------------------
+
+Whitenoise makes it easier (than nginx and apache modules) to
+self-contain a web app.
+
+Gunicorn is full python (so has similar avantages).
+
+
+Tox
+---
+
+`Tox <https://testrun.org/tox/latest/>`_ is a generic virtualenv
+management and test command line tool we can use for:
+
+- checking our package installs correctly with different Python
+
+- running our tests in each of the environments, configuring our
+   test tool of choice
+- acting as a frontend to Continuous Integration servers, greatly
+    reducing boilerplate and merging CI and shell-based testing.
+
+Abelujo only runs on python2.7 at the moment. Tox helps us test that
+our application installs and runs correctly in a fresh virtual
+environment.

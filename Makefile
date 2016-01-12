@@ -37,7 +37,7 @@ npm:
 	@echo "sudo apt-get install nodejs-legacy"
 
 update:
-	# Get code, install new packages, run DB migrations, compile JS.
+	# Get code, install new packages, run DB migrations, compile JS and translation files.
 	git pull --rebase
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	pip install -r abelujo/requirements.txt

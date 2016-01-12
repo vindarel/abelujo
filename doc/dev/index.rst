@@ -6,9 +6,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   abelujo-dev.rst
    choices.rst
    angular-crash-course
-   abelujo-dev.rst
    webscraping.rst
    django-dev.rst
    clientside-dev.rst
