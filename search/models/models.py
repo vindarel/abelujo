@@ -1020,6 +1020,14 @@ class Place (models.Model):
             log.error(e)
             return None
 
+    def add_copies(self, cards):
+        """Adds the given list of cards objects. A simple and uncomplete
+        wrapper to "add_copy" for consistency. Use the latter instead.
+
+        """
+        for it in cards:
+            self.add_copy(it)
+
 
 class Preferences(models.Model):
     """
@@ -1912,6 +1920,12 @@ class Sell(models.Model):
             }
 
         return ret
+
+    @staticmethod
+    def sell_card(card, nb=1):
+        """Sell a Card. Simple wrapper to Sell.sell_cards.
+        """
+        return Sell.sell_cards(None, cards=[card])
 
     @staticmethod
     def sell_cards(ids_prices_nb, date=None, payment=None, cards=[]):

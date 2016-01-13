@@ -720,21 +720,36 @@ class TestAlerts(TestCase):
         self.deposit = DepositFactory.create()
         self.deposit.distributor = self.dist
         self.deposit.add_copies([self.card])
+        # Put the Card in a default place, in 2 copies: one is the deposit,
+        # one is ours.
+        self.place = PlaceFactory.create()
+        self.place.add_copy(self.card, nb=2)
         # the tested Alert.
-        self.alert = Alert(card=self.card)
-        self.alert.save()
+        # self.alert = Alert(card=self.card)
+        # self.alert.save()
 
-    def test_get_alerts(self):
-        self.alert.deposits.add(self.deposit)
-        got = Alert.get_alerts(to_list=True)
-        self.assertTrue(got)
+        # A sell creates an alert
+        Sell.sell_card(self.card)
+        self.alerts, status, msgs = Alert.get_alerts()
 
-    def test_nominal(self):
-        self.alert.deposits.add(self.deposit)
+    def test_get_alerts_nominal(self):
+        # self.alert.deposits.add(self.deposit)
+        self.assertTrue(self.alerts)
+        self.assertTrue(self.alerts[0].card.ambiguous_sell())
 
     def test_add_deposits_of_card(self):
         self.alert.add_deposits_of_card(self.card)
         self.assertEqual(1, len(self.card.deposit_set.all()))
+
+    def test_alerts_auto_resolved(self):
+        """An alert can be resolved if we sell the remaining copies of the card.
+        """
+        # If we sell the 2nd copy, they're all sold, so the alert is resolved.
+        Sell.sell_card(self.card)
+        alerts, status, msgs = Alert.get_alerts()
+        alert = alerts[0]
+        self.assertEqual(alert.card.quantity, 0)
+        self.assertFalse(alert.card.ambiguous_sell())
 
 class TestInventory(TestCase):
 
