@@ -28,6 +28,15 @@
 div(ng-controller="historyController")
     h3 {% trans "History" %}
 
+    div
+        alert(
+          ng-repeat="alert in alerts"
+          type="{{ 'alert.level' | ng }}"
+          close="closeAlert($item)"
+          ng-click="utils.closeAlert($item)"
+        )
+          {{ 'alert.message' | ng }}
+
     span
       input.btn.btn-default(value="All", ng-click="filterModel='All'"))
       input.btn.btn-default(value="Entries", ng-click="filterModel='Entry'")
@@ -43,19 +52,22 @@ div(ng-controller="historyController")
           span {{ 'hist.item.created' | ng }}
         .col-md-2
            span {% trans "Sell" %}
-        .col-md-8
+        .col-md-7
           span sold {{ 'hist.item.cards.length' | ng }} {% trans "cards" %}:  
             span {% trans "total sold" %}: {{ 'hist.item.total_price_sold' | ng }}
             a(href="{{ hist.item.details_url }}") Details
           div(ng-repeat="card in hist.item.cards")
             a(href="{{ card.get_absolute_url }}")  {{ 'card.title' | ng }}
+        .col-md-1
+          i.button.glyphicon.glyphicon-remove-sign(ng-click="sellUndo($index)")
+
 
        div(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")
          .col-md-2
            span {{ 'hist.item.created ' | ng }}
          .col-md-2
            span {% trans "Entry" %}
-         .col-md-8
+         .col-md-7
             div(ng-repeat="item in hist.item.copies")
                {% verbatim %}
                a(href="{{ item.card.get_absolute_url }}") {{ item.card.title }}
@@ -66,7 +78,7 @@ div(ng-controller="historyController")
            span {{ 'hist.item.created ' | ng }}
         .col-md-2
           span {% trans "Movement" %}
-        .col-md-8
+        .col-md-7
           span {% trans "Moved" %} {{ 'hist.item.nb ' | ng }} {% trans "copies" %} {% trans "from" %} {{ 'hist.item.origin.name ' | ng }} {% trans "to" %} {{ 'hist.item.dest.name ' | ng }}
           {% verbatim %}
           a(href="{{ hist.item.card.get_absolute_url }}")

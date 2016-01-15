@@ -25,6 +25,11 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 CHAR_LENGTH = 200
 
+# Statuses for the client (understood by bootstrap).
+ALERT_SUCCESS = "success"
+ALERT_ERROR = "error"
+ALERT_WARNING = "warning"
+
 PAYMENT_CHOICES = [
     (0, "cash"),
     (1, "check"),

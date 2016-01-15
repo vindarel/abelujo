@@ -55,7 +55,10 @@ apipatterns = patterns("",
     url(r'^api/publishers$', 'search.models.api.publishers', name="api_publishers"),
     url(r'^api/deposits/due_dates/$', 'search.models.api.deposits_due_dates', name="api_deposits_due_dates"),
     url(r'^api/deposits/?$', 'search.models.api.deposits', name="api_deposits"),
+
+    url(r'^api/sell/(?P<pk>\d+)/undo$', 'search.models.api.sell_undo', name="api_sell_undo"),
     url(r'^api/sell$', 'search.models.api.sell', name="api_sell"),
+
     url(r'^api/history$', 'search.models.api.history', name="api_history"),
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),
     url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),

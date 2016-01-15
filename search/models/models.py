@@ -35,6 +35,9 @@ from django.utils.translation import ugettext as _
 from search.models import history
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
+from search.models.common import (ALERT_ERROR,
+                                  ALERT_WARNING,
+                                  ALERT_SUCCESS)
 from search.models.common import TimeStampedModel
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
@@ -57,19 +60,6 @@ DEPOSIT_TYPES_CHOICES = [
     )),
     ]
 
-# Statuses for the client (understood by bootstrap).
-STATUS_SUCCESS = "success"
-STATUS_ERROR = "error"
-STATUS_WARNING = "warning"
-
-class TimeStampedModel(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
-        app_label = "search"
-
 
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200)
@@ -90,7 +80,7 @@ class Author(TimeStampedModel):
         except Exception as e:
             log.error("Author.search error: {}".format(e))
             data = [
-                {"alerts": {"level": STATUS_ERROR,
+                {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for authors"}}
             ]
 
@@ -185,7 +175,7 @@ class Publisher (models.Model):
         except Exception as e:
             log.error("Publisher.search error: {}".format(e))
             data = [
-                {"alerts": {"level": STATUS_ERROR,
+                {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for publishers"}}
             ]
 
@@ -255,7 +245,7 @@ class CardType(models.Model):
         except Exception as e:
             log.error("CardType.search error: {}".format(e))
             data = [
-                {"alerts": {"level": STATUS_ERROR,
+                {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for authors"}}
             ]
 
@@ -556,11 +546,11 @@ class Card(TimeStampedModel):
         :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")
         """
-        # Why use a static method ? Because from the view, we get
-        # back an id and not a Card object. Why ? Because we want to
-        # store list of cards into the session, and we can't serialize
-        # Card objects as is, so we use lits of dicts (but we may use
-        # django serialization instead).
+        # Why use a static method ? Because from the view, we get back
+        # an id and not a Card object. Why ? Because we want to store
+        # list of cards into the session, and we can't serialize Card
+        # objects as is, so we use lists of dicts (that we prefer over
+        # django serialization).
         try:
             card = Card.objects.get(id=id)
 
@@ -570,6 +560,7 @@ class Card(TimeStampedModel):
             else:
                 if card.placecopies_set.count():
                     # XXX: get the default place
+                    # fix also the undo().
                     log.warning("selling: select the place: to finish")
                     place_obj = card.placecopies_set.first()
                 else:
@@ -589,6 +580,33 @@ class Card(TimeStampedModel):
             Basket.add_to_auto_command(card)
 
         return (True, "")
+
+    def sell_undo(self, quantity=1, place_id=None):
+        """Do the contrary of sell().
+
+        todo: manage the places we sell from correctly.
+        """
+        msgs = []
+        if place_id:
+            place_obj = self.placecopies_set.get(id=place_id)
+        else:
+            # same warning as sell()
+            if self.placecopies_set.count():
+                place_obj = self.placecopies_set.first()
+            else:
+                return False, {"message": _(u"We can not undo the sell of card {}: \
+                it is not associated to any place. This shouldn't happen.").format(self.title),
+                               "status": ALERT_ERROR}
+                # let's take the default place
+                # place_obj = Place.objects.first()
+                # msgs.append(u"No place was specified for '{}'. Let's take {}".format(self.title, place_obj.name))
+
+        place_obj.nb = place_obj.nb + quantity
+        place_obj.save()
+        self.quantity = self.quantity + quantity
+        self.save()
+
+        return True, msgs
 
     @staticmethod
     def exists(card_dict):
@@ -1628,7 +1646,7 @@ class Deposit(TimeStampedModel):
 
         """
         msgs = []
-        status = STATUS_SUCCESS
+        status = ALERT_SUCCESS
         dep = None
         copies = depo_dict.pop('copies')  # add the copies after deposit creation.
         copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
@@ -1637,7 +1655,7 @@ class Deposit(TimeStampedModel):
         if not copies_to_add:
             msgs.append({'level': messages.WARNING,
                          'message': _(u"The deposit wasn't created. It must contain at least one valid card")})
-            return STATUS_WARNING, msgs
+            return ALERT_WARNING, msgs
 
         # Check the cards are not already in a deposit.
         for copy in copies_to_add:
@@ -1652,7 +1670,7 @@ class Deposit(TimeStampedModel):
                 message += "."
                 msgs.append(dict(level=messages.INFO, message=message))
 
-                return STATUS_ERROR, msgs
+                return ALERT_ERROR, msgs
 
         # Normal case.
         dest_place_id = None
@@ -1668,7 +1686,7 @@ class Deposit(TimeStampedModel):
                             'message':_("The deposit was successfully created.")})
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
-            return STATUS_ERROR, msgs.append({'level': "danger",
+            return ALERT_ERROR, msgs.append({'level': "danger",
                                               'message': e})
 
         # Link to the destination place, if any.
@@ -1838,6 +1856,9 @@ class Sell(models.Model):
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
                                blank=True, null=True)
+    #: If True, this sell was already canceled. It can not be undone twice.
+    canceled = models.BooleanField(default=False, blank=True)
+
     # alerts
     # client
 
@@ -1943,7 +1964,7 @@ class Sell(models.Model):
 
         """
         alerts = [] # error messages
-        status = STATUS_SUCCESS
+        status = ALERT_SUCCESS
         cards_obj = []
         sell = None
 
@@ -1955,7 +1976,7 @@ class Sell(models.Model):
 
         if not ids_prices_nb:
             log.warning(u"Sell: no cards are passed on. That shouldn't happen.")
-            status = STATUS_WARNING
+            status = ALERT_WARNING
             return sell, status, alerts
 
         if not date:
@@ -1988,17 +2009,17 @@ class Sell(models.Model):
             except ObjectDoesNotExist:
                 msg = u"Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
-                alerts.append({"level": STATUS_ERROR, "message": msg})
-                status = STATUS_WARNING
+                alerts.append({"level": ALERT_ERROR, "message": msg})
+                status = ALERT_WARNING
 
         # Create the Sell.
         try:
             sell = Sell(created=date, payment=payment)
             sell.save()
         except Exception as e:
-            status = STATUS_ERROR
+            status = ALERT_ERROR
             alerts.append({"message": "Ooops, we couldn't sell anything :S",
-                           "level": STATUS_ERROR})
+                           "level": ALERT_ERROR})
             log.error(u"Error on creating Sell object: {}".format(e))
 
         # Add the cards and their attributes.
@@ -2008,8 +2029,8 @@ class Sell(models.Model):
                 msg = u"We can not sell the card '{}' because the price_sold wasn't set and the card's price is None.".format(card.title)
                 log.error(msg)
                 alerts.append({"message": msg,
-                               "level": STATUS_WARNING,})
-                status = STATUS_WARNING
+                               "level": ALERT_WARNING,})
+                status = ALERT_WARNING
                 continue
             quantity = ids_prices_nb[i].get("quantity", 1)
 
@@ -2022,16 +2043,16 @@ class Sell(models.Model):
                 sold.save()
             except Exception as e:
                 alerts.append({"message": _(u"Warning: we couldn't sell {}.".format(card.id)),
-                              "level": STATUS_WARNING})
+                              "level": ALERT_WARNING})
                 log.error(u"Error on adding the card {} to the sell {}: {}".format(card.id,
                                                                                    sell.id,
                                                                                    e))
-                status = STATUS_ERROR
+                status = ALERT_ERROR
 
         # XXX: misleading names: alerts (messages) and Alert.
         if not alerts:
             alerts.append({"message": _(u"Sell successfull."),
-                           "level": STATUS_SUCCESS})
+                           "level": ALERT_SUCCESS})
 
         return (sell, status, alerts)
 
@@ -2043,6 +2064,63 @@ class Sell(models.Model):
 
         return self.soldcards_set.filter(card__id=card_id)
 
+    @staticmethod
+    def sell_undo(sell_id):
+        status = False
+        msgs = []
+        try:
+            sell = Sell.objects.get(id=sell_id)
+            status, msgs = sell.undo()
+        except Exception as e:
+            log.error(u"Error while trying to undo sell id {}: {}".format(sell_id, e))
+            msgs.append({"message": u"Error while undoing sell {}".format(sell_id), "level": ALERT_ERROR})
+
+        return status, msgs
+
+    def undo(self):
+        """Undo:
+        - add the necessary quantity to the right place
+        - create a new entry, for the history.
+        - we do not undo alerts here
+
+        todo: manage the places we sell from.
+        """
+        if self.canceled:
+            return True, {"message": u"This sell was already canceled.",
+                          "level": ALERT_WARNING}
+
+        status = True
+        msgs = []
+        cards = []
+        for soldcard in self.soldcards_set.all():
+            card_obj = soldcard.card
+            cards.append(card_obj)
+            qty = soldcard.quantity
+            try:
+                status, msgs = card_obj.sell_undo(quantity=qty, place_id=None)
+            except Exception as e:
+                msgs.append(u"Error while undoing sell {}.".format(self.id))
+                log.error(u"Error while undoing sell {}: {}".format(self.id, e))
+                status = False
+
+        # Add a log to the Entry history
+        if status:
+            # We can undo a Sell only once.
+            self.canceled = True
+            self.save()
+
+            reason = "canceled sell n°{} of {}".format(self.id, self.created.strftime(DATE_FORMAT))
+            try:
+                history.Entry.new(cards, payment=4, reason=reason)  # 4: canceled sell
+            except Exception as e:
+                log.error(u"Error while adding an Entry to the history for card {}:{}".format(self.id, e))
+                status = False
+
+            msgs.append({"message": _(u"Sell {} canceled with success.").format(self.id),
+                         "level": ALERT_SUCCESS})
+            log.debug(u"Sell {} canceled".format(self.id))
+
+        return status, msgs
 
 def getHistory(to_list=False, sells_only=False):
     """return the last sells, card creations and movements.
@@ -2063,7 +2141,7 @@ def getHistory(to_list=False, sells_only=False):
     else:
         toret = sells + entries + moves
     toret.sort(key= lambda it: it['created'], reverse=True)
-    return toret, STATUS_SUCCESS, alerts
+    return toret, ALERT_SUCCESS, alerts
 
 
 class Alert(models.Model):
@@ -2112,7 +2190,7 @@ class Alert(models.Model):
         alerts = Alert.objects.all().order_by("-date_creation")
         # todo: the alert may be resolved if we sold the remaining copies.
         msgs = []
-        status = STATUS_SUCCESS
+        status = ALERT_SUCCESS
         if to_list:
             alerts = [alert.obj_to_list() for alert in alerts]
         return (alerts, status, msgs)

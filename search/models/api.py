@@ -25,11 +25,13 @@ from models import Sell
 from models import Stats
 from models import getHistory
 
+from search.models.common import (ALERT_ERROR,
+                                  ALERT_WARNING,
+                                  ALERT_SUCCESS)
+
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-ALERT_SUCCESS = "success"
-ALERT_ERROR = "error"
 
 # To search objects and send them as json:
 # - call the search method of the model
@@ -390,6 +392,23 @@ def sell(request, **response_kwargs):
 
     elif request.method == "GET":
         log.error("Calling /api/sell with GET instead of POST.")
+
+def sell_undo(request, pk, **response_kwargs):
+    """Undo the given sell id: re-buy the cards.
+    """
+    msgs = []
+    status = True
+    if request.method == "GET":
+        response_kwargs["content_type"] = "application/json"
+        if pk:
+            status, msgs = Sell.sell_undo(pk)
+        else:
+            msgs.append({"message": u"Internal error: we didn't receive which sell to cancel.",
+                         "status": ALERT_ERROR})
+
+        to_ret = {"status": status,
+                  "alerts": msgs}
+        return HttpResponse(json.dumps(to_ret), **response_kwargs)
 
 
 def history(request, **response_kwargs):

@@ -1,7 +1,8 @@
-angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', ($http, $scope, $timeout, $filter, $window) !->
+angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', ($http, $scope, $timeout, $filter, $window, utils) !->
 
     $scope.history = []
     $scope.filterModel = 'All'
+    $scope.alerts = []
 
     params = do
         query: null
@@ -22,6 +23,15 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             return true
         return false
 
+    $scope.sellUndo = (index) !->
+        sell = $scope.history[index]
+
+        $http.get "/api/sell/#{sell.item.id}/undo"
+        .then (response) !->
+            $scope.alerts.push response.data.alerts
+
+    $scope.closeAlert = (index) !->
+        $scope.alerts.splice index, 1
 
     $window.document.title = "Abelujo - " + gettext("History")
 

@@ -694,6 +694,45 @@ class TestSells(TestCase):
         sell, status, msgs = Sell.sell_cards(to_sell)
         self.assertEqual(Alert.objects.count(), 1)
 
+    def test_undo_card(self):
+        """
+        """
+        # Sell a card
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1
+                },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+        sell, status, msgs = Sell.sell_cards(to_sell)
+
+        # undo from Card:
+        self.autobio.sell_undo()
+        self.assertEqual(self.autobio.quantity_compute(), 1)
+        self.assertEqual(self.autobio.quantity, 1)
+
+    def test_undo_sell(self):
+        """
+        """
+        # Sell a card
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1
+                },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+        sell, status, msgs = Sell.sell_cards(to_sell)
+        # complete undo from Sell:
+        sell.undo()
+
+        self.assertEqual(self.autobio.quantity_compute(), 1)
+        self.assertEqual(self.autobio.quantity, 1)
 
 class TestHistory(TestCase):
 
