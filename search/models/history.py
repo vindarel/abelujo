@@ -32,6 +32,8 @@ from search.models.common import DATE_FORMAT
 
 log = logging.getLogger(__name__)
 
+CHAR_MAX_LENGTH = 200
+
 class InternalMovement(TimeStampedModel):
     """An internal movement
     For a single Card (or a Basket).
@@ -99,6 +101,7 @@ class Entry(TimeStampedModel):
     (1, "purchase"),
     (2, "deposit"),
     (3, "gift"),
+    (4, "sell canceled"),
     )
 
     class Meta:
@@ -111,7 +114,8 @@ class Entry(TimeStampedModel):
     typ = models.IntegerField(default=EntryTypes.purchase,
                               choices=ENTRY_TYPES_CHOICES)
     payment = models.CharField(choices=PAYMENT_CHOICES,
-                               max_length=200, blank=True, null=True)
+                               max_length=CHAR_MAX_LENGTH, blank=True, null=True)
+    reason = models.CharField(max_length=CHAR_MAX_LENGTH, blank=True, null=True)
 
     def __unicode__(self):
         return "type {}, created at {}".format(self.typ, self.created)
@@ -165,7 +169,7 @@ class Entry(TimeStampedModel):
         return True
 
     @staticmethod
-    def new(copies, payment=None):
+    def new(copies, payment=None, reason=None):
         """Create a new record for the given list of copies.
 
         - copies: list
@@ -176,7 +180,7 @@ class Entry(TimeStampedModel):
         try:
             if isinstance(payment, unicode) or isinstance(payment, str):
                 payment = int(payment)
-            en = Entry(payment=payment)
+            en = Entry(payment=payment, reason=reason)
             en.save()
             en.add_copies(copies)
 
