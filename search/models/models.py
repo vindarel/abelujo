@@ -511,10 +511,11 @@ class Card(TimeStampedModel):
                     log.error("Error searching for isbn {}: {}".format(isbn, e))
                     # XXX we can return messages !
 
+        cards = cards[:SIZE_LIMIT]
         if to_list:
             cards = Card.obj_to_list(cards)
 
-        return cards[:SIZE_LIMIT]
+        return cards
 
     @staticmethod
     def get_from_id_list(cards_id):
