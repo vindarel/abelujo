@@ -32,6 +32,23 @@ form(action='{% url "card_collection" %}', method="post")
   {% bootstrap_form searchForm layout="horizontal" %}
   input.btn.btn-primary(type='submit', value="{% trans 'valider' %}")
 
+div(ng-controller="collectionController")
+  table.table.table-striped(datatable="ng")
+    thead
+      th Title
+      th Publishers
+      th quantity
+    tbody
+      tr(ng-repeat="card in cards")
+        th {{ 'card.title' | ng }}
+        th
+        th {{ 'card.quantity' | ng }}
+
+     //- tfoot
+       tr
+         td.text-center(colspan="5")
+           //- div(st-pagination="", st-items-by-page="10")
+
 unless book_list
   p.bg-info {% trans "No results" %}
 

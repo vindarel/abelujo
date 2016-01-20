@@ -15,6 +15,11 @@ var bg = require("gulp-bg");
 
 var vendorJsFiles = [
   // 'static/bower_components/jquery/jquery.min.js', // load separately and first (needed by autocomplete_light and django_bootstrap).
+    // jquery: for bootstrap and datatables.
+    // to load before bootstrap.
+    // jquery must come before angular and datatables.
+    'static/bower_components/jquery/dist/jquery.min.js',
+    'static/bower_components/datatables/media/js/jquery.dataTables.min.js',
   'static/bower_components/angularjs/angular.min.js',
   'static/bower_components/angular-bootstrap/ui-bootstrap.min.js',
   'static/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
@@ -32,6 +37,7 @@ var vendorJsFiles = [
     'static/bower_components/c3/c3.min.js',
     'static/bower_components/d3/d3.min.js',
     'static/bower_components/angular-smart-table/dist/smart-table.min.js',
+    'static/bower_components/angular-datatables/dist/angular-datatables.min.js',
 ];
 
 var appFiles = [

@@ -12,6 +12,7 @@ angular.module('abelujo', [
     'ui.select',
     'ui.bootstrap',
     'smart-table',
+    'datatables',
 
     // application level:
     'abelujo.filters',

@@ -15,7 +15,8 @@
         "prelude-ls": "1.1.2",
         "datejs": "latest",
         "c3": "latest",
-        "angular-smart-table": "2.1"
+        "angular-smart-table": "2.1",
+        "angular-datatables": "0.5"
     },
 
     "description": "abelujo",
