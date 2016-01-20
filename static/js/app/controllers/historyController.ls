@@ -5,8 +5,9 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.alerts = []
 
     params = do
-        query: null
-    $http.get "/api/history", params
+        query: ""
+    $http.get "/api/history", do
+        params: params
     .then (response) ->
         response.data.data.map (item) !->
             repr = "item n° " + item.id

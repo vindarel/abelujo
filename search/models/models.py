@@ -171,7 +171,10 @@ class Publisher (models.Model):
     @staticmethod
     def search(query):
         try:
-            data = Publisher.objects.filter(name__icontains=query)
+            if query:
+                data = Publisher.objects.filter(name__icontains=query)
+            else:
+                data = Publisher.objects.all()
         except Exception as e:
             log.error("Publisher.search error: {}".format(e))
             data = [
@@ -474,7 +477,8 @@ class Card(TimeStampedModel):
                                          Q(authors__name__icontains=elt))
 
         elif not isbns:
-            cards = Card.objects.all()  # returns a QuerySets, which are lazy.
+            # cards = Card.objects.all()  # returns a QuerySets, which are lazy.
+            cards = Card.first_cards(20)  # returns a QuerySets, which are lazy.
 
         if cards and category_id:
             try:

@@ -90,43 +90,9 @@ class SearchForm(forms.Form):
                         help_text=_("Part of title, of author's name, or isbn"),
                     )
 
-def get_card_type_choices():
-    return [(0, _(u"All cards"))] + [(typ.id, typ.name)
-                               for typ in CardType.objects.all()]
-
-def get_publisher_choices():
-    return [(0, _("All"))] + [(pub.id, pub.name)
-                              for pub in Publisher.objects.all()]
-
 def get_places_choices():
     return [(0, _("All"))] + [(it.id, it.name)
                                for it in Place.objects.all()]
-
-def get_category_choices():
-    return [(0, _("All"))] + [(it.id, it.name)
-                              for it in Category.objects.all()]
-
-class CollectionSearchForm(forms.Form):
-    card_type = forms.ChoiceField(get_card_type_choices(),
-                                  label=_("Type of card"),
-                                  required=False)
-    publisher = forms.ChoiceField(get_publisher_choices(),
-                                  label=_("Publisher"),
-                                  required=False)
-
-    q = forms.CharField(max_length=100,
-                        required=False,
-                        min_length=3,
-                        label=_(u"Search on title, authors or isbn."))
-
-    place = forms.ChoiceField(get_places_choices(),
-                              label=_("Places"),
-                              required=False)
-
-    category = forms.ChoiceField(get_category_choices(),
-                                 label=_("Category"),
-                                 required=False)
-
 
 class MyNumberInput(TextInput):
     # render an IntegerField with a "number" html5 widget, not text.
@@ -641,77 +607,8 @@ def collection(request):
 
     - return: a list (of card dicts)
     """
-    form = CollectionSearchForm()
-    retlist = []
-    cards = []
 
-    if request.method == "POST": #XXX that should be a GET
-        form = CollectionSearchForm(request.POST)
-        if form.is_valid():
-            card_type_id = form.cleaned_data.get("card_type")
-            if card_type_id:
-                card_type_id = int(card_type_id)
-            publisher_id = form.cleaned_data.get("publisher")
-            if publisher_id:
-                publisher_id = int(publisher_id)
-            place_id = form.cleaned_data.get("place")
-            if place_id:
-                place_id = int(place_id)
-            cat_id = form.cleaned_data.get("category")
-            if cat_id:
-                cat_id = int(cat_id)
-            words = form.cleaned_data.get("q").split()
-            cards = Card.search(words,
-                                card_type_id=card_type_id,
-                                publisher_id=publisher_id,
-                                place_id=place_id,
-                                category_id=cat_id,
-                                to_list=True)
-            # store results in session for later re-use
-            request.session["collection_search"] = cards
-
-
-    else:
-        # GET
-        if request.GET.get("format") == "text":
-            if request.session.get("collection_search"):
-                cards = request.session["collection_search"]
-            else:
-                cards = Card.first_cards(50)
-            response = HttpResponse(ppcard(cards),
-                                    content_type="text/plain;charset=utf-8")
-            return response
-
-        cards = Card.first_cards(50)
-        cards = Card.obj_to_list(cards)
-
-    return render(request, "search/collection.jade", {
-            "searchForm": form,
-            "nb_results": len(cards),
-            "total_results": Card.objects.count(),
-            "book_list": cards,
-            "AddToDepositForm": AddToDepositForm,
-            })
-
-# def sell(request):
-#     form = CollectionSearchForm()
-#     req = request.POST
-#     if not req.get("id"):
-#         message = u"Erreur: cette notice n'existe pas."
-#         level = messages.ERROR
-#     else:
-#         ret, msg = Card.sell(id=req['id'])
-#         if ret:
-#             message = u"La vente de %s est bien enregistrée." % (req.get('title'),)
-#             level = messages.SUCCESS
-#         else:
-#             message = u"La vente a échoué. %s" % msg
-#             level = messages.ERROR
-
-#     messages.add_message(request, level, message)
-#     return render(request, 'search/index.jade', {
-#                   'searchForm': form
-#                   })
+    return render(request, "search/collection.jade")
 
 @login_required
 def sell(request):

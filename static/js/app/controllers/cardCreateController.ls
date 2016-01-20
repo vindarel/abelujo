@@ -33,8 +33,7 @@ angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$
 
     card_id = utils.url_id($window.location.pathname) # can be null
     if card_id
-        params = {}
-        $http.get "/api/card/#{card_id}", params
+        $http.get "/api/card/#{card_id}"
         .then (response) ->
             $scope.card = response.data.data
             $scope.title = $scope.card.title
@@ -61,9 +60,7 @@ angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$
                 item
 
     # Get card types
-    params = do
-        query: ""
-    $http.get "/api/cardtype", params
+    $http.get "/api/cardtype"
     .then (response) ->
         $scope.card_types = response.data
         $scope.type = $scope.card_types[0]

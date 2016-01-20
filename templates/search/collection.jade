@@ -27,88 +27,90 @@
 
 h3 {% trans "Search in the stock" %}
 
-form(action='{% url "card_collection" %}', method="post")
-  {% csrf_token %}
-  {% bootstrap_form searchForm layout="horizontal" %}
-  input.btn.btn-primary(type='submit', value="{% trans 'valider' %}")
+div(ng-cloak, ng-show="cards", ng-controller="collectionController")
 
-div(ng-controller="collectionController")
-  table.table.table-striped(datatable="ng")
-    thead
-      th Title
-      th Publishers
-      th quantity
-    tbody
-      tr(ng-repeat="card in cards")
-        th {{ 'card.title' | ng }}
-        th
-        th {{ 'card.quantity' | ng }}
+ .row
+  .col-md-6
+   form
+    div.form-group
+      label.col-md-4 Search terms
+      div.col-md-8
+        input.form-control#default-input(
+          ng-model="query"
+          type="text"
+          placeholder='{% trans "Search on title, authors or isbn" %}'
+        )
 
-     //- tfoot
-       tr
-         td.text-center(colspan="5")
-           //- div(st-pagination="", st-items-by-page="10")
+ .row
+   .col-md-6
+    form
+     div
+        label.col-sm-4 Type of card
+        div.col-md-8
+          select.form-control(
+            ng-model="card_type"
+            ng-options="elt.name group by elt.group for elt in card_types"
+          )
 
-unless book_list
-  p.bg-info {% trans "No results" %}
+    div
+      label.col-sm-4 Publisher
+      div.col-md-8
+        select.form-control(
+          ng-model="publisher"
+          ng-options="elt.fields.name for elt in publishers")
 
-span: span {{ nb_results }} {% trans "results" %} / {{ total_results }}
-      a(href="{% url 'card_collection' %}?format=text")
+   .col-md-6
+    form
+     div.form-group
+        label.col-sm-4 Places
+        div.col-md-8
+          select.form-control(
+            ng-model="place"
+            ng-options="elt.name for elt in places")
+
+    div.form-group
+      label.col-sm-4 Category
+      div.col-md-8
+        select.form-control(
+          ng-model="category"
+          ng-options="elt.fields.name for elt in categories")
+
+ .row
+  .col-md-4
+     input.btn.btn-primary(value="{% trans 'Chercher' %}", ng-click="validate()", type="submit")
+
+  //- span: a(href="{% url 'card_collection' %}?format=text")
         input.btn(type="submit", value="{% trans 'voir en texte' %}", style="float: right;")
 
-for b in book_list
-  table.table.table-condensed
-    tr
-      if b.img
-        td: img(src="{{ b.img }}", style="height: 150px;")
-      td
-        span
-          h3: a(href="{{ b.get_absolute_url }}", title='{% trans "Edit the card" %}') {{b.title}}
-          if b.details_url
-            a(target="_blank", href="{{ b.details_url }}") {% trans "See on" %} {{ b.data_source }}
-        if b.authors
-          for aut in b.authors
-            div {{aut.fields.name}}
-        table.table-condensed
-          tr
-            if b.publishers
-              td
-                span
-                  for pub in b.publishers
-                    b(title="{{ pub.fields.name }}") {% trans "publisher" %} 
-                    span(title="{{ pub.fields.name }}") {{ pub.fields.name | truncatewords:2}}
-            td
-              span
-                b isbn 
-                span {{ b.isbn }}
-            td
-              span
-                b(title="{% if not collection %} {% trans 'collection inconnue' %} {% endif%}") {% trans "collection" %} 
-                span(title="{% if not b.collection %} %{ trans 'collection inconnue' %} {% endif%}")
-                  {% if not collection %}
-                  span ---
-                  {% else %}
-                  span {{ b.collection }}
-                  {% endif %}
-            td
-              {{ b.price }} €
-          tr
-            if b.distributor
-              td
-                span
-                  b {% trans "distributor" %} 
-                  span {{ b.distributor.name }}
-            td
-              b {% trans "places" %} 
-              span {{ b.places }}
-            td
-              b {% trans "in stock" %} 
-              span {{ b.quantity }}
+ table.table.table-striped(datatable="ng", ng-show="cards")
+    thead
+      th {% trans "Title" %}
+      th {% trans "Authors" %}
+      th {% trans "Publishers" %}
+      th {% trans "Quantity" %}
 
-  form.form-inline(action="{% url 'deposits_add_card' %}", method="post") {% csrf_token %}
-    {% bootstrap_form AddToDepositForm %}
-    input(type="hidden", value='{% url "card_collection" %}', name="redirect_to")
-    input(type="hidden", value="{{ b.isbn }}", name="isbn")
-    input.btn.btn-primary(type="submit", value='{% trans "add to deposit" %}')
+    tbody
+      tr(ng-repeat="card in cards")
+        td
+          .row
+            .col-md-6
+              img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
+            .col-md-6
+              h4: a(href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
+              a(ng-show="card.details_url", href="{{ 'card.details_url' | ng }}", target="_blank") {% trans "See on" %} {{ 'card.data_source' |ng}}
+              div {{ 'card.price' |ng }} €
+              div
+                b isbn: 
+                span {{ 'card.isbn' |ng}}
+              div(ng-show="card.places")
+                b lieux: 
+                span {{ 'card.places' | ng}}
+
+        td
+          div(ng-repeat="author in card.authors")
+            div {{ 'author.fields.name' |ng}}
+        td {{ 'card.pubs_repr' | ng }}
+        td {{ 'card.quantity' | ng }}
+
 
 {% endblock content %}
