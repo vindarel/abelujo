@@ -456,15 +456,14 @@ class Card(TimeStampedModel):
         """
         SIZE_LIMIT = 100 #TODO: pagination
         isbns = []
+        cards = []
+
         # Get all isbns, eans.
         if words:
+            # Separate search terms that are isbns.
             isbns = filter(is_isbn, words)
+            words = list(set(words) - set(isbns))
 
-        # Get a clean list of search keywords.
-        words = list(set(words) - set(isbns))
-
-        cards = []
-        if words:
             # Doesn't pass data validation of the view.
             head = words[0]
             cards = Card.objects.filter(Q(title__icontains=head) |
