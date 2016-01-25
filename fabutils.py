@@ -37,19 +37,6 @@ def select_client_cfg(letters, cfg):
         exit(1)
     return cl[0]
 
-def ssh_to(client, config=None):
-    cmd = "ssh -Y {}@{}".format(config.get('user'),
-                                   client.get('url', config.get('url')))
-    if config.get('dir') or client.get('dir'):
-        cmd += " -t 'cd {}; zsh --login;'".format(
-            os.path.join(config.get('home'),
-                         config.get('dir', client.get('dir')),
-                         client.get('name'),
-                         'abelujo'),)
-    print "todo: workon venv"
-    print "connecting to {}".format(cmd)
-    os.system(cmd)
-
 def main():
     cfg_file = "clients.yaml"
     cfg = get_yaml_cfg(cfg_file)

@@ -63,11 +63,11 @@ from fabutils import select_client_cfg, get_yaml_cfg
 
 CLIENTS = "clients.yaml"
 
-cfg = get_yaml_cfg(CLIENTS)
-cfg = addict.Dict(cfg)
+CFG = get_yaml_cfg(CLIENTS)
+CFG = addict.Dict(CFG)
 
-env.hosts = cfg.url
-env.user = cfg.user
+env.hosts = CFG.url
+env.user = CFG.user
 
 # Notes:
 
@@ -143,3 +143,18 @@ def update(client):
     with cd(wd):
         with prefix("source ~/.virtualenvs/{}/bin/activate".format(client.venv)):
             res = run("make update")
+
+def ssh_to(client):
+    config = CFG
+    client = select_client_cfg(client, CFG)
+    cmd = "ssh -Y {}@{}".format(config.get('user'),
+                                   client.get('url', config.get('url')))
+    if config.get('dir') or client.get('dir'):
+        cmd += " -t 'cd {}; zsh --login;'".format(
+            os.path.join(config.get('home'),
+                         config.get('dir', client.get('dir')),
+                         client.get('name'),
+                         'abelujo'),)
+    print "todo: workon venv"
+    print "connecting to {}".format(cmd)
+    os.system(cmd)
