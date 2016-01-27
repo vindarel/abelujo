@@ -814,15 +814,8 @@ def deposit_add_copies(request, pk):
 @login_required
 def basket_auto_command(request):
     template = "search/basket_auto_command.jade"
-    auto_command_nb = Basket.auto_command_nb()
     if request.method == "GET":
-        basket = Basket.objects.get(name="auto_command")
-        cards = basket.copies.all()
-        return render(request, template, {
-            "basket": basket,
-            "cards": cards,
-            "auto_command_nb": auto_command_nb,
-        })
+        return render(request, template)
 
 @login_required
 def baskets(request):

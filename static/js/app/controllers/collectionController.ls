@@ -1,4 +1,4 @@
-angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$q', ($http, $scope, $timeout, utils, $filter, $window, $q) !->
+angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.

@@ -23,20 +23,23 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load ngfilter %}
 
-unless cards
-  p {% trans "No card is this basket" %}.
-table.table.table-condensed.table-striped
-  tr
-    td {% trans "Title" %}
-    td {% trans "Authors" %}
-    td {% trans "Distributor" %}
-    td {% trans "Quantity left" %}
-  for card in cards
-    tr
-      td: a(href="{{ card.get_absolute_url }}") {{ card.title }}
-      td {{ card.display_authors }}
-      td {{ card.distributor.name }}
-      td {{ card.quantity }}
+h3 {% trans "Cards to command" %}
+
+div(ng-cloak, ng-controller="basketToCommandController")
+
+  table.table.table-condensed.table-striped(datatable="ng", ng-show="cards")
+    thead
+      th {% trans "Title" %}
+      th {% trans "Authors" %}
+      th {% trans "Distributor" %}
+      th {% trans "Quantity left" %}
+    tbody
+      tr(ng-repeat="card in cards track by $index")
+        td: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
+        td {{ 'card.authors_repr' |ng }}
+        td {{ 'card.distributor.name' |ng }}
+        td {{ 'card.quantity' |ng }}
 
 {% endblock %}

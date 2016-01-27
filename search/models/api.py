@@ -438,6 +438,27 @@ def auto_command_total(request, **response_kwargs):
             pass
     return HttpResponse(json.dumps(total), **response_kwargs)
 
+def basket(request, pk, **kwargs):
+    """Get the list of cards and act on the given basket.
+
+    pk: its id.
+    """
+    data = []
+    if request.method == "GET":
+        if pk:
+            try:
+                basket = Basket.objects.get(id=pk)
+            except Exception as e:
+                log.error("Error while getting basket {}: {}".format(pk, e))
+                return HttpResponse(json.dumps(data), **kwargs) # return error message
+
+            data = basket.copies.all()
+            ret = [it.to_dict() for it in data]
+            ret = json.dumps(ret)
+            return HttpResponse(ret, **kwargs)
+
+    return HttpResponse(json.dumps(data), **kwargs)
+
 def baskets(request, **kwargs):
     """Get the list of basket names. If a pk is given as argument, return
     the list of its copies.

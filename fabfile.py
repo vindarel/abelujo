@@ -131,8 +131,9 @@ def update(client):
     - client: name, or part of name of a client (str). We'll get the
     client's full name.
 
-    TODO: sometimes, we need to restart the server (for django to load
-    a new module like templatetags, for translations,...).
+    TODO: sometimes, we need to restart the server: to load new
+    templates, for django to load a new module like templatetags, for
+    translations,....
 
     """
     cfg = CLIENTS
