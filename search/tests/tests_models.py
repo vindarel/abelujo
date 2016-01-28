@@ -368,6 +368,10 @@ class TestBaskets(TestCase):
         self.basket.add_copy(self.card, nb=self.nb_copies)
         self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1 + self.nb_copies)
 
+    def test_basket_add_copies(self):
+        self.basket.add_copies([1])
+        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1 + self.nb_copies)
+
     def test_sell_auto_command_add_to_basket(self):
         """When a card reaches the threshold (0), pertains to a deposit and
         the deposit's auto_command is set to True, then add this card to the

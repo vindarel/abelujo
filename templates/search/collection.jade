@@ -29,6 +29,15 @@ h3 {% trans "Search in the stock" %}
 
 div(ng-cloak, ng-show="cards", ng-controller="collectionController")
 
+ div
+    alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
  .row
   .col-md-6
    form

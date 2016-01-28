@@ -1,10 +1,10 @@
-angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
+angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$cookies', ($http, $scope, $timeout, utils, $filter, $window, $cookies) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
-    # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines} = require 'prelude-ls'
+    {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
 
     $scope.query = ""
     $scope.cards = []
@@ -73,9 +73,39 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
                 $scope.selected[elt.id] = $scope.selectAll
 
         $scope.selectAll = not $scope.selectAll
+
+    $scope.addToBasket = !->
+        "Add the selected cards to the 'to command' basket.
+        "
+        to_add = Obj.filter (== true), $scope.selected
+        |> Obj.keys
+
+        coma_sep = join ",", to_add
+        params = do
+            card_ids: coma_sep
+        $http.post "/api/baskets/1/add/", params
+        .then (response) !->
+            $scope.alerts = response.data
+
+            # todo: update the base template's badge on number of cards in the command basket.
+
     # Set focus:
     angular.element('#default-input').trigger('focus')
 
     $window.document.title = "Abelujo - " + gettext("Stock")
+
+    $scope.closeAlert = (index) ->
+        $scope.alerts.splice index, 1
+
+
+    # This is needed for Django to process the params to its
+    # request.POST dictionnary:
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded charset=UTF-8'
+
+    # We need not to pass the parameters encoded as json to Django.
+    # Encode them like url parameters.
+    $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
+    config = do
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded charset=UTF-8'}
 
 ]

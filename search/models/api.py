@@ -438,24 +438,38 @@ def auto_command_total(request, **response_kwargs):
             pass
     return HttpResponse(json.dumps(total), **response_kwargs)
 
-def basket(request, pk, **kwargs):
+def basket(request, pk, action="", **kwargs):
     """Get the list of cards and act on the given basket.
 
     pk: its id.
+
+    action: add
     """
     data = []
-    if request.method == "GET":
-        if pk:
-            try:
-                basket = Basket.objects.get(id=pk)
-            except Exception as e:
-                log.error("Error while getting basket {}: {}".format(pk, e))
-                return HttpResponse(json.dumps(data), **kwargs) # return error message
+    try:
+        basket = Basket.objects.get(id=pk)
+    except Exception as e:
+        log.error("Error while getting basket {}: {}".format(pk, e))
+        return HttpResponse(json.dumps(data), **kwargs) # return error message
 
-            data = basket.copies.all()
-            ret = [it.to_dict() for it in data]
-            ret = json.dumps(ret)
-            return HttpResponse(ret, **kwargs)
+    if request.method == "GET":
+        data = basket.copies.all()
+        ret = [it.to_dict() for it in data]
+        ret = json.dumps(ret)
+        return HttpResponse(ret, **kwargs)
+
+    elif request.method == 'POST':
+        if action and action == "add" and request.POST.get("card_ids"):
+            msgs = []
+            ids = request.POST.get("card_ids")
+            id_list = list_from_coma_separated_ints(ids)
+            try:
+                msg = basket.add_copies(id_list)
+                msgs.append(msg)
+            except Exception as e:
+                log.error('Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
+
+            return HttpResponse(json.dumps(msgs), **kwargs)
 
     return HttpResponse(json.dumps(data), **kwargs)
 

@@ -1133,6 +1133,23 @@ class Basket(models.Model):
         except Exception as e:
             log.error(u"Error while adding a card to basket %s: %s" % (self.name,e))
 
+    def add_copies(self, card_ids):
+        """Add the given list of card ids to this basket.
+
+        card_ids: list of card ids (int)
+
+        return: an alert dictionnary (level, message)
+        """
+        for id in card_ids:
+            try:
+                card = Card.objects.get(id=id)
+                self.add_copy(card)
+            except Exception as e:
+                log.error("Error while getting card of id {}".format(id))
+                return {'level': ALERT_ERROR, 'message': "Internal error"}
+
+        return {'level': ALERT_SUCCESS, 'message':_("OK !")}
+
     @staticmethod
     def add_to_auto_command(card):
         """Add the given Card object to the basket for auto commands.

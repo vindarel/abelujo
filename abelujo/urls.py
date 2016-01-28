@@ -36,9 +36,6 @@ apipatterns = patterns("",
     # js code.
     # XXX: the strings returned by the api (called from JS) are not translated. See issue #14.
 
-    url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
-    url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
-
     url(r'^api/cards/create$', 'search.models.api.card_create', name="api_card_create"),
     url(r'^api/cards$', 'search.models.api.cards', name="api_cards"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', 'search.models.api.card_add',
@@ -50,6 +47,9 @@ apipatterns = patterns("",
 
     url(r'^api/authors$', 'search.models.api.authors', name="api_authors"),
 
+    url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
+    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z]+)/?', 'search.models.api.basket', name="api_basket_add"), #action: add
+    url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
     url(r'^api/baskets/(?P<pk>\d+)/copies', 'search.models.api.baskets', name="api_basket_copies"),
     url(r'^api/baskets/?$', 'search.models.api.baskets', name="api_baskets"),
 
