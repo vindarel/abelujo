@@ -14,6 +14,9 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.category = null
     $scope.publisher = null
 
+    $scope.selectAll = true
+    $scope.selected = {}
+
     $scope.card_types =
           # WARNING duplication from dbfixture.json
           {name: gettext("all publication"), id:null}
@@ -43,6 +46,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $http.get "/api/cards"
     .then (response) !->
         $scope.cards = response.data
+        for elt in $scope.cards
+            $scope.selected[elt.id] = false
 
     $scope.validate = !->
         params = do
@@ -62,6 +67,12 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         .then (response) !->
             $scope.cards = response.data
 
+    # Add a checkbox column to select rows.
+    $scope.toggleAll = !->
+        for elt in $scope.cards
+                $scope.selected[elt.id] = $scope.selectAll
+
+        $scope.selectAll = not $scope.selectAll
     # Set focus:
     angular.element('#default-input').trigger('focus')
 

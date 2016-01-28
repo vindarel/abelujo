@@ -77,17 +77,23 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
 
  .row
   .col-md-4
-     input.btn.btn-primary(value="{% trans 'Chercher' %}", ng-click="validate()", type="submit")
+     input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")
 
   //- span: a(href="{% url 'card_collection' %}?format=text")
         input.btn(type="submit", value="{% trans 'voir en texte' %}", style="float: right;")
 
- table.table.table-striped(datatable="ng", ng-show="cards")
+ .row
+   .col-md-9
+   .col-md-1
+     input.button.btn.btn-default(value="{% trans 'Command…' %}", ng-click="addToBasket()", ng-show="selected", title='{% trans "Add the selection to the Command basket" %}')
+
+ table.table.table-striped(ng-show="cards", datatable="ng")
     thead
       th {% trans "Title" %}
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
       th {% trans "Quantity" %}
+      th: input(type="checkbox", ng-click="toggleAll()")
 
     tbody
       tr(ng-repeat="card in cards")
@@ -111,6 +117,6 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
             div {{ 'author.fields.name' |ng}}
         td {{ 'card.pubs_repr' | ng }}
         td {{ 'card.quantity' | ng }}
-
+        td: input(type="checkbox", ng-model="selected[card.id]")
 
 {% endblock content %}
