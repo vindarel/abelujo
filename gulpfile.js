@@ -18,7 +18,7 @@ var vendorJsFiles = [
     // jquery: for bootstrap and datatables.
     // to load before bootstrap.
     // jquery must come before angular and datatables.
-    'static/bower_components/jquery/dist/jquery.min.js',
+    'static/bower_components/jquery/jquery.min.js',
     'static/bower_components/datatables/media/js/jquery.dataTables.min.js',
   'static/bower_components/angularjs/angular.min.js',
   'static/bower_components/angular-bootstrap/ui-bootstrap.min.js',
