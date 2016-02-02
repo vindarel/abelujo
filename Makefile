@@ -28,9 +28,9 @@ install:  deps db npm gulp translation-compile
 npm:
 	@echo "Installing Node and bower packages..."
 	npm install
-	@echo "Installing gulp and rapydscript globally... (needs root)"
+	@echo "Installing gulp globally... (needs root)"
 	# Don't install protractor globally, we'll have permission pb with the webdriver.
-	@sudo npm install -g gulp rapydscript elementor
+	@sudo npm install -g gulp elementor
 	# Install or update Selenium etc (XXX: development only).
 	./node_modules/protractor/bin/webdriver-manager update
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
