@@ -48,7 +48,7 @@ div.ng-cloak(ng-controller="cardAddController")
                 i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a distributor" %}')
 
   .row(ng-show="filtered_deposits.length")
-      div {% trans "Add to following deposits" %}:
+      h4 {% trans "Add to following deposits" %}:
       table.table.table-condensed.table-striped.my-table-narrow
         tr(ng-repeat="it in filtered_deposits")
          td.my-narrow {{ "it.name" | ng }} ({{ "it.distributor" | ng }})
@@ -61,7 +61,7 @@ div.ng-cloak(ng-controller="cardAddController")
           td {% trans "total" %}: {{ "total_deposits" | ng }}
 
   .row
-      div {% trans "Achat d'exemplaires pour chaque lieu:" %}
+      h4 {% trans "Buy copies for each place" %}:
       table.table.table-condensed.my-table-narrow
         tr(ng-repeat="it in places")
           td.my-narrow {{ "it.name" | ng }}
@@ -75,7 +75,7 @@ div.ng-cloak(ng-controller="cardAddController")
           td.text-left {% trans "with discount" %}: {{ "total_places_discount" | ng }}
 
   .row
-      div {% trans "Add to baskets" %}:
+      h4 {% trans "Add to baskets" %}:
       table.table.table-condensed.table-striped.my-table-narrow
         tr(ng-repeat="it in baskets")
           td.my-narrow {{ "it.name" | ng }}
