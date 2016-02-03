@@ -53,7 +53,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           return $http.get("/api/cards", {
               params: {
                   "query": val,
-                  "card_type_id": $scope.card_type.id,
+                  "card_type_id": $scope.card_type.id
               }})
               .then(function(response){ // "then", not "success"
                   return response.data.map(function(item){

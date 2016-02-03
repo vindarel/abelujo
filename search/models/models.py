@@ -477,8 +477,7 @@ class Card(TimeStampedModel):
                                          Q(authors__name__icontains=elt))
 
         elif not isbns:
-            # cards = Card.objects.all()  # returns a QuerySets, which are lazy.
-            cards = Card.first_cards(20)  # returns a QuerySets, which are lazy.
+            cards = Card.objects.all()  # returns a QuerySets, which are lazy.
 
         if cards and category_id:
             try:
@@ -1149,6 +1148,22 @@ class Basket(models.Model):
                 return {'level': ALERT_ERROR, 'message': "Internal error"}
 
         return {'level': ALERT_SUCCESS, 'message':_("OK !")}
+
+    def quantity(self, card=None, card_id=None):
+        """Return the total quantity of copies in it, or the quantity of the given card.
+
+        card: card object
+        card_id: id (int)
+
+        return: int.
+        """
+        if not card:
+            return sum([it.nb for it in self.basketcopies_set.all()])
+        else:
+            it = card or card_id
+            return self.basketcopies_set.get(card=it).nb
+
+        return -1
 
     @staticmethod
     def add_to_auto_command(card):

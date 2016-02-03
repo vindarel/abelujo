@@ -17,6 +17,9 @@ from search import models
 from search.models.api import getSellDict
 from search.models.api import list_from_coma_separated_ints
 from search.models.api import list_to_pairs
+from search.models.common import (ALERT_SUCCESS,
+                                  ALERT_ERROR,
+                                  ALERT_WARNING)
 from tests_models import SellsFactory
 from tests_models import PlaceFactory
 from tests_views import DBFixture
@@ -114,7 +117,7 @@ class ApiTest(TestCase):
         self.params["date"] = "2015-04-17"
         resp = self.c.post("/api/sell", self.params)
         resp_data = json.loads(resp.content)
-        self.assertEqual(resp_data["status"], models.STATUS_SUCCESS)
+        self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)
 
     def test_sell_cards_nocards(self):
         self.params["to_sell"] = u""
@@ -126,7 +129,7 @@ class ApiTest(TestCase):
         self.params["to_sell"] = u"2,9.5,2"
         resp = self.c.post("/api/sell", self.params)
         resp_data = json.loads(resp.content)
-        self.assertEqual(resp_data["status"], models.STATUS_SUCCESS)
+        self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)
 
     def test_history(self):
         resp = self.c.get(reverse("api_history"))

@@ -30,6 +30,9 @@ from django.utils import timezone
 
 import factory
 from factory.django import DjangoModelFactory
+from search.models import (ALERT_WARNING,
+                           ALERT_SUCCESS,
+                           ALERT_ERROR)
 from search.models import Author
 from search.models import Alert
 from search.models import Basket
@@ -49,9 +52,6 @@ from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
 from search.models import Sell
-from search.models import STATUS_ERROR
-from search.models import STATUS_SUCCESS
-from search.models import STATUS_WARNING
 
 class SellsFactory(DjangoModelFactory):
     class Meta:
@@ -370,7 +370,9 @@ class TestBaskets(TestCase):
 
     def test_basket_add_copies(self):
         self.basket.add_copies([1])
-        self.assertEqual(self.basket.basketcopies_set.get(card=self.card).nb, 1 + self.nb_copies)
+        qt = self.basket.quantity(card_id=1)
+        self.assertEqual(qt, 1)
+        self.assertEqual(1, self.basket.quantity())
 
     def test_sell_auto_command_add_to_basket(self):
         """When a card reaches the threshold (0), pertains to a deposit and
@@ -419,7 +421,7 @@ class TestDeposits(TestCase):
         status, msgs = Deposit.from_dict({'name': 'new',
                                            'copies': [self.card],
                                            'distributor': self.distributor})
-        self.assertEqual(status, STATUS_ERROR)
+        self.assertEqual(status, ALERT_ERROR)
 
     def test_no_distributor(self):
         self.card.distributor = None
@@ -645,7 +647,7 @@ class TestSells(TestCase):
                     "quantity": 2,
                     "price_sold": p2}]
         sell, status, msgs = Sell.sell_cards(to_sell)
-        self.assertEqual(STATUS_SUCCESS, status)
+        self.assertEqual(ALERT_SUCCESS, status)
 
         int_table = sell.soldcards_set.all()
         self.assertEqual(len(int_table), 2)
@@ -659,7 +661,7 @@ class TestSells(TestCase):
     def test_sell_none(self):
         to_sell = []
         sell, status, msgs = Sell.sell_cards(to_sell)
-        self.assertEqual(STATUS_WARNING, status)
+        self.assertEqual(ALERT_WARNING, status)
 
     def test_sell_no_price(self):
         p1 = 7.7
@@ -675,7 +677,7 @@ class TestSells(TestCase):
                     "price_sold": p2}]
 
         sell, status, msgs = Sell.sell_cards(to_sell)
-        self.assertEqual(STATUS_WARNING, status)
+        self.assertEqual(ALERT_WARNING, status)
         int_table = sell.soldcards_set.all()
         self.assertTrue(len(int_table), 1)
 
@@ -699,7 +701,7 @@ class TestSells(TestCase):
         self.assertEqual(Alert.objects.count(), 1)
 
     def test_undo_card(self):
-        """
+        """Undo a sell, test only the Card method.
         """
         # Sell a card
         p1 = 7.7
@@ -714,9 +716,11 @@ class TestSells(TestCase):
         sell, status, msgs = Sell.sell_cards(to_sell)
 
         # undo from Card:
-        self.autobio.sell_undo()
+        status, msgs = self.autobio.sell_undo()
         self.assertEqual(self.autobio.quantity_compute(), 1)
-        self.assertEqual(self.autobio.quantity, 1)
+        self.assertEqual(self.autobio.quantity, 1) # to fix
+        status, msgs = self.autobio.sell_undo()
+        self.assertTrue(msgs)
 
     def test_undo_sell(self):
         """
@@ -751,7 +755,7 @@ class TestHistory(TestCase):
     def test_history(self):
         hist, status, alerts = getHistory()
         self.assertEqual(2, len(hist)) # a Sell is created without any cards sold.
-        self.assertEqual(STATUS_SUCCESS, status)
+        self.assertEqual(ALERT_SUCCESS, status)
 
 class TestAlerts(TestCase):
 
@@ -767,21 +771,16 @@ class TestAlerts(TestCase):
         # one is ours.
         self.place = PlaceFactory.create()
         self.place.add_copy(self.card, nb=2)
-        # the tested Alert.
-        # self.alert = Alert(card=self.card)
-        # self.alert.save()
-
         # A sell creates an alert
         Sell.sell_card(self.card)
         self.alerts, status, msgs = Alert.get_alerts()
 
     def test_get_alerts_nominal(self):
-        # self.alert.deposits.add(self.deposit)
         self.assertTrue(self.alerts)
         self.assertTrue(self.alerts[0].card.ambiguous_sell())
 
     def test_add_deposits_of_card(self):
-        self.alert.add_deposits_of_card(self.card)
+        self.alerts[0].add_deposits_of_card(self.card)
         self.assertEqual(1, len(self.card.deposit_set.all()))
 
     def test_alerts_auto_resolved(self):
