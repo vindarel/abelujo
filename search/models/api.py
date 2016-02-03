@@ -50,9 +50,11 @@ def cards(request, **response_kwargs):
     query = query.split() if query else None
     distributor = request.GET.get("distributor")
     card_type_id = request.GET.get("card_type_id")
+    publisher_id = request.GET.get("publisher_id")
     # data = serializers.serialize("json", Card.search(query))
     data = Card.search(query, to_list=True,
                        distributor=distributor,
+                       publisher_id=publisher_id,
                        card_type_id=card_type_id)
     log.info(u"we have json distributors: ", data)
     response_kwargs['content_type'] = 'application/json'

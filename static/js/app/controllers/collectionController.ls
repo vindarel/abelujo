@@ -54,7 +54,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             query: $scope.query
 
         if $scope.publisher
-            params['publisher'] = $scope.publisher.pk
+            params['publisher_id'] = $scope.publisher.pk
         if $scope.place
             params['place'] = $scope.place.id
         if $scope.card_type

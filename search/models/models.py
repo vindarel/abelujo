@@ -500,8 +500,7 @@ class Card(TimeStampedModel):
 
         if cards and publisher_id:
             try:
-                pub = Publisher.objects.get(id=publisher_id)
-                cards = cards.filter(publishers=pub)
+                cards = cards.filter(publishers=publisher_id)
             except Exception as e:
                 log.error("we won't search for a publisher that doesn't exist: {}".format(e))
 
