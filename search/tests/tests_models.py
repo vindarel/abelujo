@@ -83,6 +83,8 @@ class InventoryFactory(DjangoModelFactory):
     class Meta:
         model = Inventory
 
+ISBN = "9782757837009"
+
 class CardFactory(DjangoModelFactory):
     class Meta:
         model = Card
@@ -93,6 +95,7 @@ class CardFactory(DjangoModelFactory):
     # distributor = factory.SubFactory(DistributorFactory)
     distributor = None
     price = 9.99
+    isbn = ISBN
 
 class TestCards(TestCase):
     def setUp(self):
@@ -109,7 +112,7 @@ class TestCards(TestCase):
         self.goldman = Author(name=self.GOLDMAN)
         self.goldman.save()
         # create a Card
-        self.fixture_isbn = "987"
+        self.fixture_isbn = ISBN
         self.fixture_title = "living my life"
         self.autobio = Card(title=self.fixture_title,
                             isbn=self.fixture_isbn,
@@ -212,6 +215,10 @@ class TestCards(TestCase):
     def test_search_key_words(self):
         res = Card.search(["liv", "gold"])
         self.assertEqual(1, len(res))
+
+    def test_search_card_isbn(self):
+        res = Card.search([ISBN])
+        self.assertEqual(len(res), 1)
 
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)

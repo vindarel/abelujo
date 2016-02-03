@@ -467,6 +467,7 @@ class Card(TimeStampedModel):
             isbns = filter(is_isbn, words)
             words = list(set(words) - set(isbns))
 
+        if words:
             # Doesn't pass data validation of the view.
             head = words[0]
             cards = Card.objects.filter(Q(title__icontains=head) |
