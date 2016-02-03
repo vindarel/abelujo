@@ -56,6 +56,14 @@ class DepositAdmin(admin.ModelAdmin):
 
     list_display = ("name", "distributor", "dest_place", "due_date", "auto_command")
 
+class PublisherAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Publisher
+
+    list_display = ("name",)
+    list_editable = ("name",)
+    search_fields = ["name"]
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
@@ -66,5 +74,5 @@ admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
 admin.site.register(Place)
 admin.site.register(PlaceCopies)
-admin.site.register(Publisher)
+admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(Sell)
