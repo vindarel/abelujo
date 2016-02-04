@@ -99,6 +99,8 @@ class Distributor(TimeStampedModel):
     discount = models.IntegerField(default=0, null=True, blank=True)
     #: Star the distributors to give precendence to our favourite ones.
     stars = models.IntegerField(default=0, null=True, blank=True)
+    #: Contact: email adress. To complete, create a Contact class.
+    email = models.EmailField(null=True, blank=True)
 
     class Meta:
         app_label = "search"
@@ -122,6 +124,7 @@ class Distributor(TimeStampedModel):
             "name": self.name,
             "discount": self.discount,
             "stars": self.stars,
+            "email": self.email,
             "repr": self.__repr__(),
         }
 
