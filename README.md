@@ -97,7 +97,7 @@ In the virtual env, run:
 Development
 ===========
 
-Django project (1.7), in python (2.7), with AngularJS (1.3)
+Django project (1.8), in python (2.7), with AngularJS (1.3)
 
 We use:
 
