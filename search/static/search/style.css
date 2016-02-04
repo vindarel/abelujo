@@ -13,6 +13,10 @@
     width: 250px;
 }
 
+.my-number-input {
+    width: 50px;
+}
+
 .text-left {
     text-align: left;
 }

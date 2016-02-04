@@ -29,17 +29,37 @@ h3 {% trans "Cards to command" %}
 
 div(ng-cloak, ng-controller="basketToCommandController")
 
-  table.table.table-condensed.table-striped(datatable="ng", ng-show="cards")
-    thead
-      th {% trans "Title" %}
-      th {% trans "Authors" %}
-      th {% trans "Distributor" %}
-      th {% trans "Quantity left" %}
-    tbody
-      tr(ng-repeat="card in cards track by $index")
-        td: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
-        td {{ 'card.authors_repr' |ng }}
-        td {{ 'card.distributor.name' |ng }}
-        td {{ 'card.quantity' |ng }}
+  em {% trans "The cards to command are grouped by distributor. Check the quantity you want to command and send them an email." %}
+  div(ng-repeat="(pub_id, cards) in sorted_cards")
+        span
+          h4 {{ 'grouped_dist[pub_id][0].name'|ng}}  
+            a(href="mailto:{{'grouped_dist[pub_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[pub_id]' | ng }}", ng-click="get_body(pub_id)") {% trans "Write to" %}:  {{ 'grouped_dist[pub_id][0].email' | ng}}
+
+        table.table.table-condensed.table-striped
+            thead
+              th {% trans "Title" %}
+              th {% trans "Price" %}
+              th {% trans "Quantity left" %}
+              th {% trans "To command" %}
+            tbody
+              tr(ng-repeat="card in cards")
+                td: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
+                td {{ 'card.price' |ng }} €
+                td {{ 'card.quantity' |ng }}
+                td: input.my-number-input(type="number", min=0, max=99, ng-model="card.threshold")
+
+  // we'll use the modal shortly !
+  script(type="text/ng-template", id="commandModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Command" %}
+      div {% trans "The cards are grouped by distributor. Please check the list and confirm." %}
+
+    div.modal-body
+      div(ng-repeat="(pub_id, cards) in sorted_cards")
+        h4 pub: {{ 'pub_id'|ng}}
+        div(ng-repeat="card in cards")
+          div {{'card.title'|ng}}
+
+  //- button.btn.btn-primary(ng-click="open('lg')") {% trans 'Command…' %}
 
 {% endblock %}
