@@ -279,6 +279,8 @@ class Card(TimeStampedModel):
     #: The current quantity of this card in Places. It is equal to the sum of quantities in each place.
     # It may seem redundant but it's needed for effective queries.
     quantity = models.IntegerField(null=True, blank=True, default=0)
+    #: The minimal quantity we want to always have in stock:
+    threshold = models.IntegerField(blank=True, null=True, default=1)
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, null=True)
     year_published = models.DateField(blank=True, null=True)
@@ -419,6 +421,7 @@ class Card(TimeStampedModel):
             "pubs_repr": pubs_repr,
             "quantity": self.quantity,
             "title": self.title,
+            "threshold": self.threshold,
         }
         return res
 
