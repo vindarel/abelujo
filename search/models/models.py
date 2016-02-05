@@ -1155,6 +1155,27 @@ class Basket(models.Model):
 
         return {'level': ALERT_SUCCESS, 'message':_("OK !")}
 
+    def remove_copy(self, card_id):
+        """Remove the given card (id) from the basket.
+        """
+        status = True
+        msgs = []
+        msg = ""
+        try:
+            inter_table = self.basketcopies_set.filter(card__id=card_id).get()
+            inter_table.delete()
+        except ObjectDoesNotExist as e:
+            log.error(u"Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
+            status = False
+            msg = _(u"Card not found")
+        except Exception as e:
+            log.error(u"Error while trying to remove card {} from basket {}: {}".format(card_id, self.id, e))
+            status = False
+            msg = _(u"Could not remove the card from the command basket. This is an internal error.")
+
+        msgs.append(msg)
+        return status, msgs
+
     def quantity(self, card=None, card_id=None):
         """Return the total quantity of copies in it, or the quantity of the given card.
 

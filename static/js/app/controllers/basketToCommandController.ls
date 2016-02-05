@@ -70,6 +70,29 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         $scope.bodies[pub_id] = body
         body
 
+    #  This is needed for Django to process the params to its
+    #  request.POST dictionnary:
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+
+    #  We need not to pass the parameters encoded as json to Django.
+    #  Encode them like url parameters.
+    $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
+    config = do
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+
+
+    $scope.remove_from_selection = (pub_id, index_to_rm) !->
+        "Remove the card from the list. Server call."
+        sure = confirm(gettext("Are you sure to remove the card '{}' from the command basket ?").replace("{}", $scope.sorted_cards[pub_id][index_to_rm].title))
+        if sure
+            card_id = $scope.sorted_cards[pub_id][index_to_rm].id
+            $http.post "/api/baskets/#{AUTO_COMMAND_ID}/remove/#{card_id}/",
+            .then (response) !->
+                $scope.sorted_cards[pub_id].splice(index_to_rm, 1)
+
+            .catch (resp) !->
+                $log.info "Error when trying to remove the card " + card_id
+
     # Set focus:
     # angular.element('#default-input').trigger('focus')
 

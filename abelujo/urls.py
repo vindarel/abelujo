@@ -48,7 +48,7 @@ apipatterns = patterns("",
     url(r'^api/authors$', 'search.models.api.authors', name="api_authors"),
 
     url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
-    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z]+)/?', 'search.models.api.basket', name="api_basket_add"), #action: add
+    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"), #action: add, remove
     url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
     url(r'^api/baskets/(?P<pk>\d+)/copies', 'search.models.api.baskets', name="api_basket_copies"),
     url(r'^api/baskets/?$', 'search.models.api.baskets', name="api_baskets"),

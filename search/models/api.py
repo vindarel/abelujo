@@ -261,7 +261,7 @@ def list_from_coma_separated_ints(str):
 
     # Data validation: should check that we only have ints and comas...
     if str:
-        return [toIntOrFloat(it) for it in str.split(",")]
+        return [toIntOrFloat(it) for it in str.strip(",").split(",")]
     else:
         return []
 
@@ -440,19 +440,30 @@ def auto_command_total(request, **response_kwargs):
             pass
     return HttpResponse(json.dumps(total), **response_kwargs)
 
-def basket(request, pk, action="", **kwargs):
-    """Get the list of cards and act on the given basket.
 
-    pk: its id.
+def basket(request, pk, action="", card_id="", **kwargs):
+    """Get the list of cards or act on the given basket.
 
-    action: add
+    pk: the basket id.
+
+    actions:
+      - add (POST): give card_ids as a list of coma-separated ints
+      - remove (POST): complete the url with a card id, like .../remove/10
     """
     data = []
+    msgs = []
+    status = True
+    to_ret = {"status": True,
+              "data": data,
+              "msgs": msgs}
+
     try:
         basket = Basket.objects.get(id=pk)
     except Exception as e:
-        log.error("Error while getting basket {}: {}".format(pk, e))
-        return HttpResponse(json.dumps(data), **kwargs) # return error message
+        log.error(u"Error while getting basket {}: {}".format(pk, e))
+        msgs.append(e.message)
+        to_ret['status'] = False
+        return HttpResponse(json.dumps(to_ret), **kwargs) # return error message
 
     if request.method == "GET":
         data = basket.copies.all()
@@ -461,19 +472,26 @@ def basket(request, pk, action="", **kwargs):
         return HttpResponse(ret, **kwargs)
 
     elif request.method == 'POST':
+        # Add a card
         if action and action == "add" and request.POST.get("card_ids"):
             msgs = []
             ids = request.POST.get("card_ids")
             id_list = list_from_coma_separated_ints(ids)
+
             try:
                 msg = basket.add_copies(id_list)
                 msgs.append(msg)
             except Exception as e:
-                log.error('Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
+                log.error(u'Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
 
-            return HttpResponse(json.dumps(msgs), **kwargs)
+        # Remove a card
+        elif action and action == "remove" and card_id:
+            status, msgs = basket.remove_copy(card_id)
 
-    return HttpResponse(json.dumps(data), **kwargs)
+    to_ret['status'] = status
+    to_ret['data'] = data
+    to_ret['msgs'] = msgs
+    return HttpResponse(json.dumps(to_ret), **kwargs)
 
 def baskets(request, **kwargs):
     """Get the list of basket names. If a pk is given as argument, return

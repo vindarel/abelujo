@@ -56,6 +56,10 @@ class CardFactory(DjangoModelFactory):
     distributor = factory.SubFactory(DistributorFactory)
     price = 10
 
+class BasketFactory(DjangoModelFactory):
+    class Meta:
+        model = models.Basket
+
 
 # class ApiTest(TestCase, DBFixture):
 class ApiTest(TestCase):
@@ -156,6 +160,29 @@ class ApiTest(TestCase):
         resp = self.c.get(reverse("api_places"))
         data = json.loads(resp.content)
         self.assertTrue(data[0]["name"] == self.place.name)
+
+class TestBaskets(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory.create()
+        self.basket = BasketFactory.create()
+        self.basket.add_copy(self.card)
+        self.params = {
+            "cards_id": self.card.id,
+        }
+        self.c = Client()
+
+    def test_basket_add_card(self):
+        resp = self.c.post(reverse("api_basket_act", args=('1', 'add')), self.params)
+        data = json.loads(resp.content)
+        self.assertTrue(data['status'] )
+        self.assertFalse(data['msgs'] )
+
+    def test_basket_remove_card(self):
+        resp = self.c.post(reverse("api_basket_act", args=('1', 'remove', "1,")))
+        data = json.loads(resp.content)
+        self.assertTrue(data['status'])
+        self.assertEqual(data['msgs'], [u''])
 
 
 class TestUtils(TestCase):
