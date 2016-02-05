@@ -312,7 +312,7 @@ class TestAddView(TestCase):
         self.assertEqual(fixture_result["isbn"], all_cards[0].isbn, "isbn are not equal")
         self.assertEqual(fixture_result["title"], all_cards[0].title, "title are not equal")
         # We are redirected to the "edit" view,
-        self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search&isbn=None")
+        self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search")
 
     def test_move(self, mock_data_source):
         resp = self.c.get(reverse("card_move", args=(1,)))
@@ -347,49 +347,6 @@ class TestAddView(TestCase):
         resp = self.c.post(reverse("card_add"), data)
         mock_postSearch.assert_called_once_with(fixture_no_isbn["test search"][0]["data_source"],
                                                 fixture_no_isbn["test search"][0]["details_url"])
-
-class TestCollectionView(TestCase, DBFixture):
-
-    def setUp(self):
-        DBFixture.__init__(self)
-        self.c = Client()
-        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
-        self.c.login(username="admin", password="admin")
-
-    def test_nominal(self):
-        resp = self.c.get(reverse("card_collection"))  # get the 5th first cards
-        self.assertEqual(resp.status_code, 200)
-
-    def test_search_title(self):
-        form = {"q": "living",}
-        resp = self.c.post(reverse("card_collection"), data=form)
-        self.assertEqual(resp.status_code, 200)
-
-    def test_search_no_keywords(self):
-        form = {"q": "",}
-        resp = self.c.post(reverse("card_collection"), data=form)
-        self.assertEqual(resp.status_code, 200)
-
-    def test_search_with_card_type(self):
-        form = {"q": "living", "card_type": "1"}  # all strings.
-        resp = self.c.post(reverse("card_collection"), data=form)
-        self.assertEqual(resp.status_code, 200)
-
-    def test_search_isbn(self):
-        form = {"isbn": self.fixture_isbn,}
-        resp = self.c.post(reverse("card_collection"), data=form)
-        self.assertEqual(resp.status_code, 200)
-
-    def test_view_as_text(self):
-        resp = self.c.get(reverse("card_collection") + "/?format=text")
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue("living" in resp.content)
-        self.assertTrue("Goldman" in resp.content)
-        self.assertTrue("1 titles, 0 exemplaries" in resp.content)
-        self.assertTrue("[{'fields" not in resp.content)
-        self.assertTrue("'isoformat':" not in resp.content)
-        self.assertTrue("u''" not in resp.content)
-        self.assertTrue("{}" not in resp.content)
 
 class TestDeposit(TestCase, DBFixture):
 

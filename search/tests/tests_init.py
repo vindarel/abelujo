@@ -39,6 +39,7 @@ class SimpleTest(TestCase):
 
     def setUp(self):
         self.c = Client()
+        self.c.login(username="admin", password="admin")
 
     @mock.patch('search.views.search_on_data_source', return_value=search_on_data_source_fixture)
     def test_templates_used(self, mymock):
@@ -57,23 +58,3 @@ class SimpleTest(TestCase):
         # Don't fire the query. We may want to setup cache.
         # res = self.c.get("/search?q=living+life&source=chapitre", follow=True)
         # self.assertEqual(res.status_code, 200)
-
-
-class TestTemplates(TestCase):
-
-    def setUp(self):
-        self.c = Client()
-        self.search_results = search_on_data_source_fixture[0]
-
-    @mock.patch('search.views.search_on_data_source', return_value=search_on_data_source_fixture)
-    def test_discogs_search_results(self, mymock):
-        """Call the search view with mocked data and check the template is
-        populated as expected.
-        """
-        response = self.c.get(reverse("card_search"), {u'q': u'sky valley', 'source':'discogs'})
-        mymock.assert_called_once_with("discogs", [u'sky', u'valley'])
-        self.assertEqual(response.context['result_list'], self.search_results)
-        self.assertEqual(response.context['data_source'], "discogs")
-        self.assertEqual(response.context['page_title'], u'sky valley')
-        self.assertTemplateUsed(response, 'search/search_result.jade')
-        self.assertContains(response, self.search_results[0]['title'])
