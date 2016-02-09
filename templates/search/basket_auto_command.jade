@@ -33,7 +33,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
   div(ng-repeat="(pub_id, cards) in sorted_cards")
         span
           h4 {{ 'grouped_dist[pub_id][0].name'|ng}}  
-            a(href="mailto:{{'grouped_dist[pub_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[pub_id]' | ng }}", ng-click="get_body(pub_id)") {% trans "Write to" %}:  {{ 'grouped_dist[pub_id][0].email' | ng}}
+            a(href="mailto:{{'grouped_dist[pub_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[pub_id]' | ng }}", ng-click="get_body(pub_id)")
+              i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[pub_id][0].email' | ng}} {% trans ' with your desktop mail client' %}")
 
         table.table.table-condensed.table-striped
             thead
