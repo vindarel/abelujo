@@ -24,3 +24,7 @@
 .myImg {
     height: 150px;
 }
+
+.mouse-pointer {
+    cursor: pointer;
+}

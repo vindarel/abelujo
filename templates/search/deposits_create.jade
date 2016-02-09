@@ -100,7 +100,7 @@ div(ng-controller="DepositCreateController")
                 )
 
      .col-lg-1
-            i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index)", style="float: right;")
+            i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
   .row
     input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
         // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")

@@ -49,7 +49,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 td {{ 'card.quantity' |ng }}
                 td
                   input.my-number-input(type="number", min=0, max=99, ng-model="card.threshold")
-                  i.glyphicon.glyphicon-remove(ng-click="remove_from_selection(pub_id, $index)", style="padding-left: 1em;")
+                  i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(pub_id, $index)", style="padding-left: 1em;")
 
   // we'll use the modal shortly !
   script(type="text/ng-template", id="commandModal.html")
