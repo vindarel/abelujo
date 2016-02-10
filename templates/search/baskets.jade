@@ -28,7 +28,7 @@ div(ng-controller="basketsController")
  h1 Baskets
  .col-md-3
   div
-     i.glyphicon.glyphicon-plus
+     i.glyphicon.glyphicon-plus.mouse-pointer(title='{% trans "Create a basket" %}', ng-click="open('sm')")
    ul.list-group
      div(ng-repeat="it in baskets")
         li.list-group-item(ng-click="showBasket($index)") {{ " it.name " | ng }}
@@ -38,5 +38,13 @@ div(ng-controller="basketsController")
  .col-md-9
     div(ng-repeat="it in copies")
       div {{ " it.title " | ng }}
+
+ script(type="text/ng-template", id="commandModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Create a basket" %}
+
+    div.modal-body
+      label Name
+      input(type="text")
 
 {% endblock content %}
