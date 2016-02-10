@@ -3,6 +3,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.baskets = []
     $scope.copies = []
     $scope.alerts = []
+    $scope.show_buttons = {}
 
     $http.get "/api/baskets"
     .then (response) ->
