@@ -1124,6 +1124,36 @@ class Basket(models.Model):
         except:
             return 0
 
+    @staticmethod
+    def new(name=None):
+        """Create a new basket.
+
+        - name: name (str)
+
+        - Return: a 3-tuple with the new basket object (None if a pb occurs), along with the status and messages.
+        """
+        status = True
+        msgs = []
+        if not name:
+            msg = {'level': ALERT_ERROR,
+                   'message': _("Please provide the name of the new basket")}
+            status = False
+            return None, status, msgs.append(msg)
+
+        try:
+            b_obj = Basket.objects.create(name=name)
+            b_obj.save()
+            msg = {'level': ALERT_SUCCESS,
+                   'message': _("New basket created")}
+        except Exception as e:
+            log.error("Pb when trying to create a new basket: {}".format(e))
+            msgs.append({"level": ALERT_ERROR,
+                         "message": _("We could not create a new basket. This is an internal error.")})
+            return None, False, msgs
+
+        msgs += msg
+        return b_obj, status, msgs
+
     def add_copy(self, card, nb=1):
         """Adds the given card to the basket.
 

@@ -528,6 +528,23 @@ def baskets(request, **kwargs):
                   "data": data,}
         return HttpResponse(json.dumps(to_ret), **kwargs)
 
+def baskets_create(request, **response_kwargs):
+    """Create a new basket.
+    Return its id.
+    """
+    response_kwargs["content_type"] = "application/json"
+    if request.method == "GET":
+        return HttpResponse(json.dumps("create a basket with a POST request"), **response_kwargs)
+
+    if request.method == "POST":
+        name = request.POST.get('name')
+        b_obj, status, msgs = Basket.new(name=name)
+        to_ret = {"data": b_obj.id,
+                  "alerts": msgs,
+                  "status": status}
+
+        return HttpResponse(json.dumps(to_ret), **response_kwargs)
+
 
 def alerts(request, **response_kwargs):
     msgs = []
