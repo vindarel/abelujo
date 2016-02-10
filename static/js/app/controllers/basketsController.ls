@@ -2,6 +2,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.baskets = []
     $scope.copies = []
+    $scope.alerts = []
 
     $http.get "/api/baskets"
     .then (response) ->
@@ -11,17 +12,34 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 $scope.showBasket 0
 
     $scope.showBasket = (item) !->
-        cur = $scope.baskets[item]
-        if not cur.copies
-            $http.get "/api/baskets/#{cur.id}/copies"
+        $scope.cur_basket = $scope.baskets[item]
+        if not $scope.cur_basket.copies
+            $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
             .then (response) !->
                 $scope.baskets[item].copies = response.data.data
                 $scope.copies = response.data.data
 
         else
-            $scope.copies = cur.copies
+            $scope.copies = $scope.cur_basket.copies
 
     $window.document.title = "Abelujo - " + gettext("Baskets")
+
+    $scope.closeAlert = (index) ->
+        $scope.alerts.splice index, 1
+
+
+    $scope.remove_from_selection = (index_to_rm) !->
+        "Remove the card from the list. Server call to the api."
+        sure = confirm(gettext("Are you sure to remove the card '{}' from the basket ?").replace("{}", $scope.copies[index_to_rm].title))
+        if sure
+            card_id = $scope.copies[index_to_rm].id
+            $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
+            .then (response) !->
+                $scope.copies.splice(index_to_rm, 1)
+                $scope.alerts = response.data.msgs
+
+            .catch (resp) !->
+                $log.info "Error when trying to remove the card " + card_id
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do

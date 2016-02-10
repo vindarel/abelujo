@@ -25,6 +25,15 @@
 {% load ngfilter %}
 
 div(ng-controller="basketsController")
+ div
+    alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
  h1 Baskets
  .col-md-3
   div
@@ -39,6 +48,7 @@ div(ng-controller="basketsController")
    table.table.table-condensed.table-striped
      tr(ng-repeat="it in copies")
        td: a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
+       td: i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="padding-left: 1em;", title='{% trans "Remove from basket" %}')
 
  script(type="text/ng-template", id="commandModal.html")
     div.modal-header
