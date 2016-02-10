@@ -1153,7 +1153,7 @@ class Basket(models.Model):
                 log.error("Error while getting card of id {}".format(id))
                 return {'level': ALERT_ERROR, 'message': "Internal error"}
 
-        return {'level': ALERT_SUCCESS, 'message':_("OK !")}
+        return {'level': ALERT_SUCCESS, 'message':_("The cards were successfully marked to command")}
 
     def remove_copy(self, card_id):
         """Remove the given card (id) from the basket.

@@ -59,7 +59,7 @@ div(ng-controller="historyController")
           div(ng-repeat="card in hist.item.cards")
             a(href="{{ card.get_absolute_url }}")  {{ 'card.title' | ng }}
         .col-md-1
-          i.button.glyphicon.glyphicon-remove-sign.mouse-pointer(ng-click="sellUndo($index)")
+          i.button.glyphicon.glyphicon-remove-sign.mouse-pointer(ng-click="sellUndo($index)", title="{% trans 'Remove this card from the list of commands' %}")
 
 
        div(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")

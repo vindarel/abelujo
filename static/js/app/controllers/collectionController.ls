@@ -85,7 +85,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             card_ids: coma_sep
         $http.post "/api/baskets/1/add/", params
         .then (response) !->
-            $scope.alerts = response.data
+            $scope.alerts = response.data.msgs
 
             # todo: update the base template's badge on number of cards in the command basket.
 
