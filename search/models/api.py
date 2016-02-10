@@ -539,7 +539,7 @@ def baskets_create(request, **response_kwargs):
     if request.method == "POST":
         name = request.POST.get('name')
         b_obj, status, msgs = Basket.new(name=name)
-        to_ret = {"data": b_obj.id,
+        to_ret = {"data": b_obj.to_dict() if b_obj else {},
                   "alerts": msgs,
                   "status": status}
 
