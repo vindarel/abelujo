@@ -40,7 +40,7 @@ div(ng-controller="basketsController")
      i.glyphicon.glyphicon-plus.mouse-pointer(title='{% trans "Create a basket" %}', ng-click="open('sm')")
    ul.list-group
      div(ng-repeat="it in baskets")
-        li.list-group-item.mouse-pointer(ng-click="showBasket($index)") {{ " it.name " | ng }}
+        li.list-group-item.mouse-pointer(ng-class="{active: cur_basket.id == it.id}", ng-click="showBasket($index)") {{ " it.name " | ng }}
             span.badge {{ " it.length " | ng }}
 
 
