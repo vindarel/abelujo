@@ -16,6 +16,8 @@
 
 angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils) !->
 
+    {Obj, join, reject, sum, map, filter, lines} = require 'prelude-ls'
+
     $scope.baskets = []
     $scope.copies = []
     $scope.alerts = []
@@ -24,12 +26,15 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $http.get "/api/baskets"
     .then (response) ->
-        response.data.data.map (item) !->
-            $scope.baskets.push item
-            if $scope.baskets[0].id
-                $scope.showBasket 0
+        """Get the baskets, do not show the "to command" one, of id=1.
+        """
+        $scope.baskets = response.data.data
+        |> reject (.id == 1)
+
+        $scope.showBasket 0
 
     $scope.showBasket = (item) !->
+        "Show the copies of the given basket."
         $scope.cur_basket = $scope.baskets[item]
         if not $scope.cur_basket.copies
             $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
@@ -44,6 +49,38 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
+
+    $scope.command = !->
+        """Add the copies of the current basket to the Command basket. Api call.
+        """
+        if not $scope.cur_basket.copies.length
+            alert gettext "This basket has no copies to command !"
+            return
+
+        sure = confirm "Do you want to mark the cards of the basket '#{$scope.cur_basket.name}' to command ?"
+        if sure
+            to_add = $scope.cur_basket.copies
+            |> map (.id)
+
+            coma_sep = join ",", to_add
+            alert to_add
+
+            #  This is needed for Django to process the params to its
+            #  request.POST dictionnary:
+            $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+
+            #  We need not to pass the parameters encoded as json to Django.
+            #  Encode them like url parameters.
+            $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
+            config = do
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+
+            params = do
+                card_ids = coma_sep
+            $http.post "/api/baskets/#{$scope.cur_basket.id}/add/", params
+            .then (response) !->
+                $scope.alerts = response.data.msgs
+                alert "KO"
 
 
     $scope.remove_from_selection = (index_to_rm) !->

@@ -472,7 +472,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         return HttpResponse(ret, **kwargs)
 
     elif request.method == 'POST':
-        # Add a card
+        # Add cards
         if action and action == "add" and request.POST.get("card_ids"):
             msgs = []
             ids = request.POST.get("card_ids")

@@ -45,6 +45,18 @@ div(ng-controller="basketsController")
 
 
  .col-md-9
+   .col-md-1
+
+    .btn-group
+     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false")
+       i.glyphicon.glyphicon-cog
+       span.caret
+     ul.dropdown-menu
+       li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
+
+   .col-md-6
+     h4   {{ 'cur_basket.name' |ng}}
+
    table.table.table-condensed.table-striped
      tr(ng-repeat="it in copies", ng-mouseenter="show_buttons[$index] = true", ng-mouseleave="show_buttons[$index] = false")
        td: a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
