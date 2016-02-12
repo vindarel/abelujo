@@ -37,7 +37,7 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
     $scope.url = ""
     path = $window.location.pathname
 
-    re = RegExp "\/([a-z][a-z])\/\([a-z]+\)/"
+    re = RegExp "\/([a-z][a-z])\/\([a-z]+\)/?"
     res = path.match re
     if res
         $scope.url = res[* - 1] # *: last

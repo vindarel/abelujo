@@ -51,7 +51,7 @@ urlpatterns = patterns('',
     url(r'^stock/card/(?P<pk>\d+)/buy', 'search.views.card_buy',
         name="card_buy"),
 
-    url(r'^sell$', 'search.views.sell',
+    url(r'^sell/$', 'search.views.sell',
         name="card_sell"),
     url(r'^sell/(?P<pk>\d+)', 'search.views.sell_details',
         name="sell_details"),
