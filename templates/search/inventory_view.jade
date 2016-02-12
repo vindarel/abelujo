@@ -30,7 +30,7 @@ div(ng-controller="inventoryNewController")
     h4 {% trans "Search in the stock" %}
     .row
       .col-md-9
-        div remaining: {% verbatim %} {{ total_missing }} {{ progress_current }} % {% endverbatim %}
+        div {% trans "You did "%} {{ 'progress_current' | ng }} %. {% trans "It remains" %}: {{ 'total_missing' |ng }} {% trans " cards" %}
 
         div.progress
           div.progress-bar.progress-bar-info(role="progress-bar"
