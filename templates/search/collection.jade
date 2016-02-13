@@ -94,7 +94,9 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
  .row
    .col-md-9
    .col-md-1
-     input.button.btn.btn-default(value="{% trans 'Command…' %}", ng-click="addToBasket()", ng-show="selected", title='{% trans "Add the selection to the Command basket" %}')
+     button.button.btn.btn-default(ng-click="open()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to…' %}
+      i.glyphicon.glyphicon-pushpin
+
 
  table.table.table-striped(ng-show="cards", datatable="ng")
     thead
@@ -127,5 +129,17 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
         td {{ 'card.pubs_repr' | ng }}
         td {{ 'card.quantity' | ng }}
         td: input(type="checkbox", ng-model="selected[card.id]")
+
+ script(type="text/ng-template", id="collectionModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Add to basket(s)" %}
+
+    div.modal-body
+      div(ng-repeat="basket in baskets")
+        span
+          input(type="checkbox", ng-model="selected_baskets[basket.id]")
+          label {{ 'basket.name' | ng}}
+
+      button.btn.btn-primary(ng-click="ok()") OK
 
 {% endblock content %}

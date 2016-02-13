@@ -1180,10 +1180,10 @@ class Basket(models.Model):
                 card = Card.objects.get(id=id)
                 self.add_copy(card)
             except Exception as e:
-                log.error("Error while getting card of id {}".format(id))
+                log.error(u"Error while getting card of id {}: {}".format(id, e))
                 return {'level': ALERT_ERROR, 'message': "Internal error"}
 
-        return {'level': ALERT_SUCCESS, 'message':_("The cards were successfully marked to command")}
+        return {'level': ALERT_SUCCESS, 'message':_(u"The cards were successfully added to the basket '{}'".format(self.name))}
 
     def remove_copy(self, card_id):
         """Remove the given card (id) from the basket.

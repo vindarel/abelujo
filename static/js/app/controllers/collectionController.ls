@@ -1,4 +1,4 @@
-angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$cookies', ($http, $scope, $timeout, utils, $filter, $window, $cookies) !->
+angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$cookies', '$uibModal', '$log', ($http, $scope, $timeout, utils, $filter, $window, $cookies, $uibModal, $log) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
@@ -13,9 +13,12 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.categories = []
     $scope.category = null
     $scope.publisher = null
+    $scope.baskets = []
 
     $scope.selectAll = true
     $scope.selected = {}
+
+    $scope.alerts = []
 
     $scope.card_types =
           # WARNING duplication from dbfixture.json
@@ -74,21 +77,6 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
         $scope.selectAll = not $scope.selectAll
 
-    $scope.addToBasket = !->
-        "Add the selected cards to the 'to command' basket.
-        "
-        to_add = Obj.filter (== true), $scope.selected
-        |> Obj.keys
-
-        coma_sep = join ",", to_add
-        params = do
-            card_ids: coma_sep
-        $http.post "/api/baskets/1/add/", params
-        .then (response) !->
-            $scope.alerts = response.data.msgs
-
-            # todo: update the base template's badge on number of cards in the command basket.
-
     # Set focus:
     angular.element('#default-input').trigger('focus')
 
@@ -108,4 +96,75 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     config = do
         headers: { 'Content-Type': 'application/x-www-form-urlencoded charset=UTF-8'}
 
+    $scope.open = (size) !->
+        to_add = Obj.filter (== true), $scope.selected
+        |> Obj.keys
+
+        if not to_add.length
+            alert "Please select some cards first"
+            return
+
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'collectionModal.html'
+            controller: 'CollectionModalControllerInstance'
+            ## backdrop: 'static'
+            size: size,
+            resolve: do
+                selected: ->
+                    $scope.selected
+                utils: ->
+                    utils
+
+        modalInstance.result.then (alerts) !->
+            $scope.alerts = alerts
+        , !->
+              $log.info "modal dismissed"
 ]
+
+angular.module "abelujo" .controller "CollectionModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) ->
+
+    {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
+
+    $scope.selected_baskets = {}
+    $scope.alerts = []
+
+    $http.get "/api/baskets"
+    .then (response) ->
+        $scope.baskets = response.data.data
+
+    $scope.ok = !->
+
+        to_add = Obj.filter (== true), selected
+        |> Obj.keys
+
+        coma_sep = join ",", to_add
+
+        baskets_ids = $scope.selected_baskets
+        |> Obj.filter ( -> it is true)
+        |> Obj.keys
+
+        #  This is needed for Django to process the params to its
+        #  request.POST dictionnary:
+        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+
+        #  We need not to pass the parameters encoded as json to Django.
+        #  Encode them like url parameters.
+        $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
+        config = do
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+
+        params = do
+            card_ids: coma_sep
+
+        for b_id in baskets_ids
+            $log.info "Adding cards to basket #{b_id}..."
+            $http.post "/api/baskets/#{b_id}/add/", params
+            .then (response) !->
+                $scope.alerts = $scope.alerts.concat response.data.msgs
+
+        $uibModalInstance.close($scope.alerts)
+
+
+    $scope.cancel = !->
+        $uibModalInstance.dismiss('cancel')
