@@ -27,11 +27,13 @@
 
 h3 {% trans "Inventory started" %}
 table.table.table-striped.table-hover
-  tr
-    td {% trans "Created the" %}
-    td {% trans "On the place" %}
-    td
+  thead
+   tr
+    th {% trans "Created the" %}
+    th {% trans "On the place" %}
+    th
 
+  tbody
   for inv in inventories
     tr
       td {{ inv.created }}

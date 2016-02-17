@@ -857,6 +857,13 @@ def inventory_delete(request, pk):
     return HttpResponseRedirect(reverse("inventories"))
 
 @login_required
+def inventory_terminate(request, pk):
+    """
+    """
+    template = "search/inventory_terminate.jade"
+    return render(request, template)
+
+@login_required
 def dashboard(request):
     template = "search/dashboard.jade"
     stats = Stats()

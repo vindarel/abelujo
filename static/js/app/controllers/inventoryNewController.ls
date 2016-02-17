@@ -20,11 +20,15 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.showAll = false  # toggled by the checkbox itself.
     $scope.cards_to_show = []
 
-
     $scope.tmpcard = undefined
     # A list of already selected cards' ids
     $scope.selected_ids = []
     existing_card = undefined
+
+    # If we're on page /../inventories/XX/, get info of inventory XX.
+    #XXX use angular routing
+    $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
+    $scope.language = utils.url_language($window.location.pathname)
 
     $scope.setCardsToShow = !->
         " Show all the cards inventoried, or the current ones. "
@@ -33,12 +37,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         else
             $scope.cards_to_show = $scope.cards_selected
 
-    # If we're on page /../inventories/XX/, get info of inventory XX.
-    #XXX use angular routing
-    re = /inventories\/(\d+)/
-    res = $window.location.pathname.match(re)
-    if res and res.length == 2
-        $scope.inv_id = res[1]
+    if $scope.inv_id
 
         $http.get "/api/inventories/#{$scope.inv_id}/"
         .then (response) ->
@@ -150,6 +149,11 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             # Reset the cards to display
             $scope.cards_selected = []
             return response.data.status
+
+    $scope.terminate = !->
+        $http.get "/api/inventories/#{$scope.inv_id}/diff/"
+        .then (response) !->
+            $window.location.href = "/#{$scope.language}/inventories/#{$scope.inv_id}/terminate/"
 
     # Set focus:
     focus = !->

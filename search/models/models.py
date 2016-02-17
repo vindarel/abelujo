@@ -2369,6 +2369,31 @@ class Inventory(TimeStampedModel):
 
         return ret
 
+    @staticmethod
+    def diff_inventory(pk):
+        try:
+            obj = Inventory.objects.get(id=pk)
+            return obj.diff()
+        except Exception as e:
+            log.error(u"Error getting inventory: {}".format(e))
+            return None
+
+    def diff(self):
+        """Diff the inventory's state with the database: get
+        - which cards are
+        ok,
+        - which ones are missing from the inventory,
+        - which are missing from the
+        database,
+        - which are in the database but with the wrong quantity.
+
+        - return
+
+        """
+        # to finish.
+        data = self.state()
+        return data
+
     def add_pairs(self, pairs, add=False):
         """Save the given copies.
 

@@ -98,5 +98,7 @@ urlpatterns = patterns('',
     url(r'^inventories/(?P<pk>\d+)/?$', 'search.views.inventories',
         name="inventory_view"),
     url(r'^inventories/(?P<pk>\d+)/delete', 'search.views.inventory_delete',
-        name="inventory_delete")
+        name="inventory_delete"),
+    url(r'^inventories/(?P<pk>\d+)/terminate', 'search.views.inventory_terminate',
+        name="inventory_terminate"),
 )

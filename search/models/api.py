@@ -660,6 +660,13 @@ def inventories_update(request, **kwargs):
 
     return HttpResponse(json.dumps(to_ret), **kwargs)
 
+def inventory_diff(request, pk, **kwargs):
+    """
+    """
+    res = Inventory.diff_inventory(pk)
+    return HttpResponse(json.dumps(res), **kwargs)
+
+
 def stats(request, **kwargs):
     """Return stats about the stock.
     """
