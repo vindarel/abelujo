@@ -28,7 +28,7 @@ div {% trans "Did you receive more copies of the titles you have in this deposit
 form(action='{% url "deposit_add_copies" pk %}', method="post")
   {% csrf_token %}
   {% bootstrap_form form layout="horizontal"%}
-  input.btn.btn-primary(type='submit', value="{% trans 'valider' %}")
+  input.btn.btn-primary(type='submit', value="{% trans 'validate' %}")
   a(href="{% url 'deposits_view' pk %}")
     input.btn.btn-default(value="{% trans 'Cancel' %}")
 

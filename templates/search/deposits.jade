@@ -47,17 +47,17 @@ if  depo_pubtype
         td {{ dep.total_init_price }}
 
 else
-  h4 {% trans "Aucun dépôt de type éditeur" %}
+  h4 {% trans "No deposit of distributor's type" %}
 
 if depo_fix
   h3 Dépots de la librairie:
   table.table.table-striped.table-hover
     tr
-        td {% trans "Nom du dépot" %}
-        td {% trans "Diffuseur" %}
-        td {% trans "Dernier état de dépôt" %}
+        td {% trans "Deposit's name" %}
+        td {% trans "Distributor" %}
+        td {% trans "Last deposit state" %}
 
-        td {% trans "Alertes" %}
+        td {% trans "Alerts" %}
         td {% trans "Initial qty" %}
         td {% trans "Total price" %}
 
@@ -87,7 +87,7 @@ if depo_fix
     td
 
 else
-  h4 {% trans "Aucun dépôt de librairie" %}
+  h4 {% trans "No deposit of bookshop type" %}
 
-a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "Nouveau dépôt" %}
+a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
 {% endblock content %}

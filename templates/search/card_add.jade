@@ -33,7 +33,7 @@ div.ng-cloak(ng-controller="cardAddController")
         td: select(ng-model="category", ng-options="it.fields.name for it in categories")
     table
       tr
-        td.my-narrow {% trans "diffuseur" %}
+        td.my-narrow {% trans "distributor" %}
         td
 
           ui-select.my-narrow(ng-model="distributor.selected", ng-change="filter_deposits()")

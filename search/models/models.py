@@ -333,7 +333,7 @@ class Card(TimeStampedModel):
         publishers = ", ".join([pub.name for pub in self.publishers.all()])
         if len(publishers) > MAX_LENGTH:
             publishers = publishers[0:MAX_LENGTH] + "..."
-        distributor = self.distributor.name if self.distributor else _("aucun")
+        distributor = self.distributor.name if self.distributor else _("none")
         return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     def display_authors(self):
@@ -1644,7 +1644,7 @@ class Deposit(TimeStampedModel):
             if copy.distributor and (copy.distributor.name == distributor):
                 filtered.append(copy)
             else:
-                cur_dist = copy.distributor.name if copy.distributor else "aucun"
+                cur_dist = copy.distributor.name if copy.distributor else _(u"none")
                 msgs.append({'level': messages.WARNING,
                              'message': MSG_CARD_DIFFERENT_DIST %
                              (copy.title, cur_dist, distributor)})

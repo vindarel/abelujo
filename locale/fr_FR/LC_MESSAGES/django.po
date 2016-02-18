@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-18 16:32+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-02-18 18:04+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -77,11 +77,11 @@ msgstr "La notice n'existe pas."
 
 #: search/models/models.py:1139
 msgid "Please provide the name of the new basket"
-msgstr ""
+msgstr "Veuillez spécifier le nom du nouveau panier"
 
 #: search/models/models.py:1147
 msgid "New basket created"
-msgstr ""
+msgstr "Le nouveau panier a été créé"
 
 #: search/models/models.py:1151
 msgid "We could not create a new basket. This is an internal error."
@@ -160,7 +160,7 @@ msgstr "Attention: la vente de {} a échoué."
 
 #: search/models/models.py:2216
 msgid "Sell {} canceled with success."
-msgstr ""
+msgstr "La vente {} a été annulée avec succès"
 
 #: search/models/models.py:2442
 msgid "total nb of cards"
@@ -358,7 +358,7 @@ msgstr ""
 
 #: templates/search/alerts.jade:33
 msgid "Date"
-msgstr ""
+msgstr "Date"
 
 #: templates/search/alerts.jade:34
 #: templates/search/basket_auto_command.jade:41
@@ -390,7 +390,7 @@ msgstr "Auto-commander"
 msgid ""
 "The cards to command are grouped by distributor. Check the quantity you want "
 "to command and send them an email."
-msgstr ""
+msgstr "Les notices sont groupées par diffuseur. Vous pouvez vérifier la quantité que vous voulez commander pour chacune, puis envoyer un mail aux diffuseurs."
 
 #: templates/search/basket_auto_command.jade:36
 #, fuzzy
@@ -400,15 +400,15 @@ msgstr "A commander"
 
 #: templates/search/basket_auto_command.jade:36
 msgid "Hello"
-msgstr ""
+msgstr "Bonjour"
 
 #: templates/search/basket_auto_command.jade:37
 msgid "Write to"
-msgstr ""
+msgstr "Écrire à"
 
 #: templates/search/basket_auto_command.jade:37
 msgid " with your desktop mail client"
-msgstr ""
+msgstr "avec votre client mail préféré"
 
 #: templates/search/basket_auto_command.jade:42
 #, fuzzy
@@ -422,7 +422,7 @@ msgstr "Quantité restante"
 
 #: templates/search/basket_auto_command.jade:52
 msgid "Remove from list"
-msgstr ""
+msgstr "Enlever de la liste"
 
 #: templates/search/basket_auto_command.jade:57
 #, fuzzy
@@ -433,7 +433,7 @@ msgstr "A commander"
 #: templates/search/basket_auto_command.jade:58
 msgid ""
 "The cards are grouped by distributor. Please check the list and confirm."
-msgstr ""
+msgstr "Les notices sont groupées par diffuseur. Veuillez vérifier la liste et confirmer."
 
 #: templates/search/basket_auto_command.jade:66
 #: templates/search/baskets.jade:55
@@ -450,11 +450,11 @@ msgstr "Créé le"
 
 #: templates/search/baskets.jade:55
 msgid "Mark all the cards to command"
-msgstr ""
+msgstr "Tout marquer à commander"
 
 #: templates/search/baskets.jade:63
 msgid "Remove from basket"
-msgstr ""
+msgstr "Enlever du panier"
 
 #: templates/search/card_add.jade:32
 msgid "category"
@@ -479,11 +479,11 @@ msgstr "Ajouter au dépôt:"
 #: templates/search/card_add.jade:61 templates/search/card_add.jade.py:72
 #: templates/search/sell_details.jade:44
 msgid "total"
-msgstr ""
+msgstr "total"
 
 #: templates/search/card_add.jade:64
 msgid "Buy copies for each place"
-msgstr ""
+msgstr "Acheter des exemplaires pour chaque lieu"
 
 #: templates/search/card_add.jade:75
 msgid "with discount"
@@ -543,7 +543,7 @@ msgstr "cette notice n'a pas d'isbn"
 
 #: templates/search/card_edit.jade:63
 msgid "isbn"
-msgstr ""
+msgstr "isbn"
 
 #: templates/search/card_edit.jade:67
 msgid "year of publication"
@@ -594,7 +594,7 @@ msgstr "Édition"
 
 #: templates/search/card_show.jade:32
 msgid "Move…"
-msgstr ""
+msgstr "Déplacer…"
 
 #: templates/search/card_show.jade:39
 msgid "in stock"
@@ -602,7 +602,7 @@ msgstr "en stock"
 
 #: templates/search/card_show.jade:41
 msgid "source"
-msgstr ""
+msgstr "source"
 
 #: templates/search/card_show.jade:43
 msgid "Category"
@@ -610,7 +610,7 @@ msgstr "Catégorie"
 
 #: templates/search/card_show.jade:45
 msgid "Comment"
-msgstr ""
+msgstr "Commentaire"
 
 #: templates/search/card_show.jade:64
 msgid "Presente in"
@@ -815,7 +815,7 @@ msgstr "Quantité minimum demandée"
 
 #: templates/search/deposits_create.jade:65
 msgid "This number can also be specified card-wise"
-msgstr ""
+msgstr "The chiffre peut aussi être spécifié pour chaque notice"
 
 #: templates/search/deposits_create.jade:69
 msgid "Auto-command the cards"
@@ -899,7 +899,7 @@ msgstr "notices"
 
 #: templates/search/history.jade:62
 msgid "Remove this card from the list of commands"
-msgstr ""
+msgstr "Enlever cette notice da la liste des commandes"
 
 #: templates/search/history.jade:69
 msgid "Entry"
@@ -979,7 +979,7 @@ msgstr "Montrer tous les titres déjà inventoriés"
 
 #: templates/search/inventory_terminate.jade:29
 msgid "What shall we do about those cards ?"
-msgstr ""
+msgstr "Que devons-nous faire de ces notices ?"
 
 #: templates/search/inventory_view.jade:26
 msgid "Inventory ongoing"
@@ -987,11 +987,11 @@ msgstr "Inventaire en cours"
 
 #: templates/search/inventory_view.jade:33
 msgid "You did "
-msgstr ""
+msgstr "Vous avez fait"
 
 #: templates/search/inventory_view.jade:33
 msgid "It remains"
-msgstr ""
+msgstr "Il reste"
 
 #: templates/search/inventory_view.jade:33
 #, fuzzy
@@ -1001,11 +1001,11 @@ msgstr "notices"
 
 #: templates/search/inventory_view.jade:45
 msgid "Save"
-msgstr ""
+msgstr "Sauvegarder"
 
 #: templates/search/inventory_view.jade:46
 msgid "Terminate…"
-msgstr ""
+msgstr "Terminer…"
 
 #: templates/search/inventory_view.jade:58
 #: templates/search/sell_create.jade:83
