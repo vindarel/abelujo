@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-06 19:07+0100\n"
+"POT-Creation-Date: 2016-02-18 17:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,105 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ruche-web/admin/js/SelectFilter2.js:47
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:47
-#, c-format
-msgid "Available %s"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:60
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:60
-msgid "Filter"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:64
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:64
-msgid "Choose all"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:64
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:64
-#, c-format
-msgid "Click to choose all %s at once."
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:70
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:70
-msgid "Choose"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:72
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:72
-msgid "Remove"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:78
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:78
-#, c-format
-msgid "Chosen %s"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:84
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:84
-msgid "Remove all"
-msgstr ""
-
-#: ruche-web/admin/js/SelectFilter2.js:84
-#: ruche-web/rucheweb/admin/js/SelectFilter2.js:84
-#, c-format
-msgid "Click to remove all chosen %s at once."
-msgstr ""
-
-#: ruche-web/admin/js/actions.js:26 ruche-web/admin/js/actions.min.js:26
-#: ruche-web/rucheweb/admin/js/actions.js:26
-#: ruche-web/rucheweb/admin/js/actions.min.js:26
-msgid "%(sel)s of %(cnt)s selected"
-msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] ""
-msgstr[1] ""
-
 #: static/js/app/controllers/DepositCreateController.js:30
-#: static/js/build/abelujo.js:60
 msgid "fix deposit"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:31
-#: static/js/build/abelujo.js:61
 msgid "deposit of bookshops"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:35
-#: static/js/build/abelujo.js:65
 msgid "external deposit (for publisher)"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:36
-#: static/js/build/abelujo.js:66
 msgid "publisher deposit"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:207
-#: static/js/build/abelujo.js:237
 msgid "Deposits"
 msgstr ""
 
 #: static/js/app/controllers/alertsController.js:12
-#: static/js/build/abelujo.js:252
 msgid "not any more"
 msgstr ""
 
 #: static/js/app/controllers/alertsController.js:14
-#: static/js/build/abelujo.js:254
 msgid "yes"
 msgstr ""
 
 #: static/js/app/controllers/alertsController.js:17
-#: static/js/build/abelujo.js:257
 msgid "Alerts"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:15
-#: static/js/build/abelujo.js:293
 msgid "all publication"
 msgstr ""
 
@@ -124,105 +58,59 @@ msgstr ""
 #: static/js/app/controllers/sellController.js:17
 #: static/js/app/controllers/sellController.js:18
 #: static/js/app/controllers/sellController.js:19
-#: static/js/build/abelujo.js:294 static/js/build/abelujo.js.c:295
-#: static/js/build/abelujo.js:296 static/js/build/abelujo.js.c:297
 msgid "book"
 msgstr "buch"
 
 #: static/js/app/controllers/sellController.js:17
-#: static/js/build/abelujo.js:295
 msgid "booklet"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:18
-#: static/js/build/abelujo.js:296
 msgid "periodical"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:19
-#: static/js/build/abelujo.js:297
 msgid "other print"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:20
 #: static/js/app/controllers/sellController.js:21
 #: static/js/app/controllers/sellController.js:22
-#: static/js/build/abelujo.js:298 static/js/build/abelujo.js.c:299
-#: static/js/build/abelujo.js:300
 msgid "CD"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:21
-#: static/js/build/abelujo.js:299
 msgid "DVD"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:22
-#: static/js/build/abelujo.js:300
 msgid "vinyl"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:23
-#: static/js/build/abelujo.js:301
 msgid "others"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:27
-#: static/js/build/abelujo.js:305
 msgid "cash"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:28
-#: static/js/build/abelujo.js:306
 msgid "cheque"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:29
-#: static/js/build/abelujo.js:307
 msgid "visa card"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:30
-#: static/js/build/abelujo.js:308
 msgid "gift"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:31
-#: static/js/build/abelujo.js:309
 msgid "other"
 msgstr ""
 
 #: static/js/app/controllers/sellController.js:219
-#: static/js/build/abelujo.js:497
 msgid "Sell"
-msgstr ""
-
-#: static/js/build/abelujo.js:658
-#: static/js/build/livescript/controllers/basketsController.js:25
-msgid "Baskets"
-msgstr ""
-
-#: static/js/build/abelujo.js:803
-#: static/js/build/livescript/controllers/cardAddController.js:143
-msgid "Add a card"
-msgstr ""
-
-#: static/js/build/abelujo.js:939
-#: static/js/build/livescript/controllers/cardCreateController.js:134
-msgid "new card"
-msgstr ""
-
-#: static/js/build/abelujo.js:957
-#: static/js/build/livescript/controllers/collectionController.js:16
-msgid "Stock"
-msgstr ""
-
-#: static/js/build/abelujo.js:1036
-#: static/js/build/livescript/controllers/historyController.js:30
-msgid "History"
-msgstr ""
-
-#: static/js/build/abelujo.js:1179
-#: static/js/build/livescript/controllers/inventoryNewController.js:141
-msgid "Inventory"
 msgstr ""

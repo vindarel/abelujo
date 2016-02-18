@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-06 18:07+0000\n"
+"POT-Creation-Date: 2016-02-18 16:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,123 +37,162 @@ msgstr "Castillan"
 msgid "Catalan"
 msgstr ""
 
-#: ruche-web/search/chapitreScraper.py:22
-msgid "produit indisponible"
-msgstr "produit indisponible"
-
-#: ruche-web/search/chapitreScraper.py:172
-msgid "Error matching nbr_result"
-msgstr ""
-
-#: search/models/api.py:129
+#: search/models/api.py:133
 msgid "Woops, we can not create this card. This is a bug !"
 msgstr ""
 
-#: search/models/api.py:364 search/models/models.py:2033
+#: search/models/api.py:368 search/models/models.py:2151
 msgid "Sell successfull."
 msgstr "La vente a été réalisée avec succès."
 
-#: search/models/api.py:552
+#: search/models/api.py:643
 msgid "Internal error. We couldn't save the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu sauvegarder l'inventaire"
 
-#: search/models/api.py:568
+#: search/models/api.py:659
 msgid "Inventory saved. Keep working !"
 msgstr "Inventaire sauvegardé. Il faut s'y remettre !"
 
-#: search/models/models.py:338
+#: search/models/models.py:336
 msgid "aucun"
 msgstr ""
 
-#: search/models/models.py:669
+#: search/models/models.py:606
+msgid ""
+"We can not undo the sell of card {}:                 it is not associated to "
+"any place. This shouldn't happen."
+msgstr ""
+
+#: search/models/models.py:696
 #, fuzzy
 #| msgid "The deposit was successfully created."
 msgid "The card was created successfully."
 msgstr "Le dépôt a été créé avec succès."
 
-#: search/models/models.py:670
+#: search/models/models.py:697
 #, fuzzy
 #| msgid "The card doesn't exist."
 msgid "This card already exists."
 msgstr "La notice n'existe pas."
 
-#: search/models/models.py:1281
+#: search/models/models.py:1139
+msgid "Please provide the name of the new basket"
+msgstr ""
+
+#: search/models/models.py:1147
+msgid "New basket created"
+msgstr ""
+
+#: search/models/models.py:1151
+msgid "We could not create a new basket. This is an internal error."
+msgstr ""
+
+#: search/models/models.py:1186
+#, fuzzy
+#| msgid "The card were successfully added to the deposit."
+msgid "The cards were successfully added to the basket '{}'"
+msgstr "La notice a été ajoutée au dépôt."
+
+#: search/models/models.py:1198
+#, fuzzy
+#| msgid "The card were successfully added to the deposit."
+msgid "The card was successfully removed from the basket"
+msgstr "La notice a été ajoutée au dépôt."
+
+#: search/models/models.py:1203
+msgid "Card not found"
+msgstr ""
+
+#: search/models/models.py:1208
+msgid ""
+"Could not remove the card from the command basket. This is an internal error."
+msgstr ""
+
+#: search/models/models.py:1396
 #, fuzzy
 #| msgid "Error when adding the deposit"
 msgid "An error occured while adding a card to the deposit state."
 msgstr "Erreur en ajoutant le dépôt"
 
-#: search/models/models.py:1293
+#: search/models/models.py:1408
 msgid "This deposit state is closed ! We won't update it, sorry."
 msgstr "Cet état de dépôt est cloturé, nous ne pouvons pas le mettre à jour."
 
-#: search/models/models.py:1314 search/models/models.py:1599
+#: search/models/models.py:1429 search/models/models.py:1714
 msgid ""
 "Wooops, an error occured while adding a card to the deposit. That shouldn't "
 "happen !"
-msgstr "Ouuups, une erreur est survenue en ajoutant une notice au dépôt. Ceci ne devrait pas arriver !"
+msgstr ""
+"Ouuups, une erreur est survenue en ajoutant une notice au dépôt. Ceci ne "
+"devrait pas arriver !"
 
-#: search/models/models.py:1385
+#: search/models/models.py:1500
 msgid "The deposit state can not be closed. There are conflicting sells."
-msgstr "L'état de dépôt ne peut pas être enregistré. Il y a des ventes conflictuelles."
+msgstr ""
+"L'état de dépôt ne peut pas être enregistré. Il y a des ventes "
+"conflictuelles."
 
-#: search/models/models.py:1639
+#: search/models/models.py:1754
 msgid "The deposit wasn't created. It must contain at least one valid card"
 msgstr "Le dépôt n'a pas été créé. Il doit contenir au moins une notice valide"
 
-#: search/models/models.py:1668
+#: search/models/models.py:1783
 msgid "The deposit was successfully created."
 msgstr "Le dépôt a été créé avec succès."
 
-#: search/models/models.py:1733
+#: search/models/models.py:1848
 msgid "this deposit has no cards. Impossible to do a checkout."
 msgstr "ce dépôt n'a pas de notices. Impossible d'en faire un résumé."
 
-#: search/models/models.py:1739
+#: search/models/models.py:1854
 msgid ""
 "Hey oh, a deposit state for this deposit already exists.             Please "
 "close it before opening a new one."
 msgstr ""
 
-#: search/models/models.py:1773
+#: search/models/models.py:1888
 msgid "No cards were sold since the last deposit state."
 msgstr "Aucune notice n'a été vendue depuis le dernier état de dépôt."
 
-#: search/models/models.py:2024
+#: search/models/models.py:2142
 msgid "Warning: we couldn't sell {}."
 msgstr "Attention: la vente de {} a échoué."
 
-#: search/models/models.py:2242
+#: search/models/models.py:2216
+msgid "Sell {} canceled with success."
+msgstr ""
+
+#: search/models/models.py:2442
 msgid "total nb of cards"
 msgstr "nombre total de notices"
 
-#: search/models/models.py:2244
+#: search/models/models.py:2444
 msgid "nb of books"
 msgstr "nombre de livres"
 
-#: search/models/models.py:2246
+#: search/models/models.py:2446
 msgid "cards of unknown type"
 msgstr "notices de type inconnu"
 
-#: search/models/models.py:2250
+#: search/models/models.py:2450
 msgid "nb of cards we bought and their cost"
 msgstr "nombre de notices en fond propre et leur coût"
 
-#: search/models/models.py:2270
+#: search/models/models.py:2470
 msgid "nb of cards in deposits"
 msgstr "nombre de notices en dépôts"
 
-#: search/models/models.py:2275
+#: search/models/models.py:2475
 #, fuzzy
 #| msgid "Name of the deposit"
 msgid "cost of the deposits"
 msgstr "Nom du dépôt"
 
-#: search/models/models.py:2278
+#: search/models/models.py:2478
 msgid "total cost"
 msgstr "coût total"
 
-#: search/models/models.py:2284
+#: search/models/models.py:2484
 msgid "next appointments"
 msgstr "prochaines échéances"
 
@@ -172,99 +211,72 @@ msgid "Part of title, of author's name, or isbn"
 msgstr "Partie du titre, nom de l'auteur, etc."
 
 #: search/views.py:94
-msgid "All cards"
-msgstr "Toutes notices"
-
-#: search/views.py:98 search/views.py:102 search/views.py:106
 msgid "All"
 msgstr "Tous"
 
-#: search/views.py:111
-msgid "Type of card"
-msgstr "Type de notice"
-
-#: search/views.py:114
-#, fuzzy
-#| msgid "Publishers"
-msgid "Publisher"
-msgstr "Éditeurs"
-
-#: search/views.py:120
-#, fuzzy
-#| msgid "Partie du titre, nom de l'auteur, etc."
-msgid "Search on title, authors or isbn."
-msgstr "Partie du titre, nom de l'auteur, etc."
-
-#: search/views.py:123
-#, fuzzy
-#| msgid "places"
-msgid "Places"
-msgstr "lieus de stockage"
-
-#: search/views.py:127 templates/search/card_show.jade:43
-msgid "Category"
-msgstr "Catégorie"
-
-#: search/views.py:139
+#: search/views.py:105
 msgid "Distributors"
 msgstr "Diffuseurs"
 
-#: search/views.py:141 templates/search/card_edit.jade:92
-#: templates/search/card_show.jade:52
+#: search/views.py:107 templates/search/card_edit.jade:92
+#: templates/search/card_show.jade:52 templates/search/collection.jade:105
 msgid "Publishers"
 msgstr "Éditeurs"
 
-#: search/views.py:196
+#: search/views.py:162
 msgid "Add to the deposit:"
 msgstr "Ajouter au dépôt:"
 
-#: search/views.py:512 templates/search/sell_details.jade:26
+#: search/views.py:478 templates/search/sell_details.jade:26
 msgid "Payment"
 msgstr "Paiement"
 
-#: search/views.py:513
+#: search/views.py:479
 msgid "Bill"
 msgstr "Facture"
 
-#: search/views.py:514 templates/search/deposits_create.jade:93
-#: templates/search/inventory_view.jade:85
+#: search/views.py:480 templates/search/collection.jade:106
+#: templates/search/deposits_create.jade:93
+#: templates/search/inventory_view.jade:86
 #: templates/search/sell_create.jade:123 templates/search/sell_details.jade:31
 msgid "Quantity"
 msgstr "Quantité"
 
-#: search/views.py:515
+#: search/views.py:481
 #, fuzzy
 #| msgid "places"
 msgid "Place"
 msgstr "lieus de stockage"
 
-#: search/views.py:611
+#: search/views.py:577
 #, fuzzy
 #| msgid "The deposit was successfully created."
 msgid "The card \"{}\" was added successfully."
 msgstr "Le dépôt a été créé avec succès."
 
-#: search/views.py:797
+#: search/views.py:694
 msgid "Error when adding the deposit"
 msgstr "Erreur en ajoutant le dépôt"
 
-#: search/views.py:823
+#: search/views.py:720
 #, fuzzy
 #| msgid "We could not add the card to the deposit: the given ean is null."
 msgid "We could not add the card to the deposit: the given isbn is null."
 msgstr "Impossible d'ajouter cette notice au dépôt: l'isbn est nul."
 
-#: search/views.py:828
+#: search/views.py:725
 msgid "The card were successfully added to the deposit."
 msgstr "La notice a été ajoutée au dépôt."
 
-#: search/views.py:855
+#: search/views.py:752
 msgid "This deposit doesn't exist !"
 msgstr "Le dépôt demandé n'existe pas !"
 
-#: search/views.py:882
+#: search/views.py:779
 msgid "Woops, there was an error :S we can't close this deposit state."
-msgstr "Ouups, il y a eu une erreur :S nous ne pouvons pas cloturer cet état de dépôt."
+msgstr ""
+"Ouups, il y a eu une erreur :S nous ne pouvons pas cloturer cet état de "
+"dépôt."
 
 #: templates/admin/search/base_site.html:19
 msgid "Django site admin"
@@ -288,38 +300,39 @@ msgstr "Se déconneter"
 msgid "My stock"
 msgstr "Mon stock"
 
-#: templates/base.jade:52 templates/search/history.jade:45
+#: templates/base.jade:53 templates/search/history.jade:54
 msgid "Sell"
 msgstr "Vendre"
 
-#: templates/base.jade:54
+#: templates/base.jade:56
 msgid "New entry"
 msgstr "Nouvelle entrée"
 
-#: templates/base.jade:56 templates/search/card_show.jade:70
+#: templates/base.jade:59 templates/search/card_show.jade:70
 msgid "Deposits"
 msgstr "Dépôts"
 
-#: templates/base.jade:58
+#: templates/base.jade:62
 msgid "Inventories"
 msgstr "Inventaires"
 
-#: templates/base.jade:60
+#: templates/base.jade:65 templates/search/basket_auto_command.jade:44
 msgid "To command"
 msgstr "A commander"
 
-#: templates/base.jade:63
+#: templates/base.jade:69
 #, fuzzy
 #| msgid "No basket"
 msgid "Baskets"
 msgstr "Aucun panier"
 
-#: templates/base.jade:65 templates/search/history.jade:29
+#: templates/base.jade:72 templates/search/history.jade:29
 msgid "History"
 msgstr "Historique"
 
-#: templates/base.jade:68 templates/search/alerts.jade:28
-#: templates/search/card_show.jade:76 templates/search/deposits_view.jade:41
+#: templates/base.jade:75 templates/search/alerts.jade:28
+#: templates/search/card_show.jade:76 templates/search/deposits.jade:35
+#: templates/search/deposits_view.jade:41
 msgid "Alerts"
 msgstr "Alertes"
 
@@ -348,9 +361,9 @@ msgid "Date"
 msgstr ""
 
 #: templates/search/alerts.jade:34
-#: templates/search/basket_auto_command.jade:31
-#: templates/search/card_edit.jade:42 templates/search/dashboard.jade:43
-#: templates/search/deposits_view.jade:52
+#: templates/search/basket_auto_command.jade:41
+#: templates/search/card_edit.jade:42 templates/search/collection.jade:103
+#: templates/search/dashboard.jade:43 templates/search/deposits_view.jade:52
 #: templates/search/sell_details.jade:30
 msgid "Title"
 msgstr "Titre"
@@ -368,24 +381,80 @@ msgid "Related deposit"
 msgstr "dépôts concernés"
 
 #: templates/search/basket_auto_command.jade:28
-msgid "No card is this basket"
-msgstr "Aucun exemplaire dans ce panier"
+#, fuzzy
+#| msgid "Auto command"
+msgid "Cards to command"
+msgstr "Auto-commander"
 
 #: templates/search/basket_auto_command.jade:32
-#: templates/search/card_edit.jade:74
-msgid "Authors"
-msgstr "Auteurs"
+msgid ""
+"The cards to command are grouped by distributor. Check the quantity you want "
+"to command and send them an email."
+msgstr ""
 
-#: templates/search/basket_auto_command.jade:33
-#: templates/search/card_edit.jade:110 templates/search/card_show.jade:58
-#: templates/search/dashboard.jade:61 templates/search/deposits_create.jade:70
-#: templates/search/deposits_view.jade:31
-msgid "Distributor"
-msgstr "Diffuseur"
+#: templates/search/basket_auto_command.jade:36
+#, fuzzy
+#| msgid "To command"
+msgid "New command"
+msgstr "A commander"
 
-#: templates/search/basket_auto_command.jade:34
+#: templates/search/basket_auto_command.jade:36
+msgid "Hello"
+msgstr ""
+
+#: templates/search/basket_auto_command.jade:37
+msgid "Write to"
+msgstr ""
+
+#: templates/search/basket_auto_command.jade:37
+msgid " with your desktop mail client"
+msgstr ""
+
+#: templates/search/basket_auto_command.jade:42
+#, fuzzy
+#| msgid "price"
+msgid "Price"
+msgstr "prix"
+
+#: templates/search/basket_auto_command.jade:43
 msgid "Quantity left"
 msgstr "Quantité restante"
+
+#: templates/search/basket_auto_command.jade:52
+msgid "Remove from list"
+msgstr ""
+
+#: templates/search/basket_auto_command.jade:57
+#, fuzzy
+#| msgid "To command"
+msgid "Command"
+msgstr "A commander"
+
+#: templates/search/basket_auto_command.jade:58
+msgid ""
+"The cards are grouped by distributor. Please check the list and confirm."
+msgstr ""
+
+#: templates/search/basket_auto_command.jade:66
+#: templates/search/baskets.jade:55
+#, fuzzy
+#| msgid "To command"
+msgid "Command…"
+msgstr "A commander"
+
+#: templates/search/baskets.jade:40 templates/search/baskets.jade.py:67
+#, fuzzy
+#| msgid "Created the"
+msgid "Create a basket"
+msgstr "Créé le"
+
+#: templates/search/baskets.jade:55
+msgid "Mark all the cards to command"
+msgstr ""
+
+#: templates/search/baskets.jade:63
+msgid "Remove from basket"
+msgstr ""
 
 #: templates/search/card_add.jade:32
 msgid "category"
@@ -413,7 +482,7 @@ msgid "total"
 msgstr ""
 
 #: templates/search/card_add.jade:64
-msgid "Achat d'exemplaires pour chaque lieu:"
+msgid "Buy copies for each place"
 msgstr ""
 
 #: templates/search/card_add.jade:75
@@ -484,6 +553,17 @@ msgstr "année de publication"
 msgid "homepage"
 msgstr "page d'accueil"
 
+#: templates/search/card_edit.jade:74 templates/search/collection.jade:104
+msgid "Authors"
+msgstr "Auteurs"
+
+#: templates/search/card_edit.jade:110 templates/search/card_show.jade:58
+#: templates/search/dashboard.jade:61 templates/search/deposits.jade:33
+#: templates/search/deposits_create.jade:70
+#: templates/search/deposits_view.jade:31
+msgid "Distributor"
+msgstr "Diffuseur"
+
 #: templates/search/card_edit.jade:126
 #, fuzzy
 #| msgid "cards"
@@ -504,7 +584,7 @@ msgstr "Déplacer les notices"
 msgid "and add some to baskets"
 msgstr "Ajouter au panier"
 
-#: templates/search/card_show.jade:30 templates/search/collection.jade:49
+#: templates/search/card_show.jade:30
 msgid "Edit the card"
 msgstr "Modifier la notice"
 
@@ -516,13 +596,17 @@ msgstr "Édition"
 msgid "Move…"
 msgstr ""
 
-#: templates/search/card_show.jade:39 templates/search/collection.jade:88
+#: templates/search/card_show.jade:39
 msgid "in stock"
 msgstr "en stock"
 
 #: templates/search/card_show.jade:41
 msgid "source"
 msgstr ""
+
+#: templates/search/card_show.jade:43
+msgid "Category"
+msgstr "Catégorie"
 
 #: templates/search/card_show.jade:45
 msgid "Comment"
@@ -554,50 +638,39 @@ msgstr "Résumé"
 msgid "Search in the stock"
 msgstr "Chercher dans le stock"
 
-#: templates/search/collection.jade:33
-#: templates/search/deposit_add_copies.jade:31
-msgid "valider"
-msgstr ""
+#: templates/search/collection.jade:50
+#, fuzzy
+#| msgid "Partie du titre, nom de l'auteur, etc."
+msgid "Search on title, authors or isbn"
+msgstr "Partie du titre, nom de l'auteur, etc."
 
-#: templates/search/collection.jade:36
-msgid "No results"
-msgstr "Aucun résultat"
+#: templates/search/collection.jade:89 templates/search/index.jade:32
+msgid "Search"
+msgstr "Recherche"
 
-#: templates/search/collection.jade:38
-msgid "results"
-msgstr "résultats"
-
-#: templates/search/collection.jade:40
+#: templates/search/collection.jade:92
 msgid "voir en texte"
 msgstr ""
 
-#: templates/search/collection.jade:51
+#: templates/search/collection.jade:97
+#, fuzzy
+#| msgid "Add this card to the basket"
+msgid "Add the cards selected to basket(s)"
+msgstr "Ajouter cette notice au panier"
+
+#: templates/search/collection.jade:97 templates/search/search_result.jade:83
+msgid "Add to…"
+msgstr "Ajouter à…"
+
+#: templates/search/collection.jade:117
 msgid "See on"
 msgstr "Voir sur"
 
-#: templates/search/collection.jade:61
-msgid "publisher"
-msgstr "éditeur"
-
-#: templates/search/collection.jade:69
-msgid "collection inconnue"
-msgstr ""
-
-#: templates/search/collection.jade:69
-msgid "collection"
-msgstr ""
-
-#: templates/search/collection.jade:82
-msgid "distributor"
-msgstr "diffuseur"
-
-#: templates/search/collection.jade:85
-msgid "places"
-msgstr "lieus de stockage"
-
-#: templates/search/collection.jade:95
-msgid "add to deposit"
-msgstr "ajouter au dépôt"
+#: templates/search/collection.jade:135
+#, fuzzy
+#| msgid "Add to basket"
+msgid "Add to basket(s)"
+msgstr "Ajouter au panier"
 
 #: templates/search/dashboard.jade:26
 msgid "Abelujo's dashboard"
@@ -653,42 +726,60 @@ msgstr "Ajouter au dépôt:"
 msgid ""
 "Did you receive more copies of the titles you have in this deposit ? You can "
 "add them here."
-msgstr "Si vous avez reçu d'autres exemplaires des titres présents dans ce dépôts, vous pouvez les ajouter ici."
+msgstr ""
+"Si vous avez reçu d'autres exemplaires des titres présents dans ce dépôts, "
+"vous pouvez les ajouter ici."
+
+#: templates/search/deposit_add_copies.jade:31
+msgid "valider"
+msgstr ""
 
 #: templates/search/deposit_add_copies.jade:33
 #: templates/search/sell_create.jade:134
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/search/deposits.jade:32 templates/search/deposits.jade.py:56
-msgid "Nom du dépot"
-msgstr ""
+#: templates/search/deposits.jade:32
+#, fuzzy
+#| msgid "Deposit type"
+msgid "Deposit name"
+msgstr "Type de dépôt"
 
-#: templates/search/deposits.jade:33 templates/search/deposits.jade.py:57
-msgid "Diffuseur"
-msgstr ""
+#: templates/search/deposits.jade:34
+#, fuzzy
+#| msgid "New entry"
+msgid "Last checkout"
+msgstr "Nouvelle entrée"
 
-#: templates/search/deposits.jade:34 templates/search/deposits.jade.py:58
-msgid "Dernier état de dépôt"
-msgstr ""
-
-#: templates/search/deposits.jade:35 templates/search/deposits.jade.py:60
-msgid "Alertes"
-msgstr ""
-
-#: templates/search/deposits.jade:50
-msgid "Aucun dépôt de type éditeur"
-msgstr ""
-
-#: templates/search/deposits.jade:61
+#: templates/search/deposits.jade:36 templates/search/deposits.jade.py:61
 #, fuzzy
 #| msgid "Inital quantity"
 msgid "Initial qty"
 msgstr "Quantity initiale"
 
-#: templates/search/deposits.jade:62
+#: templates/search/deposits.jade:37 templates/search/deposits.jade.py:62
 msgid "Total price"
 msgstr "Prix total"
+
+#: templates/search/deposits.jade:50
+msgid "Aucun dépôt de type éditeur"
+msgstr ""
+
+#: templates/search/deposits.jade:56
+msgid "Nom du dépot"
+msgstr ""
+
+#: templates/search/deposits.jade:57
+msgid "Diffuseur"
+msgstr ""
+
+#: templates/search/deposits.jade:58
+msgid "Dernier état de dépôt"
+msgstr ""
+
+#: templates/search/deposits.jade:60
+msgid "Alertes"
+msgstr ""
 
 #: templates/search/deposits.jade:64 templates/search/deposits_create.jade:47
 msgid "Due date"
@@ -758,7 +849,7 @@ msgstr "Dernier état de dépôt"
 msgid "total init"
 msgstr "total initial"
 
-#: templates/search/deposits_view.jade:45 templates/search/history.jade:48
+#: templates/search/deposits_view.jade:45 templates/search/history.jade:57
 msgid "total sold"
 msgstr "total ventes"
 
@@ -802,37 +893,37 @@ msgstr "Ajouter des exemplaires…"
 msgid "Delete this deposit"
 msgstr "dépôts concernés"
 
-#: templates/search/history.jade:47
+#: templates/search/history.jade:56
 msgid "cards"
 msgstr "notices"
 
-#: templates/search/history.jade:57
+#: templates/search/history.jade:62
+msgid "Remove this card from the list of commands"
+msgstr ""
+
+#: templates/search/history.jade:69
 msgid "Entry"
 msgstr "Entrée"
 
-#: templates/search/history.jade:68
+#: templates/search/history.jade:80
 msgid "Movement"
 msgstr "Mouvement"
 
-#: templates/search/history.jade:70
+#: templates/search/history.jade:82
 msgid "Moved"
 msgstr "Déplacé"
 
-#: templates/search/history.jade:70
+#: templates/search/history.jade:82
 msgid "copies"
 msgstr "exemplaires"
 
-#: templates/search/history.jade:70
+#: templates/search/history.jade:82
 msgid "from"
 msgstr "de"
 
-#: templates/search/history.jade:70
+#: templates/search/history.jade:82
 msgid "to"
 msgstr "à"
-
-#: templates/search/index.jade:32
-msgid "Search"
-msgstr "Recherche"
 
 #: templates/search/index.jade:33
 msgid "or"
@@ -846,54 +937,92 @@ msgstr "Ajouter une notice manuellement"
 msgid "Inventory started"
 msgstr "Inventaire en cours"
 
-#: templates/search/inventories.jade:31
+#: templates/search/inventories.jade:32
 msgid "Created the"
 msgstr "Créé le"
 
-#: templates/search/inventories.jade:32
+#: templates/search/inventories.jade:33
 msgid "On the place"
 msgstr "Lieu"
 
-#: templates/search/inventories.jade:41
+#: templates/search/inventories.jade:43
 msgid "Continue"
 msgstr "Continuer"
 
-#: templates/search/inventories.jade:43
+#: templates/search/inventories.jade:45
 msgid "Delete"
 msgstr "Supprimer"
 
-#: templates/search/inventories.jade:45
+#: templates/search/inventories.jade:47
 msgid "New..."
 msgstr "Nouveau..."
 
-#: templates/search/inventories.jade:50
+#: templates/search/inventories.jade:52
 msgid "What place are you doing the inventory of ?"
 msgstr "De quel lieu faites-vous l'inventaire ?"
 
-#: templates/search/inventories.jade:60
+#: templates/search/inventories.jade:62
 msgid "New"
 msgstr "Nouveau"
+
+#: templates/search/inventory_terminate.jade:26
+#, fuzzy
+#| msgid "Start an inventory"
+msgid "Terminate this inventory"
+msgstr "Commencer un inventaire"
+
+#: templates/search/inventory_terminate.jade:28
+#, fuzzy
+#| msgid "Show all cards inventoried"
+msgid "Total of cards not inventoried"
+msgstr "Montrer tous les titres déjà inventoriés"
+
+#: templates/search/inventory_terminate.jade:29
+msgid "What shall we do about those cards ?"
+msgstr ""
 
 #: templates/search/inventory_view.jade:26
 msgid "Inventory ongoing"
 msgstr "Inventaire en cours"
 
-#: templates/search/inventory_view.jade:57
+#: templates/search/inventory_view.jade:33
+msgid "You did "
+msgstr ""
+
+#: templates/search/inventory_view.jade:33
+msgid "It remains"
+msgstr ""
+
+#: templates/search/inventory_view.jade:33
+#, fuzzy
+#| msgid "cards"
+msgid " cards"
+msgstr "notices"
+
+#: templates/search/inventory_view.jade:45
+msgid "Save"
+msgstr ""
+
+#: templates/search/inventory_view.jade:46
+msgid "Terminate…"
+msgstr ""
+
+#: templates/search/inventory_view.jade:58
 #: templates/search/sell_create.jade:83
 msgid "Use TAB to validate your choice, Enter to proceed."
 msgstr "Utilisez TAB pour valider la selection, Entrée pour finir la vente."
 
-#: templates/search/inventory_view.jade:69
+#: templates/search/inventory_view.jade:70
 msgid "Show all cards inventoried"
 msgstr "Montrer tous les titres déjà inventoriés"
 
-#: templates/search/inventory_view.jade:72
+#: templates/search/inventory_view.jade:73
 #, fuzzy
 #| msgid "titles selected. Total:"
 msgid "titles selected."
 msgstr "titres sélectionnés. Total:"
 
-#: templates/search/inventory_view.jade:80
+#: templates/search/inventory_view.jade:81
 #: templates/search/sell_create.jade:104
 msgid "There is a conflict with deposits."
 msgstr "Il y a un conflit de dépôts."
@@ -910,10 +1039,6 @@ msgstr ""
 #: templates/search/search_result.jade:61
 msgid "The isbn will be downloaded when you press enter."
 msgstr "Le n°isbn sera téléchargé à l'enregistrement de la notice."
-
-#: templates/search/search_result.jade:81
-msgid "Add to…"
-msgstr "Ajouter à…"
 
 #: templates/search/sell_create.jade:26
 msgid "Selling cards"
@@ -938,6 +1063,46 @@ msgstr "Prix initial"
 #: templates/search/sell_details.jade:33
 msgid "Price sold"
 msgstr "Prix de vente"
+
+#~ msgid "produit indisponible"
+#~ msgstr "produit indisponible"
+
+#~ msgid "All cards"
+#~ msgstr "Toutes notices"
+
+#~ msgid "Type of card"
+#~ msgstr "Type de notice"
+
+#, fuzzy
+#~| msgid "Publishers"
+#~ msgid "Publisher"
+#~ msgstr "Éditeurs"
+
+#, fuzzy
+#~| msgid "places"
+#~ msgid "Places"
+#~ msgstr "lieus de stockage"
+
+#~ msgid "No card is this basket"
+#~ msgstr "Aucun exemplaire dans ce panier"
+
+#~ msgid "No results"
+#~ msgstr "Aucun résultat"
+
+#~ msgid "results"
+#~ msgstr "résultats"
+
+#~ msgid "publisher"
+#~ msgstr "éditeur"
+
+#~ msgid "distributor"
+#~ msgstr "diffuseur"
+
+#~ msgid "places"
+#~ msgstr "lieus de stockage"
+
+#~ msgid "add to deposit"
+#~ msgstr "ajouter au dépôt"
 
 #~ msgid "The card doesn't exist."
 #~ msgstr "La notice n'existe pas."
@@ -982,12 +1147,6 @@ msgstr "Prix de vente"
 #~| msgid "cards"
 #~ msgid "new card"
 #~ msgstr "notices"
-
-#~ msgid "Start an inventory"
-#~ msgstr "Commencer un inventaire"
-
-#~ msgid "Add this card to the basket"
-#~ msgstr "Ajouter cette notice au panier"
 
 #~ msgid "History of sells"
 #~ msgstr "Historique des ventes"
