@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-18 16:32+0000\n"
-"PO-Revision-Date: 2016-02-18 17:51+0100\n"
+"PO-Revision-Date: 2016-02-18 18:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -616,7 +616,7 @@ msgstr "desconocido"
 
 #: templates/search/card_show.jade:86
 msgid "Sells since the last entry"
-msgstr "Vendas desde la última entrada"
+msgstr "Ventas desde la última entrada"
 
 #: templates/search/card_show.jade:97
 msgid "Summary"
@@ -670,7 +670,7 @@ msgstr "Estado del stock"
 
 #: templates/search/dashboard.jade:39
 msgid "Best 10 sells of this month"
-msgstr "Las 10 mejores vendas del mes"
+msgstr "Las 10 mejores ventas del mes"
 
 #: templates/search/dashboard.jade:44
 #, fuzzy
@@ -841,7 +841,7 @@ msgstr "total al inicio"
 
 #: templates/search/deposits_view.jade:45 templates/search/history.jade:57
 msgid "total sold"
-msgstr "total de vendas"
+msgstr "total de ventas"
 
 #: templates/search/deposits_view.jade:47
 msgid "to pay"
@@ -861,7 +861,7 @@ msgstr "cantidad de inicio"
 
 #: templates/search/deposits_view.jade:55
 msgid "nb sold"
-msgstr "cantidad de vendas"
+msgstr "cantidad de ventas"
 
 #: templates/search/deposits_view.jade:56
 msgid "current qty"
@@ -1058,7 +1058,7 @@ msgstr "Precio inicial"
 
 #: templates/search/sell_details.jade:33
 msgid "Price sold"
-msgstr "Precio de venda"
+msgstr "Precio de venta"
 
 #~ msgid "produit indisponible"
 #~ msgstr "producto indisponible"
