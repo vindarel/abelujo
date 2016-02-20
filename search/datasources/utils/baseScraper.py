@@ -140,7 +140,11 @@ class Scraper(object):
 
             # If a isbn is given, search for it
             if isbns:
-                query = "&{}={}".format(self.ISBN_QPARAM, isbns[0])
+                if self.ISBN_QPARAM:
+                    query = "&{}={}".format(self.ISBN_QPARAM, isbns[0])
+                else:
+                    query = isbns[0]
+
                 self.url = self.SOURCE_URL_ADVANCED_SEARCH + query
 
             # otherwise search the keywords.

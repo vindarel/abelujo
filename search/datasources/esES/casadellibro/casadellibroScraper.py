@@ -59,9 +59,11 @@ class Scraper(baseScraper):
         self.SOURCE_URL_BASE = u"http://www.casadellibro.com"
         #: Url to which we just have to add url parameters to run the search
         self.SOURCE_URL_SEARCH = u"http://www.casadellibro.com/busqueda-generica?busqueda="
+        self.SOURCE_URL_ADVANCED_SEARCH = self.SOURCE_URL_SEARCH
         #: Optional suffix to the search url (may help to filter types, i.e. don't show e-books).
         self.TYPE_BOOK = "book"
         self.URL_END = u"&idtipoproducto=-1&tipoproducto=1&nivel=5"
+        self.ISBN_QPARAM = ""
 
 
     query = ""
