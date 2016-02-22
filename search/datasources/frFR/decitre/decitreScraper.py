@@ -221,7 +221,7 @@ def postSearch(card):
         "price": None
         }
     req = requests.get(url)
-    soup = BeautifulSoup(req.content)
+    soup = BeautifulSoup(req.content, "lxml")
 
     try:
         info = soup.find_all(class_="information")

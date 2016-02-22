@@ -140,6 +140,9 @@ class Scraper(object):
 
             # If a isbn is given, search for it
             if isbns:
+                # Some sites use query parameters to set the isbn
+                # (decitre), others treat it like a normal one (casa
+                # del libro).
                 if self.ISBN_QPARAM:
                     query = "&{}={}".format(self.ISBN_QPARAM, isbns[0])
                 else:
@@ -155,7 +158,7 @@ class Scraper(object):
         log.debug('search url: %s' % self.url)
         self.url += self.URL_END
         self.req = requests.get(self.url)
-        self.soup = BeautifulSoup(self.req.content)
+        self.soup = BeautifulSoup(self.req.content, "lxml")
         #TODO: to be continued
 
     def _product_list(self):
@@ -268,7 +271,7 @@ def postSearch(card):
         return None
 
     req = requests.get(url)
-    soup = BeautifulSoup(req.text)
+    soup = BeautifulSoup(req.text, "lxml")
     details = soup.find_all(class_="productDetails-items-content")
     # The complementary information we need to return. Isbn is compulsory.
     to_ret = {"isbn": None}

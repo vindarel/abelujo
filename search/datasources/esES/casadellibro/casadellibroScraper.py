@@ -143,7 +143,7 @@ def postSearch(card):
 
     to_ret = {"isbn": None}
     req = requests.get(url)
-    soup = BeautifulSoup(req.text)
+    soup = BeautifulSoup(req.text, "lxml")
 
     try:
         isbn = soup.find(class_="book-header-2-subtitle-isbn").text
@@ -163,5 +163,5 @@ if __name__=="__main__":
     map(pprint.pprint, bklist)
     print "Nb results: {}".format(len(bklist))
     print "1st book postSearch:"
-    post = postSearch(bklist[0]["details_url"])
+    post = postSearch(bklist[0])
     print post
