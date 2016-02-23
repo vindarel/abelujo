@@ -744,7 +744,8 @@ def deposits_view(request, pk):
         if not checkout:
             # Could do in a "get or create" method.
             checkout = deposit.last_checkout()
-        if not checkout.closed:
+
+        if checkout and not checkout.closed:
             checkout.update()
         balance = checkout.balance()
 

@@ -1748,12 +1748,6 @@ class Deposit(TimeStampedModel):
         copies = depo_dict.pop('copies')  # add the copies after deposit creation.
         copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
 
-        # Don't create it if it has no valid copies.
-        if not copies_to_add:
-            msgs.append({'level': messages.WARNING,
-                         'message': _(u"The deposit wasn't created. It must contain at least one valid card")})
-            return ALERT_WARNING, msgs
-
         # Check the cards are not already in a deposit.
         for copy in copies_to_add:
             copy_depos = copy.deposit_set.all()
@@ -1843,9 +1837,6 @@ class Deposit(TimeStampedModel):
 
         return: tuple (DepositState object or None, list of messages (str))
         """
-        if not self.copies.count():
-            log.debug("this deposit has no cards.")
-            return None, [_("this deposit has no cards. Impossible to do a checkout.")]
 
         msgs = []
         cur_depostate = DepositState.existing(self)
@@ -2451,7 +2442,7 @@ class Stats(object):
                             'value': "<soon>"}
 
         # Cleanlyness: nb of cards with stock <= 0
-        res['nb_cards_no_stock'] = {'label': "nb of cards with no copies",
+        res['nb_cards_no_stock'] = {'label': _(u"nb of cards with no copies"),
                                     'value': Card.objects.filter(quantity__lte=0).count()}
         res['nb_cards_one_copy'] = {'label': "cards with one copy",
                                     'value': Card.objects.filter(quantity=1).count()}

@@ -54,9 +54,6 @@ table.table.table-striped.table-hover
         th {% trans "qty init" %}
         th {% trans "nb sold" %}
         th {% trans "current qty" %}
-    {% if card_balance|length = 0 %}
-    div nop !
-    {% endif %}
     for key, bal in cards_balance
       tr
         td  {{ key.title }}
