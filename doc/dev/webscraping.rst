@@ -103,12 +103,25 @@ Test strategy
 
 Unit tests and end-to-end tests.
 
-They are long the first time we run them (awaiting HTTP requests),
-quick the second time (using the cache).
+They can be long when we run them, because we are awaiting HTTP
+requests. We do not use a cache to run end to end tests.
 
-TODO: finish e2e tests
 
-TODO: Continuous integration.
+To run end to end tests ("live tests"), go to the `datasources` directory and run::
+
+    make testscrapers
+
+These tests are defined for each scraper. They use a base class in
+``utils/baseScraper.py``. The expected results are defined in their
+``test_scraper.yaml``. This yaml defines a list of books we are
+expecting to find in the scraping results. The base tests fires a
+search, filters the results (with the title, the ean and the price
+which are expecting to be the same) and then it tests more fields
+(publishers, authors, etc). It also tests that the ``postSearch``
+method returns what is expected.
+
+TODO: run tests periodically.
+
 
 Cache policy
 ------------

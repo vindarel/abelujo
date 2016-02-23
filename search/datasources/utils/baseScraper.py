@@ -109,6 +109,7 @@ class Scraper(object):
 
         """
 
+        isbns = []
         if not args and not kwargs:
             print 'Error: give args to the query'
 
@@ -184,10 +185,7 @@ class Scraper(object):
     @catch_errors
     def _price(self, product):
         """return a float."""
-        price = product.find(class_="bookPrise").text
-        price = price.replace("EUR", "").strip()
-        price = priceStr2Float(price)
-        return price
+        return None
 
     @catch_errors
     def _authors(self, product):

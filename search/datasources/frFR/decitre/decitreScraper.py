@@ -117,6 +117,7 @@ class Scraper(baseScraper):
 
     def _price(self, product):
         "the real price, without -5%"
+        return None
         try:
             details_soup = product.getDetailsSoup()
             block_right = details_soup.find(class_='prod-top-r')
@@ -241,14 +242,17 @@ def postSearch(card):
     return card
 
 
-@annotate(args=clize.Parameter.REQUIRED)
+@annotate(words=clize.Parameter.REQUIRED)
 @kwoargs()
-def main(*args):
+def main(*words):
     """
-    args: keywords to search
+    words: keywords to search (or isbn/ean)
     """
+    if not words:
+        print "Please give keywords as arguments"
+        return
     import pprint
-    scrap = Scraper(*args)
+    scrap = Scraper(*words)
     bklist, errors = scrap.search()
     print "Nb results: {}".format(len(bklist))
     bklist = [postSearch(it) for it in bklist]

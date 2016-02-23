@@ -70,7 +70,7 @@ class testScraperBase(unittest.TestCase):
                 filtered_res = filterAttribute("price", dataresults, filtered_res)
 
                 # Test the attributes.
-                self.assertEqual(len(filtered_res), 1)
+                self.assertTrue(filtered_res)
                 for attr in ["title",
                              "ean",  # may be None
                              "price",
