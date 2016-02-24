@@ -32,10 +32,13 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
 
     $http.get "/api/inventories/#{$scope.inv_id}/diff/"
     .then (response) !->
-        $scope.alerts = response.data.msgs
-        # Update the progress bar.
-        $scope.total_missing = response.data.total_missing
+        # $scope.alerts = response.data.msgs
+        $scope.diff = response.data.diff
+        $scope.in_stock = response.data.in_stock
+        $scope.in_inv = response.data.in_inv
 
+    $scope.validate = !->
+        alert gettext "Coming soon !"
 
     # Set focus:
     focus = !->

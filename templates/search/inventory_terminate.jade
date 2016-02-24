@@ -24,10 +24,39 @@
 {% load ngfilter %}
 
 h3 {% trans "Terminate this inventory" %}
+div {% trans "Here you can compare the inventory with the real stock, and take actions." %}
+em {% trans "Coming soon:" %}
 div(ng-controller="inventoryTerminateController")
-  h4 {% trans "Total of cards not inventoried" %}: {{ 'total_missing'|ng }}
-  div {% trans "What shall we do about those cards ?" %}
 
-  div (work is ongoing !)
+  h4 {% trans "The following cards appear only in the stock" %}
+  table.table.table-condensed.table-striped.table-hover(datatable='ng')
+    thead
+      th {% trans "Title" %}
+      th {% trans "Quantity" %}
+    tbody
+      tr(ng-repeat="(id, data) in in_stock")
+        td {{ 'data.card.title'|ng}}
+        td {{ 'data.quantity'|ng}}
+
+  h4 {% trans "The following cards appear only in the inventory" %}
+  table(datatable='ng')
+    thead
+      th {% trans "Title" %}
+    tbody
+      tr(ng-repeat="(id, data) in in_inv")
+        td {{ 'data.card.title'|ng}}
+
+   h4 {% trans "The following appear in both, but have a difference of quantity" %}
+   table.table.table-condensed.table-striped.table-hover(datatable='ng')
+     thead
+       th {% trans "Title" %}
+       th {% trans "Quantity" %}
+     tbody
+      tr(ng-repeat="(id, data) in diff")
+        td {{ 'data.card.title'|ng }}
+        td {{ 'data.diff' |ng }}
+
+   button.btn.btn-primary(ng-click='validate()') {% trans "Validate" %}
+
 
 {% endblock content %}

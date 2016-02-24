@@ -663,8 +663,11 @@ def inventories_update(request, **kwargs):
 def inventory_diff(request, pk, **kwargs):
     """
     """
-    res = Inventory.diff_inventory(pk)
-    return HttpResponse(json.dumps(res), **kwargs)
+    res = Inventory.diff_inventory(pk, to_dict=True)
+    to_ret = {'in_stock': res[0],
+              'in_inv': res[1],
+              'diff': res[2]}
+    return HttpResponse(json.dumps(to_ret), **kwargs)
 
 
 def stats(request, **kwargs):

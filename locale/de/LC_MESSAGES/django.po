@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-18 16:32+0000\n"
+"POT-Creation-Date: 2016-02-26 15:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Woops, we can not create this card. This is a bug !"
 msgstr ""
 
-#: search/models/api.py:368 search/models/models.py:2151
+#: search/models/api.py:368 search/models/models.py:2143
 msgid "Sell successfull."
 msgstr ""
 
@@ -54,130 +54,126 @@ msgstr ""
 msgid "Inventory saved. Keep working !"
 msgstr ""
 
-#: search/models/models.py:336
-msgid "aucun"
+#: search/models/models.py:337 search/models/models.py:1648
+msgid "none"
 msgstr ""
 
-#: search/models/models.py:606
+#: search/models/models.py:607
 msgid ""
 "We can not undo the sell of card {}:                 it is not associated to "
 "any place. This shouldn't happen."
 msgstr ""
 
-#: search/models/models.py:696
+#: search/models/models.py:697
 msgid "The card was created successfully."
 msgstr ""
 
-#: search/models/models.py:697
+#: search/models/models.py:698
 msgid "This card already exists."
 msgstr ""
 
-#: search/models/models.py:1139
+#: search/models/models.py:1140
 msgid "Please provide the name of the new basket"
 msgstr ""
 
-#: search/models/models.py:1147
+#: search/models/models.py:1148
 msgid "New basket created"
 msgstr ""
 
-#: search/models/models.py:1151
+#: search/models/models.py:1152
 msgid "We could not create a new basket. This is an internal error."
 msgstr ""
 
-#: search/models/models.py:1186
+#: search/models/models.py:1187
 msgid "The cards were successfully added to the basket '{}'"
 msgstr ""
 
-#: search/models/models.py:1198
+#: search/models/models.py:1199
 msgid "The card was successfully removed from the basket"
 msgstr ""
 
-#: search/models/models.py:1203
+#: search/models/models.py:1204
 msgid "Card not found"
 msgstr ""
 
-#: search/models/models.py:1208
+#: search/models/models.py:1209
 msgid ""
 "Could not remove the card from the command basket. This is an internal error."
 msgstr ""
 
-#: search/models/models.py:1396
+#: search/models/models.py:1397
 msgid "An error occured while adding a card to the deposit state."
 msgstr ""
 
-#: search/models/models.py:1408
+#: search/models/models.py:1409
 msgid "This deposit state is closed ! We won't update it, sorry."
 msgstr ""
 
-#: search/models/models.py:1429 search/models/models.py:1714
+#: search/models/models.py:1430 search/models/models.py:1715
 msgid ""
 "Wooops, an error occured while adding a card to the deposit. That shouldn't "
 "happen !"
 msgstr ""
 
-#: search/models/models.py:1500
+#: search/models/models.py:1501
 msgid "The deposit state can not be closed. There are conflicting sells."
 msgstr ""
 
-#: search/models/models.py:1754
-msgid "The deposit wasn't created. It must contain at least one valid card"
-msgstr ""
-
-#: search/models/models.py:1783
+#: search/models/models.py:1778
 msgid "The deposit was successfully created."
 msgstr ""
 
-#: search/models/models.py:1848
-msgid "this deposit has no cards. Impossible to do a checkout."
-msgstr ""
-
-#: search/models/models.py:1854
+#: search/models/models.py:1846
 msgid ""
 "Hey oh, a deposit state for this deposit already exists.             Please "
 "close it before opening a new one."
 msgstr ""
 
-#: search/models/models.py:1888
+#: search/models/models.py:1880
 msgid "No cards were sold since the last deposit state."
 msgstr ""
 
-#: search/models/models.py:2142
+#: search/models/models.py:2134
 msgid "Warning: we couldn't sell {}."
 msgstr ""
 
-#: search/models/models.py:2216
+#: search/models/models.py:2208
 msgid "Sell {} canceled with success."
 msgstr ""
 
-#: search/models/models.py:2442
+#: search/models/models.py:2461
 msgid "total nb of cards"
 msgstr ""
 
-#: search/models/models.py:2444
+#: search/models/models.py:2463
 msgid "nb of books"
 msgstr ""
 
-#: search/models/models.py:2446
+#: search/models/models.py:2465
 msgid "cards of unknown type"
 msgstr ""
 
-#: search/models/models.py:2450
+#: search/models/models.py:2469
 msgid "nb of cards we bought and their cost"
 msgstr ""
 
-#: search/models/models.py:2470
+#: search/models/models.py:2473
+msgid "nb of cards with no copies"
+msgstr ""
+
+#: search/models/models.py:2489
 msgid "nb of cards in deposits"
 msgstr ""
 
-#: search/models/models.py:2475
+#: search/models/models.py:2494
 msgid "cost of the deposits"
 msgstr ""
 
-#: search/models/models.py:2478
+#: search/models/models.py:2497
 msgid "total cost"
 msgstr ""
 
-#: search/models/models.py:2484
+#: search/models/models.py:2503
 msgid "next appointments"
 msgstr ""
 
@@ -220,6 +216,8 @@ msgstr ""
 
 #: search/views.py:480 templates/search/collection.jade:106
 #: templates/search/deposits_create.jade:93
+#: templates/search/inventory_terminate.jade:35
+#: templates/search/inventory_terminate.jade:53
 #: templates/search/inventory_view.jade:86
 #: templates/search/sell_create.jade:123 templates/search/sell_details.jade:31
 msgid "Quantity"
@@ -245,11 +243,11 @@ msgstr ""
 msgid "The card were successfully added to the deposit."
 msgstr ""
 
-#: search/views.py:752
+#: search/views.py:753
 msgid "This deposit doesn't exist !"
 msgstr ""
 
-#: search/views.py:779
+#: search/views.py:780
 msgid "Woops, there was an error :S we can't close this deposit state."
 msgstr ""
 
@@ -261,49 +259,49 @@ msgstr ""
 msgid "Django (overriden) administration"
 msgstr ""
 
-#: templates/base.jade:42
+#: templates/base.jade:43
 msgid "Admin"
 msgstr ""
 
-#: templates/base.jade:43
+#: templates/base.jade:44
 msgid "Logout"
 msgstr ""
 
-#: templates/base.jade:50
+#: templates/base.jade:51
 msgid "My stock"
 msgstr "Stock"
 
-#: templates/base.jade:53 templates/search/history.jade:54
+#: templates/base.jade:54 templates/search/history.jade:54
 msgid "Sell"
 msgstr "Verkaufen"
 
-#: templates/base.jade:56
+#: templates/base.jade:57
 msgid "New entry"
 msgstr "Neu eingabe"
 
-#: templates/base.jade:59 templates/search/card_show.jade:70
+#: templates/base.jade:60 templates/search/card_show.jade:70
 msgid "Deposits"
 msgstr ""
 
-#: templates/base.jade:62
+#: templates/base.jade:63
 msgid "Inventories"
 msgstr ""
 
-#: templates/base.jade:65 templates/search/basket_auto_command.jade:44
+#: templates/base.jade:66 templates/search/basket_auto_command.jade:44
 msgid "To command"
 msgstr ""
 
-#: templates/base.jade:69
+#: templates/base.jade:70
 msgid "Baskets"
 msgstr ""
 
-#: templates/base.jade:72 templates/search/history.jade:29
+#: templates/base.jade:73 templates/search/history.jade:29
 msgid "History"
 msgstr ""
 
-#: templates/base.jade:75 templates/search/alerts.jade:28
+#: templates/base.jade:76 templates/search/alerts.jade:28
 #: templates/search/card_show.jade:76 templates/search/deposits.jade:35
-#: templates/search/deposits_view.jade:41
+#: templates/search/deposits.jade.py:60 templates/search/deposits_view.jade:41
 msgid "Alerts"
 msgstr ""
 
@@ -334,7 +332,10 @@ msgstr ""
 #: templates/search/alerts.jade:34
 #: templates/search/basket_auto_command.jade:41
 #: templates/search/card_edit.jade:42 templates/search/collection.jade:103
-#: templates/search/dashboard.jade:43 templates/search/deposits_view.jade:52
+#: templates/search/dashboard.jade:42 templates/search/deposits_view.jade:52
+#: templates/search/inventory_terminate.jade:34
+#: templates/search/inventory_terminate.jade:44
+#: templates/search/inventory_terminate.jade:52
 #: templates/search/sell_details.jade:30
 msgid "Title"
 msgstr ""
@@ -416,7 +417,7 @@ msgid "category"
 msgstr ""
 
 #: templates/search/card_add.jade:36
-msgid "diffuseur"
+msgid "distributor"
 msgstr ""
 
 #: templates/search/card_add.jade:48 templates/search/card_edit.jade:123
@@ -447,6 +448,7 @@ msgstr ""
 #: templates/search/card_add.jade:86 templates/search/card_buy.jade:39
 #: templates/search/card_move.jade:35
 #: templates/search/deposits_create.jade:105
+#: templates/search/inventory_terminate.jade:59
 #: templates/search/sell_create.jade:132
 msgid "Validate"
 msgstr ""
@@ -505,7 +507,8 @@ msgid "Authors"
 msgstr ""
 
 #: templates/search/card_edit.jade:110 templates/search/card_show.jade:58
-#: templates/search/dashboard.jade:61 templates/search/deposits.jade:33
+#: templates/search/dashboard.jade:60 templates/search/deposits.jade:33
+#: templates/search/deposits.jade.py:57
 #: templates/search/deposits_create.jade:70
 #: templates/search/deposits_view.jade:31
 msgid "Distributor"
@@ -590,7 +593,7 @@ msgid "Search"
 msgstr ""
 
 #: templates/search/collection.jade:92
-msgid "voir en texte"
+msgid "see as text"
 msgstr ""
 
 #: templates/search/collection.jade:97
@@ -613,35 +616,35 @@ msgstr ""
 msgid "Abelujo's dashboard"
 msgstr ""
 
-#: templates/search/dashboard.jade:32
+#: templates/search/dashboard.jade:31
 msgid "Composition of the stock"
 msgstr ""
 
-#: templates/search/dashboard.jade:39
+#: templates/search/dashboard.jade:38
 msgid "Best 10 sells of this month"
 msgstr ""
 
-#: templates/search/dashboard.jade:44
+#: templates/search/dashboard.jade:43
 msgid "Quantity sold"
 msgstr ""
 
-#: templates/search/dashboard.jade:56
+#: templates/search/dashboard.jade:55
 msgid "Next deposits to pay"
 msgstr ""
 
-#: templates/search/dashboard.jade:60 templates/search/deposits_view.jade:29
+#: templates/search/dashboard.jade:59 templates/search/deposits_view.jade:29
 msgid "Deposit"
 msgstr ""
 
-#: templates/search/dashboard.jade:62
+#: templates/search/dashboard.jade:61
 msgid "due date"
 msgstr ""
 
-#: templates/search/dashboard.jade:70
+#: templates/search/dashboard.jade:69
 msgid "Comfort of the stock"
 msgstr ""
 
-#: templates/search/dashboard.jade:78
+#: templates/search/dashboard.jade:77
 msgid "Cost of the stock VS deposits"
 msgstr ""
 
@@ -656,7 +659,7 @@ msgid ""
 msgstr ""
 
 #: templates/search/deposit_add_copies.jade:31
-msgid "valider"
+msgid "validate"
 msgstr ""
 
 #: templates/search/deposit_add_copies.jade:33
@@ -683,23 +686,15 @@ msgid "Total price"
 msgstr ""
 
 #: templates/search/deposits.jade:50
-msgid "Aucun dépôt de type éditeur"
+msgid "No deposit of distributor's type"
 msgstr ""
 
 #: templates/search/deposits.jade:56
-msgid "Nom du dépot"
+msgid "Deposit's name"
 msgstr ""
 
-#: templates/search/deposits.jade:57
-msgid "Diffuseur"
-msgstr ""
-
-#: templates/search/deposits.jade:58
-msgid "Dernier état de dépôt"
-msgstr ""
-
-#: templates/search/deposits.jade:60
-msgid "Alertes"
+#: templates/search/deposits.jade:58 templates/search/deposits_view.jade:39
+msgid "Last deposit state"
 msgstr ""
 
 #: templates/search/deposits.jade:64 templates/search/deposits_create.jade:47
@@ -707,14 +702,10 @@ msgid "Due date"
 msgstr ""
 
 #: templates/search/deposits.jade:90
-msgid "Aucun dépôt de librairie"
+msgid "No deposit of bookshop type"
 msgstr ""
 
-#: templates/search/deposits.jade:92
-msgid "Nouveau dépôt"
-msgstr ""
-
-#: templates/search/deposits_create.jade:26
+#: templates/search/deposits.jade:92 templates/search/deposits_create.jade:26
 msgid "New deposit"
 msgstr ""
 
@@ -762,10 +753,6 @@ msgstr ""
 msgid "Auto command"
 msgstr ""
 
-#: templates/search/deposits_view.jade:39
-msgid "Last deposit state"
-msgstr ""
-
 #: templates/search/deposits_view.jade:44
 msgid "total init"
 msgstr ""
@@ -798,15 +785,15 @@ msgstr ""
 msgid "current qty"
 msgstr ""
 
-#: templates/search/deposits_view.jade:68
+#: templates/search/deposits_view.jade:65
 msgid "Save this deposit state"
 msgstr ""
 
-#: templates/search/deposits_view.jade:71
+#: templates/search/deposits_view.jade:68
 msgid "Add copies…"
 msgstr ""
 
-#: templates/search/deposits_view.jade:74
+#: templates/search/deposits_view.jade:71
 msgid "Delete this deposit"
 msgstr ""
 
@@ -886,12 +873,29 @@ msgstr ""
 msgid "Terminate this inventory"
 msgstr ""
 
-#: templates/search/inventory_terminate.jade:28
-msgid "Total of cards not inventoried"
+#: templates/search/inventory_terminate.jade:27
+msgid ""
+"Here you can compare the inventory with the real stock, and take actions."
 msgstr ""
 
-#: templates/search/inventory_terminate.jade:29
-msgid "What shall we do about those cards ?"
+#: templates/search/inventory_terminate.jade:28
+msgid "Coming soon:"
+msgstr ""
+
+#: templates/search/inventory_terminate.jade:28
+msgid "validation of the inventory"
+msgstr ""
+
+#: templates/search/inventory_terminate.jade:31
+msgid "The following cards appear only in the stock"
+msgstr ""
+
+#: templates/search/inventory_terminate.jade:41
+msgid "The following cards appear only in the inventory"
+msgstr ""
+
+#: templates/search/inventory_terminate.jade:49
+msgid "The following appear in both, but have a difference of quantity"
 msgstr ""
 
 #: templates/search/inventory_view.jade:26

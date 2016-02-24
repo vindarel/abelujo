@@ -57,7 +57,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             alert gettext "This basket has no copies to command !"
             return
 
-        sure = confirm "Do you want to mark the cards of the basket '#{$scope.cur_basket.name}' to command ?"
+        sure = confirm gettext("Do you want to mark the cards of the basket '#{$scope.cur_basket.name}' to command ?")
         if sure
             to_add = $scope.cur_basket.copies
             |> map (.id)
