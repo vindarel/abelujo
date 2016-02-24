@@ -831,3 +831,25 @@ class TestInventory(TestCase):
         # add_pairs *sets* the quantities
         state = self.inv.state()
         self.assertEqual(state['total_copies'], 1)
+
+    def test_diff(self):
+
+        self.card2 = CardFactory()
+        self.card3 = CardFactory()
+        self.place.add_copy(self.card2)
+        res = self.inv.add_copy(self.card2, nb=2)
+        res = self.inv.add_copy(self.card3, nb=1)
+        # the inv:
+        # - has card3 that the place doesn't have
+        # - it has not the card 1
+        # - has card2 with +1 copy
+        in_stock, in_inv, d_diff = self.inv.diff()
+        self.assertEqual(in_inv[3]['quantity'], 1)
+        self.assertEqual(in_stock[1]['quantity'], 1)
+        self.assertEqual(d_diff[2]['diff'], 1)
+
+        # With to_dict:
+        in_stock, in_inv, d_diff = self.inv.diff(to_dict=True)
+        self.assertTrue(in_stock)
+        self.assertTrue(in_inv)
+        self.assertTrue(d_diff)

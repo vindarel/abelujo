@@ -23,21 +23,22 @@ from datetime import date
 from textwrap import dedent
 
 import pytz
+from toolz.dicttoolz import update_in
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
-from django.utils.http import quote
 from django.utils import timezone
+from django.utils.http import quote
 from django.utils.translation import ugettext as _
 from search.models import history
+from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_SUCCESS
+from search.models.common import ALERT_WARNING
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
-from search.models.common import (ALERT_ERROR,
-                                  ALERT_WARNING,
-                                  ALERT_SUCCESS)
 from search.models.common import TimeStampedModel
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
@@ -2361,15 +2362,15 @@ class Inventory(TimeStampedModel):
         return ret
 
     @staticmethod
-    def diff_inventory(pk):
+    def diff_inventory(pk, **kwargs):
         try:
             obj = Inventory.objects.get(id=pk)
-            return obj.diff()
+            return obj.diff(**kwargs)
         except Exception as e:
             log.error(u"Error getting inventory: {}".format(e))
             return None
 
-    def diff(self):
+    def diff(self, to_dict=False):
         """Diff the inventory's state with the database: get
         - which cards are
         ok,
@@ -2381,9 +2382,36 @@ class Inventory(TimeStampedModel):
         - return
 
         """
-        # to finish.
-        data = self.state()
-        return data
+        inv_cards_set = self.inventorycards_set.all()
+        stock_cards_set = self.place.placecopies_set.all()
+        d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
+        d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
+
+        # cards in stock but not in the inventory:
+        in_stock = list(set(d_stock) - set(d_inv)) # list of ids
+        in_stock = {it: d_stock[it] for it in in_stock}
+
+        # cards in the inventory but not in stoc:
+        in_inv = list(set(d_inv) - set(d_stock))
+        in_inv = {it: d_inv[it] for it in in_inv}
+
+        # Difference of quantities:
+        d_diff = {} # its quantity is: "how many the inventory has more or less compared with the stock"
+        for id, val in d_inv.iteritems():
+            if d_stock.get(id):
+                if val['quantity'] != d_stock[id]['quantity']:
+                    d_diff[id] = {'card': val['card'],
+                                  'diff': val['quantity'] - d_stock[id]['quantity'],
+                                  'stock': d_stock[id]['quantity'],
+                                  'inv': val['quantity']}
+
+        if to_dict:
+            # Update each sub-dict in place, to replace the card obj with its to_dict.
+            in_stock = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in in_stock.iteritems()}
+            in_inv = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in in_inv.iteritems()}
+            d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
+
+        return in_stock, in_inv, d_diff
 
     def add_pairs(self, pairs, add=False):
         """Save the given copies.
