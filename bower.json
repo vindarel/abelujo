@@ -16,6 +16,7 @@
         "datejs": "latest",
         "c3": "latest",
         "angular-smart-table": "2.1",
+        "angular-loading-bar": "0.8",
         "angular-datatables": "0.5"
     },
 

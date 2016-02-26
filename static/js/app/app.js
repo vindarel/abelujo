@@ -13,6 +13,7 @@ angular.module('abelujo', [
     'ui.bootstrap',
     'smart-table',
     'datatables',
+    'angular-loading-bar',
 
     // application level:
     'abelujo.filters',
