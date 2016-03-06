@@ -27,7 +27,8 @@ import time
 
 from datetime import datetime
 from pprint import pprint
-from sigtools.modifiers import kwoargs
+from sigtools.modifiers import annotate
+from sigtools.modifiers import autokwoargs
 from tqdm import tqdm
 
 # Relative imports inside a package using __main__ don't work. Need
@@ -156,6 +157,15 @@ def cardCorresponds(card, odsrow):
     return: Boolean
 
     """
+    # Check isbn first.
+    if card.get('isbn') == odsrow.get('ISBN'):
+        return True
+
+    # BUG card['isbn'] égal 'poche' !!! TODO:
+    if not odsrow.get('title'):
+        log.warning("odsrow has no title. This shouldn't happen. {}".format(odsrow))
+        return False
+
     t1 = rmPunctuation(card.get('title'))
     t1 = replaceAccentsInStr(t1)
     t1 = t1.upper()
@@ -208,6 +218,9 @@ def search_on_scraper(search_terms):
     This method is easy to monkeypatch in unit tests.
     """
     return Scraper(search_terms).search()
+
+def search_post_results(card):
+    return postSearch(card)
 
 def addRowInfo(card, row):
     """Add some info to the card coming from the ods row.
@@ -272,6 +285,7 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     debugfile = basename + ".json"
     if os.path.isfile(debugfile):
         with open(debugfile, "r") as f:
+            log.info("Reading the json cache file...")
             data = f.read()
         if data:
             cards = json.loads(data)
@@ -279,16 +293,24 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
             return cards['cards_found'], cards['cards_no_isbn'], cards['cards_not_found']
 
     for i, row in tqdm(enumerate(odsdata)):
-        search_terms = "{} {} {}".format(row["title"], row.get(ODS_AUTHORS, ""), row[ODS_PUBLISHER])
+        if "ISBN" in row:
+            search_terms = row['ISBN']
+            row['isbn_search'] = True
+        else:
+            search_terms = "{} {} {}".format(row["title"], row.get(ODS_AUTHORS, ""), row[ODS_PUBLISHER])
+
         row['search_terms'] = search_terms
         # log.debug("item %d/%d: Searching %s for '%s'..." % (i, len(odsdata), datasource, search_terms))
 
         # Fire the search:
         try:
             cards, stacktraces = search_on_datasource(search_terms)
+            if row.get('isbn_search'):
+                cards[0] = search_post_results(cards[0])
+
         except Exception as e:
-            log.error(e)
-            return 1
+            log.error("odslookup: Error while searching cards: {}".format(e))
+
 
         # log.debug("found %s cards.\n" % len(cards))
         if stacktraces:
@@ -315,21 +337,23 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
     print "Search on {} lasted: {}".format(datasource, ended - start)
     return (cards_found, cards_no_isbn, cards_not_found)
 
-def run(odsfile, datasource, timeout=TIMEOUT):
+def run(odsfile, datasource, timeout=TIMEOUT, nofieldsrow=False):
     cards_found = cards_no_isbn = cards_not_found = None
     to_ret = {"found": cards_found, "no_isbn": None, "not_found": None,
               "odsdata": None,
               "messages": None,
               "status": 0}
     odsdata = {}
-    odsdata = ods2csv2py.run(odsfile)
+
+    # Read the data.
+    odsdata = ods2csv2py.run(odsfile, nofieldsrow=nofieldsrow)
+
     if not odsdata:
         exit(1)
     if odsdata.get("status") == 1:
         # TODO: propagate the error
         return odsdata
     if odsdata:
-        print "\n".join(res['title'] for res in odsdata.get("data"))
         log.debug("ods sheet data: %i results\n" % (len(odsdata.get("data")),))
 
     # Look up for cards on our datasource
@@ -365,17 +389,20 @@ def run(odsfile, datasource, timeout=TIMEOUT):
     to_ret["odsdata"]   = odsdata
     return to_ret
 
-@kwoargs()
-def main(*args):
-    """args: the ods file
+@annotate(sourcefile=clize.Parameter.REQUIRED)
+@autokwoargs
+def main(sourcefile, nofieldsrow=False):
+    """
 
-    If we find a find with the same basename and ending in json, we'll
+    sourcefile: the ods/csv file
+
+    If we find a file with the same basename and ending in json, we'll
     use that data to replace the remote search of the ods file (debug
     purposes). If we don't find one we'll create one.
 
     """
     datasource = "decitre"
-    odsdata = run(args[0], datasource, timeout=TIMEOUT)
+    odsdata = run(sourcefile, datasource, timeout=TIMEOUT, nofieldsrow=nofieldsrow)
     if odsdata.get("messages"):
         log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
     return odsdata["status"]

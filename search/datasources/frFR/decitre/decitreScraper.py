@@ -209,7 +209,7 @@ def postSearch(card):
     - isbn
     - price
 
-    Return a dict with new attributes.
+    Return a new card (dict) complemented with the new attributes.
     """
     url = card.get('details_url') or card.get('url')
     if not url:

@@ -24,6 +24,10 @@ import sys
 from subprocess import call
 from toolz import valmap
 
+import clize
+from sigtools.modifiers import annotate
+from sigtools.modifiers import autokwoargs
+
 from odsutils import getMissingData
 from odsutils import keysEqualValues
 from odsutils import setRowTypes
@@ -75,21 +79,39 @@ def fieldNames(csvfile):
     """Return the field names of the file.
     They may not be at the first row.
 
+    If there is no field names, read a config file ("odssettings.py")
+    where they are specified.
+
     return a tuple (original fieldnames, translated fieldnames).
+
     """
+    settings = "odssettings.py"
+
     with open(csvfile, "r") as f:
         csvdata = f.read()
     data = csvdata.splitlines()
+    # We expect that a row with "title" is the row with all field names.
     for i, line in enumerate(data):
         if "TITLE" in line.upper() or "TITRE" in line.upper():
             orig_fieldnames = line
             fieldnames = [translateHeader(orig_fieldnames.split(",")[ind]) for ind in range(len(orig_fieldnames.split(",")))]
             fieldnames = map(lambda x: x.upper(), fieldnames)
             return orig_fieldnames, fieldnames
+
+    # No field names ? Read a config file.
+    if os.path.isfile(settings):
+        try:
+            from odssettings import fields
+            fields = map(lambda x: x.upper(), fields)
+            csvfields = ",".join(fields)
+            return csvfields, fields
+        except Exception as e:
+            log.error("Error while trying to import the field names from the odssettings.py file: {}".format(e))
+
     log.info("warning: no fieldnames found in file {}.".format(csvfile))
     return [], []
 
-def extractCardData(csvfile, lang="frFR"):
+def extractCardData(csvfile, lang="frFR", nofieldsrow=False, delimiter=";"):
     """Return the interesting data.
 
     The fieldnames may not be the first row. Skip the useless lines,
@@ -109,26 +131,32 @@ def extractCardData(csvfile, lang="frFR"):
     messages = []
     to_ret = {"fieldnames": fieldnames, "data": data, "messages": messages, "status": 0}
     orig_fieldnames, fieldnames = fieldNames(csvfile)
-    if "TITLE" not in fieldnames:
-        msg = "Erreur: nous n'avons pas trouvé la colomne %s" % ("TITRE",)  # TODO translate
+    if "TITLE" not in fieldnames and "ISBN" not in fieldnames:
+        msg = "Erreur: nous n'avons pas trouvé la colonne %s" % ("TITRE",)  # TODO translate
         to_ret["messages"].append({"message": msg, "level": "error"})
         to_ret["status"] = 1
-    if "PUBLISHERS" not in fieldnames:
+    if "PUBLISHERS" not in fieldnames and "ISBN" not in fieldnames:
         msg = "Erreur: nous n'avons pas trouvé la colomne %s" % ("EDITEUR",)
         to_ret["messages"].append({"message": msg, "level": "error"})
         to_ret["status"] = 1
     if to_ret["status"] == 1:
         return to_ret
+
     # data = filter(lambda line: len(line) != len(fieldnames), data)
-    reader = csv.DictReader(open(csvfile, "r"), fieldnames=orig_fieldnames.split(","))
+    reader = csv.DictReader(open(csvfile, "r"),
+                            fieldnames=orig_fieldnames.split(","),
+                            delimiter=delimiter)
+
     # skip the lines untill we find the fieldnames one.
-    while not keysEqualValues(reader.next()):
-        pass
+    if not nofieldsrow:
+        while not keysEqualValues(reader.next()):
+            pass
     rest = [line for line in reader]
     # Translate all keys to english. How to do it before ? We prefer not to rewrite the csv file.
     data = translateAllKeys(rest)
     data = removeVoidRows(data)
-    data = removeDuplicates(data)
+    if "TITLE" in fieldnames:
+        data = removeDuplicates(data)
     # replace accents bad encoding.
     data = map(lambda dic: valmap(replaceAccentsInStr, dic), data)
     data = setRowTypes(data)
@@ -136,14 +164,14 @@ def extractCardData(csvfile, lang="frFR"):
     data = getMissingData(data)
     return {"fieldnames": fieldnames, "data": data, "messages": messages}
 
-def run(odsfile):
+def run(odsfile, nofieldsrow=False):
     """
     :param str odsfile: the .ods file
     """
     csvdata = []
     csvfile = convert2csv(odsfile)
     if os.path.exists(csvfile):
-        csvdata = extractCardData(csvfile)
+        csvdata = extractCardData(csvfile, nofieldsrow=nofieldsrow)
         if csvdata["data"]:
             # print "found data:", csvdata["data"]
             print "results found in CSV: ", len(csvdata["data"])
@@ -158,13 +186,18 @@ def run(odsfile):
         Hint: close all LibreOffice windows before continuing.")
     return csvdata
 
-def main():
-    if len(sys.argv) > 1:
-        odsfile = sys.argv[1]
-        run(odsfile)
-    else:
-        print "Missing an argument."
-        print "Usage: %s calcsheet.ods" % (sys.argv[0],)
+
+@annotate(sourcefile=clize.Parameter.REQUIRED)
+@autokwoargs
+def main(sourcefile, nofieldsrow=False):
+    """
+    Read a source file (ods, csv) and return its rows as a python dict, each row mapped to its column name.
+
+    nofieldsrow: use if the ods/csv file has only columns of data and
+       not a row of field names. In that case, use the odssettings.py config file to read the field names.
+
+    """
+    run(sourcefile, nofieldsrow=nofieldsrow)
 
 if __name__ == '__main__':
-    exit(main())
+    exit(clize.run(main))

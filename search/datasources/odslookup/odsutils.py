@@ -123,7 +123,7 @@ def keysEqualValues(dic):
 def removeVoidRows(data):
     """Remove rows for which the title or the publisher is the null string.
     """
-    data = filter(lambda line: (line["title"] != "") and (line["publishers"] != ""), data)
+    data = filter(lambda line: (line.get("title") != "") and (line.get("publishers") != ""), data)
     return data
 
 def removeDuplicates(data):
