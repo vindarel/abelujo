@@ -90,7 +90,7 @@ def odsimport(odsfile=None):
     cmd = 'make odsimport odsfile={}'.format(odsfile)
 
 def statusall():
-    for client in cfg.clients:
+    for client in CFG.clients:
         check_uptodate(client.name)
 
 def check_uptodate(client):
@@ -116,7 +116,8 @@ def check_uptodate(client):
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
             if res in git_last_commits:
                 index = git_last_commits.index(res)
-                print "- {} is ".format(wd) +\
+                print colored("- {}", 'blue').format(client.name) +\
+                    " is " +\
                     colored("{}", "red").format(index) +\
                     " commits behind"
             else:
