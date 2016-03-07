@@ -31,7 +31,6 @@ from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-from djangular.forms import NgModelFormMixin
 from unidecode import unidecode
 
 from models import Basket

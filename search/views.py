@@ -40,7 +40,6 @@ from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-from djangular.forms import NgModelFormMixin
 from models import Basket
 from models import Bill
 from models import Card
