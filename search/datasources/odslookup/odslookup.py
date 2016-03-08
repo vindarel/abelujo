@@ -219,8 +219,8 @@ def search_on_scraper(search_terms):
     """
     return Scraper(search_terms).search()
 
-def search_post_results(card):
-    return postSearch(card)
+def search_post_results(card, isbn=None):
+    return postSearch(card, isbn=isbn)
 
 def addRowInfo(card, row):
     """Add some info to the card coming from the ods row.
@@ -234,7 +234,7 @@ def addRowInfo(card, row):
     if not card:
         print "card is None. that shouldn't happen."
         return card
-    if row.get('quantity'):
+    if row.get('quantity'): # TODO: to check
         card['quantity'] = toInt(row.get('quantity'))
 
     if row.get('discount') and not card.get('discount'):
@@ -306,7 +306,8 @@ def lookupCards(odsdata, datasource=None, timeout=0.2, search_on_datasource=sear
         try:
             cards, stacktraces = search_on_datasource(search_terms)
             if row.get('isbn_search'):
-                cards[0] = search_post_results(cards[0])
+                log.debug("Looking postSearch of {}".format(row.get('isbn')))
+                cards[0] = search_post_results(cards[0], isbn=row.get('isbn'))
 
         except Exception as e:
             log.error("odslookup: Error while searching cards: {}".format(e))
@@ -389,9 +390,9 @@ def run(odsfile, datasource, timeout=TIMEOUT, nofieldsrow=False):
     to_ret["odsdata"]   = odsdata
     return to_ret
 
-@annotate(sourcefile=clize.Parameter.REQUIRED)
+@annotate(sourcefiles=clize.Parameter.REQUIRED)
 @autokwoargs
-def main(sourcefile, nofieldsrow=False):
+def main(nofieldsrow=False, *sourcefiles):
     """
 
     sourcefile: the ods/csv file
@@ -402,10 +403,19 @@ def main(sourcefile, nofieldsrow=False):
 
     """
     datasource = "decitre"
-    odsdata = run(sourcefile, datasource, timeout=TIMEOUT, nofieldsrow=nofieldsrow)
-    if odsdata.get("messages"):
-        log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
-    return odsdata["status"]
+    odsdata = []
+    status = 1
+    ll = len(sourcefiles)
+    for i, sourcefile in enumerate(sourcefiles):
+        log.info("Loading file {}/{}: {}…".format(sourcefile, i, ll))
+        odsdata = run(sourcefile, datasource, timeout=TIMEOUT, nofieldsrow=nofieldsrow)
+
+        if odsdata.get("messages"):
+            log.debug("\n".join(msg["message"] for msg in odsdata["messages"]))
+
+        status = status or odsdata['status']
+
+    return status
 
 if __name__ == '__main__':
     clize.run(main)

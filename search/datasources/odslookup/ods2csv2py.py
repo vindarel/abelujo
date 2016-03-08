@@ -152,6 +152,8 @@ def extractCardData(csvfile, lang="frFR", nofieldsrow=False, delimiter=";"):
         while not keysEqualValues(reader.next()):
             pass
     rest = [line for line in reader]
+    # XXX: should validate data. We may not have the wright delimiter, and so on.
+
     # Translate all keys to english. How to do it before ? We prefer not to rewrite the csv file.
     data = translateAllKeys(rest)
     data = removeVoidRows(data)

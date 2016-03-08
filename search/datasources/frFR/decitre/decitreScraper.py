@@ -143,6 +143,7 @@ class Scraper(baseScraper):
         description = req.content
         return description
 
+    @catch_errors
     def _details(self, product):
         try:
             details_soup = product.getDetailsSoup()
@@ -202,15 +203,22 @@ class Scraper(baseScraper):
 
         return bk_list, stacktraces
 
-def postSearch(card):
+def postSearch(card, isbn=None):
     """Get a card (dictionnary) with 'details_url'.
 
     Gets additional data:
     - isbn
     - price
 
+    Check the isbn is valid. If not, return None. But that shouldn't happen !
+
+    We can give the isbn as a keyword-argument (it can happen when we
+    import data from a file). In that case, don't look for the isbn.
+
     Return a new card (dict) complemented with the new attributes.
+
     """
+    given_isbn = isbn
     url = card.get('details_url') or card.get('url')
     if not url:
         log.error("postSearch: we must find a key 'details_url' or 'url'")
@@ -218,19 +226,25 @@ def postSearch(card):
 
     #: the needed attributes to populate
     to_ret = {
-        "isbn": None,
+        "isbn": given_isbn,
         "price": None
         }
     req = requests.get(url)
     soup = BeautifulSoup(req.content, "lxml")
 
-    try:
-        info = soup.find_all(class_="information")
-        isbn = info[4].text.split('\n')[-1].strip()
-        isbn = isbn_cleanup(isbn)
-        card['isbn'] = isbn
-    except Exception as e:
-        log.error("postSearch: error while getting the isbn of {}: {}".format(url, e))
+    if not given_isbn:
+        try:
+            isbn = soup.find(itemprop='sku').text.strip()
+            isbn = isbn_cleanup(isbn)
+
+            if not is_isbn(isbn):
+                import ipdb; ipdb.set_trace()
+                log.error("The isbn {} is not valid. Return nothing.".format(isbn))
+                isbn = given_isbn or None
+
+            card['isbn'] = isbn
+        except Exception as e:
+            log.error("postSearch: error while getting the isbn of {}: {}".format(url, e))
 
     try:
         product = soup.find(class_="product-main-information")
