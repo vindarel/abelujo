@@ -16,18 +16,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import glob
 import json
 import os
 
 import search.datasources.odslookup.odslookup as odslookup
-from tqdm import tqdm
-
 from search.models.models import Card
 from search.models.models import Category
 from search.models.models import Distributor
 from search.models.models import Place
 from search.models.models import Preferences
 from search.models.models import Publisher
+from tqdm import tqdm
 
 
 def getAllKeys(cards, key):
@@ -44,23 +44,20 @@ def getAllKeys(cards, key):
     its = filter(lambda it: it is not None, its)
     return its
 
-def run(*args):
-    """This method is needed by the runscript command. We can pass
-    arguments from the command line by passing a comma-separated list
-    of values with --script-args.
+def import_file(odsfile):
+    """Import the cards (as dicts) from within this csv file.
 
-    Usage:
-    : python manage.py runscript odsimport
+    Read the csv and lookup for the cards on the remote data source.
 
-    So with a Makefile target:
-    : make odsimport odsfile=myfile.ods
+    Take the data from the .json if any.
 
-    documentation of runscript: http://django-extensions.readthedocs.org/en/latest/runscript.html
+    Then create all the publishers, the distributors and their
+    discount (if any), the default place, and add the cards to the
+    default place.
+
     """
-    print "script args:", args
     ADD_NO_EAN = True
     ADD_NOT_FOUND = True
-    odsfile = args[0]
     if not os.path.exists(odsfile):
         print "Error: file '%s' doesn't exist. Give it as argument with odsfile=..." % (odsfile,)
         return 1
@@ -154,10 +151,11 @@ def run(*args):
     # Add all other cards (even with uncomplete info).
     if ADD_NO_EAN:
         print "Adding cards without ean..."
-        for card in tqdm(cards["cards_no_ean"]):
+        for card in tqdm(cards["cards_no_isbn"]):
             #XXX the logs will thrash stdout.
             card_obj, msgs = Card.from_dict(card)
-            place.add_copy(card_obj, nb=qty)
+            if card.get('title'):
+                place.add_copy(card_obj, nb=qty)
         print "...done."
 
     if ADD_NOT_FOUND:
@@ -170,3 +168,32 @@ def run(*args):
                 print "Error adding card {}: {}".format(card.get('title'), e)
 
     print "All done."
+
+def run(*args):
+    """This method is needed by the runscript command. We can pass
+    arguments from the command line by passing a comma-separated list
+    of values with --script-args.
+
+    Usage:
+    : python manage.py runscript odsimport
+
+    So with a Makefile target:
+    : make odsimport odsfile=myfile.ods
+
+    You can also give a directory as argument. We'll look for all csv files in there:
+    : make odsimport odsfile=mydir/
+
+    documentation of runscript: http://django-extensions.readthedocs.org/en/latest/runscript.html
+    """
+    print "script args:", args
+    files = args
+    if os.path.isdir(args[0]):
+        files = glob.glob('{}*csv'.format(args[0]))
+
+    for i, afile in enumerate(files):
+        print "---------------"
+        print "Importing file {}/{}: {}".format(i + 1, len(files) + 1, afile)
+        print "---------------"
+        import_file(afile)
+
+    print "All files imported."

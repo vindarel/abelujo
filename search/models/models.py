@@ -1016,6 +1016,10 @@ class Place (models.Model):
         - nothing
 
         """
+        if not type(nb) == type(1):
+            # log.warning("nb '{}' is not an int: the quantity was malformed".format(nb))
+            nb = 1
+
         try:
             place_copy, created = self.placecopies_set.get_or_create(card=card)
             place_copy.nb += nb
