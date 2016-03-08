@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 HELP = """This file is a fabric: http://docs.fabfile.org/en/latest/
 
@@ -55,11 +56,16 @@ from termcolor import colored
 
 from fabric.api import cd
 from fabric.api import env
+from fabric.api import execute
 from fabric.api import prefix
+from fabric.api import put
 from fabric.api import run
+from fabric.api import sudo
+from fabric.contrib.files import exists
+from fabutils import get_yaml_cfg
+from fabutils import select_client_cfg
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from fabutils import select_client_cfg, get_yaml_cfg
 
 CLIENTS = "clients.yaml"
 
@@ -68,6 +74,16 @@ CFG = addict.Dict(CFG)
 
 env.hosts = CFG.url
 env.user = CFG.user
+
+CLIENT_TMPL = """
+
+  - name: {}
+    venv: {}
+    port: {}
+"""
+
+# Use ssh_config for passwords and cie
+# env.use_ssh_config = True
 
 # Notes:
 
@@ -80,6 +96,8 @@ env.user = CFG.user
 
 # env.parallel http://docs.fabfile.org/en/latest/usage/env.html#env-parallel
 # http://docs.fabfile.org/en/latest/usage/parallel.html
+
+# Take inspiration from Mezzanine: https://github.com/stephenmcd/mezzanine/blob/master/mezzanine/project_template/fabfile.py
 
 def help():
     print HELP
@@ -104,7 +122,7 @@ def check_uptodate(client):
     cfg = get_yaml_cfg(cfg)
     cfg = addict.Dict(cfg)
     client = select_client_cfg(client, cfg)
-    wd = cfg.home + cfg.dir + client.name + "/abelujo"
+    wd = cfg.home + cfg.dir + client.name + CFG.project_name
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
     with cd(wd):
         res = run("git rev-parse HEAD")
@@ -141,7 +159,7 @@ def update(client):
     cfg = get_yaml_cfg(cfg)
     cfg = addict.Dict(cfg)
     client = select_client_cfg(client, cfg)
-    wd = cfg.home + cfg.dir + client.name + "/abelujo"
+    wd = cfg.home + cfg.dir + client.name + CFG.project_name
     with cd(wd):
         with prefix("source ~/.virtualenvs/{}/bin/activate".format(client.venv)):
             res = run("make update")
@@ -156,7 +174,65 @@ def ssh_to(client):
             os.path.join(config.get('home'),
                          config.get('dir', client.get('dir')),
                          client.get('name'),
-                         'abelujo'),)
+                         CFG.project_name),)
     print "todo: workon venv"
     print "connecting to {}".format(cmd)
     os.system(cmd)
+
+def create():
+    """Create a new client and call the install task.
+
+    - name: name of the client (and of the venv).
+    """
+    name = raw_input("Client name ? ")
+    venv = raw_input("Venv name ? [{}] ".format(name))
+    venv = venv or name
+    # Get the first available port
+    ports = [it.port for it in CFG.clients]
+    ports = sorted(ports)
+    possible_ports = range(8000, 8000 + len(CFG.clients) + 1)
+    free_port = list(set(possible_ports) - set(ports))[0]
+    port = raw_input("Port ? [{}] ".format(free_port))
+    port = port or free_port
+
+    # Write into the config file
+    with open(CLIENTS, "a") as f:
+        f.write(CLIENT_TMPL.format(name, venv, port))
+        execute(install(name))
+
+def copy_files(name, *files):
+    """
+    """
+    client = select_client_cfg(name, CFG)
+    tmp_init_data = '/tmp/{}/'.format(client.name)
+    if not exists(tmp_init_data):
+        run('mkdir -p {}'.format(tmp_init_data))
+    import ipdb; ipdb.set_trace()
+    put(files[0], tmp_init_data)
+
+def install(name):
+    """Clone and install Abelujo into the given client directory.
+
+    Create a super user,
+
+    populate the DB with initial data, if any,
+
+    run gunicorn with the right port.
+    """
+    client = select_client_cfg(name, CFG)
+    wd = CFG.home + CFG.dir + client.name
+    if not exists(wd):
+        run("mkdir {}".format(wd, wd))
+    with cd(wd):
+        run("test -d {} || git clone {}".format(CFG.project_name, CFG.project_git_url))
+        with cd(CFG.project_name):
+            import ipdb; ipdb.set_trace()
+            # TODO:
+            # - create a venv
+            # - install,
+            # run('make install')
+            # - create super user
+            # - populate DB with initial data if any
+            # The csv files may be in nested directories.
+            run('make odsimport odsfile=$(find /tmp/{}/*csv)'.format(client.name))
+            # - run gunicorn with the right port,

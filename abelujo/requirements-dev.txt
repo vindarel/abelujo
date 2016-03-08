@@ -1,3 +1,5 @@
+### packages only needed for local development, not used on production.
+
 ### testing
 mock==1.0.1
 ipdb
@@ -14,5 +16,5 @@ sphinx==1.2.3           # documentation system.
 # platter                 # package builder # not in pypi yet
 
 ### deployment
-fabric                  # remote execution
+fabric==1.10            # remote execution
 underwear               # easy deployment
