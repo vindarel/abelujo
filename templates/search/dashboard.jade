@@ -32,6 +32,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
       div(ng-show="stats")
         div {% verbatim %} {{stats.nb_cards.label}}: {{stats.nb_cards.value}} {% endverbatim %}
         div {% verbatim %} {{ stats.nb_books.label}}: {{stats.nb_books.value }} {% endverbatim %}
+        div(title="{{ 'stats.total_cost.title' | ng }}") {% verbatim %} {{ stats.total_cost.label}}: {{stats.total_cost.value }} {% endverbatim %} €
       div(id="chart")
 
     .col-lg-6

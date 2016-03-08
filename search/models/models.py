@@ -16,6 +16,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import decimal  # round floats and choose rounding method
 import json
 import logging
 import operator
@@ -2462,21 +2463,21 @@ class Stats(object):
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
-        res['nb_cards'] = {'label': _("total nb of cards"),
+        res['nb_cards'] = {'label': _("Total number of cards"),
                            'value': Card.objects.count()}
-        res['nb_books'] = {'label': _("nb of books"),
+        res['nb_books'] = {'label': _("Number of books"),
                            'value': Card.objects.filter(card_type=type_book).count()}
-        res['nb_unknown'] = {'label': _("cards of unknown type"),
+        res['nb_unknown'] = {'label': _("Cards of unknown type"),
                              'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought
         # impossible atm
-        res['nb_bought'] = {'label': _("nb of cards we bought and their cost"),
+        res['nb_bought'] = {'label': _("Number of cards we bought and their cost"),
                             'value': "<soon>"}
 
         # Cleanlyness: nb of cards with stock <= 0
-        res['nb_cards_no_stock'] = {'label': _(u"nb of cards with no copies"),
+        res['nb_cards_no_stock'] = {'label': _(u"Number of cards with no copies"),
                                     'value': Card.objects.filter(quantity__lte=0).count()}
-        res['nb_cards_one_copy'] = {'label': "cards with one copy",
+        res['nb_cards_one_copy'] = {'label': _(u"Cards with a single copy"),
                                     'value': Card.objects.filter(quantity=1).count()}
 
         # Stock of deposits
@@ -2490,16 +2491,19 @@ class Stats(object):
                 if nb_current > 0:
                     in_deposits += nb_current
 
-        res['in_deposits'] = {'label': _("nb of cards in deposits"),
+        res['in_deposits'] = {'label': _("Nb of cards in deposits"),
                               'value': in_deposits}
         # xxx: percentage cards we bought / in deposit / in both
 
         # Cost
-        res['deposits_cost'] = {'label': _("cost of the deposits"),
+        res['deposits_cost'] = {'label': _("Cost of the deposits"),
                                 'value': deposits_cost}
         # XXX: long query ! See comments for Card.quantity
-        res['total_cost'] = {'label': _("total cost"),
-                             'value': sum([it.price * it.quantity for it in Card.objects.all()])}
+        total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
+        res['total_cost'] = {'label': _(u"Total cost"),
+                             'Title': _(u"Cost of each card by its quantity in stock, rounded to the upper decimal.\nThe real value is {}".format(total_cost)),
+                             # Round the float... or just {:.2f}.format.
+                             'value': float(decimal.Decimal(total_cost).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))}
 
         # Next appointments
         # xxx: transform to strings and associate with the deposit.
