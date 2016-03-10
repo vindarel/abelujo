@@ -23,6 +23,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.alerts = []
     $scope.show_buttons = {}
     $scope.new_name = null
+    $scope.cur_basket = 0
+
+    $scope.language = utils.url_language($window.location.pathname)
 
     $http.get "/api/baskets"
     .then (response) ->
@@ -95,6 +98,49 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
             .catch (resp) !->
                 $log.info "Error when trying to remove the card " + card_id
+
+    $scope.get_data = ->
+        # coma-sep list of ids:
+        $scope.cur_basket.copies
+        |> map (.id)
+        |> join ","
+
+    $scope.export_csv = (layout) !->
+        """Export the selected cards of the current list to csv.
+        Server call to generate it.
+        """
+        ids_qties = []
+        map ->
+            ids_qties.push "#{it.id}, 1" #XXX: here we'll need custom quantities
+        , $scope.copies
+
+        ###### This is needed for Django to process the params to its
+        #  request.POST dictionnary:
+        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+
+        #  We need not to pass the parameters encoded as json to Django.
+        #  Encode them like url parameters.
+        $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
+
+        config = do
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        ######
+
+        params = do
+            # ids and quantities separated by comas
+            "ids_qties": join ",", ids_qties
+            "format": "csv"
+            "layout": layout
+
+        $http.post "/#{$scope.language}/baskets/export/", params
+        .then (response) !->
+            # We get raw data. We must open it as a file with JS.
+            a = document.createElement('a')
+            a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
+            a.target      = '_blank'
+            a.download    = "liste-#{$scope.cur_basket.name}.csv"
+            document.body.appendChild(a)
+            a.click()
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do

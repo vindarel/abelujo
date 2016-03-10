@@ -79,6 +79,8 @@ urlpatterns = patterns('',
     url(r'^commands/', 'search.views.basket_auto_command',
         name="basket_auto_command"),
 
+    url(r'^baskets/export/$', 'search.views.baskets_export',
+        name="baskets_export"),
     url(r'^baskets/', 'search.views.baskets',
         name="baskets"),
 

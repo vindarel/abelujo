@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import csv
 import logging
 import traceback
 import urllib
@@ -35,6 +36,7 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import StreamingHttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
@@ -56,6 +58,7 @@ from models import Sell
 from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
+from search.models import api
 from search.models.utils import ppcard
 
 log = logging.getLogger(__name__)
@@ -817,11 +820,63 @@ def basket_auto_command(request):
     if request.method == "GET":
         return render(request, template)
 
+class Echo(object):
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    # taken from Django docs
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
 @login_required
 def baskets(request):
     template = "search/baskets.jade"
     if request.method == "GET":
         return render(request, template)
+
+@login_required
+def baskets_export(request):
+    """Export as the required format: csv, pdf, pdf with barcode (todo),...
+
+    - POST parameter: str of coma-separated ints. They represent
+    tuples of a card id and its quantity. (use api.list_to_pairs and
+    api.list_from_coma_separated_ints to get a list of tuples back)
+
+    - layout: 'simple': only show isbns and quantities. 'complete':
+      with title, authors, publishers etc
+
+    Return: it returns raw csv. The client side must handle its download.
+
+    """
+
+    ids_qties = request.POST.get('ids_qties')
+    tups = api.list_to_pairs(api.list_from_coma_separated_ints(ids_qties))
+
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer, delimiter=';')
+    try:
+        cards_qties = [(Card.objects.get(id=tup[0]), tup[1]) for tup in tups]
+        if request.POST.get('layout') == 'simple':
+            isbns_qties = [(tup[0].isbn, tup[1]) for tup in cards_qties]
+        else:
+            # to finish
+            isbns_qties = [(
+                tup[0].title,
+                tup[0].authors_repr,
+                tup[0].publisher_repr,
+                tup[1]
+            ) for tup in cards_qties]
+
+        content = [writer.writerow(row) for row in isbns_qties]
+        response = StreamingHttpResponse(content,
+                                         content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    except Exception as e:
+        log.error("Error while constructing csv: {}".format(e))
+
+    return response
 
 @login_required
 def inventory_list(request):

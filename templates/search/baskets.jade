@@ -54,6 +54,17 @@ div(ng-controller="basketsController")
      ul.dropdown-menu
        li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
 
+   .col-md-1
+     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
+       i.glyphicon.glyphicon-download
+       span.caret
+     ul.dropdown-menu
+       li: a(href="#", ng-click="export_csv('simple')") csv ({% trans "simple: isbn and quantity" %})
+       // Continue:
+       //- li: a(href="#", ng-click="export_csv('complete')") csv ({% trans "complete: with titles and more" %})
+       //- li: a(href="#") pdf (with barcodes)
+       //- li: a(href="#") pdf (without barcodes)
+
    .col-md-6
      h4   {{ 'cur_basket.name' |ng}}
 
