@@ -122,7 +122,7 @@ def check_uptodate(client):
     cfg = get_yaml_cfg(cfg)
     cfg = addict.Dict(cfg)
     client = select_client_cfg(client, cfg)
-    wd = cfg.home + cfg.dir + client.name + CFG.project_name
+    wd = os.path.join(cfg.home, cfg.dir, client.name, CFG.project_name)
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
     with cd(wd):
         res = run("git rev-parse HEAD")
@@ -159,7 +159,7 @@ def update(client):
     cfg = get_yaml_cfg(cfg)
     cfg = addict.Dict(cfg)
     client = select_client_cfg(client, cfg)
-    wd = cfg.home + cfg.dir + client.name + CFG.project_name
+    wd = os.path.join(cfg.home, cfg.dir, client.name, CFG.project_name)
     with cd(wd):
         with prefix("source ~/.virtualenvs/{}/bin/activate".format(client.venv)):
             res = run("make update")
