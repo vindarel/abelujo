@@ -60,4 +60,4 @@ xhtml2pdf               # produce pdf from html templates. Installs
 underwear               # easy deployment
 fabric                  # remote execution
 whitenoise              # serve static files. Easily, efficiently.
-gunicorn                # wsgi server
+gunicorn==19.4          # wsgi server
