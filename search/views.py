@@ -16,19 +16,12 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import csv
+import datetime
 import logging
 import traceback
 import urllib
 import urlparse
 
-from unidecode import unidecode
-
-import datasources.all.discogs.discogsScraper as discogs
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
-import datasources.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
-import datasources.frFR.decitre.decitreScraper as decitre
-import models
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -39,9 +32,19 @@ from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.template.loader import get_template
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+from unidecode import unidecode
+from xhtml2pdf import pisa
+
+import datasources.all.discogs.discogsScraper as discogs
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+import datasources.frFR.decitre.decitreScraper as decitre
+import models
 from models import Basket
 from models import Bill
 from models import Card
@@ -844,37 +847,64 @@ def baskets_export(request):
     api.list_from_coma_separated_ints to get a list of tuples back)
 
     - layout: 'simple': only show isbns and quantities. 'complete':
-      with title, authors, publishers etc
+      with title, authors, publishers etc; 'pdf': pdf with barcodes and quantity.
 
-    Return: it returns raw csv. The client side must handle its download.
+    Return: it returns raw data, either csv or pdf. The client side must handle its download.
 
     """
 
+    layout = request.POST.get('layout')
     ids_qties = request.POST.get('ids_qties')
     tups = api.list_to_pairs(api.list_from_coma_separated_ints(ids_qties))
 
-    pseudo_buffer = Echo()
-    writer = csv.writer(pseudo_buffer, delimiter=';')
-    try:
-        cards_qties = [(Card.objects.get(id=tup[0]), tup[1]) for tup in tups]
-        if request.POST.get('layout') == 'simple':
-            isbns_qties = [(tup[0].isbn, tup[1]) for tup in cards_qties]
-        else:
-            # to finish
-            isbns_qties = [(
-                tup[0].title,
-                tup[0].authors_repr,
-                tup[0].publisher_repr,
-                tup[1]
-            ) for tup in cards_qties]
+    response = HttpResponse()
 
-        content = [writer.writerow(row) for row in isbns_qties]
-        response = StreamingHttpResponse(content,
-                                         content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+    try:
+        template = get_template('pdftemplates/pdf-barcode.jade')
+
+        cards_qties = [(Card.objects.get(id=tup[0]), tup[1]) for tup in tups]
+        isbns_qties = [(tup[0].isbn, tup[1]) for tup in cards_qties]
+
+        if layout == 'simple':
+            pseudo_buffer = Echo()
+            writer = csv.writer(pseudo_buffer, delimiter=';')
+            content = [writer.writerow(row) for row in isbns_qties]
+            response = StreamingHttpResponse(content, content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+        elif layout == 'pdf':
+            # How to test that easily ?
+            with open("pdfexport.pdf", "w+b") as resultFile:
+
+                list_name = request.POST.get('list_name')
+                date = datetime.date.today()
+                response = HttpResponse(content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+
+                cards = [it[0] for it in cards_qties]
+                # the barcode generator doesn't accept None isbn.
+                for card in cards:
+                    if not card.isbn:
+                        card.isbn = "0000000000000"
+
+                sourceHtml = template.render({'cards_qties': cards_qties,
+                                              'list_name': list_name,
+                                              'date': date})
+                # convert to a pdf file
+                # pisaStatus = pisa.CreatePDF(
+                        # sourceHtml,                # the HTML to convert
+                        # dest=response)           # file handle to recieve result
+
+                pisaStatus = pisa.CreatePDF(
+                        sourceHtml,
+                        # outsource,                # the HTML to convert
+                        # dest=resultFile)           # file handle to recieve result
+                        dest=response)
+
 
     except Exception as e:
-        log.error("Error while constructing csv: {}".format(e))
+        log.error("Error while constructing {}: {}".format(layout, e))
+        response.status_code = 500
 
     return response
 

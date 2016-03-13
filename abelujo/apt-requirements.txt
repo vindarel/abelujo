@@ -1,3 +1,6 @@
+# Careful: write comments only at beg of line
+# (see Makefile's update)
+
 python-pip
 virtualenvwrapper
 python-dev
@@ -11,3 +14,5 @@ nodejs-legacy
 npm
 postgresql-contrib
 libpq-dev
+# for Pillow / xhtml2pdf
+libjpeg-dev

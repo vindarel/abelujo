@@ -53,6 +53,8 @@ distance                # between two strings.
 clize                   # build command line arguments
 tqdm                    # progress bar
 termcolor               # colorful terminal output
+xhtml2pdf               # produce pdf from html templates. Installs
+                        # Reportlab, Pypdf2 and Pillow, i.e. big dependencies.
 
 # deployment
 underwear               # easy deployment

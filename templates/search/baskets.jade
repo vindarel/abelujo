@@ -59,10 +59,11 @@ div(ng-controller="basketsController")
        i.glyphicon.glyphicon-download
        span.caret
      ul.dropdown-menu
-       li: a(href="#", ng-click="export_csv('simple')") csv ({% trans "simple: isbn and quantity" %})
+       li: a(href="#", ng-click="export_csv('simple')") csv - {% trans "simple: isbn and quantity" %}
+       li: a(href="#", ng-click="export_csv('pdf')") pdf - {% trans "with barcodes" %}
+
        // Continue:
        //- li: a(href="#", ng-click="export_csv('complete')") csv ({% trans "complete: with titles and more" %})
-       //- li: a(href="#") pdf (with barcodes)
        //- li: a(href="#") pdf (without barcodes)
 
    .col-md-6

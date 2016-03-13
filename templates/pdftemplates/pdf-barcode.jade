@@ -1,0 +1,43 @@
+{% load i18n %}
+!!! 5
+html
+head
+  style.
+    @page {
+      margin: 2cm;
+      size: a4 portrait;
+
+        @frame header_frame {
+            -pdf-frame-content: header_content;
+            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+        }
+
+        @frame content_frame {
+            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+        }
+
+        @frame footer_frame {
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+        }
+
+    }
+  body
+
+    h2#header_content(style="{text-align: center;}") Abelujo - {{ list_name }}, {{ date }}
+    div#footer_content {% trans "page" %} <pdf:pagenumber>
+    // of <pdf:pagecount>
+
+    table
+      thead
+        tr
+          th
+          th {% trans "Title" %}
+          th {% trans "Quantity" %}
+      tbody
+        for card in cards_qties
+          tr
+            td <pdf:barcode value="{{ card.0.isbn }}" type="ean13" humanreadable="1" align="baseline" />
+            td {{ card.0.title }}
+            td {{ card.1 }}
+        endfor

@@ -131,16 +131,28 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             "ids_qties": join ",", ids_qties
             "format": "csv"
             "layout": layout
+            "list_name": $scope.cur_basket.name
 
         $http.post "/#{$scope.language}/baskets/export/", params
         .then (response) !->
             # We get raw data. We must open it as a file with JS.
             a = document.createElement('a')
-            a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
             a.target      = '_blank'
-            a.download    = "liste-#{$scope.cur_basket.name}.csv"
+            if layout == 'simple'
+                a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
+                a.download    = "liste-#{$scope.cur_basket.name}.csv"
+
+            else
+                a.href  = 'data:attachment/pdf,' +  encodeURIComponent(response.data)
+                a.download    = "liste-#{$scope.cur_basket.name}.pdf"
+
             document.body.appendChild(a)
             a.click()
+
+        , (response) !->
+            $scope.alerts = $scope.alerts.concat do
+                level: "error"
+                message: gettext "We couldn't produce the file, there were an internal error. Sorry !"
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do
