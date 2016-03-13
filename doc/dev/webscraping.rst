@@ -9,7 +9,11 @@ websites:
 
 - for french books:
 
-  - we get them through chapitre.com
+  - we get them through decitre.fr
+
+- for spanish books:
+
+  - from casadellibro.com
 
 - for german books:
 
@@ -41,7 +45,7 @@ or ``json``.
 This is where web scraping comes in. Web scraping is the practice of
 using a computer program to sift through a web page and gather the
 data that you need in a format most useful to you while at the same
-time preserving the structure of the data. (excerpt of
+time preserving the structure of the data. (excerpt of xxx)
 
 To scrap websites, we have to fire an HTTP request, get the response,
 parse it and extract the interesting fields.
@@ -76,7 +80,20 @@ Parsing is done with `beautifulSoup4 <http://www.crummy.com/software/BeautifulSo
 
 .. note::
 
-   if the page is rendered with javascript, we'll use ``selenium``.
+   Often, the page is partly rendered by javascript calls to the
+   server. As a result, the html we get with `requests` from our
+   python script isn't the same as the one displayed in the browser
+   (when we see its source).
+
+   A big tool to get the html after javascript execution is
+   ``selenium``. However, we don't necessarity need it (and didn't so
+   far). Indeed, we can study what calls make the page to what api
+   endpoints and call them ourselves. Or simply get the html of a
+   book's details page.
+
+Often, we don't get all the data we want about a single book from the
+list of results (we always want its price and isbn). We can get it
+with a second pass, and scrape its details page.
 
 
 .. seealso::
@@ -95,6 +112,8 @@ How to add a data source
 ------------------------
 
 Take example from `deDE/buchwagner/buchWagnerScraper.de <https://gitlab.com/vindarel/abelujo/tree/master/search/datasources/deDE>`_.
+
+See also the `BaseScraper`.
 
 But first, contact us !
 
@@ -156,6 +175,15 @@ How to import an ods LibreOffice sheet
 --------------------------------------
 
 It's on the command line only and is still a work in progress.
+
+The ods (or csv) file can be of two forms:
+
+- it has a row containing the name of the columns. In that case, it
+  must have a "title" column or a "isbn" one.
+
+- it contains only data, it has no row to declare the column names. In
+  that case, we use a settings.py file to declare them.
+
 
 In short::
 
