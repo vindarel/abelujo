@@ -63,6 +63,7 @@ from search.models import Entry
 from search.models import EntryCopies
 from search.models import api
 from search.models.utils import ppcard
+from search.models.utils import truncate
 
 log = logging.getLogger(__name__)
 
@@ -871,6 +872,11 @@ def baskets_export(request):
             content = [writer.writerow(row) for row in isbns_qties]
             response = StreamingHttpResponse(content, content_type="text/csv")
             response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+        elif layout == 'txt':
+            rows = [ u"{} {}".format( truncate(card.title), qty) for (card, qty) in cards_qties]
+            content = "\n".join(rows)
+            response = HttpResponse(content, content_type="text/raw")
 
         elif layout == 'pdf':
             # How to test that easily ?

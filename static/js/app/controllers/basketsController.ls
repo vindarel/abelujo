@@ -142,9 +142,13 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
                 a.download    = "liste-#{$scope.cur_basket.name}.csv"
 
-            else
+            else if layout == 'pdf'
                 a.href  = 'data:attachment/pdf,' +  encodeURIComponent(response.data)
                 a.download    = "liste-#{$scope.cur_basket.name}.pdf"
+
+            else if layout == 'txt'
+                a.href = 'data:attachment/txt,' + encodeURIComponent(response.data)
+                a.download    = "liste-#{$scope.cur_basket.name}.txt"
 
             document.body.appendChild(a)
             a.click()
