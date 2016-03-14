@@ -207,7 +207,6 @@ def copy_files(name, *files):
     tmp_init_data = '/tmp/{}/'.format(client.name)
     if not exists(tmp_init_data):
         run('mkdir -p {}'.format(tmp_init_data))
-    import ipdb; ipdb.set_trace()
     put(files[0], tmp_init_data)
 
 def install(name):

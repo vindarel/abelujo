@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright 2014 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
@@ -19,6 +19,7 @@
 import glob
 import json
 import os
+from tqdm import tqdm
 
 import search.datasources.odslookup.odslookup as odslookup
 from search.models.models import Card
@@ -27,7 +28,6 @@ from search.models.models import Distributor
 from search.models.models import Place
 from search.models.models import Preferences
 from search.models.models import Publisher
-from tqdm import tqdm
 
 
 def getAllKeys(cards, key):
@@ -44,7 +44,7 @@ def getAllKeys(cards, key):
     its = filter(lambda it: it is not None, its)
     return its
 
-def import_file(odsfile):
+def import_file(odsfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
     """Import the cards (as dicts) from within this csv file.
 
     Read the csv and lookup for the cards on the remote data source.
@@ -56,8 +56,6 @@ def import_file(odsfile):
     default place.
 
     """
-    ADD_NO_EAN = True
-    ADD_NOT_FOUND = True
     if not os.path.exists(odsfile):
         print "Error: file '%s' doesn't exist. Give it as argument with odsfile=..." % (odsfile,)
         return 1
@@ -82,6 +80,12 @@ def import_file(odsfile):
     if not cards:
         cards = odslookup.run(odsfile, datasource)
 
+    import_cards(cards, ADD_NOT_FOUND=ADD_NOT_FOUND, ADD_NO_EAN=ADD_NO_EAN, ADD_EAN=ADD_EAN)
+
+def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
+    """
+    """
+
     ### Get all publishers and create them OR do it in Card.from_dict ?
     pubs = []
     for key, val in cards.iteritems():
@@ -102,6 +106,7 @@ def import_file(odsfile):
     for key, val in cards.iteritems():
         if val:
             for dic in val:
+                assert type(dic) == type({})
                 dist = dic.get('distributor')
                 if dist and dist not in seen:
                    discount = dic.get('discount', 0)
@@ -126,7 +131,6 @@ def import_file(odsfile):
         Category.objects.get_or_create(name=it)
     print "...done."
 
-    import ipdb; ipdb.set_trace()
     ### Create a default place if needed.
     pref = Preferences.objects.first()
     if pref and pref.default_place:
@@ -140,27 +144,28 @@ def import_file(odsfile):
 
     ### Add cards
     # Add the cards with all info.
-    print "Adding cards to the database..."
-    print "Adding cards with ean..."
-    for card in tqdm(cards["cards_found"]): # tqdm: progress bar
-        qty = card.get('quantity')
-        card_obj, msgs = Card.from_dict(card)
-        place.add_copy(card_obj, nb=qty)
-    print "...done."
+    if ADD_EAN:
+        print "Adding cards to the database..."
+        print "Adding cards with ean..."
+        for card in tqdm(cards["cards_found"]): # tqdm: progress bar
+            qty = card.get('quantity')
+            card_obj, msgs = Card.from_dict(card)
+            place.add_copy(card_obj, nb=qty)
+        print "...done."
 
     # Add all other cards (even with uncomplete info).
-    if ADD_NO_EAN:
+    if ADD_NO_EAN and cards.get('cards_no_isbn'):
         print "Adding cards without ean..."
-        for card in tqdm(cards["cards_no_isbn"]):
+        for card in tqdm(cards.get("cards_no_isbn")):
             #XXX the logs will thrash stdout.
             card_obj, msgs = Card.from_dict(card)
             if card.get('title'):
                 place.add_copy(card_obj, nb=qty)
         print "...done."
 
-    if ADD_NOT_FOUND:
+    if ADD_NOT_FOUND and cards.get('cards_not_found'):
         print "Adding cards not found, without much info..."
-        for card in tqdm(cards["cards_not_found"]):
+        for card in tqdm(cards.get("cards_not_found")):
             try:
                 card_obj, msgs = Card.from_dict(card)
                 place.add_copy(card_obj, nb=qty)
@@ -186,14 +191,26 @@ def run(*args):
     documentation of runscript: http://django-extensions.readthedocs.org/en/latest/runscript.html
     """
     print "script args:", args
+    ADD_NOT_FOUND = True
+    ADD_NO_EAN = True
+    ADD_EAN = True
+
     files = args
+    if 'NOTFOUND' in args:
+        ADD_NOT_FOUND = True
+        ADD_NO_EAN = False
+        ADD_EAN = False
+        files = [it for it in args]
+        files.remove('NOTFOUND')
+
+    # mmh... I did use a shell wildcard to give many files already.
     if os.path.isdir(args[0]):
         files = glob.glob('{}*csv'.format(args[0]))
 
     for i, afile in enumerate(files):
         print "---------------"
-        print "Importing file {}/{}: {}".format(i + 1, len(files) + 1, afile)
+        print "Importing file {}/{}: {}".format(i + 1, len(files), afile)
         print "---------------"
-        import_file(afile)
+        import_file(afile, ADD_EAN=ADD_EAN, ADD_NO_EAN=ADD_NO_EAN, ADD_NOT_FOUND=ADD_NOT_FOUND)
 
     print "All files imported."
