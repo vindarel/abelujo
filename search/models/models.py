@@ -274,7 +274,7 @@ class Card(TimeStampedModel):
     has_isbn = models.NullBooleanField(default=True, blank=True, null=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
-    price = models.FloatField(null=True, blank=True)
+    price = models.FloatField(null=True, blank=True, default=0.0)
     #: price_sold is only used to generate an angular form, it is not
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
@@ -2499,11 +2499,14 @@ class Stats(object):
         res['deposits_cost'] = {'label': _("Cost of the deposits"),
                                 'value': deposits_cost}
         # XXX: long query ! See comments for Card.quantity
-        total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
-        res['total_cost'] = {'label': _(u"Total cost"),
-                             'Title': _(u"Cost of each card by its quantity in stock, rounded to the upper decimal.\nThe real value is {}".format(total_cost)),
+        try:
+            total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
+            res['total_cost'] = {'label': _(u"Total cost"),
+                                 'Title': _(u"Cost of each card by its quantity in stock, rounded to the upper decimal.\nThe real value is {}".format(total_cost)),
                              # Round the float... or just {:.2f}.format.
-                             'value': float(decimal.Decimal(total_cost).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))}
+                                 'value': float(decimal.Decimal(total_cost).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))}
+        except Exception as e:
+            log.error("Error with total_cost: {}".format(e))
 
         # Next appointments
         # xxx: transform to strings and associate with the deposit.
