@@ -91,7 +91,7 @@ class Scraper(object):
         # there is no comic type.
         self.TYPE_DEFAULT = self.TYPE_BOOK
 
-        #: Query parameter to search for the ean/isbn
+        #: Query parameter to search for the ean/isbn (if needed, maybe it uses the regular search pattern).
         #: for example, "dctr_ean", without & nor =
         self.ISBN_QPARAM = ""
 
@@ -145,11 +145,12 @@ class Scraper(object):
                 # (decitre), others treat it like a normal one (casa
                 # del libro).
                 if self.ISBN_QPARAM:
-                    query = "&{}={}".format(self.ISBN_QPARAM, isbns[0])
+                    self.query = "&{}={}".format(self.ISBN_QPARAM, isbns[0])
                 else:
-                    query = isbns[0]
+                    #xxx we could search for many isbns at once.
+                    self.query = isbns[0]
 
-                self.url = self.SOURCE_URL_ADVANCED_SEARCH + query
+                self.url = self.SOURCE_URL_ADVANCED_SEARCH + self.query
 
             # otherwise search the keywords.
             else:

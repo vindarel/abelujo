@@ -24,7 +24,7 @@ import string
 def priceFromText(text):
     """Extract the price from text with regexp.
     """
-    match = re.search('\d+,?\d*', text)
+    match = re.search('\d+[,\.]?\d*', text)
     price = match.group()
     return price
 
