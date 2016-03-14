@@ -44,6 +44,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             .then (response) !->
                 $scope.baskets[item].copies = response.data.data
                 $scope.copies = response.data.data
+                map ->
+                    it.basket_qty = 1
+                , $scope.copies
 
         else
             $scope.copies = $scope.cur_basket.copies
@@ -65,7 +68,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             to_add = $scope.cur_basket.copies
             |> map (.id)
 
-            coma_sep = join ",", to_add
+            coma_sep = join ",", to_add # TODO custom quantities
             alert to_add
 
             #  This is needed for Django to process the params to its
@@ -111,7 +114,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         """
         ids_qties = []
         map ->
-            ids_qties.push "#{it.id}, 1" #XXX: here we'll need custom quantities
+            ids_qties.push "#{it.id}, #{it.basket_qty}"
         , $scope.copies
 
         ###### This is needed for Django to process the params to its
