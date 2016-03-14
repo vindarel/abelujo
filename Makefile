@@ -13,8 +13,11 @@ debian:
 	@sudo pip install virtualenvwrapper
 
 # Install in current directory
-deps:
+pip:
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
+
+pip-dev: pip
+	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
 
 db:
 	@python manage.py syncdb --noinput           # populate the db for django
@@ -46,6 +49,9 @@ update:
 	gulp
 	@python manage.py collectstatic --noinput
 	make translation-compile 	# gunicorn needs a restart
+	@echo "For development, don't forget make pip-dev"
+
+update-dev: update pip-dev
 
 migrate:
 	python manage.py migrate

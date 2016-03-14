@@ -109,6 +109,12 @@ We use:
 
 See the developer documentation: http://dev.abelujo.cc/
 
+Note::
+
+As a complement to the installion procedure above, you also need to install development dependencies that are listed in another requirements file::
+
+    make pip-dev
+
 We get the data about books with some webscraping (discogs provides an
 api).
 
