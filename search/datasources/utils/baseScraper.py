@@ -54,6 +54,19 @@ recquires it (when it clicks to add a book or to get more
 informations about one). We call the postSearch method, defined
 above, which gets those complementary fields, if any.
 
+Advanced search
+---------------
+
+Still experimental.
+
+To search for all publications by a publisher, type "ed:name".
+
+To do:
+- different keywords/language,
+- see the keyword with a regexp (ed[a-z]*:)
+- search for keywords also,
+- and pagination, because we want to parse through everything
+
 Shall we use xpath ?
 --------------------
 
@@ -94,6 +107,8 @@ class Scraper(object):
         #: Query parameter to search for the ean/isbn (if needed, maybe it uses the regular search pattern).
         #: for example, "dctr_ean", without & nor =
         self.ISBN_QPARAM = ""
+        #: Query parameter to filter on the publisher
+        self.PUBLISHER_QPARAM = ""
 
     def __init__(self, *args, **kwargs):
         """Constructs the query url with the given parameters, retrieves the
@@ -154,8 +169,15 @@ class Scraper(object):
 
             # otherwise search the keywords.
             else:
-                self.query = "+".join(words)
-                self.url = self.SOURCE_URL_SEARCH + self.query
+                # Check an advanced search of the form "editeur:name"
+                if "ed:" in words[0]:
+                    ed = words[0].split(':')[1]
+                    self.query = "&{}={}".format(self.PUBLISHER_QPARAM, ed)
+                    self.url = self.SOURCE_URL_ADVANCED_SEARCH + self.query
+
+                else:
+                    self.query = "+".join(words)
+                    self.url = self.SOURCE_URL_SEARCH + self.query
 
         log.debug('search url: %s' % self.url)
         self.url += self.URL_END

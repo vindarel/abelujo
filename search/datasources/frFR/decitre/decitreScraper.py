@@ -37,6 +37,11 @@ log = logging.getLogger(__name__)
 
 class Scraper(baseScraper):
 
+    """
+    Advanced search available:
+    - publisher: "ed[iteur]:name"
+    """
+
     query = ""
 
 
@@ -54,6 +59,7 @@ class Scraper(baseScraper):
         self.URL_END = u"&search-scope=0&product_type=3" # search books
         #: Query parameter to search for the ean/isbn
         self.ISBN_QPARAM = "dctr_ean"
+        self.PUBLISHER_QPARAM = "dctr_publisher_name"
 
     def __init__(self, *args, **kwargs):
         """
