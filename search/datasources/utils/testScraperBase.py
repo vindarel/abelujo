@@ -84,7 +84,7 @@ class testScraperBase(unittest.TestCase):
     def testPostSearch(self):
         for bktest in self.datatest:
             if bktest.get("postSearch"):
-                postresult = self.postSearch(bktest["postSearch"])
+                postresult = self.postSearch(bktest.get("postSearch"))
                 for attr in bktest["postSearch"]["results"]:
                     self.assertEqual(postresult[attr],
                                      bktest["postSearch"]["results"][attr])
