@@ -71,7 +71,8 @@ CLIENTS = "clients.yaml"
 
 CFG = get_yaml_cfg(CLIENTS)
 CFG = addict.Dict(CFG)
-
+VENV_SOURCE = "source ~/.virtualenvs/{}/bin/activate"
+GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload"
 env.hosts = CFG.url
 env.user = CFG.user
 
@@ -161,7 +162,8 @@ def update(client):
     client = select_client_cfg(client, cfg)
     wd = os.path.join(cfg.home, cfg.dir, client.name, CFG.project_name)
     with cd(wd):
-        with prefix("source ~/.virtualenvs/{}/bin/activate".format(client.venv)):
+        run("echo {} > PORT.txt".format(client.port))
+        with prefix(VENV_SOURCE.format(client.venv)):
             res = run("make update")
 
 def ssh_to(client):
@@ -235,3 +237,17 @@ def install(name):
             # The csv files may be in nested directories.
             run('make odsimport odsfile=$(find /tmp/{}/*csv)'.format(client.name))
             # - run gunicorn with the right port,
+
+
+def start(name):
+    """Run gunicorn.
+
+    Read the port in PORT.txt
+    """
+    client = select_client_cfg(name, CFG)
+    wd = CFG.home + CFG.dir + client.name
+    with cd(wd):
+        with prefix(VENV_SOURCE.format(client.name)):
+            gunicorn = GUNICORN.format(project_name=CFG.project_name, url=CFG.url)
+            print "TODO: run in background"
+            run(gunicorn)
