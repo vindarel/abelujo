@@ -48,12 +48,14 @@ class Scraper(baseScraper):
         #: Url to which we just have to add url parameters to run the search
         self.SOURCE_URL_SEARCH = u"http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&LIVREANCIEN=2&MOTS="
         #: advanced url (searcf for isbns)
-        self.SOURCE_URL_ADVANCED_SEARCH = u"http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&LIVREANCIEN=2&MOTS="
+        self.SOURCE_URL_ADVANCED_SEARCH = u"http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=appro&LIVREANCIEN=2&MOTS="
         #: Optional suffix to the search url (may help to filter types, i.e. don't show e-books).
         self.URL_END = u"&x=0&y=0" # search books
         self.TYPE_BOOK = u"book"
         #: Query parameter to search for the ean/isbn
         self.ISBN_QPARAM = u""
+        #: Query param to search for the publisher (editeur)
+        self.PUBLISHER_QPARAM = u"EDITEUR"
 
     def __init__(self, *args, **kwargs):
         """
@@ -62,7 +64,9 @@ class Scraper(baseScraper):
         super(Scraper, self).__init__(*args, **kwargs)
 
     def _product_list(self):
-        plist = self.soup.find_all(class_='tab_listlivre')
+        # The table doesn't have its css classes 'even' and 'odd' yet.
+        plist = self.soup.find(class_='tab_listlivre')
+        plist = plist.find_all('tr')
         if not plist:
             logging.info(u'Warning: product list is null, we (apparently) didn\'t find any result')
         return plist
@@ -215,40 +219,6 @@ def postSearch(card, isbn=None):
     Return a new card (dict) complemented with the new attributes.
 
     """
-    given_isbn = isbn
-    url = card.get('details_url') or card.get('url')
-    if not url:
-        log.error("postSearch: we must find a key 'details_url' or 'url'")
-        return None
-
-    #: the needed attributes to populate
-    to_ret = {
-        "isbn": given_isbn,
-        "price": None
-        }
-    req = requests.get(url)
-    soup = BeautifulSoup(req.content, "lxml")
-
-    if not given_isbn:
-        try:
-            isbn = soup.find(itemprop='sku').text.strip()
-            isbn = isbn_cleanup(isbn)
-
-            if not is_isbn(isbn):
-                log.error("The isbn {} is not valid. Return nothing.".format(isbn))
-                isbn = given_isbn or None
-
-            card['isbn'] = isbn
-        except Exception as e:
-            log.error("postSearch: error while getting the isbn of {}: {}".format(url, e))
-
-    try:
-        product = soup.find(class_="product-main-information")
-        price = product.find(class_="final-price").span.attrs['content']
-        card['price'] = priceStr2Float(price)
-    except Exception as e:
-        log.error("postSearch: error while getting price of {}: {}".format(url, e))
-
     return card
 
 

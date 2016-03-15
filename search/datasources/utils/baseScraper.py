@@ -283,34 +283,8 @@ class Scraper(object):
 def postSearch(card):
     """Complementary informations to fetch on a details' page.
 
-    - isbn (compulsory): a str with alpha-num digits only (use isbn_cleanup())
-    - description
+    The card must have an isbn in the end.
+
+    Return: the card dict, with isbn
     """
-    url = card.get('details_url') or card.get('url')
-    if not url:
-        log.error("postSearch error: url is {} !".format(url))
-        return None
-
-    req = requests.get(url)
-    soup = BeautifulSoup(req.text, "lxml")
-    details = soup.find_all(class_="productDetails-items-content")
-    # The complementary information we need to return. Isbn is compulsory.
-    to_ret = {"isbn": None}
-
-    try:
-        isbn = soup.find(class_="floatRight")
-        isbn = isbn.find_all("p")[2].text.strip().split(":")[1].strip()
-        card["isbn"] = isbn_cleanup(isbn)
-        log.debug("postSearch of {}: we got isbn {}.".format(url, isbn))
-
-    except Exception, e:
-        log.debug("Error while getting the isbn of {} : {}".format(url, e))
-        log.debug(e)
-
-    try:
-        description = soup.find(class_="alt_content").p.text.strip()
-        card["description"] = description
-    except Exception as e:
-        log.debug("Error while getting the description of {}: {}".format(url, e))
-
     return card

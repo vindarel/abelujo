@@ -40,10 +40,12 @@ from unidecode import unidecode
 from xhtml2pdf import pisa
 
 import datasources.all.discogs.discogsScraper as discogs
+# The datasources imports must have the name as their self.SOURCE_NAME
 import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
 import datasources.esES.casadellibro.casadellibroScraper as casadellibro
 import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
 import datasources.frFR.decitre.decitreScraper as decitre
+import datasources.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
 import models
 from models import Basket
 from models import Bill
@@ -74,6 +76,7 @@ DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 SCRAPER_CHOICES = [
     ("Book shops", (
         ("decitre", "decitre.fr"),
+        ("librairiedeparis", "librairie de Paris"),
         ("chapitre", "chapitre.com - fr"),
         ("buchWagner", "buchWagner Munchen - de"),
         ("casadellibro", "casa del libro, Madrid - es"),
