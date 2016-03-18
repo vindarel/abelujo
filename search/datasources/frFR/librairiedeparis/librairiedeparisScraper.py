@@ -134,8 +134,9 @@ class Scraper(baseScraper):
     @catch_errors
     def _isbn(self, product):
         """
+        Return: str
         """
-        isbn = self.soup.find(class_='gencod').text.strip()
+        isbn = product.find(class_='gencod').text.strip()
         return isbn
 
     @catch_errors
