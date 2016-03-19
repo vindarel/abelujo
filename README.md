@@ -6,15 +6,16 @@ français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr
 This project is at its debut stage. However it is already possible to:
 
 -   look up for **books**, either by keywords or by isbn/ean (which works with a **barcode scanner**). You can currently search for:
-    * french books (through [decitre.fr](http://www.decitre.fr/)), or chapitre.com
-    * german books(through [buch-wagner.de](http://www.buch-wagner.de))
+    * french books (through [librairiedeparis](http://www.librairie-de-paris.fr/), [decitre.fr](http://www.decitre.fr/) or chapitre.com)
     * spanish books (through [casadellibro.com](http://www.casadellibro.com))
+    * german books(through [buch-wagner.de](http://www.buch-wagner.de))
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
--   add exemplaries to your stock, set places, use baskets,
+-   do an **inventories** of your stock,
+-   manage lists of books, export them to **csv** and **pdf** (with **barcodes**),
+-   send an email to distributors to **order** books,
 -   manage deposits and distributors, see **the balance of your deposits**,
 -   sell books, see conflicts of distributors, see the history,
--   do an **inventory** per place,
 -   import data from a LibreOffice Calc file (.ods) (experimental, cli only. See the [user documentation](doc/user/index.rst "user doc")).
 
 It is translated to english, french and spanish.
