@@ -25,9 +25,9 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.selectAll = true
     # warning, they must have the same id as their module's self.NAME.
     $scope.datasources =
-        * name: "librairiedeparis (fr)"
+        * name: "librairiedeparis - fr"
           id: "librairiedeparis"
-        * name: "Decitre (fr)"
+        * name: "Decitre - fr"
           id: "decitre"
         * name: "Casa del libro - es"
           id: "casadellibro"

@@ -115,7 +115,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         ids_qties = []
         map ->
             ids_qties.push "#{it.id}, #{it.basket_qty}"
-        , $scope.copies
+        , filter (.basket_qty > 0), $scope.copies
 
         ###### This is needed for Django to process the params to its
         #  request.POST dictionnary:

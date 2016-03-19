@@ -166,3 +166,22 @@ def list_to_pairs(ll):
         if i % 2 == 0:
             res.append( (ll[i],ll[i+1]) )
     return res
+
+def list_from_coma_separated_ints(str):
+    """Gets a string with coma-separated numbers (ints or floats), like
+    "1,2.2,3", returns a list with each number. Because on url
+    parameters we can get a list of ids like this.
+
+    """
+    def toIntOrFloat(nb):
+        try:
+            return int(nb)
+        except ValueError:
+            nb = nb.replace(",", ".")
+            return float(nb)
+
+    # Data validation: should check that we only have ints and comas...
+    if str:
+        return [toIntOrFloat(it) for it in str.strip(",").split(",")]
+    else:
+        return []

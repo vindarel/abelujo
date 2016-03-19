@@ -64,6 +64,7 @@ from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
 from search.models.utils import list_to_pairs
+from search.models.utils import list_from_coma_separated_ints
 from search.models.utils import ppcard
 from search.models.utils import truncate
 
@@ -864,7 +865,7 @@ def baskets_export(request):
 
     layout = request.POST.get('layout')
     ids_qties = request.POST.get('ids_qties')
-    tups = list_to_pairs(api.list_from_coma_separated_ints(ids_qties))
+    tups = list_to_pairs(list_from_coma_separated_ints(ids_qties))
 
     response = HttpResponse()
 

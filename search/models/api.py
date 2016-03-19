@@ -31,6 +31,7 @@ from search.models.common import ALERT_WARNING
 from search.views import search_on_data_source, postSearch
 
 from .utils import list_to_pairs
+from .utils import list_from_coma_separated_ints
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -249,25 +250,6 @@ def publishers(request, **response_kwargs):
         data = Publisher.search(query)
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
-
-def list_from_coma_separated_ints(str):
-    """Gets a string with coma-separated numbers (ints or floats), like
-    "1,2.2,3", returns a list with each number. Because on url
-    parameters we can get a list of ids like this.
-
-    """
-    def toIntOrFloat(nb):
-        try:
-            return int(nb)
-        except ValueError:
-            nb = nb.replace(",", ".")
-            return float(nb)
-
-    # Data validation: should check that we only have ints and comas...
-    if str:
-        return [toIntOrFloat(it) for it in str.strip(",").split(",")]
-    else:
-        return []
 
 def getSellDict(lst):
     """We have a list of int and floats representing the card ids, their
