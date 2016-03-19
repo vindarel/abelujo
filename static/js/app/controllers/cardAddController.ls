@@ -32,6 +32,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.update_total_deposits = !->
         $scope.total_deposits = $scope.deposits |> map (.quantity) |> sum
 
+    # Get the card
     re = /(\d)+/
     card_id = $window.location.pathname.match(re)
     $http.get "/api/card/" + card_id, do

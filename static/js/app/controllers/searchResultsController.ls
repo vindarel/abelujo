@@ -24,6 +24,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.cards = []
     $scope.alerts = []
     $scope.selectAll = true
+    # warning, they must have the same id as their module's self.NAME.
     $scope.datasources =
         * name: "librairiedeparis (fr)"
           id: "librairiedeparis"
@@ -36,6 +37,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.validate = !->
         params = do
             query: $scope.query
+            datasource: $scope.datasource.id
 
         $http.get "/api/datasource/search/", do
             params: params
@@ -59,10 +61,19 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
-    # todo needed ?
-    config = do
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded charset=UTF-8'}
+    $scope.create_and_add = (card) !->
+        params = do
+            card: card
+        $http.post "/api/cards/create", params
+        .then (response) ->
+            card_id = response.data.card_id
+            # Card created in DB. Now add it to places, deposits, etc.
+            $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.name}"
 
+        , (response) ->
+            ... # error
+
+    # Modal
     $scope.open = (size) !->
         to_add = Obj.filter (.selected == true), $scope.cards
 

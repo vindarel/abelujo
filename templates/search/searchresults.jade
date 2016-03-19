@@ -63,7 +63,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
  .row
    .col-md-9
    .col-md-1
-     button.button.btn.btn-default(ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to…' %}
+     button.button.btn.btn-default(ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
       i.glyphicon.glyphicon-pushpin
 
  table.table.table-striped(ng-show="cards")
@@ -93,7 +93,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         td
           div(ng-repeat="pub in card.publishers")
             div {{ 'pub' | ng }}
-        td: input(type="checkbox", ng-model="card.selected")
+        td
+          input(type="checkbox", ng-model="card.selected")
+          button.btn.btn-primary(ng-click="create_and_add(card)") {% trans "Buy…" %}
 
  script(type="text/ng-template", id="SearchResultsModal.html")
     div.modal-header

@@ -43,11 +43,12 @@ log = logging.getLogger(__name__)
 # With serializer, the access to the dict properties is deeper (inside object.fields),
 # so it makes it not straightforward with js widgets, like ui-select.
 
-def datasource(request, **response_kwargs):
+def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
     """
     query = request.GET.get('query')
-    res, traces = search_on_data_source("librairiedeparis", query)
+    datasource = request.GET.get('datasource')
+    res, traces = search_on_data_source(datasource, query)
     data = {"data": res,
             "alerts": traces,
             "status": 200,}
@@ -99,6 +100,10 @@ def card(request, **kwargs):
     return HttpResponse(ret, **kwargs)
 
 def card_create(request, **response_kwargs):
+    """Create a card with either request params or json in request.body
+
+    Return: a tuple (card_id, status, alerts)
+    """
     if request.method == "POST":
         params = request.POST.copy()
         response_kwargs["content_type"] = "application/json"
@@ -106,17 +111,9 @@ def card_create(request, **response_kwargs):
         alerts = []
 
         isbn = params.get('isbn')
-        if params.get("has_isbn") == "true":
-            try:
-                isbn = int(isbn)
-            except TypeError:
-                isbn = None
-        else:
-            isbn = None
-
         category = params.get('category')
-
-        try:
+        # Mixed style from client (to fix).
+        if params:
             card_dict = {
                 "title": params.get('title'),
                 "price": params.get('price'),
@@ -129,10 +126,18 @@ def card_create(request, **response_kwargs):
                 "details_url": params.get("details_url"),
                 "year": params.get("year_published"),
             }
-
             if category:
                 card_dict['category'] = category
 
+        # we got the card dict
+        else:
+            params = json.loads(request.body)
+            card_dict = params.get('card')
+            card_dict['has_isbn'] = True if card_dict.get('isbn') else False
+
+        #TODO: call postSearch
+
+        try:
             card_obj, msg = Card.from_dict(card_dict)
             alerts.append({"level": ALERT_SUCCESS,
                            "message": msg})
