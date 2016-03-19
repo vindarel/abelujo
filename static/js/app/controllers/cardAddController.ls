@@ -129,7 +129,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         .then (response) !->
             # $scope.alerts = response.data.alerts
             if response.status == 200
-                $window.location.href = "/#{$scope.language}/search#{$window.location.search}"
+                $window.location.href = "/#{$scope.language}/search##{$window.location.search}"
 
     # Set focus:
     angular.element('#default-input').trigger('focus');

@@ -14,11 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils) !->
+angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location) !->
 
-    {Obj, join, reject, sum, map, filter, lines} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines} = require 'prelude-ls'
 
-    $window.document.title = "Abelujo - " + gettext("search")
     $scope.language = utils.url_language($window.location.pathname)
 
     $scope.cards = []
@@ -35,16 +34,34 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.datasource = $scope.datasources[0]
 
     $scope.validate = !->
+        $location.search('q', $scope.query)
+        $location.search('source', $scope.datasource.id)
+        search_obj = $location.search()
         params = do
-            query: $scope.query
-            datasource: $scope.datasource.id
+            # query: $scope.query
+            query: search_obj.q
+            # datasource: $scope.datasource.id
+            datasource: search_obj.source
 
         $http.get "/api/datasource/search/", do
             params: params
         .then (response) !->
+            $window.document.title = "Abelujo - " + gettext("search") + " " + $scope.query
             $scope.cards = response.data.data
             for card in $scope.cards
                 card.selected = false
+
+    # Initial search results, read the url's query params after the #
+    search_obj = $location.search()
+    $scope.query = search_obj.q
+    source_id = search_obj.source
+    $scope.datasource = $scope.datasources
+    |> find (.id == source_id)
+    if not $scope.datasource
+        $scope.datasource = $scope.datasources[0]
+    $scope.validate!
+
+    $window.document.title = "Abelujo - " + gettext("search") + " " + $scope.query
 
     # Add a checkbox column to select rows.
     $scope.toggleAll = !->
@@ -68,7 +85,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         .then (response) ->
             card_id = response.data.card_id
             # Card created in DB. Now add it to places, deposits, etc.
-            $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.name}"
+            $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.id}"
 
         , (response) ->
             ... # error
