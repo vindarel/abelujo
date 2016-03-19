@@ -679,7 +679,7 @@ class Card(TimeStampedModel):
             publishers: list of names of publishers (create one on the fly, like with webscraping)
             publishers_ids: list of ids of publishers
             has_isbn:   boolean
-            isbn:       int
+            isbn:       str
             details_url: url (string)
             card_type:  name of the type (string)
             location:   string

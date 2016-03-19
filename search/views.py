@@ -63,7 +63,7 @@ from models import Sell
 from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
-from search.models import api
+from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
 from search.models.utils import truncate
 
@@ -215,7 +215,8 @@ def search_on_data_source(data_source, search_terms):
     # get the imported module by name.
     # They all must have a class Scraper.
     scraper = getattr(globals()[data_source], "Scraper")
-    res, traces = scraper(*search_terms).search()
+    # res, traces = scraper(*search_terms).search()
+    res, traces = scraper(search_terms).search()
     return res, traces
 
 def postSearch(data_source, details_url):
@@ -272,6 +273,10 @@ def search(request):
     page_title = ""
     data_source = SCRAPER_CHOICES[0][1][0][0]
     query = ""
+    # template = "search/search_result.jade"
+    template = "search/searchresults.jade"
+
+    return render(request, template)
 
     req = request.GET.copy()
     if not req.get('data_source'):
@@ -317,7 +322,7 @@ def search(request):
             if query:
                 retlist = request.session["search_result"][qparams['q']]
 
-    return render(request, "search/search_result.jade", {
+    return render(request, template, {
         "searchForm": form,
         "addForm": AddForm(),
         "result_list": retlist,
@@ -859,7 +864,7 @@ def baskets_export(request):
 
     layout = request.POST.get('layout')
     ids_qties = request.POST.get('ids_qties')
-    tups = api.list_to_pairs(api.list_from_coma_separated_ints(ids_qties))
+    tups = list_to_pairs(api.list_from_coma_separated_ints(ids_qties))
 
     response = HttpResponse()
 

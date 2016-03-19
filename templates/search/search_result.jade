@@ -55,18 +55,16 @@ for b in result_list
                       span {{ pub }}
                       if not forloop.last
                         span ; 
-            {% if b.isbn %}
-            td
+            if b.isbn
+             td
               span
                 b(title='{% trans "The isbn will be downloaded when you press enter." %}') isbn 
                 span {{ b.isbn }}
-            {% endif %}
             td
-                {% if b.price %}
-                span
+                if b.price
+                 span
                   b prix 
                   span {{ b.price }} €
-                {% endif %}
 
         if b.description
           div {{b.description}}

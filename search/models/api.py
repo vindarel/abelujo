@@ -24,10 +24,13 @@ from models import Publisher
 from models import Sell
 from models import Stats
 from models import getHistory
+from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_SUCCESS
+from search.models.common import ALERT_WARNING
 
-from search.models.common import (ALERT_ERROR,
-                                  ALERT_WARNING,
-                                  ALERT_SUCCESS)
+from search.views import search_on_data_source, postSearch
+
+from .utils import list_to_pairs
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -40,8 +43,19 @@ log = logging.getLogger(__name__)
 # With serializer, the access to the dict properties is deeper (inside object.fields),
 # so it makes it not straightforward with js widgets, like ui-select.
 
+def datasource(request, **response_kwargs):
+    """Search for new cards on external sources.
+    """
+    query = request.GET.get('query')
+    res, traces = search_on_data_source("librairiedeparis", query)
+    data = {"data": res,
+            "alerts": traces,
+            "status": 200,}
+    response_kwargs['content_type'] = 'application/json'
+    return HttpResponse(json.dumps(data), **response_kwargs)
+
 def cards(request, **response_kwargs):
-    """search for cards with the given query, or return all of them (with
+    """search for cards in the stock with the given query, or return all of them (with
     a limit).
 
     """
@@ -137,21 +151,6 @@ def card_create(request, **response_kwargs):
 
     else:
         log.error("creating a card should be done with POST.")
-
-def list_to_pairs(ll):
-    """Get a list of ints: [1, 0, 2, 0]
-
-    return a list of pairs: [ (1, 0), (2,0) ]
-
-    why ? to deal with url parameters when django and angularjs don't
-    work so well together. (card_add)
-
-    """
-    res = []
-    for i in range(len(ll) - 1):
-        if i % 2 == 0:
-            res.append( (ll[i],ll[i+1]) )
-    return res
 
 def card_add(request, **response_kwargs):
     """Add the given card to places (=buy it), deposits and baskets.
@@ -465,6 +464,9 @@ def basket(request, pk, action="", card_id="", **kwargs):
         to_ret['status'] = False
         return HttpResponse(json.dumps(to_ret), **kwargs) # return error message
 
+    # json request
+    req = json.loads(request.body)
+
     if request.method == "GET":
         data = basket.copies.all()
         ret = [it.to_dict() for it in data]
@@ -472,7 +474,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         return HttpResponse(ret, **kwargs)
 
     elif request.method == 'POST':
-        # Add cards
+        # Add cards from ids (from the Collection view)
         if action and action == "add" and request.POST.get("card_ids"):
             msgs = []
             ids = request.POST.get("card_ids")
@@ -483,6 +485,32 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 msgs.append(msg)
             except Exception as e:
                 log.error(u'Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
+
+        # Add cards from card dicts, not in db yet (from the search view).
+        elif action and action == "add" and req.get('cards'):
+            # req: dict where keys are an index (useless, js dependency) and values, the card dicts.
+            cards = req['cards'].values()
+            # Create the new cards in the DB.
+            ids = []
+            for card in cards:
+                try:
+                    exists = Card.objects.filter(isbn=card.get('isbn')).first()
+                    if not exists:
+                        card_obj, msgs = Card.from_dict(card)
+                        ids.append(card_obj.id)
+                    else:
+                        ids.append(exists.id)
+
+                except Exception as e:
+                    log.error("Error while creating card from baskets: {}".format(e))
+
+            # Add them to the basket.
+            try:
+                msg = basket.add_copies(ids)
+            except Exception:
+                log.error("Error while adding copies {} to basket {}: {}".format(ids, pk, e))
+
+
 
         # Remove a card
         elif action and action == "remove" and card_id:

@@ -1,0 +1,110 @@
+// Copyright 2014 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+
+{% block content %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load ngfilter %}
+
+
+h3 {% trans "Search for new titles" %}
+
+div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
+
+ div
+    alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
+ .row
+  .col-md-10
+   form
+    div.form-group
+      label.col-md-4 {% trans "Source" %}
+      div.col-md-8
+        select.form-control(ng-model="datasource", ng-options="elt.name for elt in datasources")
+      label.col-md-4 {% trans "Search terms" %}
+      div.col-md-8
+        input.form-control#default-input(
+          ng-model="query"
+          type="text"
+          placeholder='{% trans "Search on title, authors or isbn" %}'
+        )
+
+
+ .row
+  .col-md-4
+     input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")
+
+  //- span: a(href="{% url 'card_collection' %}?format=text")
+        input.btn(type="submit", value="{% trans 'see as text' %}", style="float: right;")
+
+ .row
+   .col-md-9
+   .col-md-1
+     button.button.btn.btn-default(ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to…' %}
+      i.glyphicon.glyphicon-pushpin
+
+ table.table.table-striped(ng-show="cards")
+    thead
+      th {% trans "Title" %}
+      th {% trans "Authors" %}
+      th {% trans "Publishers" %}
+      th: input(type="checkbox", ng-click="toggleAll()")
+
+    tbody
+      tr(ng-repeat="card in cards")
+        td
+          .row
+            .col-md-6
+              img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
+            .col-md-6
+              h4: a(href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
+              a(ng-show="card.details_url", href="{{ 'card.details_url' | ng }}", target="_blank") {% trans "See on" %} {{ 'card.data_source' |ng}}
+              div {{ 'card.price' |ng }} €
+              div
+                b isbn: 
+                span {{ 'card.isbn' |ng}}
+
+        td
+          div(ng-repeat="author in card.authors")
+            div {{ 'author' |ng}}
+        td
+          div(ng-repeat="pub in card.publishers")
+            div {{ 'pub' | ng }}
+        td: input(type="checkbox", ng-model="card.selected")
+
+ script(type="text/ng-template", id="SearchResultsModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Add to basket(s)" %}
+
+    div.modal-body
+      div(ng-repeat="basket in baskets")
+        span
+          input(type="checkbox", ng-model="selected_baskets[basket.id]")
+          label {{ 'basket.name' | ng}}
+
+      button.btn.btn-primary(ng-click="ok()") OK
+
+{% endblock content %}

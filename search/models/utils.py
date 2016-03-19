@@ -151,3 +151,18 @@ def isbn_cleanup(isbn):
         punctuation = set(string.punctuation)
         res = "".join([it for it in isbn if it not in punctuation])
     return res
+
+def list_to_pairs(ll):
+    """Get a list of ints: [1, 0, 2, 0]
+
+    return a list of pairs: [ (1, 0), (2,0) ]
+
+    why ? to deal with url parameters when django and angularjs don't
+    work so well together. (card_add)
+
+    """
+    res = []
+    for i in range(len(ll) - 1):
+        if i % 2 == 0:
+            res.append( (ll[i],ll[i+1]) )
+    return res
