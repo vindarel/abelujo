@@ -22,6 +22,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
     $scope.cards = []
     $scope.alerts = []
+    $scope.page = 1
     $scope.selectAll = true
     # warning, they must have the same id as their module's self.NAME.
     $scope.datasources =
@@ -32,16 +33,60 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         * name: "Casa del libro - es"
           id: "casadellibro"
     $scope.datasource = $scope.datasources[0]
+    $scope.results_page = [] # list of dicts with page and other search params.
+
+    $scope.next_results = !->
+        if not $scope.query
+            return
+        search_obj = $location.search()
+        page = search_obj.page
+        if not page
+            page = "1"
+
+        page = parseInt(page, 10)
+        page += 1
+        $scope.page = page
+        $location.search('page', page)
+        $scope.validate!
+
+    $scope.previous_results = !->
+        if not $scope.query
+            return
+        search_obj = $location.search()
+        page = search_obj.page
+        if not page
+            page = "1"
+
+        page = parseInt(page, 10)
+        page -= 1
+        if page < 1
+            page = 1
+        $scope.page = page
+        $location.search('page', page)
+        $scope.validate!
 
     $scope.validate = !->
+        """Search for cards.
+        """
+        if not $scope.query
+            return
         $location.search('q', $scope.query)
         $location.search('source', $scope.datasource.id)
         search_obj = $location.search()
+
+        # Look at the history, for Previous button
+        cache = $scope.results_page
+        |> find ( -> it.page == $scope.page and it.query == $scope.query and it.datasource == $scope.datasource.id)
+        if cache
+            $scope.cards = cache.cards
+            return
+
         params = do
             # query: $scope.query
             query: search_obj.q
             # datasource: $scope.datasource.id
             datasource: search_obj.source
+            page: search_obj.page
 
         $http.get "/api/datasource/search/", do
             params: params
@@ -50,6 +95,11 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             $scope.cards = response.data.data
             for card in $scope.cards
                 card.selected = false
+            $scope.results_page.push do
+                cards: $scope.cards
+                page: $scope.page
+                query: $scope.query
+                datasource: $scope.datasource.id
 
     # Initial search results, read the url's query params after the #
     search_obj = $location.search()

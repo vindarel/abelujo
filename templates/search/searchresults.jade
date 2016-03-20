@@ -55,16 +55,21 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
  .row
   .col-md-4
-     input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")
-
-  //- span: a(href="{% url 'card_collection' %}?format=text")
-        input.btn(type="submit", value="{% trans 'see as text' %}", style="float: right;")
+     input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}")
 
  .row
-   .col-md-9
-   .col-md-1
+   .col-md-8
+   .col-md-2
      button.button.btn.btn-default(ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
       i.glyphicon.glyphicon-pushpin
+   .col-md-2
+     nav(style="float: right;")
+          ul.pagination
+            li.active: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
+              span(aria-hidden="true") &laquo;
+            li.active: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
+              span(aria-hidden="true") &raquo;
+
 
  table.table.table-striped(ng-show="cards")
     thead
@@ -72,6 +77,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
       th: input(type="checkbox", ng-click="toggleAll()")
+      th
 
     tbody
       tr(ng-repeat="card in cards")
@@ -95,7 +101,14 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
             div {{ 'pub' | ng }}
         td
           input(type="checkbox", ng-model="card.selected")
+        td
           button.btn.btn-primary(ng-click="create_and_add(card)") {% trans "Buy…" %}
+
+ nav(style="float: right;")
+          ul.pagination
+            li.active: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
+            li.active: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
+              span(aria-hidden="true") &raquo;
 
  script(type="text/ng-template", id="SearchResultsModal.html")
     div.modal-header
