@@ -95,9 +95,14 @@ class Scraper(object):
         """Call before __init__.
         """
         self.SOURCE_NAME = "name"
+        #: Base url of the website
         self.SOURCE_URL_BASE = u"http//url-base"
+        #: Url to which we just have to add url parameters to run the search
         self.SOURCE_URL_SEARCH = u"url-search"
+        #: Advanced search url
         self.SOURCE_URL_ADVANCED_SEARCH = u""
+        #: The url to search for an isbn (can be the advanced or the simple one).
+        self.SOURCE_URL_ISBN_SEARCH = self.SOURCE_URL_SEARCH
         ERR_OUTOFSTOCK = u"product out of stock"
         self.TYPE_BOOK = "book"
         self.TYPE_DVD = "dvd"
@@ -164,6 +169,7 @@ class Scraper(object):
                 q += "&%s=%s" % (k, urlend)
 
             self.url += q
+            self.url += self.URL_END + self.pagination()
 
         else:
 
@@ -178,7 +184,8 @@ class Scraper(object):
                     #xxx we could search for many isbns at once.
                     self.query = isbns[0]
 
-                self.url = self.SOURCE_URL_ADVANCED_SEARCH + self.query
+                self.url = self.SOURCE_URL_ISBN_SEARCH + self.query
+                self.url += self.URL_END # no pagination when isbn
 
             # otherwise search the keywords.
             else:
@@ -192,8 +199,9 @@ class Scraper(object):
                     self.query = "+".join(words)
                     self.url = self.SOURCE_URL_SEARCH + self.query
 
-        log.debug('search url: %s' % self.url)
-        self.url += self.URL_END + self.pagination()
+                self.url += self.URL_END + self.pagination()
+
+        log.info('search url: %s' % self.url)
         self.req = requests.get(self.url)
         self.soup = BeautifulSoup(self.req.content, "lxml")
 

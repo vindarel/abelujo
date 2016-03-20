@@ -49,6 +49,8 @@ class Scraper(baseScraper):
         self.SOURCE_URL_SEARCH = u"http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&LIVREANCIEN=2&MOTS="
         #: advanced url (searcf for isbns)
         self.SOURCE_URL_ADVANCED_SEARCH = u"http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=appro&LIVREANCIEN=2&MOTS="
+        #: the url to search for an isbn.
+        self.SOURCE_URL_ISBN_SEARCH = self.SOURCE_URL_SEARCH
         #: Optional suffix to the search url (may help to filter types, i.e. don't show e-books).
         self.URL_END = u"&x=0&y=0" # search books
         self.TYPE_BOOK = u"book"
