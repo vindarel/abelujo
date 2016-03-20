@@ -89,17 +89,6 @@ SCRAPER_CHOICES = [
  )
 ]
 
-class SearchForm(forms.Form):
-    source = forms.ChoiceField(choices=SCRAPER_CHOICES,
-                                        label=_(u'Data source'),
-                                        # help_text='choose the data source for your query',
-                                        )
-    q = forms.CharField(max_length=100, required=False,
-                        min_length=4,
-                        label=_("Key words, or ean/isbn"),
-                        help_text=_("Part of title, of author's name, or isbn"),
-                    )
-
 def get_places_choices():
     return [(0, _("All"))] + [(it.id, it.name)
                                for it in Place.objects.all()]
@@ -237,29 +226,6 @@ def postSearch(data_source, details_url):
         res = {}
     return res
 
-@login_required
-def index(request):
-    form = SearchForm()
-    page_title = ""
-    data_source = SCRAPER_CHOICES[0][1][0][0]
-    retlist = []
-    if request.method == "POST":
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            if request.POST.has_key("q") and request.POST["q"]:
-                data_source = form.cleaned_data['source']
-                rev_url = get_reverse_url(form.cleaned_data)
-                page_title = "search index"
-                # forward to search?q=query+parameters
-                return HttpResponseRedirect(rev_url)
-
-    return render(request, "search/search_result.jade", {
-            "searchForm": form,
-            "result_list": retlist,
-            "data_source": data_source,
-            "page_title": page_title,
-            })
-
 def _session_result_set(request, key, val):
     """Set request.session['search_result'][key] to val.
 
@@ -270,75 +236,8 @@ def _session_result_set(request, key, val):
 
 @login_required
 def search(request):
-    retlist = []
-    page_title = ""
-    data_source = SCRAPER_CHOICES[0][1][0][0]
-    query = ""
-    # template = "search/search_result.jade"
     template = "search/searchresults.jade"
-
     return render(request, template)
-
-    req = request.GET.copy()
-    if not req.get('data_source'):
-        req['data_source'] = data_source
-    form = SearchForm(req)
-
-    if request.method == 'GET' and form.is_valid():
-        data_source = form.cleaned_data['source']
-        query = form.cleaned_data.get('q')
-        if query:
-            page_title = query[:50]
-            search_terms = [q for q in query.split()]
-
-            retlist, traces = search_on_data_source(data_source, search_terms)
-            if not retlist:
-                messages.add_message(request, messages.INFO, "Sorry, we didn't find anything with '%s'" % (query,))
-                for trace in traces:
-                    messages.add_message(request, messages.INFO, trace)
-
-            # if not request.session.get("search_result"):
-            if not _request_session_get(request, "search_result"):
-                request.session["search_result"] = {}
-            # unidecode: transliteration from unicode to ascii (query will be in url)
-            _session_result_set(request, unidecode(query), retlist)
-            # request.session["search_result"][unidecode(query)] = retlist
-            # This too, otherwise it doesn't stick in session["search_result"].
-            request.session[unidecode(query)] = retlist
-            _session_result_set(request, unidecode(query), retlist)
-        else:
-            # Uncomplete form (specify we need isbn or q).
-            log.error("form not complete")
-
-    else:
-        # POST or form not valid
-        form = SearchForm()
-        query = None
-        # Re-display results of previous search.
-        if "search_result" in request.session:
-            url = request.META['HTTP_REFERER']
-            qparams = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
-            query = qparams.get('q')
-            # Get the last query of this page (case of parallell searches)
-            if query:
-                retlist = request.session["search_result"][qparams['q']]
-
-    return render(request, template, {
-        "searchForm": form,
-        "addForm": AddForm(),
-        "result_list": retlist,
-        "data_source": data_source,
-        "page_title": page_title,
-        "q": query,
-    })
-
-def _request_session_get(request, key):
-    """Gets the session's key.
-
-    A function is needed to mock this call in unit tests (Django
-    doesn't provide anything to use the session in tests).
-    """
-    return request.session.get(key)
 
 @login_required
 def card_show(request, pk):
@@ -365,85 +264,6 @@ def card_show(request, pk):
         "total_sold": total_sold,
         })
 
-
-@login_required
-def add(request):
-    """Add the requested Card to the DB.
-
-    Before adding it, we need to get the last information about the
-    Card, the ones we couldn't get at the first scraping. We call the
-    `postSearch` method of the scraper module. Sometimes it is the
-    only way to get the isbn (with only two http requests).
-
-    The list of cards is stored in the session. The template only returns the list's indice.
-
-    """
-    card = {}
-    resp_status = 200
-    cur_search_result = _request_session_get(request, "search_result")
-    req = request.POST.copy()
-    form = AddForm(req)
-
-    if not form.is_valid():
-        resp_status = 400
-        log.error("Addform isn't valid.")
-        return HttpResponse(status=resp_status)
-
-    else:
-        # Get the last search results of the session:
-        cur_search_result = _request_session_get(request, "search_result")
-        # Get the results of the corresponding search.
-        if req.get('q'):
-            cur_search_result = cur_search_result.get(unidecode(req.get('q')))
-        elif req.get('isbn'):
-            cur_search_result = cur_search_result.get(req.get('isbn'))
-        else:
-            # The "q" should be following along, hidden in template or as url param.
-            cur_search_result = cur_search_result.get(cur_search_result.keys()[-1])
-        if not cur_search_result:
-            log.debug("Error: the session has no search_result.")
-
-        card = cur_search_result[form.cleaned_data["forloop_counter0"]]
-        data_source = card["data_source"]
-
-        # Call the postSearch method of the datasource module.
-        if not card.get('isbn') and not card.get('isbn'):
-            if not data_source:
-                log.debug("Error: the data source is unknown.")
-                resp_status = 500
-                # XXX return an error page
-            else:
-                # fire a new http request to get the isbn (or other missing informations):
-                card = postSearch(data_source, card)
-                if not card.get("isbn"):
-                    log.warning("warning: postSearch couldnt get the isbn.")
-
-        try:
-            # Create the card. No quantity yet.
-            card["distributor"] = form.cleaned_data.get("distributor")
-            card_obj, msgs = Card.from_dict(card)
-            for msg in msgs:
-                messages.add_message(request, messages.INFO, msg)
-
-            messages.add_message(request, messages.SUCCESS, u'"{}" has been added succesfully.'.format(card.get('title'),))
-
-        except Exception, e:
-            messages.add_message(request, messages.ERROR, u'"{}" could not be registered.'.format(card.get('title'),))
-            log.error("Error when trying to add card: {}".format(e))
-            log.error(traceback.format_exc())
-            resp_status = 500
-
-        # the card_move view is used by two other views. Go back to the right one.
-        request.session["back_to"] = reverse("card_search")
-        # url = reverse("card_edit", args=(card_obj.id,))
-        url = reverse("card_create", args=(card_obj.id,))
-        # Doesn't Django have an automatic way, really ?
-        # see also our get_reverse_url(qparams, url=)
-        # unidecode: transliterate unicode to ascii (unicode protection).
-        qparams = {"q": unidecode(req.get('q')),}
-        url = url + "?" + urllib.urlencode(qparams)
-
-        return HttpResponseRedirect(url)
 
 class CardMoveForm(forms.Form):
     """We want to create a field for each Place and Basket object
