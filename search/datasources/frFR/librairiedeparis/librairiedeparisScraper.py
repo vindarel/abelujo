@@ -56,12 +56,31 @@ class Scraper(baseScraper):
         self.ISBN_QPARAM = u""
         #: Query param to search for the publisher (editeur)
         self.PUBLISHER_QPARAM = u"EDITEUR"
+        #: Number of results to display
+        self.NBR_RESULTS_QPARAM = u"NOMBRE"
+        self.NBR_RESULTS = 24 # 12 by default
 
     def __init__(self, *args, **kwargs):
         """
         """
         self.set_constants()
         super(Scraper, self).__init__(*args, **kwargs)
+
+    def pagination(self):
+        """Format the url part to grab the right page.
+
+        Return: a str, the necessary url part to add at the end.
+        """
+        page_qparam = u""
+        if type(self.page) in [type(u"u"), type("str")]:
+            self.page = int(self.page)
+        if self.NBR_RESULTS and self.NBR_RESULTS_QPARAM:
+            page_qparam = u"&{}={}&{}={}".format(self.NBR_RESULTS_QPARAM,
+                                                 self.NBR_RESULTS,
+                                                 "DEBUT",
+                                                 self.NBR_RESULTS * self.page)
+
+        return page_qparam
 
     def _product_list(self):
         # The table doesn't have its css classes 'even' and 'odd' yet.
