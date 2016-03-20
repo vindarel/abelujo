@@ -33,9 +33,7 @@ urlpatterns = patterns('',
 
     # url(r'^$', RedirectView.as_view(url='search/')),
     url(r'^$', 'search.views.dashboard', name="dashboard"),
-    url(r'^search/$', 'search.views.index', name="card_index"),
-    url(r'^search$', 'search.views.search', name="card_search"),
-    url(r'^search', 'search.views.search'),
+    url(r'^search/?$', 'search.views.search', name="card_search"),
 
     url(r'^stock/card/(?P<pk>\d+)/?$', 'search.views.card_show',
         name="card_show"),
