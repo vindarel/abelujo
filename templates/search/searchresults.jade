@@ -52,10 +52,12 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
 
-
  .row
-  .col-md-4
+  .col-md-8
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}")
+     span  {% trans "or" %}: 
+     a(href="{% url 'card_edit' %}") {% trans "Add a card manually" %}
+
 
  .row
    .col-md-8
