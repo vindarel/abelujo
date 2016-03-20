@@ -39,8 +39,7 @@ log = logging.getLogger(__name__)
 
 # To search objects and send them as json:
 # - call the search method of the model
-# - use django's serializer or manually transform the
-#   objects to a list and to json.
+# - serialize the result to a list and to json manually, not with django's serializer.
 # With serializer, the access to the dict properties is deeper (inside object.fields),
 # so it makes it not straightforward with js widgets, like ui-select.
 
@@ -49,7 +48,8 @@ def datasource_search(request, **response_kwargs):
     """
     query = request.GET.get('query')
     datasource = request.GET.get('datasource')
-    res, traces = search_on_data_source(datasource, query)
+    page = request.GET.get('page', 1)
+    res, traces = search_on_data_source(datasource, query, PAGE=page)
     data = {"data": res,
             "alerts": traces,
             "status": 200,}

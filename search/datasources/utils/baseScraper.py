@@ -109,6 +109,10 @@ class Scraper(object):
         self.ISBN_QPARAM = ""
         #: Query parameter to filter on the publisher
         self.PUBLISHER_QPARAM = ""
+        #: Number of results to display
+        self.NBR_RESULTS_QPARAM = u""
+        self.NBR_RESULTS = 24 # 12 by default
+
 
     def __init__(self, *args, **kwargs):
         """Constructs the query url with the given parameters, retrieves the
@@ -124,6 +128,7 @@ class Scraper(object):
 
         """
 
+        self.page = 1
         isbns = []
         if not args and not kwargs:
             print 'Error: give args to the query'
@@ -140,10 +145,18 @@ class Scraper(object):
         # Get the search keywords without isbns
         words = list(set(args) - set(isbns))
 
+        # Pagination
+        if 'PAGE' in kwargs:
+            self.page = kwargs.pop('PAGE')
+            if not self.page:
+                self.page = 1
+
         if kwargs:
             if 'isbn' in kwargs:
                 kwargs[self.ISBN_QPARAM] = kwargs['isbn']
                 kwargs.pop('isbn')
+
+            # Build url with the remaining query parameters.
             self.url = self.SOURCE_URL_SEARCH  # ready to add query+args+parameters
             q = ""
             for k, v in kwargs.iteritems():
@@ -180,10 +193,17 @@ class Scraper(object):
                     self.url = self.SOURCE_URL_SEARCH + self.query
 
         log.debug('search url: %s' % self.url)
-        self.url += self.URL_END
+        self.url += self.URL_END + self.pagination()
         self.req = requests.get(self.url)
         self.soup = BeautifulSoup(self.req.content, "lxml")
-        #TODO: to be continued
+
+    def pagination(self):
+        """Format the url part to grab the right page.
+
+        Return: a str, the necessary url part to add at the end.
+        """
+        page_qparam = u""
+        return page_qparam
 
     def _product_list(self):
         """The css class that every block of book has in common.

@@ -204,7 +204,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     rev_url = reverse(url_name) + "?" + params
     return rev_url
 
-def search_on_data_source(data_source, search_terms):
+def search_on_data_source(data_source, search_terms, PAGE=1):
     """search with the appropriate scraper.
 
     data_source is the name of an imported module.
@@ -217,7 +217,7 @@ def search_on_data_source(data_source, search_terms):
     # They all must have a class Scraper.
     scraper = getattr(globals()[data_source], "Scraper")
     # res, traces = scraper(*search_terms).search()
-    res, traces = scraper(search_terms).search()
+    res, traces = scraper(search_terms, PAGE=PAGE).search()
     return res, traces
 
 def postSearch(data_source, details_url):
