@@ -108,7 +108,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             alert gettext "This basket has no copies to command !"
             return
 
-        sure = confirm gettext("Do you want to mark the cards of the basket '#{$scope.cur_basket.name}' to command ?")
+        sure = confirm gettext("Do you want to mark all the cards of this list to command ?")
         if sure
             to_add = $scope.cur_basket.copies
             |> map (.id)
@@ -119,7 +119,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $http.post "/api/baskets/#{COMMAND_BASKET_ID}/add/", params
             .then (response) !->
                 $scope.alerts = response.data.msgs
-                alert gettext "The cards were successfully added to the Command list."
 
 
     $scope.remove_from_selection = (index_to_rm) !->

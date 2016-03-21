@@ -24,9 +24,9 @@
 
 {% load ngfilter %}
 
-div(ng-controller="basketsController")
+div(ng-cloak, ng-controller="basketsController")
  div
-    alert(
+    uib-alert(
       ng-repeat="alert in alerts"
       type="{{ 'alert.level' | ng }}"
       close="closeAlert($item)"

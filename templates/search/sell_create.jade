@@ -27,7 +27,7 @@ h3 {% trans "Selling cards" %}
 div.ng-cloak(ng-controller="sellController")
 
   div
-    alert(
+    uib-alert(
       ng-repeat="alert in alerts"
       type="{{ 'alert.level' | ng }}"
       close="closeAlert($item)"
