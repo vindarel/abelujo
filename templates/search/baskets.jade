@@ -67,8 +67,26 @@ div(ng-controller="basketsController")
        //- li: a(href="#", ng-click="export_csv('complete')") csv ({% trans "complete: with titles and more" %})
        //- li: a(href="#") pdf (without barcodes)
 
-   .col-md-6
+   .col-md-4
      h4   {{ 'cur_basket.name' |ng}}
+
+   .col-md-6
+          p.input-group
+            input.nullable.form-control(
+              type='text'
+              typeahead-loading="loadingCards"
+              ng-model='copy_selected'
+              uib-typeahead='copy.repr for copy in getCards($viewValue)'
+              typeahead-min-length="3"
+              typeahead-on-select="add_selected_card($item)"
+              title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
+              id="default-input"
+            )
+            i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
+
+            span.input-group-btn
+              button.btn.btn-default(type='button')
+                i.glyphicon.glyphicon-refresh
 
    table.table.table-condensed.table-striped
      thead

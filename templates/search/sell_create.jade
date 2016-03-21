@@ -55,7 +55,7 @@ div.ng-cloak(ng-controller="sellController")
 
         .col-md-9
           p.input-group
-            label.sr-only Payment
+            label.sr-only {% trans "Payment" %}
             select.form-control(
               ng-model="payment"
               ng-options="elt.name for elt in payment_means"
@@ -65,7 +65,7 @@ div.ng-cloak(ng-controller="sellController")
       .row
         .col-md-3
             span.input-group-btn
-              label.sr-only Card type
+              label.sr-only {% trans "Card type" %}
               select.form-control(
                 ng-model="card_type"
                 ng-options="elt.name group by elt.group for elt in card_types"

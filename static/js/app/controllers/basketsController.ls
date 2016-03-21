@@ -16,7 +16,7 @@
 
 angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils) !->
 
-    {Obj, join, reject, sum, map, filter, lines} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines} = require 'prelude-ls'
 
     $scope.baskets = []
     $scope.copies = []
@@ -24,6 +24,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.show_buttons = {}
     $scope.new_name = null
     $scope.cur_basket = 0
+    $scope.cards_fetched = [] # fetched from the autocomplete
+    $scope.copy_selected = undefined
 
     $scope.language = utils.url_language($window.location.pathname)
 
@@ -56,6 +58,48 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
+    $scope.getCards = (term) ->
+        params = do
+            query: term
+            # card_type_id: book only ?
+        $http.get "/api/cards/", do
+            params: params
+        .then (response) ->
+            map !->
+              repr = "#{it.title}, #{it.authors_repr}, " + gettext("éd.") + " " + it.pubs_repr
+              it.basket_qty = 1
+              $scope.cards_fetched.push do
+                  repr: repr
+                  id: it.id
+                  item: it
+              return do
+                repr: repr
+                id: it.id
+            , response.data
+            return $scope.cards_fetched # useful ?
+
+    $scope.add_selected_card = (card_repr) !->
+        """ Add the card selected from the autocomplete to the current list's copies.
+        Save it.
+        """
+        tmpcard = $scope.cards_fetched
+        |> find (.repr == card_repr.repr)
+        tmpcard = tmpcard.item
+        $scope.copies.push tmpcard
+        $scope.copy_selected = undefined
+        # TODO: save
+        $scope.save_card_to_basket tmpcard.id, $scope.cur_basket.id
+
+    $scope.save_card_to_basket = (card_id, basket_id) !->
+        coma_sep = "#{card_id}"
+        params = do
+            card_ids: coma_sep
+        $http.post "/api/baskets/#{basket_id}/add/", params
+        .then (response) !->
+            $scope.alerts = response.data.msgs
+        , (response) !->
+            ... # error
+
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.
         """
@@ -86,7 +130,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $http.post "/api/baskets/#{$scope.cur_basket.id}/add/", params
             .then (response) !->
                 $scope.alerts = response.data.msgs
-                alert "KO"
+                alert gettext "The cards were successfully added to the Command list."
 
 
     $scope.remove_from_selection = (index_to_rm) !->
@@ -177,6 +221,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         , !->
               $log.info "modal dismissed"
 
+    angular.element('#default-input').trigger('focus');
 
 ]
 

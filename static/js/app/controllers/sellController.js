@@ -49,6 +49,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
           });
 
+      // Fetch cards for the autocomplete.
+      // Livescript version: see basketsController.ls
       $scope.getCards = function(val){
           return $http.get("/api/cards", {
               params: {
