@@ -451,11 +451,6 @@ def basket(request, pk, action="", card_id="", **kwargs):
         to_ret['status'] = False
         return HttpResponse(json.dumps(to_ret), **kwargs) # return error message
 
-    # json request
-    # xxx: when the client uses utils.transformRequestAsFormPost, we get params in request.POST,
-    # If not, they are in request.body => use this more !
-    req = json.loads(request.body)
-
     if request.method == "GET":
         data = basket.copies.all()
         ret = [it.to_dict() for it in data]
@@ -463,10 +458,15 @@ def basket(request, pk, action="", card_id="", **kwargs):
         return HttpResponse(ret, **kwargs)
 
     elif request.method == 'POST':
+        # json request
+        req = {}
+        if request.body:
+            # 'remove' doesn't use this.
+            req = json.loads(request.body)
         # Add cards from ids (from the Collection view)
-        if action and action == "add" and (request.POST.get("card_ids") or req.get('card_ids')):
+        if action and action == "add" and req.get('card_ids'):
             msgs = []
-            ids = request.POST.get("card_ids") or req.get('card_ids')
+            ids = req.get('card_ids')
             id_list = list_from_coma_separated_ints(ids)
 
             try:

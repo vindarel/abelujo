@@ -26,6 +26,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.cur_basket = 0
     $scope.cards_fetched = [] # fetched from the autocomplete
     $scope.copy_selected = undefined
+    COMMAND_BASKET_ID = 1
 
     $scope.language = utils.url_language($window.location.pathname)
 
@@ -113,21 +114,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             |> map (.id)
 
             coma_sep = join ",", to_add # TODO custom quantities
-            alert to_add
-
-            #  This is needed for Django to process the params to its
-            #  request.POST dictionnary:
-            $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-
-            #  We need not to pass the parameters encoded as json to Django.
-            #  Encode them like url parameters.
-            $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
-            config = do
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-
             params = do
-                card_ids = coma_sep
-            $http.post "/api/baskets/#{$scope.cur_basket.id}/add/", params
+                card_ids: coma_sep
+            $http.post "/api/baskets/#{COMMAND_BASKET_ID}/add/", params
             .then (response) !->
                 $scope.alerts = response.data.msgs
                 alert gettext "The cards were successfully added to the Command list."
