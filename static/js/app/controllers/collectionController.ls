@@ -14,6 +14,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.category = null
     $scope.publisher = null
     $scope.baskets = []
+    $scope.show_images = true
 
     $scope.selectAll = true
     $scope.selected = {}
@@ -85,6 +86,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
+    $scope.toggle_images = !->
+        $scope.show_images = not $scope.show_images
 
     # This is needed for Django to process the params to its
     # request.POST dictionnary:
