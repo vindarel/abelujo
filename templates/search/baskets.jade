@@ -88,18 +88,24 @@ div(ng-cloak, ng-controller="basketsController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-refresh
 
+   .row
+     .col-md-6
+     .col-md-2 {% trans "Number of copies" %}: {{ 'get_total_copies()'|ng}}
+     .col-md-2 {% trans "total" %}: {{ 'get_total_price()'|ng}} €
    table.table.table-condensed.table-striped
      thead
        th {% trans "Title" %}
        th {% trans "In stock" %}
+       th {% trans "Price" %}
        th
      tbody
        tr(ng-repeat="it in copies", ng-mouseenter="show_buttons[$index] = true", ng-mouseleave="show_buttons[$index] = false")
          td: a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
          td {{ 'it.quantity' | ng}}
+         td {{ 'it.price' | ng }} €
          td
           input.my-number-input(type="number", min=0, max=99, ng-model="it.basket_qty")
-         td: i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="padding-left: 1em;", title='{% trans "Remove from basket" %}', ng-show="show_buttons[$index]")
+         td: i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="padding-left: 1em;", title='{% trans "Remove from basket" %}', ng-show="true || show_buttons[$index]")
 
  script(type="text/ng-template", id="basketModal.html")
     div.modal-header

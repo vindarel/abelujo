@@ -140,6 +140,12 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         |> map (.id)
         |> join ","
 
+    $scope.get_total_price = ->
+        sum(map ( -> it.price * it.basket_qty), $scope.copies).toFixed 2 # round a float
+
+    $scope.get_total_copies = ->
+        sum(map (.basket_qty), $scope.copies)
+
     $scope.export_csv = (layout) !->
         """Export the selected cards of the current list to csv.
         Server call to generate it.
