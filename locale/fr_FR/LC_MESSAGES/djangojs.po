@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-09 17:32+0100\n"
+"POT-Creation-Date: 2016-03-25 16:16+0100\n"
 "PO-Revision-Date: 2016-03-09 17:37+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,7 +110,7 @@ msgstr "cadeau"
 msgid "other"
 msgstr "autre"
 
-#: static/js/app/controllers/sellController.js:219
+#: static/js/app/controllers/sellController.js:221
 msgid "Sell"
 msgstr "Vente"
 
