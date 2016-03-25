@@ -158,7 +158,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         params = do
             # ids and quantities separated by comas
             "ids_qties": join ",", ids_qties
-            "format": "csv"
             "layout": layout
             "list_name": $scope.cur_basket.name
 
@@ -186,6 +185,17 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $scope.alerts = $scope.alerts.concat do
                 level: "error"
                 message: gettext "We couldn't produce the file, there were an internal error. Sorry !"
+
+    $scope.receive_command = !->
+        # Get or create the inventory, redirect to that inventory page
+        $http.get "/api/baskets/#{$scope.cur_basket.id}/inventories/"
+        .then (response) !->
+            inv_id = response.data.data['inv_id']
+            # What url scheme ? We want to include the inv id to re-use the inventory controller.
+            # baskets/<basket_id>/inventory/<inv id>/, or
+            #  /inventories/<inv id>
+            # $window.location.href = "/#{$scope.language}/baskets/#{$scope.cur_basket.id}/receive/"
+            $window.location.href = "/#{$scope.language}/inventories/#{inv_id}/"
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do

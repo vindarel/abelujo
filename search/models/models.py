@@ -2359,12 +2359,22 @@ class Inventory(TimeStampedModel):
         """
         copies = [it.to_dict() for it in self.inventorycards_set.all()]
         total = len(copies)
-        missing = self.place.placecopies_set.count() - total
+        place_dict, basket_dict = ({}, {})
+        if self.place:
+            missing = self.place.placecopies_set.count() - total
+            place_dict = self.place.to_dict()
+        elif self.basket:
+            missing = self.basket.basketcopies_set.count() - total
+            basket_dict = self.basket.to_dict()
+        else:
+            log.error("An inventory state without a place nor a basket ? That shouldn't happen !")
+
         ret = {
             "copies": copies,
             "total_copies": total,
             "total_missing": missing,
-            "place": self.place.to_dict(),
+            "place": place_dict,
+            "basket": basket_dict,
         }
 
         return ret
@@ -2391,7 +2401,17 @@ class Inventory(TimeStampedModel):
 
         """
         inv_cards_set = self.inventorycards_set.all()
-        stock_cards_set = self.place.placecopies_set.all()
+        obj_name = ""
+        if self.place:
+            stock_cards_set = self.place.placecopies_set.all()
+            obj_name = self.place.name
+        elif self.basket:
+            stock_cards_set = self.basket.basketcopies_set.all()
+            obj_name = self.basket.name
+        else:
+            log.error("An inventory without place nor basket… that shouldn't happen.")
+
+        # Cards of the inventory and of the stock/reference:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
         d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
 
@@ -2406,20 +2426,39 @@ class Inventory(TimeStampedModel):
         # Difference of quantities:
         d_diff = {} # its quantity is: "how many the inventory has more or less compared with the stock"
         for id, val in d_inv.iteritems():
+            d_diff[id] = {}
+            d_diff[id]['in_orig'] = True # i.e. in place/basket of origin, we get the diff from
+            d_diff[id]['in_inv'] = True
+            d_diff[id]['inv'] = val['quantity']
+            d_diff[id]['card'] = val['card']
             if d_stock.get(id):
                 if val['quantity'] != d_stock[id]['quantity']:
-                    d_diff[id] = {'card': val['card'],
-                                  'diff': val['quantity'] - d_stock[id]['quantity'],
-                                  'stock': d_stock[id]['quantity'],
-                                  'inv': val['quantity']}
+                    d_diff[id]['diff'] = val['quantity'] - d_stock[id]['quantity']
+                    d_diff[id]['stock'] = d_stock[id]['quantity']
+                    d_stock[id]['inv'] = val['quantity']
+
+            else:
+                d_diff[id]['in_orig'] = False
+                d_diff[id]['stock'] = None
+                d_diff[id]['diff'] = d_inv[id]['quantity']
+
+        # Add the cards in the inv but not in the origin
+        for id, val in d_stock.iteritems():
+            if not d_inv.get(id):
+                d_diff[id] = {'in_inv': False,
+                              'in_orig': True,
+                              'card': val['card'],
+                              'stock': val['quantity'],
+                              'inv': None,
+                              }
+        # we must have all cards in d_dif and all info.
+
 
         if to_dict:
             # Update each sub-dict in place, to replace the card obj with its to_dict.
-            in_stock = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in in_stock.iteritems()}
-            in_inv = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in in_inv.iteritems()}
             d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
 
-        return in_stock, in_inv, d_diff
+        return d_diff, obj_name
 
     def add_pairs(self, pairs, add=False):
         """Save the given copies.

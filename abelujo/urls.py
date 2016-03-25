@@ -50,10 +50,15 @@ apipatterns = patterns("",
 
     url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
     url(r'^api/baskets/create', 'search.models.api.baskets_create', name="api_baskets_create"),
-    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"), #action: add, remove
-    url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
     url(r'^api/baskets/(?P<pk>\d+)/copies', 'search.models.api.baskets', name="api_basket_copies"),
     url(r'^api/baskets/?$', 'search.models.api.baskets', name="api_baskets"),
+    # Inventories of baskets
+    url(r'^api/baskets/(?P<pk>\d+)/inventories/?$',
+        'search.models.api.baskets_inventory_get_or_create', name="api_baskets_inventories"),
+    # Add or remove card(s)
+    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"), #action: add, remove
+    # Simple info
+    url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
 
     url(r'^api/distributors', 'search.models.api.distributors', name="api_distributors"),
     url(r'^api/publishers/?$', 'search.models.api.publishers', name="api_publishers"),
@@ -67,17 +72,13 @@ apipatterns = patterns("",
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),
     url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),
     url(r'^api/places/?$', 'search.models.api.places', name="api_places"),
-    url(r'^api/inventories/create$', 'search.models.api.inventories', name="api_inventories"),
+    url(r'^api/inventories/create/?$', 'search.models.api.inventories', name="api_inventories"),
     url(r'^api/inventories/(?P<pk>\d+)/update/', 'search.models.api.inventories_update', name="api_inventories_update"),
     url(r'^api/inventories/(?P<pk>\d+)/diff/', 'search.models.api.inventory_diff', name="api_inventories_diff"),
     url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
 
     url(r'^api/stats/sells/month', 'search.models.api.stats_sells_month', name='api_stats_sells_month'),
     url(r'^api/stats/', 'search.models.api.stats', name='api_stats'),
-
-    # Examples:
-    # url(r'^$', 'abelujo.views.home', name='home'),
-    # url(r'^abelujo/', include('abelujo.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

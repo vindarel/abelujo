@@ -23,37 +23,36 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "Terminate this inventory" %}
-div {% trans "Here you can compare the inventory with the real stock, and take actions." %}
-em {% trans "Coming soon:" %}
 div(ng-controller="inventoryTerminateController")
 
-  h4 {% trans "The following cards appear only in the stock" %}
-  table.table.table-condensed.table-striped.table-hover(datatable='ng')
-    thead
-      th {% trans "Title" %}
-      th {% trans "Quantity" %}
-    tbody
-      tr(ng-repeat="(id, data) in in_stock")
-        td {{ 'data.card.title'|ng}}
-        td {{ 'data.quantity'|ng}}
+  h3 {% trans "Terminate the inventory of" %} {{ 'name' | ng}}
+  div.panel.panel-info
+    div.panel-heading {% trans "Help" %}
+    div.panel-body {% trans "Here you can compare the inventory with the real stock, and take actions, like exporting a bill in pdf or update the stock." %}
 
-  h4 {% trans "The following cards appear only in the inventory" %}
-  table(datatable='ng')
-    thead
-      th {% trans "Title" %}
-    tbody
-      tr(ng-repeat="(id, data) in in_inv")
-        td {{ 'data.card.title'|ng}}
+  div.panel.panel-warning
+    div.panel-heading {% trans "Coming soon:" %}
 
-   h4 {% trans "The following appear in both, but have a difference of quantity" %}
+  .row
+   .col-md-1
+     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
+       i.glyphicon.glyphicon-cog
+       span.caret
+     ul.dropdown-menu
+       li: a(href="#", ng-click="export_bill()", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}
+
+  .row
    table.table.table-condensed.table-striped.table-hover(datatable='ng')
      thead
        th {% trans "Title" %}
-       th {% trans "Quantity" %}
+       th {% trans "Qty inventory" %}
+       th {% trans "Qty origin" %}
+       th {% trans "Difference" %}
      tbody
       tr(ng-repeat="(id, data) in diff")
         td {{ 'data.card.title'|ng }}
+        td {{ 'data.inv' | ng}}
+        td {{ 'data.stock' | ng}}
         td {{ 'data.diff' |ng }}
 
    button.btn.btn-primary(ng-click='validate()') {% trans "Validate" %}

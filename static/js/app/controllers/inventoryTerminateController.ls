@@ -4,7 +4,7 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines} = require 'prelude-ls'
+    {sum, map, filter, lines, join, Obj} = require 'prelude-ls'
 
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
@@ -19,6 +19,7 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     # Boolean to show or hide all the cards (hide by default)
     $scope.showAll = false  # toggled by the checkbox itself.
     $scope.cards_to_show = []
+    $scope.name #name of place or basket
 
     $scope.tmpcard = undefined
     # A list of already selected cards' ids
@@ -33,18 +34,32 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $http.get "/api/inventories/#{$scope.inv_id}/diff/"
     .then (response) !->
         # $scope.alerts = response.data.msgs
-        $scope.diff = response.data.diff
-        $scope.in_stock = response.data.in_stock
-        $scope.in_inv = response.data.in_inv
+        $scope.diff = response.data.cards
+        $scope.name = response.data.name
 
     $scope.validate = !->
         alert gettext "Coming soon !"
+
+    $scope.export_bill = !->
+        # The filtering logic of what to pay should be done on the server !
+        sold_obj = $scope.diff
+        |> Obj.filter (.diff < 0 ) # gives a new object: id -> value
+        ids_qties = []
+        Obj.map ->
+            diff = 0 - it.diff
+            ids_qties.push "#{it.card.id}, #{diff}"
+        , sold_obj
+        ids_qties = join ",", ids_qties
+
+        alerts = utils.export_to ids_qties, "pdf", $scope.name + "-" + gettext("bill"), $scope.language
+        if alerts
+            $scope.alerts.concat alerts
 
     # Set focus:
     focus = !->
         angular.element('#default-input').trigger('focus');
     focus()
 
-    $window.document.title = "Abelujo - " + gettext("Terminate inventory")
+    $window.document.title = "Abelujo - " + gettext("Terminate inventory") + "-" + $scope.name
 
 ]

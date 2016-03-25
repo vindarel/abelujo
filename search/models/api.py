@@ -562,6 +562,40 @@ def baskets_create(request, **response_kwargs):
 
         return HttpResponse(json.dumps(to_ret), **response_kwargs)
 
+def baskets_inventory_get_or_create(request, **response_kwargs):
+    """Get the current inventory id and its copies, or create one for the basket pk (in url).
+    """
+    data = {}
+    msgs = []
+    status = True
+    response_kwargs["content_type"] = "application/json"
+    # Get or post ? In most cases it's only a get, and we want to create one if needed. GET prefered.
+    if request.method == 'POST' or request.method == 'GET':
+        pk = response_kwargs.pop('pk')
+        try:
+            existing = Inventory.objects.filter(basket__id=pk)
+            if existing:
+                inv = existing[0]
+                cards = inv.copies.all()
+                cards = [it.to_dict() for it in cards]
+                data['cards'] = cards
+            else:
+                basket = Basket.objects.get(id=pk)
+                inv = Inventory(basket=basket)
+                inv.save()
+
+            data['inv_id'] = inv.id
+
+        except Exception as e:
+            log.error(e)
+            msgs.append({'level': 'error',
+                         'message': _("Internal error, sorry !")})
+
+        to_ret = {"status": status,
+                  "data": data,
+                  "msgs": msgs}
+        to_ret = json.dumps(to_ret)
+        return HttpResponse(to_ret, **response_kwargs)
 
 def alerts(request, **response_kwargs):
     msgs = []
@@ -607,6 +641,10 @@ def places(request, **response_kwargs):
     return HttpResponse(json.dumps(data), **response_kwargs)
 
 def inventories(request, **kwargs):
+    """GET: get the list of inventories of the given place (pk given in url).
+
+    POST: create a new inventory for the given place (place_id in POST params).
+    """
     to_ret = {
         "data": None,
     }
@@ -680,10 +718,9 @@ def inventories_update(request, **kwargs):
 def inventory_diff(request, pk, **kwargs):
     """
     """
-    res = Inventory.diff_inventory(pk, to_dict=True)
-    to_ret = {'in_stock': res[0],
-              'in_inv': res[1],
-              'diff': res[2]}
+    diff, name = Inventory.diff_inventory(pk, to_dict=True)
+    to_ret = {'cards': diff,
+              'name': name}
     return HttpResponse(json.dumps(to_ret), **kwargs)
 
 

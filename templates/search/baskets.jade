@@ -53,6 +53,7 @@ div(ng-cloak, ng-controller="basketsController")
        span.caret
      ul.dropdown-menu
        li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
+       li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
 
    .col-md-1
      button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
