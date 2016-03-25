@@ -725,8 +725,12 @@ def baskets_export(request):
                     if not card.isbn:
                         card.isbn = "0000000000000"
 
+                total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
+                total_qty = sum([it[1] for it in cards_qties])
                 sourceHtml = template.render({'cards_qties': cards_qties,
                                               'list_name': list_name,
+                                              'total': total,
+                                              'total_qty': total_qty,
                                               'date': date})
                 # convert to a pdf file
                 # pisaStatus = pisa.CreatePDF(

@@ -33,11 +33,19 @@ head
         tr
           th
           th {% trans "Title" %}
+          th {% trans "Price" %}
           th {% trans "Quantity" %}
       tbody
         for card in cards_qties
           tr
             td <pdf:barcode value="{{ card.0.isbn }}" type="ean13" humanreadable="1" align="baseline" />
             td {{ card.0.title }}
-            td {{ card.1 }}
+            td(style='{text-align: center;}') {{ card.0.price }} €
+            td(style='{text-align: center;}') {{ card.1 }}
         endfor
+      tfoot
+        tr
+          td
+          td
+          td(style='{text-align: center;}') {{ total }} €
+          td(style='{text-align: center;}') {{ total_qty }}
