@@ -17,11 +17,22 @@
 
 import csv
 import datetime
+import json
 import logging
 import traceback
 import urllib
 import urlparse
 
+from unidecode import unidecode
+
+import datasources.all.discogs.discogsScraper as discogs
+# The datasources imports must have the name as their self.SOURCE_NAME
+import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+import datasources.frFR.decitre.decitreScraper as decitre
+import datasources.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
+import models
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -36,17 +47,6 @@ from django.template.loader import get_template
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-from unidecode import unidecode
-from xhtml2pdf import pisa
-
-import datasources.all.discogs.discogsScraper as discogs
-# The datasources imports must have the name as their self.SOURCE_NAME
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
-import datasources.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
-import datasources.frFR.decitre.decitreScraper as decitre
-import datasources.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
-import models
 from models import Basket
 from models import Bill
 from models import Card
@@ -63,10 +63,11 @@ from models import Sell
 from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
-from search.models.utils import list_to_pairs
 from search.models.utils import list_from_coma_separated_ints
+from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
 from search.models.utils import truncate
+from xhtml2pdf import pisa
 
 log = logging.getLogger(__name__)
 
@@ -683,8 +684,11 @@ def baskets_export(request):
 
     """
 
-    layout = request.POST.get('layout')
-    ids_qties = request.POST.get('ids_qties')
+    params = request.body
+    params = json.loads(params)
+    layout = params.get('layout')
+    ids_qties = params.get('ids_qties')
+    list_name = params.get('list_name')
     tups = list_to_pairs(list_from_coma_separated_ints(ids_qties))
 
     response = HttpResponse()
@@ -711,7 +715,6 @@ def baskets_export(request):
             # How to test that easily ?
             with open("pdfexport.pdf", "w+b") as resultFile:
 
-                list_name = request.POST.get('list_name')
                 date = datetime.date.today()
                 response = HttpResponse(content_type='application/pdf')
                 response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
