@@ -2325,6 +2325,9 @@ class Inventory(TimeStampedModel):
     copies = models.ManyToManyField(Card, through="InventoryCards", blank=True, null=True)
     #: Place we are doing the inventory in.
     place = models.ForeignKey("Place", blank=True, null=True)
+    #: We can also do "inventories" of baskets, meaning we compare it
+    # with a newly received command, or a pack of cards returned.
+    basket = models.ForeignKey("Basket", blank=True, null=True)
 
     def add_copy(self, copy, nb=1, add=True):
         """copy: a Card object.
