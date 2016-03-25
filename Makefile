@@ -53,6 +53,11 @@ update:
 
 update-dev: update pip-dev
 
+# Create migrations and commit them.
+migrations:
+	python manage.py makemigrations
+	git add search/migrations/*.py
+
 migrate:
 	python manage.py migrate
 
