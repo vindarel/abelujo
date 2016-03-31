@@ -2491,14 +2491,14 @@ class Stats(object):
     class Meta:
         app_label = "search"
 
-    def stock(self, to_json=True):
+    def stock(self, to_json=False):
         """Simple figures about our stock:
         - how many cards
         - how many exemplaries
         - cost of the stock
         - idem for stock in deposits
 
-        return: json by default, or a dict if to_json is set to False.
+        return: a dict by default, a json if to_json is set to True.
 
         Everything below needs unit tests.
         """

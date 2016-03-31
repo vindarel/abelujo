@@ -9,6 +9,7 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.utils.translation import ugettext as _
 from models import Alert
 from models import Author
@@ -27,11 +28,11 @@ from models import getHistory
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
+from search.views import postSearch
+from search.views import search_on_data_source
 
-from search.views import search_on_data_source, postSearch
-
-from .utils import list_to_pairs
 from .utils import list_from_coma_separated_ints
+from .utils import list_to_pairs
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -43,8 +44,15 @@ log = logging.getLogger(__name__)
 # With serializer, the access to the dict properties is deeper (inside object.fields),
 # so it makes it not straightforward with js widgets, like ui-select.
 
+# This file needs more uniformisation. Some methods return a dict with
+# 'data', 'alerts' and 'msgs', some just a list. Everything should be
+# in a dict (good practive influenced by the JsonResponse that likes a
+# dict better).
+
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
+
+    - return: a JsonResponse with data, alerts, and status.
     """
     query = request.GET.get('query')
     datasource = request.GET.get('datasource')
@@ -53,8 +61,7 @@ def datasource_search(request, **response_kwargs):
     data = {"data": res,
             "alerts": traces,
             "status": 200,}
-    response_kwargs['content_type'] = 'application/json'
-    return HttpResponse(json.dumps(data), **response_kwargs)
+    return JsonResponse(data, safe=False)
 
 def cards(request, **response_kwargs):
     """search for cards in the stock with the given query, or return all of them (with
@@ -67,14 +74,12 @@ def cards(request, **response_kwargs):
     distributor = request.GET.get("distributor")
     card_type_id = request.GET.get("card_type_id")
     publisher_id = request.GET.get("publisher_id")
-    # data = serializers.serialize("json", Card.search(query))
     data = Card.search(query, to_list=True,
                        distributor=distributor,
                        publisher_id=publisher_id,
                        card_type_id=card_type_id)
     log.info(u"we have json distributors: ", data)
-    response_kwargs['content_type'] = 'application/json'
-    return HttpResponse(json.dumps(data), **response_kwargs)
+    return JsonResponse(data, safe=False)
 
 def card(request, **kwargs):
     """Get a card by id.
@@ -96,9 +101,7 @@ def card(request, **kwargs):
             msgs.append({"message": msg, "level": ALERT_ERROR})
 
     ret["alerts"] = msgs
-    ret = json.dumps(ret)
-    kwargs['content_type'] = "application/json"
-    return HttpResponse(ret, **kwargs)
+    return JsonResponse(ret)
 
 def card_create(request, **response_kwargs):
     """Create a card with either request params or json in request.body
@@ -107,7 +110,6 @@ def card_create(request, **response_kwargs):
     """
     if request.method == "POST":
         params = request.POST.copy()
-        response_kwargs["content_type"] = "application/json"
         status = httplib.OK
         alerts = []
 
@@ -145,7 +147,7 @@ def card_create(request, **response_kwargs):
 
             msgs = {"status": status, "alerts": alerts, "card_id": card_obj.id}
             if card_obj:
-                return HttpResponse(json.dumps(msgs), **response_kwargs)
+                return JsonResponse(msgs)
 
         except Exception as e:
             log.error("Error adding a card: {}".format(e))
@@ -153,7 +155,7 @@ def card_create(request, **response_kwargs):
                            "message":_("Woops, we can not create this card. This is a bug !")})
 
 
-        return HttpResponse(json.dumps(msgs), **response_kwargs)
+        return JsonResponse(msgs)
 
     else:
         log.error("creating a card should be done with POST.")
@@ -166,7 +168,6 @@ def card_add(request, **response_kwargs):
     """
     if request.method == "POST":
         params = request.POST.copy()
-        response_kwargs["content_type"] = "application/json"
         status = httplib.OK
         alerts = []
         data = []
@@ -206,7 +207,7 @@ def card_add(request, **response_kwargs):
             card_obj.category = cat
             card_obj.save()
 
-        return HttpResponse(json.dumps(status), **response_kwargs)
+        return JsonResponse(status, safe=False)
 
 def cardtype(request, **response_kwargs):
     if request.method == "GET":
@@ -241,8 +242,7 @@ def distributors(request, **response_kwargs):
             data = Distributor.objects.all()
             data = [it.to_list() for it in data]
         data = json.dumps(data)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
+        return JsonResponse(data, safe=False)
 
 def publishers(request, **response_kwargs):
     if request.method == "GET":
@@ -277,7 +277,6 @@ def deposits(request, **response_kwargs):
     {level: int, messages: str}
     """
     msgs = {"status": httplib.OK, "messages": []}
-    response_kwargs['content_type'] = 'application/json'
 
     if request.method == "POST":
         params = request.POST.copy()
@@ -314,7 +313,7 @@ def deposits(request, **response_kwargs):
         msgs = {"status": status,
                 "alerts": depo_msgs}
 
-        return HttpResponse(json.dumps(msgs), **response_kwargs)
+        return JsonResponse(msgs)
 
     # GET
     else:
@@ -324,21 +323,20 @@ def deposits(request, **response_kwargs):
                "msgs": msgs,
                "status": httplib.OK,
                }
-        return HttpResponse(json.dumps(res), **response_kwargs)
+        return JsonResponse(res)
 
 def deposits_due_dates(request, **response_kwargs):
     """Get which deposits are to be paid in a (near) future.
     """
+    depos = {}
     if request.method == 'GET':
-        response_kwargs["content_type"] = "application/json"
 
         try:
             depos = Deposit.next_due_dates(to_list=True)
         except Exception as e:
             log.error(e)
 
-        res = json.dumps(depos)
-        return HttpResponse(res, **response_kwargs)
+        return JsonResponse(depos, safe=False)
 
 def sell(request, **response_kwargs):
 
@@ -358,7 +356,6 @@ def sell(request, **response_kwargs):
         #TODO: data validation
         if params.get("to_sell") == "null":
             pass #TODO: return and display an error.
-        response_kwargs["content_type"] = "application/json"
         to_sell = list_from_coma_separated_ints(params.get("to_sell"))
         to_sell = getSellDict(to_sell)
         date = params.get("date")
@@ -370,13 +367,13 @@ def sell(request, **response_kwargs):
             log.error(u"api/sell error: {}".format(e))
             alerts.append({"level": "error",
                            "message": e})
-            return HttpResponse(json.dumps(alerts), **response_kwargs)
+            return JsonResponse(alerts, safe=False)
 
         if not alerts:
             alerts = success_msg
         to_ret = {"status": status,
                   "alerts": alerts}
-        return HttpResponse(json.dumps(to_ret), **response_kwargs)
+        return JsonResponse(to_ret)
 
     elif request.method == "GET":
         log.error("Calling /api/sell with GET instead of POST.")
@@ -387,7 +384,6 @@ def sell_undo(request, pk, **response_kwargs):
     msgs = []
     status = True
     if request.method == "GET":
-        response_kwargs["content_type"] = "application/json"
         if pk:
             status, msgs = Sell.sell_undo(pk)
         else:
@@ -396,14 +392,12 @@ def sell_undo(request, pk, **response_kwargs):
 
         to_ret = {"status": status,
                   "alerts": msgs}
-        return HttpResponse(json.dumps(to_ret), **response_kwargs)
-
+        return JsonResponse(to_ret)
 
 def history(request, **response_kwargs):
     alerts = []
     if request.method == "GET":
         params = request.GET.copy()
-        response_kwargs["content_type"] = "application/json"
         try:
             hist, status, alerts = getHistory()
         except Exception as e:
@@ -413,18 +407,17 @@ def history(request, **response_kwargs):
         to_ret = {"status": status,
                   "alerts": alerts,
                   "data": hist}
-        return HttpResponse(json.dumps(to_ret), **response_kwargs)
+        return JsonResponse(to_ret)
 
 def auto_command_total(request, **response_kwargs):
     total = -1
     if request.method == "GET":
         params = request.GET.copy()
-        response_kwargs["content_type"] = "application/json"
         try:
             total = Basket.auto_command_nb()
         except Exception as e:
             pass
-    return HttpResponse(json.dumps(total), **response_kwargs)
+    return JsonResponse(total, safe=False)
 
 
 def basket(request, pk, action="", card_id="", **kwargs):
@@ -449,13 +442,12 @@ def basket(request, pk, action="", card_id="", **kwargs):
         log.error(u"Error while getting basket {}: {}".format(pk, e))
         msgs.append(e.message)
         to_ret['status'] = False
-        return HttpResponse(json.dumps(to_ret), **kwargs) # return error message
+        return JsonResponse(to_ret) # also return error message.
 
     if request.method == "GET":
         data = basket.copies.all()
         ret = [it.to_dict() for it in data]
-        ret = json.dumps(ret)
-        return HttpResponse(ret, **kwargs)
+        return JsonResponse(ret, safe=False)
 
     elif request.method == 'POST':
         # json request
@@ -499,8 +491,6 @@ def basket(request, pk, action="", card_id="", **kwargs):
             except Exception:
                 log.error("Error while adding copies {} to basket {}: {}".format(ids, pk, e))
 
-
-
         # Remove a card
         elif action and action == "remove" and card_id:
             status, msgs = basket.remove_copy(card_id)
@@ -508,7 +498,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
     to_ret['status'] = status
     to_ret['data'] = data
     to_ret['msgs'] = msgs
-    return HttpResponse(json.dumps(to_ret), **kwargs)
+    return JsonResponse(to_ret)
 
 def baskets(request, **kwargs):
     """Get the list of basket names. If a pk is given as argument, return
@@ -519,7 +509,6 @@ def baskets(request, **kwargs):
         params = request.GET.copy()
         msgs = []
         status = httplib.OK
-        kwargs["content_type"] = "application/json"
         if kwargs.get('pk'):
             pk = kwargs.pop('pk')
             try:
@@ -543,15 +532,14 @@ def baskets(request, **kwargs):
         to_ret = {"status": status,
                   "alerts": msgs,
                   "data": data,}
-        return HttpResponse(json.dumps(to_ret), **kwargs)
+        return JsonResponse(to_ret)
 
 def baskets_create(request, **response_kwargs):
     """Create a new basket.
     Return its id.
     """
-    response_kwargs["content_type"] = "application/json"
     if request.method == "GET":
-        return HttpResponse(json.dumps("create a basket with a POST request"), **response_kwargs)
+        return JsonResponse({'data': "Use a POST request"})
 
     if request.method == "POST":
         name = request.POST.get('name')
@@ -560,7 +548,7 @@ def baskets_create(request, **response_kwargs):
                   "alerts": msgs,
                   "status": status}
 
-        return HttpResponse(json.dumps(to_ret), **response_kwargs)
+        return JsonResponse(to_ret)
 
 def baskets_inventory_get_or_create(request, **response_kwargs):
     """Get the current inventory id and its copies, or create one for the basket pk (in url).
@@ -568,7 +556,6 @@ def baskets_inventory_get_or_create(request, **response_kwargs):
     data = {}
     msgs = []
     status = True
-    response_kwargs["content_type"] = "application/json"
     # Get or post ? In most cases it's only a get, and we want to create one if needed. GET prefered.
     if request.method == 'POST' or request.method == 'GET':
         pk = response_kwargs.pop('pk')
@@ -594,8 +581,7 @@ def baskets_inventory_get_or_create(request, **response_kwargs):
         to_ret = {"status": status,
                   "data": data,
                   "msgs": msgs}
-        to_ret = json.dumps(to_ret)
-        return HttpResponse(to_ret, **response_kwargs)
+        return JsonResponse(to_ret)
 
 def alerts(request, **response_kwargs):
     msgs = []
@@ -603,7 +589,6 @@ def alerts(request, **response_kwargs):
     status = 0
     if request.method == "GET":
         params = request.GET.copy()
-        response_kwargs["content_type"] = "application/json"
         try:
             alerts, status, msgs = Alert.get_alerts(to_list=True)
 
@@ -613,32 +598,30 @@ def alerts(request, **response_kwargs):
     to_ret = {"status": status,
               "alerts": msgs,
               "data": alerts}
-    return HttpResponse(json.dumps(to_ret), **response_kwargs)
+    return JsonResponse(to_ret)
 
 def alerts_open(request, **response_kwargs):
     total = 0
     if request.method == "GET":
         params = request.GET.copy()
-        response_kwargs["content_type"] = "application/json"
         try:
             total = Alert.objects.count()
         except Exception as e:
             pass
 
-    return HttpResponse(json.dumps(total), **response_kwargs)
+    return JsonResponse(total, safe=False)
 
 def places(request, **response_kwargs):
     obj = []
     if request.method == "GET":
         params = request.GET.copy()
-        response_kwargs["content_type"] = "application/json"
         try:
             obj = Place.objects.all()
         except Exception as e:
             log.error("api error while getting places: {}".format(e))
 
     data = [it.to_dict() for it in obj]
-    return HttpResponse(json.dumps(data), **response_kwargs)
+    return JsonResponse(data, safe=False)
 
 def inventories(request, **kwargs):
     """GET: get the list of inventories of the given place (pk given in url).
@@ -664,7 +647,7 @@ def inventories(request, **kwargs):
                           "inventory_id": inv.id,
                       }
             }
-            return HttpResponse(json.dumps(to_ret), **kwargs)
+            return JsonResponse(to_ret)
 
     elif request.method == "GET":
         if kwargs.get("pk"):
@@ -677,7 +660,7 @@ def inventories(request, **kwargs):
             state = inv.state()
             to_ret['data'] = state
 
-    return HttpResponse(json.dumps(to_ret), **kwargs)
+    return JsonResponse(to_ret)
 
 def inventories_update(request, **kwargs):
     """Save copies and their quantities.
@@ -713,7 +696,7 @@ def inventories_update(request, **kwargs):
             if status == "success": # XXX import satuses from models
                 to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
 
-    return HttpResponse(json.dumps(to_ret), **kwargs)
+    return JsonResponse(to_ret)
 
 def inventory_diff(request, pk, **kwargs):
     """
@@ -721,23 +704,19 @@ def inventory_diff(request, pk, **kwargs):
     diff, name = Inventory.diff_inventory(pk, to_dict=True)
     to_ret = {'cards': diff,
               'name': name}
-    return HttpResponse(json.dumps(to_ret), **kwargs)
-
+    return JsonResponse(to_ret)
 
 def stats(request, **kwargs):
     """Return stats about the stock.
     """
     stats = Stats()
     stock = stats.stock()
-    kwargs["content_type"] = "application/json"
-    return HttpResponse(stock, **kwargs)
+    return JsonResponse(stock)
 
 def stats_sells_month(request, **kwargs):
     """Return the 10 best sells of this month.
     """
     LIMIT = 10
-    kwargs["content_type"] = "application/json"
     stats = Stats()
     res = stats.best_sells_month()[:LIMIT]
-
-    return HttpResponse(json.dumps(res), **kwargs)
+    return JsonResponse(res, safe=False)
