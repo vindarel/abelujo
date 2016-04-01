@@ -73,6 +73,9 @@ class Scraper(baseScraper):
 
         Return: a str, the necessary url part to add at the end.
         """
+        if self.page == 1:
+            return ""
+
         page_qparam = u""
         if type(self.page) in [type(u"u"), type("str")]:
             self.page = int(self.page)
