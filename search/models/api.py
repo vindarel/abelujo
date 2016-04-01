@@ -67,6 +67,8 @@ def cards(request, **response_kwargs):
     """search for cards in the stock with the given query, or return all of them (with
     a limit).
 
+    Don't return cards added in the DB but not bought.
+
     """
     data = []
     query = request.GET.get("query")
@@ -77,7 +79,8 @@ def cards(request, **response_kwargs):
     data = Card.search(query, to_list=True,
                        distributor=distributor,
                        publisher_id=publisher_id,
-                       card_type_id=card_type_id)
+                       card_type_id=card_type_id,
+                       bought=True)
     log.info(u"we have json distributors: ", data)
     return JsonResponse(data, safe=False)
 

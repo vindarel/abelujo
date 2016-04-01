@@ -265,6 +265,7 @@ class Card(TimeStampedModel):
     physical object.
     """
 
+    #: Title:
     title = models.CharField(max_length=CHAR_LENGTH)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True)
@@ -307,6 +308,9 @@ class Card(TimeStampedModel):
     summary = models.TextField(null=True, blank=True)
     #: a user's comment
     comment = models.TextField(blank=True)
+    #: Did we buy this card once, or did we register it only to use in
+    #: lists (baskets), without buying it ?
+    in_stock = models.BooleanField(default=True)
 
     @property
     def ean(self):
@@ -449,7 +453,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, to_list=False,
-               publisher_id=None, place_id=None, category_id=None):
+               publisher_id=None, place_id=None, category_id=None, bought=False):
         """Search a card (by title, authors' names, ean/isbn).
 
         SIZE_LIMIT = 100
@@ -479,7 +483,8 @@ class Card(TimeStampedModel):
             # Doesn't pass data validation of the view.
             head = words[0]
             cards = Card.objects.filter(Q(title__icontains=head) |
-                                         Q(authors__name__icontains=head))
+                                        Q(authors__name__icontains=head))
+
             if len(words) > 1:
                 for elt in words[1:]:
                     cards = cards.filter(Q(title__icontains=elt)|
@@ -487,6 +492,9 @@ class Card(TimeStampedModel):
 
         elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
+
+        if bought:
+            cards = cards.filter(in_stock=True)
 
         if cards and category_id:
             try:
@@ -683,6 +691,7 @@ class Card(TimeStampedModel):
             details_url: url (string)
             card_type:  name of the type (string)
             location:   string
+            in_stock:   bool
             sortkey:    string of authors in the order they appear on
                         the cover
             origkey:    (optional) original key, like an ISBN, or if
@@ -871,6 +880,16 @@ class Card(TimeStampedModel):
             except Exception as e:
                 log.error(e)
 
+        # We add a card in the stock when we buy it (add it in a place).
+        in_stock = False
+        if card.has_key('in_stock'):
+            in_stock = card.get('in_stock')
+        try:
+            card_obj.in_stock = in_stock
+            card_obj.save()
+        except Exception as e:
+            log.error('Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
+
         return card_obj, [msg_success]
 
     def get_absolute_url(self):
@@ -1028,6 +1047,11 @@ class Place (models.Model):
 
             # Keep in sync the card's quantity field.
             card.quantity += nb
+            card.save()
+
+            # A card could be in the DB but only in a list
+            # (basket). Now it's bought at least once.
+            card.in_stock = True
             card.save()
 
         except Exception,e:
