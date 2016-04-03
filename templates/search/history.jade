@@ -37,43 +37,44 @@ div(ng-controller="historyController")
         )
           {{ 'alert.message' | ng }}
 
-    span
-      input.btn.btn-default(value="All", ng-click="filterModel='All'"))
-      input.btn.btn-default(value="Entries", ng-click="filterModel='Entry'")
-      input.btn.btn-default(value="Sells", ng-click="filterModel='Sell'"))
-      input.btn.btn-default(value="Movements", ng-click="filterModel='InternalMovement'"))
+    uib-tabset(justified="true")
+        uib-tab(heading='{% trans "Entries" %}', select="filterHistory('Entry')")
+        uib-tab(heading='{% trans "Sells" %}', select="filterHistory('Sell')")
+        uib-tab(heading='{% trans "Movements" %}', select="filterHistory('InternalMovement')")
 
+    button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+      i.glyphicon.glyphicon-th-list
 
-    div(ng-repeat="hist in history")
+    div(ng-repeat="hist in to_show")
       .row.ng-cloak
 
-       div(ng-if="hist.item.model === 'Sell'", ng-show="showModel('Sell')")
-        .col-md-2
+       div(ng-if="hist.item.model === 'Sell'")
+        .col-md-3
           span {{ 'hist.item.created' | ng }}
-        .col-md-2
-           span {% trans "Sell" %}
-        .col-md-7
-          span sold {{ 'hist.item.cards.length' | ng }} {% trans "cards" %}:  
-            span {% trans "total sold" %}: {{ 'hist.item.total_price_sold' | ng }}
-            a(href="{{ hist.item.details_url }}") Details
+        .col-md-8
+          div {{ 'hist.item.cards.length' | ng }} {% trans "cards" %}:  
+            span {% trans "total" %}: {{ 'hist.item.total_price_sold' | ng }} €
+            a(href="{{ hist.item.details_url }}")  {% trans "details…" %}
           div(ng-repeat="card in hist.item.cards")
-            a(href="{{ card.get_absolute_url }}")  {{ 'card.title' | ng }}
+            .row
+              .col-md-3(ng-show="show_images")
+                img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
+              a(href="{{ card.get_absolute_url }}")  {{ 'card.title' | ng }}
         .col-md-1
-          i.button.glyphicon.glyphicon-remove-sign.mouse-pointer(ng-click="sellUndo($index)", title="{% trans 'Remove this card from the list of commands' %}")
+          i.button.glyphicon.glyphicon-remove-sign.mouse-pointer(ng-click="sellUndo($index)", title="{% trans 'Undo this sell' %}")
 
 
-       div(ng-if="hist.item.model === 'Entry'", ng-show="showModel('Entry')")
-         .col-md-2
+       div(ng-if="hist.item.model === 'Entry'")
+         .col-md-3
            span {{ 'hist.item.created ' | ng }}
-         .col-md-2
-           span {% trans "Entry" %}
-         .col-md-7
+         .col-md-9
             div(ng-repeat="item in hist.item.copies")
-               {% verbatim %}
-               a(href="{{ item.card.get_absolute_url }}") {{ item.card.title }}
-               {% endverbatim %}
+               .col-md-3(ng-show="show_images")
+                    img.myImg(ng-show="item.card.img", src="{{ 'item.card.img' | ng }}")
+               .col-md-9
+                 a(href="{{ 'item.card.get_absolute_url' | ng }}") {{ 'item.card.title' | ng }}
 
-       div(ng-if="hist.item.model === 'InternalMovement'", ng-show="showModel('InternalMovement')")
+       div(ng-if="hist.item.model === 'InternalMovement'")
         .col-md-2
            span {{ 'hist.item.created ' | ng }}
         .col-md-2
