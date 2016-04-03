@@ -42,6 +42,7 @@ npm:
 update:
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
 	git pull --rebase
+	git submodule update --remote
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	pip install -r abelujo/requirements.txt
 	make npm # that's horribly long. Bundle static files and send them somehow.

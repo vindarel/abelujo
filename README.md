@@ -40,7 +40,7 @@ Installation
 
 Get the sources:
 
-    git clone https://gitlab.com/vindarel/abelujo.git
+    git clone --recursive https://gitlab.com/vindarel/abelujo.git
 
 it creates the directory "abelujo":
 
