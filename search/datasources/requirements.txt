@@ -1,4 +1,0 @@
-addict
-clize
-requests
-bs4
