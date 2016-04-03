@@ -76,10 +76,12 @@ def cards(request, **response_kwargs):
     distributor = request.GET.get("distributor")
     card_type_id = request.GET.get("card_type_id")
     publisher_id = request.GET.get("publisher_id")
+    order_by = request.GET.get("order_by")
     data = Card.search(query, to_list=True,
                        distributor=distributor,
                        publisher_id=publisher_id,
                        card_type_id=card_type_id,
+                       order_by=order_by,
                        bought=True)
     log.info(u"we have json distributors: ", data)
     return JsonResponse(data, safe=False)

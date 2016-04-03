@@ -28,6 +28,8 @@ from toolz.dicttoolz import update_in
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import EmptyPage
+from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
@@ -453,7 +455,8 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, to_list=False,
-               publisher_id=None, place_id=None, category_id=None, bought=False):
+               publisher_id=None, place_id=None, category_id=None,
+               bought=False, order_by=None):
         """Search a card (by title, authors' names, ean/isbn).
 
         SIZE_LIMIT = 100
@@ -530,7 +533,20 @@ class Card(TimeStampedModel):
                     log.error("Error searching for isbn {}: {}".format(isbn, e))
                     # XXX we can return messages !
 
-        cards = cards[:SIZE_LIMIT]
+        # Sort
+        if order_by:
+            cards = cards.order_by(order_by)
+
+        # Pagination
+        paginator = Paginator(cards, SIZE_LIMIT)
+        page = 1
+        try:
+            cards = paginator.page(page)
+        except EmptyPage:
+            cards = paginator.page(paginator.num_page)
+        finally:
+            cards = cards.object_list
+
         if to_list:
             cards = Card.obj_to_list(cards)
 

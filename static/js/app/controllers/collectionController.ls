@@ -47,7 +47,10 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         $scope.publishers = response.data
 
     # Get cards in stock
-    $http.get "/api/cards"
+    params = do
+        order_by: "-created" # valid django
+    $http.get "/api/cards", do
+        params: params
     .then (response) !->
         $scope.cards = response.data
         for elt in $scope.cards
