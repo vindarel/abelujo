@@ -59,8 +59,8 @@ div(ng-controller="InventoryModalController")
       //- div {{ 'item.name ' | ng }}
       form.form-inline
         select.form-control(ng-model="place", ng-options="it.name for it in items", required)
-        button.btn.btn-primary(ng-click="ok()") Ok
-        button.btn.btn-cancel Cancel
+        button.btn.btn-primary(ng-click="ok()") {% trans "Ok" %}
+        button.btn.btn-cancel(ng-click="cancel()") {% trans "Cancel" %}
 
   button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}
 

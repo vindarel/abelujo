@@ -481,7 +481,6 @@ class InventoriesListView(ListView):
     model = Inventory
     template_name = "search/inventories.jade"
     context_object_name = "inventories"
-    #TODO: class based views (CBV) need login_required too.
 
 class DepositsListView(ListView):
     model = Deposit
