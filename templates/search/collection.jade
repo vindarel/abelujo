@@ -120,9 +120,10 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
         td
           .row
             .col-md-9
-              h4: a(href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
-              a(ng-show="card.details_url", href="{{ 'card.details_url' | ng }}", target="_blank") {% trans "See on" %} {{ 'card.data_source' |ng}}
-              .row
+              div: a(href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
+              h6(ng-show="show_images")
+                a(ng-show="card.details_url", href="{{ 'card.details_url' | ng }}", target="_blank") {% trans "See on" %} {{ 'card.data_source' |ng}}
+              .row(ng-show="show_images")
                .col-md-6
                 b isbn: 
                 span {{ 'card.isbn' |ng}}
