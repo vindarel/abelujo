@@ -37,7 +37,10 @@ table.table.table-striped.table-hover
   for inv in inventories
     tr
       td {{ inv.created }}
-      td {{ inv.place }}
+      if inv.place
+        td {{ inv.place }}
+      else
+        td {{ inv.basket }}
       td
         a(href="{{ inv.id }}")
           button.btn.btn-primary {% trans "Continue" %}
