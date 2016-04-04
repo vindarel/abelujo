@@ -29,8 +29,8 @@ div.ng-cloak(ng-controller="cardAddController")
   .row
     table
       tr
-        td.my-narrow {% trans "category" %}
-        td: select(ng-model="category", ng-options="it.fields.name for it in categories")
+        td.my-narrow {% trans "shelf" %}
+        td: select(ng-model="shelf", ng-options="it.fields.name for it in shelfs")
     table
       tr
         td.my-narrow {% trans "distributor" %}

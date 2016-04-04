@@ -213,17 +213,19 @@ class Collection (models.Model):
     def __unicode__(self):
         return u"{}".format(self.name)
 
-class Category(models.Model):
-    """Categories:
+class Shelf(models.Model):
+    """Shelves are categories for cards, but they have a physical location
+    in the bookstore.
 
     - ...
 
-    For now, a Card has only one category.
+    For now, a Card has only one shelf.
+
     """
     class Meta:
         app_label = "search"
 
-    #: Name of the category
+    #: Name of the shelf
     name = models.CharField(max_length=CHAR_LENGTH)
 
     def __unicode__(self):
@@ -293,8 +295,8 @@ class Card(TimeStampedModel):
     distributor = models.ForeignKey("Distributor", blank=True, null=True)
     #: Collection
     collection = models.ForeignKey(Collection, blank=True, null=True)
-    #: Category (for now, only one category).
-    category = models.ForeignKey(Category, blank=True, null=True)
+    #: Shelf (for now, only one shelf).
+    shelf = models.ForeignKey("Shelf", blank=True, null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
@@ -455,7 +457,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, to_list=False,
-               publisher_id=None, place_id=None, category_id=None,
+               publisher_id=None, place_id=None, shelf_id=None,
                bought=False, order_by=None):
         """Search a card (by title, authors' names, ean/isbn).
 
@@ -499,9 +501,9 @@ class Card(TimeStampedModel):
         if bought:
             cards = cards.filter(in_stock=True)
 
-        if cards and category_id:
+        if cards and shelf_id:
             try:
-                cards = cards.filter(category=category_id)
+                cards = cards.filter(shelf=shelf_id)
             except Exception as e:
                 log.error(e)
 
@@ -698,7 +700,7 @@ class Card(TimeStampedModel):
             title:      string
             year:       int or None
             authors:    list of authors names (list of str) or list of Author objects.
-            category:   id (int)
+            shelf:   id (int)
             distributor: id of a Distributor
             publishers: list of names of publishers (create one on the fly, like with webscraping)
             publishers_ids: list of ids of publishers
@@ -765,13 +767,13 @@ class Card(TimeStampedModel):
                 except Exception as e:
                     log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
 
-        # Get the category
-        card_category = None
-        if card.get('category'):
+        # Get the shelf
+        card_shelf = None
+        if card.get('shelf'):
             try:
-                card_category, created = Category.objects.get_or_create(name=card.get('category'))
+                card_shelf, created = Shelf.objects.get_or_create(name=card.get('shelf'))
             except Exception as e:
-                log.warning("couldn't get or create the category {}.".format(card.get('category')))
+                log.warning("couldn't get or create the shelf {}.".format(card.get('shelf')))
 
         # Get the publishers:
         card_publishers = []
@@ -838,15 +840,15 @@ class Card(TimeStampedModel):
                 except Exception as e:
                     log.error(u"--- error while adding the collection: %s" % (e,))
 
-            # add the category
-            category_id = card.get('category_id')
-            if category_id and category_id != "0":
+            # add the shelf
+            shelf_id = card.get('shelf_id')
+            if shelf_id and shelf_id != "0":
                 try:
-                    cat_obj = Category.objects.get(id=category_id)
-                    card_obj.category = cat_obj
+                    cat_obj = Shelf.objects.get(id=shelf_id)
+                    card_obj.shelf = cat_obj
                     card_obj.save()
                 except Exception as e:
-                    log.error("error adding category {}: {}".format(category_id, e))
+                    log.error("error adding shelf {}: {}".format(shelf_id, e))
 
             # add the type of the card
             typ = "unknown"
@@ -888,10 +890,10 @@ class Card(TimeStampedModel):
         # except Exception, e:
         #     log.error(u"--- error while setting the default place: %s" % (e,))
 
-        # add the category
-        if card_category:
+        # add the shelf
+        if card_shelf:
             try:
-                card_obj.category = card_category
+                card_obj.shelf = card_shelf
                 card_obj.save()
             except Exception as e:
                 log.error(e)

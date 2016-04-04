@@ -16,7 +16,7 @@ from models import Author
 from models import Basket
 from models import Card
 from models import CardType
-from models import Category
+from models import Shelf
 from models import Deposit
 from models import Distributor
 from models import Inventory
@@ -119,7 +119,7 @@ def card_create(request, **response_kwargs):
         alerts = []
 
         isbn = params.get('isbn')
-        category = params.get('category')
+        shelf = params.get('shelf')
         # Mixed style from client (to fix).
         if params:
             card_dict = {
@@ -134,8 +134,8 @@ def card_create(request, **response_kwargs):
                 "details_url": params.get("details_url"),
                 "year": params.get("year_published"),
             }
-            if category:
-                card_dict['category'] = category
+            if shelf:
+                card_dict['shelf'] = shelf
 
         # we got the card dict
         else:
@@ -181,7 +181,7 @@ def card_add(request, **response_kwargs):
         card_obj = Card.objects.get(id=pk)
 
         distributor_id = params.get('distributor_id')
-        category_id = params.get("category_id")
+        shelf_id = params.get("shelf_id")
         deposits_ids_qties = params.get('deposits_ids_qties')
         baskets_ids_qties = params.get('baskets_ids_qties')
         places_ids_qties = params.get('places_ids_qties')
@@ -207,9 +207,9 @@ def card_add(request, **response_kwargs):
                 obj = Place.objects.get(id=id)
                 obj.add_copy(card_obj, nb=qty)
 
-        if category_id:
-            cat = Category.objects.get(id=category_id)
-            card_obj.category = cat
+        if shelf_id:
+            cat = Shelf.objects.get(id=shelf_id)
+            card_obj.shelf = cat
             card_obj.save()
 
         return JsonResponse(status, safe=False)
@@ -221,9 +221,11 @@ def cardtype(request, **response_kwargs):
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
 
-def categories(request, **response_kwargs):
+def shelfs(request, **response_kwargs):
+    # Note: for easier search, replace and auto-generation, we choose
+    # to pluralize wrongly.
     if request.method == 'GET':
-        data = Category.objects.all()
+        data = Shelf.objects.all()
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
 

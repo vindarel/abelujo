@@ -51,7 +51,7 @@ from models import Basket
 from models import Bill
 from models import Card
 from models import CardType
-from models import Category
+from models import Shelf
 from models import Deposit
 from models import DepositState
 from models import Distributor

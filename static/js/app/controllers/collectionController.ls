@@ -10,8 +10,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.cards = []
     $scope.places = []
     $scope.place = null
-    $scope.categories = []
-    $scope.category = null
+    $scope.shelfs = []
+    $scope.shelf = null
     $scope.publisher = null
     $scope.baskets = []
     $scope.show_images = true
@@ -38,9 +38,9 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     .then (response) !->
         $scope.places = response.data
 
-    $http.get "/api/categories"
+    $http.get "/api/shelfs"
     .then (response) !->
-        $scope.categories = response.data
+        $scope.shelfs = response.data
 
     $http.get "/api/publishers"
     .then (response) !->
@@ -66,8 +66,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params['place'] = $scope.place.id
         if $scope.card_type
             params['card_type'] = $scope.card_type
-        if $scope.category
-            params['category'] = $scope.category.pk
+        if $scope.shelf
+            params['shelf'] = $scope.shelf.pk
 
         $http.get "/api/cards", do
             params: params

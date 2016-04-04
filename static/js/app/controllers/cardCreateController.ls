@@ -23,8 +23,8 @@ angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$
     $scope.card = {}
     $scope.card_types = []
 
-    $scope.category = {"fields": {"pk": 0}}
-    $scope.categories = []
+    $scope.shelf = {"fields": {"pk": 0}}
+    $scope.shelfs = []
 
     $scope.alerts = []
     $scope.card_created_id = undefined
@@ -66,10 +66,10 @@ angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$
         $scope.type = $scope.card_types[0]
         response.data
 
-    # Get categories
-    $http.get "/api/categories",
+    # Get shelfs
+    $http.get "/api/shelfs",
     .then (response) !->
-        $scope.categories = response.data
+        $scope.shelfs = response.data
 
     # Distributors
     getDistributors = ->
@@ -97,7 +97,7 @@ angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$
         params = do
             title: $scope.title
             price: $scope.price
-            category: $scope.category.pk
+            shelf: $scope.shelf.pk
             authors: map (.pk), $scope.authors_selected # list of ids
             publishers: map (.pk), $scope.pubs_selected
             year_published: $scope.year_published

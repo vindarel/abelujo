@@ -42,7 +42,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
   .col-md-6
    form
     div.form-group
-      label.col-md-4 Search terms
+      label.col-md-4 {% trans "Search terms" %}
       div.col-md-8
         input.form-control#default-input(
           ng-model="query"
@@ -54,7 +54,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
    .col-md-6
     form
      div
-        label.col-sm-4 Type of card
+        label.col-sm-4 {% trans "Type of card" %}
         div.col-md-8
           select.form-control(
             ng-model="card_type"
@@ -62,7 +62,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
           )
 
     div
-      label.col-sm-4 Publisher
+      label.col-sm-4 {% trans "Publisher" %}
       div.col-md-8
         select.form-control(
           ng-model="publisher"
@@ -71,18 +71,18 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
    .col-md-6
     form
      div.form-group
-        label.col-sm-4 Places
+        label.col-sm-4 {% trans "Places" %}
         div.col-md-8
           select.form-control(
             ng-model="place"
             ng-options="elt.name for elt in places")
 
     div.form-group
-      label.col-sm-4 Category
+      label.col-sm-4 {% trans "Shelf" %}
       div.col-md-8
         select.form-control(
-          ng-model="category"
-          ng-options="elt.fields.name for elt in categories")
+          ng-model="shelf"
+          ng-options="elt.fields.name for elt in shelfs")
 
  .row
   .col-md-4
@@ -94,7 +94,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
  .row
    .col-md-8
    .col-md-2
-     button.button.btn(ng-click="toggle_images()")
+     button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
       i.glyphicon.glyphicon-th-list
    .col-md-1
      button.button.btn.btn-default(ng-click="open()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to…' %}

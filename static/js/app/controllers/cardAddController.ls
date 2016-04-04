@@ -8,7 +8,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
 
     $scope.card = {}
     $scope.ready = false
-    $scope.category = {}
+    $scope.shelf = {}
 
     $scope.total_places = 0
     $scope.total_places_discount = 0
@@ -76,11 +76,11 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         for it in $scope.baskets
             it.quantity = 0
 
-    # Get categories
-    $http.get "/api/categories/", do
+    # Get shelfs
+    $http.get "/api/shelfs/", do
         params: {}
     .then (response) !->
-        $scope.categories = response.data
+        $scope.shelfs = response.data
 
     $scope.filter_deposits = !->
         $scope.filtered_deposits = $scope.deposits |> filter (.distributor == $scope.distributor.selected.name)
@@ -122,8 +122,8 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
             deposits_ids_qties: deposits_ids_qties
             baskets_ids_qties: baskets_ids_qties
 
-        if $scope.category.pk
-            params.category_id = $scope.category.pk
+        if $scope.shelf.pk
+            params.shelf_id = $scope.shelf.pk
 
         $http.post "/api/card/#{$scope.card.id}/add/", params
         .then (response) !->

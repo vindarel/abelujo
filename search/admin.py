@@ -20,7 +20,7 @@ from search.models import Basket
 from search.models import BasketCopies
 from search.models import Bill
 from search.models import Card
-from search.models import Category
+from search.models import Shelf
 from search.models import Distributor
 from search.models import Deposit
 from search.models import Place
@@ -69,7 +69,7 @@ admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
-admin.site.register(Category)
+admin.site.register(Shelf)
 admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
 admin.site.register(Place)

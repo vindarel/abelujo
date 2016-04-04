@@ -44,7 +44,7 @@ apipatterns = patterns("",
     url(r'^api/card/(?P<pk>\d+)', 'search.models.api.card', name="api_card"),
     url(r'^api/cardtype$', 'search.models.api.cardtype', name="api_cardtype"),
 
-    url(r'^api/categories', 'search.models.api.categories', name="api_categories"),
+    url(r'^api/shelfs', 'search.models.api.shelfs', name="api_shelfs"),
 
     url(r'^api/authors$', 'search.models.api.authors', name="api_authors"),
 
