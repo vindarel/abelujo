@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-03 14:12+0000\n"
-"PO-Revision-Date: 2016-04-03 16:16+0200\n"
+"PO-Revision-Date: 2016-04-07 00:49+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -1152,10 +1152,8 @@ msgid "There is a conflict with deposits."
 msgstr "Il y a un conflit de dépôts."
 
 #: templates/search/searchresults.jade:27
-#, fuzzy
-#| msgid "Partie du titre, nom de l'auteur, etc."
 msgid "Search for new titles"
-msgstr "Partie du titre, nom de l'auteur, etc."
+msgstr "Recherche de nouveaux titres"
 
 #: templates/search/searchresults.jade:44
 #, fuzzy
