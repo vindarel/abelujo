@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller "InventoryModalController", ($http, $scope, $modal, $log, utils) !->
+angular.module "abelujo" .controller "InventoryModalController", ($http, $scope, $uibModal, $log, utils) !->
 
     $scope.animationsEnabled = true
 
@@ -10,7 +10,7 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
                         $scope.place = response.data[0]
 
     $scope.open = (size) !->
-        modalInstance = $modal.open do
+        modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
             templateUrl: 'modalContent.html'
             controller: 'ModalInstanceCtrl'
@@ -30,12 +30,12 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
               $log.info "modal dismissed"
 
 
-angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $modalInstance, items, $window, $log, place, utils) ->
+angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelf, utils) ->
 
     $scope.items = items
     $scope.place = place
     $scope.ok = ->
-        $modalInstance.close()
+        $uibModalInstance.close()
         $log.info "post new inventory !"
 
           #  This is needed for Django to process the params to its
@@ -60,4 +60,4 @@ angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $modal
             #else: display error.
 
     $scope.cancel = !->
-        $modalInstance.dismiss('cancel')
+        $uibModalInstance.dismiss('cancel')
