@@ -2365,9 +2365,11 @@ class Inventory(TimeStampedModel):
 
     #: List of cards and their quantities already "inventored".
     copies = models.ManyToManyField(Card, through="InventoryCards", blank=True, null=True)
-    #: Place we are doing the inventory in.
+    #: We can do the inventory of a shelf.
+    shelf = models.ForeignKey("Shelf", blank=True, null=True)
+    #: we can also do the inventory of a whole place.
     place = models.ForeignKey("Place", blank=True, null=True)
-    #: We can also do "inventories" of baskets, meaning we compare it
+    #: At last, we can also do "inventories" of baskets, meaning we compare it
     # with a newly received command, or a pack of cards returned.
     basket = models.ForeignKey("Basket", blank=True, null=True)
 
