@@ -30,8 +30,8 @@ html(ng-app="abelujo")
     script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')
       div {% block pagetitle %} {% endblock %}
 
-  body.container-fluid
-    nav.navbar.navbar-default(role="navigation")
+  nav.navbar.navbar-default(role="navigation")
+    body.container-fullwidth
       div.navbar-collapse
         ul.nav.navbar-nav
           li.active(href="#")
@@ -45,7 +45,6 @@ html(ng-app="abelujo")
 
   body.container-fluid(ng-controller="baseController")
     div.col-md-2(id="menu")
-      div
         ul.nav.nav-pills.nav-stacked
           li(ng-class="{active: url == 'collection' }")
             a(href='{% url "card_collection" %}') {% trans "My stock" %}
