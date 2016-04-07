@@ -1067,10 +1067,8 @@ msgid "New"
 msgstr "Nouveau"
 
 #: templates/search/inventory_terminate.jade:28
-#, fuzzy
-#| msgid "Start an inventory"
 msgid "Terminate the inventory of"
-msgstr "Commencer un inventaire"
+msgstr "Terminer l'inventaire de"
 
 #: templates/search/inventory_terminate.jade:30
 msgid "Help"

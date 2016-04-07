@@ -76,11 +76,15 @@ def cards(request, **response_kwargs):
     distributor = request.GET.get("distributor")
     card_type_id = request.GET.get("card_type_id")
     publisher_id = request.GET.get("publisher_id")
+    place_id = request.GET.get("place_id")
+    shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
     data = Card.search(query, to_list=True,
                        distributor=distributor,
                        publisher_id=publisher_id,
                        card_type_id=card_type_id,
+                       place_id=place_id,
+                       shelf_id=shelf_id,
                        order_by=order_by,
                        bought=True)
     log.info(u"we have json distributors: ", data)
@@ -638,23 +642,39 @@ def inventories(request, **kwargs):
     to_ret = {
         "data": None,
     }
-    if request.method == "POST":
-        params = request.POST.copy()
-        place_id = params.get("place_id")
-        if place_id:
-            try:
-                inv = Inventory()
-                inv.place = Place.objects.get(id=place_id)
-                inv.save()
-            except Exception as e:
-                log.error(e)
+    msgs = []
 
-            to_ret = {"data":
-                      {
-                          "inventory_id": inv.id,
-                      }
-            }
-            return JsonResponse(to_ret)
+    if request.method == "POST":
+        import ipdb; ipdb.set_trace()
+        params = json.loads(request.body)
+        place_id = params.get("place_id")
+        shelf_id = params.get("shelf_id")
+
+        # Simple UI, so we can have both place_id and shelf_id, but
+        # prior is given to the shelf.
+        try:
+            inv = Inventory()
+            if shelf_id:
+                inv.shelf = Shelf.objects.get(id=shelf_id)
+            elif place_id:
+                inv.place = Place.objects.get(id=place_id)
+            else:
+                log.error('Inventory create: we have neither a shelf_id nor a place_id, this shouldnt happen.')
+
+            inv.save()
+
+        except Exception as e:
+            log.error(e)
+            msgs.append({'level': 'error',
+                         'message': _("We couldn't create the requested inventory. This is an error, sorry !")})
+
+        to_ret = {"data":
+                  {
+                      "inventory_id": inv.id,
+                  },
+                  'messages': msgs
+        }
+        return JsonResponse(to_ret)
 
     elif request.method == "GET":
         if kwargs.get("pk"):

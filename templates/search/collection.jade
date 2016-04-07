@@ -30,7 +30,7 @@ h3 {% trans "Search in the stock" %}
 div(ng-cloak, ng-show="cards", ng-controller="collectionController")
 
  div
-    alert(
+    uib-alert(
       ng-repeat="alert in alerts"
       type="{{ 'alert.level' | ng }}"
       close="closeAlert($item)"

@@ -1,13 +1,22 @@
 angular.module "abelujo" .controller "InventoryModalController", ($http, $scope, $uibModal, $log, utils) !->
 
+    {sum, map, filter, lines, sort, sort-by} = require 'prelude-ls'
+
     $scope.animationsEnabled = true
 
-    $scope.items = ["item1", "two"]
-    $scope.place = "rst"
+    $scope.places = []
+    $scope.place = {}
+    $scope.shelfs = []
+    $scope.shelf = {}
+
     $http.get "/api/places"
-                    .then (response) !->
-                        $scope.items = response.data
-                        $scope.place = response.data[0]
+        .then (response) !->
+            $scope.places = response.data
+
+    $http.get "/api/shelfs"
+        .then (response) !->
+            $scope.shelfs = sort-by (.fields.name), response.data
+            $scope.shelf = $scope.shelfs[0]
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do
@@ -17,10 +26,14 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
             ## backdrop: 'static'
             size: size,
             resolve: do
-                items: ->
-                    $scope.items
+                places: ->
+                    $scope.places
                 place: ->
                     $scope.place
+                shelfs: ->
+                    $scope.shelfs
+                shelf: ->
+                    $scope.shelf
                 utils: ->
                     utils
 
@@ -30,33 +43,28 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
               $log.info "modal dismissed"
 
 
-angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelf, utils) ->
+angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelfs, shelf, utils) ->
 
-    $scope.items = items
+    $scope.places = places
     $scope.place = place
+    $scope.shelfs = shelfs
+    $scope.shelf = shelf
     $scope.ok = ->
         $uibModalInstance.close()
         $log.info "post new inventory !"
 
-          #  This is needed for Django to process the params to its
-          #  request.POST dictionnary:
-        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-
-          #  We need not to pass the parameters encoded as json to Django.
-          #  Encode them like url parameters.
-        $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
-        config = do
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        language = utils.url_language($window.location.pathname)
 
         params = do
-            "place_id": $scope.place.id
+            place_id: $scope.place.id
+            shelf_id: $scope.shelf.pk
+
         $http.post "/api/inventories/create", params
         .then (response) !->
-            $scope.inventory = response.data.data.inventory_id
+            inventory_id = response.data.data.inventory_id
 
-            if $scope.inventory
-                #XXX localization: en, fr,...
-                $window.location.href = "/en/inventories/#{$scope.inventory}/"
+            if inventory_id
+                $window.location.href = "/#{language}/inventories/#{inventory_id}/"
             #else: display error.
 
     $scope.cancel = !->

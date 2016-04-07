@@ -23,8 +23,8 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "Inventory ongoing" %}
 div(ng-controller="inventoryNewController")
+  h3 {% trans "Inventory of " %} {{ 'cur_inv.name' | ng }}
   div {{ 'alerts ' | ng }}
   form(method="get")
     h4 {% trans "Search in the stock" %}

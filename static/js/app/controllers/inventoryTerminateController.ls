@@ -20,6 +20,7 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $scope.showAll = false  # toggled by the checkbox itself.
     $scope.cards_to_show = []
     $scope.name #name of place or basket
+    $scope.alerts = []
 
     $scope.tmpcard = undefined
     # A list of already selected cards' ids

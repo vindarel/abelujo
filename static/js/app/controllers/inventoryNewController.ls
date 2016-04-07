@@ -28,6 +28,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # If we're on page /../inventories/XX/, get info of inventory XX.
     #XXX use angular routing
     $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
+    $scope.cur_inv = ""
     $scope.language = utils.url_language($window.location.pathname)
 
     $scope.setCardsToShow = !->
@@ -61,6 +62,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.progressStyle = do
                 min-width: 4em
                 width: $scope.progress_current + "%"
+
+            $scope.cur_inv = $scope.state.shelf or $scope.state.basket or $scope.state.place
+
             return
 
     $scope.updateProgress = (current, missing) !->

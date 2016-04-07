@@ -100,6 +100,10 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
                 page: $scope.page
                 query: $scope.query
                 datasource: $scope.datasource.id
+        , (response) ->
+            $scope.alerts.push do
+                level: 'error'
+                message: gettext "Internal error, sorry !"
 
     # Initial search results, read the url's query params after the #
     search_obj = $location.search()

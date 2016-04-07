@@ -232,6 +232,47 @@ class Shelf(models.Model):
         #idea: show the nb of cards with that category.
         return u"{}".format(self.name)
 
+    def to_dict(self):
+        """Return a dict with the shelf name and its list of cards.
+        """
+        to_ret = {
+            'id': self.id,
+            'name': self.name,
+            # 'cards': Card.objects.filter(shelf=self.id),
+            }
+        return to_ret
+
+    def cards(self, to_dict=False):
+        """Return the list of cards of this shelf. (a list of Card obj, unless
+        to_dict is set to True)
+
+        """
+        cards = Card.objects.filter(shelf=self.id)
+        if to_dict:
+            cards = [it.to_dict() for it in cards]
+
+        return cards
+
+    def cards_set(self):
+        """
+        - return: a dict of dicts:
+           a card id: {'card': a card dict, 'nb': its quantity.}
+
+        Used for an Inventory diff.
+        """
+        cards = self.cards()
+        cards_set = {it.id: {'card': it,
+                             'quantity': it.quantity}
+                     for it in cards}
+        return cards_set
+
+    @property
+    def cards_qty(self):
+        """
+        - return: int
+        """
+        qty = Card.objects.filter(shelf=self.id).count()
+        return qty
 
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
@@ -2373,6 +2414,10 @@ class Inventory(TimeStampedModel):
     # with a newly received command, or a pack of cards returned.
     basket = models.ForeignKey("Basket", blank=True, null=True)
 
+    def __unicode__(self):
+        inv_obj = self.shelf or self.place or self.basket
+        return "{}: {}".format(self.id, inv_obj.name)
+
     def add_copy(self, copy, nb=1, add=True):
         """copy: a Card object.
 
@@ -2403,20 +2448,24 @@ class Inventory(TimeStampedModel):
         """
         copies = [it.to_dict() for it in self.inventorycards_set.all()]
         total = len(copies)
-        place_dict, basket_dict = ({}, {})
-        if self.place:
+        shelf_dict, place_dict, basket_dict = ({}, {}, {})
+        if self.shelf:
+            missing = self.shelf.cards_qty - total
+            shelf_dict = self.shelf.to_dict()
+        elif self.place:
             missing = self.place.placecopies_set.count() - total
             place_dict = self.place.to_dict()
         elif self.basket:
             missing = self.basket.basketcopies_set.count() - total
             basket_dict = self.basket.to_dict()
         else:
-            log.error("An inventory state without a place nor a basket ? That shouldn't happen !")
+            log.error("Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
 
         ret = {
             "copies": copies,
             "total_copies": total,
             "total_missing": missing,
+            "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,
         }
@@ -2444,9 +2493,13 @@ class Inventory(TimeStampedModel):
         - return
 
         """
+        d_stock = None
         inv_cards_set = self.inventorycards_set.all()
         obj_name = ""
-        if self.place:
+        if self.shelf:
+            d_stock = self.shelf.cards_set()
+            obj_name = self.shelf.name
+        elif self.place:
             stock_cards_set = self.place.placecopies_set.all()
             obj_name = self.place.name
         elif self.basket:
@@ -2457,7 +2510,8 @@ class Inventory(TimeStampedModel):
 
         # Cards of the inventory and of the stock/reference:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
-        d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
+        if not d_stock:
+            d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
 
         # cards in stock but not in the inventory:
         in_stock = list(set(d_stock) - set(d_inv)) # list of ids

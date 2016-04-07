@@ -63,11 +63,11 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         if $scope.publisher
             params['publisher_id'] = $scope.publisher.pk
         if $scope.place
-            params['place'] = $scope.place.id
+            params['place_id'] = $scope.place.id
         if $scope.card_type
             params['card_type'] = $scope.card_type
         if $scope.shelf
-            params['shelf'] = $scope.shelf.pk
+            params['shelf_id'] = $scope.shelf.pk
 
         $http.get "/api/cards", do
             params: params
