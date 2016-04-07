@@ -13,6 +13,7 @@ Contents:
    django-dev.rst
    clientside-dev.rst
    deploy-manage.rst
+   codingstyle.rst
    editors.rst
 
 
