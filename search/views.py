@@ -51,7 +51,6 @@ from models import Basket
 from models import Bill
 from models import Card
 from models import CardType
-from models import Shelf
 from models import Deposit
 from models import DepositState
 from models import Distributor
@@ -60,9 +59,11 @@ from models import Place
 from models import Preferences
 from models import Publisher
 from models import Sell
+from models import Shelf
 from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
+from search.models.utils import is_isbn
 from search.models.utils import list_from_coma_separated_ints
 from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
@@ -721,7 +722,7 @@ def baskets_export(request):
                 cards = [it[0] for it in cards_qties]
                 # the barcode generator doesn't accept None isbn.
                 for card in cards:
-                    if not card.isbn:
+                    if not is_isbn(card.isbn):
                         card.isbn = "0000000000000"
 
                 total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
