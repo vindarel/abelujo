@@ -265,10 +265,8 @@ msgid "Quantity"
 msgstr "Quantité"
 
 #: search/views.py:318
-#, fuzzy
-#| msgid "places"
 msgid "Place"
-msgstr "lieus de stockage"
+msgstr "Lieu de stockage"
 
 #: search/views.py:414
 #, fuzzy
@@ -376,10 +374,8 @@ msgstr "Titre"
 #: templates/pdftemplates/pdf-barcode.jade:36
 #: templates/search/basket_auto_command.jade:42
 #: templates/search/baskets.jade:100 templates/search/collection.jade:108
-#, fuzzy
-#| msgid "price"
 msgid "Price"
-msgstr "prix"
+msgstr "Prix"
 
 #: templates/registration/login.jade:25
 msgid "Please sign in to Abelujo"
@@ -731,32 +727,24 @@ msgid "Search in the stock"
 msgstr "Chercher dans le stock"
 
 #: templates/search/collection.jade:45 templates/search/searchresults.jade:47
-#, fuzzy
-#| msgid "Search"
 msgid "Search terms"
 msgstr "Recherche"
 
 #: templates/search/collection.jade:50 templates/search/searchresults.jade:52
-#, fuzzy
-#| msgid "Partie du titre, nom de l'auteur, etc."
 msgid "Search on title, authors or isbn"
-msgstr "Partie du titre, nom de l'auteur, etc."
+msgstr "Partie du titre, nom de l'auteur, isbn, etc."
 
 #: templates/search/collection.jade:57
 msgid "Type of card"
 msgstr "Type de notice"
 
 #: templates/search/collection.jade:65
-#, fuzzy
-#| msgid "Publishers"
 msgid "Publisher"
-msgstr "Éditeurs"
+msgstr "Éditeur"
 
 #: templates/search/collection.jade:74 templates/search/collection.jade:112
-#, fuzzy
-#| msgid "places"
 msgid "Places"
-msgstr "lieus de stockage"
+msgstr "Lieus"
 
 #: templates/search/collection.jade:89 templates/search/index.jade:32
 #: templates/search/searchresults.jade:57
