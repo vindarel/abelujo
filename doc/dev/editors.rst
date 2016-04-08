@@ -1,3 +1,22 @@
+Git configuration
+=================
+
+We work with a `git submodule`:
+https://www.git-scm.com/book/en/v2/Git-Tools-Submodules.
+
+If you develop on the submodule side, a ``git diff`` on the project
+root will only say that the submodule has local modifications (is
+dirty), but won't tell you what changed. Set this setting::
+
+    git config --local diff.submodule log
+
+Now a git diff will show the submodule's log.
+
+.. note::
+
+   That helps in Emacs' Magit too.
+
+
 Editors configurations
 ======================
 
@@ -17,7 +36,7 @@ Emacs' package manager
 
 Starting with version 24 Emacs has an official package manager:
 `package.el` (we already had el-get and it still works). But you won't
-go long if you don't activate the MELPA repository: see
+go far if you don't activate the MELPA repository: see
 http://wikemacs.org/wiki/MELPA
 
 Now to install a package::
