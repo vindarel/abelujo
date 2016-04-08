@@ -723,6 +723,7 @@ def baskets_export(request):
                 # the barcode generator doesn't accept None isbn.
                 for card in cards:
                     if not is_isbn(card.isbn):
+                        # XXX should return a message
                         card.isbn = "0000000000000"
 
                 total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
