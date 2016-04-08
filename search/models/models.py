@@ -518,6 +518,7 @@ class Card(TimeStampedModel):
         SIZE_LIMIT = 100 #TODO: pagination
         isbns = []
         cards = []
+        msgs = []
 
         # Get all isbns, eans.
         if words:
@@ -574,7 +575,8 @@ class Card(TimeStampedModel):
                     cards.append(card)
                 except Exception as e:
                     log.error("Error searching for isbn {}: {}".format(isbn, e))
-                    # XXX we can return messages !
+                    msgs.append({'level': 'error',
+                                 'message': e})
 
         # Sort
         if order_by:
@@ -593,7 +595,7 @@ class Card(TimeStampedModel):
         if to_list:
             cards = Card.obj_to_list(cards)
 
-        return cards
+        return cards, msgs
 
     @staticmethod
     def get_from_id_list(cards_id):

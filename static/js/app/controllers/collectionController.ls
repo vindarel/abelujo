@@ -59,6 +59,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.validate = !->
         params = do
             query: $scope.query
+            order_by: "-created"
+            in_stock: true
 
         if $scope.publisher
             params['publisher_id'] = $scope.publisher.pk

@@ -79,15 +79,17 @@ def cards(request, **response_kwargs):
     place_id = request.GET.get("place_id")
     shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
-    data = Card.search(query, to_list=True,
-                       distributor=distributor,
-                       publisher_id=publisher_id,
-                       card_type_id=card_type_id,
-                       place_id=place_id,
-                       shelf_id=shelf_id,
-                       order_by=order_by,
-                       bought=True)
+    bought = request.GET.get("in_stock")
+    data, msgs = Card.search(query, to_list=True,
+                             distributor=distributor,
+                             publisher_id=publisher_id,
+                             card_type_id=card_type_id,
+                             place_id=place_id,
+                             shelf_id=shelf_id,
+                             order_by=order_by,
+                             bought=bought)
     log.info(u"we have json distributors: ", data)
+    # TODO:return the msgs
     return JsonResponse(data, safe=False)
 
 def card(request, **kwargs):
