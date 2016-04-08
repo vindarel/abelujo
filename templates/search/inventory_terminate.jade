@@ -39,7 +39,8 @@ div(ng-controller="inventoryTerminateController")
        i.glyphicon.glyphicon-cog
        span.caret
      ul.dropdown-menu
-       li: a(href="#", ng-click="export_bill()", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}
+       li: a(href="#", ng-click="export_list('bill')", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}
+       li: a(href="#", ng-click="export_list('inv')", title='{% trans "Get the list of the inventory" %}) {% trans "Inventory list - pdf" %}
 
   .row
    table.table.table-condensed.table-striped.table-hover(datatable='ng')
