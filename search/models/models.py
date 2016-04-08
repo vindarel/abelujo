@@ -539,7 +539,7 @@ class Card(TimeStampedModel):
         elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
 
-        if bought:
+        if bought and cards:
             cards = cards.filter(in_stock=True)
 
         if cards and shelf_id:
