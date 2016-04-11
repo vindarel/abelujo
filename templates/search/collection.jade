@@ -108,6 +108,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
       th {% trans "Price" %}
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
+      th {% trans "Shelf" %}
       th {% trans "Quantity" %}
       th {% trans "Places" %}
       th: input(type="checkbox", ng-click="toggleAll()")
@@ -134,6 +135,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
           div(ng-repeat="author in card.authors")
             div {{ 'author.fields.name' |ng}}
         td {{ 'card.pubs_repr' | ng }}
+        td {{ 'card.shelf' | ng }}
         td {{ 'card.quantity' | ng }}
         td
           div(ng-show="card.places") {{ 'card.places' | ng}}

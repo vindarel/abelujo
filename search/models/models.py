@@ -471,6 +471,7 @@ class Card(TimeStampedModel):
             "publishers": pubs,
             "pubs_repr": pubs_repr,
             "quantity": self.quantity,
+            "shelf": self.shelf.name if self.shelf else "",
             "title": self.title,
             "threshold": self.threshold,
         }
