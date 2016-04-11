@@ -13,6 +13,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.shelfs = []
     $scope.shelf = null
     $scope.publisher = null
+    $scope.distributors = []
+    $scope.distributor = null
     $scope.baskets = []
     $scope.show_images = true
 
@@ -46,6 +48,10 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     .then (response) !->
         $scope.publishers = response.data
 
+    $http.get "/api/distributors"
+    .then (response) !->
+        $scope.distributors = response.data
+
     # Get cards in stock
     params = do
         order_by: "-created" # valid django
@@ -70,6 +76,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params['card_type'] = $scope.card_type
         if $scope.shelf
             params['shelf_id'] = $scope.shelf.pk
+        if $scope.distributor
+            params['distributor_id'] = $scope.distributor.id
 
         $http.get "/api/cards", do
             params: params

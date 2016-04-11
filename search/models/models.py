@@ -498,7 +498,8 @@ class Card(TimeStampedModel):
         return ret
 
     @staticmethod
-    def search(words, card_type_id=None, distributor=None, to_list=False,
+    def search(words, card_type_id=None, distributor=None, distributor_id=None,
+               to_list=False,
                publisher_id=None, place_id=None, shelf_id=None,
                bought=False, order_by=None):
         """Search a card (by title, authors' names, ean/isbn).
@@ -558,6 +559,9 @@ class Card(TimeStampedModel):
 
         if distributor and cards:
             cards = cards.filter(distributor__name__exact=distributor)
+
+        if distributor_id and cards:
+            cards = cards.filter(distributor__id=distributor_id)
 
         if cards and card_type_id:
             cards = cards.filter(card_type=card_type_id)

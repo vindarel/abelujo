@@ -74,6 +74,7 @@ def cards(request, **response_kwargs):
     query = request.GET.get("query")
     query = query.split() if query else None
     distributor = request.GET.get("distributor")
+    distributor_id = request.GET.get("distributor_id")
     card_type_id = request.GET.get("card_type_id")
     publisher_id = request.GET.get("publisher_id")
     place_id = request.GET.get("place_id")
@@ -82,6 +83,7 @@ def cards(request, **response_kwargs):
     bought = request.GET.get("in_stock")
     data, msgs = Card.search(query, to_list=True,
                              distributor=distributor,
+                             distributor_id=distributor_id,
                              publisher_id=publisher_id,
                              card_type_id=card_type_id,
                              place_id=place_id,
@@ -254,7 +256,6 @@ def distributors(request, **response_kwargs):
         else:
             data = Distributor.objects.all()
             data = [it.to_list() for it in data]
-        data = json.dumps(data)
         return JsonResponse(data, safe=False)
 
 def publishers(request, **response_kwargs):
