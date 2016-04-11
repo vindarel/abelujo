@@ -465,7 +465,9 @@ def basket(request, pk, action="", card_id="", **kwargs):
     elif request.method == 'POST':
         # json request
         req = {}
-        if request.body:
+        if request.POST.get('card_ids'):
+            req = request.POST
+        elif request.body:
             # 'remove' doesn't use this.
             req = json.loads(request.body)
         # Add cards from ids (from the Collection view)
