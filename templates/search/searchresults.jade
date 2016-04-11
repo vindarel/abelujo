@@ -104,7 +104,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         td
           input(type="checkbox", ng-model="card.selected")
         td
-          button.btn.btn-primary(ng-click="create_and_add(card)") {% trans "Buy…" %}
+          button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
 
  nav(style="float: right;")
           ul.pagination
