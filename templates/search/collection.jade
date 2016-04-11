@@ -38,9 +38,9 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
     )
       {{ 'alert.message' | ng }}
 
- .row
-  .col-md-6
-   form
+ form(ng-submit="validate()")
+  .row
+   .col-md-6
     div.form-group
       label.col-md-4 {% trans "Search terms" %}
       div.col-md-8
@@ -50,7 +50,7 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
 
- .row
+  .row
    .col-md-6
     form
      div

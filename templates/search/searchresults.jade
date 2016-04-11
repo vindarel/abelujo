@@ -39,7 +39,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
  .row
   .col-md-10
-   form
+   form(ng-submit="validate()")
     div.form-group
       label.col-md-4 {% trans "Source" %}
       div.col-md-8
