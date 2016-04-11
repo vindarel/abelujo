@@ -414,10 +414,8 @@ msgid "Related deposit"
 msgstr "dépôts concernés"
 
 #: templates/search/basket_auto_command.jade:28
-#, fuzzy
-#| msgid "Auto command"
 msgid "Cards to command"
-msgstr "Auto-commander"
+msgstr "Notices à commander"
 
 #: templates/search/basket_auto_command.jade:32
 msgid ""
@@ -428,10 +426,8 @@ msgstr ""
 "que vous voulez commander pour chacune, puis envoyer un mail aux diffuseurs."
 
 #: templates/search/basket_auto_command.jade:36
-#, fuzzy
-#| msgid "To command"
 msgid "New command"
-msgstr "A commander"
+msgstr "Nouvelle commande"
 
 #: templates/search/basket_auto_command.jade:36
 msgid "Hello"
@@ -457,7 +453,7 @@ msgstr "Enlever de la liste"
 #, fuzzy
 #| msgid "To command"
 msgid "Command"
-msgstr "A commander"
+msgstr "À commander"
 
 #: templates/search/basket_auto_command.jade:58
 msgid ""
@@ -468,16 +464,12 @@ msgstr ""
 
 #: templates/search/basket_auto_command.jade:66
 #: templates/search/baskets.jade:55
-#, fuzzy
-#| msgid "To command"
 msgid "Command…"
-msgstr "A commander"
+msgstr "Passer commande…"
 
 #: templates/search/baskets.jade:40 templates/search/baskets.jade.py:113
-#, fuzzy
-#| msgid "Created the"
 msgid "Create a basket"
-msgstr "Créé le"
+msgstr "Créer une liste"
 
 #: templates/search/baskets.jade:55
 msgid "Mark all the cards to command"
@@ -488,10 +480,8 @@ msgid "Receive a command and check you received all the books"
 msgstr "Recevoir un colis et vérifier son contenu"
 
 #: templates/search/baskets.jade:56
-#, fuzzy
-#| msgid "To command"
 msgid "Receive a command"
-msgstr "A commander"
+msgstr "Réceptionner un colis"
 
 #: templates/search/baskets.jade:59
 #: templates/search/inventory_terminate.jade:38
@@ -499,10 +489,8 @@ msgid "Export the list to the required format"
 msgstr "Exporter la liste au format requis"
 
 #: templates/search/baskets.jade:64
-#, fuzzy
-#| msgid "Minimum wanted quantity"
 msgid "simple: isbn and quantity"
-msgstr "Quantité minimum demandée"
+msgstr "simple: isbn et quantité"
 
 #: templates/search/baskets.jade:65
 msgid "with barcodes"
@@ -518,8 +506,6 @@ msgid "Use TAB to validate your choice, Enter to proceed."
 msgstr "Utilisez TAB pour valider la selection, Entrée pour finir la vente."
 
 #: templates/search/baskets.jade:94
-#, fuzzy
-#| msgid "nb of books"
 msgid "Number of copies"
 msgstr "nombre de livres"
 
@@ -530,8 +516,6 @@ msgid "total"
 msgstr "total"
 
 #: templates/search/baskets.jade:99
-#, fuzzy
-#| msgid "in stock"
 msgid "In stock"
 msgstr "en stock"
 
@@ -982,10 +966,8 @@ msgid "Add copies…"
 msgstr "Ajouter des exemplaires…"
 
 #: templates/search/deposits_view.jade:71
-#, fuzzy
-#| msgid "related deposits"
 msgid "Delete this deposit"
-msgstr "dépôts concernés"
+msgstr "Supprimer ce dépôt"
 
 #: templates/search/history.jade:41
 #, fuzzy
