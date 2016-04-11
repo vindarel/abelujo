@@ -5,7 +5,7 @@ français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr
 
 This project is at its debut stage. However it is already possible to:
 
--   look up for **books**, either by keywords or by isbn/ean (which works with a **barcode scanner**). You can currently search for:
+-   look up for **books**, either by keywords or by isbn/ean (which works with a **barcode scanner**). See the https://gitlab.com/vindarel/bookshops library. You can currently search for:
     * french books (through [librairiedeparis](http://www.librairie-de-paris.fr/), [decitre.fr](http://www.decitre.fr/) or chapitre.com)
     * spanish books (through [casadellibro.com](http://www.casadellibro.com))
     * german books(through [buch-wagner.de](http://www.buch-wagner.de))
