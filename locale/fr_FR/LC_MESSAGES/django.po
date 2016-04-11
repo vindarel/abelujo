@@ -490,7 +490,7 @@ msgstr "Exporter la liste au format requis"
 
 #: templates/search/baskets.jade:64
 msgid "simple: isbn and quantity"
-msgstr "simple: isbn et quantité"
+msgstr "simple: isbn et quantité (Dilicom)"
 
 #: templates/search/baskets.jade:65
 msgid "with barcodes"

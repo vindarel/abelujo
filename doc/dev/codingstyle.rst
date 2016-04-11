@@ -22,6 +22,17 @@ Quantity, qty, number, count ?
 
 Prefer `qty`.
 
+Method parameters naming
+------------------------
+
+When the paramater is an id, say it:
+
+    def foo(card_id=None):
+
+Otherwise, it should accept both an object and an id (as a string or
+an int), so you should check the type.
+
+
 API
 ---
 

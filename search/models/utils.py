@@ -178,7 +178,7 @@ def list_from_coma_separated_ints(str):
             return int(nb)
         except ValueError:
             nb = nb.replace(",", ".")
-            return float(nb)
+            return float(nb) if nb else None
 
     # Data validation: should check that we only have ints and comas...
     if str:

@@ -29,7 +29,28 @@ h3 {% trans "Cards to command" %}
 
 div(ng-cloak, ng-controller="basketToCommandController")
 
-  em {% trans "The cards to command are grouped by distributor. Check the quantity you want to command and send them an email." %}
+  div
+    uib-alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
+  div.panel.panel-info
+    div.panel-heading {% trans "Help" %}
+    div.panel-body {% trans "The cards to command are grouped by distributor. Check the quantity you want to command and send them an email." %}
+    div.panel-body {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
+
+  .row
+    .col-md-1
+     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
+       i.glyphicon.glyphicon-download
+       span.caret
+     ul.dropdown-menu
+       li: a(href="#", ng-click="export_to('simple')") csv - {% trans "simple: isbn and quantity" %}
+
   div(ng-repeat="(pub_id, cards) in sorted_cards")
         span
           h4 {{ 'grouped_dist[pub_id][0].name'|ng}}  

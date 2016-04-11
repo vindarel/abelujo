@@ -690,6 +690,7 @@ def baskets_export(request):
     ids_qties = params.get('ids_qties')
     list_name = params.get('list_name')
     tups = list_to_pairs(list_from_coma_separated_ints(ids_qties))
+    tups = filter(lambda it: it is not None, tups)
 
     response = HttpResponse()
 
@@ -698,6 +699,9 @@ def baskets_export(request):
 
         cards_qties = [(Card.objects.get(id=tup[0]), tup[1]) for tup in tups]
         isbns_qties = [(tup[0].isbn, tup[1]) for tup in cards_qties]
+        # Should warn about no isbn, also on client side.
+        # Booklets, newspapers or even books can be without isbn in a normal situation.
+        isbns_qties = filter(lambda it: it[0] is not None, isbns_qties)
 
         if layout == 'simple':
             pseudo_buffer = Echo()

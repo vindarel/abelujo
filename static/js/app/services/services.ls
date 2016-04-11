@@ -35,7 +35,8 @@ utils.factory 'utils', ($http) ->
         export_to: (ids_qties, layout, list_name, language) ->
             """
             - ids_qties: string of coma-separated integers
-            - layout: "csv", "pdf"
+            - layout: "simple": csv with isbn and quantity
+                "pdf": pdf with barcodes, titles, quantity, price, and totals.
             - list_name: str
 
             Return a list of alerts.
@@ -73,3 +74,4 @@ utils.factory 'utils', ($http) ->
                 alerts = alerts.concat do
                     level: "error"
                     message: gettext "We couldn't produce the file, there were an internal error. Sorry !"
+                alerts

@@ -20,18 +20,21 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {find, sum, map, filter, lines, group-by} = require 'prelude-ls'
+    {find, sum, map, filter, lines, group-by, join} = require 'prelude-ls'
 
     # url encodings for "mailto"
     NEWLINE = "%0D%0A"
     ESPERLUETTE = "%26"
 
     AUTO_COMMAND_ID = 1
+    $scope.alerts = []
     $scope.cards = []
     $scope.sorted_cards = {}
     $scope.distributors = []
     $scope.grouped_dist = {}
     $scope.bodies = {} # pub_id, email body
+
+    $scope.language = utils.url_language($window.location.pathname)
 
     $http.get "/api/baskets/#{AUTO_COMMAND_ID}",
     .then (response) ->
@@ -42,6 +45,25 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     .then (response) !->
         $scope.distributors = response.data
         $scope.grouped_dist = group-by (.id), $scope.distributors
+
+    $scope.export_to = (layout) ->
+        """Export to the given format: simple (csv), etc
+        """
+        ids_qties = []
+        map ->
+            ids_qties.push "#{it.id}, #{it.threshold}"
+        , $scope.cards
+        $scope.isbns = $scope.cards
+        |> map (.isbn)
+
+        ids_qties = join ",", ids_qties
+        $scope.ids_qties = ids_qties
+
+        promise = utils.export_to ids_qties, "simple", "command", $scope.language
+        # $scope.alerts += alerts
+
+    $scope.closeAlert = (index) ->
+        $scope.alerts.splice index, 1
 
     $scope.get_body = (pub_id) ->
         "Get the list of cards and their quantities for the email body.
@@ -69,17 +91,6 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         body += NEWLINE + gettext("Thank you.")
         $scope.bodies[pub_id] = body
         body
-
-    #  This is needed for Django to process the params to its
-    #  request.POST dictionnary:
-    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-
-    #  We need not to pass the parameters encoded as json to Django.
-    #  Encode them like url parameters.
-    $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
-    config = do
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-
 
     $scope.remove_from_selection = (pub_id, index_to_rm) !->
         "Remove the card from the list. Server call."
