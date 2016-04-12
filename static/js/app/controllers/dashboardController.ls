@@ -56,6 +56,6 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     .then (response) !->
         $scope.deposits = response.data
 
-    $window.document.title = "Abelujo"
+    $window.document.title = "Abelujo" + " - " + gettext "dashboard"
 
 ]

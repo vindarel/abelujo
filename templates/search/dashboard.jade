@@ -23,16 +23,14 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "Abelujo's dashboard" %}
-
 div(ng-controller="dashboardController", ng-cloak="stats")
   .row
     .col-lg-6
       h3 {% trans "Composition of the stock" %}
       div(ng-show="stats")
-        h4 {{'stats.nb_cards.label'|ng}}: {{'stats.nb_cards.value'|ng}}
-        h4 {% verbatim %} {{ stats.nb_books.label}}: {{stats.nb_books.value }} {% endverbatim %}
-        h4(title="{{ 'stats.total_cost.title' | ng }}") {% verbatim %} {{ stats.total_cost.label}}: {{stats.total_cost.value }} {% endverbatim %} €
+        h4 {% trans "Total number of cards" %}: {{'stats.nb_cards.value'|ng}}
+        h4 {% trans "Number of books" %}: {{'stats.nb_books.value'|ng }}
+        h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %}: {{'stats.total_cost.value'|ng }} €
       div(id="chart")
 
     .col-lg-6
@@ -82,14 +80,13 @@ div(ng-controller="dashboardController", ng-cloak="stats")
     .col-lg-6
       h3 {% trans "Comfort of the stock" %}
       div(ng-show="stats")
-        div {% verbatim %} {{stats.nb_cards_no_stock.label}}: {{stats.nb_cards_no_stock.value}} {% endverbatim %}
-        div {% verbatim %} {{ stats.nb_cards_one_copy.label}}: {{stats.nb_cards_one_copy.value }} {% endverbatim %}
+        div {% trans "Nb cards with no copy" %}: {{'stats.nb_cards_no_stock.value'|ng}}
+        div {% trans "Nb cards with one copy" %}: {{'stats.nb_cards_one_copy.value'|ng }}
       div(id="chartNoStock")
 
   .row
     .col-lg-6
       h3 {% trans "Cost of the stock VS deposits" %}
-    .col-lg-6
       div(id="chart2")
 
 
