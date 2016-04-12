@@ -1048,8 +1048,6 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: templates/search/inventories.jade:56
-#, fuzzy
-#| msgid "What place are you doing the inventory of ?"
 msgid "What are you doing the inventory of ?"
 msgstr "De quel lieu faites-vous l'inventaire ?"
 
@@ -1062,10 +1060,8 @@ msgid "Ok"
 msgstr "Ok"
 
 #: templates/search/inventories.jade:68
-#, fuzzy
-#| msgid "On the place"
 msgid "A whole place"
-msgstr "Lieu"
+msgstr "Un lieu entier"
 
 #: templates/search/inventories.jade:74
 msgid "New"
