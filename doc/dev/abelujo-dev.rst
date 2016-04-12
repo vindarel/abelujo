@@ -265,12 +265,6 @@ rely on install correctly. We do it partially with `tox
 no one is missing ;) At is core it is made to test the installation
 against multiple versions of python but we don't need that (yet).
 
-And this isn't enough yet, because nothing guarantees that ``pip``
-itself or ``node`` are installed correctly on the machine, which can be
-a fresh or an old Debian, an Ubuntu, a web server, ... for that, we
-started setting up `Docker` and a **continuous integration** server
-on Gitlab.com. But that's an ongoing work.
-
 
 Running Tests
 -------------
@@ -397,41 +391,3 @@ And when you want to suggest changes to the official repository, you
 press the button "Pull Request". We'll have a place to tchat about
 your changes, and when a maintainer feels like it's ok, he or she will
 merge your changes. We can also give you the right to do so.
-
-Install and work on the Docker image (ongoing work)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Why Docker ?
-
-Before Docker came along, virtualenv was pretty much the tool of
-choice for Python developers as it allows you to separate package
-dependencies for different applications you're working on without
-having to create separate virtual machines for each one. It worked
-very well for me.
-
-However, there are still some annoying things the developers will have
-to deal with. Such things include having to install additional
-applications and services required by the project such as PostgreSQL,
-RabbitMQ, and Solr, for example. Also, some Python packages won't
-install/compile properly without additional libraries installed on the
-developer's machine. Pillow and lxml are just two that come to
-mind. There is also the issue of predictability when you deploy to
-production. You may be developing on a Mac but your production server
-runs Ubuntu 12.04. Features that worked fine locally may have issues
-when deployed to the servers.
-
-Of course, virtual machines can solve these issues. But VMs are heavy,
-take some time to start up, and if you like to separate services (say
-a different VM for PostgreSQL), that could use up quite a bit of
-system resources and if you use a laptop for development you will see
-a pretty significant reduction in battery life.
-
-With Docker, these issues go away. You can have all these services in
-isolated Docker containers that are lightweight and start up very
-quickly. You can use base images for different Linux distros,
-preferably the same distro and version you use in production.
-
-read more:
-
-* tutorial: https://www.calazan.com/using-docker-and-docker-compose-for-local-django-development-replacing-virtualenv/
-* Docker: https://docker.com/
