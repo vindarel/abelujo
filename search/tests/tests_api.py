@@ -111,10 +111,12 @@ class ApiTest(TestCase):
         self.assertEqual(dep.dest_place.name, models.Place.objects.get(id=1).name)
 
     def test_deposits_no_card(self):
+        """Yes it is possible to create one without cards.
+        """
         self.params["cards_id"] = ""
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
-        self.assertEqual(resp_data["alerts"][0]["level"], messages.WARNING)
+        self.assertEqual(resp_data["alerts"][0]["level"], models.ALERT_SUCCESS)
 
     def test_sell_cards(self):
         self.params["to_sell"] = u"1,9.5,2"
@@ -172,17 +174,26 @@ class TestBaskets(TestCase):
         }
         self.c = Client()
 
-    def test_basket_add_card(self):
-        resp = self.c.post(reverse("api_basket_act", args=('1', 'add')), self.params)
-        data = json.loads(resp.content)
-        self.assertTrue(data['status'] )
-        self.assertFalse(data['msgs'] )
+    # XXX: Django: we can't read request.body twice. It appears a middleware reads it before us
+    # in api.basket. We get:
+    # RawPostDataException: You cannot access body after reading from request's data stream
+    # => write end to end tests.
+
+    # def test_basket_add_card(self):
+    #     resp = self.c.post(reverse("api_basket_act", args=('1', 'add')), self.params)
+    #     data = json.loads(resp.content)
+    #     self.assertTrue(data['status'] )
+    #     self.assertFalse(data['msgs'] )
 
     def test_basket_remove_card(self):
-        resp = self.c.post(reverse("api_basket_act", args=('1', 'remove', "1,")))
+        # self.params["cards_id"] = ""
+        # resp = self.c.post("/api/deposits", self.params)
+        # Setting the content type makes the test work (there's no body params here, so ok).
+        # https://github.com/tomchristie/django-rest-framework/issues/2774
+        resp = self.c.post(reverse("api_basket_act", args=('1', 'remove', "1,")), content_type='application/json')
         data = json.loads(resp.content)
         self.assertTrue(data['status'])
-        self.assertEqual(data['msgs'], [u''])
+        self.assertEqual(data['msgs'][0]['level'], u'success')
 
 
 class TestUtils(TestCase):

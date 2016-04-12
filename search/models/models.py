@@ -514,8 +514,8 @@ class Card(TimeStampedModel):
           objects. Used to store the search result into the session,
           which doesn't know how to store Card objects.
 
-        returns: a list of objects or a list of dicts if to_list is
-        specified.
+        returns: a 2-tuple: a list of objects or a list of dicts if to_list is
+        specified, and a list of messages.
         """
         SIZE_LIMIT = 100 #TODO: pagination
         isbns = []
@@ -1833,7 +1833,7 @@ class Deposit(TimeStampedModel):
         - copies: a list of Card objects
         - quantities: a list of their respective quantities (int)
 
-        returns: a tuple status, list of messages. The messages are dictionnaries:
+        returns: a 2-tuple status, list of messages. The messages are dictionnaries:
             - level: STATUS_{SUCCESS, ERROR, WARNING}
             - message: string
 
@@ -2497,7 +2497,7 @@ class Inventory(TimeStampedModel):
         database,
         - which are in the database but with the wrong quantity.
 
-        - return
+        - return a 2-tuple
 
         """
         d_stock = None

@@ -51,6 +51,7 @@ from search.models import Place
 from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
+from search.models import Shelf
 from search.models import Sell
 
 class SellsFactory(DjangoModelFactory):
@@ -85,6 +86,13 @@ class InventoryFactory(DjangoModelFactory):
 
 ISBN = "9782757837009"
 
+
+class ShelfFactory(DjangoModelFactory):
+    class Meta:
+        model = Shelf
+
+    name = factory.Sequence(lambda n: "shelf test id %s" % (n + 1))
+
 class CardFactory(DjangoModelFactory):
     class Meta:
         model = Card
@@ -116,6 +124,7 @@ class TestCards(TestCase):
         self.fixture_title = "living my life"
         self.autobio = Card(title=self.fixture_title,
                             isbn=self.fixture_isbn,
+                            shelf=ShelfFactory(),
                             card_type=typ)
         self.autobio.save()
         self.autobio.authors.add(self.goldman)
@@ -197,15 +206,15 @@ class TestCards(TestCase):
 
     def test_search(self):
         # Should search with way more cards.
-        res = Card.search(["gold"], card_type_id=1)
+        res, msgs = Card.search(["gold"], card_type_id=1)
         self.assertEqual(1, len(res))
 
     def test_search_notype(self):
-        res = Card.search(["gold"], card_type_id=999)
+        res, msgs = Card.search(["gold"], card_type_id=999)
         self.assertFalse(res)
 
     def test_search_alltypes(self):
-        res = Card.search(["gold"], card_type_id=0)
+        res, msgs = Card.search(["gold"], card_type_id=0)
         self.assertTrue(res)
 
     def test_search_only_type(self):
@@ -213,12 +222,19 @@ class TestCards(TestCase):
         self.assertTrue(Card.search("", card_type_id=1))
 
     def test_search_key_words(self):
-        res = Card.search(["liv", "gold"])
+        res, msgs = Card.search(["liv", "gold"])
         self.assertEqual(1, len(res))
 
     def test_search_card_isbn(self):
-        res = Card.search([ISBN])
+        res, msgs = Card.search([ISBN])
         self.assertEqual(len(res), 1)
+
+    def test_search_shelf(self):
+        res, msgs = Card.search(["gold"], shelf_id=1)
+        self.assertEqual(len(res), 1)
+        # Shelf doesn't exist:
+        res, msgs = Card.search(["gold"], shelf_id=2)
+        self.assertEqual(len(res), 0)
 
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)
@@ -840,16 +856,23 @@ class TestInventory(TestCase):
         res = self.inv.add_copy(self.card2, nb=2)
         res = self.inv.add_copy(self.card3, nb=1)
         # the inv:
-        # - has card3 that the place doesn't have
-        # - it has not the card 1
+        d_diff, objname = self.inv.diff()
+        # - has not the card 1
+        self.assertEqual(d_diff[1]['inv'], None)
+        self.assertEqual(d_diff[1]['stock'], 1)
+        self.assertEqual(d_diff[1]['in_orig'], True)
+
         # - has card2 with +1 copy
-        in_stock, in_inv, d_diff = self.inv.diff()
-        self.assertEqual(in_inv[3]['quantity'], 1)
-        self.assertEqual(in_stock[1]['quantity'], 1)
         self.assertEqual(d_diff[2]['diff'], 1)
+        self.assertEqual(d_diff[2]['stock'], 1)
+        self.assertEqual(d_diff[2]['inv'], 2)
+
+        # - has card3 that the place doesn't have
+        self.assertEqual(d_diff[3]['diff'], 1)
+        self.assertEqual(d_diff[3]['inv'], 1)
+        self.assertEqual(d_diff[3]['in_orig'], False)
+        self.assertEqual(d_diff[3]['in_inv'], True)
 
         # With to_dict:
-        in_stock, in_inv, d_diff = self.inv.diff(to_dict=True)
-        self.assertTrue(in_stock)
-        self.assertTrue(in_inv)
+        d_diff, objname = self.inv.diff(to_dict=True)
         self.assertTrue(d_diff)

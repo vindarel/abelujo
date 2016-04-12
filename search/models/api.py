@@ -467,7 +467,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         # json request
         req = {}
         if request.POST.get('card_ids'):
-            req = request.POST
+            req = request.POST.copy()
         elif request.body:
             # 'remove' doesn't use this.
             req = json.loads(request.body)
