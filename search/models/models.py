@@ -693,6 +693,12 @@ class Card(TimeStampedModel):
 
         return True, msgs
 
+    def last_sell(self):
+        """Return: the last sell datetime.
+        """
+        last_soldcard = SoldCards.objects.filter(card__id=self.id).last()
+        return last_soldcard.created
+
     @staticmethod
     def exists(card_dict):
         """Check if the given card already exists in the database.
