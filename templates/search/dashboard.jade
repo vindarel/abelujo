@@ -30,9 +30,9 @@ div(ng-controller="dashboardController", ng-cloak="stats")
     .col-lg-6
       h3 {% trans "Composition of the stock" %}
       div(ng-show="stats")
-        div {% verbatim %} {{stats.nb_cards.label}}: {{stats.nb_cards.value}} {% endverbatim %}
-        div {% verbatim %} {{ stats.nb_books.label}}: {{stats.nb_books.value }} {% endverbatim %}
-        div(title="{{ 'stats.total_cost.title' | ng }}") {% verbatim %} {{ stats.total_cost.label}}: {{stats.total_cost.value }} {% endverbatim %} €
+        h4 {{'stats.nb_cards.label'|ng}}: {{'stats.nb_cards.value'|ng}}
+        h4 {% verbatim %} {{ stats.nb_books.label}}: {{stats.nb_books.value }} {% endverbatim %}
+        h4(title="{{ 'stats.total_cost.title' | ng }}") {% verbatim %} {{ stats.total_cost.label}}: {{stats.total_cost.value }} {% endverbatim %} €
       div(id="chart")
 
     .col-lg-6
@@ -50,6 +50,19 @@ div(ng-controller="dashboardController", ng-cloak="stats")
           tr
             td.text-center(colspan="5")
               div(st-pagination="", st-items-by-page="10")
+
+  .row
+    .col-lg-6
+      h3 {% trans "Cards never sold" %}: {{ 'static_stock.never_sold_nb'|ng }}
+      div: em {% trans "Excerpt of the list" %}:
+      table.table.table-striped(datatable="ng")
+        thead
+          tr
+            th {% trans "Title" %}
+        tbody
+          tr(ng-repeat="it in static_stock.never_sold_list")
+            th
+              a(href="{{'it.get_absolute_url'|ng}}") {{ 'it.title' | ng }}
 
   .row
     .col-lg-6

@@ -23,6 +23,7 @@ from models import Inventory
 from models import Place
 from models import Publisher
 from models import Sell
+from models import SoldCards
 from models import Stats
 from models import getHistory
 from search.models.common import ALERT_ERROR
@@ -650,7 +651,6 @@ def inventories(request, **kwargs):
     msgs = []
 
     if request.method == "POST":
-        import ipdb; ipdb.set_trace()
         params = json.loads(request.body)
         place_id = params.get("place_id")
         shelf_id = params.get("shelf_id")
@@ -752,3 +752,19 @@ def stats_sells_month(request, **kwargs):
     stats = Stats()
     res = stats.best_sells_month()[:LIMIT]
     return JsonResponse(res, safe=False)
+
+def stats_static(request, page=0, **kwargs):
+    """Return the static stock.
+    """
+    PAGE = 20
+
+    notsold = Card.objects.exclude(id__in = SoldCards.objects.all().values_list('id', flat=True))
+
+    ret = [it.to_dict() for it in notsold[page:page + PAGE]]
+
+    to_ret = {
+        'never_sold_nb': len(notsold),
+        'never_sold_list': ret,
+    }
+
+    return JsonResponse(to_ret)

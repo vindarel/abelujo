@@ -48,6 +48,10 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     .then (response) !->
         $scope.sells_month = response.data
 
+    $http.get "/api/stats/static"
+    .then (response) !->
+        $scope.static_stock = response.data
+
     $http.get "/api/deposits/due_dates/"
     .then (response) !->
         $scope.deposits = response.data
