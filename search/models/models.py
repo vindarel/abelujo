@@ -1999,7 +1999,7 @@ class Deposit(TimeStampedModel):
         return (closed, msg)
 
 
-class SoldCards(models.Model):
+class SoldCards(TimeStampedModel):
 
     class Meta:
         app_label = "search"
