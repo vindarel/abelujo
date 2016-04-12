@@ -1,4 +1,4 @@
-angular.module "abelujo.controllers", [] .controller 'cardCreateController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
+angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope', '$window', 'utils', '$filter', ($http, $scope, $window, utils, $filter) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.

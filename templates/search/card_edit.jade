@@ -76,7 +76,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
               input(
                   type="text",
                   ng-model="{% verbatim %} author_input {% endverbatim %}"
-                  typeahead="{% verbatim %} author.fields.name for author in getItemsApi('/api/authors', $viewValue, 'authors_selected') {% endverbatim %}"
+                  uib-typeahead="{% verbatim %} author.fields.name for author in getItemsApi('/api/authors', $viewValue, 'authors_selected') {% endverbatim %}"
                   typeahead-min-length="3"
                   typeahead-on-select="add_selected_item($item, 'author_input', 'authors_selected')"
               )
@@ -94,7 +94,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
           input(
               type="text",
               ng-model="{% verbatim %} pub_input {% endverbatim %}"
-              typeahead="{% verbatim %} pub.fields.name for pub in getItemsApi('/api/publishers', $viewValue, 'pubs_selected') {% endverbatim %}"
+              uib-typeahead="{% verbatim %} pub.fields.name for pub in getItemsApi('/api/publishers', $viewValue, 'pubs_selected') {% endverbatim %}"
               typeahead-min-length="3"
               typeahead-on-select="add_selected_item($item, 'pub_input', 'pubs_selected')"
           )
