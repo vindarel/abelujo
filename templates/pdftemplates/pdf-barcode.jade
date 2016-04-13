@@ -25,8 +25,7 @@ head
   body
 
     h2#header_content(style="{text-align: center;}")  {{ list_name }}, {{ date }}
-    div#footer_content(style="{text-align: center;}") {% trans "page" %} <pdf:pagenumber> Abelujo.cc
-    // of <pdf:pagecount>
+    div#footer_content(style="{text-align: center;}") {% trans "page" %} <pdf:pagenumber> / <pdf:pagecount> 
 
     table
       thead
