@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils) !->
+angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location) !->
 
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index} = require 'prelude-ls'
 
@@ -37,15 +37,23 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         $scope.baskets = response.data.data
         |> reject (.id == 1)
 
-        $scope.showBasket 0
+        hash_basket_id = parseInt $location.hash(), 10
+        index = find-index ( -> hash_basket_id == it.id), $scope.baskets
+        if not index
+            index = 0
 
-    $scope.showBasket = (item) !->
+        $scope.showBasket index
+
+    $scope.showBasket = (index) !->
         "Show the copies of the given basket."
-        $scope.cur_basket = $scope.baskets[item]
+        $scope.cur_basket = $scope.baskets[index]
+        $location.hash($scope.cur_basket.id)
+        $window.document.title = "Abelujo - " + gettext("Baskets") + ", " + $scope.cur_basket.name
+
         if not $scope.cur_basket.copies
             $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
             .then (response) !->
-                $scope.baskets[item].copies = response.data.data
+                $scope.baskets[index].copies = response.data.data
                 $scope.copies = response.data
                 |> sort-by (.title)
 
