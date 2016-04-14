@@ -386,7 +386,7 @@ msgid ""
 "You can also export all this list to csv, wich will contain, for each card, "
 "the isbn and the quantity to command. This format is well suited to feed in "
 "the website of some resailers, like Dilicom."
-msgstr ""
+msgstr "Vous pouvez également exporter la liste entière au format csv. Le fichier contiendra une colonne isbn et une colonne quantité, ce qui le rend compatible avec l'interface client de Dilicom."
 
 #: templates/search/basket_auto_command.jade:48
 #: templates/search/baskets.jade:59
@@ -968,16 +968,12 @@ msgid "Entries"
 msgstr "Inventaires"
 
 #: templates/search/history.jade:42
-#, fuzzy
-#| msgid "Sell"
 msgid "Sells"
-msgstr "Vendre"
+msgstr "Vente"
 
 #: templates/search/history.jade:43
-#, fuzzy
-#| msgid "Movement"
 msgid "Movements"
-msgstr "Mouvement"
+msgstr "Mouvements"
 
 #: templates/search/history.jade:55
 msgid "cards"
