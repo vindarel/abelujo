@@ -100,7 +100,11 @@ div(ng-cloak, ng-controller="basketsController")
        th {% trans "Price" %}
        th
      tbody
-       tr(ng-repeat="it in copies", ng-mouseenter="show_buttons[$index] = true", ng-mouseleave="show_buttons[$index] = false")
+       tr.repeated-item(
+          ng-repeat="it in copies"
+          ng-mouseenter="show_buttons[$index] = true"
+          ng-mouseleave="show_buttons[$index] = false")
+
          td: a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
          td {{ 'it.quantity' | ng}}
          td {{ 'it.price' | ng }} €

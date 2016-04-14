@@ -8,6 +8,7 @@ angular.module('abelujo', [
     'ngCookies',
     'ngResource',
     'ngSanitize',
+    'ngAnimate',
     'ui.router',
     'ui.select',
     'ui.bootstrap',

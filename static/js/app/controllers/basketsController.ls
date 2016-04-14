@@ -16,7 +16,7 @@
 
 angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils) !->
 
-    {Obj, join, reject, sum, map, filter, find, lines} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index} = require 'prelude-ls'
 
     $scope.baskets = []
     $scope.copies = []
@@ -47,6 +47,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             .then (response) !->
                 $scope.baskets[item].copies = response.data.data
                 $scope.copies = response.data
+                |> sort-by (.title)
 
         else
             $scope.copies = $scope.cur_basket.copies
@@ -83,24 +84,33 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         tmpcard = $scope.cards_fetched
         |> find (.repr == card_repr.repr)
         tmpcard = tmpcard.item
-        $scope.copies.push tmpcard
+        # $scope.copies.push tmpcard
+        # Insert at the right sorted place
+        index = 0
+        index = find-index ( -> tmpcard.title < it.title), $scope.copies
+        if not index
+            index = $scope.copies.length
+        $scope.copies.splice index, 0, tmpcard
         $scope.copy_selected = undefined
         # TODO: save
         $scope.save_card_to_basket tmpcard.id, $scope.cur_basket.id
 
     $scope.save_card_to_basket = (card_id, basket_id) !->
+        # XXX seems redundant with save_quantity below
         coma_sep = "#{card_id}"
         params = do
             card_ids: coma_sep
         $http.post "/api/baskets/#{basket_id}/add/", params
         .then (response) !->
-            $scope.alerts = response.data.msgs
+            null
+            # $scope.alerts = response.data.msgs # the confirmation alert should be less intrusive
         , (response) !->
             ... # error
 
     $scope.save_quantity = (index) !->
         """Save the item quantity.
         """
+        # XXX see save_card_to_basket above
         card = $scope.copies[index]
         utils.save_quantity card, $scope.cur_basket.id
 
