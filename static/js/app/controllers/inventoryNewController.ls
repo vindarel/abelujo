@@ -120,15 +120,42 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $scope.copy_selected = undefined
         $scope.setCardsToShow() # needed for init
 
+        $scope.save()
+
     $scope.remove_from_selection = (index_to_rm) !->
         $scope.selected_ids.splice(index_to_rm, 1)
         $scope.cards_selected.splice(index_to_rm, 1)
         $scope.all.splice(index_to_rm, 1)
         focus()
 
+        card = $scope.cards_to_show[index_to_rm]
+        params = do
+            "card_id": card.id
+        $http.post "/api/inventories/#{$scope.inv_id}/remove/", params
+        .then (response) !->
+            $scope.cards_to_show.splice index_to_rm, 1
+            # Update the progress bar.
+            $scope.total_missing += 1
+            $scope.total_copies -= 1
+            $scope.updateProgress $scope.total_copies, $scope.total_missing
+
     $scope.getTotalCopies = ->
         map (.quantity), $scope.cards_selected
         |> sum
+
+    $scope.updateCard = (index) !->
+        """
+        """
+        card = $scope.cards_to_show[index]
+        params = do
+            "ids_qties": "#{card.id},#{card.quantity};"
+        $http.post "/api/inventories/#{$scope.inv_id}/update/", params
+        .then (response) !->
+            $scope.cards_to_show.splice index_to_rm, 1
+            # Update the progress bar.
+            $scope.total_missing -= 1
+            $scope.total_copies += 1
+            $scope.updateProgress $scope.total_copies, $scope.total_missing
 
     $scope.save = ->
         # Send the new copies and quantities to be saved.
@@ -138,7 +165,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         , $scope.cards_selected
 
         params = do
-            "ids_qties": ids_qties
+            "ids_qties": join "", ids_qties
         $http.post "/api/inventories/#{$scope.inv_id}/update/", params
         .then (response) !->
             $scope.alerts = response.data.msgs

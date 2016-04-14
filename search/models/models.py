@@ -2417,6 +2417,12 @@ class InventoryCards(models.Model):
     #: How many copies of it did we find in our stock ?
     quantity = models.IntegerField(default=0)
 
+    def __unicode__(self):
+        return u"Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
+                                                   self.quantity,
+                                                   self.card.title,
+                                                   self.card.id)
+
     def to_dict(self):
         return {
             "card": self.card.to_dict(),
@@ -2467,6 +2473,21 @@ class Inventory(TimeStampedModel):
             return None
 
         return inv_copies.quantity
+
+    def remove_card(self, card_id):
+        """
+
+        - return: status (bool)
+        """
+        try:
+            inv_copies = self.inventorycards_set.get(card__id=card_id)
+            inv_copies.delete()
+
+        except Exception as e:
+            log.error(e)
+            return False
+
+        return True
 
     def state(self):
         """Get the current state:

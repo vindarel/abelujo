@@ -735,7 +735,7 @@ def inventories_update(request, **kwargs):
             # {u'ids_qties': [u'185, 1;,50, 1;']}
             # a string with ids an their quantities.
             ids = params.get('ids_qties')
-            together = ids[0].split(';')
+            together = ids.split(';')
             pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
 
             status, _msgs = inv.add_pairs(pairs)
@@ -743,6 +743,35 @@ def inventories_update(request, **kwargs):
             to_ret['status'] = status
             if status == "success": # XXX import satuses from models
                 to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
+
+    return JsonResponse(to_ret)
+
+def inventories_remove(request, **kwargs):
+    """Remove a card from the inventory.
+
+    - as post param in request.body: 'card_id'
+
+    """
+    msgs = []
+    to_ret = {}
+    if request.method == "POST":
+        if kwargs.get('pk'):
+            pk = kwargs.pop('pk')
+
+            try:
+                inv = Inventory.objects.get(id=pk)
+            except Exception as e:
+                log.error(e)
+                msgs.append(_("Internal error. We couldn't update the inventory"))
+                return # XXX return 400 error
+
+            params = request.body
+            params = json.loads(params)
+            ids = params.get('card_id')
+
+            status = inv.remove_card(ids)
+
+            to_ret['status'] = status
 
     return JsonResponse(to_ret)
 

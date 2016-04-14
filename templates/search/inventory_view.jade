@@ -30,7 +30,7 @@ div(ng-controller="inventoryNewController")
     h4 {% trans "Search in the stock" %}
     .row
       .col-md-9
-        div {% trans "You did "%} {{ 'progress_current' | ng }} %. {% trans "It remains" %}: {{ 'total_missing' |ng }} {% trans " cards" %}
+        div {% trans "You did "%} {{ 'progress_current' | ng }} %. {% trans "It remains" %}: {{ 'total_missing' |ng }} {% trans "cards" %}
 
         div.progress
           div.progress-bar.progress-bar-info(role="progress-bar"
@@ -71,7 +71,9 @@ div(ng-controller="inventoryNewController")
 
   h4.ng-cloak(ng-show="cards_to_show.length")
     {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
-  div(ng-cloak, ng-show="cards_to_show", ng-repeat="card in cards_to_show")
+  div.repeated-item(ng-cloak
+                    ng-show="cards_to_show"
+                    ng-repeat="card in cards_to_show")
     div
      .col-md-9
       a(href="{{ 'card.details_url ' | ng }}") {{ 'card.title' | ng }}
@@ -87,8 +89,8 @@ div(ng-controller="inventoryNewController")
             span.input-group-addon X
             input.form-control(
                 type="number", min=0, max=99
-                ng-model="{% verbatim %} cards_to_show[$index].quantity {% endverbatim %}"
-                ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
+                ng-model="cards_to_show[$index].quantity"
+                ng-change="updateCard($index)"
             )
 
      .col-md-1

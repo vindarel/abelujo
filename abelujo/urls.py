@@ -74,6 +74,7 @@ apipatterns = patterns("",
     url(r'^api/places/?$', 'search.models.api.places', name="api_places"),
     url(r'^api/inventories/create/?$', 'search.models.api.inventories', name="api_inventories"),
     url(r'^api/inventories/(?P<pk>\d+)/update/', 'search.models.api.inventories_update', name="api_inventories_update"),
+    url(r'^api/inventories/(?P<pk>\d+)/remove/', 'search.models.api.inventories_remove', name="api_inventories_remove"),
     url(r'^api/inventories/(?P<pk>\d+)/diff/', 'search.models.api.inventory_diff', name="api_inventories_diff"),
     url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
 
