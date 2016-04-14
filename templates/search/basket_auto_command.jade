@@ -51,11 +51,17 @@ div(ng-cloak, ng-controller="basketToCommandController")
      ul.dropdown-menu
        li: a(href="#", ng-click="export_to('simple')") csv - {% trans "simple: isbn and quantity" %}
 
+    .col-md-6
+    .col-md-5
+      div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
+
   div(ng-repeat="(pub_id, cards) in sorted_cards")
         span
-          h4 {{ 'grouped_dist[pub_id][0].name'|ng}}  
+          .row
+           h4.col-md-6 {{ 'grouped_dist[pub_id][0].name'|ng}}  
             a(href="mailto:{{'grouped_dist[pub_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[pub_id]' | ng }}", ng-click="get_body(pub_id)")
               i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[pub_id][0].email' | ng}} {% trans ' with your desktop mail client' %}")
+           .col-md-6
 
         table.table.table-condensed.table-striped
             thead
@@ -69,8 +75,16 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 td {{ 'card.price' |ng }} €
                 td {{ 'card.quantity' |ng }}
                 td
-                  input.my-number-input(type="number", min=0, max=99, ng-model="card.threshold")
+                  input.my-number-input(type="number", min=0, max=99,
+                    ng-model="card.basket_qty"
+                    ng-change="save_quantity(pub_id, $index)")
                   i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(pub_id, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
+
+              tr
+                td {% trans "Total" %}
+                td {{ 'get_total_price(pub_id)' |ng}}  €
+                td
+                td {{'get_total_copies(pub_id)'|ng}}
 
   // we'll use the modal shortly !
   script(type="text/ng-template", id="commandModal.html")

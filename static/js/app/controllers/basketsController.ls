@@ -102,12 +102,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         """Save the item quantity.
         """
         card = $scope.copies[index]
-        params = do
-            id_qty: "#{card.id},#{card.basket_qty}"
-        $http.post "/api/baskets/#{$scope.cur_basket.id}/update/", params
-        .then (response) !->
-            $scope.alerts = response.data.msgs
-
+        utils.save_quantity card, $scope.cur_basket.id
 
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.
@@ -149,10 +144,10 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         |> join ","
 
     $scope.get_total_price = ->
-        sum(map ( -> it.price * it.basket_qty), $scope.copies).toFixed 2 # round a float
+        utils.total_price $scope.copies
 
     $scope.get_total_copies = ->
-        sum(map (.basket_qty), $scope.copies)
+        utils.total_copies $scope.copies
 
     $scope.export_csv = (layout) !->
         """Export the selected cards of the current list to csv.

@@ -36,7 +36,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $scope.language = utils.url_language($window.location.pathname)
 
-    $http.get "/api/baskets/#{AUTO_COMMAND_ID}",
+    $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies",
     .then (response) ->
         $scope.cards = response.data
         $scope.sorted_cards = group-by (.distributor.id), $scope.cards
@@ -45,6 +45,25 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     .then (response) !->
         $scope.distributors = response.data
         $scope.grouped_dist = group-by (.id), $scope.distributors
+
+    $scope.save_quantity = (pub_id, index) !->
+        card = $scope.sorted_cards[pub_id][index]
+        utils.save_quantity card, AUTO_COMMAND_ID
+
+    $scope.get_total_copies = (pub_id) ->
+        copies = $scope.sorted_cards[pub_id]
+        utils.total_copies copies
+
+    $scope.get_total_price = (pub_id) ->
+        copies = $scope.sorted_cards[pub_id]
+        total = utils.total_price(copies)
+        return total
+
+    $scope.super_total_copies = ->
+        utils.total_copies $scope.cards
+
+    $scope.super_total_price = ->
+        utils.total_price $scope.cards
 
     $scope.export_to = (layout) ->
         """Export to the given format: simple (csv), etc
