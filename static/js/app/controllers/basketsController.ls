@@ -137,7 +137,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
             .then (response) !->
                 $scope.copies.splice(index_to_rm, 1)
-                $scope.alerts = response.data.msgs
+                # $scope.alerts = response.data.msgs # useless
 
             .catch (resp) !->
                 $log.info "Error when trying to remove the card " + card_id
