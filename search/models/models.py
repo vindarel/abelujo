@@ -1184,6 +1184,21 @@ class BasketCopies(models.Model):
     def __unicode__(self):
         return u"Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
 
+    def to_dict(self):
+        """Card representation and its quantity in the basket.
+
+        Return: a dict, with 'basket_qty'.
+        """
+        card = []
+        try:
+            card = self.card.to_dict()
+            card['basket_qty'] = self.nb
+        except Exception as e:
+            log.error(e)
+
+        return card
+
+
 class Basket(models.Model):
     """A basket is a set of copies that are put in it for later use. Its
     copies can be present in the stock or not. To mix with a basket's

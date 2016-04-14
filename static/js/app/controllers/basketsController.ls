@@ -46,10 +46,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
             .then (response) !->
                 $scope.baskets[item].copies = response.data.data
-                $scope.copies = response.data.data
-                map ->
-                    it.basket_qty = 1
-                , $scope.copies
+                $scope.copies = response.data
 
         else
             $scope.copies = $scope.cur_basket.copies
@@ -100,6 +97,17 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $scope.alerts = response.data.msgs
         , (response) !->
             ... # error
+
+    $scope.save_quantity = (index) !->
+        """Save the item quantity.
+        """
+        card = $scope.copies[index]
+        params = do
+            id_qty: "#{card.id},#{card.basket_qty}"
+        $http.post "/api/baskets/#{$scope.cur_basket.id}/update/", params
+        .then (response) !->
+            $scope.alerts = response.data.msgs
+
 
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.

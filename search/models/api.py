@@ -436,13 +436,16 @@ def auto_command_total(request, **response_kwargs):
 
 
 def basket(request, pk, action="", card_id="", **kwargs):
-    """Get the list of cards or act on the given basket.
+    """Get the list of cards or act on the given basket (POST):
+    - add: add many cards,
+    - remove
+    - update: one card.
 
     pk: the basket id.
 
-    actions:
-      - add (POST): give card_ids as a list of coma-separated ints
-      - remove (POST): complete the url with a card id, like .../remove/10
+    Example url: /api/baskets/1/add/ with query parameters "card_ids": "10,2,11,1"
+
+    - return: a list of messages.
     """
     data = []
     msgs = []
@@ -460,8 +463,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         return JsonResponse(to_ret) # also return error message.
 
     if request.method == "GET":
-        data = basket.copies.all()
-        ret = [it.to_dict() for it in data]
+        ret = [it.to_dict() for it in basket.basketcopies_set.all()]
         return JsonResponse(ret, safe=False)
 
     elif request.method == 'POST':
@@ -511,6 +513,19 @@ def basket(request, pk, action="", card_id="", **kwargs):
         # Remove a card
         elif action and action == "remove" and card_id:
             status, msgs = basket.remove_copy(card_id)
+
+        # Update one card
+        elif action and action == "update" and req.get('id_qty'):
+            card_id, qty = list_from_coma_separated_ints(req.get('id_qty'))
+            try:
+                basket_qty = basket.basketcopies_set.get(card__id=card_id)
+                basket_qty.nb = qty
+                basket_qty.save()
+            except Exception as e:
+                log.error("Error while setting the card qty in list {}: {}".format(basket.id, e))
+                msgs.append({'level': "error",
+                             'message': _("We couldn't set the quantity of the card.")})
+
 
     to_ret['status'] = status
     to_ret['data'] = data

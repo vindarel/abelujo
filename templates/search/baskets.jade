@@ -105,7 +105,9 @@ div(ng-cloak, ng-controller="basketsController")
          td {{ 'it.quantity' | ng}}
          td {{ 'it.price' | ng }} €
          td
-          input.my-number-input(type="number", min=0, max=99, ng-model="it.basket_qty")
+          input.my-number-input(type="number", min=0, max=99,
+            ng-model="it.basket_qty"
+            ng-change="save_quantity($index)")
          td: i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="padding-left: 1em;", title='{% trans "Remove from basket" %}', ng-show="true || show_buttons[$index]")
 
  script(type="text/ng-template", id="basketModal.html")
