@@ -67,11 +67,11 @@ div(ng-controller="inventoryNewController")
      .col-lg-3
 
         input(type="checkbox", ng-model="showAll", ng-change="setCardsToShow()")
-        span {% trans "Show all cards inventoried" %}
+        span(ng-click="toggleCardsToShow()") {% trans "Show all cards inventoried" %}
 
   h4.ng-cloak(ng-show="cards_to_show.length")
     {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
-  div(ng-cloak, ng-show="cards_to_show", ng-repeat="card in cards_to_show.reverse()")
+  div(ng-cloak, ng-show="cards_to_show", ng-repeat="card in cards_to_show")
     div
      .col-md-9
       a(href="{{ 'card.details_url ' | ng }}") {{ 'card.title' | ng }}

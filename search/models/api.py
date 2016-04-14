@@ -728,13 +728,14 @@ def inventories_update(request, **kwargs):
                 msgs.append(_("Internal error. We couldn't save the inventory"))
                 return # XXX return 400 error
 
-            params = request.POST.copy()
+            params = request.body
+            params = json.loads(params)
             # We don't receive a well formatted json.
             # We receive this:
             # {u'ids_qties': [u'185, 1;,50, 1;']}
             # a string with ids an their quantities.
             ids = params.get('ids_qties')
-            together = ids.split(';')
+            together = ids[0].split(';')
             pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
 
             status, _msgs = inv.add_pairs(pairs)

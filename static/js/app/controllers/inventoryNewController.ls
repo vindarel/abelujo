@@ -4,7 +4,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines} = require 'prelude-ls'
+    {sum, map, filter, lines, reverse} = require 'prelude-ls'
 
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
@@ -35,8 +35,14 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         " Show all the cards inventoried, or the current ones. "
         if $scope.showAll
             $scope.cards_to_show = $scope.all
+            |> reverse
         else
             $scope.cards_to_show = $scope.cards_selected
+            |> reverse
+
+    $scope.toggleCardsToShow = !->
+        $scope.showAll = ! $scope.showAll
+        $scope.setCardsToShow!
 
     if $scope.inv_id
 
@@ -130,16 +136,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         map  ->
             ids_qties.push "#{it.id}, #{it.quantity};"
         , $scope.cards_selected
-
-        #  This is needed for Django to process the params to its
-        #  request.POST dictionnary:
-        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-
-        #  We need not to pass the parameters encoded as json to Django.
-        #  Encode them like url parameters.
-        $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
-        config = do
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
         params = do
             "ids_qties": ids_qties
