@@ -330,7 +330,7 @@ class Card(TimeStampedModel):
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=1)
     #: Publisher of the card:
-    publishers = models.ManyToManyField(Publisher, blank=True, null=True)
+    publishers = models.ManyToManyField(Publisher, blank=True)
     year_published = models.DateField(blank=True, null=True)
     #: Distributor:
     distributor = models.ForeignKey("Distributor", blank=True, null=True)
@@ -341,7 +341,7 @@ class Card(TimeStampedModel):
     # location = models.ForeignKey(Location, blank=True, null=True)
         #    default=u'?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
-    places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, null=True)  #TODO: allow null
+    places = models.ManyToManyField("Place", through="PlaceCopies", blank=True)
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
     img = models.URLField(null=True, blank=True)
@@ -1212,7 +1212,7 @@ class Basket(models.Model):
     #: Type of the basket (preparation of a command, a stand, other, etc)
     basket_type = models.ForeignKey("BasketType", null=True, blank=True)
     #: Copies in it:
-    copies = models.ManyToManyField(Card, through="BasketCopies", blank=True, null=True)
+    copies = models.ManyToManyField(Card, through="BasketCopies", blank=True)
     # Access the intermediate table with basketcopies_set.all(), basketcopies_set.get(card=card)
     #: Comment:
     comment = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
@@ -1449,7 +1449,7 @@ class DepositState(models.Model):
     # "created" could be inherited with TimeStampedModel but we want
     # it to be more precise (timezone.now())
     created = models.DateTimeField(blank=True, null=True)
-    copies = models.ManyToManyField(Card, through="DepositStateCopies", blank=True, null=True)
+    copies = models.ManyToManyField(Card, through="DepositStateCopies", blank=True)
     closed = models.DateTimeField(blank=True, null=True)
     # closed = models.DateField(default=None, blank=True, null=True)
 
@@ -1669,7 +1669,7 @@ class Deposit(TimeStampedModel):
     #: the distributor (or person) we have the copies from.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
     #: the cards to include in this deposit, with their nb of copies.
-    copies = models.ManyToManyField(Card, through="DepositCopies", blank=True, null=True)
+    copies = models.ManyToManyField(Card, through="DepositCopies", blank=True)
 
     #: type of the deposit. Some people also sent their books to a
     #: library and act like a distributor.
@@ -2056,7 +2056,7 @@ class Sell(models.Model):
         app_label = "search"
 
     created = models.DateTimeField()
-    copies = models.ManyToManyField(Card, through="SoldCards", blank=True, null=True)
+    copies = models.ManyToManyField(Card, through="SoldCards", blank=True)
     payment = models.CharField(choices=PAYMENT_CHOICES, #XXX: table
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
@@ -2360,7 +2360,7 @@ class Alert(models.Model):
         app_label = "search"
 
     card = models.ForeignKey("Card")
-    deposits = models.ManyToManyField(Deposit, blank=True, null=True)
+    deposits = models.ManyToManyField(Deposit, blank=True)
     date_creation = models.DateField(auto_now_add=True)
     date_resolution = models.DateField(null=True, blank=True)
     resolution_auto = models.BooleanField(default=False)
@@ -2439,7 +2439,7 @@ class Inventory(TimeStampedModel):
         app_label = "search"
 
     #: List of cards and their quantities already "inventored".
-    copies = models.ManyToManyField(Card, through="InventoryCards", blank=True, null=True)
+    copies = models.ManyToManyField(Card, through="InventoryCards", blank=True)
     #: We can do the inventory of a shelf.
     shelf = models.ForeignKey("Shelf", blank=True, null=True)
     #: we can also do the inventory of a whole place.

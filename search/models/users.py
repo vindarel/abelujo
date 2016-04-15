@@ -89,7 +89,7 @@ class Bill(TimeStampedModel):
     #: shipping costs, with taxes.
     shipping = models.FloatField(null=True, blank=True)
     #: reference also the list of cards, their quantity and their discount.
-    copies = models.ManyToManyField("search.Card", through="BillCopies", null=True, blank=True)
+    copies = models.ManyToManyField("search.Card", through="BillCopies", blank=True)
     #: total to pay.
     total = models.FloatField()
 
