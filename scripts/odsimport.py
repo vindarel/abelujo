@@ -23,7 +23,7 @@ from tqdm import tqdm
 
 import search.datasources.odslookup.odslookup as odslookup
 from search.models.models import Card
-from search.models.models import Category
+from search.models.models import Shelf
 from search.models.models import Distributor
 from search.models.models import Place
 from search.models.models import Preferences
@@ -56,7 +56,7 @@ def import_file(odsfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
     default place.
 
     """
-    if not os.path.exists(odsfile):
+    if not os.path.exists(os.path.expanduser(odsfile)):
         print "Error: file '%s' doesn't exist. Give it as argument with odsfile=..." % (odsfile,)
         return 1
     datasource = "chapitre"
@@ -126,9 +126,9 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     ### Get and create all categories
     print "Creating categories..."
     cats = []
-    cats = getAllKeys(cards, "category")
+    cats = getAllKeys(cards, "shelf")
     for it in tqdm(cats):
-        Category.objects.get_or_create(name=it)
+        Shelf.objects.get_or_create(name=it)
     print "...done."
 
     ### Create a default place if needed.
