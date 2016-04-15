@@ -30,7 +30,6 @@ lxml==3.5               # html parser (like beautifulsoup4, but for xpath)
 ### Django extensions
 django_extensions==1.5    # more useful commands to manage.py (shell_plus).
 Werkzeug                  # runserver_plus: richer tracebacks and inline console.
-django-autocomplete-light # ajax autocompletion without writing javascript.
 mod_wsgi==4.4             # apache server for development.
 # mod_wsgi-httpd           # discard the system's apache httpd server if needed.
 
