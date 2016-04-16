@@ -234,7 +234,7 @@ def shelfs(request, **response_kwargs):
     # Note: for easier search, replace and auto-generation, we choose
     # to pluralize wrongly.
     if request.method == 'GET':
-        data = Shelf.objects.all()
+        data = Shelf.objects.order_by("name").all()
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
 

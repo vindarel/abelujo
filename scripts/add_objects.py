@@ -25,7 +25,7 @@ from tqdm import tqdm
 
 from search.models.models import Card
 from search.models.models import CardType
-from search.models.models import Category
+from search.models.models import Shelf
 from search.models.models import Place
 from search.models.models import Preferences
 
@@ -35,7 +35,7 @@ Run with the runscript management command.
 
 Usage:
 
-./manage.py runscript add_objects --script-args=scripts/categories_fr.yaml
+./manage.py runscript add_objects --script-args=scripts/shelfs_fr.yaml
 """
 def run(*args):
     """Define a yaml:
