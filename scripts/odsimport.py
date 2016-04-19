@@ -44,7 +44,7 @@ def getAllKeys(cards, key):
     its = filter(lambda it: it is not None, its)
     return its
 
-def import_file(odsfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
+def import_file(srcfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
     """Import the cards (as dicts) from within this csv file.
 
     Read the csv and lookup for the cards on the remote data source.
@@ -56,13 +56,13 @@ def import_file(odsfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
     default place.
 
     """
-    if not os.path.exists(os.path.expanduser(odsfile)):
-        print "Error: file '%s' doesn't exist. Give it as argument with odsfile=..." % (odsfile,)
+    if not os.path.exists(os.path.expanduser(srcfile)):
+        print "Error: file '%s' doesn't exist. Give it as argument with srcfile=..." % (srcfile,)
         return 1
     datasource = "chapitre"
 
     ### Get the json data, if any.
-    basename, ext = os.path.splitext(odsfile)
+    basename, ext = os.path.splitext(srcfile)
     jsonfile = basename + ".json"
     cards = []
     jsonfile = os.path.join(os.path.abspath("./"), jsonfile)
@@ -78,9 +78,13 @@ def import_file(odsfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
 
     ### Run: lookup cards from the ods.
     if not cards:
-        cards = odslookup.run(odsfile, datasource)
+        cards = odslookup.run(srcfile, datasource)
 
-    import_cards(cards, ADD_NOT_FOUND=ADD_NOT_FOUND, ADD_NO_EAN=ADD_NO_EAN, ADD_EAN=ADD_EAN)
+    if cards['status'] == 1:
+        print "Error status. Aborting. ", cards['messages']
+
+    else:
+        import_cards(cards, ADD_NOT_FOUND=ADD_NOT_FOUND, ADD_NO_EAN=ADD_NO_EAN, ADD_EAN=ADD_EAN)
 
 def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     """
@@ -183,10 +187,10 @@ def run(*args):
     : python manage.py runscript odsimport
 
     So with a Makefile target:
-    : make odsimport odsfile=myfile.ods
+    : make odsimport srcfile=myfile.ods
 
     You can also give a directory as argument. We'll look for all csv files in there:
-    : make odsimport odsfile=mydir/
+    : make odsimport srcfile=mydir/
 
     documentation of runscript: http://django-extensions.readthedocs.org/en/latest/runscript.html
     """

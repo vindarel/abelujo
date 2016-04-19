@@ -169,10 +169,10 @@ cov:
 	@echo "You can now open the page htmlcov/index.html"
 
 # Import from an ods file (LibreOffice Calc)
-# usage: make odsimport odsfile=myfile.ods
-odsfile = ""
+# usage: make odsimport srcfile=myfile.ods
+srcfile = ""
 odsimport:
-	python manage.py runscript odsimport --script-args=$(odsfile)
+	python manage.py runscript -v2 odsimport --script-args=$(srcfile)
 
 doc:
 	# the chmod is for the host server to serve the files.
