@@ -21,7 +21,7 @@ import json
 import os
 from tqdm import tqdm
 
-import search.datasources.odslookup.odslookup as odslookup
+import search.datasources.bookshops.odslookup.odslookup as odslookup
 from search.models.models import Card
 from search.models.models import Shelf
 from search.models.models import Distributor

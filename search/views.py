@@ -25,13 +25,13 @@ import urlparse
 
 from unidecode import unidecode
 
-import datasources.all.discogs.discogsScraper as discogs
+import datasources.bookshops.all.discogs.discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
-import datasources.deDE.buchwagner.buchWagnerScraper as buchWagner
-import datasources.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
-import datasources.frFR.decitre.decitreScraper as decitre
-import datasources.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
+import datasources.bookshops.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.bookshops.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
+import datasources.bookshops.frFR.decitre.decitreScraper as decitre
+import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
 import models
 from django import forms
 from django.contrib import messages
