@@ -209,3 +209,7 @@ clean:
 	find . -name "*.pyc" -exec rm {} +
 	rm -rf htmlcov
 	rm -rf .coverage
+
+clean-caches:
+	# that can be needed when moving scraper code.
+	find . -name "cache.sqlite" -exec rm {} +
