@@ -21,12 +21,6 @@ pyyaml
 psycopg2                # postgresql database engine.
 pytz			# timezone
 
-### web scrapers:
-requests==2.7           # http calls
-requests_cache          # set up a cache in 2 loc
-beautifulsoup4          # html parser
-lxml==3.5               # html parser (like beautifulsoup4, but for xpath)
-
 ### Django extensions
 django_extensions==1.5    # more useful commands to manage.py (shell_plus).
 Werkzeug                  # runserver_plus: richer tracebacks and inline console.
@@ -39,7 +33,7 @@ tabulate                # pretty print tabular data.
 addict                  # dotted notation to dict attributes and more.
 unidecode               # ASCII transliteration of unicode text.
 distance                # between two strings.
-clize                   # build command line arguments
+clize==3                # build command line arguments
 tqdm                    # progress bar
 termcolor               # colorful terminal output
 xhtml2pdf               # produce pdf from html templates. Installs

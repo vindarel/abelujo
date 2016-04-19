@@ -19,13 +19,21 @@ pip:
 pip-dev: pip
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
 
+pip-submodule:
+	cd search/datasources && pip install -r requirements.txt
+
+pip-submodule-dev:
+	cd search/datasources && pip install -r requirements-dev.txt
+
 db:
 	@python manage.py syncdb --noinput           # populate the db for django
 	@python manage.py loaddata dbfixture.json    # set admin user (admin/admin)
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  deps db npm gulp translation-compile
+install:  debian pip pip-submodule db npm gulp translation-compile
+
+install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm gulp translation-compile
 
 # Install npm and bower packages
 npm:
@@ -44,7 +52,8 @@ update:
 	git pull --rebase
 	git submodule update --remote
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
-	pip install -r abelujo/requirements.txt
+	make pip
+	make pip-submodule
 	make npm # that's horribly long. Bundle static files and send them somehow.
 	python manage.py migrate
 	gulp
@@ -52,7 +61,7 @@ update:
 	make translation-compile 	# gunicorn needs a restart
 	@echo "For development, don't forget make pip-dev"
 
-update-dev: update pip-dev
+update-dev: update pip-dev pip-submodule-dev
 
 # Create migrations and commit them.
 migrations:
