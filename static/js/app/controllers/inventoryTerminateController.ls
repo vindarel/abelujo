@@ -27,6 +27,13 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $scope.selected_ids = []
     existing_card = undefined
 
+    $scope.more_in_inv = {}
+    $scope.less_in_inv = {}
+    $scope.missing     = {}
+    $scope.is_more_in_inv = false
+    $scope.is_less_in_inv = false
+    $scope.is_missing     = false
+
     # If we're on page /../inventories/XX/, get info of inventory XX.
     #XXX use angular routing
     $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
@@ -37,6 +44,26 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
         # $scope.alerts = response.data.msgs
         $scope.diff = response.data.cards
         $scope.name = response.data.name
+
+        # Cards that are too much in the inventory
+        $scope.more_in_inv = $scope.diff
+        |> Obj.filter (.diff > 0)
+        $scope.is_more_in_inv = ! Obj.empty $scope.more_in_inv
+        # Cards that are present in less qty in the inventory
+        $scope.less_in_inv = $scope.diff
+        |> Obj.filter (.diff < 0)
+        $scope.is_less_in_inv = ! Obj.empty $scope.less_in_inv
+        # Cards that are missing in the inventory
+        $scope.missing = $scope.diff
+        |> Obj.filter (.inv == 0)
+        $scope.is_missing = ! Obj.empty $scope.missing
+        # Cards not present initially
+        $scope.no_origin = $scope.diff
+        |> Obj.filter (.stock == 0)
+        $scope.is_no_origin = ! Obj.empty $scope.no_origin
+
+    $scope.obj_length = (obj) ->
+        Obj.keys obj .length
 
     $scope.validate = !->
         alert gettext "Coming soon !"

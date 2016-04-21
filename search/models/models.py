@@ -2579,14 +2579,13 @@ class Inventory(TimeStampedModel):
             d_diff[id]['inv'] = val['quantity']
             d_diff[id]['card'] = val['card']
             if d_stock.get(id):
-                if val['quantity'] != d_stock[id]['quantity']:
-                    d_diff[id]['diff'] = val['quantity'] - d_stock[id]['quantity']
-                    d_diff[id]['stock'] = d_stock[id]['quantity']
-                    d_stock[id]['inv'] = val['quantity']
+                d_diff[id]['diff'] = val['quantity'] - d_stock[id]['quantity']
+                d_diff[id]['stock'] = d_stock[id]['quantity']
+                d_stock[id]['inv'] = val['quantity']
 
             else:
                 d_diff[id]['in_orig'] = False
-                d_diff[id]['stock'] = None
+                d_diff[id]['stock'] = 0
                 d_diff[id]['diff'] = d_inv[id]['quantity']
 
         # Add the cards in the inv but not in the origin
@@ -2596,7 +2595,8 @@ class Inventory(TimeStampedModel):
                               'in_orig': True,
                               'card': val['card'],
                               'stock': val['quantity'],
-                              'inv': None,
+                              'inv': 0,
+                              'diff': val['quantity'],
                               }
         # we must have all cards in d_dif and all info.
 
