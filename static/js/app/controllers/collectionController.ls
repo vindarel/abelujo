@@ -1,4 +1,4 @@
-angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$cookies', '$uibModal', '$log', ($http, $scope, $timeout, utils, $filter, $window, $cookies, $uibModal, $log) !->
+angular.module "abelujo.controllers", [] .controller 'collectionController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$cookies', '$uibModal', '$log', 'hotkeys', ($http, $scope, $timeout, utils, $filter, $window, $cookies, $uibModal, $log, hotkeys) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
@@ -136,6 +136,16 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             $scope.alerts = alerts
         , !->
               $log.info "modal dismissed"
+
+
+    # Keyboard shortcuts (hotkeys)
+    hotkeys.bindTo($scope)
+    .add do
+        combo: "d"
+        description: gettext "show or hide the book details in tables."
+        callback: !->
+            $scope.toggle_images!
+
 ]
 
 angular.module "abelujo" .controller "CollectionModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) ->

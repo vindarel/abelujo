@@ -15,6 +15,7 @@ angular.module('abelujo', [
     'smart-table',
     'datatables',
     'angular-loading-bar',
+    'cfp.hotkeys',
 
     // application level:
     'abelujo.filters',

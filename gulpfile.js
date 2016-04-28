@@ -40,6 +40,7 @@ var vendorJsFiles = [
     'static/bower_components/angular-smart-table/dist/smart-table.min.js',
     'static/bower_components/angular-datatables/dist/angular-datatables.min.js',
     'static/bower_components/angular-loading-bar/build/loading-bar.min.js',
+    'static/bower_components/angular-hotkeys/build/hotkeys.min.js',
 ];
 
 var appFiles = [
