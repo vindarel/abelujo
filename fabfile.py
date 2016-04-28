@@ -72,7 +72,9 @@ CLIENTS = "clients.yaml"
 CFG = get_yaml_cfg(CLIENTS)
 CFG = addict.Dict(CFG)
 VENV_SOURCE = "source ~/.virtualenvs/{}/bin/activate"
-GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload"
+#: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
+#: Live reload on code change.
+GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt"
 env.hosts = CFG.url
 env.user = CFG.user
 
