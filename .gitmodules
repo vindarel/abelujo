@@ -1,3 +1,3 @@
 [submodule "search/datasources"]
 	path = search/datasources
-	url = git@gitlab.com:vindarel/bookshops.git
+	url = https://gitlab.com/vindarel/bookshops.git
