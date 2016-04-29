@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', ($http, $scope, $timeout, $filter, $window, utils, $log) !->
+angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys) !->
 
     {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
 
@@ -46,6 +46,14 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
+
+    # Keyboard shortcuts (hotkeys)
+    hotkeys.bindTo($scope)
+    .add do
+        combo: "d"
+        description: gettext "show or hide the book details in tables."
+        callback: !->
+            $scope.toggle_images!
 
     $window.document.title = "Abelujo - " + gettext("History")
 
