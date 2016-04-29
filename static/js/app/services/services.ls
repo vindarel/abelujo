@@ -35,6 +35,9 @@ utils.factory 'utils', ($http) ->
                 return res[1]
             null
 
+        set_focus: !->
+            angular.element('#default-input').trigger('focus');
+
         total_price: (copies) ->
             sum(map ( -> it.price * it.basket_qty), copies).toFixed 2 # round a float
 

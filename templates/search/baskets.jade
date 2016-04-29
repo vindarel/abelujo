@@ -72,8 +72,9 @@ div(ng-cloak, ng-controller="basketsController")
      h4   {{ 'cur_basket.name' |ng}}
 
    .col-md-6
+     form
           p.input-group
-            input.nullable.form-control(
+            input.nullable.form-control#default-input(
               type='text'
               typeahead-loading="loadingCards"
               ng-model='copy_selected'
@@ -90,11 +91,16 @@ div(ng-cloak, ng-controller="basketsController")
                 i.glyphicon.glyphicon-refresh
 
    .row
-     .col-md-6
+     .col-md-1
+       button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+         i.glyphicon.glyphicon-th-list
+
+     .col-md-5
      .col-md-2 {% trans "Number of copies" %}: {{ 'get_total_copies()'|ng}}
      .col-md-2 {% trans "total" %}: {{ 'get_total_price()'|ng}} €
    table.table.table-condensed.table-striped
      thead
+       th(ng-show="show_images")
        th {% trans "Title" %}
        th {% trans "In stock" %}
        th {% trans "Price" %}
@@ -105,6 +111,9 @@ div(ng-cloak, ng-controller="basketsController")
           ng-mouseenter="show_buttons[$index] = true"
           ng-mouseleave="show_buttons[$index] = false")
 
+         td(ng-show="show_images")
+            .col-md-6(ng-show="show_images")
+              img.myImg(ng-show="it.img", src="{{ 'it.img' | ng }}")
          td: a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
          td {{ 'it.quantity' | ng}}
          td {{ 'it.price' | ng }} €

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location) !->
+angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', 'hotkeys', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location, hotkeys) !->
 
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index} = require 'prelude-ls'
 
@@ -26,6 +26,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.cur_basket = 0
     $scope.cards_fetched = [] # fetched from the autocomplete
     $scope.copy_selected = undefined
+    $scope.show_images = false
+
     COMMAND_BASKET_ID = 1
 
     $scope.language = utils.url_language($window.location.pathname)
@@ -234,7 +236,25 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         , !->
               $log.info "modal dismissed"
 
-    angular.element('#default-input').trigger('focus');
+    utils.set_focus!
+
+    $scope.toggle_images = !->
+        $scope.show_images = not $scope.show_images
+
+    # Keyboard shortcuts (hotkeys)
+    hotkeys.bindTo($scope)
+    .add do
+        combo: "d"
+        description: gettext "show or hide the book details in tables."
+        callback: !->
+            $scope.toggle_images!
+
+    .add do
+        combo: "s"
+        description: gettext "go to the search box"
+        callback: !->
+           utils.set_focus!
+
 
 ]
 

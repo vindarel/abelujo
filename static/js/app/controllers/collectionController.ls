@@ -92,7 +92,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         $scope.selectAll = not $scope.selectAll
 
     # Set focus:
-    angular.element('#default-input').trigger('focus')
+    utils.set_focus!
 
     $window.document.title = "Abelujo - " + gettext("Stock")
 
@@ -145,6 +145,12 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         description: gettext "show or hide the book details in tables."
         callback: !->
             $scope.toggle_images!
+
+    .add do
+        combo: "s"
+        description: gettext "go to the search box"
+        callback: !->
+            utils.set_focus!
 
 ]
 

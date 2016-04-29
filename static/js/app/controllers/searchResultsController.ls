@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location) !->
+angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', 'hotkeys', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location, hotkeys) !->
 
     {Obj, join, reject, sum, map, filter, find, lines} = require 'prelude-ls'
 
@@ -169,6 +169,24 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             $scope.alerts = alerts
         , !->
               $log.info "modal dismissed"
+
+    # Set focus:
+    utils.set_focus!
+
+    # Keyboard shortcuts (hotkeys)
+    hotkeys.bindTo($scope)
+    .add do
+        combo: "d"
+        description: gettext "show or hide the book details in tables."
+        callback: !->
+            $scope.toggle_images!
+
+    .add do
+        combo: "s"
+        description: gettext "go to the search box"
+        callback: !->
+            utils.set_focus!
+
 ]
 
 angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) ->
