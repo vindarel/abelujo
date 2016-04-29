@@ -114,12 +114,15 @@ def statusall():
     for client in CFG.clients:
         check_uptodate(client.name)
 
-def check_uptodate(client):
+def check_uptodate(client=None):
     """Check wether the distant repo is up to date with the local one. If
     not, how many commits behind ?
 
     """
     max_count = 10
+
+    if not client:
+        return statusall()
 
     cfg = CLIENTS
     cfg = get_yaml_cfg(cfg)
@@ -139,7 +142,7 @@ def check_uptodate(client):
                 index = git_last_commits.index(res)
                 print colored("- {}", 'blue').format(client.name) +\
                     " is " +\
-                    colored("{}", "red").format(index) +\
+                    colored("{}", "yellow").format(index) +\
                     " commits behind"
             else:
                 print colored("- {}", "blue").format(client.name) +\
