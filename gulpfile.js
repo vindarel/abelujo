@@ -49,9 +49,9 @@ var appFiles = [
 ];
 
 var vendorCSSFiles = [
-    // set headers in base.jade !
     'static/bower_components/angular-ui-select/dist/select.min.css',
     'static/bower_components/c3/c3.min.css',
+    // warning: set headers in base.jade !
 ];
 
 // Include files to test with karma
