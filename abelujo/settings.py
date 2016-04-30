@@ -187,7 +187,6 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     # Custom:
     'mod_wsgi.server',
-    'underwear',
 
     'search',
 )
