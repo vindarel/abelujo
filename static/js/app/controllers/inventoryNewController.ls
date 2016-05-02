@@ -4,7 +4,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines, reverse} = require 'prelude-ls'
+    {sum, map, filter, lines, reverse, join} = require 'prelude-ls'
 
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
