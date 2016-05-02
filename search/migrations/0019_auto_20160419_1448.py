@@ -8,8 +8,10 @@ def remove_scraper_cache(apps, schema_director):
     Needed when moving the scrapers module up to bookshops/
     """
     import os
-    os.system("make clean-caches")
-    
+    # Commented out after all migrations on server done.
+    # Will run with django tests !
+    # os.system("make clean-caches")
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -17,5 +19,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(remove_scraper_cache),
+        # migrations.RunPython(remove_scraper_cache),
     ]
