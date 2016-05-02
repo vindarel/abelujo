@@ -36,11 +36,9 @@ def getAllKeys(cards, key):
     return: a list
     """
     its = []
-    for _, val in cards.iteritems():
-        if val:
-            for dic in val:
-                if dic.get(key) not in its:
-                    its.append(dic.get(key))
+    for dic in cards:
+        if dic.get(key) not in its:
+            its.append(dic.get(key))
     its = filter(lambda it: it is not None, its)
     return its
 
@@ -88,15 +86,14 @@ def import_file(srcfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
 
 def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     """
+    - cards:
     """
 
     ### Get all publishers and create them OR do it in Card.from_dict ?
     pubs = []
-    for key, val in cards.iteritems():
-        if val:
-            for dic in val:
-                if dic.get('publisher') not in pubs:
-                    pubs.append(dic.get('publishers'))
+    for val in cards['found']:
+        if val.get('publishers') and val['publishers'][0] not in pubs:
+            [pubs.append(it) for it in val.get('publishers')]
     pubs = filter(lambda it: it is not None, pubs)
 
     print "Creating publishers..."
@@ -107,15 +104,13 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     ### Get all distributors and their discount
     dists = []
     seen = []
-    for key, val in cards.iteritems():
-        if val:
-            for dic in val:
-                assert type(dic) == type({})
-                dist = dic.get('distributor')
-                if dist and dist not in seen:
-                   discount = dic.get('discount', 0)
-                   seen.append(dist)
-                   dists.append((dist, discount))
+    for val in cards['found']:
+        assert type(val) == type({})
+        dist = val.get('distributor')
+        if dist and dist not in seen:
+            discount = val.get('discount', 0)
+            seen.append(dist)
+            dists.append((dist, discount))
 
     print "Creating distributors..."
     for tup in tqdm(dists):
@@ -130,7 +125,7 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     ### Get and create all categories
     print "Creating categories..."
     cats = []
-    cats = getAllKeys(cards, "shelf")
+    cats = getAllKeys(cards['found'], "shelf")
     for it in tqdm(cats):
         Shelf.objects.get_or_create(name=it)
     print "...done."
@@ -151,7 +146,7 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     if ADD_EAN:
         print "Adding cards to the database..."
         print "Adding cards with ean..."
-        for card in tqdm(cards["cards_found"]): # tqdm: progress bar
+        for card in tqdm(cards["found"]): # tqdm: progress bar
             qty = card.get('quantity')
             card_obj, msgs = Card.from_dict(card)
             place.add_copy(card_obj, nb=qty)
