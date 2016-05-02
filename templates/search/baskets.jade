@@ -45,18 +45,21 @@ div(ng-cloak, ng-controller="basketsController")
 
 
  .col-md-9
-   .col-md-1
+  .row
+   .col-md-3
 
     .btn-group
-     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false")
+     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
        i.glyphicon.glyphicon-cog
        span.caret
      ul.dropdown-menu
        li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
        li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
+       li.divider(role="separator")
+       li: a(href="#") rst
 
-   .col-md-1
-     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
+    .btn-group
+     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
        i.glyphicon.glyphicon-download
        span.caret
      ul.dropdown-menu
@@ -64,11 +67,8 @@ div(ng-cloak, ng-controller="basketsController")
        li: a(href="#", ng-click="export_csv('simple')") csv - {% trans "simple: isbn and quantity" %}
        li: a(href="#", ng-click="export_csv('pdf')") pdf - {% trans "with barcodes" %}
 
-       // Continue:
-       //- li: a(href="#", ng-click="export_csv('complete')") csv ({% trans "complete: with titles and more" %})
-       //- li: a(href="#") pdf (without barcodes)
 
-   .col-md-4
+   .col-md-3
      h4   {{ 'cur_basket.name' |ng}}
 
    .col-md-6
@@ -90,7 +90,7 @@ div(ng-cloak, ng-controller="basketsController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-refresh
 
-   .row
+  .row
      .col-md-1
        button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
          i.glyphicon.glyphicon-th-list
