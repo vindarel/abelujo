@@ -1352,6 +1352,48 @@ class Basket(models.Model):
         except Exception as e:
             log.error(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
 
+    def to_deposit(self, distributor=None, name=""):
+        """Transform this basket to a deposit.
+
+        Beware: the cards of have the same distributor or they'll be rejected.
+
+        - distributor: a distributor object or id (int)
+        - name: the deposit name
+        - dep_type: the deposit type (see DEPOSIT_TYPES_CHOICES)
+
+        Return: a tuple the deposit object with a list of error messages
+        """
+        msgs = []
+        if type(distributor) == int:
+            try:
+                distributor = Distributor.objects.get(id=distributor)
+            except ObjectDoesNotExist as e:
+                log.error("Basket to deposit: the given distributor of id {} doesn't exist: {}".format(distributor, e))
+                return None
+
+        if not distributor:
+            msg = "Basket to deposit: no distributor. Abort."
+            log.error(msg)
+            return None, [msg]
+
+        if not name:
+            msg = "Basket to deposit: no name given."
+            log.error(msg)
+            return None, [msg]
+
+        dep = Deposit(name=name)
+        dep.distributor = distributor
+        try:
+            dep.save()
+            msgs = dep.add_copies(self.copies.all())
+            msgs += msgs
+        except Exception as e:
+            log.error("Basket to deposit: error adding copies: {}".format(e))
+            msgs.append(e)
+
+        return dep, msgs
+
+
 class BasketType (models.Model):
     """
     """
@@ -1791,8 +1833,9 @@ class Deposit(TimeStampedModel):
         return next
 
     def add_copies(self, copies, nb=1, quantities=[]):
-        """Add the given list of copies objects to this deposit (if their
-        distributor matches).
+        """Add the given list of copies objects to this deposit. If their
+        distributors don't match, exit. If the given copies don't
+        have a distributor yet, set it.
 
         - copies: list of Card objects or ids.
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
@@ -1805,6 +1848,11 @@ class Deposit(TimeStampedModel):
             for (i, copy) in enumerate(copies):
                 if type(copy) == type('str'):
                     copy = Card.objects.get(id=copy)
+
+                if not copy.distributor:
+                    # No distributor ? Ok, you receive this one.
+                    copy.distributor = self.distributor
+                    copy.save
 
                 if copy.distributor and (copy.distributor.name == self.distributor.name):
                     if len(quantities) == len(copies):
@@ -1821,9 +1869,12 @@ class Deposit(TimeStampedModel):
                         checkout.add_copies(copies, quantities=quantities)
 
                 else:
-                    log.error(dedent(u"""Error: the distributor names do not match.
-                    We should have filtered the copies before."""))
-            return []
+                    msg = u"Error: the distributor of card \"{}\" do not match the one of the deposit: {} and {}.".\
+                          format(copy.title, copy.distributor.name, self.distributor.name)
+                    log.error(msg + u"We should have filtered the copies before.")
+                    msgs.append(msg)
+
+            return msgs
 
         except Exception as e:
             log.error(u"Error while adding a card to the deposit: {}".format(e))

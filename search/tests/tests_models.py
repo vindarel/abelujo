@@ -72,6 +72,7 @@ class DistributorFactory(DjangoModelFactory):
     class Meta:
         model = Distributor
     name = factory.Sequence(lambda n: "distributor test %s" % n)
+    discount = 35
 
 class PlaceFactory(DjangoModelFactory):
     class Meta:
@@ -380,6 +381,9 @@ class TestBaskets(TestCase):
         self.card = Card(title="test card") ; self.card.save()
         self.nb_copies = 9
 
+        # a Distributor
+        self.distributor = DistributorFactory(); self.distributor.save()
+
     def tearDown(self):
         pass
 
@@ -405,6 +409,39 @@ class TestBaskets(TestCase):
         Card.sell(id=self.card.id)
         # fix: create the initial basket
         # self.assertEqual(self.basket_commands.basketcopies_set.get(card=self.card).nb, 1)
+
+    def test_to_deposit_card_no_dist(self):
+        """Transform a basket to a deposit. The given card has no distributor,
+        so will inherit the deposit one.
+        """
+        # add a card
+        # self.card.distributor = self.distributor; self.card.save()
+        self.basket.add_copy(self.card)
+        # add a Distributor
+        dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
+        self.assertFalse(msgs)
+
+    def test_to_deposit_different_dist(self):
+        """The card has a different distributor: reject.
+        """
+        # Another dist:
+        dist2 = DistributorFactory()
+        # add a card
+        self.card.distributor = dist2; self.card.save()
+        self.basket.add_copy(self.card)
+        # add a Distributor
+        dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
+        self.assertTrue(msgs)
+
+    def test_to_deposit_nominal(self):
+        """
+        """
+        # add a card
+        self.card.distributor = self.distributor; self.card.save()
+        self.basket.add_copy(self.card)
+        # add a Distributor
+        dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
+        self.assertFalse(msgs)
 
 class TestDeposits(TestCase):
 
@@ -447,16 +484,19 @@ class TestDeposits(TestCase):
         self.assertEqual(status, ALERT_ERROR)
 
     def test_no_distributor(self):
+        """card with no dist will inherit it.
+        """
         self.card.distributor = None
         msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(len(msgs), 0)
-        self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
+        self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
 
     def test_different_distributor(self):
-        self.other_dist = Distributor(name="other dist").save()
+        self.other_dist = DistributorFactory()
         self.card.distributor = self.other_dist
+        self.card.save()
         msgs = self.deposit.add_copies([self.card,])
-        self.assertEqual(len(msgs), 0)
+        self.assertEqual(len(msgs), 1)
         self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
 
     def test_from_dict_nominal(self):
