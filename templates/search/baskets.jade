@@ -34,10 +34,7 @@ div(ng-cloak, ng-controller="basketsController")
     )
       {{ 'alert.message' | ng }}
 
- h1 {% trans "Baskets" %}
  .col-md-3
-  div
-     i.glyphicon.glyphicon-plus.mouse-pointer(title='{% trans "Create a basket" %}', ng-click="open('sm')")
    ul.list-group
      div(ng-repeat="it in baskets")
         li.list-group-item.mouse-pointer(ng-class="{active: cur_basket.id == it.id}", ng-click="showBasket($index)") {{ " it.name " | ng }}
@@ -46,30 +43,41 @@ div(ng-cloak, ng-controller="basketsController")
 
  .col-md-9
   .row
-   .col-md-3
+   .col-md-6
 
     .btn-group
-     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
-       i.glyphicon.glyphicon-cog
+     button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
        span.caret
+
      ul.dropdown-menu
+       li: a(href="#", title='', ng-click="open('sm')") {% trans "Create a basket" %}
+       li.divider(role="separator")
+
        li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
        li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
        li.divider(role="separator")
-       li: a(href="#") rst
+       li: a(href="#", ng-click="as_deposit()", title='{% trans "You can transform this list of books to a deposit. You will be asked the distributor and the discount." %}') {% trans "Transform as deposit" %}…
+
+       li.divider(role="separator")
+       li: a(href="http://abelujo.cc/docs/lists/", target="_blank") {% trans "Help" %}
 
     .btn-group
      button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-       i.glyphicon.glyphicon-download
        span.caret
+
      ul.dropdown-menu
        li: a(href="#", ng-click="export_csv('txt')") txt
        li: a(href="#", ng-click="export_csv('simple')") csv - {% trans "simple: isbn and quantity" %}
        li: a(href="#", ng-click="export_csv('pdf')") pdf - {% trans "with barcodes" %}
 
+    .btn-group
+       button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+         i.glyphicon.glyphicon-th-list
 
-   .col-md-3
-     h4   {{ 'cur_basket.name' |ng}}
+       button.btn.btn-default(type="button", ng-click="showing_notes = ! showing_notes", title='{% trans "Show your notes" %}')
+         i.glyphicon.glyphicon-pencil
+
+   .col-md-2
 
    .col-md-6
      form
@@ -90,18 +98,6 @@ div(ng-cloak, ng-controller="basketsController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-refresh
 
-  .row
-     .col-md-1
-       button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
-         i.glyphicon.glyphicon-th-list
-
-     .col-md-1.button.btn(ng-click="showing_notes = ! showing_notes", title='{% trans "Show your notes" %}')
-         i.glyphicon.glyphicon-pencil
-
-     .col-md-4
-     .col-md-2 {% trans "Number of copies" %}: {{ 'get_total_copies()'|ng}}
-     .col-md-2 {% trans "total" %}: {{ 'get_total_price()'|ng}} €
-
    div(ng-show="showing_notes")
      div
        textarea(cols=80, rows=6, ng-model="cur_basket.comment")
@@ -115,6 +111,16 @@ div(ng-cloak, ng-controller="basketsController")
        th {% trans "Price" %}
        th
      tbody
+       tr
+         td(ng-show="show_images")
+            .col-md-6(ng-show="show_images")
+
+         td {% trans "Total" %}
+         td
+         td {{ 'get_total_price()'|ng}} €
+         td {{ 'get_total_copies()'|ng}}
+         td
+
        tr.repeated-item(
           ng-repeat="it in copies"
           ng-mouseenter="show_buttons[$index] = true"
