@@ -44,9 +44,10 @@ html(ng-app="abelujo")
             a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
             a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px") {% trans "Logout" %}
 
-  body.container-fluid(ng-controller="baseController")
-    div.col-md-2(id="menu")
-        ul.nav.nav-pills.nav-stacked
+  div.container-fluid#wrapper(ng-controller="baseController")
+    div.col-md-2#sidebar-wrapper
+
+        ul.sidebar-nav.nav.nav-pills.nav-stacked
           li(ng-class="{active: url == 'collection' }")
             a(href='{% url "card_collection" %}') {% trans "My stock" %}
 
@@ -77,12 +78,10 @@ html(ng-app="abelujo")
               span.badge.ng-cloak {{ "alerts_open" | ng }}
 
 
-  div.col-md-10(id="content")
-    {% if messages %}
-    ul
-      {% for msg in messages %}
-      <li {% if msg.tags %} class="{{ msg.tags }}" {% endif %}> {{msg}} </li>
-      {% endfor %}
-    {% endif %}
-    {% block content %}
-    {% endblock content %}
+    div.col-md-10#page-content-wrapper
+      div#page-content
+        .container
+          .row
+            .col-md-12
+                {% block content %}
+                {% endblock content %}
