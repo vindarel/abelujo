@@ -95,9 +95,18 @@ div(ng-cloak, ng-controller="basketsController")
        button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
          i.glyphicon.glyphicon-th-list
 
-     .col-md-5
+     .col-md-1.button.btn(ng-click="showing_notes = ! showing_notes", title='{% trans "Show your notes" %}')
+         i.glyphicon.glyphicon-pencil
+
+     .col-md-4
      .col-md-2 {% trans "Number of copies" %}: {{ 'get_total_copies()'|ng}}
      .col-md-2 {% trans "total" %}: {{ 'get_total_price()'|ng}} €
+
+   div(ng-show="showing_notes")
+     div
+       textarea(cols=80, rows=6, ng-model="cur_basket.comment")
+     button.button.btn.btn-default(ng-click="save_basket()") {% trans "Save" %}
+
    table.table.table-condensed.table-striped
      thead
        th(ng-show="show_images")

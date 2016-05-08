@@ -582,6 +582,29 @@ def baskets_create(request, **response_kwargs):
 
         return JsonResponse(to_ret)
 
+def baskets_update(request, pk, **response_kwargs):
+    """Update the given fields of basket of id 'pk'.
+
+    Note: currently only the comment.
+    """
+    to_ret = {"data": [],
+              "alerts": [],
+              "status": ALERT_SUCCESS,}
+    if request.method == "POST":
+        try:
+            basket = Basket.objects.get(id=pk)
+        except Exception as e:
+            log.error("Basket update: {}".format(e))
+
+        # fields are in request.body
+        params = json.loads(request.body)
+        comment = params.get('comment')
+        if comment is not None: # accept ""
+            basket.comment = comment
+            basket.save()
+
+        return JsonResponse(to_ret)
+
 def baskets_inventory_get_or_create(request, **response_kwargs):
     """Get the current inventory id and its copies, or create one for the basket pk (in url).
     """

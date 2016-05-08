@@ -47,6 +47,7 @@ from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 
 CHAR_LENGTH = 200
+TEXT_LENGTH = 10000
 PAGE_SIZE = 50
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
 # and the ui in general (datejs).
@@ -1215,7 +1216,7 @@ class Basket(models.Model):
     copies = models.ManyToManyField(Card, through="BasketCopies", blank=True)
     # Access the intermediate table with basketcopies_set.all(), basketcopies_set.get(card=card)
     #: Comment:
-    comment = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
+    comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True)
 
     class Meta:
         app_label = "search"
@@ -1228,6 +1229,7 @@ class Basket(models.Model):
         return {"name": self.name,
                 "id": self.id,
                 "length": self.copies.count(),
+                "comment": self.comment,
                 }
 
     @staticmethod

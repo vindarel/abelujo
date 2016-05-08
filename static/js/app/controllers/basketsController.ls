@@ -23,7 +23,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.alerts = []
     $scope.show_buttons = {}
     $scope.new_name = null
-    $scope.cur_basket = 0
+    $scope.cur_basket = undefined
     $scope.cards_fetched = [] # fetched from the autocomplete
     $scope.copy_selected = undefined
     $scope.show_images = false
@@ -31,6 +31,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     COMMAND_BASKET_ID = 1
 
     $scope.language = utils.url_language($window.location.pathname)
+
+    $scope.showing_notes = false
 
     $http.get "/api/baskets"
     .then (response) ->
@@ -45,6 +47,15 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             index = 0
 
         $scope.showBasket index
+
+    $scope.save_basket = !->
+        params = do
+            comment: $scope.cur_basket.comment
+
+        $log.info "updating basket #{$scope.cur_basket.id}…"
+        $http.post "/api/baskets/#{$scope.cur_basket.id}/update/", params
+        .then (response) ->
+            resp = response.data
 
     $scope.showBasket = (index) !->
         "Show the copies of the given basket."
@@ -220,6 +231,13 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             # $window.location.href = "/#{$scope.language}/baskets/#{$scope.cur_basket.id}/receive/"
             $window.location.href = "/#{$scope.language}/inventories/#{inv_id}/"
 
+    $scope.as_deposit = !->
+        # Transform this list to a deposit.
+        ...
+
+    #############################
+    # Open Modal
+    # ###########################
     $scope.open = (size) !->
         modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
@@ -241,7 +259,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
 
+    ##############################
     # Keyboard shortcuts (hotkeys)
+    # ############################
     hotkeys.bindTo($scope)
     .add do
         combo: "d"
@@ -254,6 +274,12 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         description: gettext "go to the search box"
         callback: !->
            utils.set_focus!
+
+    .add do
+        combo: "n"
+        description: gettext "hide or show your notes"
+        callback: !->
+            $scope.showing_notes = ! $scope.showing_notes
 
 
 ]
