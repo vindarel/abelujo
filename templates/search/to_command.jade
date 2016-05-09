@@ -25,8 +25,6 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "Cards to command" %}
-
 div(ng-cloak, ng-controller="basketToCommandController")
 
   div
@@ -45,8 +43,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
   .row
     .col-md-1
-     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
-       i.glyphicon.glyphicon-download
+     button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
        span.caret
      ul.dropdown-menu
        li: a(href="#", ng-click="export_to('simple')") csv - {% trans "simple: isbn and quantity" %}

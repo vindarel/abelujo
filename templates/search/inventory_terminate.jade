@@ -48,8 +48,7 @@ div(ng-controller="inventoryTerminateController")
 
   .row
    .col-md-1
-     button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}")
-       i.glyphicon.glyphicon-cog
+     button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
        span.caret
      ul.dropdown-menu
        li: a(href="#", ng-click="export_list('bill')", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}

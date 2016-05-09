@@ -82,15 +82,13 @@ div.ng-cloak(ng-controller="sellController")
               typeahead-on-select="add_selected_card($item)"
               title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
               id="default-input"
+              placeholder="{% trans 'What did you sell ?' %}"
             )
             i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
 
             span.input-group-btn
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-refresh
-
-      div
-        span {% trans "Look for a" %} {{ 'card_type.name ' | ng }}
 
       h3(ng-show="cards_selected.length")
         {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }}
@@ -130,8 +128,7 @@ div.ng-cloak(ng-controller="sellController")
 
 
       input.btn.btn-primary(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
-      // input.btn.btn-primary(type="submit", value="Valider", ng-submit="sellCards()")
-      input.btn.btn(value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
+      input.btn.btn.btn-default(value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
 
 {% endblock content %}

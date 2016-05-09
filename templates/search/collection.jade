@@ -27,7 +27,7 @@
 
 h3 {% trans "Search in the stock" %}
 
-div(ng-cloak, ng-show="cards", ng-controller="collectionController")
+div(ng-cloak, ng-controller="collectionController")
 
  div
     uib-alert(
@@ -91,23 +91,23 @@ div(ng-cloak, ng-show="cards", ng-controller="collectionController")
           ng-options="elt.fields.name for elt in shelfs")
 
  .row
-  .col-md-4
+   .col-md-8
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")
 
-  //- span: a(href="{% url 'card_collection' %}?format=text")
-        input.btn(type="submit", value="{% trans 'see as text' %}", style="float: right;")
+     .btn-group
 
- .row
-   .col-md-8
-   .col-md-2
-     button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
-      i.glyphicon.glyphicon-th-list
-   .col-md-1
-     button.button.btn.btn-default(ng-click="open()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to…' %}
-      i.glyphicon.glyphicon-pushpin
+       button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+         span.caret
+
+       ul.dropdown-menu
+         li: a(href="#", ng-click="open()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to baskets…' %}
 
 
- table.row-border.hover(ng-show="cards", datatable="ng")
+      button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+        i.glyphicon.glyphicon-th-list
+
+
+ table.row-border.hover(ng-show="cards.length != 0", datatable="ng")
     thead
       th(ng-show="show_images")
       th {% trans "Title" %}

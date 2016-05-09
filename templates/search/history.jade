@@ -26,8 +26,6 @@
 
 
 div(ng-controller="historyController")
-    h3 {% trans "History" %}
-
     div
         alert(
           ng-repeat="alert in alerts"
@@ -42,7 +40,7 @@ div(ng-controller="historyController")
         uib-tab(heading='{% trans "Sells" %}', select="filterHistory('Sell')")
         uib-tab(heading='{% trans "Movements" %}', select="filterHistory('InternalMovement')")
 
-    button.button.btn(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+    button.button.btn.btn-default(type="button", ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
       i.glyphicon.glyphicon-th-list
 
     div(ng-repeat="hist in to_show")
