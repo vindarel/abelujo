@@ -34,6 +34,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
           id: "casadellibro"
     $scope.datasource = $scope.datasources[0]
     $scope.results_page = [] # list of dicts with page and other search params.
+    $scope.show_images = true
 
     $scope.next_results = !->
         if not $scope.query
@@ -125,6 +126,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
         $scope.selectAll = not $scope.selectAll
 
+    $scope.toggle_images = !->
+        $scope.show_images = not $scope.show_images
 
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1

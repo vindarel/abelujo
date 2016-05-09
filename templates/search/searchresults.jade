@@ -51,20 +51,29 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           type="text"
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
+  .col-md-2
 
  .row
-  .col-md-8
+   .col-md-10
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}")
      span  {% trans "or" %}: 
      a(href="{% url 'card_edit' %}") {% trans "Add a card manually" %}
-
-
- .row
-   .col-md-8
    .col-md-2
-     button.button.btn.btn-default(ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
-      i.glyphicon.glyphicon-pushpin
-   .col-md-2
+
+ .row(ng-show="cards.length != 0")
+    .col-md-10
+     .btn-group
+       button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+         span.caret
+
+       ul.dropdown-menu
+
+        li: a(href="#", ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to list…' %}
+
+     button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+         i.glyphicon.glyphicon-th-list
+
+    .col-md-2
      nav(style="float: right;")
           ul.pagination
             li.active: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
@@ -73,27 +82,26 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
               span(aria-hidden="true") &raquo;
 
 
- table.table.table-striped(ng-show="cards")
+ table.table.table-striped(ng-show="cards.length != 0")
     thead
+      th(ng-show="show_images")
       th {% trans "Title" %}
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
+      th {% trans "Price" %}
       th: input(type="checkbox", ng-click="toggleAll()")
       th
 
     tbody
       tr(ng-repeat="card in cards")
+        td(ng-show="show_images")
+            .col-md-6(ng-show="show_images")
+              img.myImg(ng-show="card.img", src="{{ 'card.img' | ng}}", alt="cover image")
         td
-          .row
-            .col-md-6
-              img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
-            .col-md-6
-              h4: a(href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
-              a(ng-show="card.details_url", href="{{ 'card.details_url' | ng }}", target="_blank") {% trans "See on" %} {{ 'card.data_source' |ng}}
-              div {{ 'card.price' |ng }} €
-              div
-                b isbn: 
-                span {{ 'card.isbn' |ng}}
+              div: a(href="{{ 'card.details_url' | ng }}", target="_blank") {{ 'card.title' | ng }}
+              div(ng-show="show_images")
+                    b isbn: 
+                    span {{ 'card.isbn' |ng}}
 
         td
           div(ng-repeat="author in card.authors")
@@ -101,12 +109,14 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         td
           div(ng-repeat="pub in card.publishers")
             div {{ 'pub' | ng }}
+        td: div {{ 'card.price'|ng }}
+
         td
           input(type="checkbox", ng-model="card.selected")
         td
           button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
 
- nav(style="float: right;")
+ nav(style="float: right;", ng-show="cards.length != 0")
           ul.pagination
             li.active: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
             li.active: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
