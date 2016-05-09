@@ -44,8 +44,8 @@ html(ng-app="abelujo")
             a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
             a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px") {% trans "Logout" %}
 
-  div.container-fluid#wrapper(ng-controller="baseController")
-    div.col-md-2#sidebar-wrapper
+  #wrapper(ng-controller="baseController")
+    #sidebar-wrapper
 
         ul.sidebar-nav.nav.nav-pills.nav-stacked
           li(ng-class="{active: url == 'collection' }")
@@ -78,9 +78,9 @@ html(ng-app="abelujo")
               span.badge.ng-cloak {{ "alerts_open" | ng }}
 
 
-    div.col-md-10#page-content-wrapper
-      div#page-content
-        .container
+    #page-content-wrapper
+      #page-content
+        .container-fluid
           .row
             .col-md-12
                 {% block content %}
