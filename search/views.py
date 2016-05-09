@@ -650,7 +650,7 @@ def deposit_add_copies(request, pk):
 
 @login_required
 def basket_auto_command(request):
-    template = "search/basket_auto_command.jade"
+    template = "search/to_command.jade"
     if request.method == "GET":
         return render(request, template)
 
