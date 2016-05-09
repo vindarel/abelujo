@@ -26,33 +26,41 @@
 div(ng-controller="inventoryTerminateController")
 
   h3 {% trans "Terminate the inventory of" %} {{ 'name' | ng}}
-  div.panel.panel-info
-    div.panel-heading {% trans "Help" %}
-    div.panel-body {% trans "Here you can compare the inventory with the real stock, and take actions, like exporting a bill in pdf or update the stock." %}
-
-  div(ng-if="is_no_origin").panel.panel-warning
+  .col-md-12
+   .col-md-3(ng-if="is_no_origin").panel.panel-warning
     div.panel-heading
     div.panel-body {% trans "Warning: we inventoried some cards that were not here originally." %} (x {{'obj_length(no_origin)'|ng}})
 
-  div(ng-if="is_missing").panel.panel-warning
+   .col-md-3.panel.panel-warning(ng-if="is_missing")
     div.panel-heading
-    div.panel-body {% trans "Warning: some cards are missing in the inventory." %} (x {{'obj_length(missing)'|ng}})
+    div.panel-body {% trans "Warning: some cards are missing in the inventory." %} (x {{'obj_length(missing)'|ng}}, {{ 'missing_cost'|ng}} €)
 
-  div(ng-if="is_less_in_inv").panel.panel-info
+   .col-md-3(ng-if="is_less_in_inv").panel.panel-info
     div.panel-heading
     div.panel-body {% trans "We are missing copies of some cards" %} (x {{'obj_length(less_in_inv)'|ng}})
 
-  div(ng-if="is_more_in_inv").panel.panel-info
+   .col-md-3(ng-if="is_more_in_inv").panel.panel-info
     div.panel-heading
     div.panel-body {% trans "We inventoried some cards with more copies than planned" %} (x {{'obj_length(more_in_inv)'|ng}})
 
   .row
-   .col-md-1
-     button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-       span.caret
-     ul.dropdown-menu
-       li: a(href="#", ng-click="export_list('bill')", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}
-       li: a(href="#", ng-click="export_list('inv')", title='{% trans "Get the list of the inventory" %}) {% trans "Inventory list - pdf" %}
+   .col-md-3
+     .btn-group
+       button.btn.btn-info.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+         span.caret
+       ul.dropdown-menu
+         li: a(href="#", ng-click='validate()') {% trans "Validate the inventory" %}
+
+     .btn-group
+       button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+         span.caret
+       ul.dropdown-menu
+         li: a(href="#", ng-click="export_list('bill')", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}
+         li: a(href="#", ng-click="export_list('inv')", title='{% trans "Get the list of the inventory" %}) {% trans "Inventory list - pdf" %}
+
+
+     a(href="http://abelujo.cc/docs/inventories/", target="_blank"): button.btn.btn-default(href="http://abelujo.cc/docs/inventories/", title='{% trans "Read the documentation" %}')
+       i.glyphicon.glyphicon-question-sign
 
   .row
    table.table.table-condensed.table-striped.table-hover(datatable='ng')
@@ -69,7 +77,6 @@ div(ng-controller="inventoryTerminateController")
         td {{ 'data.inv' | ng}}
         td {{ 'data.diff' |ng }}
 
-   button.btn.btn-primary(ng-click='validate()') {% trans "Validate" %}
 
 
 {% endblock content %}
