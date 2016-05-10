@@ -109,6 +109,7 @@ div(ng-cloak, ng-controller="collectionController")
 
  table.row-border.hover(ng-show="cards.length != 0", datatable="ng")
     thead
+      th: input(type="checkbox", ng-click="toggleAll()")
       th(ng-show="show_images")
       th {% trans "Title" %}
       th {% trans "Price" %}
@@ -117,10 +118,10 @@ div(ng-cloak, ng-controller="collectionController")
       th {% trans "Shelf" %}
       th {% trans "Quantity" %}
       th {% trans "Places" %}
-      th: input(type="checkbox", ng-click="toggleAll()")
 
     tbody
       tr(ng-repeat="card in cards")
+        td: input(type="checkbox", ng-model="selected[card.id]")
         td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
               img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
@@ -146,7 +147,6 @@ div(ng-cloak, ng-controller="collectionController")
         td
           div(ng-show="card.places") {{ 'card.places' | ng}}
 
-        td: input(type="checkbox", ng-model="selected[card.id]")
 
  script(type="text/ng-template", id="collectionModal.html")
     div.modal-header

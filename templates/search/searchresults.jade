@@ -74,26 +74,29 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
          i.glyphicon.glyphicon-th-list
 
     .col-md-2
-     nav(style="float: right;")
+       nav(style="float: right;")
           ul.pagination
-            li.active: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
+            li: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
               span(aria-hidden="true") &laquo;
-            li.active: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
+            li: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
               span(aria-hidden="true") &raquo;
 
 
  table.table.table-striped(ng-show="cards.length != 0")
     thead
+      th: input(type="checkbox", ng-click="toggleAll()")
       th(ng-show="show_images")
       th {% trans "Title" %}
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
       th {% trans "Price" %}
-      th: input(type="checkbox", ng-click="toggleAll()")
       th
 
     tbody
       tr(ng-repeat="card in cards")
+
+        td
+          input(type="checkbox", ng-model="card.selected")
         td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
               img.myImg(ng-show="card.img", src="{{ 'card.img' | ng}}", alt="cover image")
@@ -110,9 +113,6 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           div(ng-repeat="pub in card.publishers")
             div {{ 'pub' | ng }}
         td: div {{ 'card.price'|ng }}
-
-        td
-          input(type="checkbox", ng-model="card.selected")
         td
           button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
 
