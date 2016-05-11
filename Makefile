@@ -5,6 +5,9 @@
 # The target names are not a file produced by the commands of that target. Always out of date.
 .PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp tox
 
+clone:
+	git clone --recursive https://gitlab.com/vindarel/abelujo.git
+
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
 debian:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
