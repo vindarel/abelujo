@@ -37,7 +37,12 @@ div(ng-cloak, ng-controller="basketsController")
  .col-md-3
    ul.list-group
      div(ng-repeat="it in baskets")
-        li.list-group-item.mouse-pointer(ng-class="{active: cur_basket.id == it.id}", ng-click="showBasket($index)") {{ " it.name " | ng }}
+        li.list-group-item.mouse-pointer(
+          ng-class="{active: cur_basket.id == it.id}"
+          ng-click="showBasket($index)"
+          uib-popover="{{'baskets[$index].comment.substring(0,200)'|ng}}"
+          popover-trigger="mouseenter"
+          popover-placement="left") {{ " it.name " | ng }}
             span.badge {{ " it.length " | ng }}
 
 
