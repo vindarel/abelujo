@@ -63,9 +63,6 @@ div(ng-cloak, ng-controller="basketsController")
        li.divider(role="separator")
        li: a(href="#", ng-click="as_deposit()", title='{% trans "You can transform this list of books to a deposit. You will be asked the distributor and the discount." %}') {% trans "Transform as deposit" %}…
 
-       li.divider(role="separator")
-       li: a(href="http://abelujo.cc/docs/lists/", target="_blank") {% trans "Help" %}
-
     .btn-group
      button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
        span.caret
@@ -81,6 +78,9 @@ div(ng-cloak, ng-controller="basketsController")
 
        button.btn.btn-default(type="button", ng-click="showing_notes = ! showing_notes", title='{% trans "Show your notes" %}')
          i.glyphicon.glyphicon-pencil
+
+       a(href="http://abelujo.cc/docs/lists/", target="_blank"): button.btn.btn-default(href="http://abelujo.cc/docs/inventories/", title='{% trans "Read the documentation" %}')
+         i.glyphicon.glyphicon-question-sign
 
    .col-md-2
 
