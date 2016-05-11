@@ -26,9 +26,10 @@
 {% load ngfilter %}
 
 if  depo_pubtype
-  h3 Dépots externes
+  h3 {% trans "External deposits" %}
     table.table.table-striped.table-hover
-    tr
+    thead
+      tr
         td {% trans "Deposit name" %}
         td {% trans "Distributor" %}
         td {% trans "Last checkout" %}
@@ -36,7 +37,8 @@ if  depo_pubtype
         td {% trans "Initial qty" %}
         td {% trans "Total price" %}
 
-    for dep in depo_pubtype
+    tbody
+     for dep in depo_pubtype
       tr
         td
             a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
@@ -50,19 +52,21 @@ else
   h4 {% trans "No deposit of distributor's type" %}
 
 if depo_fix
-  h3 Dépots de la librairie:
+  h3 {% trans "Deposits of the bookstore" %}
   table.table.table-striped.table-hover
+   thead
     tr
-        td {% trans "Deposit's name" %}
-        td {% trans "Distributor" %}
-        td {% trans "Last deposit state" %}
+        th {% trans "Deposit's name" %}
+        th {% trans "Distributor" %}
+        th {% trans "Last deposit state" %}
 
-        td {% trans "Alerts" %}
-        td {% trans "Initial qty" %}
-        td {% trans "Total price" %}
+        th {% trans "Alerts" %}
+        th {% trans "Initial qty" %}
+        th {% trans "Total price" %}
 
-        td {% trans "Due date" %}
+        th {% trans "Due date" %}
 
+   tbody
     for dep in depo_fix
       tr
         td
@@ -76,7 +80,7 @@ if depo_fix
 
         td {{ dep.due_date }}
 
-    td
+    td {% trans "Total" %}
     td
     td
 

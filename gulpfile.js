@@ -78,7 +78,7 @@ gulp.task('less', function() {
         .pipe(gulp.dest('static/css'));
 });
 
-// Compile livescript TODO: it needs two passes. Fix.
+// Compile livescript
 gulp.task('compile:livescript', function () {
     return gulp.src('static/js/app/**/*.ls')
         .pipe(livescript({bare: true}))

@@ -236,7 +236,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         ...
 
     #############################
-    # Open Modal
+    # Open new basket modal
     # ###########################
     $scope.open = (size) !->
         modalInstance = $uibModal.open do
@@ -253,8 +253,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $scope.baskets.push basket
         , !->
               $log.info "modal dismissed"
-
-    utils.set_focus!
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
@@ -281,10 +279,48 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         callback: !->
             $scope.showing_notes = ! $scope.showing_notes
 
+    .add do
+        combo: "D"
+        description: gettext "transform to a Deposit"
+        callback: !->
+            $scope.open_to_deposit!
+
+    .add do
+        combo: "C"
+        description: gettext "Create a new list"
+        callback: !->
+            $scope.open!
+
+    #############################
+    # Open ToDeposit Modal
+    # ###########################
+    $scope.open_to_deposit = (size) !->
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'basketToDepositModal.html'
+            controller: 'BasketToDepositModalControllerInstance'
+            ## backdrop: 'static'
+            size: size,
+            resolve: do
+                utils: ->
+                    utils
+                basket_id: ->
+                    $scope.cur_basket.id
+
+        modalInstance.result.then () !->
+            ""
+        , !->
+              $log.info "modal dismissed"
+
 
 ]
 
+#####################
+# New basket modal
+# ###################
 angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils) ->
+
+    utils.set_focus!
 
     $scope.ok = !->
         $log.info "create new basket !"
@@ -308,6 +344,38 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
             $scope.alerts = response.data.alerts
             $uibModalInstance.close(basket)
 
+
+    $scope.cancel = !->
+        $uibModalInstance.dismiss('cancel')
+
+########################
+# Basket to deposit modal
+# ######################
+angular.module "abelujo" .controller "BasketToDepositModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, basket_id) ->
+
+    $scope.distributor_list = []
+    $scope.distributor = {}
+    $scope.new_name = ""
+
+    utils.set_focus!
+
+    # Distributors
+    utils.distributors!
+    .then (response) ->
+        $scope.distributor_list = response.data
+
+    $scope.ok = !->
+        $log.info $scope.distributor.selected
+        $log.info $scope.new_name
+
+        params = do
+            distributor_id: $scope.distributor.selected.id
+            name: $scope.new_name
+
+        $http.post "/api/baskets/#{basket_id}/to_deposit/", params
+        .then (response) !->
+            $log.info "post ok"
+            $uibModalInstance.close()
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')

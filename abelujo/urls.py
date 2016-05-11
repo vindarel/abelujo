@@ -57,7 +57,7 @@ apipatterns = patterns("",
     url(r'^api/baskets/(?P<pk>\d+)/inventories/?$',
         'search.models.api.baskets_inventory_get_or_create', name="api_baskets_inventories"),
     # Add or remove card(s)
-    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"), #action: add, remove
+    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z_]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"), #action: add, remove, update
     # Simple info
     url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
 

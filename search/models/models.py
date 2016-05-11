@@ -1718,7 +1718,7 @@ class Deposit(TimeStampedModel):
     #: type of the deposit. Some people also sent their books to a
     #: library and act like a distributor.
     deposit_type = models.CharField(choices=DEPOSIT_TYPES_CHOICES,
-                                    default=DEPOSIT_TYPES_CHOICES[0],
+                                    default="fix",
                                     max_length=CHAR_LENGTH)
 
     #: in case of a deposit for a publisher, the place (client?) who

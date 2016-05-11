@@ -73,9 +73,9 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
 
     # Distributors
     getDistributors = ->
-        $http.get "/api/distributors"
-        .then (response) ->
-            $scope.distributor_list = response.data
+      utils.distributors!
+      .then (response) ->
+          $scope.distributor_list = response.data
     getDistributors()
 
     $scope.add_selected_item = (item, model_input, model_list) ->

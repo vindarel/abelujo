@@ -94,3 +94,7 @@ utils.factory 'utils', ($http) ->
                     level: "error"
                     message: gettext "We couldn't produce the file, there were an internal error. Sorry !"
                 alerts
+
+        # next step: $resource
+        distributors: ->
+          $http.get "/api/distributors"

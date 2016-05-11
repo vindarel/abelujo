@@ -439,7 +439,8 @@ def basket(request, pk, action="", card_id="", **kwargs):
     """Get the list of cards or act on the given basket (POST):
     - add: add many cards,
     - remove
-    - update: one card.
+    - update: one card
+    - to_deposit: transform to a deposit. args: deposit_id, name
 
     pk: the basket id.
 
@@ -456,6 +457,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
 
     try:
         basket = Basket.objects.get(id=pk)
+
     except Exception as e:
         log.error(u"Error while getting basket {}: {}".format(pk, e))
         msgs.append(e.message)
@@ -474,6 +476,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         elif request.body:
             # 'remove' doesn't use this.
             req = json.loads(request.body)
+
         # Add cards from ids (from the Collection view)
         if action and action == "add" and req.get('card_ids'):
             msgs = []
@@ -525,6 +528,25 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 log.error("Error while setting the card qty in list {}: {}".format(basket.id, e))
                 msgs.append({'level': "error",
                              'message': _("We couldn't set the quantity of the card.")})
+
+        # Transform the basket to a deposit
+        elif action and action == "to_deposit":
+            distributor_id = req.get('distributor_id')
+            name = req.get('name')
+            if not distributor_id:
+                msgs.append({'level': 'error',
+                             'message': "please give the distributor_id as a parameter"})
+
+            if not name:
+                msgs.append({'level': 'error',
+                             'message': "please give the name as parameter"})
+
+            try:
+                basket.to_deposit(distributor=distributor_id, name=name)
+            except Exception as e:
+                log.error('Error while transforming basket {} to deposit: {}'.format(basket.id, e))
+                msgs.append({'level': 'error',
+                             'message': _("We couldn't set this list as a deposit. Sorry !")})
 
 
     to_ret['status'] = status
