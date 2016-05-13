@@ -27,7 +27,7 @@ from unidecode import unidecode
 
 import datasources.bookshops.all.discogs.discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
-import datasources.bookshops.deDE.buchwagner.buchWagnerScraper as buchWagner
+import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
 import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellibro
 import datasources.bookshops.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
 import datasources.bookshops.frFR.decitre.decitreScraper as decitre
@@ -74,22 +74,6 @@ log = logging.getLogger(__name__)
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
-
-# scraper names are the name of the imported module.
-SCRAPER_CHOICES = [
-    ("Book shops", (
-        ("decitre", "decitre.fr"),
-        ("librairiedeparis", "librairie de Paris"),
-        ("chapitre", "chapitre.com - fr"),
-        ("buchWagner", "buchWagner Munchen - de"),
-        ("casadellibro", "casa del libro, Madrid - es"),
-    )
- ),
-    ("CDs", (
-        ("discogs", "discogs.com"),
-    )
- )
-]
 
 def get_places_choices():
     return [(0, _("All"))] + [(it.id, it.name)

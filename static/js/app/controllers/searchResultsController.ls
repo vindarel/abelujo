@@ -28,10 +28,13 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.datasources =
         * name: "librairiedeparis - fr"
           id: "librairiedeparis"
-        * name: "Decitre - fr"
-          id: "decitre"
+        # * name: "Decitre - fr"
+          # id: "decitre"
         * name: "Casa del libro - es"
           id: "casadellibro"
+        * name: "Buchlentner - de"
+          id: "buchlentner"
+
     $scope.datasource = $scope.datasources[0]
     $scope.results_page = [] # list of dicts with page and other search params.
     $scope.show_images = true
