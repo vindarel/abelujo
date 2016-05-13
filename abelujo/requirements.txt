@@ -38,7 +38,7 @@ tqdm                    # progress bar
 termcolor               # colorful terminal output
 xhtml2pdf               # produce pdf from html templates. Installs
                         # Reportlab, Pypdf2 and Pillow, i.e. big dependencies.
-isbnlib==3.5            # isbn utils
+isbnlib<4               # isbn utils
 
 # deployment
 whitenoise              # serve static files. Easily, efficiently.
