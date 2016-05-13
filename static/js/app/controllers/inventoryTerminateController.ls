@@ -100,7 +100,8 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
 
         ids_qties = join ",", ids_qties
 
-        alerts = utils.export_to ids_qties, "pdf", $scope.name + "-" + doc_title, $scope.language
+        # Do the export.
+        alerts = utils.export_to ids_qties, "pdf-nobarcode", $scope.name + "-" + doc_title, $scope.language
         if alerts
             $scope.alerts.concat alerts
 

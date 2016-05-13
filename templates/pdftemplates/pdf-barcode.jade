@@ -30,21 +30,29 @@ head
     table
       thead
         tr
-          th
+          if barcode
+            th
           th {% trans "Title" %}
           th {% trans "Price" %}
           th {% trans "Quantity" %}
+
       tbody
         for card in cards_qties
           tr
-            td <pdf:barcode value="{{ card.0.isbn }}" type="ean13" humanreadable="1" align="baseline" />
-            td {{ card.0.title }}
+            if barcode
+              td <pdf:barcode value="{{ card.0.isbn }}" type="ean13" humanreadable="1" align="baseline" />
+            td {{ forloop.counter }} - {{ card.0.title }}
             td(style='{text-align: center;}') {{ card.0.price }} €
             td(style='{text-align: center;}') {{ card.1 }}
         endfor
+
       tfoot
         tr
+          if barcode
+            td
           td
-          td
-          td(style='{text-align: center;}') {{ total }} €
-          td(style='{text-align: center;}') {{ total_qty }}
+            b {% trans "Total" %}
+          td(style='{text-align: center;}')
+            b {{ total }} €
+          td(style='{text-align: center;}')
+            b {{ total_qty }}

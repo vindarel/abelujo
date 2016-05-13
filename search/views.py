@@ -668,20 +668,24 @@ def baskets_export(request):
 
     """
 
-    params = request.body
-    params = json.loads(params)
-    layout = params.get('layout')
-    ids_qties = params.get('ids_qties')
-    list_name = params.get('list_name')
-    tups = list_to_pairs(list_from_coma_separated_ints(ids_qties))
-    tups = filter(lambda it: it is not None, tups)
-
     response = HttpResponse()
+    params = request.body
+    try:
+        params = json.loads(params)
+        layout = params.get('layout')
+        ids_qties = params.get('ids_qties')
+        list_name = params.get('list_name')
+        tups = list_to_pairs(list_from_coma_separated_ints(ids_qties))
+        tups = filter(lambda it: it is not None, tups)
+    except Exception as e:
+        log.error("Error with body params while exporting to pdf: {}".format(e))
+        return response
 
     try:
         template = get_template('pdftemplates/pdf-barcode.jade')
 
         cards_qties = [(Card.objects.get(id=tup[0]), tup[1]) for tup in tups]
+        cards_qties = sorted(cards_qties, key = lambda it: it[0].title)
         isbns_qties = [(tup[0].isbn, tup[1]) for tup in cards_qties]
         # Should warn about no isbn, also on client side.
         # Booklets, newspapers or even books can be without isbn in a normal situation.
@@ -699,7 +703,7 @@ def baskets_export(request):
             content = "\n".join(rows)
             response = HttpResponse(content, content_type="text/raw")
 
-        elif layout == 'pdf':
+        elif layout in ['pdf', 'pdf-nobarcode']:
             # How to test that easily ?
             with open("pdfexport.pdf", "w+b") as resultFile:
 
@@ -720,6 +724,7 @@ def baskets_export(request):
                                               'list_name': list_name,
                                               'total': total,
                                               'total_qty': total_qty,
+                                              'barcode': layout == 'pdf',
                                               'date': date})
                 # convert to a pdf file
                 # pisaStatus = pisa.CreatePDF(
