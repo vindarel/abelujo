@@ -8,7 +8,7 @@ This project is at its debut stage. However it is already possible to:
 -   look up for **books**, either by keywords or by isbn/ean (which works with a **barcode scanner**). See the https://gitlab.com/vindarel/bookshops library. You can currently search for:
     * french books (through [librairiedeparis](http://www.librairie-de-paris.fr/), [decitre.fr](http://www.decitre.fr/) or chapitre.com)
     * spanish books (through [casadellibro.com](http://www.casadellibro.com))
-    * german books(through [buch-wagner.de](http://www.buch-wagner.de))
+    * german books(through [buchlentner.de](http://www.buchlentner.de))
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
 -   do an **inventories** of your stock,
