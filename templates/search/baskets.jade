@@ -111,10 +111,16 @@ div(ng-cloak, ng-controller="basketsController")
    table.table.table-condensed.table-striped
      thead
        th(ng-show="show_images")
-       th {% trans "Title" %}
-       th {% trans "In stock" %}
-       th {% trans "Price" %}
-       th
+       th(ng-click="sort_by('title')") {% trans "Title" %}
+         span.caret
+       th(ng-click="sort_by('quantity')") {% trans "In stock" %}
+         span.caret
+       th(ng-click="sort_by('price')") {% trans "Price" %}
+         span.caret
+       th(ng-click="sort_by('basket_qty')")
+         span.caret
+
+
      tbody
        tr
          td(ng-show="show_images")

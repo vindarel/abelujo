@@ -16,7 +16,7 @@
 
 angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', 'hotkeys', ($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location, hotkeys) !->
 
-    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
 
     $scope.baskets = []
     $scope.copies = []
@@ -33,6 +33,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.language = utils.url_language($window.location.pathname)
 
     $scope.showing_notes = false
+    $scope.last_sort = "title"
 
     $http.get "/api/baskets"
     .then (response) ->
@@ -256,6 +257,17 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
+
+    $scope.sort_by = (key) ->
+        if $scope.last_sort == key
+            $scope.copies = $scope.copies
+            |> reverse
+        else
+            $scope.copies = $scope.copies
+            |> sort-by ( -> it[key])
+            $scope.last_sort = key
+
+        $log.info $scope.copies
 
     ##############################
     # Keyboard shortcuts (hotkeys)
