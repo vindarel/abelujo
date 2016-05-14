@@ -37,6 +37,8 @@ urlpatterns = patterns('',
     url(r'^database/?', admin_site.urls),
     url(r'^search/?$', 'search.views.search', name="card_search"),
 
+    url(r'^stats/', 'search.views.dashboard', name="stats"),
+
     url(r'^stock/card/(?P<pk>\d+)/?$', 'search.views.card_show',
         name="card_show"),
     # works to edit a card with /edit/\d+. JS will fetch the existing info.

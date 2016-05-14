@@ -35,9 +35,12 @@ html(ng-app="abelujo")
     body.container-fullwidth
       div.navbar-collapse
         ul.nav.navbar-nav
-          li.active(href="#")
-            a(href='{% url "dashboard" %}') Abelujo
-              i.glyphicon.glyphicon-home
+          li
+            a Abelujo
+          li(href="#")
+            a(href='{% url "stats" %}') {% trans "Statistiques" %}
+              i.glyphicon.glyphicon-stats
+
           li.dropdown
             a.dropdown-toggle(href="#", data-toggle="dropdown", role="button", title='{% trans "Access everything on the database" %}') {% trans "Database" %}
               span.caret
