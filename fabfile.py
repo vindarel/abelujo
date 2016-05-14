@@ -158,23 +158,36 @@ def check_uptodate(client=None):
                     colored("{}", "red").format(max_count) +\
                     " commits behind."
 
+def _request_call(url):
+    status = 0
+    try:
+        status = requests.get(url, timeout=TIMEOUT).status_code
+    except Exception as e:
+        # print "Exception: {}".format(e)
+        status = 404
+
+    return status
+
 def check_online():
     """Check every instance's working.
 
-    xxx: fab parallel, async/multiprocessing, email alert, other tool…
+    Parallel task on same host with multiprocessing (fabric does on /different/ hosts).
     """
-    for client in sorted(CFG.clients, key=lambda it: it.name):
-        url = "http://{}:{}/fr/".format(CFG.url, client.port)
-        try:
-            status = requests.get(url, timeout=TIMEOUT).status_code
-        except Exception as e:
-            print "Exception: {}".format(e)
-            status = 404
 
+    sorted_clients = sorted(CFG.clients, key=lambda it: it.name)
+    urls = ["http://{}:{}/fr/".format(CFG.url, client.port) for client in sorted_clients]
+
+    import multiprocessing
+    pool = multiprocessing.Pool(8)
+
+    status = pool.map(_request_call, urls)
+    res = zip(status, sorted_clients)
+    for status, client in res:
         if status != 200:
-            print colored(u"- {} has a pb".format(client.name), "red") + " on " + url
+            print colored(u"- {} has a pb".format(client.name), "red") + " on {}".format(client['port'])
         else:
             print u"- {} ok".format(client.name)
+
 
 def update(client):
     """Update a client.
