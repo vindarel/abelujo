@@ -39,9 +39,9 @@ html(ng-app="abelujo")
             a(href='{% url "dashboard" %}') Abelujo
               i.glyphicon.glyphicon-home
         ul.nav.navbar-nav.navbar-right
-          li
-           span
+          li(href="#")
             a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
+          li(href="#")
             a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px") {% trans "Logout" %}
 
   #wrapper(ng-controller="baseController")
