@@ -52,6 +52,7 @@ import sys
 from subprocess import check_output
 
 import addict
+import requests
 from termcolor import colored
 
 from fabric.api import cd
@@ -77,6 +78,9 @@ VENV_SOURCE = "source ~/.virtualenvs/{}/bin/activate"
 GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt"
 env.hosts = CFG.url
 env.user = CFG.user
+
+#: timeout (in s) for http requests
+TIMEOUT = 15
 
 CLIENT_TMPL = """
 
@@ -110,16 +114,16 @@ def odsimport(odsfile=None):
     """
     cmd = 'make odsimport odsfile={}'.format(odsfile)
 
-def statusall():
-    for client in CFG.clients:
-        check_uptodate(client.name)
-
 def openclient(client):
     """Open the client page with a web browser.
     """
     client = select_client_cfg(client, CFG)
     cmd = "firefox {}:{}/fr/ & 2>/dev/null".format(CFG.url, client.port)
     os.system(cmd)
+
+def statusall():
+    for client in CFG.clients:
+        check_uptodate(client.name)
 
 def check_uptodate(client=None):
     """Check wether the distant repo is up to date with the local one. If
@@ -154,6 +158,24 @@ def check_uptodate(client=None):
                     colored("{}", "red").format(max_count) +\
                     " commits behind."
 
+def check_online():
+    """Check every instance's working.
+
+    xxx: fab parallel, async/multiprocessing, email alert, other tool…
+    """
+    for client in sorted(CFG.clients, key=lambda it: it.name):
+        url = "http://{}:{}/fr/".format(CFG.url, client.port)
+        try:
+            status = requests.get(url, timeout=TIMEOUT).status_code
+        except Exception as e:
+            print "Exception: {}".format(e)
+            status = 404
+
+        if status != 200:
+            print colored(u"- {} has a pb".format(client.name), "red") + " on " + url
+        else:
+            print u"- {} ok".format(client.name)
+
 def update(client):
     """Update a client.
 
@@ -165,25 +187,21 @@ def update(client):
     translations,....
 
     """
-    cfg = CLIENTS
-    cfg = get_yaml_cfg(cfg)
-    cfg = addict.Dict(cfg)
-    client = select_client_cfg(client, cfg)
-    wd = os.path.join(cfg.home, cfg.dir, client.name, CFG.project_name)
+    client = select_client_cfg(client, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
         run("echo {} > PORT.txt".format(client.port))
         with prefix(VENV_SOURCE.format(client.venv)):
             res = run("make update")
 
 def ssh_to(client):
-    config = CFG
     client = select_client_cfg(client, CFG)
-    cmd = "ssh -Y {}@{}".format(config.get('user'),
-                                   client.get('url', config.get('url')))
-    if config.get('dir') or client.get('dir'):
+    cmd = "ssh -Y {}@{}".format(CFG.get('user'),
+                                   client.get('url', CFG.get('url')))
+    if CFG.get('dir') or client.get('dir'):
         cmd += " -t 'cd {}; zsh --login;'".format(
-            os.path.join(config.get('home'),
-                         config.get('dir', client.get('dir')),
+            os.path.join(CFG.get('home'),
+                         CFG.get('dir', client.get('dir')),
                          client.get('name'),
                          CFG.project_name),)
     print "todo: workon venv"
