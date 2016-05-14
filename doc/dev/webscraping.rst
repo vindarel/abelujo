@@ -1,6 +1,10 @@
 Data sources and webscraping
 ============================
 
+This functionnality is built in a python library: https://gitlab.com/vindarel/bookshops
+
+It provides also a shell command line tool.
+
 Where do we get the data of books and CDs from ?
 ------------------------------------------------
 
@@ -17,21 +21,17 @@ websites:
 
 - for german books:
 
-  - from buchwagner.de
+  - from buchlentner.de
 
 - CDs: from discogs.com.
 
 Appart Discogs who provides a public api, we extract the data on the
 other sites with some webscraping.
 
-Why not use amazon's public apis ?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Why not use amazon's public apis ? The BNF ? other ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Amazon is killing bookshops, little publishers, authors,
-traductors and its employees. Screw Amazon.
-
-On our results page, we add a link to the original website. We want to
-support real bookshops that way.
+See https://gitlab.com/vindarel/bookshops
 
 How does web scraping work ?
 ----------------------------
@@ -111,11 +111,29 @@ No easy answer ! But it looks like it is.
 How to add a data source
 ------------------------
 
-Take example from `deDE/buchwagner/buchWagnerScraper.de <https://gitlab.com/vindarel/abelujo/tree/master/search/datasources/deDE>`_.
+Take example from `deDE/buchlentner/buchlentnerScraper.py <https://gitlab.com/vindarel/abelujo/tree/master/search/datasources/deDE>`_.
 
 See also the `BaseScraper`.
 
 But first, contact us !
+
+
+What makes a good website to scrape ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The website should:
+
+- have a search url (by contrast to hidden post parameters)
+- have a search url easy to understand
+- idem for advanced parameters (search by isbn, by publisher, etc)
+- display the price on the results page, without javascript (compulsory)
+- display the isbn on the main results page (without javascript). If
+  not, display it on the product page (will be slower. Still without
+  javascript).
+- not redirect to the product page when we search one isbn but show
+  the default results page with 1 result (or we'll need to write the
+  CSS selectors twice)
+- not clutter the results with e-books (the format should be a parameter)
 
 Test strategy
 -------------
@@ -167,7 +185,6 @@ For sites of which the url is not guessable, use ``mechanize``.
 
 Study how ``xpath`` can help shorten the code and scrapers creation.
 
-Make a library of its own so that in can be used in other projects.
 
 Test with continuous integration on GitlabCI.
 
@@ -176,7 +193,10 @@ How to import an ods LibreOffice sheet
 
 It's on the command line only and is still a work in progress.
 
-The ods (or csv) file can be of two forms:
+The ods (or csv) file can be of these forms:
+
+- it has a row with an "isbn" and "quantity" columns (this is the
+  easiest and most precise way)
 
 - it has a row containing the name of the columns. In that case, it
   must have a "title" column or a "isbn" one.
