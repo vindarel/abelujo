@@ -29,7 +29,6 @@ import datasources.bookshops.all.discogs.discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
 import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
 import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.bookshops.frFR.chapitre.chapitreScraper as chapitre  # same name as module's SOURCE_NAME
 import datasources.bookshops.frFR.decitre.decitreScraper as decitre
 import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
 import models
