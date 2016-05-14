@@ -23,6 +23,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from search.views import DepositsListView
 from search.views import InventoriesListView
+from search.admin import admin_site
 
 js_info_dict = { 'packages': ('search', '',), }
 
@@ -33,6 +34,7 @@ urlpatterns = patterns('',
 
     # url(r'^$', RedirectView.as_view(url='search/')),
     url(r'^$', 'search.views.dashboard', name="dashboard"),
+    url(r'^database/?', admin_site.urls),
     url(r'^search/?$', 'search.views.search', name="card_search"),
 
     url(r'^stock/card/(?P<pk>\d+)/?$', 'search.views.card_show',

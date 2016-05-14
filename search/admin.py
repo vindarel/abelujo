@@ -28,6 +28,21 @@ from search.models import PlaceCopies
 from search.models import Publisher
 from search.models import Sell
 
+class MyAdmin(admin.AdminSite):
+    site_header = 'Monty Python administration'
+    site_title = 'Abelujo admin'
+
+admin_site = MyAdmin(name='myadmin')
+admin_site.register(Author)
+admin_site.register(Basket)
+admin_site.register(Distributor)
+admin_site.register(Deposit)
+admin_site.register(Place)
+admin_site.register(PlaceCopies)
+admin_site.register(Publisher)
+admin_site.register(Sell)
+admin_site.register(Shelf)
+
 class CardAdmin(admin.ModelAdmin):
     class Meta:
         model = Card

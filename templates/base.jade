@@ -38,6 +38,22 @@ html(ng-app="abelujo")
           li.active(href="#")
             a(href='{% url "dashboard" %}') Abelujo
               i.glyphicon.glyphicon-home
+          li.dropdown
+            a.dropdown-toggle(href="#", data-toggle="dropdown", role="button", title='{% trans "Access everything on the database" %}') {% trans "Database" %}
+              span.caret
+            ul.dropdown-menu
+                li(href="#")
+                    a(href='/databasesearch/place', title='{% trans "List and edit the bookshop\'s places" %}') {% trans "Places" %}
+                li(href="#")
+                    a(href='/databasesearch/shelf', title='{% trans "List and edit the shelves" %}') {% trans "Shelves" %}
+                li(href="#")
+                    a(href='/databasesearch/distributor') {% trans "Distributors" %}
+                li(href="#")
+                    a(href='/databasesearch/publisher') {% trans "Publisher" %}
+                li.divider(role="separator")
+                li(href="#")
+                    a(href='/database') {% trans "All" %}
+
         ul.nav.navbar-nav.navbar-right
           li(href="#")
             a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
