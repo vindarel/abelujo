@@ -114,6 +114,13 @@ def statusall():
     for client in CFG.clients:
         check_uptodate(client.name)
 
+def openclient(client):
+    """Open the client page with a web browser.
+    """
+    client = select_client_cfg(client, CFG)
+    cmd = "firefox {}:{}/fr/ & 2>/dev/null".format(CFG.url, client.port)
+    os.system(cmd)
+
 def check_uptodate(client=None):
     """Check wether the distant repo is up to date with the local one. If
     not, how many commits behind ?
@@ -124,11 +131,8 @@ def check_uptodate(client=None):
     if not client:
         return statusall()
 
-    cfg = CLIENTS
-    cfg = get_yaml_cfg(cfg)
-    cfg = addict.Dict(cfg)
-    client = select_client_cfg(client, cfg)
-    wd = os.path.join(cfg.home, cfg.dir, client.name, CFG.project_name)
+    client = select_client_cfg(client, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
     with cd(wd):
         res = run("git rev-parse HEAD")
