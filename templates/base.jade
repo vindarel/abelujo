@@ -42,7 +42,8 @@ html(ng-app="abelujo")
           li(href="#")
             a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
           li(href="#")
-            a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px") {% trans "Logout" %}
+            a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px", title=' {% trans "Logout" %}')
+              i.glyphicon.glyphicon-log-out
 
   #wrapper(ng-controller="baseController")
     #sidebar-wrapper
