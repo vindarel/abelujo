@@ -1,6 +1,49 @@
 Client-side development
 =======================
 
+Html and CSS to improve the user interfacet
+------------------------------------------
+
+How to improve the user interface with html and CSS ?
+
+Html with Jade templates
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note that we don't write pure html, we use the jade templating
+language instead, which compiles to html.
+
+- http://jade-lang.com/
+
+Very quick reference:
+
+::
+
+   <div class="nav", id="default-id", href="#">
+   // is written
+   div.nav#default-id(href="#")
+   // and the div can be omitted:
+   .nav#default-id(href="#")
+
+Le't consider possible pitfalls:
+
+If you comment out a node, its children will be commented out as well
+
+.. code-block:: text
+
+  // div.commented
+       span.commented-by-its-parent
+
+Bootstrap and custom CSS
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The css file for the app is at `search/static/search/style.css`.
+
+Our CSS layout and widgets come from Bootstrap3 and Angular-UI:
+
+- http://getbootstrap.com/components/
+- https://angular-ui.github.io/bootstrap/versioned-docs/0.14.3/ .
+
+
 Add a bower dependency
 ----------------------
 
