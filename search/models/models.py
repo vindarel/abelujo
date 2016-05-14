@@ -25,6 +25,8 @@ from textwrap import dedent
 
 import pytz
 from toolz.dicttoolz import update_in
+from toolz.dicttoolz import valmap
+from toolz.itertoolz import groupby
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -696,9 +698,13 @@ class Card(TimeStampedModel):
 
     def last_sell(self):
         """Return: the last sell datetime.
+        xxx: db field for lookups ?
         """
+        last_sell = None
         last_soldcard = SoldCards.objects.filter(card__id=self.id).last()
-        return last_soldcard.created
+        if last_soldcard:
+            last_sell = last_soldcard.created
+        return last_sell
 
     @staticmethod
     def exists(card_dict):
@@ -2686,6 +2692,28 @@ class Inventory(TimeStampedModel):
 
         return (status, msgs)
 
+def shelf_age_sort_key(it):
+    """
+
+    -it: a card object
+
+    Return: a dict of lists with card objects. The keys (0,…4) represent days intervals.
+
+    """
+    it = ( timezone.now() - ( it.last_sell() or it.created ) ).days
+    if it <= 91: # 3 months
+        return 0
+    elif it <= 182: # 6 months
+        return 1
+    elif it <= 365:
+        return 2
+    elif it <= 547: # 18 months
+        return 3
+    elif it <= 730: # 24 months
+        return 4
+    else:
+        return 5
+
 class Stats(object):
 
     class Meta:
@@ -2789,3 +2817,29 @@ class Stats(object):
         res = sorted(res, key=lambda it: it['quantity'], reverse=True)
 
         return res
+
+
+    def _shelf_age(self, shelf_id):
+        shelf_name = None
+        try:
+            shelf = Shelf.objects.get(id=shelf_id)
+            shelf_name = shelf.name
+        except Exception as e:
+            log.error("No shelf with id {}: {}".format(shelf_id, e))
+            return None
+
+        hcards = Card.objects.filter(shelf__name=shelf_name)
+        stats = groupby(shelf_age_sort_key, hcards)
+
+        # Have a dict with all keys (easier for plotting charts)
+        for key in range(6):
+            if not stats.has_key(key):
+                stats[key] = []
+
+        # to dict
+        stats = valmap(lambda its: [it.to_dict() for it in its], stats)
+
+        return stats
+
+    def stock_age(self, shelf):
+        return self._shelf_age(shelf)

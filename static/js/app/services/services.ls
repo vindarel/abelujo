@@ -99,3 +99,6 @@ utils.factory 'utils', ($http) ->
         # next step: $resource
         distributors: ->
           $http.get "/api/distributors"
+
+        shelfs: ->
+            $http.get "/api/shelfs"

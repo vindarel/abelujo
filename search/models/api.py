@@ -16,13 +16,13 @@ from models import Author
 from models import Basket
 from models import Card
 from models import CardType
-from models import Shelf
 from models import Deposit
 from models import Distributor
 from models import Inventory
 from models import Place
 from models import Publisher
 from models import Sell
+from models import Shelf
 from models import SoldCards
 from models import Stats
 from models import getHistory
@@ -858,3 +858,8 @@ def stats_static(request, page=0, **kwargs):
     }
 
     return JsonResponse(to_ret)
+
+def stats_stock_age(request, **kwargs):
+    shelf = request.GET.get('shelf_id')
+    stats = Stats().stock_age(shelf)
+    return JsonResponse(stats)

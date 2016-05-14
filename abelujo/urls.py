@@ -81,6 +81,7 @@ apipatterns = patterns("",
 
     url(r'^api/stats/sells/month', 'search.models.api.stats_sells_month', name='api_stats_sells_month'),
     url(r'^api/stats/static', 'search.models.api.stats_static', name='api_stats_static'),
+    url(r'^api/stats/stock_age/?', 'search.models.api.stats_stock_age', name='api_stats_stock_age'),
     url(r'^api/stats/', 'search.models.api.stats', name='api_stats'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
