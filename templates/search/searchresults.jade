@@ -76,9 +76,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
     .col-md-2
        nav(style="float: right;")
           ul.pagination
-            li: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
+            li.mouse-pointer: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
               span(aria-hidden="true") &laquo;
-            li: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
+            li.mouse-pointer: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
               span(aria-hidden="true") &raquo;
 
 
@@ -118,8 +118,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
  nav(style="float: right;", ng-show="cards.length != 0")
           ul.pagination
-            li.active: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
-            li.active: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
+            li.mouse-pointer: a(ng-click="previous_results()", aria-label="Previous", title="{% trans 'Previous results' %}")
+              span(aria-hidden="true") &laquo;
+            li.mouse-pointer: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
               span(aria-hidden="true") &raquo;
 
  script(type="text/ng-template", id="SearchResultsModal.html")
