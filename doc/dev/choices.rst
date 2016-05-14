@@ -117,10 +117,44 @@ with its `prelude library <http://livescript.net/#prelude-ls>`_.
 Livescript has many more to offer than other alternatives like
 Coffeescript or RapydScript (the "pythonic" javascript).
 
+Quick reference:
+
+- functions are declared like in coffeescript with the arrow
+  notation. They return the last expression by default, unless we
+  declare the function with ``!->``, in which case we need to write the
+  ``return`` statement.
+
+  .. code-block:: coffeescript
+
+     save = (arg) ->
+         ...
+
+- the ``do`` notation helps in many things, like creating dictionnaries (javascript objects)
+
+  .. code-block:: coffeescript
+
+     params = do
+       card_id: $scope.card_id
+
+- the functional methods are handy to manipulate data. We can chain them with the ``|>`` pipe:
+
+  .. code-block:: coffeescript
+
+     cards_with_stock = all_cards
+     |> filter (.quantity > 0)
+
+which is a shortcut to access an object's attribute or method. We can also write anonymous functions where ``it`` represents the method argument:
+
+  .. code-block:: coffeescript
+
+     cards_with_stock = all_cards
+     |> filter ( -> it[quantity] > 0)
+
+
 Fabric
 ------
 
-`Fabric < http://docs.fabfile.org/en/latest/ >`_ helps to run remote
+`Fabric <http://docs.fabfile.org/en/latest/>`_ helps to run remote
 management commands to instances through ssh. See the ``fabfile.py``.
 
 Deployment: Gunicorn and Whitenoise

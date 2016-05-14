@@ -16,13 +16,20 @@ language instead, which compiles to html.
 
 Very quick reference:
 
-::
+.. code-block:: html
 
    <div class="nav", id="default-id", href="#">
-   // is written
+      <ul> etc
+
+is written
+
+.. code-block:: jade
+
    div.nav#default-id(href="#")
+      ul etc
    // and the div can be omitted:
    .nav#default-id(href="#")
+      ul etc
 
 Le't consider possible pitfalls:
 
