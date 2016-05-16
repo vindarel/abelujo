@@ -37,11 +37,11 @@ html(ng-app="abelujo")
         ul.nav.navbar-nav
           li
             a Abelujo
-          li(href="#")
+          li.push-right(href="#")
             a(href='{% url "stats" %}') {% trans "Statistiques" %}
               i.glyphicon.glyphicon-stats
 
-          li.dropdown
+          li.dropdown.push-right
             a.dropdown-toggle(href="#", data-toggle="dropdown", role="button", title='{% trans "Access everything on the database" %}') {% trans "Database" %}
               span.caret
             ul.dropdown-menu
