@@ -35,7 +35,7 @@ div(ng-controller="inventoryTerminateController")
     div.panel-heading
     div.panel-body {% trans "Warning: some cards are missing in the inventory." %} (x {{'obj_length(missing)'|ng}}, {{ 'missing_cost'|ng}} €)
 
-   .col-md-3(ng-if="is_less_in_inv").panel.panel-info
+   .col-md-3(ng-if="is_less_in_inv").panel.panel-warning
     div.panel-heading
     div.panel-body {% trans "We are missing copies of some cards" %} (x {{'obj_length(less_in_inv)'|ng}})
 
@@ -72,10 +72,10 @@ div(ng-controller="inventoryTerminateController")
 
      tbody
       tr(ng-repeat="(id, data) in diff")
-        td {{ 'data.card.title'|ng }}
-        td {{ 'data.stock' | ng}}
-        td {{ 'data.inv' | ng}}
-        td {{ 'data.diff' |ng }}
+        td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.card.title'|ng }}
+        td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.stock' | ng}}
+        td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.inv' | ng}}
+        td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.diff' |ng }}
 
 
 

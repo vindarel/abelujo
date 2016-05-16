@@ -29,6 +29,21 @@
     cursor: pointer;
 }
 
+.my-green-bg {
+    /* background: #00ff00; */
+    background: #81f888;
+}
+
+.my-red-bg {
+    /* background: #ff0000; */
+    background: #f7877e;
+}
+
+.my-yellow-bg {
+    /* background: #ffff00; */
+    background: #f8fb3d;
+}
+
 /* Angular animation for ng-repeat */
 
 /*
