@@ -47,11 +47,11 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
 
         # Cards that are too much in the inventory
         $scope.more_in_inv = $scope.diff
-        |> Obj.filter (.diff > 0)
+        |> Obj.filter (.diff < 0)
         $scope.is_more_in_inv = ! Obj.empty $scope.more_in_inv
         # Cards that are present in less qty in the inventory
         $scope.less_in_inv = $scope.diff
-        |> Obj.filter (.diff < 0)
+        |> Obj.filter (.diff > 0)
         $scope.is_less_in_inv = ! Obj.empty $scope.less_in_inv
         # Cards that are missing in the inventory
         # (not a list but an object: id-> card)

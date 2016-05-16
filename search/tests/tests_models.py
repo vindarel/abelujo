@@ -895,17 +895,18 @@ class TestInventory(TestCase):
         self.place.add_copy(self.card2)
         res = self.inv.add_copy(self.card2, nb=2)
         res = self.inv.add_copy(self.card3, nb=1)
-        # the inv:
+        # the inventory...
         d_diff, objname = self.inv.diff()
-        # - has not the card 1
-        self.assertEqual(d_diff[1]['inv'], None)
+        # - ... has not the card 1
         self.assertEqual(d_diff[1]['stock'], 1)
+        self.assertEqual(d_diff[1]['inv'], 0)
+        self.assertEqual(d_diff[1]['diff'], 1)
         self.assertEqual(d_diff[1]['in_orig'], True)
 
         # - has card2 with +1 copy
-        self.assertEqual(d_diff[2]['diff'], 1)
         self.assertEqual(d_diff[2]['stock'], 1)
         self.assertEqual(d_diff[2]['inv'], 2)
+        self.assertEqual(d_diff[2]['diff'], -1)
 
         # - has card3 that the place doesn't have
         self.assertEqual(d_diff[3]['diff'], 1)

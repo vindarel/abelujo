@@ -2630,6 +2630,7 @@ class Inventory(TimeStampedModel):
         in_inv = {it: d_inv[it] for it in in_inv}
 
         # Difference of quantities:
+        # diff = quantity original - quantity found in inventory
         d_diff = {} # its quantity is: "how many the inventory has more or less compared with the stock"
         for id, val in d_inv.iteritems():
             d_diff[id] = {}
@@ -2638,7 +2639,7 @@ class Inventory(TimeStampedModel):
             d_diff[id]['inv'] = val['quantity']
             d_diff[id]['card'] = val['card']
             if d_stock.get(id):
-                d_diff[id]['diff'] = val['quantity'] - d_stock[id]['quantity']
+                d_diff[id]['diff'] = d_stock[id]['quantity'] - val['quantity']
                 d_diff[id]['stock'] = d_stock[id]['quantity']
                 d_stock[id]['inv'] = val['quantity']
 
