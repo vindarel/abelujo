@@ -27,7 +27,6 @@ div(ng-controller="inventoryNewController")
   h3 {% trans "Inventory of " %} {{ 'cur_inv.name' | ng }}
   div {{ 'alerts ' | ng }}
   form(method="get")
-    h4 {% trans "Search in the stock" %}
     .row
       .col-md-9
         div {% trans "You did "%} {{ 'progress_current' | ng }} %. {% trans "It remains" %}: {{ 'total_missing' |ng }} {% trans "cards" %}
@@ -56,6 +55,7 @@ div(ng-controller="inventoryNewController")
             typeahead-on-select="add_selected_card($item)"
             title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
             id="default-input"
+            placeholder='{% trans "Search in the stock" %}'
           )
           i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
 
@@ -68,31 +68,38 @@ div(ng-controller="inventoryNewController")
         input(type="checkbox", ng-model="showAll", ng-change="setCardsToShow()")
         span(ng-click="toggleCardsToShow()") {% trans "Show all cards inventoried" %}
 
-  h4.ng-cloak(ng-show="cards_to_show.length")
-    {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
-  div.repeated-item(ng-cloak
-                    ng-show="cards_to_show"
-                    ng-repeat="card in cards_to_show")
-    div
-     .col-md-9
-      a(href="{{ 'card.details_url ' | ng }}") {{ 'card.title' | ng }}
-      span {{ 'card.authors_repr' | ng }}
-      i.glyphicon.glyphicon-warning-sign(
-        ng-show="{% verbatim %} cards_to_show[$index].ambiguous_sell {% endverbatim %}"
-        title="{% trans 'There is a conflict with deposits.' %}")
-      i.glyphicon.glyphicon-exclamation-s
+  div(ng-show="cards_to_show.length > 0")
+   table.table.table-condensed(datatable="ng")
+    thead
+        tr
+          th {% trans "Title" %}
+          th {% trans "Author" %}
+          th {% trans "Quantity" %}
+          th
 
-     .col-md-2
-        p.input-group
-            label.sr-only {% trans "Quantity" %}
-            span.input-group-addon X
-            input.form-control(
-                type="number", min=0, max=99
-                ng-model="cards_to_show[$index].quantity"
-                ng-change="updateCard($index)"
-            )
+    tbody
+        tr.repeated-item(ng-show="cards_to_show", ng-repeat="card in cards_to_show")
 
-     .col-md-1
-       i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
+         td.col-md-6
+          a(href="{{ 'card.details_url ' | ng }}") {{ 'card.title' | ng }}
+         td.col-md-3
+          span {{ 'card.authors_repr' | ng }}
+          i.glyphicon.glyphicon-warning-sign(
+            ng-show="{% verbatim %} cards_to_show[$index].ambiguous_sell {% endverbatim %}"
+            title="{% trans 'There is a conflict with deposits.' %}")
+          i.glyphicon.glyphicon-exclamation-s
+
+         td.col-md-1
+            p.input-group
+                label.sr-only {% trans "Quantity" %}
+                span.input-group-addon X
+                input.form-control(
+                    type="number", min=0, max=99
+                    ng-model="cards_to_show[$index].quantity"
+                    ng-change="updateCard($index)"
+                )
+
+         td.col-md-1
+           i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
 
 {% endblock content %}

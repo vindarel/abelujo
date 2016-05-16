@@ -1,4 +1,4 @@
-angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
+angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', 'hotkeys', ($http, $scope, $timeout, utils, $filter, $window, hotkeys) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
@@ -12,7 +12,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.copy_selected = undefined
     $scope.history = []
     # The cards "inventoried" of the current session: the ones
-    # displayed. They must be saved in DB.
+    # displayed. They are saved in the db instantly.
     $scope.cards_selected = []
     # All the cards inventoried, even the ones we don't want to show anymore.
     $scope.all = []
@@ -123,12 +123,16 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $scope.save()
 
     $scope.remove_from_selection = (index_to_rm) !->
+        """Remove the card from the selection to display
+        and from the inventory (api call).
+        """
         $scope.selected_ids.splice(index_to_rm, 1)
         $scope.cards_selected.splice(index_to_rm, 1)
         $scope.all.splice(index_to_rm, 1)
         focus()
 
         card = $scope.cards_to_show[index_to_rm]
+
         params = do
             "card_id": card.id
         $http.post "/api/inventories/#{$scope.inv_id}/remove/", params
@@ -138,10 +142,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.total_missing += 1
             $scope.total_copies -= 1
             $scope.updateProgress $scope.total_copies, $scope.total_missing
-
-    $scope.getTotalCopies = ->
-        map (.quantity), $scope.cards_selected
-        |> sum
 
     $scope.updateCard = (index) !->
         """
@@ -158,7 +158,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.updateProgress $scope.total_copies, $scope.total_missing
 
     $scope.save = ->
-        # Send the new copies and quantities to be saved.
+        """Send the new copies and quantities to be saved.
+        """
         ids_qties = [] # a list of simple types, not list of dicts (see utils service)
         map  ->
             ids_qties.push "#{it.id}, #{it.quantity};"
@@ -174,18 +175,31 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.total_copies += $scope.cards_selected.length
             $scope.updateProgress($scope.total_copies, $scope.total_missing)
             # Reset the cards to display
-            $scope.cards_selected = []
+            # $scope.cards_selected = []
             return response.data.status
 
     $scope.terminate = !->
         $http.get "/api/inventories/#{$scope.inv_id}/diff/"
         .then (response) !->
             $window.location.href = "/#{$scope.language}/inventories/#{$scope.inv_id}/terminate/"
+    ######################
+    # keyboard shortcuts
+    # ####################
+    hotkeys.bindTo($scope)
+    .add do
+        combo: "a"
+        description: gettext "show all cards inventoried"
+        callback: !->
+            $scope.toggleCardsToShow!
+
+    .add do
+        combo: "s"
+        description: gettext "go to the search box"
+        callback: !->
+           utils.set_focus!
 
     # Set focus:
-    focus = !->
-        angular.element('#default-input').trigger('focus');
-    focus()
+    utils.set_focus!
 
     $window.document.title = "Abelujo - " + gettext("Inventory")
 
