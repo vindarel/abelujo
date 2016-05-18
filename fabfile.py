@@ -89,6 +89,9 @@ CLIENT_TMPL = """
     port: {}
 """
 
+#: pretty console output
+COL_WIDTH = 10
+
 # Use ssh_config for passwords and cie
 # env.use_ssh_config = True
 
@@ -184,9 +187,9 @@ def check_online():
     res = zip(status, sorted_clients)
     for status, client in res:
         if status != 200:
-            print colored(u"- {} has a pb".format(client.name), "red") + " on {}".format(client['port'])
+            print colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port'])
         else:
-            print u"- {} ok".format(client.name)
+            print u"- {:{}} ".format(client.name, COL_WIDTH) + colored("ok", "green")
 
 
 def update(client):
