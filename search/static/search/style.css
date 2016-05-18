@@ -36,7 +36,7 @@
 
 .my-green-bg {
     /* background: #00ff00; */
-    background: #81f888;
+    background-color: #81f888;
 }
 
 .my-red-bg {
@@ -47,6 +47,11 @@
 .my-yellow-bg {
     /* background: #ffff00; */
     background: #f8fb3d;
+}
+
+/* On bootstrap 3, badges don't have context classes any more. Use this to use the ones of labels: label-success etc */
+.label-as-badge {
+    border-radius: 1em;
 }
 
 /* Angular animation for ng-repeat */

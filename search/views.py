@@ -192,6 +192,10 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     scraper = getattr(globals()[data_source], "Scraper")
     # res, traces = scraper(*search_terms).search()
     res, traces = scraper(search_terms, PAGE=PAGE).search()
+
+    # Check if we already have these cards in stock (with isbn).
+    res = Card.is_in_stock(res)
+
     return res, traces
 
 def postSearch(data_source, details_url):

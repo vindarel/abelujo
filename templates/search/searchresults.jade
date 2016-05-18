@@ -81,7 +81,6 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
             li.mouse-pointer: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
               span(aria-hidden="true") &raquo;
 
-
  table.table.table-striped(ng-show="cards.length != 0")
     thead
       th: input(type="checkbox", ng-click="toggleAll()")
@@ -101,7 +100,14 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
             .col-md-6(ng-show="show_images")
               img.myImg(ng-show="card.img", src="{{ 'card.img' | ng}}", alt="cover image")
         td
-              div: a(href="{{ 'card.details_url' | ng }}", target="_blank") {{ 'card.title' | ng }}
+              span.label.label-as-badge.label-default(
+                ng-class="{'label-success': card.in_stock > 0, 'label-danger': card.in_stock < 0}"
+                ng-show="card.in_stock != null"
+                title='{% trans "This card is already in your stock" %}')
+                  {{'card.in_stock'|ng}}
+              span
+                a(href="{{ 'card.details_url' | ng }}", target="_blank") {{ 'card.title' | ng }}
+
               div(ng-show="show_images")
                     b isbn: 
                     span {{ 'card.isbn' |ng}}

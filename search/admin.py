@@ -29,7 +29,7 @@ from search.models import Publisher
 from search.models import Sell
 
 class MyAdmin(admin.AdminSite):
-    site_header = 'Monty Python administration'
+    site_header = 'Abelujo administration'
     site_title = 'Abelujo admin'
 
 admin_site = MyAdmin(name='myadmin')

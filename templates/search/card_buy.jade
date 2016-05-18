@@ -27,7 +27,7 @@ form(method='post', action="{% url 'card_buy' card.id %}")
   {% csrf_token %}
   .row
     .col-lg-9
-      h4 {% trans "Buy cards" %}
+      h4 {% trans "Add to your stock" %}
       div {% trans "public price" %}: {{ card.price }}
       div {% trans "discount" %}: {{ card.distributor.discount }} %
       div {% trans "buying price" %}: {{ buying_price }}

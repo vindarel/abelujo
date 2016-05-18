@@ -606,6 +606,30 @@ class Card(TimeStampedModel):
         return cards, msgs
 
     @staticmethod
+    def is_in_stock(cards):
+        """Check by isbn if the given cards (dicts) are in stock.
+
+        Return a list of dicts with a new key each: "in_stock": 0/the quantity
+        """
+        if not cards:
+            return cards
+
+        found = 0
+        for card in cards:
+            if card.get('isbn'):
+                try:
+                    found = Card.objects.get(isbn=card.get('isbn'))
+                    if found:
+                        found = found.quantity
+                except ObjectDoesNotExist:
+                    found = None
+
+                card['in_stock'] = found
+
+        return cards
+
+
+    @staticmethod
     def get_from_id_list(cards_id):
         """cards_id: list of card ids
 
