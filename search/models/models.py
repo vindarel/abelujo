@@ -520,7 +520,7 @@ class Card(TimeStampedModel):
         returns: a 2-tuple: a list of objects or a list of dicts if to_list is
         specified, and a list of messages.
         """
-        SIZE_LIMIT = 100 #TODO: pagination
+        SIZE_LIMIT = 10 #TODO: pagination
         isbns = []
         cards = []
         msgs = []
