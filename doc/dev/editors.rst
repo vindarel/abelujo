@@ -114,6 +114,15 @@ JSON
 
 - `json-mode`: syntax highlighting and commands to reformat.
 
+CSS
+~~~
+
+The CSS mode is recognized by default, but a few stuff more may be useful:
+
+- ``M-x rainbow-mode`` will colorize strings that represent colors, like "#cdfa07" or just "blue".
+- ``M-x list-colors-display`` will show a big list of color choices with their notation in another buffer.
+
+
 Shell interaction
 ~~~~~~~~~~~~~~~~~
 
