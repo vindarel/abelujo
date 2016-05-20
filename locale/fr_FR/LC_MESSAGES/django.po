@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-18 15:33+0000\n"
-"PO-Revision-Date: 2016-05-18 17:43+0200\n"
+"POT-Creation-Date: 2016-05-20 14:59+0000\n"
+"PO-Revision-Date: 2016-05-20 17:00+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -202,7 +202,7 @@ msgstr "Facture"
 #: templates/search/deposits_create.jade:93
 #: templates/search/inventory_view.jade:77
 #: templates/search/inventory_view.jade:94
-#: templates/search/sell_create.jade:121 templates/search/sell_details.jade:31
+#: templates/search/sell_create.jade:129 templates/search/sell_details.jade:31
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -348,7 +348,8 @@ msgstr "Titre"
 
 #: templates/pdftemplates/pdf-barcode.jade:36
 #: templates/search/baskets.jade:118 templates/search/collection.jade:115
-#: templates/search/searchresults.jade:91 templates/search/to_command.jade:66
+#: templates/search/searchresults.jade:91
+#: templates/search/sell_create.jade:110 templates/search/to_command.jade:66
 msgid "Price"
 msgstr "Prix"
 
@@ -545,13 +546,14 @@ msgstr "Ajouter aux listes:"
 #: templates/search/card_add.jade:86 templates/search/card_buy.jade:39
 #: templates/search/card_move.jade:35
 #: templates/search/deposits_create.jade:105
-#: templates/search/sell_create.jade:130
+#: templates/search/sell_create.jade:141
 msgid "Validate"
 msgstr "Valider"
 
-#: templates/search/card_buy.jade:30
-msgid "Buy cards"
-msgstr "notices"
+#: templates/search/card_buy.jade:30 templates/search/searchresults.jade:123
+#, fuzzy
+msgid "Add to your stock"
+msgstr "Ajouter à votre stock"
 
 #: templates/search/card_buy.jade:31
 msgid "public price"
@@ -811,7 +813,7 @@ msgstr "Valider"
 
 #: templates/search/deposit_add_copies.jade:33
 #: templates/search/inventories.jade:65 templates/search/inventories.jade:72
-#: templates/search/sell_create.jade:131
+#: templates/search/sell_create.jade:142
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1131,7 +1133,7 @@ msgid "Author"
 msgstr "Auteur"
 
 #: templates/search/inventory_view.jade:89
-#: templates/search/sell_create.jade:102
+#: templates/search/sell_create.jade:105
 msgid "There is a conflict with deposits."
 msgstr "Il y a un conflit de dépôts."
 
@@ -1173,11 +1175,6 @@ msgid "This card is already in your stock"
 msgstr "La notice n'existe pas."
 
 #: templates/search/searchresults.jade:123
-#, fuzzy
-msgid "Add to your stock"
-msgstr "Ajouter à votre stock"
-
-#: templates/search/searchresults.jade:123
 msgid "Add…"
 msgstr "Nouveau…"
 
@@ -1197,6 +1194,10 @@ msgstr "Qu'avez-vous vendu ?"
 #: templates/search/sell_create.jade:94
 msgid "titles selected. Total:"
 msgstr "titres sélectionnés. Total:"
+
+#: templates/search/sell_create.jade:122
+msgid "Choose a discount"
+msgstr "Choisissez une remise"
 
 #: templates/search/sell_details.jade:25
 msgid "Sell of the"
@@ -1268,6 +1269,9 @@ msgid ""
 msgstr ""
 "Les notices sont groupées par diffuseur. Veuillez vérifier la liste et "
 "confirmer."
+
+#~ msgid "Buy cards"
+#~ msgstr "notices"
 
 #~ msgid "Terminate…"
 #~ msgstr "Terminer…"

@@ -1,4 +1,4 @@
-angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', function ($http, $scope, $timeout, utils, $filter, $window) {
+angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$log', function ($http, $scope, $timeout, utils, $filter, $window, $log) {
     // utils: in services.js
 
       // set the xsrf token via cookies.
@@ -6,6 +6,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       $scope.dist_list = [];
       $scope.distributor = undefined;
       $scope.copy_selected = undefined;
+    // List of the cards we're going to sell.
+    // Objects augmented with price_orig, quick_discount
       $scope.cards_selected = [];
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
@@ -31,6 +33,22 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           {name: gettext("other"), id:5},
       ];
       $scope.payment = $scope.payment_means[0];
+
+    $scope.discounts = {};
+    // and store the selected discount in this object.
+    // For the first time had pbs with another variable.
+    $scope.discounts.choices = [
+        {discount: 0,
+         name: "0%", // caution. a "" may introduce a bug
+         id:1},
+        {discount: 5,
+         name: "5%",
+         id:2
+        },
+        {discount: 30,
+         name: "30%",
+         id:3}
+    ];
 
       $scope.card_type = $scope.card_types[0];
       $scope.tmpcard = undefined;
@@ -78,6 +96,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               return it.repr === card_repr.repr;
           }) ;
           $scope.tmpcard = $scope.tmpcard[0].item;
+          $scope.tmpcard.price_orig = $scope.tmpcard.price_sold;
           // TODO: don't put duplicates. ONGOING !
           if (! _.contains($scope.selected_ids, $scope.tmpcard.id)) {
               $scope.cards_selected.push($scope.tmpcard);
@@ -86,6 +105,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           }
           $scope.copy_selected = undefined;
           $scope.updateTotalPrice();
+          $scope.alerts = [];
       };
 
       $scope.remove_from_selection = function(index_to_rm){
@@ -110,6 +130,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                                       function(memo, it) {
                                           return memo + (it.price_sold * it.quantity);},
                                       0);
+        $scope.total_price = $scope.total_price.toFixed(2); // round the float
     };
 
     $scope.getTotalCopies = function(){
@@ -117,6 +138,14 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                         function(memo, it){
                             return memo + it.quantity;},
                         0);
+    };
+
+    $scope.discount_apply = function(index){
+        var price_sold;
+        price_sold = $scope.cards_selected[index]['price_orig'];
+        $scope.cards_selected[index]['price_sold'] = price_sold - price_sold * $scope.cards_selected[index].quick_discount.discount / 100;
+
+        $scope.updateTotalPrice();
     };
 
       // Watch the change of distributor: we would like to filter out
