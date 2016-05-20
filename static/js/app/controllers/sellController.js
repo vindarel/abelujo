@@ -148,6 +148,15 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.updateTotalPrice();
     };
 
+    $scope.discount_global = function() {
+        // Set the same discount to all cards
+        var discount = $scope.discounts.global_discount;
+        for(var card = 0; card < $scope.cards_selected.length; card++) {
+            $scope.cards_selected[card]['quick_discount'] = discount;
+            $scope.discount_apply(card);
+        }
+    };
+
       // Watch the change of distributor: we would like to filter out
       // the cards that don't have the right dist.
       $scope.$watch("distributor", function(){

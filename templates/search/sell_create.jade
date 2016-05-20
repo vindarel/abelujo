@@ -90,8 +90,20 @@ div.ng-cloak(ng-controller="sellController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-refresh
 
-      h3(ng-show="cards_selected.length")
-        {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} €
+      .row
+        .col-md-3
+          input.btn.btn-success(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
+          input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
+      .row(ng-show="cards_selected.length > 0")
+          h3.col-md-6 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} €
+          .col-md-2
+          .col-md-1
+            select(
+              ng-options="elt.name for elt in discounts.choices"
+              title='{% trans "Set this discount to all" %}'
+              ng-model="discounts.global_discount"
+              ng-change="discount_global()")
+
 
       .row(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4.col-md-6
@@ -138,8 +150,6 @@ div.ng-cloak(ng-controller="sellController")
             i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
 
 
-      input.btn.btn-primary(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
-      input.btn.btn.btn-default(value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
 
 {% endblock content %}
