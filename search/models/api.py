@@ -497,7 +497,9 @@ def basket(request, pk, action="", card_id="", **kwargs):
             ids = []
             for card in cards:
                 try:
-                    exists = Card.objects.filter(isbn=card.get('isbn')).first()
+                    exists = False
+                    if card.get('isbn'):
+                        exists = Card.objects.filter(isbn=card.get('isbn')).first()
                     if not exists:
                         card_obj, msgs = Card.from_dict(card)
                         ids.append(card_obj.id)
