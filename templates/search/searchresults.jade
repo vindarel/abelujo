@@ -108,7 +108,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
               span
                 a(href="{{ 'card.details_url' | ng }}", target="_blank") {{ 'card.title' | ng }}
 
-              div(ng-show="show_images")
+              div(ng-show="show_images && card.isbn")
                     b isbn: 
                     span {{ 'card.isbn' |ng}}
 
