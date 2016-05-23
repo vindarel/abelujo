@@ -24,7 +24,7 @@
 {% load ngfilter %}
 
 div(ng-controller="inventoryNewController")
-  h3 {% trans "Inventory of " %} {{ 'cur_inv.name' | ng }}
+  h3 {% trans "Inventory of " %} {{ 'cur_inv' | ng }}
   div {{ 'alerts ' | ng }}
   form(method="get")
     .row

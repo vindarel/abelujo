@@ -178,6 +178,12 @@ class Publisher (models.Model):
     def get_absolute_url(self):
         return "/admin/search/publisher/{}".format(self.id)
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "id": self.id,
+        }
+
     @staticmethod
     def search(query):
         try:
@@ -2527,12 +2533,14 @@ class Inventory(TimeStampedModel):
     shelf = models.ForeignKey("Shelf", blank=True, null=True)
     #: we can also do the inventory of a whole place.
     place = models.ForeignKey("Place", blank=True, null=True)
+    #: we can also do the inventory of publishers
+    publisher = models.ForeignKey("publisher", blank=True, null=True)
     #: At last, we can also do "inventories" of baskets, meaning we compare it
     # with a newly received command, or a pack of cards returned.
     basket = models.ForeignKey("Basket", blank=True, null=True)
 
     def __unicode__(self):
-        inv_obj = self.shelf or self.place or self.basket
+        inv_obj = self.shelf or self.place or self.basket or self.publisher
         return "{}: {}".format(self.id, inv_obj.name)
 
     def add_copy(self, copy, nb=1, add=True):
@@ -2580,29 +2588,39 @@ class Inventory(TimeStampedModel):
         """
         copies = [it.to_dict() for it in self.inventorycards_set.all()]
         total = len(copies)
-        shelf_dict, place_dict, basket_dict = ({}, {}, {})
+        inv_name = ""
+        shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
         if self.shelf:
             missing = self.shelf.cards_qty - total
             shelf_dict = self.shelf.to_dict()
+            inv_name = self.shelf.name
         elif self.place:
             missing = self.place.placecopies_set.count() - total
             place_dict = self.place.to_dict()
+            inv_name = self.place.name
+        elif self.publisher:
+            missing = self.publisher.card_set.count() - total
+            pub_dict = self.publisher.to_dict()
+            inv_name = self.publisher.name
         elif self.basket:
             missing = self.basket.basketcopies_set.count() - total
             basket_dict = self.basket.to_dict()
+            inv_name = self.basket.name
         else:
             log.error("Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
 
-        ret = {
+        state = {
             "copies": copies,
+            "inv_name": inv_name,
             "total_copies": total,
             "total_missing": missing,
             "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,
+            "publisher": pub_dict,
         }
 
-        return ret
+        return state
 
     @staticmethod
     def diff_inventory(pk, **kwargs):
@@ -2637,8 +2655,12 @@ class Inventory(TimeStampedModel):
         elif self.basket:
             stock_cards_set = self.basket.basketcopies_set.all()
             obj_name = self.basket.name
+        elif self.publisher:
+            cards = self.publisher.card_set.all()
+            d_stock = {it.id: {'card': it, 'quantity': it.quantity} for it in cards}
+            obj_name = self.publisher.name
         else:
-            log.error("An inventory without place nor basket… that shouldn't happen.")
+            log.error("An inventory without place nor shelf nor basket nor publisher... that shouldn't happen.")
 
         # Cards of the inventory and of the stock/reference:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}

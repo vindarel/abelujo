@@ -57,18 +57,25 @@ div(ng-controller="InventoryModalController")
 
     div.modal-body
      .row
-        .col-md-6
+        .col-md-4
             h4 {% trans "A shelf" %}
             form.form-inline
               select.form-control(ng-model="shelf", ng-options="it.fields.name for it in shelfs")
-            button.btn.btn-primary(ng-click="ok()") {% trans "Ok" %}
+            button.btn.btn-primary(ng-click="ok('shelf')") {% trans "Ok" %}
             button.btn.btn-cancel(ng-click="cancel()") {% trans "Cancel" %}
 
-        .col-md-6
-            h4 {% trans "A whole place" %}
+        .col-md-4
+            h4 {% trans "A place" %}
             form.form-inline
-                    select.form-control(ng-model="place", ng-options="it.name for it in places", required)
-            button.btn.btn-primary(ng-click="ok()") {% trans "Ok" %}
+                    select.form-control(ng-model="place", ng-options="it.name for it in places")
+            button.btn.btn-primary(ng-click="ok('place')") {% trans "Ok" %}
+            button.btn.btn-cancel(ng-click="cancel()") {% trans "Cancel" %}
+
+        .col-md-4
+            h4 {% trans "An editor" %}
+            form.form-inline
+              select.form-control(ng-model="publisher", ng-options="it.fields.name for it in publishers")
+            button.btn.btn-primary(ng-click="ok('publisher')") {% trans "Ok" %}
             button.btn.btn-cancel(ng-click="cancel()") {% trans "Cancel" %}
 
   button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}

@@ -714,15 +714,19 @@ def inventories(request, **kwargs):
         params = json.loads(request.body)
         place_id = params.get("place_id")
         shelf_id = params.get("shelf_id")
+        publisher_id = params.get("publisher_id")
 
-        # Simple UI, so we can have both place_id and shelf_id, but
-        # prior is given to the shelf.
         try:
             inv = Inventory()
-            if shelf_id:
-                inv.shelf = Shelf.objects.get(id=shelf_id)
+            # shelf_id is always populated by the UI. If another one
+            # is populated, that's what we want
+            # XXX weak UI!
+            if publisher_id:
+                inv.publisher = Publisher.objects.get(id=publisher_id)
             elif place_id:
                 inv.place = Place.objects.get(id=place_id)
+            elif shelf_id:
+                inv.shelf = Shelf.objects.get(id=shelf_id)
             else:
                 log.error('Inventory create: we have neither a shelf_id nor a place_id, this shouldnt happen.')
 
@@ -746,11 +750,11 @@ def inventories(request, **kwargs):
             pk = kwargs.pop("pk")
             try:
                 inv = Inventory.objects.get(id=pk)
+                state = inv.state()
+                to_ret['data'] = state
             except Exception as e:
                 log.error(e)
                 # and return error msg
-            state = inv.state()
-            to_ret['data'] = state
 
     return JsonResponse(to_ret)
 

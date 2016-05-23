@@ -20,19 +20,28 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
 
     $scope.animationsEnabled = true
 
+    $scope.data = {}
     $scope.places = []
     $scope.place = {}
     $scope.shelfs = []
     $scope.shelf = {}
+    $scope.publisher = {}
+    $scope.publishers = []
 
     $http.get "/api/places"
         .then (response) !->
             $scope.places = response.data
+            $scope.data['places'] = response.data
 
     $http.get "/api/shelfs"
         .then (response) !->
             $scope.shelfs = sort-by (.fields.name), response.data
             $scope.shelf = $scope.shelfs[0]
+
+    $http.get "/api/publishers/"
+    .then (response) !->
+        $scope.publishers = sort-by (.fields.name), response.data
+        $log.info response.data
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do
@@ -50,6 +59,10 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
                     $scope.shelfs
                 shelf: ->
                     $scope.shelf
+                publishers: ->
+                    $scope.publishers
+                publisher: ->
+                    $scope.publisher
                 utils: ->
                     utils
 
@@ -59,21 +72,24 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
               $log.info "modal dismissed"
 
 
-angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelfs, shelf, utils) ->
+angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelfs, shelf, publishers, publisher, utils) ->
 
     $scope.places = places
     $scope.place = place
     $scope.shelfs = shelfs
     $scope.shelf = shelf
-    $scope.ok = ->
+    $scope.publishers = publishers
+    $scope.publisher = publisher
+    $scope.ok = (model) ->
         $uibModalInstance.close()
         $log.info "post new inventory !"
 
         language = utils.url_language($window.location.pathname)
 
         params = do
-            place_id: $scope.place.id
-            shelf_id: $scope.shelf.pk
+            place_id: $scope.place.id if model == 'place'
+            shelf_id: $scope.shelf.pk if model == 'shelf'
+            publisher_id: $scope.publisher.pk if model == 'publisher'
 
         $http.post "/api/inventories/create", params
         .then (response) !->

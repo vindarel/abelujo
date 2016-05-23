@@ -85,7 +85,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
                 min-width: 4em
                 width: $scope.progress_current + "%"
 
-            $scope.cur_inv = $scope.state.shelf or $scope.state.basket or $scope.state.place
+            $scope.cur_inv = $scope.state.inv_name
 
             return
 
