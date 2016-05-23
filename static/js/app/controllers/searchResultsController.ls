@@ -34,6 +34,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
           id: "casadellibro"
         * name: "Buchlentner - de"
           id: "buchlentner"
+        * name: "discogs - CDs"
+          id: "discogs"
 
     $scope.datasource = $scope.datasources[0]
     $scope.results_page = [] # list of dicts with page and other search params.
