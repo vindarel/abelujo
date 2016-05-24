@@ -623,10 +623,11 @@ class Card(TimeStampedModel):
         found = 0
         for card in cards:
             try:
-                # found = Card.objects.get(isbn=card.get('isbn'))
                 found, _ = Card.exists(card)
+                if type(found) == list:
+                    found = found[0]
                 if found:
-                    found = found[0].quantity
+                    found = found.quantity
             except ObjectDoesNotExist:
                 found = None
 
