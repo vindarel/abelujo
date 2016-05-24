@@ -94,8 +94,8 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
     tbody
       tr(ng-repeat="card in cards")
 
-        td(ng-click="card.selected = ! card.selected")
-          input(type="checkbox")
+        td
+          input(type="checkbox", ng-model="card.selected")
         td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
               img.myImg(ng-show="card.img", src="{{ 'card.img' | ng}}", alt="cover image")

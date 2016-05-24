@@ -121,7 +121,7 @@ div(ng-cloak, ng-controller="collectionController")
 
     tbody
       tr(ng-repeat="card in cards")
-        td(ng-click="selected[card.id] = ! selected[card.id]"): input(type="checkbox", ng-model="selected[card.id]")
+        td: input(type="checkbox", ng-model="selected[card.id]")
         td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
               img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
