@@ -54,6 +54,12 @@ from search.models import Publisher
 from search.models import Shelf
 from search.models import Sell
 
+class AuthorFactory(DjangoModelFactory):
+    class Meta:
+        model = Author
+
+    name = factory.Sequence(lambda n: "author test %d" % n)
+
 class SellsFactory(DjangoModelFactory):
     class Meta:
         model = Sell
@@ -186,6 +192,30 @@ class TestCards(TestCase):
                                             "authors": [self.GOLDMAN],
                                             "publishers": ["not a pub"]})
         self.assertFalse(bad_publishers)
+
+    def test_exists_many(self):
+        # Second card with same title, other authors
+        self.card2 = Card(title=self.fixture_title,
+                          isbn=self.fixture_isbn,
+                          shelf=ShelfFactory())
+        self.card2.save()
+        author = AuthorFactory()
+        self.card2.authors.add(author)
+        self.card2.save()
+
+        # we find our card when many have the same title.
+        same_authors, msgs = Card.exists({"title": self.fixture_title,
+                                           "authors": [author.name]})
+        self.assertTrue(same_authors)
+        # same title but different authors.
+        other_authors, msgs = Card.exists({"title": self.fixture_title,
+                                           "authors": [AuthorFactory()]})
+        self.assertFalse(other_authors)
+        # only the same title. Should exist.
+        no_pubs_no_authors, msgs = Card.exists({"title": self.fixture_title,})
+        self.assertTrue(no_pubs_no_authors)
+        self.assertEqual(len(no_pubs_no_authors), 2)
+
         # TODO: and collection
 
     def test_from_dict_no_authors(self):

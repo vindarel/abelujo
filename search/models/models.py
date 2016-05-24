@@ -622,15 +622,15 @@ class Card(TimeStampedModel):
 
         found = 0
         for card in cards:
-            if card.get('isbn'):
-                try:
-                    found = Card.objects.get(isbn=card.get('isbn'))
-                    if found:
-                        found = found.quantity
-                except ObjectDoesNotExist:
-                    found = None
+            try:
+                # found = Card.objects.get(isbn=card.get('isbn'))
+                found, _ = Card.exists(card)
+                if found:
+                    found = found[0].quantity
+            except ObjectDoesNotExist:
+                found = None
 
-                card['in_stock'] = found
+            card['in_stock'] = found
 
         return cards
 
@@ -754,38 +754,51 @@ class Card(TimeStampedModel):
         # Look for the same isbn/ean
         if card_dict.get('isbn') or card_dict.get('ean'):
             isbn = card_dict.get('isbn', card_dict.get('ean'))
-            clist = Card.objects.filter(isbn=isbn)
+            clist = Card.objects.filter(isbn=isbn).first()
             if clist:
                 return clist, msgs
 
         # Get the title.
         if not card_dict.get('title'):
             return None, ["Error: this card has no title."]
-        clist = Card.objects.filter(title=card_dict.get('title'))
+        clist = Card.objects.filter(title=card_dict.get('title')).all()
+        no_authors, no_pubs = False, False
         if clist:
             for obj in clist:
                 if card_dict.get('publishers'):
                     set_obj = set([it.name for it in obj.publishers.all()])
                     set_dict = set(card_dict.get('publishers'))
                     if not set_obj == set_dict:
-                        msgs.append("A card with isbn exists, but it has a different publisher")
-                        return None, msgs
+                        continue
+
+                else:
+                    no_pubs = True
 
                 if card_dict.get('authors'):
                     set_obj = set([it.name for it in obj.authors.all()])
                     set_dict = set(card_dict.get('authors'))
                     if not set_obj == set_dict:
-                        msgs.append("A card with same isbn exists, but it has different authors.")
-                        return None, msgs
+                        continue
 
-            # What to do about not uniq result ?
-            return clist, msgs
+                else:
+                    no_authors = True
+
+                # the card passed the filter: return it.
+                if not (no_authors and no_pubs):
+                    return obj, msgs
+
+            # Some cards have the same title, and not much more attributes.
+            if no_authors and no_pubs:
+                return clist, msgs
 
         return None, msgs
 
     @staticmethod
     def from_dict(card):
         """Add a card from a dict.
+
+        Check if it already exists in the db (the card may have no
+        isbn). If so, update its secondary fields.
 
         Format of dict:
             title:      string
@@ -808,10 +821,8 @@ class Card(TimeStampedModel):
 
 
         return: a tuple Card objec created or existing, message (str).
+
         """
-        # Some books always go missing...
-        # location_string = card.get('location', u'?')
-        # location, _ = Location.objects.get_or_create(name=location_string)
 
         msg_success = _("The card was created successfully.")
         msg_exists = _("This card already exists.")
@@ -871,6 +882,7 @@ class Card(TimeStampedModel):
         if card.get("publishers_ids"):
             card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
 
+        # Check if the card already exists (it may not have an isbn).
         exists_list, _msgs = Card.exists(card)
         created = False
         if exists_list:
