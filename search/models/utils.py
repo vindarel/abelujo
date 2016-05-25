@@ -15,10 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import decimal
 import re
 import string
 
 import addict
+
 # from models import getHistory # don't import model here-> circular
 from tabulate import tabulate
 
@@ -185,3 +187,10 @@ def list_from_coma_separated_ints(str):
         return [toIntOrFloat(it) for it in str.strip(",").split(",")]
     else:
         return []
+
+def roundfloat(nb):
+    """Round the given float to two decimals.
+
+    return: a float
+    """
+    return float(decimal.Decimal(nb).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))

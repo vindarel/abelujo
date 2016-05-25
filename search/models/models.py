@@ -16,7 +16,6 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import decimal  # round floats and choose rounding method
 import json
 import logging
 import operator
@@ -47,6 +46,7 @@ from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
+from search.models.utils import roundfloat
 
 CHAR_LENGTH = 200
 TEXT_LENGTH = 10000
@@ -2833,7 +2833,7 @@ class Stats(object):
             total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
             res['total_cost'] = {'label': "",
                              # Round the float... or just {:.2f}.format.
-                                 'value': float(decimal.Decimal(total_cost).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))}
+                                 'value': roundfloat(total_cost)}
         except Exception as e:
             log.error("Error with total_cost: {}".format(e))
 
@@ -2849,9 +2849,12 @@ class Stats(object):
 
         return res
 
-    def best_sells_month(self):
-        """Best sells of the current month.
+    def best_sells_month(self, limit=10):
+        """Best sells of the current month, total revenue, total nb of cards
+        sold, average sell.
+
         """
+        nb_sold_cards = 0
         # Get the sells since the beginning of this month
         now = timezone.now()
         month_beg = now - timezone.timedelta(days=now.day - 1)
@@ -2859,11 +2862,15 @@ class Stats(object):
 
         # Add the quantity sold of each card.
         best_sells = {} # title -> qty
+        # and count the total revenue
+        revenue = 0
         for sell in sells_obj:
             soldcards = sell.soldcards_set.all()
             for soldcard in soldcards:
                 title = soldcard.card.title
                 qty = soldcard.quantity
+                nb_sold_cards += qty
+                revenue += qty * soldcard.price_sold
                 if not best_sells.get("title"):
                     best_sells[title] = 0
                 best_sells[title] += qty
@@ -2873,10 +2880,21 @@ class Stats(object):
         for (title, qty) in best_sells.iteritems():
             res.append({'title': title, 'quantity': qty})
 
+
         # Sort by decreasing qty
         res = sorted(res, key=lambda it: it['quantity'], reverse=True)
 
-        return res
+        # Average sell
+        sell_mean = revenue / nb_sold_cards
+
+        to_ret = {
+            "best_sells": res[:limit],
+            "revenue": roundfloat(revenue),
+            "nb_sold_cards": nb_sold_cards,
+            "mean": roundfloat(sell_mean),
+            }
+
+        return to_ret
 
 
     def _shelf_age(self, shelf_id):

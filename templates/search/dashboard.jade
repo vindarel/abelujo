@@ -34,6 +34,12 @@ div(ng-controller="dashboardController", ng-cloak="stats")
       div(id="chart")
 
     .col-lg-6
+      h3 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
+      .row
+        .col-md-3
+          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
+        .col-md-9
+          div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
       h3 {% trans "Best 10 sells of this month" %}
       table.table.table-striped(st-table="sells_month")
         thead
@@ -41,7 +47,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
             th {% trans "Title" %}
             th {% trans "Quantity sold" %}
         tbody
-          tr(ng-repeat="sell in sells_month")
+          tr(ng-repeat="sell in sells_month.best_sells")
             th {{ 'sell.title' | ng }}
             th {{ 'sell.quantity' | ng }}
         tfoot

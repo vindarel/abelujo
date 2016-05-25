@@ -846,7 +846,7 @@ def stats_sells_month(request, **kwargs):
     """
     LIMIT = 10
     stats = Stats()
-    res = stats.best_sells_month()[:LIMIT]
+    res = stats.best_sells_month(limit=LIMIT)
     return JsonResponse(res, safe=False)
 
 def stats_static(request, page=0, **kwargs):
