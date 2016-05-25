@@ -68,6 +68,12 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     .then (response) !->
         $scope.distributors = response.data
 
+    $scope.stats = {}
+    $http.get "/api/stats/"
+    .then (response) !->
+        $scope.stats = response.data
+        $log.info $scope.stats
+
     # Get cards in stock
     params = do
         order_by: "-created" # valid django
