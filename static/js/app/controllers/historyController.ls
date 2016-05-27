@@ -16,13 +16,14 @@
 
 angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys) !->
 
-    {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
 
     $scope.history = []
     $scope.to_show = []
     $scope.filterModel = 'All'
     $scope.alerts = []
-    $scope.show_images = true
+    $scope.show_details = 0
+    $scope.last_sort = "created"
 
     params = do
         query: ""
@@ -36,7 +37,8 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
                 repr: repr
                 item: item
             $scope.to_show = $scope.history
-            |> filter (.item.model == 'Entry')
+            $scope.sells = $scope.history
+            # |> filter (.item.model == 'Entry')
 
             return do
                 repr: repr
@@ -60,8 +62,25 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
-    $scope.toggle_images = !->
-        $scope.show_images = not $scope.show_images
+    $scope.toggle_details = !->
+        "0: show nothing, 1: show second tables, 2: show also covers"
+        $scope.show_details +=  1
+        if $scope.show_details == 3
+            $scope.show_details = 0
+
+    $scope.sort_by = (key) ->
+        """Custom sort function. Smart-table is buggy and
+        under-documented. Didn't find a good table for angular.
+        """
+        if $scope.last_sort == key
+            $scope.sells = $scope.sells
+            |> reverse
+        else
+            $scope.sells = $scope.sells
+            |> sort-by ( -> it.item[key])
+            $scope.last_sort = key
+
+        $log.info $scope.sells
 
     # Keyboard shortcuts (hotkeys)
     hotkeys.bindTo($scope)
@@ -69,7 +88,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         combo: "d"
         description: gettext "show or hide the book details in tables."
         callback: !->
-            $scope.toggle_images!
+            $scope.toggle_details!
 
     $window.document.title = "Abelujo - " + gettext("History")
 

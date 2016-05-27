@@ -414,7 +414,8 @@ def history(request, **response_kwargs):
     if request.method == "GET":
         params = request.GET.copy()
         try:
-            hist, status, alerts = getHistory()
+            # hist, status, alerts = getHistory()
+            hist, status, alerts = Sell.history()
         except Exception as e:
             log.error(u"api/history error: {}".format(e))
             return HttpResponse(json.dumps(alerts), **response_kwargs)

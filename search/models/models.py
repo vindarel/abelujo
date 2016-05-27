@@ -2140,6 +2140,14 @@ class SoldCards(TimeStampedModel):
         ret = u"card id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
         return ret
 
+    def to_dict(self):
+        return {"card_id": self.card.id,
+                "card": Card.to_dict(self.card),
+                "quantity": self.quantity,
+                "price_init": self.price_init,
+                "price_sold": self.price_sold,
+                }
+
 class Sell(models.Model):
     """A sell represents a set of one or more cards that are sold:
     - at the same time,
@@ -2234,12 +2242,11 @@ class Sell(models.Model):
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
         json-ified."""
-        cards = map(lambda it: Card.obj_to_list([it.card])[0],
-                  self.soldcards_set.all())
+        cards_sold = [it.to_dict() for it in self.soldcards_set.all()]
         ret = {
             "id": self.id,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
-            "cards": cards,
+            "cards": cards_sold,
             # "payment": self.payment,
             "total_price_init": self.total_price_init,
             "total_price_sold": self.total_price_sold,
@@ -2428,6 +2435,16 @@ class Sell(models.Model):
             log.debug(u"Sell {} canceled".format(self.id))
 
         return status, msgs
+
+    @staticmethod
+    def history(to_list=True):
+        """
+        """
+        alerts = []
+        sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
+        if to_list:
+            sells = [it.to_list() for it in sells]
+        return sells, ALERT_SUCCESS, alerts
 
 def getHistory(to_list=False, sells_only=False):
     """return the last sells, card creations and movements.
@@ -2855,6 +2872,7 @@ class Stats(object):
 
         """
         nb_sold_cards = 0
+
         # Get the sells since the beginning of this month
         now = timezone.now()
         month_beg = now - timezone.timedelta(days=now.day - 1)
