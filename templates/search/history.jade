@@ -58,18 +58,20 @@ div(ng-controller="historyController")
              td {{ 'sell.item.created' | ng }}
              td {{ 'sell.item.total_price_sold' | ng }} €
              td
-                .row {{ 'sell.item.cards.length' | ng }} {% trans "cards" %}
-                table.table.table-condensed(ng-show="show_details > 0")
+                .row.mouse-pointer(ng-click="sell.show_row = ! sell.show_row")
+                  span {{ 'sell.item.cards.length' | ng }} {% trans "cards" %}
+                table.table.table-condensed(ng-show="show_details > 0 || sell.show_row == true")
                   thead
-                    th.col-md-2(ng-show="show_details > 1")
-                    th.col-md-6 {% trans "Title" %}
+                    th.col-md-2(ng-show="show_details > 1 || sell.show_covers")
+                    th.col-md-6.mouse-pointer(ng-click="sell.show_covers = ! sell.show_covers") {% trans "Title" %}
+                      i.glyphicon.glyphicon-menu-down
                     th.col-md-1 {% trans "price init" %}
                     th.col-md-2 {% trans "price sold" %}
                     th.col-md-1 {% trans "quantity" %}
 
                   tbody
                     tr(ng-repeat="card_sold in sell.item.cards")
-                      td(ng-show="show_details == 2")
+                      td(ng-show="show_details == 2 || sell.show_covers")
                         img.myImg(ng-show="card_sold.card.img", src="{{ 'card_sold.card.img' | ng }}")
                       td
                         a(href="{{'card_sold.card.get_absolute_url'|ng}}")  {{ 'card_sold.card.title' | ng }}

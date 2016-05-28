@@ -31,11 +31,13 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         params: params
     .then (response) ->
         response.data.data.map (item) !->
-            repr = "item n° " + item.id
+            repr = "sell n° " + item.id
             $scope.history.push do
                 id: item.id
                 repr: repr
                 item: item
+                show_row: false
+                show_covers: false
             $scope.to_show = $scope.history
             $scope.sells = $scope.history
             # |> filter (.item.model == 'Entry')
