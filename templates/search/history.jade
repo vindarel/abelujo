@@ -44,6 +44,7 @@ div(ng-controller="historyController")
       i.glyphicon.glyphicon-th-list
 
     .row.ng-cloak
+      .col-md-9
         table.table.table-condensed
           thead
             th.col-md-2(ng-click="sort_by('created')") {% trans "Date" %}
@@ -82,6 +83,25 @@ div(ng-controller="historyController")
              td
                 i.col-md-2.button.glyphicon.glyphicon-share-alt.mouse-pointer(ng-click="sellUndo($index)", title="{% trans 'Undo this sell' %}")
 
+      .col-md-3.panel.panel-info
+        div.panel-heading {% trans "Statistics" %}
+        div.panel-body
+          h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
+          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
+          div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
+          h4 {% trans "Best 10 sells of this month" %}
+          table.table
+            thead
+              tr
+                th {% trans "Title" %}
+                th {% trans "Quantity sold" %}
+            tbody
+              tr(ng-repeat="sell in sells_month.best_sells")
+                td {{ 'sell.title' | ng }}
+                td {{ 'sell.quantity' | ng }}
+            tfoot
+              tr
+                td.text-center(colspan="5")
 
     div(ng-if="hist.item.model === 'Entry'")
          .col-md-3

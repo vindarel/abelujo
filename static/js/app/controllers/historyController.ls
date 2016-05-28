@@ -19,6 +19,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
 
     $scope.history = []
+    $scope.sells_month = {}
     $scope.to_show = []
     $scope.filterModel = 'All'
     $scope.alerts = []
@@ -48,6 +49,10 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             return do
                 repr: repr
                 id: item.id
+
+    $http.get "/api/stats/sells/month"
+    .then (response) !->
+        $scope.sells_month = response.data
 
     $scope.filterHistory = (model) !->
         $log.info model
