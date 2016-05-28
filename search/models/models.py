@@ -2243,10 +2243,12 @@ class Sell(models.Model):
         """Return this object as a python list, ready to be serialized or
         json-ified."""
         cards_sold = [it.to_dict() for it in self.soldcards_set.all()]
+        total_copies_sold = sum([it['quantity'] for it in cards_sold])
         ret = {
             "id": self.id,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
             "cards": cards_sold,
+            "total_copies_sold": total_copies_sold,
             # "payment": self.payment,
             "total_price_init": self.total_price_init,
             "total_price_sold": self.total_price_sold,

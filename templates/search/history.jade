@@ -60,7 +60,7 @@ div(ng-controller="historyController")
              td {{ 'sell.item.total_price_sold' | ng }} €
              td
                 .row.mouse-pointer(ng-click="sell.show_row = ! sell.show_row")
-                  span {{ 'sell.item.cards.length' | ng }} {% trans "cards" %}
+                  span {{ 'sell.item.cards.length' | ng }} {% trans "titles" %}, {{'sell.item.total_copies_sold'|ng}}x
                 table.table.table-condensed(ng-show="show_details > 0 || sell.show_row == true")
                   thead
                     th.col-md-2(ng-show="show_details > 1 || sell.show_covers")
