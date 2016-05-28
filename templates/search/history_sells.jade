@@ -1,0 +1,87 @@
+// Copyright 2014 - 2016 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+{% block history_sells %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load ngfilter %}
+
+div
+    .row.ng-cloak
+      .col-md-9
+        table.table.table-condensed
+          thead
+            th.col-md-2(ng-click="sort_by('created')") {% trans "Date" %}
+              span.caret
+            th.col-md-1(ng-click="sort_by('total_price_sold')") {% trans "Amount" %}
+              span.caret
+            th {% trans "Titles" %}
+            th.col-md-1
+
+          tbody
+            tr(ng-repeat="sell in sells")
+             td {{ 'sell.item.created' | ng }}
+             td {{ 'sell.item.total_price_sold' | ng }} €
+             td
+                .row.mouse-pointer(ng-click="sell.show_row = ! sell.show_row")
+                  span {{ 'sell.item.cards.length' | ng }} {% trans "titles" %}, {{'sell.item.total_copies_sold'|ng}}x
+                table.table.table-condensed(ng-show="show_details > 0 || sell.show_row == true")
+                  thead
+                    th.col-md-2(ng-show="show_details > 1 || sell.show_covers")
+                    th.col-md-6.mouse-pointer(ng-click="sell.show_covers = ! sell.show_covers") {% trans "Title" %}
+                      i.glyphicon.glyphicon-menu-down
+                    th.col-md-1 {% trans "price init" %}
+                    th.col-md-2 {% trans "price sold" %}
+                    th.col-md-1 {% trans "quantity" %}
+
+                  tbody
+                    tr(ng-repeat="card_sold in sell.item.cards")
+                      td(ng-show="show_details == 2 || sell.show_covers")
+                        img.myImg(ng-show="card_sold.card.img", src="{{ 'card_sold.card.img' | ng }}")
+                      td
+                        a(href="{{'card_sold.card.get_absolute_url'|ng}}")  {{ 'card_sold.card.title' | ng }}
+                      td {{'card_sold.price_init'|ng}} €
+                      td {{'card_sold.price_sold'|ng}} €
+                      td {{'card_sold.quantity'|ng}}
+
+             td
+                i.col-md-2.button.glyphicon.glyphicon-share-alt.mouse-pointer(ng-click="sellUndo($index)", title="{% trans 'Undo this sell' %}")
+
+      .col-md-3.panel.panel-info
+        div.panel-heading {% trans "Statistics" %}
+        div.panel-body
+          h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
+          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
+          div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
+          h4 {% trans "Best 10 sells of this month" %}
+          table.table
+            thead
+              tr
+                th {% trans "Title" %}
+                th {% trans "Quantity sold" %}
+            tbody
+              tr(ng-repeat="sell in sells_month.best_sells")
+                td {{ 'sell.title' | ng }}
+                td {{ 'sell.quantity' | ng }}
+            tfoot
+              tr
+                td.text-center(colspan="5")
+
+
+{% endblock history_sells %}
