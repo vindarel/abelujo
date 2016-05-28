@@ -32,6 +32,9 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     .then (response) ->
         response.data.data.map (item) !->
             repr = "sell n° " + item.id
+            created = Date.parse(item.created)
+            created = created.toString("d-MMM-yyyy") # human representation
+            item.created = created
             $scope.history.push do
                 id: item.id
                 repr: repr
