@@ -171,13 +171,17 @@ def _request_call(url):
 
     return status
 
-def check_online():
+def check_online(client=None):
     """Check every instance's working.
 
     Parallel task on same host with multiprocessing (fabric does on /different/ hosts).
     """
 
-    sorted_clients = sorted(CFG.clients, key=lambda it: it.name)
+    if not client:
+        sorted_clients = sorted(CFG.clients, key=lambda it: it.name)
+    else:
+        sorted_clients = [select_client_cfg(client, CFG)]
+
     urls = ["http://{}:{}/fr/".format(CFG.url, client.port) for client in sorted_clients]
 
     import multiprocessing
@@ -209,6 +213,8 @@ def update(client):
         run("echo {} > PORT.txt".format(client.port))
         with prefix(VENV_SOURCE.format(client.venv)):
             res = run("make update")
+
+    check_online(client.name)
 
 def ssh_to(client):
     client = select_client_cfg(client, CFG)
