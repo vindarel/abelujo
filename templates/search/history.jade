@@ -35,24 +35,39 @@ div(ng-controller="historyController")
           {{ 'alert.message' | ng }}
 
     uib-tabset(justified="true")
-        uib-tab(heading='{% trans "Sells" %}', select="filterHistory('Sell')")
-        uib-tab(heading='{% trans "Entries" %}', select="filterHistory('Entry')")
+        uib-tab(heading='{% trans "Sells" %}', select="select_tab('sells')")
+        uib-tab(heading='{% trans "Entries" %}', select="history_entries()")
         uib-tab(heading='{% trans "Movements" %}', select="filterHistory('InternalMovement')")
 
     button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
       i.glyphicon.glyphicon-th-list
 
-    {% include "search/history_sells.jade" %}
+    div(ng-show="show_tab == 'sells'")
+      {% include "search/history_sells.jade" %}
 
-    div(ng-if="hist.item.model === 'Entry'")
-         .col-md-3
-           span {{ 'hist.item.created ' | ng }}
-         .col-md-9
-            div(ng-repeat="item in hist.item.copies")
-               .col-md-3(ng-show="show_details == 2")
+    div(ng-show="show_tab == 'entries'")
+      table.table.table-condensed
+          thead
+            th {% trans "Date" %}
+            th {% trans "Title" %}
+            th {% trans "Publishers" %}
+
+          tbody
+            tr(ng-repeat="hist in entries")
+              td {{ 'hist.created ' | ng }}
+              td
+               table
+                 thead
+                   th
+                   th
+                   th
+                 tr(ng-repeat="item in hist.copies")
+                  td(ng-show="show_details == 1")
                     img.myImg(ng-show="item.card.img", src="{{ 'item.card.img' | ng }}")
-               .col-md-9
-                 a(href="{{ 'item.card.get_absolute_url' | ng }}") {{ 'item.card.title' | ng }}
+                  td.col-md-8
+                    a(href="{{ 'item.card.get_absolute_url' | ng }}") {{ 'item.card.title' | ng }}
+
+              td {{'hist.copies[0].card.pubs_repr'|ng}}
 
        div(ng-if="hist.item.model === 'InternalMovement'")
         .col-md-2

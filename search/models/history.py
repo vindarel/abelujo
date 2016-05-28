@@ -19,6 +19,9 @@ import datetime
 import logging
 from datetime import date
 
+from common import ALERT_ERROR
+from common import ALERT_SUCCESS
+from common import ALERT_WARNING
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel
 from django.apps import apps
@@ -33,6 +36,7 @@ from search.models.common import DATE_FORMAT
 log = logging.getLogger(__name__)
 
 CHAR_MAX_LENGTH = 200
+PAGE_SIZE = 50
 
 class InternalMovement(TimeStampedModel):
     """An internal movement
@@ -190,3 +194,20 @@ class Entry(TimeStampedModel):
             log.error(e)
 
             return None, False
+
+    @staticmethod
+    def history(to_dict=True, to_list=True, page=None, page_size=PAGE_SIZE):
+        """
+        """
+        alerts = []
+        entries = []
+
+        try:
+            entries = Entry.objects.order_by("-created")[:page_size]
+        except Exception as e:
+            log.error('Error in Entry.history: {}'.format(e))
+
+        if to_list:
+            entries = [it.to_list() for it in entries]
+
+        return entries, ALERT_SUCCESS, alerts

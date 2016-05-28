@@ -26,6 +26,7 @@ from models import Shelf
 from models import SoldCards
 from models import Stats
 from models import getHistory
+from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
@@ -409,7 +410,11 @@ def sell_undo(request, pk, **response_kwargs):
                   "alerts": msgs}
         return JsonResponse(to_ret)
 
-def history(request, **response_kwargs):
+TO_RET = {"status": ALERT_SUCCESS,
+          "alerts": [],
+          "data": []}
+
+def history_sells(request, **response_kwargs):
     alerts = []
     if request.method == "GET":
         params = request.GET.copy()
@@ -424,6 +429,15 @@ def history(request, **response_kwargs):
                   "alerts": alerts,
                   "data": hist}
         return JsonResponse(to_ret)
+
+def history_entries(request, **response_kwargs):
+    if request.method == "GET":
+        params = request.GET.copy()
+        entries, status, alerts = history.Entry.history()
+        to_ret = TO_RET
+        to_ret['data'] = entries
+        return JsonResponse(to_ret)
+
 
 def auto_command_total(request, **response_kwargs):
     total = -1

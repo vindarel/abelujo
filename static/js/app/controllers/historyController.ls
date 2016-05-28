@@ -24,11 +24,12 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.filterModel = 'All'
     $scope.alerts = []
     $scope.show_details = 0
+    $scope.show_tab = 'sells'
     $scope.last_sort = "created"
 
     params = do
         query: ""
-    $http.get "/api/history", do
+    $http.get "/api/history/sells", do
         params: params
     .then (response) ->
         response.data.data.map (item) !->
@@ -53,6 +54,17 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $http.get "/api/stats/sells/month"
     .then (response) !->
         $scope.sells_month = response.data
+
+    $scope.history_entries = !->
+        $http.get "/api/history/entries"
+        .then (response) !->
+            $scope.show_tab = 'entries'
+            $scope.entries = response.data.data
+            |> map (-> it.created = Date.parse(it.created).toString("d-MMM-yyyy"); it)
+            $log.info response.data
+
+    $scope.select_tab = (model) !->
+        $scope.show_tab = model
 
     $scope.filterHistory = (model) !->
         $log.info model
