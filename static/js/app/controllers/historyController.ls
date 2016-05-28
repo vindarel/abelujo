@@ -63,13 +63,12 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             |> map (-> it.created = Date.parse(it.created).toString("d-MMM-yyyy"); it)
             $log.info response.data
 
+        $http.get "/api/stats/entries/month"
+        .then (response) !->
+            $scope.entries_month = response.data
+
     $scope.select_tab = (model) !->
         $scope.show_tab = model
-
-    $scope.filterHistory = (model) !->
-        $log.info model
-        $scope.to_show = $scope.history
-        |> filter (.item.model == model)
 
     $scope.sellUndo = (index) !->
         sell = $scope.to_show[index]

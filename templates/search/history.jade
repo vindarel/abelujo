@@ -46,7 +46,9 @@ div(ng-controller="historyController")
       {% include "search/history_sells.jade" %}
 
     div(ng-show="show_tab == 'entries'")
-      table.table.table-condensed
+     .row
+      .col-md-9
+       table.table.table-condensed
           thead
             th {% trans "Date" %}
             th {% trans "Title" %}
@@ -68,6 +70,11 @@ div(ng-controller="historyController")
                     a(href="{{ 'item.card.get_absolute_url' | ng }}") {{ 'item.card.title' | ng }}
 
               td {{'hist.copies[0].card.pubs_repr'|ng}}
+
+      .col-md-3.panel.panel-info
+        div.panel.panel-heading {% trans "Statistics" %}
+        div.panel.panel-body
+          h4 {% trans "Total acquisitions of this month" %}: {{'entries_month.total'|ng}}
 
        div(ng-if="hist.item.model === 'InternalMovement'")
         .col-md-2

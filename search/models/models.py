@@ -2916,6 +2916,16 @@ class Stats(object):
 
         return to_ret
 
+    def entries_month(self):
+        """
+        """
+        now = timezone.now()
+        month_beg = now - timezone.timedelta(days=now.day - 1)
+        res = history.Entry.objects.filter(created__gt=month_beg)
+        res = [it.to_dict() for it in res]
+        nb = sum([it.entrycopies_set.count() for it in res])
+        return {"cards": res,
+                "total": nb}
 
     def _shelf_age(self, shelf_id):
         shelf_name = None

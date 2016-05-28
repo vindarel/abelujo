@@ -864,6 +864,12 @@ def stats_sells_month(request, **kwargs):
     res = stats.best_sells_month(limit=LIMIT)
     return JsonResponse(res, safe=False)
 
+def stats_entries_month(request, **kwargs):
+    """
+    """
+    res = Stats().entries_month()
+    return JsonResponse(res, safe=False)
+
 def stats_static(request, page=0, **kwargs):
     """Return the static stock.
     """
