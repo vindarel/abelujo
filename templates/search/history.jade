@@ -37,7 +37,7 @@ div(ng-controller="historyController")
     uib-tabset(justified="true")
         uib-tab(heading='{% trans "Sells" %}', select="select_tab('sells')")
         uib-tab(heading='{% trans "Entries" %}', select="history_entries()")
-        uib-tab(heading='{% trans "Movements" %}', select="filterHistory('InternalMovement')")
+        //- uib-tab(heading='{% trans "Movements" %}', select="filterHistory('InternalMovement')")
 
     button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
       i.glyphicon.glyphicon-th-list
