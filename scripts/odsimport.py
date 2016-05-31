@@ -149,7 +149,7 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
         for card in tqdm(cards["found"]): # tqdm: progress bar
             qty = card.get('quantity')
             card_obj, msgs = Card.from_dict(card)
-            place.add_copy(card_obj, nb=qty)
+            place.add_copy(card_obj, nb=qty, add=False)
         print "...done."
 
     # Add all other cards (even with uncomplete info).
