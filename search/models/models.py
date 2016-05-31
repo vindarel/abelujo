@@ -887,11 +887,7 @@ class Card(TimeStampedModel):
         exists_list, _msgs = Card.exists(card)
         created = False
         if exists_list:
-            if len(exists_list) > 1:
-                log.warning("checking existence: found {} many similar cards of title {}.".format(len(exists_list), card.get('title')))
-
-            card_obj = exists_list[0]
-
+            card_obj = exists_list
             # Update fields, except isbn (as with "else" below)
             card_obj.distributor = card_distributor
             card_obj.save()
@@ -1147,12 +1143,12 @@ class Place (models.Model):
             "comment": self.comment,
             }
 
-    def add_copy(self, card, nb=1):
+    def add_copy(self, card, nb=1, add=True):
         """Adds the given number of copies (1 by default) of the given
-        card to this place.
+        car to this place.
 
         - card: a card object
-        - nb: the number of copies to add (optional)
+        - nb: the number of copies to add (optional).
 
         returns:
         - nothing
@@ -1164,7 +1160,10 @@ class Place (models.Model):
 
         try:
             place_copy, created = self.placecopies_set.get_or_create(card=card)
-            place_copy.nb += nb
+            if add:
+                place_copy.nb += nb
+            else:
+                place_copy.nb = nb
             place_copy.save()
 
             # Keep in sync the card's quantity field.
