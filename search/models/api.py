@@ -33,6 +33,7 @@ from search.models.common import ALERT_WARNING
 from search.views import postSearch
 from search.views import search_on_data_source
 
+from .utils import is_isbn
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
 
@@ -71,6 +72,11 @@ def cards(request, **response_kwargs):
 
     Don't return cards added in the DB but not bought.
 
+    If we don't find anything in our db and we have an isbn as input,
+    search the title on the internet. To have added a card in stock or
+    not should not be a limitation when we manipulate books (doing the
+    inventory, lists, etc).
+
     """
     data = []
     query = request.GET.get("query")
@@ -92,8 +98,26 @@ def cards(request, **response_kwargs):
                              shelf_id=shelf_id,
                              order_by=order_by,
                              bought=bought)
-    log.info(u"we have json distributors: ", data)
     # TODO:return the msgs
+
+    # Search our stock on a keyword search, but search also the web on an isbn search,
+    # if we don't find it in stock.
+    if not data:
+        isbn_in_query = filter(is_isbn, query)
+        if isbn_in_query:
+            log.info('Nothing in stock ? Search larger')
+            datasource = 'librairiedeparis' # depends on client's language
+            data, traces = search_on_data_source(datasource, isbn_in_query[0])
+
+            # add the result into our db
+            if data:
+                try:
+                    # We need to wait for it to get its id.
+                    card, _= Card.from_dict(data[0], to_list=True)
+                    data = [card]
+                except Exception as e:
+                    log.warning("Error while adding card from isbn search in db: {}".format(e))
+
     return JsonResponse(data, safe=False)
 
 def card(request, **kwargs):

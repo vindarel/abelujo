@@ -795,7 +795,7 @@ class Card(TimeStampedModel):
         return None, msgs
 
     @staticmethod
-    def from_dict(card):
+    def from_dict(card, to_list=False):
         """Add a card from a dict.
 
         Check if it already exists in the db (the card may have no
@@ -1008,7 +1008,11 @@ class Card(TimeStampedModel):
         except Exception as e:
             log.error('Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
 
-        return card_obj, [msg_success]
+        card = card_obj
+        if to_list:
+            card = card_obj.to_dict()
+
+        return card, [msg_success]
 
     def get_absolute_url(self):
         return reverse("card_show", args=(self.id,))

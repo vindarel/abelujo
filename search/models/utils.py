@@ -130,7 +130,7 @@ def is_isbn(it):
     if (type(it) == type(u'u') or type(it) == type('str'))and \
        len(it) in ISBN_ALLOWED_LENGTHS and \
        pattern.match(it):
-        res = True
+        res = it
 
     return res
 
