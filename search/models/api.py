@@ -98,8 +98,7 @@ def cards(request, **response_kwargs):
                              card_type_id=card_type_id,
                              place_id=place_id,
                              shelf_id=shelf_id,
-                             order_by=order_by,
-                             bought=bought)
+                             order_by=order_by)
     # TODO:return the msgs
 
     lang = request.GET.get("lang")
