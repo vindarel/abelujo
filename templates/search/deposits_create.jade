@@ -81,7 +81,6 @@ div(ng-controller="DepositCreateController")
           typeahead-min-length="3"
           typeahead-on-select="add_selected_card($item)"
         )
-        i.glyphicon.glyphicon-refresh.ng-cloak(ng-show='loadingCards')
 
   .row
     div.list-group.ng-cloak(ng-show="cards_selected", ng-repeat="card in cards_selected ")

@@ -82,13 +82,13 @@ div.ng-cloak(ng-controller="sellController")
               typeahead-on-select="add_selected_card($item)"
               title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
               id="default-input"
-              placeholder="{% trans 'What did you sell ?' %}"
+              placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
             )
-            i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
+            i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
             span.input-group-btn
               button.btn.btn-default(type='button')
-                i.glyphicon.glyphicon-refresh
+                i.glyphicon.glyphicon-search
 
       .row
         .col-md-3

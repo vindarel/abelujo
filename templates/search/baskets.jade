@@ -96,12 +96,12 @@ div(ng-cloak, ng-controller="basketsController")
               typeahead-on-select="add_selected_card($item)"
               title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
               id="default-input"
+              placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
             )
-            i.glyphicon.glyphicon-refresh(ng-show='loadingCards')
 
             span.input-group-btn
               button.btn.btn-default(type='button')
-                i.glyphicon.glyphicon-refresh
+                i.glyphicon.glyphicon-search
 
    div(ng-show="showing_notes")
      div
