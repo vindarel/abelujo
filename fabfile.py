@@ -1,5 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import sys
+from subprocess import check_output
+
+import addict
+import requests
+from termcolor import colored
+
+from fabric.api import cd
+from fabric.api import env
+from fabric.api import execute
+from fabric.api import prefix
+from fabric.api import put
+from fabric.api import run
+from fabric.api import sudo
+from fabric.contrib.files import exists
+from fabutils import get_yaml_cfg
+from fabutils import select_client_cfg
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 HELP = """This file is a fabric: http://docs.fabfile.org/en/latest/
 
@@ -46,28 +66,6 @@ TODO: restart gunicorn when needed. It can be needed to load new
 templatetags, to load new translations,...
 
 """
-
-import os
-import sys
-from subprocess import check_output
-
-import addict
-import requests
-from termcolor import colored
-
-from fabric.api import cd
-from fabric.api import env
-from fabric.api import execute
-from fabric.api import prefix
-from fabric.api import put
-from fabric.api import run
-from fabric.api import sudo
-from fabric.contrib.files import exists
-from fabutils import get_yaml_cfg
-from fabutils import select_client_cfg
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 CLIENTS = "clients.yaml"
 
 CFG = get_yaml_cfg(CLIENTS)
