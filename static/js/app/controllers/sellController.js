@@ -58,6 +58,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // messages for ui feedback: list of couple level/message
       $scope.alerts = undefined;
 
+      $scope.language = utils.url_language($window.location.pathname);
+
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
               return response.data.map(function(item){
@@ -73,6 +75,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           return $http.get("/api/cards", {
               params: {
                   "query": val,
+                  "lang": $scope.language,
                   "card_type_id": $scope.card_type.id
               }})
               .then(function(response){ // "then", not "success"
