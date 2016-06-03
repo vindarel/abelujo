@@ -82,6 +82,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.getCards = (term) ->
         params = do
             query: term
+            lang: $scope.language
             # card_type_id: book only ?
         $http.get "/api/cards/", do
             params: params

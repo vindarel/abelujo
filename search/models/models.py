@@ -1000,7 +1000,7 @@ class Card(TimeStampedModel):
 
         # We add a card in the stock when we buy it (add it in a place).
         in_stock = False
-        if card.has_key('in_stock'):
+        if card.has_key('in_stock') and card['in_stock']:
             in_stock = card.get('in_stock')
         try:
             card_obj.in_stock = in_stock

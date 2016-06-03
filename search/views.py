@@ -74,6 +74,9 @@ log = logging.getLogger(__name__)
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 
+#: Default datasource to be used when searching isbn, if source not supplied.
+DEFAULT_DATASOURCE = "librairiedeparis"
+
 def get_places_choices():
     return [(0, _("All"))] + [(it.id, it.name)
                                for it in Place.objects.all()]
@@ -177,6 +180,25 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     params = urllib.urlencode(qparam)
     rev_url = reverse(url_name) + "?" + params
     return rev_url
+
+def get_datasource_from_lang(lang):
+    """From a lang (str), return the name (str) of the datasource module.
+
+    And for CDs ? The client should be in "recordsop" mode.
+    """
+    if not lang:
+        return DEFAULT_DATASOURCE
+
+    if lang.startswith("fr"):
+        return "librairiedeparis"
+    elif lang.startswith("de"):
+        return "buchlentner"
+    elif lang.startswith("es"):
+        return "casadellibro"
+    elif lang == "discogs":
+        return lang
+    else:
+        return DEFAULT_DATASOURCE
 
 def search_on_data_source(data_source, search_terms, PAGE=1):
     """search with the appropriate scraper.

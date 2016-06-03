@@ -30,6 +30,7 @@ from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
+from search.views import get_datasource_from_lang
 from search.views import postSearch
 from search.views import search_on_data_source
 
@@ -89,6 +90,7 @@ def cards(request, **response_kwargs):
     shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
     bought = request.GET.get("in_stock")
+
     data, msgs = Card.search(query, to_list=True,
                              distributor=distributor,
                              distributor_id=distributor_id,
@@ -100,13 +102,14 @@ def cards(request, **response_kwargs):
                              bought=bought)
     # TODO:return the msgs
 
+    lang = request.GET.get("lang")
     # Search our stock on a keyword search, but search also the web on an isbn search,
     # if we don't find it in stock.
     if not data:
         isbn_in_query = filter(is_isbn, query)
         if isbn_in_query:
-            log.info('Nothing in stock ? Search larger')
-            datasource = 'librairiedeparis' # depends on client's language
+            datasource = get_datasource_from_lang(lang)
+            log.info('Nothing in stock ? Search larger for isbn {} on {}'.format(query[0], datasource))
             data, traces = search_on_data_source(datasource, isbn_in_query[0])
 
             # add the result into our db
