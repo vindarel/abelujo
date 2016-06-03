@@ -1167,8 +1167,8 @@ msgid "Analyse…"
 msgstr "Analyser…"
 
 #: templates/search/inventory_view.jade:58
-msgid "Search in the stock"
-msgstr "Chercher dans le stock"
+msgid "Search any isbn, search by keywords in your stock"
+msgstr "Cherchez tout isbn ou par mots-clefs dans votre stock"
 
 #: templates/search/inventory_view.jade:69
 msgid "Show all cards inventoried"

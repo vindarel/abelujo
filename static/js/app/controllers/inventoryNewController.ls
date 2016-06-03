@@ -96,8 +96,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.getCards = (val) ->
         $http.get "/api/cards", do
             params: do
-                "query": val
-                "card_type_id": null
+                query: val
+                card_type_id: null
+                lang: $scope.language
         .then (response) ->
             response.data.map (item) ->
                 repr = "#{item.title}, #{item.authors_repr}, éd #{item.pubs_repr}"
