@@ -2700,6 +2700,7 @@ class Inventory(TimeStampedModel):
         # Cards of the inventory and of the stock/reference:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
         if not d_stock:
+        if d_stock is None:
             d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
 
         # cards in stock but not in the inventory:
