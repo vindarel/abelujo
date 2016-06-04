@@ -2697,11 +2697,14 @@ class Inventory(TimeStampedModel):
         else:
             log.error("An inventory without place nor shelf nor basket nor publisher... that shouldn't happen.")
 
-        # Cards of the inventory and of the stock/reference:
+        # Cards of the inventory:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
-        if not d_stock:
+        # Total copies inventoried
+        total_copies_in_inv = sum([it.quantity for it in inv_cards_set.all()])
+        # Cards of the stock (the reference)
         if d_stock is None:
             d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
+        total_copies_in_stock = sum([it['quantity'] for _, it in d_stock.iteritems()])
 
         # cards in stock but not in the inventory:
         in_stock = list(set(d_stock) - set(d_inv)) # list of ids
@@ -2747,7 +2750,7 @@ class Inventory(TimeStampedModel):
             # Update each sub-dict in place, to replace the card obj with its to_dict.
             d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
 
-        return d_diff, obj_name
+        return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
     def add_pairs(self, pairs, add=False):
         """Save the given copies.

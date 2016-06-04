@@ -60,6 +60,8 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
         # $scope.alerts = response.data.msgs
         $scope.diff = response.data.cards
         $scope.name = response.data.name
+        $scope.total_copies_in_inv = response.data.total_copies_in_inv
+        $scope.total_copies_in_stock = response.data.total_copies_in_stock
 
         # Cards that are too much in the inventory
         $scope.more_in_inv = $scope.diff

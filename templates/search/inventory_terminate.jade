@@ -62,6 +62,14 @@ div(ng-controller="inventoryTerminateController")
      a(href="http://abelujo.cc/docs/inventories/", target="_blank"): button.btn.btn-default(href="http://abelujo.cc/docs/inventories/", title='{% trans "Read the documentation" %}')
        i.glyphicon.glyphicon-question-sign
 
+   .col-md-9
+    .col-md-3
+     h4 {% trans "Initial qty" %}: {{'total_copies_in_stock'|ng}}
+    .col-md-3
+     h4 {% trans "Qty inventory" %}: {{'total_copies_in_inv'|ng}}
+    .col-md-3
+     h4 {% trans "Difference" %}: {{'total_copies_in_inv - total_copies_in_stock'|ng}}
+
   .row
    table.table.table-condensed.table-striped.table-hover(datatable='ng')
      thead

@@ -870,8 +870,10 @@ def inventories_remove(request, **kwargs):
 def inventory_diff(request, pk, **kwargs):
     """
     """
-    diff, name = Inventory.diff_inventory(pk, to_dict=True)
+    diff, name, total_copies_in_inv, total_copies_in_stock = Inventory.diff_inventory(pk, to_dict=True)
     to_ret = {'cards': diff,
+              'total_copies_in_inv': total_copies_in_inv,
+              'total_copies_in_stock': total_copies_in_stock,
               'name': name}
     return JsonResponse(to_ret)
 
