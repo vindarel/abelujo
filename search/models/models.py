@@ -2795,6 +2795,10 @@ class Inventory(TimeStampedModel):
                 status = "error"
                 return None
 
+            if self.shelf:
+                card.shelf = self.shelf
+                card.save()
+
         return (status, msgs)
 
 def shelf_age_sort_key(it):
