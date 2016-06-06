@@ -25,30 +25,7 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "Inventory started" %}
-table.table.table-striped.table-hover
-  thead
-   tr
-    th {% trans "Created the" %}
-    th {% trans "On the place" %}
-    th
-
-  tbody
-  for inv in inventories
-    tr
-      td {{ inv.created }}
-      if inv.shelf
-        td {{ inv.shelf }}
-      else
-        if inv.place
-          td {{ inv.place }}
-        else
-          td {{ inv.basket }}
-      td
-        a(href="{{ inv.id }}")
-          button.btn.btn-primary {% trans "Continue" %}
-        a(href="{{ inv.id }}/delete")
-          button.btn.btn-danger {% trans "Delete" %}
+h3 {% trans "Inventories started" %}
 
 div(ng-controller="InventoryModalController")
   script(type="text/ng-template", id="modalContent.html")
@@ -79,5 +56,30 @@ div(ng-controller="InventoryModalController")
             button.btn.btn-cancel(ng-click="cancel()") {% trans "Cancel" %}
 
   button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}
+
+table.table.table-striped.table-hover
+  thead
+   tr
+    th {% trans "Created the" %}
+    th {% trans "On the place" %}
+    th
+
+  tbody
+  for inv in inventories
+    tr
+      td {{ inv.created }}
+      if inv.shelf
+        td {{ inv.shelf }}
+      else
+        if inv.place
+          td {{ inv.place }}
+        else
+          td {{ inv.basket }}
+      td
+        a(href="{{ inv.id }}")
+          button.btn.btn-primary {% trans "Continue" %}
+        a(href="{{ inv.id }}/delete")
+          button.btn.btn-danger {% trans "Delete" %}
+
 
 {% endblock content %}
