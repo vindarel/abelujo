@@ -73,7 +73,7 @@ utils.factory 'utils', ($http) ->
                 # We get raw data. We must open it as a file with JS.
                 a = document.createElement('a')
                 a.target      = '_blank'
-                if layout == 'simple'
+                if layout in ['simple', 'csv', 'csv_extended']
                     a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
                     a.download    = "#{list_name}.csv"
 

@@ -716,11 +716,18 @@ def baskets_export(request):
         # Booklets, newspapers or even books can be without isbn in a normal situation.
         isbns_qties = filter(lambda it: it[0] is not None, isbns_qties)
 
-        if layout == 'simple':
+        if layout in ['simple', 'csv']:
             pseudo_buffer = Echo()
-            writer = csv.writer(pseudo_buffer, delimiter=';')
             writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
             content = [writer.writerow(row) for row in isbns_qties]
+            response = StreamingHttpResponse(content, content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+        elif layout in ['csv_extended']:
+            pseudo_buffer = Echo()
+            writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+            rows = [(card.title, card.shelf, quantity) for (card, quantity) in cards_qties]
+            content = [writer.writerow(row) for row in rows]
             response = StreamingHttpResponse(content, content_type="text/csv")
             response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
 

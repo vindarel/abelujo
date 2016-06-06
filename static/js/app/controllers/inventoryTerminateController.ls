@@ -96,6 +96,8 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $scope.export_list = (arg) !->
         # The filtering logic of what to pay should be done on the server !
         doc_title = ""
+        export_format = 'pdf-nobarcode'
+
         if arg == 'bill'
             # Cards we sold, that didn't come back.
             sold_obj = $scope.diff
@@ -107,7 +109,7 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
             , sold_obj
             doc_title = gettext "bill"
 
-        if arg == 'inv'
+        if arg in ['inv', 'csv', 'csv_extended']
             # Cards of the inventory, that we received.
             obj_list = $scope.diff
             |> Obj.filter (.inv != null)
@@ -115,11 +117,15 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
             Obj.map ->
                 ids_qties.push "#{it.card.id}, #{it.inv}"
             , obj_list
+            if arg == 'csv'
+                export_format = 'csv'
+            if arg == 'csv_extended'
+                export_format = arg
 
         ids_qties = join ",", ids_qties
 
         # Do the export.
-        alerts = utils.export_to ids_qties, "pdf-nobarcode", $scope.name + "-" + doc_title, $scope.language
+        alerts = utils.export_to ids_qties, export_format, $scope.name + "-" + doc_title, $scope.language
         if alerts
             $scope.alerts.concat alerts
 
