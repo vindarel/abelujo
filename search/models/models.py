@@ -438,14 +438,33 @@ class Card(TimeStampedModel):
     def to_dict(self):
         return self.to_list()
 
+    @property
+    def pubs_repr(self):
+        """Coma-separated str representation of this card's publishers.
+        May need truncating ?
+
+        Return: str
+        """
+        publishers = self.publishers.all()
+        pubs_repr = ", ".join(it.name for it in publishers)
+        return pubs_repr
+
+    @property
+    def authors_repr(self):
+        """
+        """
+        authors = self.authors.all()
+        authors_repr = ", ".join([it.name for it in authors])
+        return authors_repr
+
     def to_list(self):
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
         auth = [{"fields": {'name': it.name}} for it in authors]
-        authors_repr = ", ".join(it.name for it in authors)
+        authors_repr = self.authors_repr
         publishers = self.publishers.all()
         pubs = [{'fields': {'name': it.name}} for it in publishers]
-        pubs_repr = ", ".join(it.name for it in publishers)
+        pubs_repr = self.pubs_repr
 
         if self.distributor:
             dist = self.distributor.to_list()

@@ -724,9 +724,16 @@ def baskets_export(request):
             response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
 
         elif layout in ['csv_extended']:
+            header = [(_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Quantity"))]
             pseudo_buffer = Echo()
             writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-            rows = [(card.title, card.shelf, quantity) for (card, quantity) in cards_qties]
+            rows = header
+            rows += [(card.title,
+                      card.authors_repr,
+                      card.pubs_repr,
+                      card.shelf,
+                      quantity)
+                     for (card, quantity) in cards_qties]
             content = [writer.writerow(row) for row in rows]
             response = StreamingHttpResponse(content, content_type="text/csv")
             response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
