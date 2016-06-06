@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import csv
+import unicodecsv
 import datetime
 import json
 import logging
@@ -719,6 +719,7 @@ def baskets_export(request):
         if layout == 'simple':
             pseudo_buffer = Echo()
             writer = csv.writer(pseudo_buffer, delimiter=';')
+            writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
             content = [writer.writerow(row) for row in isbns_qties]
             response = StreamingHttpResponse(content, content_type="text/csv")
             response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
