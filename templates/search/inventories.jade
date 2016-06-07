@@ -74,7 +74,12 @@ table.table.table-striped.table-hover
         if inv.place
           td {{ inv.place }}
         else
-          td {{ inv.basket }}
+          if inv.basket
+            td {{ inv.basket }}
+          else
+            if inv.publisher
+              td {{ inv.publisher.name }}
+
       td
         a(href="{{ inv.id }}")
           button.btn.btn-primary {% trans "Continue" %}
