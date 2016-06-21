@@ -2935,7 +2935,9 @@ class Stats(object):
         res = sorted(res, key=lambda it: it['quantity'], reverse=True)
 
         # Average sell
-        sell_mean = revenue / nb_sold_cards
+        sell_mean = None
+        if nb_sold_cards:
+            sell_mean = revenue / nb_sold_cards
 
         to_ret = {
             "best_sells": res[:limit],
