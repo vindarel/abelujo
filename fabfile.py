@@ -73,7 +73,7 @@ CFG = addict.Dict(CFG)
 VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
 #: Live reload on code change.
-GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt"
+GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt --daemon"
 env.hosts = CFG.url
 env.user = CFG.user
 
@@ -314,9 +314,9 @@ def start(name):
     Read the port in PORT.txt
     """
     client = select_client_cfg(name, CFG)
-    wd = CFG.home + CFG.dir + client.name
+    wd = CFG.home + CFG.dir + client.name + "/abelujo"
     with cd(wd):
-        with prefix(VENV_SOURCE.format(client.name)):
+        print wd
+        with prefix(VENV_ACTIVATE.format(client.name)):
             gunicorn = GUNICORN.format(project_name=CFG.project_name, url=CFG.url)
-            print "TODO: run in background"
             run(gunicorn)
