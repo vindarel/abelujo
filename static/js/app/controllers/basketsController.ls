@@ -61,18 +61,19 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.showBasket = (index) !->
         "Show the copies of the given basket."
         $scope.cur_basket = $scope.baskets[index]
-        $location.hash($scope.cur_basket.id)
-        $window.document.title = "Abelujo - " + gettext("Baskets") + ", " + $scope.cur_basket.name
+        if $scope.cur_basket
+            $location.hash($scope.cur_basket.id)
+            $window.document.title = "Abelujo - " + gettext("Baskets") + ", " + $scope.cur_basket.name
 
-        if not $scope.cur_basket.copies
-            $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
-            .then (response) !->
-                $scope.baskets[index].copies = response.data.data
-                $scope.copies = response.data
-                |> sort-by (.title)
+            if not $scope.cur_basket.copies
+                $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
+                .then (response) !->
+                    $scope.baskets[index].copies = response.data.data
+                    $scope.copies = response.data
+                    |> sort-by (.title)
 
-        else
-            $scope.copies = $scope.cur_basket.copies
+            else
+                $scope.copies = $scope.cur_basket.copies
 
     $window.document.title = "Abelujo - " + gettext("Baskets")
 
