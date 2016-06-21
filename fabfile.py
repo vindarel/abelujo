@@ -70,7 +70,7 @@ CLIENTS = "clients.yaml"
 
 CFG = get_yaml_cfg(CLIENTS)
 CFG = addict.Dict(CFG)
-VENV_SOURCE = "source ~/.virtualenvs/{}/bin/activate"
+VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
 #: Live reload on code change.
 GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt"
@@ -194,6 +194,14 @@ def check_online(client=None):
             print u"- {:{}} ".format(client.name, COL_WIDTH) + colored("ok", "green")
 
 
+def save_port(name):
+    """Save the port nb into the file port.txt
+    """
+    client = select_client_cfg(name, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    with cd(wd):
+        run("echo {} > PORT.txt".format(client.port))
+
 def update(client):
     """Update a client.
 
@@ -208,8 +216,8 @@ def update(client):
     client = select_client_cfg(client, CFG)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
-        run("echo {} > PORT.txt".format(client.port))
-        with prefix(VENV_SOURCE.format(client.venv)):
+        save_port(client.name)
+        with prefix(VENV_ACTIVATE.format(client.venv)):
             res = run("make update")
 
     check_online(client.name)
@@ -234,6 +242,11 @@ def create():
     - name: name of the client (and of the venv).
     """
     name = raw_input("Client name ? ")
+    exists = select_client_cfg(name, CFG, quiet=True)
+    if exists:
+        print "Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port'])
+        exit(1)
+
     venv = raw_input("Venv name ? [{}] ".format(name))
     venv = venv or name
     # Get the first available port
@@ -258,6 +271,11 @@ def copy_files(name, *files):
         run('mkdir -p {}'.format(tmp_init_data))
     put(files[0], tmp_init_data)
 
+def create_venv(venv):
+    """Create a new venv.
+    """
+    run('virtualenv ~/.virtulanves/{}'.format(venv))
+
 def install(name):
     """Clone and install Abelujo into the given client directory.
 
@@ -268,23 +286,27 @@ def install(name):
     run gunicorn with the right port.
     """
     client = select_client_cfg(name, CFG)
+    client = addict.Dict(client)
     wd = CFG.home + CFG.dir + client.name
     if not exists(wd):
         run("mkdir {}".format(wd, wd))
     with cd(wd):
         run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
+        # save the port
+        save_port(client.name)
         with cd(CFG.project_name):
-            import ipdb; ipdb.set_trace()
-            # TODO:
             # - create a venv
-            # - install,
-            # run('make install')
+            create_venv(client.venv)
+            with prefix(VENV_ACTIVATE.format(client.venv)):
+                # TODO:
+                # - install,
+                run('make install')
             # - create super user
             # - populate DB with initial data if any
             # The csv files may be in nested directories.
-            run('make odsimport odsfile=$(find /tmp/{}/*csv)'.format(client.name))
+            # run('make odsimport odsfile=$(find /tmp/{}/*csv)'.format(client.name))
             # - run gunicorn with the right port,
-
+                start(client.name)
 
 def start(name):
     """Run gunicorn.

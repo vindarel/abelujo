@@ -94,6 +94,9 @@ static files.
 In the virtual env, run:
 
     make update
+    # git pull --rebase
+    # git submodule update --remote
+    # install pip, migrate, gulp, collecstatic, compile transalation files
 
 Development
 ===========

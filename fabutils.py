@@ -18,7 +18,7 @@ def get_yaml_cfg(afile):
 
     return data
 
-def select_client_cfg(letters, cfg):
+def select_client_cfg(letters, cfg, quiet=False):
     """Get the client that matches the letters given as argument.
 
     exple: select_client("loc") will select localhost.
@@ -31,10 +31,12 @@ def select_client_cfg(letters, cfg):
         print "Found more than one possible clients, can't decide: {}".format([it.name for it in cl])
         return []
     if not cl:
-        print "Nobody found with '{}'".format(sys.argv[1])
-        print "existing clients:"
-        print [it.name for it in cfg.clients]
-        exit(1)
+        if not quiet:
+            print "Nobody found with '{}'".format(sys.argv[1])
+            print "existing clients:"
+            print [it.name for it in cfg.clients]
+            exit(1)
+        return []
     return cl[0]
 
 def main():
