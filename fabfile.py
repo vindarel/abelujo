@@ -272,7 +272,7 @@ def install(name):
     if not exists(wd):
         run("mkdir {}".format(wd, wd))
     with cd(wd):
-        run("test -d {} || git clone {}".format(CFG.project_name, CFG.project_git_url))
+        run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
         with cd(CFG.project_name):
             import ipdb; ipdb.set_trace()
             # TODO:
