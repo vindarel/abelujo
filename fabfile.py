@@ -300,7 +300,7 @@ def install(name):
     """
     client = fabutils.select_client_cfg(name, CFG)
     client = addict.Dict(client)
-    wd = CFG.home + CFG.dir + client.name
+    wd = os.path.join(CFG.home, CFG.dir, client.name)
     if not exists(wd):
         run("mkdir {}".format(wd, wd))
     with cd(wd):
@@ -327,7 +327,7 @@ def start(name):
     Read the port in PORT.txt
     """
     client = fabutils.select_client_cfg(name, CFG)
-    wd = CFG.home + CFG.dir + client.name + "/" + CFG.project_name
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
         print wd
         with prefix(VENV_ACTIVATE.format(client.name)):
@@ -351,7 +351,7 @@ def bower_package_version(package, names=None):
     else:
         name = names[0]
         client = fabutils.select_client_cfg(name, CFG)
-        wd = CFG.home + CFG.dir + client.name + "/" + CFG.project_name
+        wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
         print wd
         with cd(wd):
             run(BOWER_PACKAGE_VERSION)
