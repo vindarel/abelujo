@@ -1,4 +1,9 @@
 
+/* LightGrey sidebar */
+#sidebar-wrapper {
+    background-color: #F5F5F5;
+}
+
 /* The 'database' dropdown will appear below the sidebar. Push it a bit on the right so that doesn't happen. */
 .push-right {
     margin-left: 25px;
