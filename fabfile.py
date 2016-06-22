@@ -8,6 +8,7 @@ import addict
 import requests
 import termcolor
 
+import fabutils
 from fabric.api import cd
 from fabric.api import env
 from fabric.api import execute
@@ -16,7 +17,6 @@ from fabric.api import put
 from fabric.api import run
 from fabric.api import sudo
 from fabric.contrib.files import exists
-import fabutils
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -234,6 +234,20 @@ def ssh_to(client):
     print "todo: workon venv"
     print "connecting to {}".format(cmd)
     os.system(cmd)
+
+def whose_port(nb):
+    """Whose port is that ?
+    """
+    try:
+        nb = int(nb)
+    except:
+        print "{} is a number ?".format(nb)
+        return
+
+    clt = fabutils.whose_port(nb, CFG)
+    for cl in clt:
+        print termcolor.colored(cl.name, "blue"),
+        print "\t (venv: " + cl.venv + ")"
 
 def create():
     """Create a new client and call the install task.

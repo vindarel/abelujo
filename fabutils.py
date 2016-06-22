@@ -39,6 +39,15 @@ def select_client_cfg(letters, cfg, quiet=False):
         return []
     return cl[0]
 
+def whose_port(number, cfg):
+    """
+    """
+    clients = cfg.clients
+    clt = filter(lambda it: it.port == number, clients)
+    if len(clt) > 1:
+        print "Warning ! Many clients have the same port number"
+    return clt
+
 def main():
     cfg_file = "clients.yaml"
     cfg = get_yaml_cfg(cfg_file)
