@@ -322,14 +322,36 @@ def install(name):
                 start(client.name)
 
 def start(name):
-    """Run gunicorn.
+    """Run gunicorn (daemon).
 
     Read the port in PORT.txt
     """
     client = fabutils.select_client_cfg(name, CFG)
-    wd = CFG.home + CFG.dir + client.name + "/abelujo"
+    wd = CFG.home + CFG.dir + client.name + "/" + CFG.project_name
     with cd(wd):
         print wd
         with prefix(VENV_ACTIVATE.format(client.name)):
             gunicorn = GUNICORN.format(project_name=CFG.project_name, url=CFG.url)
             run(gunicorn)
+
+def bower_package_version(package, names=None):
+    """What's the installed packages version ?
+
+    - package: bower package name
+    - names: list of client names (or only beginning of name, as usual).
+    """
+    usage = "Usage: fab bower_package_version:package,client"
+
+    #: With --json, we could parse it and get rid off the sub-deps
+    BOWER_PACKAGE_VERSION = './node_modules/bower/bin/bower list --offline'
+
+    if not names:
+        print usage
+
+    else:
+        name = names[0]
+        client = fabutils.select_client_cfg(name, CFG)
+        wd = CFG.home + CFG.dir + client.name + "/" + CFG.project_name
+        print wd
+        with cd(wd):
+            run(BOWER_PACKAGE_VERSION)
