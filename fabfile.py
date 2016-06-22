@@ -6,7 +6,7 @@ from subprocess import check_output
 
 import addict
 import requests
-from termcolor import colored
+import termcolor
 
 from fabric.api import cd
 from fabric.api import env
@@ -144,19 +144,19 @@ def check_uptodate(client=None):
         # print "commit of {} is {}".format(wd, res)
 
         if res == git_head:
-            print colored("- {} is up to date".format(client.name), "green")
+            print termcolor.colored("- {} is up to date".format(client.name), "green")
         else:
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
             if res in git_last_commits:
                 index = git_last_commits.index(res)
-                print colored("- {}", 'blue').format(client.name) +\
+                print termcolor.colored("- {}", 'blue').format(client.name) +\
                     " is " +\
-                    colored("{}", "yellow").format(index) +\
+                    termcolor.colored("{}", "yellow").format(index) +\
                     " commits behind"
             else:
-                print colored("- {}", "blue").format(client.name) +\
+                print termcolor.colored("- {}", "blue").format(client.name) +\
                     " is more than " +\
-                    colored("{}", "red").format(max_count) +\
+                    termcolor.colored("{}", "red").format(max_count) +\
                     " commits behind."
 
 def _request_call(url):
@@ -189,9 +189,9 @@ def check_online(client=None):
     res = zip(status, sorted_clients)
     for status, client in res:
         if status != 200:
-            print colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port'])
+            print termcolor.colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port'])
         else:
-            print u"- {:{}} ".format(client.name, COL_WIDTH) + colored("ok", "green")
+            print u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green")
 
 
 def save_port(name):
