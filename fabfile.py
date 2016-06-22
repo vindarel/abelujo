@@ -16,8 +16,7 @@ from fabric.api import put
 from fabric.api import run
 from fabric.api import sudo
 from fabric.contrib.files import exists
-from fabutils import get_yaml_cfg
-from fabutils import select_client_cfg
+import fabutils
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -68,7 +67,7 @@ templatetags, to load new translations,...
 """
 CLIENTS = "clients.yaml"
 
-CFG = get_yaml_cfg(CLIENTS)
+CFG = fabutils.get_yaml_cfg(CLIENTS)
 CFG = addict.Dict(CFG)
 VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
@@ -118,7 +117,7 @@ def odsimport(odsfile=None):
 def openclient(client):
     """Open the client page with a web browser.
     """
-    client = select_client_cfg(client, CFG)
+    client = fabutils.select_client_cfg(client, CFG)
     cmd = "firefox {}:{}/fr/ & 2>/dev/null".format(CFG.url, client.port)
     os.system(cmd)
 
@@ -136,7 +135,7 @@ def check_uptodate(client=None):
     if not client:
         return statusall()
 
-    client = select_client_cfg(client, CFG)
+    client = fabutils.select_client_cfg(client, CFG)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
     with cd(wd):
@@ -178,7 +177,7 @@ def check_online(client=None):
     if not client:
         sorted_clients = sorted(CFG.clients, key=lambda it: it.name)
     else:
-        sorted_clients = [select_client_cfg(client, CFG)]
+        sorted_clients = [fabutils.select_client_cfg(client, CFG)]
 
     urls = ["http://{}:{}/fr/".format(CFG.url, client.port) for client in sorted_clients]
 
@@ -197,7 +196,7 @@ def check_online(client=None):
 def save_port(name):
     """Save the port nb into the file port.txt
     """
-    client = select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name, CFG)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
         run("echo {} > PORT.txt".format(client.port))
@@ -213,7 +212,7 @@ def update(client):
     translations,....
 
     """
-    client = select_client_cfg(client, CFG)
+    client = fabutils.select_client_cfg(client, CFG)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
         save_port(client.name)
@@ -223,7 +222,7 @@ def update(client):
     check_online(client.name)
 
 def ssh_to(client):
-    client = select_client_cfg(client, CFG)
+    client = fabutils.select_client_cfg(client, CFG)
     cmd = "ssh -Y {}@{}".format(CFG.get('user'),
                                    client.get('url', CFG.get('url')))
     if CFG.get('dir') or client.get('dir'):
@@ -242,7 +241,7 @@ def create():
     - name: name of the client (and of the venv).
     """
     name = raw_input("Client name ? ")
-    exists = select_client_cfg(name, CFG, quiet=True)
+    exists = fabutils.select_client_cfg(name, CFG, quiet=True)
     if exists:
         print "Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port'])
         exit(1)
@@ -265,7 +264,7 @@ def create():
 def copy_files(name, *files):
     """
     """
-    client = select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name, CFG)
     tmp_init_data = '/tmp/{}/'.format(client.name)
     if not exists(tmp_init_data):
         run('mkdir -p {}'.format(tmp_init_data))
@@ -285,7 +284,7 @@ def install(name):
 
     run gunicorn with the right port.
     """
-    client = select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name, CFG)
     client = addict.Dict(client)
     wd = CFG.home + CFG.dir + client.name
     if not exists(wd):
@@ -313,7 +312,7 @@ def start(name):
 
     Read the port in PORT.txt
     """
-    client = select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name, CFG)
     wd = CFG.home + CFG.dir + client.name + "/abelujo"
     with cd(wd):
         print wd
