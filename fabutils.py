@@ -4,7 +4,9 @@ import os
 import sys
 
 import addict
+import termcolor
 import yaml
+
 
 def get_yaml_cfg(afile):
     """From a yaml file, return the yaml structure.
@@ -47,6 +49,9 @@ def whose_port(number, cfg):
     if len(clt) > 1:
         print "Warning ! Many clients have the same port number"
     return clt
+
+def print_client(client):
+    print termcolor.colored("- {:10} ".format(client.name), "blue") + "\t {}".format(client.port)
 
 def main():
     cfg_file = "clients.yaml"

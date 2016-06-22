@@ -121,6 +121,19 @@ def openclient(client):
     cmd = "firefox {}:{}/fr/ & 2>/dev/null".format(CFG.url, client.port)
     os.system(cmd)
 
+def client_info(name=None):
+    """Show a client info (which port does he use ?). By default, show all.
+
+    Prints to stdout.
+    """
+    if name:
+        client = fabutils.select_client_cfg(name, CFG)
+        print client
+
+    else:
+        for it in sorted(CFG.clients):
+            fabutils.print_client(it)
+
 def statusall():
     for client in CFG.clients:
         check_uptodate(client.name)
@@ -235,19 +248,24 @@ def ssh_to(client):
     print "connecting to {}".format(cmd)
     os.system(cmd)
 
-def whose_port(nb):
+def port_info(nb=0):
     """Whose port is that ?
     """
-    try:
-        nb = int(nb)
-    except:
-        print "{} is a number ?".format(nb)
-        return
+    if nb:
+        try:
+            nb = int(nb)
+        except:
+            print "{} is a number ?".format(nb)
+            return
 
-    clt = fabutils.whose_port(nb, CFG)
-    for cl in clt:
-        print termcolor.colored(cl.name, "blue"),
-        print "\t (venv: " + cl.venv + ")"
+        clt = fabutils.whose_port(nb, CFG)
+        for cl in clt:
+            print termcolor.colored(cl.name, "blue"),
+            print "\t (venv: " + cl.venv + ")"
+
+    else:
+        for it in sorted(CFG.clients, key=lambda it: it.port):
+            fabutils.print_client(it)
 
 def create():
     """Create a new client and call the install task.
