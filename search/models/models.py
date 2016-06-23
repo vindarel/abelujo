@@ -2634,6 +2634,38 @@ class Inventory(TimeStampedModel):
 
         return True
 
+    def progress(self):
+        """Return the percentage of progress (int < 100).
+        """
+        done_qty = self.inventorycards_set.count()
+        orig_qty = self._orig_cards_qty()
+
+        progress = 0
+        if orig_qty:
+            progress = done_qty / float(orig_qty) * 100
+        elif done_qty:
+            progress = 100
+
+        return roundfloat(progress)
+
+    def _orig_cards_qty(self):
+        """Return the number of copies to inventory (the ones in the original
+        shelf, place, etc.
+        """
+        cards_qty = 0
+        if self.shelf:
+            cards_qty = self.shelf.cards_qty
+        elif self.place:
+            cards_qty = self.place.placecopies_set.count()
+        elif self.publisher:
+            cards_qty = self.publisher.card_set.count()
+        elif self.basket:
+            cards_qty = self.basket.basketcopies_set.count()
+        else:
+            log.error("We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
+
+        return cards_qty
+
     def state(self):
         """Get the current state:
         - list of copies already inventored and their quantities,
@@ -2644,20 +2676,18 @@ class Inventory(TimeStampedModel):
         total = len(copies)
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
+        orig_cards_qty = self._orig_cards_qty()
+        missing = orig_cards_qty - total
         if self.shelf:
-            missing = self.shelf.cards_qty - total
             shelf_dict = self.shelf.to_dict()
             inv_name = self.shelf.name
         elif self.place:
-            missing = self.place.placecopies_set.count() - total
             place_dict = self.place.to_dict()
             inv_name = self.place.name
         elif self.publisher:
-            missing = self.publisher.card_set.count() - total
             pub_dict = self.publisher.to_dict()
             inv_name = self.publisher.name
         elif self.basket:
-            missing = self.basket.basketcopies_set.count() - total
             basket_dict = self.basket.to_dict()
             inv_name = self.basket.name
         else:

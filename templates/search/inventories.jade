@@ -55,13 +55,15 @@ div(ng-controller="InventoryModalController")
             button.btn.btn-primary(ng-click="ok('publisher')") {% trans "Ok" %}
             button.btn.btn-cancel(ng-click="cancel()") {% trans "Cancel" %}
 
+
   button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}
 
 table.table.table-striped.table-hover
   thead
    tr
     th {% trans "Created the" %}
-    th {% trans "On the place" %}
+    th {% trans "Inventory of..." %}
+    th {% trans "Progress" %}
     th
 
   tbody
@@ -79,6 +81,9 @@ table.table.table-striped.table-hover
           else
             if inv.publisher
               td {{ inv.publisher.name }}
+
+      td
+        div {{ inv.progress }} %
 
       td
         a(href="{{ inv.id }}")
