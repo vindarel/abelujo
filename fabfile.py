@@ -73,6 +73,11 @@ VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
 #: Live reload on code change.
 GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt --daemon"
+#: File name whith the port number
+PID_FILE = "PID.txt"
+#: Kill a server instance
+CMD_KILL = "kill -9 $(cat {})".format(PID_FILE)
+
 #: Command to rebase a repo
 CMD_REBASE = "make rebase"
 
@@ -316,9 +321,13 @@ def create():
         f.write(CLIENT_TMPL.format(name, venv, port))
         execute(install(name))
 
-def copy_files(name, *files):
+def file_upload(name, *files):
     """
     """
+    if not files:
+        print "Usage: file_upload:name,path-to-file"
+        exit(1)
+
     client = fabutils.select_client_cfg(name, CFG)
     tmp_init_data = '/tmp/{}/'.format(client.name)
     if not exists(tmp_init_data):
@@ -362,6 +371,16 @@ def install(name):
             # - run gunicorn with the right port,
                 start(client.name)
 
+def kill(name):
+    """
+    """
+    client = fabutils.select_client_cfg(name, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    with cd(wd):
+        if exists(PID_FILE):
+            run(CMD_KILL)
+            run("rm {}".format(PID_FILE))
+
 def start(name):
     """Run gunicorn (daemon).
 
@@ -374,6 +393,12 @@ def start(name):
         with prefix(VENV_ACTIVATE.format(client.name)):
             gunicorn = GUNICORN.format(project_name=CFG.project_name, url=CFG.url)
             run(gunicorn)
+
+def restart(name):
+    """Restart a server.
+    """
+    kill(name)
+    start(name)
 
 def bower_package_version(package, names=None):
     """What's the installed packages version ?
