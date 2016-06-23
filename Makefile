@@ -50,10 +50,14 @@ npm:
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
-update:
-	# Get code, install new packages, run DB migrations, compile JS and translation files.
+# Rebase main repo and submodules
+rebase:
 	git pull --rebase
 	git submodule update --remote
+
+update:
+	make rebase
+	# Get code, install new packages, run DB migrations, compile JS and translation files.
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	make pip
 	make pip-submodule
