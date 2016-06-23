@@ -13,8 +13,8 @@ tox==1.9                # test in a fresh venv, against multiple python versions
 sphinx==1.2.3           # documentation system.
 
 ### packaging
-# platter                 # package builder # not in pypi yet
+# platter               # package builder # not in pypi yet
 
 ### deployment
-fabric==1.10            # remote execution
+fabric<2                # remote execution
 underwear               # easy deployment
