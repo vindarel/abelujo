@@ -73,6 +73,9 @@ VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
 #: Live reload on code change.
 GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {project_name}.wsgi --bind={url}:$(cat PORT.txt) --reload --pid PID.txt --daemon"
+#: Command to rebase a repo
+CMD_REBASE = "make rebase"
+
 env.hosts = CFG.url
 env.user = CFG.user
 
@@ -233,6 +236,26 @@ def update(client):
             res = run("make update")
 
     check_online(client.name)
+
+def rebase(name=None):
+    """Only run git rebase. That may be enough for light updates.
+    (but be careful nothing breaks !)
+
+    Rebase the given client, or all simultaneously.
+
+    xxx: check if the pip requirements, the js sources or xxx changed
+    and update what's needed (try not to run apt, pip and npm every
+    time).
+    """
+    def do_rebase(client):
+        wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+        with cd(wd):
+            with prefix(VENV_ACTIVATE.format(client.venv)):
+                run(CMD_REBASE)
+
+    if name:
+        client = fabutils.select_client_cfg(name, CFG)
+        do_rebase(client)
 
 def ssh_to(client):
     client = fabutils.select_client_cfg(client, CFG)
