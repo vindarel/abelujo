@@ -4,6 +4,11 @@
     background-color: #F5F5F5;
 }
 
+/* More space in between menu items */
+#sidebar-wrapper li {
+    padding-top: 10px;
+}
+
 /* The 'database' dropdown will appear below the sidebar. Push it a bit on the right so that doesn't happen. */
 .push-right {
     margin-left: 25px;
