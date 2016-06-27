@@ -375,8 +375,7 @@ def kill(name):
     """
     """
     client = fabutils.select_client_cfg(name, CFG)
-    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
-    with cd(wd):
+    with cd(fabutils.wd(client, CFG)):
         if exists(PID_FILE):
             run(CMD_KILL)
             run("rm {}".format(PID_FILE))
@@ -387,9 +386,7 @@ def start(name):
     Read the port in PORT.txt
     """
     client = fabutils.select_client_cfg(name, CFG)
-    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
-    with cd(wd):
-        print wd
+    with cd(fabutils.wd(client, CFG)):
         with prefix(VENV_ACTIVATE.format(client.name)):
             gunicorn = GUNICORN.format(project_name=CFG.project_name, url=CFG.url)
             run(gunicorn)
@@ -399,6 +396,18 @@ def restart(name):
     """
     kill(name)
     start(name)
+
+def make(cmd, name=None):
+    """Run any make command remotevy
+    """
+    if name:
+        client = fabutils.select_client_cfg(name, CFG)
+        with cd(fabutils.wd(client, CFG)):
+            with prefix(VENV_ACTIVATE.format(client.name)):
+                run("make {}".format(cmd))
+
+    else:
+        print "no client name given"
 
 def bower_package_version(package, names=None):
     """What's the installed packages version ?

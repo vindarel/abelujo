@@ -53,6 +53,11 @@ def whose_port(number, cfg):
 def print_client(client):
     print termcolor.colored("- {:10} ".format(client.name), "blue") + "\t {}".format(client.port)
 
+def wd(client, cfg):
+    """Get the working directory.
+    """
+    return os.path.join(cfg.home, cfg.dir, client.name, cfg.project_name)
+
 def main():
     cfg_file = "clients.yaml"
     cfg = get_yaml_cfg(cfg_file)
