@@ -31,21 +31,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
         h4 {% trans "Total number of cards" %}: {{'stats.nb_cards.value'|ng}}
         h4 {% trans "Number of books" %}: {{'stats.nb_books.value'|ng }}
         h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %}: {{'stats.total_cost.value'|ng }} €
-      div(id="chart")
-
-    .row.panel.panel-info
-     table.table.table-striped(st-table="ng", ng-show="stock_age_cards.length > 0")
-        thead
-          tr
-            th {% trans "Title" %}
-
-        tbody
-          tr(ng-repeat="card in stock_age_cards")
-            th {{ 'card.title' | ng }}
-        tfoot
-          tr
-            td.text-center(colspan="5")
-              div(st-pagination="", st-items-by-page="10")
+      //- div(id="chart")
 
     .row.panel.panel-info
       h3.panel.panel-heading {% trans "Next deposits to pay" %}
@@ -101,7 +87,33 @@ div(ng-controller="dashboardController", ng-cloak="stats")
               tr
                 td.text-center(colspan="5")
                   div(st-pagination="", st-items-by-page="10")
-    
+     .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Age of the last sell" %}
+
+      div.panel.panel-body
+        em {% trans "Choose a shelf to show the corresponding graph." %}
+        label.col-sm-4 {% trans "Shelf" %}
+        div.col-md-8
+         form
+          select.form-control(
+            ng-model="shelf"
+            ng-change="age_shelf()"
+            ng-options="elt.fields.name for elt in shelfs")
+
+      div(id="chart-age")
+      table.table.table-striped(st-table="ng", ng-show="stock_age_cards.length > 0")
+            thead
+              tr
+                th {% trans "Title" %}
+
+            tbody
+              tr(ng-repeat="card in stock_age_cards")
+                th {{ 'card.title' | ng }}
+            tfoot
+              tr
+                td.text-center(colspan="5")
+                  div(st-pagination="", st-items-by-page="10")
+
     .row.panel.panel-info
           h3.panel.panel-heading {% trans "Cards never sold" %}: {{ 'static_stock.never_sold_nb'|ng }}
           div.panel.panel-body
@@ -116,19 +128,6 @@ div(ng-controller="dashboardController", ng-cloak="stats")
                   a(href="{{'it.get_absolute_url'|ng}}") {{ 'it.title' | ng }}
 
 
-     .row.panel.panel-info
-      h3.panel.panel-heading {% trans "Age of the last sell" %}
 
-      div.panel.panel-body
-        em {% trans "Click the graph to show the corresponding cards." %}
-        label.col-sm-4 {% trans "Shelf" %}
-        div.col-md-8
-         form
-          select.form-control(
-            ng-model="shelf"
-            ng-change="age_shelf()"
-            ng-options="elt.fields.name for elt in shelfs")
-
-      div(id="chart-age")
 
 {% endblock content %}
