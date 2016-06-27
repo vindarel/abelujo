@@ -24,57 +24,21 @@
 {% load ngfilter %}
 
 div(ng-controller="dashboardController", ng-cloak="stats")
-  .row
-    .col-lg-6
-      h3 {% trans "Composition of the stock" %}
-      div(ng-show="stats")
+  .col-lg-6
+    .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Composition of the stock" %}
+      div.panel.panel-body(ng-show="stats")
         h4 {% trans "Total number of cards" %}: {{'stats.nb_cards.value'|ng}}
         h4 {% trans "Number of books" %}: {{'stats.nb_books.value'|ng }}
         h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %}: {{'stats.total_cost.value'|ng }} €
       div(id="chart")
 
-    .col-lg-6
-      h3 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
-      .row
-        .col-md-3
-          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
-        .col-md-9
-          div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
-      h3 {% trans "Best 10 sells of this month" %}
-      table.table.table-striped(st-table="sells_month")
-        thead
-          tr
-            th {% trans "Title" %}
-            th {% trans "Quantity sold" %}
-        tbody
-          tr(ng-repeat="sell in sells_month.best_sells")
-            th {{ 'sell.title' | ng }}
-            th {{ 'sell.quantity' | ng }}
-        tfoot
-          tr
-            td.text-center(colspan="5")
-              div(st-pagination="", st-items-by-page="10")
-
-  .row
-   .col-lg-6
-    h3 {% trans "Age of the last sell" %}
-    em {% trans "Click the graph to show the corresponding cards." %}
-
-    div
-      label.col-sm-4 {% trans "Shelf" %}
-      div.col-md-8
-        select.form-control(
-          ng-model="shelf"
-          ng-change="age_shelf()"
-          ng-options="elt.fields.name for elt in shelfs")
-
-    div#chart-age
-
-   .col-lg-6
+    .row.panel.panel-info
      table.table.table-striped(st-table="ng", ng-show="stock_age_cards.length > 0")
         thead
           tr
             th {% trans "Title" %}
+
         tbody
           tr(ng-repeat="card in stock_age_cards")
             th {{ 'card.title' | ng }}
@@ -83,45 +47,88 @@ div(ng-controller="dashboardController", ng-cloak="stats")
             td.text-center(colspan="5")
               div(st-pagination="", st-items-by-page="10")
 
-  .row
-    .col-lg-6
-      h3 {% trans "Cards never sold" %}: {{ 'static_stock.never_sold_nb'|ng }}
-      div: em {% trans "Excerpt of the list" %}:
-      table.table.table-striped(datatable="ng")
-        thead
-          tr
-            th {% trans "Title" %}
-        tbody
-          tr(ng-repeat="it in static_stock.never_sold_list")
-            th
-              a(href="{{'it.get_absolute_url'|ng}}") {{ 'it.title' | ng }}
+    .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Next deposits to pay" %}
+      div.panel.panel-body
+        table.table.table-striped
+          thead
+            tr
+              th {% trans "Deposit" %}
+              th {% trans "Distributor" %}
+              th {% trans "due date" %}
+          tbody
+            tr(ng-repeat="depo in deposits")
+              th {{ 'depo.name' | ng }}
+              th {{ 'depo.distributor' | ng }}
+              th {{ 'depo.due_date' | ng }}
 
-  .row
-    .col-lg-6
-      h3 {% trans "Next deposits to pay" %}
-      table.table.table-striped
-        thead
-          tr
-            th {% trans "Deposit" %}
-            th {% trans "Distributor" %}
-            th {% trans "due date" %}
-        tbody
-          tr(ng-repeat="depo in deposits")
-            th {{ 'depo.name' | ng }}
-            th {{ 'depo.distributor' | ng }}
-            th {{ 'depo.due_date' | ng }}
+    .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Comfort of the stock" %}
+      div.panel.panel-body
+        div(ng-show="stats")
+            div {% trans "Nb cards with no copy" %}: {{'stats.nb_cards_no_stock.value'|ng}}
+            div {% trans "Nb cards with one copy" %}: {{'stats.nb_cards_one_copy.value'|ng }}
+        div(id="chartNoStock")
 
-    .col-lg-6
-      h3 {% trans "Comfort of the stock" %}
-      div(ng-show="stats")
-        div {% trans "Nb cards with no copy" %}: {{'stats.nb_cards_no_stock.value'|ng}}
-        div {% trans "Nb cards with one copy" %}: {{'stats.nb_cards_one_copy.value'|ng }}
-      div(id="chartNoStock")
+    .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Cost of the stock VS deposits" %}
+      div.panel.panel-body
+        div#chart2
 
-  .row
-    .col-lg-6
-      h3 {% trans "Cost of the stock VS deposits" %}
-      div(id="chart2")
 
+  .col-lg-6
+    .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
+      div.panel.panel-body
+        .col-md-3
+          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
+        .col-md-9
+          div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
+
+    .row.panel.panel-info
+       h3.panel.panel-heading {% trans "Best 10 sells of this month" %}
+       div.panel.panel-body
+           table.table.table-striped(st-table="sells_month")
+            thead
+              tr
+                th {% trans "Title" %}
+                th {% trans "Quantity sold" %}
+            tbody
+              tr(ng-repeat="sell in sells_month.best_sells")
+                td {{ 'sell.title' | ng }}
+                td {{ 'sell.quantity' | ng }}
+            tfoot
+              tr
+                td.text-center(colspan="5")
+                  div(st-pagination="", st-items-by-page="10")
+    
+    .row.panel.panel-info
+          h3.panel.panel-heading {% trans "Cards never sold" %}: {{ 'static_stock.never_sold_nb'|ng }}
+          div.panel.panel-body
+            em {% trans "Excerpt of the list" %}:
+          table.table.table-striped(datatable="ng")
+            thead
+              tr
+                th {% trans "Title" %}
+            tbody
+              tr(ng-repeat="it in static_stock.never_sold_list")
+                th
+                  a(href="{{'it.get_absolute_url'|ng}}") {{ 'it.title' | ng }}
+
+
+     .row.panel.panel-info
+      h3.panel.panel-heading {% trans "Age of the last sell" %}
+
+      div.panel.panel-body
+        em {% trans "Click the graph to show the corresponding cards." %}
+        label.col-sm-4 {% trans "Shelf" %}
+        div.col-md-8
+         form
+          select.form-control(
+            ng-model="shelf"
+            ng-change="age_shelf()"
+            ng-options="elt.fields.name for elt in shelfs")
+
+      div(id="chart-age")
 
 {% endblock content %}
