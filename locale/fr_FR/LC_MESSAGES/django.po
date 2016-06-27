@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 15:32+0000\n"
-"PO-Revision-Date: 2016-06-27 18:31+0200\n"
+"POT-Creation-Date: 2016-06-27 16:33+0000\n"
+"PO-Revision-Date: 2016-06-27 18:35+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -244,8 +244,8 @@ msgstr ""
 #: search/views.py:727 templates/pdftemplates/pdf-barcode.jade:35
 #: templates/search/alerts.jade:33 templates/search/baskets.jade:114
 #: templates/search/card_edit.jade:42 templates/search/collection.jade:114
-#: templates/search/dashboard.jade:80 templates/search/dashboard.jade.py:98
-#: templates/search/dashboard.jade:122 templates/search/deposits_view.jade:52
+#: templates/search/dashboard.jade:80 templates/search/dashboard.jade:107
+#: templates/search/dashboard.jade:124 templates/search/deposits_view.jade:52
 #: templates/search/history.jade:54 templates/search/history_sells.jade:47
 #: templates/search/history_sells.jade:76
 #: templates/search/inventory_terminate.jade:77
@@ -262,7 +262,7 @@ msgstr "Auteurs"
 
 #: search/views.py:727 templates/search/card_edit.jade:54
 #: templates/search/card_show.jade:43 templates/search/collection.jade:85
-#: templates/search/collection.jade:118 templates/search/dashboard.jade:110
+#: templates/search/collection.jade:118 templates/search/dashboard.jade:95
 msgid "Shelf"
 msgstr "Rayon"
 
@@ -794,21 +794,21 @@ msgstr "Les 10 meilleures ventes du mois"
 msgid "Quantity sold"
 msgstr "Quantité vendue"
 
-#: templates/search/dashboard.jade:92
+#: templates/search/dashboard.jade:91
+msgid "Age of the stock per shelf"
+msgstr "Âge du stock par rayon"
+
+#: templates/search/dashboard.jade:94
+msgid "Choose a shelf to show the corresponding graph."
+msgstr "Choisissez un rayon pour afficher le graph correspondant"
+
+#: templates/search/dashboard.jade:118
 msgid "Cards never sold"
 msgstr "Notices jamais vendues"
 
-#: templates/search/dashboard.jade:94
+#: templates/search/dashboard.jade:120
 msgid "Excerpt of the list"
 msgstr "Extrait de la liste"
-
-#: templates/search/dashboard.jade:106
-msgid "Age of the last sell"
-msgstr "Âge de la dernière vente"
-
-#: templates/search/dashboard.jade:109
-msgid "Choose a shelf to show the corresponding graph."
-msgstr "Choisissez un rayon pour afficher le graph correspondant"
 
 #: templates/search/deposit_add_copies.jade:25
 #, fuzzy
