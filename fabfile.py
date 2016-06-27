@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import os
 import sys
 from subprocess import check_output
@@ -115,7 +117,7 @@ COL_WIDTH = 10
 # Take inspiration from Mezzanine: https://github.com/stephenmcd/mezzanine/blob/master/mezzanine/project_template/fabfile.py
 
 def help():
-    print HELP
+    print(HELP)
 
 def odsimport(odsfile=None):
     """Import cards from a LibreOffice calc. See its doc.
@@ -136,7 +138,7 @@ def client_info(name=None):
     """
     if name:
         client = fabutils.select_client_cfg(name, CFG)
-        print client
+        print(client)
 
     else:
         for it in sorted(CFG.clients):
@@ -161,30 +163,30 @@ def check_uptodate(client=None):
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
     with cd(wd):
         res = run("git rev-parse HEAD")
-        # print "commit of {} is {}".format(wd, res)
+        # print("commit of {} is {}".format(wd, res))
 
         if res == git_head:
-            print termcolor.colored("- {} is up to date".format(client.name), "green")
+            print(termcolor.colored("- {} is up to date".format(client.name), "green"))
         else:
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
             if res in git_last_commits:
                 index = git_last_commits.index(res)
-                print termcolor.colored("- {}", 'blue').format(client.name) +\
+                print(termcolor.colored("- {}", 'blue').format(client.name) +\
                     " is " +\
                     termcolor.colored("{}", "yellow").format(index) +\
-                    " commits behind"
+                    " commits behind")
             else:
-                print termcolor.colored("- {}", "blue").format(client.name) +\
+                print(termcolor.colored("- {}", "blue").format(client.name) +\
                     " is more than " +\
                     termcolor.colored("{}", "red").format(max_count) +\
-                    " commits behind."
+                    " commits behind.")
 
 def _request_call(url):
     status = 0
     try:
         status = requests.get(url, timeout=TIMEOUT).status_code
     except Exception as e:
-        # print "Exception: {}".format(e)
+        # print("Exception: {}".format(e))
         status = 404
 
     return status
@@ -209,9 +211,9 @@ def check_online(client=None):
     res = zip(status, sorted_clients)
     for status, client in res:
         if status != 200:
-            print termcolor.colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port'])
+            print(termcolor.colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port']))
         else:
-            print u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green")
+            print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green"))
 
 
 def save_port(name):
@@ -272,8 +274,8 @@ def ssh_to(client):
                          CFG.get('dir', client.get('dir')),
                          client.get('name'),
                          CFG.project_name),)
-    print "todo: workon venv"
-    print "connecting to {}".format(cmd)
+    print("todo: workon venv")
+    print("connecting to {}".format(cmd))
     os.system(cmd)
 
 def port_info(nb=0):
@@ -283,13 +285,13 @@ def port_info(nb=0):
         try:
             nb = int(nb)
         except:
-            print "{} is a number ?".format(nb)
+            print("{} is a number ?".format(nb))
             return
 
         clt = fabutils.whose_port(nb, CFG)
         for cl in clt:
-            print termcolor.colored(cl.name, "blue"),
-            print "\t (venv: " + cl.venv + ")"
+            print(termcolor.colored(cl.name, "blue"),)
+            print("\t (venv: " + cl.venv + ")")
 
     else:
         for it in sorted(CFG.clients, key=lambda it: it.port):
@@ -303,7 +305,7 @@ def create():
     name = raw_input("Client name ? ")
     exists = fabutils.select_client_cfg(name, CFG, quiet=True)
     if exists:
-        print "Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port'])
+        print("Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port']))
         exit(1)
 
     venv = raw_input("Venv name ? [{}] ".format(name))
@@ -325,7 +327,7 @@ def file_upload(name, *files):
     """
     """
     if not files:
-        print "Usage: file_upload:name,path-to-file"
+        print("Usage: file_upload:name,path-to-file")
         exit(1)
 
     client = fabutils.select_client_cfg(name, CFG)
@@ -407,7 +409,7 @@ def make(cmd, name=None):
                 run("make {}".format(cmd))
 
     else:
-        print "no client name given"
+        print("no client name given")
 
 def bower_package_version(package, names=None):
     """What's the installed packages version ?
@@ -421,12 +423,12 @@ def bower_package_version(package, names=None):
     BOWER_PACKAGE_VERSION = './node_modules/bower/bin/bower list --offline'
 
     if not names:
-        print usage
+        print(usage)
 
     else:
         name = names[0]
         client = fabutils.select_client_cfg(name, CFG)
         wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
-        print wd
+        print(wd)
         with cd(wd):
             run(BOWER_PACKAGE_VERSION)
