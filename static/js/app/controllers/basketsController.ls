@@ -111,7 +111,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 repr: repr
                 id: it.id
             , response.data
-            return $scope.cards_fetched # useful ?
 
     $scope.add_selected_card = (card_repr) !->
         """ Add the card selected from the autocomplete to the current list's copies.
