@@ -244,6 +244,16 @@ def update(client):
 
     check_online(client.name)
 
+def updatelight(name=None):
+    """Everything except package managers (apt, npm, pip).
+    """
+    rebase(name)
+    make("migrate", name)
+    make("gulp", name)
+    make("collectstatic", name)
+    make("translation-compile", name)
+    restart(name)
+
 def rebase(name=None):
     """Only run git rebase. That may be enough for light updates.
     (but be careful nothing breaks !)
