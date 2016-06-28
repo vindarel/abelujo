@@ -64,7 +64,7 @@ update:
 	make npm # that's horribly long. Bundle static files and send them somehow.
 	python manage.py migrate
 	gulp
-	@python manage.py collectstatic --noinput
+	make collectstatic
 	make translation-compile 	# gunicorn needs a restart
 	@echo "For development, don't forget make pip-dev"
 
@@ -77,6 +77,9 @@ migrations:
 
 migrate:
 	python manage.py migrate
+
+collectstatic:
+	python manage.py collectstatic --noinput
 
 # Run the tests of the UI in a browser.
 NODEBIN=./node_modules/.bin/
