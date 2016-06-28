@@ -195,6 +195,18 @@ class TestBaskets(TestCase):
         self.assertTrue(data['status'])
         self.assertEqual(data['msgs'][0]['level'], u'success')
 
+    def test_basket_delete(self):
+        resp = self.c.post(reverse("api_basket_delete", args=('1')),
+                           content_type='application/json')
+        baskets = models.Basket.objects.all()
+        self.assertFalse(baskets)
+
+    def test_basket_delete_bad(self):
+        resp = self.c.post(reverse("api_basket_delete", args=('9')),
+                           content_type='application/json')
+        data = json.loads(resp.content)
+        self.assertEqual(data['status'], u'error')
+
 
 class TestUtils(TestCase):
 

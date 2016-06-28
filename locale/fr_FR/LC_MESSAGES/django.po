@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 16:33+0000\n"
-"PO-Revision-Date: 2016-06-27 18:35+0200\n"
+"POT-Creation-Date: 2016-06-28 14:27+0000\n"
+"PO-Revision-Date: 2016-06-28 16:29+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -53,23 +53,31 @@ msgstr "Nous n'avons pas pu modifier la quantité de cette notice."
 msgid "We couldn't set this list as a deposit. Sorry !"
 msgstr "Nous n'avons pas pu transformer cette liste en dépôt. Désolé !"
 
-#: search/models/api.py:699
+#: search/models/api.py:678
+msgid "Basket deleted succesfully"
+msgstr "Liste supprimée."
+
+#: search/models/api.py:691
+msgid "The basket could not be deleted"
+msgstr "La liste n'a pas pu être supprimée"
+
+#: search/models/api.py:725
 msgid "Internal error, sorry !"
 msgstr "Erreur interne :("
 
-#: search/models/api.py:781
+#: search/models/api.py:807
 msgid "We couldn't create the requested inventory. This is an error, sorry !"
 msgstr "Nous n'avons pas pu créer l'inventaire demandé. C'est un bug, désolé."
 
-#: search/models/api.py:820
+#: search/models/api.py:846
 msgid "Internal error. We couldn't save the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu sauvegarder l'inventaire"
 
-#: search/models/api.py:837
+#: search/models/api.py:863
 msgid "Inventory saved. Keep working !"
 msgstr "Inventaire sauvegardé. Il faut s'y remettre !"
 
-#: search/models/api.py:857
+#: search/models/api.py:883
 #, fuzzy
 #| msgid "Internal error. We couldn't save the inventory"
 msgid "Internal error. We couldn't update the inventory"
@@ -242,7 +250,7 @@ msgstr ""
 "dépôt."
 
 #: search/views.py:727 templates/pdftemplates/pdf-barcode.jade:35
-#: templates/search/alerts.jade:33 templates/search/baskets.jade:114
+#: templates/search/alerts.jade:33 templates/search/baskets.jade:116
 #: templates/search/card_edit.jade:42 templates/search/collection.jade:114
 #: templates/search/dashboard.jade:80 templates/search/dashboard.jade:107
 #: templates/search/dashboard.jade:124 templates/search/deposits_view.jade:52
@@ -267,7 +275,7 @@ msgid "Shelf"
 msgstr "Rayon"
 
 #: search/views.py:727 templates/pdftemplates/pdf-barcode.jade:36
-#: templates/search/baskets.jade:118 templates/search/collection.jade:115
+#: templates/search/baskets.jade:120 templates/search/collection.jade:115
 #: templates/search/searchresults.jade:91
 #: templates/search/sell_create.jade:122 templates/search/to_command.jade:66
 msgid "Price"
@@ -368,7 +376,7 @@ msgid "page"
 msgstr "page"
 
 #: templates/pdftemplates/pdf-barcode.jade:54
-#: templates/search/baskets.jade:129 templates/search/deposits.jade:83
+#: templates/search/baskets.jade:131 templates/search/deposits.jade:83
 #: templates/search/to_command.jade:53 templates/search/to_command.jade:81
 msgid "Total"
 msgstr "Total"
@@ -410,29 +418,29 @@ msgstr "conflit"
 msgid "Related deposit"
 msgstr "dépôts concernés"
 
-#: templates/search/baskets.jade:54 templates/search/collection.jade:97
+#: templates/search/baskets.jade:55 templates/search/collection.jade:97
 #: templates/search/inventory_terminate.jade:49
 #: templates/search/searchresults.jade:66
 msgid "Action"
 msgstr "Action"
 
-#: templates/search/baskets.jade:58 templates/search/baskets.jade.py:157
+#: templates/search/baskets.jade:59 templates/search/baskets.jade.py:159
 msgid "Create a basket"
 msgstr "Créer une liste"
 
-#: templates/search/baskets.jade:61
+#: templates/search/baskets.jade:62
 msgid "Mark all the cards to command"
 msgstr "Tout marquer à commander"
 
-#: templates/search/baskets.jade:61 templates/search/to_command.jade:98
+#: templates/search/baskets.jade:62 templates/search/to_command.jade:98
 msgid "Command…"
 msgstr "Passer commande…"
 
-#: templates/search/baskets.jade:62
+#: templates/search/baskets.jade:63
 msgid "Receive a command and check you received all the books"
 msgstr "Recevoir un colis et vérifier son contenu"
 
-#: templates/search/baskets.jade:62
+#: templates/search/baskets.jade:63
 msgid "Receive a command"
 msgstr "Réceptionner un colis"
 
@@ -448,74 +456,82 @@ msgstr ""
 msgid "Transform as deposit"
 msgstr "Transformer en dépôt"
 
-#: templates/search/baskets.jade:67
+#: templates/search/baskets.jade:66
+msgid "Delete this list. This can not be undone"
+msgstr "Supprimez définitivement cette liste."
+
+#: templates/search/baskets.jade:66
+msgid "Delete this list"
+msgstr "Supprimer cette liste"
+
+#: templates/search/baskets.jade:69
 #: templates/search/inventory_terminate.jade:55
 #: templates/search/to_command.jade:46
 msgid "Export the list to the required format"
 msgstr "Exporter la liste au format requis"
 
-#: templates/search/baskets.jade:67
+#: templates/search/baskets.jade:69
 #: templates/search/inventory_terminate.jade:55
 #: templates/search/to_command.jade:46
 msgid "Export"
 msgstr "Exporter"
 
-#: templates/search/baskets.jade:72 templates/search/to_command.jade:49
+#: templates/search/baskets.jade:74 templates/search/to_command.jade:49
 msgid "simple: isbn and quantity"
 msgstr "simple: isbn et quantité (Dilicom)"
 
-#: templates/search/baskets.jade:73
+#: templates/search/baskets.jade:75
 msgid "with barcodes"
 msgstr "avec codes-barres"
 
-#: templates/search/baskets.jade:76
+#: templates/search/baskets.jade:78
 msgid "Hide and show covers (d)"
 msgstr "Cacher / montrer les détails (d)"
 
-#: templates/search/baskets.jade:79
+#: templates/search/baskets.jade:81
 msgid "Show your notes (n)"
 msgstr "Afficher vos notes (n)"
 
-#: templates/search/baskets.jade:82
+#: templates/search/baskets.jade:84
 #: templates/search/inventory_terminate.jade:63
 msgid "Read the documentation"
 msgstr "Voir la documentation"
 
-#: templates/search/baskets.jade:97 templates/search/inventory_view.jade:56
+#: templates/search/baskets.jade:99 templates/search/inventory_view.jade:56
 #: templates/search/sell_create.jade:83
 msgid "Use TAB to validate your choice, Enter to proceed."
 msgstr "Utilisez TAB pour valider la selection, Entrée pour finir la vente."
 
-#: templates/search/baskets.jade:99 templates/search/inventory_view.jade:58
+#: templates/search/baskets.jade:101 templates/search/inventory_view.jade:58
 #: templates/search/sell_create.jade:85
 msgid "Search any isbn, search by keywords in your stock"
 msgstr "Cherchez tout isbn ou par mots-clefs dans votre stock"
 
-#: templates/search/baskets.jade:109
+#: templates/search/baskets.jade:111
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: templates/search/baskets.jade:116
+#: templates/search/baskets.jade:118
 msgid "In stock"
 msgstr "en stock"
 
-#: templates/search/baskets.jade:153
+#: templates/search/baskets.jade:155
 msgid "Remove from basket"
 msgstr "Enlever de la liste"
 
-#: templates/search/baskets.jade:160 templates/search/baskets.jade.py:170
+#: templates/search/baskets.jade:162 templates/search/baskets.jade.py:172
 msgid "Name"
 msgstr "Nom"
 
-#: templates/search/baskets.jade:163 templates/search/baskets.jade.py:185
+#: templates/search/baskets.jade:165 templates/search/baskets.jade.py:187
 msgid "OK"
 msgstr "OK"
 
-#: templates/search/baskets.jade:167
+#: templates/search/baskets.jade:169
 msgid "Transform to a deposit"
 msgstr "Transformer en dépôt"
 
-#: templates/search/baskets.jade:173 templates/search/card_edit.jade:110
+#: templates/search/baskets.jade:175 templates/search/card_edit.jade:110
 #: templates/search/card_show.jade:58 templates/search/collection.jade:70
 #: templates/search/dashboard.jade:43 templates/search/deposits.jade:34
 #: templates/search/deposits.jade.py:60
@@ -524,7 +540,7 @@ msgstr "Transformer en dépôt"
 msgid "Distributor"
 msgstr "Diffuseur"
 
-#: templates/search/baskets.jade:183 templates/search/card_add.jade:48
+#: templates/search/baskets.jade:185 templates/search/card_add.jade:48
 #: templates/search/card_edit.jade:123
 msgid "Add a distributor"
 msgstr "Créer un diffuseur"

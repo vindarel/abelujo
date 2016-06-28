@@ -45,7 +45,6 @@ div(ng-cloak, ng-controller="basketsController")
           popover-placement="left") {{ " it.name " | ng }}
             span.badge {{ " it.length " | ng }}
 
-
  .col-md-9
   .row
    .col-md-6
@@ -60,8 +59,9 @@ div(ng-cloak, ng-controller="basketsController")
 
        li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
        li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
-       li.divider(role="separator")
        li: a(href="#", ng-click="open_to_deposit('md')", title='{% trans "You can transform this list of books to a deposit. You will be asked the distributor and the discount." %}') {% trans "Transform as deposit" %}…
+       li.divider(role="separator")
+       li: a(href="#", ng-click="delete_basket()", title='{% trans "Delete this list. This can not be undone" %}') {% trans "Delete this list" %}
 
     .btn-group
      button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}

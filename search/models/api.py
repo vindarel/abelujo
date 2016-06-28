@@ -479,7 +479,7 @@ def auto_command_total(request, **response_kwargs):
 def basket(request, pk, action="", card_id="", **kwargs):
     """Get the list of cards or act on the given basket (POST):
     - add: add many cards,
-    - remove
+    - remove: remove card(s),
     - update: one card
     - to_deposit: transform to a deposit. args: deposit_id, name
 
@@ -669,6 +669,32 @@ def baskets_update(request, pk, **response_kwargs):
             basket.save()
 
         return JsonResponse(to_ret)
+
+def baskets_delete(request, pk, **kw):
+    """Delete the given basket.
+    """
+    if request.method == "POST":
+        msg = {'status': ALERT_SUCCESS,
+               "message": _("Basket deleted succesfully")}
+        try:
+            b_obj = Basket.objects.get(id=pk)
+        except Exception as e:
+            log.error("Basket delete: {}".format(e))
+            return JsonResponse({'status': ALERT_ERROR,
+                                 'message': "basket {} does not exist".format(pk)})
+
+        try:
+            b_obj.delete()
+        except Exception as e:
+            log.error("Basket {} could not be deleted: {}".format(b_obj.id, e))
+            msg = {'status': ALERT_ERROR,
+                    'message': _("The basket could not be deleted")}
+        to_ret = {
+            "status": ALERT_SUCCESS,
+            "alerts": [msg],
+            }
+        return JsonResponse(to_ret)
+
 
 def baskets_inventory_get_or_create(request, **response_kwargs):
     """Get the current inventory id and its copies, or create one for the basket pk (in url).

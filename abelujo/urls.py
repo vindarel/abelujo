@@ -52,6 +52,7 @@ apipatterns = patterns("",
     url(r'^api/baskets/create', 'search.models.api.baskets_create', name="api_baskets_create"),
     url(r'^api/baskets/(?P<pk>\d+)/copies', 'search.models.api.basket', name="api_basket_copies"),
     url(r'^api/baskets/(?P<pk>\d+)/update/?', 'search.models.api.baskets_update', name="api_basket_update"),
+    url(r'^api/baskets/(?P<pk>\d+)/delete/?', 'search.models.api.baskets_delete', name="api_basket_delete"),
     url(r'^api/baskets/?$', 'search.models.api.baskets', name="api_baskets"),
     # Inventories of baskets
     url(r'^api/baskets/(?P<pk>\d+)/inventories/?$',

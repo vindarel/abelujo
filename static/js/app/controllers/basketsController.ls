@@ -75,6 +75,18 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             else
                 $scope.copies = $scope.cur_basket.copies
 
+    $scope.delete_basket =  !->
+        sure = confirm(gettext("You are going to delete the list {}. This can not be undone. Are you sure ?")replace "{}", $scope.cur_basket.name)
+        $log.info sure
+        if sure
+            $http.post "/api/baskets/#{$scope.cur_basket.id}/delete"
+            .then (response) !->
+                index = find-index (.id == $scope.cur_basket.id), $scope.baskets
+                $scope.baskets.splice index, 1
+                if index >= $scope.baskets.length
+                    index -= 1
+                $scope.showBasket index
+
     $window.document.title = "Abelujo - " + gettext("Baskets")
 
     $scope.closeAlert = (index) ->
