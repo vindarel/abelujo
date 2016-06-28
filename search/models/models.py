@@ -2648,6 +2648,13 @@ class Inventory(TimeStampedModel):
 
         return roundfloat(progress)
 
+    def quantity(self):
+        """Return the quantity of copies in it.
+
+        - return: int
+        """
+        return self.inventorycards_set.count() or 0
+
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original
         shelf, place, etc.

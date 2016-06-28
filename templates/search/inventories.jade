@@ -64,6 +64,7 @@ table.table.table-striped.table-hover
     th {% trans "Created the" %}
     th {% trans "Inventory of..." %}
     th {% trans "Progress" %}
+    th {% trans "Number of copies" %}
     th
 
   tbody
@@ -84,6 +85,9 @@ table.table.table-striped.table-hover
 
       td
         div {{ inv.progress }} %
+
+      td
+        div {{ inv.quantity }}
 
       td
         a(href="{{ inv.id }}")
