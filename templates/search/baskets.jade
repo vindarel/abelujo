@@ -35,6 +35,11 @@ div(ng-cloak, ng-controller="basketsController")
       {{ 'alert.message' | ng }}
 
  .col-md-3
+   div(ng-hide="baskets.length != 0")
+     h4
+       a(href="#", ng-click="open_new_basket('sm')") {% trans "Create a basket" %} 
+         i.glyphicon.glyphicon-plus
+
    ul.list-group
      div(ng-repeat="it in baskets")
         li.list-group-item.mouse-pointer(
@@ -54,7 +59,10 @@ div(ng-cloak, ng-controller="basketsController")
        span.caret
 
      ul.dropdown-menu
-       li: a(href="#", title='', ng-click="open('sm')") {% trans "Create a basket" %}
+       li
+         a(href="#", title='', ng-click="open_new_basket('sm')") {% trans "Create a basket" %} 
+           i.glyphicon.glyphicon-plus
+
        li.divider(role="separator")
 
        li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}

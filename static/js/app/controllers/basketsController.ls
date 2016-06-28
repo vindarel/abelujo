@@ -253,7 +253,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     #############################
     # Open new basket modal
     # ###########################
-    $scope.open = (size) !->
+    $scope.open_new_basket = (size) !->
         modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
             templateUrl: 'basketModal.html'
