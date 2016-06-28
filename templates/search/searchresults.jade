@@ -68,7 +68,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
        ul.dropdown-menu
 
-        li: a(href="#", ng-click="open()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to list…' %}
+        li: a(href="#", ng-click="open_list_select()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
+
+        li: a(href="#", ng-click="open_inv_select()", title='{% trans "Add the cards selected to an ongoing inventory" %}') {% trans "Add to inventory…" %}
 
      button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
          i.glyphicon.glyphicon-th-list
@@ -140,5 +142,19 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           label {{ 'basket.name' | ng}}
 
       button.btn.btn-primary(ng-click="ok()") OK
+
+ script(type="text/ng-template", id="SearchResultsAddToInventoryModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Choose an inventory" %}
+
+    div.modal-body
+     .row
+        .col-lg-9
+          select.form-control(ng-model="inventory"
+               ng-options="it.name for it in inventories")
+
+        .col-lg-3
+
+            button.btn.btn-primary(ng-click="ok()") OK
 
 {% endblock content %}

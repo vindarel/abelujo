@@ -634,23 +634,29 @@ class Card(TimeStampedModel):
     def is_in_stock(cards):
         """Check by isbn if the given cards (dicts) are in stock.
 
-        Return a list of dicts with a new key each: "in_stock": 0/the quantity
+        Return a list of dicts with new keys each:
+        - "in_stock": 0/the quantity
+        - "id"
         """
         if not cards:
             return cards
 
-        found = 0
+        quantity = None
+        found_id = 0
         for card in cards:
             try:
                 found, _ = Card.exists(card)
                 if type(found) == list:
                     found = found[0]
                 if found:
-                    found = found.quantity
+                    quantity = found.quantity
+                    found_id = found.id
             except ObjectDoesNotExist:
-                found = None
+                quantity = None
+                found_id = None
 
-            card['in_stock'] = found
+            card['in_stock'] = quantity
+            card['id'] = found_id
 
         return cards
 
@@ -2592,10 +2598,29 @@ class Inventory(TimeStampedModel):
     #: At last, we can also do "inventories" of baskets, meaning we compare it
     # with a newly received command, or a pack of cards returned.
     basket = models.ForeignKey("Basket", blank=True, null=True)
+    #: Closed or still active ?
+    closed = models.BooleanField(default=False)
 
     def __unicode__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
         return "{}: {}".format(self.id, inv_obj.name)
+
+    def to_dict(self):
+        name = ""
+        if self.place:
+            name = self.place.name
+        elif self.basket:
+            name = self.basket.name
+        elif self.publisher:
+            name = self.publisher.name
+        elif self.shelf:
+            name = self.shelf.name
+
+        ret = {
+            "id": self.id,
+            "name": name,
+            }
+        return ret
 
     def add_copy(self, copy, nb=1, add=True):
         """copy: a Card object.

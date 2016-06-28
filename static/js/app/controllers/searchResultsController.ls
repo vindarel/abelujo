@@ -152,8 +152,10 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         , (response) ->
             ... # error
 
-    # Modal
-    $scope.open = (size) !->
+    ########################################################
+    # Modal choose a list
+    ########################################################
+    $scope.open_list_select = (size) !->
         to_add = Obj.filter (.selected == true), $scope.cards
 
         keys = Obj.keys to_add
@@ -169,6 +171,34 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             size: size,
             resolve: do
                 selected: ->
+                    to_add
+                utils: ->
+                    utils
+
+        modalInstance.result.then (alerts) !->
+            $scope.alerts = alerts
+        , !->
+              $log.info "modal dismissed"
+
+    ########################################################
+    # Modal choose an inventory
+    ########################################################
+    $scope.open_inv_select = (size) !->
+        to_add = Obj.filter (.selected == true), $scope.cards
+
+        keys = Obj.keys to_add
+        if not keys.length
+            alert "Please select some cards first"
+            return
+
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'SearchResultsAddToInventoryModal.html'
+            controller: 'SearchResultsAddToInventoryModalController'
+            ## backdrop: 'static'
+            size: size,
+            resolve: do
+                cards_selected: ->
                     to_add
                 utils: ->
                     utils
@@ -227,6 +257,39 @@ angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($h
             $http.post "/api/baskets/#{b_id}/add/", params
             .then (response) !->
                 $scope.alerts = $scope.alerts.concat response.data.msgs
+
+        $uibModalInstance.close($scope.alerts)
+
+
+    $scope.cancel = !->
+        $uibModalInstance.dismiss('cancel')
+
+angular.module "abelujo" .controller "SearchResultsAddToInventoryModalController", ($http, $scope, $uibModalInstance, $window, $log, utils, cards_selected) ->
+
+    {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
+
+    $scope.inventory = undefined
+    $scope.alerts = []
+
+    $http.get "/api/inventories"
+    .then (response) ->
+        $scope.inventories = response.data.data
+
+    $scope.ok = !->
+
+        to_add = cards_selected # list of dicts
+
+        config = do
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+
+        params = do
+            cards: to_add
+
+        $log.info "Adding cards to inventory #{$scope.inventory.id}..."
+        $log.info "Adding cards", to_add
+        $http.post "/api/inventories/#{$scope.inventory.id}/update/", params
+        .then (response) !->
+            $scope.alerts = $scope.alerts.concat response.data.msgs
 
         $uibModalInstance.close($scope.alerts)
 

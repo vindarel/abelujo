@@ -770,9 +770,11 @@ def places(request, **response_kwargs):
     return JsonResponse(data, safe=False)
 
 def inventories(request, **kwargs):
-    """GET: get the list of inventories of the given place (pk given in url).
+    """GET: get the list of open inventories, with a place's pk in url the
+    inventories of that given place.
 
     POST: create a new inventory for the given place (place_id in POST params).
+
     """
     to_ret = {
         "data": None,
@@ -787,6 +789,7 @@ def inventories(request, **kwargs):
 
         try:
             inv = Inventory()
+            dosave = True
             # shelf_id is always populated by the UI. If another one
             # is populated, that's what we want
             # XXX weak UI!
@@ -798,8 +801,10 @@ def inventories(request, **kwargs):
                 inv.shelf = Shelf.objects.get(id=shelf_id)
             else:
                 log.error('Inventory create: we have neither a shelf_id nor a place_id, this shouldnt happen.')
+                dosave = False
 
-            inv.save()
+            if dosave:
+                inv.save()
 
         except Exception as e:
             log.error(e)
@@ -825,10 +830,25 @@ def inventories(request, **kwargs):
                 log.error(e)
                 # and return error msg
 
+        else:
+            try:
+                invs = Inventory.objects.filter(closed=False)
+                invs = [it.to_dict() for it in invs]
+                to_ret['data'] = invs
+                to_ret['status'] = ALERT_SUCCESS
+
+            except Exception as e:
+                log.error("Error getting list of inventories: {}".format(e))
+                to_ret['data'] = "Internal error"
+                to_ret['status'] = ALERT_ERROR
+
     return JsonResponse(to_ret)
 
 def inventories_update(request, **kwargs):
-    """Save copies and their quantities.
+    """Add copies and their quantities.
+
+    - pk in url: id of inventory
+    - ids_qties in request.body: cards ids and their quantities
     """
     msgs = []
     to_ret = {
@@ -842,7 +862,7 @@ def inventories_update(request, **kwargs):
             try:
                 inv = Inventory.objects.get(id=pk)
             except Exception as e:
-                log.error(e)
+                log.error("Trying to update inventory {}: e".format(pk))
                 msgs.append(_("Internal error. We couldn't save the inventory"))
                 return # XXX return 400 error
 
@@ -853,8 +873,28 @@ def inventories_update(request, **kwargs):
             # {u'ids_qties': [u'185, 1;,50, 1;']}
             # a string with ids an their quantities.
             ids = params.get('ids_qties')
-            together = ids.split(';')
-            pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
+            pairs = []
+            if ids:
+                together = ids.split(';')
+                pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
+
+            cards = params.get('cards')
+            if cards:
+                # XXX: we are requesting the id of cards we are
+                # searching on the web: they don't have an id, except
+                # if they already existed in the stock.
+                # If that's not the case, create the card.
+                cards_obj = []
+                for _nop, card_dict in cards.iteritems():
+                    if not card_dict.get('id'):
+                        try:
+                            card_obj, _nop = Card.from_dict(card_dict)
+                            card_dict['id'] = card_obj.id
+                        except Exception as e:
+                            log.error("Error creating the card {} to add to inventory {}: {}".
+                                      format(card_dict['title'], inv.id, e))
+
+                pairs = [(card['id'], 1) for _nop, card in cards.iteritems()]
 
             status, _msgs = inv.add_pairs(pairs)
 

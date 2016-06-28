@@ -48,6 +48,7 @@ apipatterns = patterns("",
 
     url(r'^api/authors$', 'search.models.api.authors', name="api_authors"),
 
+    # Baskets
     url(r'^api/baskets/auto_command/open$', 'search.models.api.auto_command_total', name="api_auto_command_total"),
     url(r'^api/baskets/create', 'search.models.api.baskets_create', name="api_baskets_create"),
     url(r'^api/baskets/(?P<pk>\d+)/copies', 'search.models.api.basket', name="api_basket_copies"),
@@ -67,6 +68,7 @@ apipatterns = patterns("",
     url(r'^api/deposits/due_dates/$', 'search.models.api.deposits_due_dates', name="api_deposits_due_dates"),
     url(r'^api/deposits/?$', 'search.models.api.deposits', name="api_deposits"),
 
+    # Sell
     url(r'^api/sell/(?P<pk>\d+)/undo$', 'search.models.api.sell_undo', name="api_sell_undo"),
     url(r'^api/sell$', 'search.models.api.sell', name="api_sell"),
 
@@ -75,12 +77,16 @@ apipatterns = patterns("",
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),
     url(r'^api/alerts/open$', 'search.models.api.alerts_open', name="api_alerts_open"),
     url(r'^api/places/?$', 'search.models.api.places', name="api_places"),
+
+    # Inventories
     url(r'^api/inventories/create/?$', 'search.models.api.inventories', name="api_inventories"),
     url(r'^api/inventories/(?P<pk>\d+)/update/', 'search.models.api.inventories_update', name="api_inventories_update"),
     url(r'^api/inventories/(?P<pk>\d+)/remove/', 'search.models.api.inventories_remove', name="api_inventories_remove"),
     url(r'^api/inventories/(?P<pk>\d+)/diff/', 'search.models.api.inventory_diff', name="api_inventories_diff"),
     url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
+    url(r'^api/inventories/?', 'search.models.api.inventories', name="api_inventories"),
 
+    # Stats
     url(r'^api/stats/sells/month', 'search.models.api.stats_sells_month', name='api_stats_sells_month'),
     url(r'^api/stats/entries/month', 'search.models.api.stats_entries_month', name='api_stats_entries_month'),
     url(r'^api/stats/static', 'search.models.api.stats_static', name='api_stats_static'),
