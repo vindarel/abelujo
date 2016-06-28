@@ -42,6 +42,9 @@ div(ng-controller="inventoryNewController")
 
        .col-md-3
          btn.btn.btn-success(ng-click="terminate()") {% trans "Analyse…" %}
+         a(href="http://abelujo.cc/docs/inventories/", target="_blank")
+           btn.btn.btn-default( title='{% trans "Read the documentation" %}')
+             i.glyphicon.glyphicon-question-sign
 
     .row
      .col-lg-9
