@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-28 16:54+0000\n"
-"PO-Revision-Date: 2016-06-28 18:53+0200\n"
+"POT-Creation-Date: 2016-06-28 20:21+0000\n"
+"PO-Revision-Date: 2016-06-28 22:22+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -213,8 +213,8 @@ msgstr "Facture"
 #: templates/pdftemplates/pdf-barcode.jade:37
 #: templates/search/collection.jade:119
 #: templates/search/deposits_create.jade:92
-#: templates/search/inventory_view.jade:76
-#: templates/search/inventory_view.jade:93
+#: templates/search/inventory_view.jade:81
+#: templates/search/inventory_view.jade:98
 #: templates/search/sell_create.jade:141 templates/search/sell_details.jade:31
 msgid "Quantity"
 msgstr "Quantité"
@@ -257,7 +257,7 @@ msgstr ""
 #: templates/search/history.jade:54 templates/search/history_sells.jade:47
 #: templates/search/history_sells.jade:76
 #: templates/search/inventory_terminate.jade:77
-#: templates/search/inventory_view.jade:74
+#: templates/search/inventory_view.jade:79
 #: templates/search/searchresults.jade:88
 #: templates/search/sell_details.jade:30 templates/search/to_command.jade:65
 msgid "Title"
@@ -495,15 +495,16 @@ msgstr "Afficher vos notes (n)"
 
 #: templates/search/baskets.jade:90
 #: templates/search/inventory_terminate.jade:63
+#: templates/search/inventory_view.jade:48
 msgid "Read the documentation"
 msgstr "Voir la documentation"
 
-#: templates/search/baskets.jade:105 templates/search/inventory_view.jade:56
+#: templates/search/baskets.jade:105 templates/search/inventory_view.jade:61
 #: templates/search/sell_create.jade:83
 msgid "Use TAB to validate your choice, Enter to proceed."
 msgstr "Utilisez TAB pour valider la selection, Entrée pour finir la vente."
 
-#: templates/search/baskets.jade:107 templates/search/inventory_view.jade:58
+#: templates/search/baskets.jade:107 templates/search/inventory_view.jade:63
 #: templates/search/sell_create.jade:85
 msgid "Search any isbn, search by keywords in your stock"
 msgstr "Cherchez tout isbn ou par mots-clefs dans votre stock"
@@ -1178,31 +1179,31 @@ msgstr "Qté initiale"
 msgid "Inventory of "
 msgstr "Inventaire de "
 
-#: templates/search/inventory_view.jade:32
+#: templates/search/inventory_view.jade:33
 msgid "You did "
 msgstr "Vous avez fait"
 
-#: templates/search/inventory_view.jade:32
+#: templates/search/inventory_view.jade:34
 msgid "It remains"
 msgstr "Il reste"
 
-#: templates/search/inventory_view.jade:32
-msgid "cards"
-msgstr "notices"
+#: templates/search/inventory_view.jade:34
+msgid "non-inventoried cards in the stock."
+msgstr "articles non inventoriés dans le stock."
 
-#: templates/search/inventory_view.jade:44
+#: templates/search/inventory_view.jade:46
 msgid "Analyse…"
 msgstr "Analyser…"
 
-#: templates/search/inventory_view.jade:68
+#: templates/search/inventory_view.jade:73
 msgid "Show all cards inventoried"
 msgstr "Montrer tous les titres déjà inventoriés"
 
-#: templates/search/inventory_view.jade:75
+#: templates/search/inventory_view.jade:80
 msgid "Author"
 msgstr "Auteur"
 
-#: templates/search/inventory_view.jade:88
+#: templates/search/inventory_view.jade:93
 #: templates/search/sell_create.jade:117
 msgid "There is a conflict with deposits."
 msgstr "Il y a un conflit de dépôts."
@@ -1330,6 +1331,9 @@ msgstr ""
 "Les notices sont groupées par diffuseur. Veuillez vérifier la liste et "
 "confirmer."
 
+#~ msgid "cards"
+#~ msgstr "notices"
+
 #, fuzzy
 #~| msgid "Search terms"
 #~ msgid "Search cards"
@@ -1340,9 +1344,6 @@ msgstr ""
 
 #~ msgid "What did you sell ?"
 #~ msgstr "Qu'avez-vous vendu ?"
-
-#~ msgid "Search in the stock"
-#~ msgstr "Chercher dans le stock"
 
 #~ msgid "details…"
 #~ msgstr "détails…"

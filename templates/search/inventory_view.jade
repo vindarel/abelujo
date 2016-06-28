@@ -29,7 +29,9 @@ div(ng-controller="inventoryNewController")
   form(method="get")
     .row
       .col-md-9
-        div {% trans "You did "%} {{ 'progress_current' | ng }} %. {% trans "It remains" %}: {{ 'total_missing' |ng }} {% trans "cards" %}
+        div
+          | {% trans "You did "%} {{ 'progress_current' | ng }} %.
+          | {% trans "It remains" %} {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
 
         div.progress
           div.progress-bar.progress-bar-info(role="progress-bar"

@@ -45,6 +45,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     #XXX use angular routing
     $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
     $scope.cur_inv = ""
+    $scope.progress_current = 0
+
     $scope.language = utils.url_language($window.location.pathname)
 
     $scope.setCardsToShow = !->
@@ -79,7 +81,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             #XXX update the progress bar on the fly
             $scope.total_copies = $scope.state.total_copies
             $scope.total_missing = $scope.state.total_missing
-            $scope.progress_current = $scope.state.total_copies / ($scope.total_missing + $scope.state.total_copies) * 100
             $scope.updateProgress($scope.total_copies, $scope.total_missing)
             $scope.progressStyle = do
                 min-width: 4em
@@ -90,8 +91,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             return
 
     $scope.updateProgress = (current, missing) !->
-        $scope.progress_current = current / (current + missing) * 100
-        $scope.progress_current = $scope.progress_current.toFixed(1)
+        if (current + missing != 0)
+            $scope.progress_current = current / (current + missing) * 100
+            $scope.progress_current = $scope.progress_current.toFixed(1)
 
     $scope.getCards = (val) ->
         $http.get "/api/cards", do
