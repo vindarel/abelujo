@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-06-28 14:27+0000\n"
-"PO-Revision-Date: 2016-06-28 16:29+0200\n"
+"PO-Revision-Date: 2016-06-28 18:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -573,7 +573,6 @@ msgid "with discount"
 msgstr "avec remise"
 
 #: templates/search/card_add.jade:78
-#, fuzzy
 msgid "Add to baskets"
 msgstr "Ajouter aux listes:"
 
@@ -585,7 +584,6 @@ msgid "Validate"
 msgstr "Valider"
 
 #: templates/search/card_buy.jade:30 templates/search/searchresults.jade:123
-#, fuzzy
 msgid "Add to your stock"
 msgstr "Ajouter à votre stock"
 
@@ -647,9 +645,8 @@ msgid "Move copies"
 msgstr "Déplacer les notices"
 
 #: templates/search/card_move.jade:31
-#, fuzzy
 msgid "and add some to baskets"
-msgstr "Ajouter à la liste"
+msgstr "et ajoutez-en aux listes"
 
 #: templates/search/card_show.jade:30
 msgid "Edit the card"
@@ -827,10 +824,8 @@ msgid "Excerpt of the list"
 msgstr "Extrait de la liste"
 
 #: templates/search/deposit_add_copies.jade:25
-#, fuzzy
-#| msgid "Add to the deposit:"
 msgid "Add copies to the deposit"
-msgstr "Ajouter au dépôt:"
+msgstr "Ajouter des articles au dépôt:"
 
 #: templates/search/deposit_add_copies.jade:26
 msgid ""
@@ -851,7 +846,6 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: templates/search/deposits.jade:29
-#, fuzzy
 msgid "External deposits"
 msgstr "Dépôt à l'extérieur"
 
@@ -881,7 +875,6 @@ msgid "Deposits of the bookstore"
 msgstr "Dépôts de la librairie"
 
 #: templates/search/deposits.jade:59
-#, fuzzy
 msgid "Deposit's name"
 msgstr "Nom du dépôt"
 
@@ -978,7 +971,6 @@ msgid "current qty"
 msgstr "qté courante"
 
 #: templates/search/deposits_view.jade:65
-#, fuzzy
 msgid "Save this deposit state"
 msgstr "Sauvegarder cet état de dépôt"
 
@@ -1003,10 +995,8 @@ msgid "Movements"
 msgstr "Mouvements"
 
 #: templates/search/history.jade:42
-#, fuzzy
-#| msgid "Hide and show covers (d)"
 msgid "Hide and show details (d)"
-msgstr "Cacher / montrer les détails (d)"
+msgstr "Cacher ou montrer les détails (d)"
 
 #: templates/search/history.jade:77
 msgid "Total acquisitions of this month"
@@ -1041,10 +1031,8 @@ msgid "Titles"
 msgstr "Titres"
 
 #: templates/search/history_sells.jade:43
-#, fuzzy
-#| msgid "Titles"
 msgid "titles"
-msgstr "Titres"
+msgstr "titres"
 
 #: templates/search/history_sells.jade:49
 msgid "price init"
@@ -1071,10 +1059,8 @@ msgid "Add a card manually"
 msgstr "Ajouter une notice manuellement"
 
 #: templates/search/inventories.jade:28
-#, fuzzy
-#| msgid "Inventory started"
 msgid "Inventories started"
-msgstr "Inventaire en cours"
+msgstr "Inventaires en cours"
 
 #: templates/search/inventories.jade:33
 msgid "What are you doing the inventory of ?"
@@ -1090,10 +1076,8 @@ msgid "Ok"
 msgstr "Ok"
 
 #: templates/search/inventories.jade:45
-#, fuzzy
-#| msgid "places"
 msgid "A place"
-msgstr "lieus de stockage"
+msgstr "Un lieu"
 
 #: templates/search/inventories.jade:52
 msgid "An editor"
@@ -1108,8 +1092,6 @@ msgid "Created the"
 msgstr "Créé le"
 
 #: templates/search/inventories.jade:65
-#, fuzzy
-#| msgid "Inventory of "
 msgid "Inventory of..."
 msgstr "Inventaire de "
 
@@ -1166,10 +1148,8 @@ msgstr "Récupérez la liste de l'inventaire"
 
 #: templates/search/inventory_terminate.jade:59
 #: templates/search/inventory_terminate.jade:60
-#, fuzzy
-#| msgid "Inventory list - pdf"
 msgid "Inventory list"
-msgstr "Liste de l'inventaire - pdf"
+msgstr "Liste de l'inventaire"
 
 #: templates/search/inventory_terminate.jade:60
 msgid "Get the list of the Inventory in csv (for LibreOffice/Excel)"
@@ -1214,7 +1194,6 @@ msgid "Show all cards inventoried"
 msgstr "Montrer tous les titres déjà inventoriés"
 
 #: templates/search/inventory_view.jade:75
-#, fuzzy
 msgid "Author"
 msgstr "Auteur"
 
@@ -1228,31 +1207,26 @@ msgid "Search for new titles"
 msgstr "Recherche de nouveaux titres"
 
 #: templates/search/searchresults.jade:44
-#, fuzzy
-#| msgid "source"
 msgid "Source"
-msgstr "source"
+msgstr "Source"
 
 #: templates/search/searchresults.jade:58
 msgid "Key words, or ean/isbn"
 msgstr "Mots clefs, ou ean/isbn"
 
 #: templates/search/searchresults.jade:71
-#, fuzzy
 msgid "Add selection to list…"
-msgstr "Ajouter à la liste…"
+msgstr "Ajouter la sélection à la liste…"
 
 #: templates/search/searchresults.jade:79
 #: templates/search/searchresults.jade:127
-#, fuzzy
 msgid "Previous results"
-msgstr "Précédent"
+msgstr "Résultats précédent"
 
 #: templates/search/searchresults.jade:81
 #: templates/search/searchresults.jade:129
-#, fuzzy
 msgid "Next results"
-msgstr "Suivants"
+msgstr "Résultats suivants"
 
 #: templates/search/searchresults.jade:106
 msgid "This card is already in your stock"
@@ -1260,14 +1234,13 @@ msgstr "Cette notice est déjà dans votre stock."
 
 #: templates/search/searchresults.jade:123
 msgid "Add…"
-msgstr "Nouveau…"
+msgstr "Ajouter…"
 
 #: templates/search/sell_create.jade:26
 msgid "Selling cards"
 msgstr "Vente"
 
 #: templates/search/sell_create.jade:68
-#, fuzzy
 msgid "Card type"
 msgstr "Type de notice"
 
@@ -1342,10 +1315,8 @@ msgid "Remove from list"
 msgstr "Enlever de la liste"
 
 #: templates/search/to_command.jade:89
-#, fuzzy
-#| msgid "To command"
 msgid "Command"
-msgstr "À commander"
+msgstr "Commander"
 
 #: templates/search/to_command.jade:90
 msgid ""
