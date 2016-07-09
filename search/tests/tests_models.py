@@ -304,6 +304,20 @@ class TestCards(TestCase):
         self.assertTrue(msgs)
         self.assertEqual(msgs[0]["message"], "the card of id 2 doesn't exist.")
 
+    def test_quantity_to_zero(self):
+        self.card2 = Card(title=self.fixture_title,
+                          isbn=self.fixture_isbn,
+                          shelf=ShelfFactory())
+        self.card2.save()
+        author = AuthorFactory()
+        self.card2.authors.add(author)
+        self.card2.save()
+        self.place.add_copy(self.card2, nb=3)
+
+        Card.quantities_to_zero()
+        self.assertEqual(self.autobio.quantity_compute(), 0)
+        self.assertEqual(Card.quantities_total(), 0)
+
     def test_placecopies(self):
         pass
 

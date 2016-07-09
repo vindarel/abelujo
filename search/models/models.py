@@ -418,6 +418,31 @@ class Card(TimeStampedModel):
             quantity = sum([pl.nb for pl in self.placecopies_set.all()])
         return quantity
 
+
+    @staticmethod
+    def quantities_to_zero():
+        """Set all cards' quantity to zero. Only for admin purposes.
+        """
+        for card in Card.objects.all():
+            card.quantity_to_zero()
+
+    @staticmethod
+    def quantities_total():
+        """Total of quantities for all cards in this stock (for tests).
+        Return: int (None on error)
+        """
+        try:
+            return sum([it.quantities_total() for it in Place.objects.all()])
+        except Exception as e:
+            log.error("Error while getting the total quantities of all cards: {}".format(e))
+
+    def quantity_to_zero(self):
+        """Set the quantity of this card to zero. This is needed sometimes for
+        admin purposes.
+        """
+        for pc in self.placecopies_set.all():
+            pc.quantity_set(0)
+
     def get_distributor(self):
         """Get the list of distributors without an error in case it is
         null. To use in card_show template.
@@ -1090,6 +1115,20 @@ class PlaceCopies (models.Model):
     def __unicode__(self):
         return u"%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
+    def quantity_set(self, nb):
+        """Set this card's quantity in this place to nb (int).
+
+        (Normally, use Place.add_copy or add_copies or sell
+        copies. This method is here for admin purposes only.)
+        """
+        try:
+            self.nb = nb
+            self.save()
+            self.card.quantity = nb
+            self.card.save()
+
+        except Exception as e:
+            log.error("Error while setting the card {}'s quantity: {}".format(self.card.id, e))
 
 class Place (models.Model):
     """A place can be a selling point, a warehouse or a stand.
@@ -1216,6 +1255,15 @@ class Place (models.Model):
             log.error(u"Error while adding an Entry to the history for card {}:{}".format(card.id, e))
 
         return place_copy.nb
+
+    def quantities_total(self):
+        """Total quantity of cards in this place.
+        Return: int (None on error)
+        """
+        try:
+            return sum([it.nb for it in self.placecopies_set.all()])
+        except Exception as e:
+            log.error("Error getting the total quantities in place {}: {}".format(self.name, e))
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?
