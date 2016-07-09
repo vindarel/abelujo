@@ -24,17 +24,19 @@ Note: to compare two objects, don't use assertEqual but the == operator.
 
 import datetime
 
+import factory
 from django.contrib import messages
+from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
-
-import factory
+from django.utils.six import StringIO
 from factory.django import DjangoModelFactory
-from search.models import (ALERT_WARNING,
-                           ALERT_SUCCESS,
-                           ALERT_ERROR)
-from search.models import Author
+
+from search.models import ALERT_ERROR
+from search.models import ALERT_SUCCESS
+from search.models import ALERT_WARNING
 from search.models import Alert
+from search.models import Author
 from search.models import Basket
 from search.models import BasketCopies
 from search.models import BasketType
@@ -45,14 +47,15 @@ from search.models import Deposit
 from search.models import DepositCopies
 from search.models import DepositState
 from search.models import Distributor
-from search.models import getHistory
 from search.models import Inventory
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
-from search.models import Shelf
 from search.models import Sell
+from search.models import Shelf
+from search.models import getHistory
+
 
 class AuthorFactory(DjangoModelFactory):
     class Meta:
@@ -316,6 +319,15 @@ class TestCards(TestCase):
 
         Card.quantities_to_zero()
         self.assertEqual(self.autobio.quantity_compute(), 0)
+        self.assertEqual(Card.quantities_total(), 0)
+
+    def test_command_reset_quantities(self):
+        """Test our custom management command.
+        """
+        out = StringIO()
+        call_command("my_reset_quantities", stdout=out)
+        self.assertIn("All done !", out.getvalue())
+
         self.assertEqual(Card.quantities_total(), 0)
 
     def test_placecopies(self):

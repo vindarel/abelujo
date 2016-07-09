@@ -423,8 +423,8 @@ class Card(TimeStampedModel):
     def quantities_to_zero():
         """Set all cards' quantity to zero. Only for admin purposes.
         """
-        for card in Card.objects.all():
-            card.quantity_to_zero()
+        for place_copy in PlaceCopies.objects.all():
+            place_copy.quantity_set(0)
 
     @staticmethod
     def quantities_total():
