@@ -23,6 +23,7 @@ from search.models import Card
 from search.models import Shelf
 from search.models import Distributor
 from search.models import Deposit
+from search.models import Inventory
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
@@ -71,6 +72,12 @@ class DepositAdmin(admin.ModelAdmin):
 
     list_display = ("name", "distributor", "dest_place", "due_date", "auto_command")
 
+class InventoryAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Inventory
+
+    pass
+
 class PublisherAdmin(admin.ModelAdmin):
     class Meta:
         model = Publisher
@@ -87,6 +94,7 @@ admin.site.register(Card, CardAdmin)
 admin.site.register(Shelf)
 admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
+admin.site.register(Inventory, InventoryAdmin)
 admin.site.register(Place)
 admin.site.register(PlaceCopies)
 admin.site.register(Publisher, PublisherAdmin)

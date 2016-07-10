@@ -418,7 +418,6 @@ class Card(TimeStampedModel):
             quantity = sum([pl.nb for pl in self.placecopies_set.all()])
         return quantity
 
-
     @staticmethod
     def quantities_to_zero():
         """Set all cards' quantity to zero. Only for admin purposes.
@@ -2651,7 +2650,7 @@ class Inventory(TimeStampedModel):
 
     def __unicode__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
-        return "{}: {}".format(self.id, inv_obj.name)
+        return u"{}: {}".format(self.id, inv_obj.name)
 
     def to_dict(self):
         name = ""
