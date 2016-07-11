@@ -92,14 +92,16 @@ table.table.table-striped.table-hover
       td
         a(href="{{ inv.id }}")
           button.btn.btn-primary {% trans "Continue" %}
-        a(href="{{ inv.id }}/delete")
-          button.btn.btn-danger {% trans "Delete" %}
 
         .btn-group
           button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
             span.caret
           ul.dropdown-menu
-            li: a(href="{{ inv.id }}/export?format=csv") csv (LibreOffice)
+            li: a(href="{{ inv.id }}/export?format=csv") {% trans "csv (LibreOffice)" %}
+            li: a(href="{{ inv.id }}/export?format=csvsimple") {% trans "csv simple (Dilicom)" %}
+
+        a(href="{{ inv.id }}/delete")
+          button.btn.btn-danger {% trans "Delete" %}
 
 
 {% endblock content %}

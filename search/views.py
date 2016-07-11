@@ -812,8 +812,20 @@ def inventory_export(request, pk):
         pseudo_buffer = Echo()
         writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
         content = writer.writerow(header)
-        content += "\n".join([writer.writerow(row) for row in rows])
+        content += "".join([writer.writerow(row) for row in rows])
 
+        response = StreamingHttpResponse(content, content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(inv.name)
+
+    if format in ['csvsimple']:
+        pseudo_buffer = Echo()
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        rows = inv.inventorycards_set.all()
+        rows = [
+            (ic.card.isbn,
+             ic.quantity)
+            for ic in rows]
+        content = [writer.writerow(row) for row in rows]
         response = StreamingHttpResponse(content, content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(inv.name)
 
