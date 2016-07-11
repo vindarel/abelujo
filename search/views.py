@@ -829,6 +829,7 @@ def inventory_export(request, pk):
              ic.card.price,
              ic.quantity)
             for ic in inv_cards]
+        rows = sorted(rows)
 
     elif report == 'simplelisting':
         header = None
@@ -838,7 +839,7 @@ def inventory_export(request, pk):
             (ic.card.isbn,
              ic.quantity)
             for ic in rows]
-
+        rows = sorted(rows)
 
     if format in ['csv']:
         pseudo_buffer = Echo()
