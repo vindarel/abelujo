@@ -721,7 +721,7 @@ def baskets_export(request):
             writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
             content = [writer.writerow(row) for row in isbns_qties]
             response = StreamingHttpResponse(content, content_type="text/csv")
-            response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+            response['Content-Disposition'] = u'attachment; filename="somefilename.csv"'
 
         elif layout in ['csv_extended']:
             header = [(_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))]
@@ -737,7 +737,7 @@ def baskets_export(request):
                      for (card, quantity) in cards_qties]
             content = [writer.writerow(row) for row in rows]
             response = StreamingHttpResponse(content, content_type="text/csv")
-            response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+            response['Content-Disposition'] = u'attachment; filename="somefilename.csv"'
 
         elif layout == 'txt':
             rows = [ u"{} {}".format( truncate(card.title), qty) for (card, qty) in cards_qties]
@@ -750,7 +750,7 @@ def baskets_export(request):
 
                 date = datetime.date.today()
                 response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+                response['Content-Disposition'] = u'attachment; filename="somefilename.pdf"'
 
                 cards = [it[0] for it in cards_qties]
                 # the barcode generator doesn't accept None isbn.
@@ -815,7 +815,7 @@ def inventory_export(request, pk):
         content += "".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(inv.name)
+        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(inv.name)
 
     if format in ['csvsimple']:
         pseudo_buffer = Echo()
@@ -827,7 +827,7 @@ def inventory_export(request, pk):
             for ic in rows]
         content = [writer.writerow(row) for row in rows]
         response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(inv.name)
+        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(inv.name)
 
     return response
 
