@@ -97,8 +97,9 @@ table.table.table-striped.table-hover
           button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
             span.caret
           ul.dropdown-menu
-            li: a(href="{{ inv.id }}/export?format=csv") {% trans "csv (LibreOffice)" %}
-            li: a(href="{{ inv.id }}/export?format=csvsimple") {% trans "csv simple (Dilicom)" %}
+            li: a(href="{{ inv.id }}/export?report=bill&format=csv") {% trans "Sells" %} - csv
+            li: a(href="{{ inv.id }}/export?report=listing&format=csv") {% trans "Full list" %} - csv
+            li: a(href="{{ inv.id }}/export?report=simplelisting&format=csv") {% trans "isbn and quantities (Dilicom)" %} - csv
 
         a(href="{{ inv.id }}/delete")
           button.btn.btn-danger {% trans "Delete" %}

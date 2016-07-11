@@ -798,7 +798,23 @@ def inventory_export(request, pk):
     except Exception as e:
         log.error(u"Error trying to export inventory of pk {}: {}".format(pk, e))
 
-    if format in ['csv']:
+    # What type of report ? The full list (default) or the bill ? (sold cards)
+    report = request.GET.get('report')
+
+
+    if report == 'bill':
+        # The cards of the inventory alongside their quantities.
+        header = (_("Title"), _("Quantity sold"))
+        diff = inv.diff()[0] # that should be cached XXX. A json row in the db ?
+        rows = []
+        for k in diff.itervalues():
+            if k.get('diff', 0) < 0:
+                qtysold = - k.get('diff')
+            else:
+                qtysold = 0
+            rows.append((k['card'].title, qtysold))
+
+    elif report == 'listing':
         inv_cards = inv.inventorycards_set.all()
         header = (_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))
         rows = [
@@ -809,23 +825,25 @@ def inventory_export(request, pk):
              ic.card.price,
              ic.quantity)
             for ic in inv_cards]
-        pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-        content = writer.writerow(header)
-        content += "".join([writer.writerow(row) for row in rows])
 
-        response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(inv.name)
-
-    if format in ['csvsimple']:
-        pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+    elif report == 'simplelisting':
+        header = None
+        inv_cards = inv.inventorycards_set.all()
         rows = inv.inventorycards_set.all()
         rows = [
             (ic.card.isbn,
              ic.quantity)
             for ic in rows]
-        content = [writer.writerow(row) for row in rows]
+
+
+    if format in ['csv']:
+        pseudo_buffer = Echo()
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        content = writer.writerow("")
+        if header:
+            content = writer.writerow(header)
+        content += "".join([writer.writerow(row) for row in rows])
+
         response = StreamingHttpResponse(content, content_type="text/csv")
         response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(inv.name)
 

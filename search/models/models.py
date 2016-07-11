@@ -2816,7 +2816,7 @@ class Inventory(TimeStampedModel):
         database,
         - which are in the database but with the wrong quantity.
 
-        - return a 2-tuple
+        - return a tuple with the diff, the object name, total copies in the inv, total in stock.
 
         """
         d_stock = None
