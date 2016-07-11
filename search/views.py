@@ -814,6 +814,10 @@ def inventory_export(request, pk):
                 qtysold = 0
             rows.append((k['card'].title, qtysold))
 
+        # Sort quantities first, then by title.
+        rows = sorted(rows)
+        rows = sorted(rows, key = lambda it: it[1] > 0, reverse=True) # with quantities first
+
     elif report == 'listing':
         inv_cards = inv.inventorycards_set.all()
         header = (_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))
