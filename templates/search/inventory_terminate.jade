@@ -56,8 +56,10 @@ div(ng-controller="inventoryTerminateController")
          span.caret
        ul.dropdown-menu
          li: a(href="#", ng-click="export_list('bill')", title='{% trans "Download the bill of what was sold" %}) {% trans "Bill as pdf" %}
+         li: a(href="/inventories/{{'inv_id'|ng}}/export?format=csv&report=bill", title='{% trans "Download the bill of what was sold" %}) {% trans "List of sells" %} - csv
          li: a(href="#", ng-click="export_list('inv')", title='{% trans "Get the list of the inventory" %}) {% trans "Inventory list" %} - pdf
-         li: a(href="#", ng-click="export_list('csv_extended')", title="'{% trans "Get the list of the Inventory in csv (for LibreOffice/Excel)" %}) {% trans "Inventory list" %} - csv
+         li: a(href="/inventories/{{ 'inv_id' | ng}}/export?format=csv", title="'{% trans "Get the list of the Inventory in csv (for LibreOffice/Excel)" %}) {% trans "Inventory list" %} - csv
+         li: a(href="/inventories/{{ 'inv_id' | ng}}/export?format=csvsimple", title='{% trans "Get the list of the Inventory in csv, only isbn and quantities, for Dilicom" %}') {% trans "Inventory list (Dilicom)" %} - csv
 
 
      a(href="http://abelujo.cc/docs/inventories/", target="_blank"): button.btn.btn-default(href="http://abelujo.cc/docs/inventories/", title='{% trans "Read the documentation" %}')
