@@ -106,4 +106,6 @@ urlpatterns = patterns('',
         name="inventory_delete"),
     url(r'^inventories/(?P<pk>\d+)/terminate', 'search.views.inventory_terminate',
         name="inventory_terminate"),
+    url(r'^inventories/(?P<pk>\d+)/export', 'search.views.inventory_export',
+        name="inventory_export"),
 )

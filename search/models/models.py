@@ -481,6 +481,15 @@ class Card(TimeStampedModel):
         authors_repr = ", ".join([it.name for it in authors])
         return authors_repr
 
+    @property
+    def shelf_repr(self):
+        """Return the shelf name, or "".
+        """
+        if self.shelf:
+            return self.shelf.name
+
+        return ""
+
     def to_list(self):
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
@@ -2652,7 +2661,8 @@ class Inventory(TimeStampedModel):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
         return u"{}: {}".format(self.id, inv_obj.name)
 
-    def to_dict(self):
+    @property
+    def name(self):
         name = ""
         if self.place:
             name = self.place.name
@@ -2663,9 +2673,12 @@ class Inventory(TimeStampedModel):
         elif self.shelf:
             name = self.shelf.name
 
+        return name
+
+    def to_dict(self):
         ret = {
             "id": self.id,
-            "name": name,
+            "name": self.name,
             }
         return ret
 

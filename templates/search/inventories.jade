@@ -95,5 +95,11 @@ table.table.table-striped.table-hover
         a(href="{{ inv.id }}/delete")
           button.btn.btn-danger {% trans "Delete" %}
 
+        .btn-group
+          button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
+            span.caret
+          ul.dropdown-menu
+            li: a(href="{{ inv.id }}/export?format=csv") csv (LibreOffice)
+
 
 {% endblock content %}

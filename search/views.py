@@ -785,6 +785,40 @@ def baskets_export(request):
 
     return response
 
+
+@login_required
+def inventory_export(request, pk):
+    """
+    """
+    response = HttpResponse()
+    template = get_template('pdftemplates/pdf-barcode.jade')
+    format = request.GET.get('format')
+    try:
+        inv = Inventory.objects.get(id=pk)
+    except Exception as e:
+        log.error(u"Error trying to export inventory of pk {}: {}".format(pk, e))
+
+    if format in ['csv']:
+        inv_cards = inv.inventorycards_set.all()
+        header = (_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))
+        rows = [
+            (ic.card.title,
+             ic.card.authors_repr,
+             ic.card.pubs_repr,
+             ic.card.shelf.name if ic.card.shelf else "",
+             ic.card.price,
+             ic.quantity)
+            for ic in inv_cards]
+        pseudo_buffer = Echo()
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        content = writer.writerow(header)
+        content += "\n".join([writer.writerow(row) for row in rows])
+
+        response = StreamingHttpResponse(content, content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(inv.name)
+
+    return response
+
 @login_required
 def inventory_list(request):
     """Display all the ongoing inventories.
