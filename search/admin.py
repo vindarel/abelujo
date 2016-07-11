@@ -76,7 +76,7 @@ class InventoryAdmin(admin.ModelAdmin):
     class Meta:
         model = Inventory
 
-    pass
+    list_display = ("name", "created", "closed")
 
 class PublisherAdmin(admin.ModelAdmin):
     class Meta:
