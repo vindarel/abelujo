@@ -51,51 +51,6 @@ utils.factory 'utils', ($http) ->
             .then (response) !->
                 alerts = response.data.msgs # unused
 
-        export_to: (ids_qties, layout, list_name, language) ->
-            """
-            - ids_qties: string of coma-separated integers
-            - layout: "simple": csv with isbn and quantity
-                "pdf": pdf with barcodes, titles, quantity, price, and totals.
-                "pdf-nobarcode"
-            - list_name: str
-
-            Return a list of alerts.
-            """
-
-            params = do
-                # ids and quantities separated by comas
-                "ids_qties": ids_qties
-                "layout": layout
-                "list_name": list_name
-
-            $http.post "/#{language}/baskets/export/", params
-            .then (response) ->
-                # We get raw data. We must open it as a file with JS.
-                a = document.createElement('a')
-                a.target      = '_blank'
-                if layout in ['simple', 'csv', 'csv_extended']
-                    a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
-                    a.download    = "#{list_name}.csv"
-
-                else if layout in ['pdf', 'pdf-nobarcode']
-                    a.href  = 'data:attachment/pdf,' +  encodeURIComponent(response.data)
-                    a.download    = "#{list_name}.pdf"
-
-                else if layout == 'txt'
-                    a.href = 'data:attachment/txt,' + encodeURIComponent(response.data)
-                    a.download    = "#{list_name}.txt"
-
-                document.body.appendChild(a)
-                a.click()
-                []
-
-            , (response) ->
-                alerts = []
-                alerts = alerts.concat do
-                    level: "error"
-                    message: gettext "We couldn't produce the file, there were an internal error. Sorry !"
-                alerts
-
         # next step: $resource
         distributors: ->
           $http.get "/api/distributors"

@@ -46,7 +46,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
      button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
        span.caret
      ul.dropdown-menu
-       li: a(href="#", ng-click="export_to('simple')") csv - {% trans "simple: isbn and quantity" %}
+       li: a(href="/baskets/1/export?format=csv&report=simplelisting") {% trans "isbn and quantity (Dilicom)" %} - csv
 
     .col-md-6
     .col-md-5

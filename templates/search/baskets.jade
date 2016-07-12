@@ -76,9 +76,11 @@ div(ng-cloak, ng-controller="basketsController")
        span.caret
 
      ul.dropdown-menu
-       li: a(href="#", ng-click="export_csv('txt')") txt
-       li: a(href="#", ng-click="export_csv('simple')") csv - {% trans "simple: isbn and quantity" %}
-       li: a(href="#", ng-click="export_csv('pdf')") pdf - {% trans "with barcodes" %}
+       li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") txt
+
+       li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=csv&report=simplelisting") {% trans "isbn and quantity (Dilicom)" %} - csv TEST
+
+       li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing") {% trans "List, with barcodes" %} - pdf
 
     .btn-group
        button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')

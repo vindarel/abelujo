@@ -81,7 +81,7 @@ urlpatterns = patterns('',
     url(r'^commands/', 'search.views.basket_auto_command',
         name="basket_auto_command"),
 
-    url(r'^baskets/export/$', 'search.views.baskets_export', name="baskets_export"),
+    url(r'^baskets/(?P<pk>\d+)/export/$', 'search.views.basket_export', name="basket_export"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',
         login_required(TemplateView.as_view(template_name="search/inventory_view.jade"))),
     url(r'^baskets/$', 'search.views.baskets',

@@ -65,22 +65,6 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.super_total_price = ->
         utils.total_price $scope.cards
 
-    $scope.export_to = (layout) ->
-        """Export to the given format: simple (csv), etc
-        """
-        ids_qties = []
-        map ->
-            ids_qties.push "#{it.id}, #{it.threshold}"
-        , $scope.cards
-        $scope.isbns = $scope.cards
-        |> map (.isbn)
-
-        ids_qties = join ",", ids_qties
-        $scope.ids_qties = ids_qties
-
-        promise = utils.export_to ids_qties, "simple", "command", $scope.language
-        # $scope.alerts += alerts
-
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 

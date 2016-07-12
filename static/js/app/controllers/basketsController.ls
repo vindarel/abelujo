@@ -194,45 +194,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.get_total_copies = ->
         utils.total_copies $scope.copies
 
-    $scope.export_csv = (layout) !->
-        """Export the selected cards of the current list to csv.
-        Server call to generate it.
-        """
-        ids_qties = []
-        map ->
-            ids_qties.push "#{it.id}, #{it.basket_qty}"
-        , filter (.basket_qty > 0), $scope.copies
-
-        params = do
-            # ids and quantities separated by comas
-            "ids_qties": join ",", ids_qties
-            "layout": layout
-            "list_name": $scope.cur_basket.name
-
-        $http.post "/#{$scope.language}/baskets/export/", params
-        .then (response) !->
-            # We get raw data. We must open it as a file with JS.
-            a = document.createElement('a')
-            a.target      = '_blank'
-            if layout == 'simple'
-                a.href        = 'data:attachment/csv,' +  encodeURIComponent(response.data)
-                a.download    = "liste-#{$scope.cur_basket.name}.csv"
-
-            else if layout == 'pdf'
-                a.href  = 'data:attachment/pdf,' +  encodeURIComponent(response.data)
-                a.download    = "liste-#{$scope.cur_basket.name}.pdf"
-
-            else if layout == 'txt'
-                a.href = 'data:attachment/txt,' + encodeURIComponent(response.data)
-                a.download    = "liste-#{$scope.cur_basket.name}.txt"
-
-            document.body.appendChild(a)
-            a.click()
-
-        , (response) !->
-            $scope.alerts = $scope.alerts.concat do
-                level: "error"
-                message: gettext "We couldn't produce the file, there were an internal error. Sorry !"
 
     $scope.receive_command = !->
         # Get or create the inventory, redirect to that inventory page

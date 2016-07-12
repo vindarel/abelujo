@@ -1332,6 +1332,10 @@ class BasketCopies(models.Model):
 
         return card
 
+    @property
+    def quantity(self):
+        # should rename the arg
+        return self.nb
 
 class Basket(models.Model):
     """A basket is a set of copies that are put in it for later use. Its
