@@ -714,6 +714,8 @@ def _export_response(copies_set, report="", format="", inv=None, name=""):
     """
     response = HttpResponse()
     quantity_header = _("Quantity")
+    rows = None
+
     if report == 'bill':
         # The cards of the inventory alongside their quantities.
         if inv:
@@ -730,6 +732,9 @@ def _export_response(copies_set, report="", format="", inv=None, name=""):
             # Sort quantities first, then by title.
             rows = sorted(rows)
             rows = sorted(rows, key = lambda it: it[1] > 0, reverse=True) # with quantities first
+
+        else:
+            log.eror("Implementation error: if you want a bill, that's certainely from an inventory, but we don't have the 'inv' object.")
 
     elif report == 'listing':
         # inv_cards = inv.inventorycopies_set.all()
@@ -815,103 +820,19 @@ def _export_response(copies_set, report="", format="", inv=None, name=""):
 def inventory_export(request, pk):
     """
     """
-    response = HttpResponse()
-    quantity_header = _("Quantity")
-    format = request.GET.get('format')
     try:
         inv = Inventory.objects.get(id=pk)
     except Exception as e:
         log.error(u"Error trying to export inventory of pk {}: {}".format(pk, e))
 
-    # What type of report ? The full list (default) or the bill ? (sold cards)
+    copies_set = inv.inventorycopies_set.all()
+
     report = request.GET.get('report')
+    format = request.GET.get('format')
 
-
-    if report == 'bill':
-        # The cards of the inventory alongside their quantities.
-        header = (_("Title"), _("Quantity sold"))
-        diff = inv.diff()[0] # that should be cached XXX. A json row in the db ?
-        rows = []
-        for k in diff.itervalues():
-            if k.get('diff', 0) < 0:
-                qtysold = - k.get('diff')
-            else:
-                qtysold = 0
-            rows.append((k['card'], qtysold))
-
-        # Sort quantities first, then by title.
-        rows = sorted(rows)
-        rows = sorted(rows, key = lambda it: it[1] > 0, reverse=True) # with quantities first
-
-    elif report == 'listing':
-        inv_cards = inv.inventorycopies_set.all()
-        header = (_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))
-        rows = [
-            (ic.card.title,
-             ic.card.authors_repr,
-             ic.card.pubs_repr,
-             ic.card.shelf.name if ic.card.shelf else "",
-             ic.card.price,
-             ic.quantity)
-            for ic in inv_cards]
-        rows = sorted(rows)
-
-    elif report == 'simplelisting':
-        header = None
-        inv_cards = inv.inventorycopies_set.all()
-        rows = inv.inventorycopies_set.all()
-        rows = [
-            (ic.card.isbn,
-             ic.quantity)
-            for ic in rows]
-        rows = sorted(rows)
-
-    if format in ['csv']:
-        pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-        content = writer.writerow("")
-        if header:
-            content = writer.writerow(header)
-
-        if report in ['bill']:
-            rows = [(it[0].title, it[1]) for it in rows]
-        content += "".join([writer.writerow(row) for row in rows])
-
-        response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(inv.name)
-
-    elif format in ['pdf']:
-        with open("pdfexport.pdf", "w+b"):
-            date = datetime.date.today()
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(inv.name)
-
-            template = get_template('pdftemplates/pdf-barcode.jade')
-            if report == "listing":
-                cards_qties = [(it.card, it.quantity) for it in inv_cards]
-            elif report == "bill":
-                quantity_header = _("Quantity sold")
-                for it in rows:
-                    if not is_isbn(it[0].isbn):
-                        it[0].isbn = "0000000000000"
-
-                cards_qties = rows
-
-            total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
-            total_qty = sum([it[1] for it in cards_qties])
-            sourceHtml = template.render({'cards_qties': cards_qties,
-                                          'list_name': inv.name,
-                                          'total': total,
-                                          'total_qty': total_qty,
-                                          'barcode': format == 'pdf',
-                                          'quantity_header': quantity_header,
-                                          'date': date})
-
-            pisaStatus = pisa.CreatePDF(
-                    sourceHtml,
-                    # outsource,                # the HTML to convert
-                    # dest=resultFile)           # file handle to recieve result
-                    dest=response)
+    response = _export_response(copies_set, report=report, format=format,
+                                inv=inv,
+                                name=inv.name)
 
     return response
 
