@@ -2609,7 +2609,7 @@ class Alert(models.Model):
         for it in card.deposit_set.all():
             self.deposits.add(it)
 
-class InventoryCards(models.Model):
+class InventoryCopies(models.Model):
     """The list of cards of an inventory, plus other information:
     - the quantity of them
     """
@@ -2644,7 +2644,7 @@ class Inventory(TimeStampedModel):
         app_label = "search"
 
     #: List of cards and their quantities already "inventored".
-    copies = models.ManyToManyField(Card, through="InventoryCards", blank=True)
+    copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
     #: We can do the inventory of a shelf.
     shelf = models.ForeignKey("Shelf", blank=True, null=True)
     #: we can also do the inventory of a whole place.
@@ -2692,7 +2692,7 @@ class Inventory(TimeStampedModel):
         if type(nb) == type("str"):
             nb = int(nb)
         try:
-            inv_copies, created = self.inventorycards_set.get_or_create(card=copy)
+            inv_copies, created = self.inventorycopies_set.get_or_create(card=copy)
             if add:
                 inv_copies.quantity += nb
             else:
@@ -2710,7 +2710,7 @@ class Inventory(TimeStampedModel):
         - return: status (bool)
         """
         try:
-            inv_copies = self.inventorycards_set.get(card__id=card_id)
+            inv_copies = self.inventorycopies_set.get(card__id=card_id)
             inv_copies.delete()
 
         except Exception as e:
@@ -2722,7 +2722,7 @@ class Inventory(TimeStampedModel):
     def progress(self):
         """Return the percentage of progress (int < 100).
         """
-        done_qty = self.inventorycards_set.count()
+        done_qty = self.inventorycopies_set.count()
         orig_qty = self._orig_cards_qty()
 
         progress = 0
@@ -2738,7 +2738,7 @@ class Inventory(TimeStampedModel):
 
         - return: int
         """
-        return self.inventorycards_set.count() or 0
+        return self.inventorycopies_set.count() or 0
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original
@@ -2764,7 +2764,7 @@ class Inventory(TimeStampedModel):
         - list of copies not found te be searched for (and their quantities)
 
         """
-        copies = [it.to_dict() for it in self.inventorycards_set.all()]
+        copies = [it.to_dict() for it in self.inventorycopies_set.all()]
         total = len(copies)
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
@@ -2820,7 +2820,7 @@ class Inventory(TimeStampedModel):
 
         """
         d_stock = None
-        inv_cards_set = self.inventorycards_set.all()
+        inv_cards_set = self.inventorycopies_set.all()
         obj_name = ""
         if self.shelf:
             d_stock = self.shelf.cards_set()

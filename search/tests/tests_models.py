@@ -930,7 +930,7 @@ class TestInventory(TestCase):
     def test_add_copy(self):
         res = self.inv.add_copy(self.card, nb=2)
         self.assertTrue(res)
-        ic = self.inv.inventorycards_set.get(card_id=self.card.id)
+        ic = self.inv.inventorycopies_set.get(card_id=self.card.id)
         self.assertEqual(ic.quantity, 2)
 
     def test_add_pairs(self):

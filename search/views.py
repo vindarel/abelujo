@@ -819,7 +819,7 @@ def inventory_export(request, pk):
         rows = sorted(rows, key = lambda it: it[1] > 0, reverse=True) # with quantities first
 
     elif report == 'listing':
-        inv_cards = inv.inventorycards_set.all()
+        inv_cards = inv.inventorycopies_set.all()
         header = (_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))
         rows = [
             (ic.card.title,
@@ -833,8 +833,8 @@ def inventory_export(request, pk):
 
     elif report == 'simplelisting':
         header = None
-        inv_cards = inv.inventorycards_set.all()
-        rows = inv.inventorycards_set.all()
+        inv_cards = inv.inventorycopies_set.all()
+        rows = inv.inventorycopies_set.all()
         rows = [
             (ic.card.isbn,
              ic.quantity)
