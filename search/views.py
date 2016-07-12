@@ -704,116 +704,13 @@ def basket_export(request, pk):
 
     return response
 
-
-def baskets_export(request):
-    """Export as the required format: csv, pdf, pdf with barcode (todo),...
-
-    - POST parameter: str of coma-separated ints. They represent
-    tuples of a card id and its quantity. (use api.list_to_pairs and
-    api.list_from_coma_separated_ints to get a list of tuples back)
-
-    - layout: 'simple': only show isbns and quantities. 'complete':
-      with title, authors, publishers etc; 'pdf': pdf with barcodes and quantity.
-
-    Return: it returns raw data, either csv or pdf. The client side must handle its download.
-
-    """
-
-    response = HttpResponse()
-    params = request.body
-    try:
-        params = json.loads(params)
-        layout = params.get('layout')
-        ids_qties = params.get('ids_qties')
-        list_name = params.get('list_name')
-        tups = list_to_pairs(list_from_coma_separated_ints(ids_qties))
-        tups = filter(lambda it: it is not None, tups)
-    except Exception as e:
-        log.error("Error with body params while exporting to pdf: {}".format(e))
-        return response
-
-    try:
-        template = get_template('pdftemplates/pdf-barcode.jade')
-
-        cards_qties = [(Card.objects.get(id=tup[0]), tup[1]) for tup in tups]
-        cards_qties = sorted(cards_qties, key = lambda it: it[0].title)
-        isbns_qties = [(tup[0].isbn, tup[1]) for tup in cards_qties]
-        # Should warn about no isbn, also on client side.
-        # Booklets, newspapers or even books can be without isbn in a normal situation.
-        isbns_qties = filter(lambda it: it[0] is not None, isbns_qties)
-
-        if layout in ['simple', 'csv']:
-            pseudo_buffer = Echo()
-            writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-            content = [writer.writerow(row) for row in isbns_qties]
-            response = StreamingHttpResponse(content, content_type="text/csv")
-            response['Content-Disposition'] = u'attachment; filename="somefilename.csv"'
-
-        elif layout in ['csv_extended']:
-            header = [(_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))]
-            pseudo_buffer = Echo()
-            writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-            rows = header
-            rows += [(card.title,
-                      card.authors_repr,
-                      card.pubs_repr,
-                      card.shelf,
-                      card.price,
-                      quantity)
-                     for (card, quantity) in cards_qties]
-            content = [writer.writerow(row) for row in rows]
-            response = StreamingHttpResponse(content, content_type="text/csv")
-            response['Content-Disposition'] = u'attachment; filename="somefilename.csv"'
-
-        elif layout == 'txt':
-            rows = [ u"{} {}".format( truncate(card.title), qty) for (card, qty) in cards_qties]
-            content = "\n".join(rows)
-            response = HttpResponse(content, content_type="text/raw")
-
-        elif layout in ['pdf', 'pdf-nobarcode']:
-            # How to test that easily ?
-            with open("pdfexport.pdf", "w+b") as resultFile:
-
-                date = datetime.date.today()
-                response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = u'attachment; filename="somefilename.pdf"'
-
-                cards = [it[0] for it in cards_qties]
-                # the barcode generator doesn't accept None isbn.
-                for card in cards:
-                    if not is_isbn(card.isbn):
-                        # XXX should return a message
-                        card.isbn = "0000000000000"
-
-                total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
-                total_qty = sum([it[1] for it in cards_qties])
-                sourceHtml = template.render({'cards_qties': cards_qties,
-                                              'list_name': list_name,
-                                              'total': total,
-                                              'total_qty': total_qty,
-                                              'barcode': layout == 'pdf',
-                                              'date': date})
-                # convert to a pdf file
-                # pisaStatus = pisa.CreatePDF(
-                        # sourceHtml,                # the HTML to convert
-                        # dest=response)           # file handle to recieve result
-
-                pisaStatus = pisa.CreatePDF(
-                        sourceHtml,
-                        # outsource,                # the HTML to convert
-                        # dest=resultFile)           # file handle to recieve result
-                        dest=response)
-
-
-    except Exception as e:
-        log.error("Error while constructing {}: {}".format(layout, e))
-        response.status_code = 500
-
-    return response
-
-
 def _export_response(copies_set, report="", format="", inv=None, name=""):
-    """
+    """Build the response with the right data (a bill ? just a list ?).
+
+    - copies_set: list of objects, like basketcopies_set: has attributes card and quantity.
+    - inv: inventory object (necessary to get the diff and the sold cards).
+
+    Return: formatted HttpResponse
     """
     response = HttpResponse()
     quantity_header = _("Quantity")
