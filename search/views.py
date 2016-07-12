@@ -791,7 +791,7 @@ def inventory_export(request, pk):
     """
     """
     response = HttpResponse()
-    template = get_template('pdftemplates/pdf-barcode.jade')
+    quantity_header = _("Quantity")
     format = request.GET.get('format')
     try:
         inv = Inventory.objects.get(id=pk)
@@ -812,7 +812,7 @@ def inventory_export(request, pk):
                 qtysold = - k.get('diff')
             else:
                 qtysold = 0
-            rows.append((k['card'].title, qtysold))
+            rows.append((k['card'], qtysold))
 
         # Sort quantities first, then by title.
         rows = sorted(rows)
@@ -847,10 +847,46 @@ def inventory_export(request, pk):
         content = writer.writerow("")
         if header:
             content = writer.writerow(header)
+
+        if report in ['bill']:
+            rows = [(it[0].title, it[1]) for it in rows]
         content += "".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")
         response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(inv.name)
+
+    elif format in ['pdf']:
+        with open("pdfexport.pdf", "w+b"):
+            date = datetime.date.today()
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(inv.name)
+
+            template = get_template('pdftemplates/pdf-barcode.jade')
+            if report == "listing":
+                cards_qties = [(it.card, it.quantity) for it in inv_cards]
+            elif report == "bill":
+                quantity_header = _("Quantity sold")
+                for it in rows:
+                    if not is_isbn(it[0].isbn):
+                        it[0].isbn = "0000000000000"
+
+                cards_qties = rows
+
+            total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
+            total_qty = sum([it[1] for it in cards_qties])
+            sourceHtml = template.render({'cards_qties': cards_qties,
+                                          'list_name': inv.name,
+                                          'total': total,
+                                          'total_qty': total_qty,
+                                          'barcode': format == 'pdf',
+                                          'quantity_header': quantity_header,
+                                          'date': date})
+
+            pisaStatus = pisa.CreatePDF(
+                    sourceHtml,
+                    # outsource,                # the HTML to convert
+                    # dest=resultFile)           # file handle to recieve result
+                    dest=response)
 
     return response
 
