@@ -459,6 +459,37 @@ class Card(TimeStampedModel):
         else:
             return []
 
+    def has_publisher(self, pub):
+        """This card has the following publisher ? (id)
+
+        Returns the publisher or a void list.
+        """
+        try:
+            return self.publishers.filter(id=pub)
+        except Exception as e:
+            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, pud, e))
+            return None
+
+    def has_distributor(self, dist):
+        """
+        - dist: int (id)
+        """
+        if not self.distributor:
+            return False
+
+        try:
+            return self.distributor.id == dist
+        except Exception as e:
+            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, dist, e))
+            return None
+
+    def has_no_distributor(self):
+        """
+        """
+        if not self.distributor:
+            return True
+        return False
+
     def to_dict(self):
         return self.to_list()
 

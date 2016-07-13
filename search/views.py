@@ -682,6 +682,11 @@ def baskets(request):
 def basket_export(request, pk):
     """Export the given basket to txt, csv or pdf, with or without barcodes.
 
+    Possible GET parameters:
+    - report: bill, listing, simplelisting
+    - format: txt, pdf, csv
+    - distributor_id: a distributor id (see To Command basket)
+
     Return: an HttpResponse with the right content type.
     """
     response = HttpResponse()
@@ -696,15 +701,20 @@ def basket_export(request, pk):
 
     report = request.GET.get('report')
     format = request.GET.get('format')
-
+    distributor_id = request.GET.get('distributor_id')
+    if distributor_id == 'undefined':
+        distributor_id = -1
+    elif distributor_id:
+        distributor_id = int(distributor_id)
 
     if copies_set and report and format:
         response = _export_response(copies_set, report=report, format=format,
+                                    distributor_id=distributor_id,
                                     name=basket.name)
 
     return response
 
-def _export_response(copies_set, report="", format="", inv=None, name=""):
+def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None):
     """Build the response with the right data (a bill ? just a list ?).
 
     - copies_set: list of objects, like basketcopies_set: has attributes card and quantity.
@@ -715,6 +725,13 @@ def _export_response(copies_set, report="", format="", inv=None, name=""):
     response = HttpResponse()
     quantity_header = _("Quantity")
     rows = None
+
+    if distributor_id == -1:
+        # get the ones without dist
+        copies_set = filter(lambda it: it.card.has_no_distributor(), copies_set)
+
+    elif distributor_id is not None and distributor_id not in ["", u""]:
+        copies_set = filter(lambda it: it.card.has_distributor(distributor_id), copies_set)
 
     if report == 'bill':
         # The cards of the inventory alongside their quantities.
@@ -766,11 +783,11 @@ def _export_response(copies_set, report="", format="", inv=None, name=""):
         pseudo_buffer = Echo()
         writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
         content = writer.writerow("")
-        if header:
-            rows.insert(0, header)
 
         if report in ['bill']:
             rows = [(it[0].title, it[1]) for it in rows]
+        if header:
+            rows.insert(0, header)
         content = "".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")

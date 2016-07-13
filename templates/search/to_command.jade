@@ -48,7 +48,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
      ul.dropdown-menu
        li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-       li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity (Dilicom)" %} - csv
+       li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
     .col-md-6
        a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
@@ -63,7 +63,15 @@ div(ng-cloak, ng-controller="basketToCommandController")
            h4.col-md-6 {{ 'grouped_dist[pub_id][0].name'|ng}}  
             a(href="mailto:{{'grouped_dist[pub_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[pub_id]' | ng }}", ng-click="get_body(pub_id)")
               i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[pub_id][0].email' | ng}} {% trans ' with your desktop mail client' %}")
-           .col-md-6
+
+            div.btn-group
+              button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+                 span.caret
+               ul.dropdown-menu
+                 li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'pub_id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+
+                 li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'pub_id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+
 
         table.table.table-condensed.table-striped
             thead
