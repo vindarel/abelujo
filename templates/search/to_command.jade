@@ -57,20 +57,20 @@ div(ng-cloak, ng-controller="basketToCommandController")
     .col-md-5
       div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
 
-  div(ng-repeat="(pub_id, cards) in sorted_cards")
+  div(ng-repeat="(dist_id, cards) in sorted_cards")
         span
           .row
-           h4.col-md-6 {{ 'grouped_dist[pub_id][0].name'|ng}}  
-            a(href="mailto:{{'grouped_dist[pub_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[pub_id]' | ng }}", ng-click="get_body(pub_id)")
-              i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[pub_id][0].email' | ng}} {% trans ' with your desktop mail client' %}")
+           h4.col-md-6 {{ 'grouped_dist[dist_id][0].name'|ng}}  
+            a(href="mailto:{{'grouped_dist[dist_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_id]' | ng }}", ng-click="get_body(dist_id)")
+              i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_id][0].email' | ng}} {% trans ' with your desktop mail client' %}")
 
             div.btn-group
               button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
                  span.caret
                ul.dropdown-menu
-                 li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'pub_id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+                 li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'dist_id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-                 li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'pub_id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+                 li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'dist_id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
 
         table.table.table-condensed.table-striped
@@ -87,14 +87,14 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 td.col-md-1
                   input.my-number-input(type="number", min=0, max=99,
                     ng-model="card.basket_qty"
-                    ng-change="save_quantity(pub_id, $index)")
-                  i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(pub_id, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
+                    ng-change="save_quantity(dist_id, $index)")
+                  i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_id, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
 
               tr
                 td.col-md-7 {% trans "Total" %}
-                td.col-md-1 {{ 'get_total_price(pub_id)' |ng}}  €
+                td.col-md-1 {{ 'get_total_price(dist_id)' |ng}}  €
                 td.col-md-1
-                td.col-md-1 {{'get_total_copies(pub_id)'|ng}}
+                td.col-md-1 {{'get_total_copies(dist_id)'|ng}}
 
   // we'll use the modal shortly !
   script(type="text/ng-template", id="commandModal.html")
@@ -103,8 +103,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
       div {% trans "The cards are grouped by distributor. Please check the list and confirm." %}
 
     div.modal-body
-      div(ng-repeat="(pub_id, cards) in sorted_cards")
-        h4 pub: {{ 'pub_id'|ng}}
+      div(ng-repeat="(dist_id, cards) in sorted_cards")
+        h4 pub: {{ 'dist_id'|ng}}
         div(ng-repeat="card in cards")
           div {{'card.title'|ng}}
 
