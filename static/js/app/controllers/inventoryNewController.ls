@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', 'hotkeys', ($http, $scope, $timeout, utils, $filter, $window, hotkeys) !->
+angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', 'hotkeys', '$log', ($http, $scope, $timeout, utils, $filter, $window, hotkeys, $log) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines, reverse, join} = require 'prelude-ls'
+    {sum, map, filter, lines, reverse, join, reject} = require 'prelude-ls'
 
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
@@ -35,6 +35,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # Boolean to show or hide all the cards (hide by default)
     $scope.showAll = false  # toggled by the checkbox itself.
     $scope.cards_to_show = []
+    # Total value
+    $scope.total_value = 0
 
     $scope.tmpcard = undefined
     # A list of already selected cards' ids
@@ -88,7 +90,16 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
             $scope.cur_inv = $scope.state.inv_name
 
+            $scope.total_value = $scope.update_total_value!
+
             return
+
+    $scope.update_total_value = ->
+        """Total cost of the cards in this inventory.
+        """
+        $scope.all
+        |> map ( -> it.price * it.quantity)
+        |> sum
 
     $scope.updateProgress = (current, missing) !->
         if (current + missing != 0)
@@ -120,6 +131,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             it.repr == card_repr.repr
         $scope.tmpcard = $scope.tmpcard[0].item
 
+        # TODO: get rid of underscore js
         if not _.contains $scope.selected_ids, $scope.tmpcard.id
             $scope.cards_selected.push $scope.tmpcard
             $scope.all.push $scope.tmpcard
@@ -138,6 +150,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
         $scope.copy_selected = undefined
         $scope.setCardsToShow() # needed for init
+        $scope.total_value += $scope.tmpcard.price * $scope.tmpcard.quantity
 
         $scope.save()
 
@@ -161,6 +174,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.total_missing += 1
             $scope.total_copies -= 1
             $scope.updateProgress $scope.total_copies, $scope.total_missing
+            $scope.total_value -= card.prce * card.quantity
 
     $scope.updateCard = (index) !->
         """
@@ -170,11 +184,19 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             "ids_qties": "#{card.id},#{card.quantity};"
         $http.post "/api/inventories/#{$scope.inv_id}/update/", params
         .then (response) !->
-            $scope.cards_to_show.splice index_to_rm, 1
             # Update the progress bar.
             $scope.total_missing -= 1
             $scope.total_copies += 1
             $scope.updateProgress $scope.total_copies, $scope.total_missing
+
+            # update the total price. Since we listen for an ng-change
+            # event, we don't know if we add or sub, so remove and add
+            # again this card from the list.
+            $log.info $scope.all
+            $scope.all = $scope.all
+            |> reject (.id == card.id)
+            $scope.all.push card
+            $scope.total_value = $scope.update_total_value!
 
     $scope.save = ->
         """Send the new copies and quantities to be saved.
