@@ -65,7 +65,7 @@ div(ng-controller="inventoryNewController")
             div
               ul
                 li {% trans "Total value" %}: {{ 'total_value' | ng }} €
-                li {% trans "It remains" %} {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
+                li(ng-show="total_missing >= 0") {% trans "It remains" %} {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
                 li {% trans "You did "%} {{ 'progress_current' | ng }} %.
                   div.progress
                     div.progress-bar.progress-bar-info(role="progress-bar"
