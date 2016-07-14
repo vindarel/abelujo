@@ -65,6 +65,7 @@ table.table.table-striped.table-hover
     th {% trans "Inventory of..." %}
     th {% trans "Progress" %}
     th {% trans "Number of copies" %}
+    th {% trans "Value" %}
     th
 
   tbody
@@ -83,11 +84,11 @@ table.table.table-striped.table-hover
             if inv.publisher
               td {{ inv.publisher.name }}
 
-      td
-        div {{ inv.progress }} %
+      td {{ inv.progress }} %
 
-      td
-        div {{ inv.quantity }}
+      td {{ inv.quantity }}
+
+      td(title='{% trans "Value of all the copies in this inventory" %}') {{ inv.value }} €
 
       td
         a(href="{{ inv.id }}")

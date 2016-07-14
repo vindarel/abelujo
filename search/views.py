@@ -855,14 +855,6 @@ def inventory_export(request, pk):
     return response
 
 @login_required
-def inventory_list(request):
-    """Display all the ongoing inventories.
-
-    An inventory can happen for a place or for a shelf.
-    """
-    pass
-
-@login_required
 def inventories(request, pk):
     template = "search/inventory_view.jade"
     if request.method == "GET":

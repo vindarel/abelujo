@@ -845,7 +845,7 @@ def inventories(request, **kwargs):
     return JsonResponse(to_ret)
 
 def inventories_update(request, **kwargs):
-    """Add copies and their quantities.
+    """Update copies and their quantities.
 
     - pk in url: id of inventory
     - ids_qties in request.body: cards ids and their quantities

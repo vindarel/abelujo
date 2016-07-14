@@ -2775,6 +2775,11 @@ class Inventory(TimeStampedModel):
         """
         return self.inventorycopies_set.count() or 0
 
+    def value(self):
+        """Total value.
+        """
+        return sum([it.card.price * it.quantity for it in self.inventorycopies_set.all()])
+
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original
         shelf, place, etc.
