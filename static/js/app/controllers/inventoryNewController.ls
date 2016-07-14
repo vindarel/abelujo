@@ -174,7 +174,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.total_missing += 1
             $scope.total_copies -= 1
             $scope.updateProgress $scope.total_copies, $scope.total_missing
-            $scope.total_value -= card.prce * card.quantity
+            $scope.total_value -= card.price * card.quantity
 
     $scope.updateCard = (index) !->
         """
