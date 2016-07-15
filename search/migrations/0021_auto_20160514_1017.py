@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='inventory',
             name='copies',
-            field=models.ManyToManyField(to='search.Card', through='search.InventoryCards', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.InventoryCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='sell',

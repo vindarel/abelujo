@@ -230,7 +230,7 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='InventoryCards',
+            name='InventoryCopies',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=1)),
@@ -327,7 +327,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='inventory',
             name='copies',
-            field=models.ManyToManyField(to='search.Card', null=True, through='search.InventoryCards', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.InventoryCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
