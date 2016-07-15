@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 21:05+0000\n"
-"PO-Revision-Date: 2016-07-12 23:09+0200\n"
+"POT-Creation-Date: 2016-07-15 10:32+0000\n"
+"PO-Revision-Date: 2016-07-15 12:34+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -41,7 +41,7 @@ msgstr "Catalan"
 msgid "Woops, we can not create this card. This is a bug !"
 msgstr "Oups, noun n'avons pas pu créer cette notice. C'est un bug !"
 
-#: search/models/api.py:394 search/models/models.py:2458
+#: search/models/api.py:394 search/models/models.py:2489
 msgid "Sell successfull."
 msgstr "La vente a été réalisée avec succès."
 
@@ -83,11 +83,11 @@ msgstr "Inventaire sauvegardé. Il faut s'y remettre !"
 msgid "Internal error. We couldn't update the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu sauvegarder l'inventaire"
 
-#: search/models/models.py:396 search/models/models.py:1945
+#: search/models/models.py:396 search/models/models.py:1976
 msgid "none"
 msgstr "aucun"
 
-#: search/models/models.py:774
+#: search/models/models.py:805
 msgid ""
 "We can not undo the sell of card {}:                 it is not associated to "
 "any place. This shouldn't happen."
@@ -95,52 +95,52 @@ msgstr ""
 "Nous n'avons pas pu annuler la vente de la notice {} car elle n'est associée "
 "à aucun lieu. Cela ne devrait pas arriver, c'est donc un bug."
 
-#: search/models/models.py:886
+#: search/models/models.py:917
 msgid "The card was created successfully."
 msgstr "La notice a été créée avec succès."
 
-#: search/models/models.py:887
+#: search/models/models.py:918
 msgid "This card already exists."
 msgstr "La notice existe déjà."
 
-#: search/models/models.py:1395
+#: search/models/models.py:1426
 msgid "Please provide the name of the new basket"
 msgstr "Veuillez spécifier le nom de la nouvelle liste"
 
-#: search/models/models.py:1403
+#: search/models/models.py:1434
 msgid "New basket created"
 msgstr "La liste a été créée"
 
-#: search/models/models.py:1407
+#: search/models/models.py:1438
 msgid "We could not create a new basket. This is an internal error."
 msgstr "Nous n'avons pas pu créer de nouvelle liste. Erreur interne."
 
-#: search/models/models.py:1442
+#: search/models/models.py:1473
 msgid "The cards were successfully added to the basket '{}'"
 msgstr "Les notices ont été ajoutées au dépôt."
 
-#: search/models/models.py:1454
+#: search/models/models.py:1485
 msgid "The card was successfully removed from the basket"
 msgstr "La notice a été enlevée de la liste."
 
-#: search/models/models.py:1459
+#: search/models/models.py:1490
 msgid "Card not found"
 msgstr "Notice non trouvée"
 
-#: search/models/models.py:1464
+#: search/models/models.py:1495
 msgid ""
 "Could not remove the card from the command basket. This is an internal error."
 msgstr "Nous n'avons pas pu enlever la notice du panier à commander."
 
-#: search/models/models.py:1694
+#: search/models/models.py:1725
 msgid "An error occured while adding a card to the deposit state."
 msgstr "Erreur en ajoutant une notice à l'état de dépôt"
 
-#: search/models/models.py:1706
+#: search/models/models.py:1737
 msgid "This deposit state is closed ! We won't update it, sorry."
 msgstr "Cet état de dépôt est cloturé, nous ne pouvons pas le mettre à jour."
 
-#: search/models/models.py:1727 search/models/models.py:2021
+#: search/models/models.py:1758 search/models/models.py:2052
 msgid ""
 "Wooops, an error occured while adding a card to the deposit. That shouldn't "
 "happen !"
@@ -148,17 +148,17 @@ msgstr ""
 "Ouuups, une erreur est survenue en ajoutant une notice au dépôt. Ceci ne "
 "devrait pas arriver !"
 
-#: search/models/models.py:1798
+#: search/models/models.py:1829
 msgid "The deposit state can not be closed. There are conflicting sells."
 msgstr ""
 "L'état de dépôt ne peut pas être enregistré. Il y a des ventes "
 "conflictuelles."
 
-#: search/models/models.py:2084
+#: search/models/models.py:2115
 msgid "The deposit was successfully created."
 msgstr "Le dépôt a été créé avec succès."
 
-#: search/models/models.py:2152
+#: search/models/models.py:2183
 msgid ""
 "Hey oh, a deposit state for this deposit already exists.             Please "
 "close it before opening a new one."
@@ -166,19 +166,19 @@ msgstr ""
 "Eh, un état de dépôt pour ce dépôt existe déjà. Il vous faut le fermer avant "
 "d'en ouvrir un nouveau."
 
-#: search/models/models.py:2186
+#: search/models/models.py:2217
 msgid "No cards were sold since the last deposit state."
 msgstr "Aucune notice n'a été vendue depuis le dernier état de dépôt."
 
-#: search/models/models.py:2449
+#: search/models/models.py:2480
 msgid "Warning: we couldn't sell {}."
 msgstr "Attention: la vente de {} a échoué."
 
-#: search/models/models.py:2523
+#: search/models/models.py:2554
 msgid "Sell {} canceled with success."
 msgstr "La vente {} a été annulée avec succès"
 
-#: search/models/models.py:3018
+#: search/models/models.py:3054
 msgid "next appointments"
 msgstr "prochaines échéances"
 
@@ -190,7 +190,7 @@ msgstr "Tous"
 msgid "Distributors"
 msgstr "Diffuseurs"
 
-#: search/views.py:94 search/views.py:741 templates/search/card_edit.jade:92
+#: search/views.py:94 search/views.py:759 templates/search/card_edit.jade:92
 #: templates/search/card_show.jade:52 templates/search/collection.jade:117
 #: templates/search/history.jade:55 templates/search/searchresults.jade:92
 msgid "Publishers"
@@ -209,11 +209,11 @@ msgstr "Paiement"
 msgid "Bill"
 msgstr "Facture"
 
-#: search/views.py:326 search/views.py:716 search/views.py:741
+#: search/views.py:326 search/views.py:727 search/views.py:759
 #: templates/search/collection.jade:119
 #: templates/search/deposits_create.jade:92
-#: templates/search/inventory_view.jade:81
-#: templates/search/inventory_view.jade:98
+#: templates/search/inventory_view.jade:88
+#: templates/search/inventory_view.jade:114
 #: templates/search/sell_create.jade:141 templates/search/sell_details.jade:31
 msgid "Quantity"
 msgstr "Quantité"
@@ -248,7 +248,7 @@ msgstr ""
 "Ouups, il y a eu une erreur :S nous ne pouvons pas cloturer cet état de "
 "dépôt."
 
-#: search/views.py:722 search/views.py:741
+#: search/views.py:740 search/views.py:759
 #: templates/pdftemplates/pdf-barcode.jade:35 templates/search/alerts.jade:33
 #: templates/search/baskets.jade:124 templates/search/card_edit.jade:42
 #: templates/search/collection.jade:114 templates/search/dashboard.jade:80
@@ -257,32 +257,33 @@ msgstr ""
 #: templates/search/history_sells.jade:47
 #: templates/search/history_sells.jade:76
 #: templates/search/inventory_terminate.jade:83
-#: templates/search/inventory_view.jade:79
+#: templates/search/inventory_view.jade:85
 #: templates/search/searchresults.jade:90
-#: templates/search/sell_details.jade:30 templates/search/to_command.jade:65
+#: templates/search/sell_details.jade:30 templates/search/to_command.jade:78
 msgid "Title"
 msgstr "Titre"
 
-#: search/views.py:722 search/views.py:794 templates/search/dashboard.jade:81
+#: search/views.py:740 search/views.py:813 templates/search/dashboard.jade:81
 #: templates/search/history_sells.jade:77
 msgid "Quantity sold"
 msgstr "Quantité vendue"
 
-#: search/views.py:741 templates/search/card_edit.jade:74
+#: search/views.py:759 templates/search/card_edit.jade:74
 #: templates/search/collection.jade:116 templates/search/searchresults.jade:91
 msgid "Authors"
 msgstr "Auteurs"
 
-#: search/views.py:741 templates/search/card_edit.jade:54
+#: search/views.py:759 templates/search/card_edit.jade:54
 #: templates/search/card_show.jade:43 templates/search/collection.jade:85
 #: templates/search/collection.jade:118 templates/search/dashboard.jade:95
 msgid "Shelf"
 msgstr "Rayon"
 
-#: search/views.py:741 templates/pdftemplates/pdf-barcode.jade:36
+#: search/views.py:759 templates/pdftemplates/pdf-barcode.jade:36
 #: templates/search/baskets.jade:128 templates/search/collection.jade:115
+#: templates/search/inventory_view.jade:87
 #: templates/search/searchresults.jade:93
-#: templates/search/sell_create.jade:122 templates/search/to_command.jade:66
+#: templates/search/sell_create.jade:122 templates/search/to_command.jade:79
 msgid "Price"
 msgstr "Prix"
 
@@ -362,7 +363,7 @@ msgstr "Dépôts"
 msgid "Baskets"
 msgstr "Listes"
 
-#: templates/base.jade:90 templates/search/to_command.jade:68
+#: templates/base.jade:90 templates/search/to_command.jade:81
 msgid "To command"
 msgstr "A commander"
 
@@ -382,7 +383,8 @@ msgstr "page"
 
 #: templates/pdftemplates/pdf-barcode.jade:54
 #: templates/search/baskets.jade:139 templates/search/deposits.jade:83
-#: templates/search/to_command.jade:53 templates/search/to_command.jade:81
+#: templates/search/inventory_view.jade:93 templates/search/to_command.jade:58
+#: templates/search/to_command.jade:94
 msgid "Total"
 msgstr "Total"
 
@@ -438,7 +440,7 @@ msgstr "Action"
 msgid "Mark all the cards to command"
 msgstr "Tout marquer à commander"
 
-#: templates/search/baskets.jade:68 templates/search/to_command.jade:98
+#: templates/search/baskets.jade:68 templates/search/to_command.jade:111
 msgid "Command…"
 msgstr "Passer commande…"
 
@@ -472,17 +474,17 @@ msgstr "Supprimer cette liste"
 
 #: templates/search/baskets.jade:75
 #: templates/search/inventory_terminate.jade:55
-#: templates/search/to_command.jade:46
+#: templates/search/to_command.jade:46 templates/search/to_command.jade:68
 msgid "Export the list to the required format"
 msgstr "Exporter la liste au format requis"
 
-#: templates/search/baskets.jade:75 templates/search/inventories.jade:97
+#: templates/search/baskets.jade:75 templates/search/inventories.jade:98
 #: templates/search/inventory_terminate.jade:55
-#: templates/search/to_command.jade:46
+#: templates/search/to_command.jade:46 templates/search/to_command.jade:68
 msgid "Export"
 msgstr "Exporter"
 
-#: templates/search/baskets.jade:81 templates/search/to_command.jade:49
+#: templates/search/baskets.jade:81
 #, fuzzy
 #| msgid "simple: isbn and quantity"
 msgid "isbn and quantity (Dilicom)"
@@ -504,16 +506,16 @@ msgstr "Afficher vos notes (n)"
 
 #: templates/search/baskets.jade:92
 #: templates/search/inventory_terminate.jade:69
-#: templates/search/inventory_view.jade:48
+#: templates/search/inventory_view.jade:56 templates/search/to_command.jade:54
 msgid "Read the documentation"
 msgstr "Voir la documentation"
 
-#: templates/search/baskets.jade:107 templates/search/inventory_view.jade:61
+#: templates/search/baskets.jade:107 templates/search/inventory_view.jade:42
 #: templates/search/sell_create.jade:83
 msgid "Use TAB to validate your choice, Enter to proceed."
 msgstr "Utilisez TAB pour valider la selection, Entrée pour finir la vente."
 
-#: templates/search/baskets.jade:109 templates/search/inventory_view.jade:63
+#: templates/search/baskets.jade:109 templates/search/inventory_view.jade:44
 #: templates/search/sell_create.jade:85
 msgid "Search any isbn, search by keywords in your stock"
 msgstr "Cherchez tout isbn ou par mots-clefs dans votre stock"
@@ -989,8 +991,8 @@ msgstr "Ajouter des exemplaires…"
 msgid "Delete this deposit"
 msgstr "Supprimer ce dépôt"
 
-#: templates/search/history.jade:38 templates/search/inventories.jade:100
-#: templates/search/inventories.jade:102
+#: templates/search/history.jade:38 templates/search/inventories.jade:101
+#: templates/search/inventories.jade:103
 msgid "Sells"
 msgstr "Ventes"
 
@@ -1018,7 +1020,7 @@ msgstr "Mouvement"
 msgid "Moved"
 msgstr "Déplacé"
 
-#: templates/search/history.jade:85 templates/search/to_command.jade:53
+#: templates/search/history.jade:85 templates/search/to_command.jade:58
 msgid "copies"
 msgstr "exemplaires"
 
@@ -1111,26 +1113,32 @@ msgstr "Progression"
 msgid "Number of copies"
 msgstr "Nombre d'exemplaires"
 
-#: templates/search/inventories.jade:94
+#: templates/search/inventories.jade:68
+msgid "Value"
+msgstr "Valeur"
+
+#: templates/search/inventories.jade:91
+msgid "Value of all the copies in this inventory"
+msgstr "Valeur de l'inventaire"
+
+#: templates/search/inventories.jade:95
 msgid "Continue"
 msgstr "Continuer"
 
-#: templates/search/inventories.jade:100
-#, fuzzy
-#| msgid "Get the list of the inventory"
+#: templates/search/inventories.jade:101
 msgid "Get the list of the cards sold with their quantity"
-msgstr "Récupérez la liste de l'inventaire"
+msgstr "Récupérez la liste des notices de l'inventaire avec leur quantité"
 
-#: templates/search/inventories.jade:104 templates/search/inventories.jade:106
+#: templates/search/inventories.jade:105 templates/search/inventories.jade:107
 msgid "Full list"
 msgstr "Liste de l'inventaire"
 
-#: templates/search/inventories.jade:108
+#: templates/search/inventories.jade:109
 #: templates/search/inventory_terminate.jade:66
 msgid "isbn and quantities (Dilicom)"
 msgstr "isbn et quantités (Dilicom)"
 
-#: templates/search/inventories.jade:111
+#: templates/search/inventories.jade:112
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1187,7 +1195,9 @@ msgstr "Récupérez la liste de l'inventaire en csv (pour LibreOffice)"
 #: templates/search/inventory_terminate.jade:66
 msgid ""
 "Get the list of the Inventory in csv, only isbn and quantities, for Dilicom"
-msgstr "Récupérez la liste de l'inventaire au format csv, avec seulement les colonnes isbn et quantité (pour Dilicom)"
+msgstr ""
+"Récupérez la liste de l'inventaire au format csv, avec seulement les "
+"colonnes isbn et quantité (pour Dilicom)"
 
 #: templates/search/inventory_terminate.jade:76
 #: templates/search/inventory_terminate.jade:85
@@ -1207,31 +1217,35 @@ msgstr "Qté initiale"
 msgid "Inventory of "
 msgstr "Inventaire de "
 
-#: templates/search/inventory_view.jade:33
-msgid "You did "
-msgstr "Vous avez fait"
-
-#: templates/search/inventory_view.jade:34
-msgid "It remains"
-msgstr "Il reste"
-
-#: templates/search/inventory_view.jade:34
-msgid "non-inventoried cards in the stock."
-msgstr "articles non inventoriés dans le stock."
-
-#: templates/search/inventory_view.jade:46
+#: templates/search/inventory_view.jade:53
 msgid "Analyse…"
 msgstr "Analyser…"
 
-#: templates/search/inventory_view.jade:73
+#: templates/search/inventory_view.jade:61
 msgid "Show all cards inventoried"
 msgstr "Montrer tous les titres déjà inventoriés"
 
-#: templates/search/inventory_view.jade:80
+#: templates/search/inventory_view.jade:67
+msgid "Total value"
+msgstr "Valeur totale"
+
+#: templates/search/inventory_view.jade:68
+msgid "It remains"
+msgstr "Il reste"
+
+#: templates/search/inventory_view.jade:68
+msgid "non-inventoried cards in the stock."
+msgstr "articles non inventoriés dans le stock."
+
+#: templates/search/inventory_view.jade:69
+msgid "You did "
+msgstr "Vous avez fait"
+
+#: templates/search/inventory_view.jade:86
 msgid "Author"
 msgstr "Auteur"
 
-#: templates/search/inventory_view.jade:93
+#: templates/search/inventory_view.jade:107
 #: templates/search/sell_create.jade:117
 msgid "There is a conflict with deposits."
 msgstr "Il y a un conflit de dépôts."
@@ -1336,35 +1350,53 @@ msgstr ""
 "contiendra une colonne isbn et une colonne quantité, ce qui le rend "
 "compatible avec l'interface client de Dilicom."
 
-#: templates/search/to_command.jade:59
+#: templates/search/to_command.jade:49 templates/search/to_command.jade:71
+msgid "Export the list of all cards to command in txt format."
+msgstr "Exporter la liste de toutes les notices à commander au format txt"
+
+#: templates/search/to_command.jade:49 templates/search/to_command.jade:71
+msgid "Listing"
+msgstr ""
+
+#: templates/search/to_command.jade:51 templates/search/to_command.jade:73
+msgid ""
+"Export the list of all cards to command in a csv, suitable for LibreOffice "
+"and to give to other services, like Dilicom."
+msgstr ""
+
+#: templates/search/to_command.jade:51 templates/search/to_command.jade:73
+msgid "isbn and quantity"
+msgstr "isbn et quantité"
+
+#: templates/search/to_command.jade:64
 msgid "New command"
 msgstr "Nouvelle commande"
 
-#: templates/search/to_command.jade:59
+#: templates/search/to_command.jade:64
 msgid "Hello"
 msgstr "Bonjour"
 
-#: templates/search/to_command.jade:60
+#: templates/search/to_command.jade:65
 msgid "Write to"
 msgstr "Écrire à"
 
-#: templates/search/to_command.jade:60
+#: templates/search/to_command.jade:65
 msgid " with your desktop mail client"
 msgstr "avec votre client mail préféré"
 
-#: templates/search/to_command.jade:67
+#: templates/search/to_command.jade:80
 msgid "Quantity left"
 msgstr "Quantité restante"
 
-#: templates/search/to_command.jade:78
+#: templates/search/to_command.jade:91
 msgid "Remove from list"
 msgstr "Enlever de la liste"
 
-#: templates/search/to_command.jade:89
+#: templates/search/to_command.jade:102
 msgid "Command"
 msgstr "Commander"
 
-#: templates/search/to_command.jade:90
+#: templates/search/to_command.jade:103
 msgid ""
 "The cards are grouped by distributor. Please check the list and confirm."
 msgstr ""
