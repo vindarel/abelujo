@@ -991,7 +991,7 @@ class TestInventory(TestCase):
         res = self.inv.add_copy(self.card2, nb=ADD2)
         res = self.inv.add_copy(self.card3, nb=ADD3)
         # Apply the inventory
-        res = self.inv.apply()
+        res, msgs = self.inv.apply()
         self.assertTrue(res)
         qty_after = self.place.quantities_total()
         self.assertEqual(qty_after, 1 + ADD2 + ADD3) # 1 is from setUp()

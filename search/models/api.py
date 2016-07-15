@@ -943,6 +943,12 @@ def inventory_diff(request, pk, **kwargs):
               'name': name}
     return JsonResponse(to_ret)
 
+def inventory_apply(request, pk, **kwargs):
+    """Apply this inv to the stock.
+    """
+    res, to_ret = Inventory.apply_inventory(pk)
+    return JsonResponse(to_ret, safe=False)
+
 def stats(request, **kwargs):
     """Return stats about the stock.
     """

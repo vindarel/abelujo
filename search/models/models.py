@@ -2970,10 +2970,18 @@ class Inventory(TimeStampedModel):
 
         return (status, msgs)
 
+    @staticmethod
+    def apply_inventory(pk):
+        inv = Inventory.objects.get(id=pk)
+        return inv.apply()
+
     def apply(self):
         """Apply this inventory to the stock. Changes each card's quantity of
         the needed place and closes the inventory.
         """
+        if self.applied or (self.closed is not None and self.closed):
+            return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]
+
         if self.place:
             place = self.place
         else:
@@ -2991,13 +2999,13 @@ class Inventory(TimeStampedModel):
 
         except Exception as e:
             log.error("Error while applying the inventory {} to the default place: {}".format(self.id, e))
-            return False
+            return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
         self.closed = timezone.now()
         self.applied = True
         self.save()
 
-        return True # and messages ?
+        return True, [{"level": ALERT_SUCCESS, "message": _("The inventory got succesfully applied to your stock.")}]
 
 
 def shelf_age_sort_key(it):

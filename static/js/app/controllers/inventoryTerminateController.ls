@@ -91,7 +91,15 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
         Obj.keys obj .length
 
     $scope.validate = !->
-        alert gettext "Coming soon !"
+        sure = confirm "Are you sure to apply this inventory to your stock ?"
+        if sure
+            $http.post "/api/inventories/#{$scope.inv_id}/apply"
+            .then (response) !->
+                status = response.data.status
+                $scope.alerts = response.data
+
+    $scope.closeAlert = (index) ->
+        $scope.alerts.splice index, 1
 
     # Set focus:
     focus = !->

@@ -24,6 +24,15 @@
 {% load ngfilter %}
 
 div(ng-controller="inventoryTerminateController")
+  div
+    uib-alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
 
   h3 {% trans "Terminate the inventory of" %} {{ 'name' | ng}}
   .col-md-12
@@ -49,7 +58,7 @@ div(ng-controller="inventoryTerminateController")
        button.btn.btn-info.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
          span.caret
        ul.dropdown-menu
-         li: a(href="#", ng-click='validate()') {% trans "Validate the inventory" %}
+         li: a(href="#", ng-click='validate()', title='{% trans "Apply this inventory to your stock. This will modify your stock" %}') {% trans "Apply to your stock" %}
 
      .btn-group
        button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
@@ -66,7 +75,7 @@ div(ng-controller="inventoryTerminateController")
          li: a(href="/inventories/{{ 'inv_id' | ng}}/export?format=csv&report=simplelisting", title='{% trans "Get the list of the Inventory in csv, only isbn and quantities, for Dilicom" %}') {% trans "isbn and quantities (Dilicom)" %} - csv
 
 
-     a(href="http://abelujo.cc/docs/inventories/", target="_blank"): button.btn.btn-default(href="http://abelujo.cc/docs/inventories/", title='{% trans "Read the documentation" %}')
+     a(href="http://abelujo.cc/docs/inventories/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
        i.glyphicon.glyphicon-question-sign
 
    .col-md-9
