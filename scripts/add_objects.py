@@ -54,12 +54,12 @@ def run(*args):
     with open(src, "r") as f:
         data = yaml.load(f.read())
 
-    names = data.get('from_string').split(" ")
+    names = data.get('names')
     print "We got: "
     print names
     model = globals()[data['model']]
     print "Adding objects to {}...".format(data['model'])
     for name in tqdm(names):
-        add_object(model, name)
+        add_object(model, name.strip())
 
     print "Done."

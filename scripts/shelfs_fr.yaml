@@ -1,2 +1,26 @@
 model: Shelf
-from_string: "Histoire Economie Philosophie Sociologie Neurosciences Litterature Polar Education Ecologie Féminisme"
+
+names:
+
+    - Arts
+    -  Bande dessinée
+    -  Ecologie
+    -  Economie
+    -  Education
+    -  Féminisme
+    -  Histoire
+    -  Histoire des pays
+    -  Jeunesse
+    -  Littérature (autres)
+    -  Littérature Proche et Moyen-Orient
+    -  Littérature africaine et antillaise
+    -  Littérature anglo-saxonne
+    -  Littérature asiatique
+    -  Littérature d'Amérique Latine
+    -  Littérature d'Europe Continentale
+    -  Littérature francophone
+    -  Philosophie
+    -  Polar
+    -  Revues
+    -  Sciences
+    -  Sciences sociales
