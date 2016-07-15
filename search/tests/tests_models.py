@@ -103,6 +103,12 @@ class ShelfFactory(DjangoModelFactory):
 
     name = factory.Sequence(lambda n: "shelf test id %s" % (n + 1))
 
+class BasketFactory(DjangoModelFactory):
+    class Meta:
+        model = Basket
+
+    name = factory.Sequence(lambda n: "basket test id %s" % (n + 1))
+
 class CardFactory(DjangoModelFactory):
     class Meta:
         model = Card
@@ -973,3 +979,56 @@ class TestInventory(TestCase):
         # With to_dict:
         d_diff, objname, _, _ = self.inv.diff(to_dict=True)
         self.assertTrue(d_diff)
+
+    def test_apply(self):
+        # create a few cards, put some in the place and in our
+        # inventory.
+        self.card2 = CardFactory()
+        self.card3 = CardFactory()
+        self.place.add_copy(self.card2)
+        ADD2= 2
+        ADD3 = 1
+        res = self.inv.add_copy(self.card2, nb=ADD2)
+        res = self.inv.add_copy(self.card3, nb=ADD3)
+        # Apply the inventory
+        res = self.inv.apply()
+        self.assertTrue(res)
+        qty_after = self.place.quantities_total()
+        self.assertEqual(qty_after, 1 + ADD2 + ADD3) # 1 is from setUp()
+        self.assertTrue(self.inv.applied)
+        self.assertTrue(self.inv.closed)
+
+        # Can't apply it twice
+        res, msgs = self.inv.apply()
+        self.assertFalse(res)
+
+    def test_apply_place(self):
+        self.card2 = CardFactory()
+        self.card3 = CardFactory()
+        ADD2= 2
+        ADD3 = 1
+        # This inv is of anoter place
+        self.place2 = PlaceFactory()
+        self.inv.place = self.place2
+        self.inv.save()
+        self.inv.add_copy(self.card2, nb=ADD2)
+        self.inv.add_copy(self.card3, nb=ADD3)
+
+        self.inv.apply()
+
+        self.assertEqual(self.place2.quantities_total(), ADD2+ ADD3) # no +1 here, it was in self.place
+        self.assertEqual(self.place2.quantity_of(self.card3), ADD3)
+
+    def test_apply_basket(self):
+        # This inv is about a basket.
+        basket = BasketFactory()
+        self.inv.basket = basket
+        self.inv.save()
+
+        # we add a copy that is also in the place. Its quantity should add.
+        self.inv.add_copy(self.card, nb=1)
+        qty_before = self.place.quantities_total()
+
+        self.inv.apply()
+        self.assertEqual(self.place.quantities_total(), qty_before + 1)
+        self.assertEqual(self.place.quantity_of(self.card), 1 + 1)

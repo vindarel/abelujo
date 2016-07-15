@@ -1254,6 +1254,8 @@ class Place (models.Model):
         """Adds the given number of copies (1 by default) of the given
         car to this place.
 
+        If arg "add" is False, set the quantity instead of summing it.
+
         - card: a card object
         - nb: the number of copies to add (optional).
 
@@ -1306,6 +1308,8 @@ class Place (models.Model):
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?
+
+        - card: a card object.
         """
         try:
             place_copies = self.placecopies_set.filter(card__id=card.id).first()
@@ -2671,8 +2675,9 @@ class InventoryCopies(models.Model):
 
 class Inventory(TimeStampedModel):
     """An inventory can happen for a place or a shelf. Once we begin it we
-    can't manipulate the stock from there. We list the copies we have in
-    stock, and enter the missing ones.
+    can't manipulate the stock from there (at least in the specs, not
+    yet). We list the copies we have in stock, and enter the missing
+    ones.
     """
 
     class Meta:
@@ -2690,7 +2695,9 @@ class Inventory(TimeStampedModel):
     # with a newly received command, or a pack of cards returned.
     basket = models.ForeignKey("Basket", blank=True, null=True)
     #: Closed or still active ?
-    closed = models.BooleanField(default=False)
+    closed = models.DateTimeField(blank=True, null=True)
+    #: Did we apply it ?
+    applied = models.BooleanField(default=False)
 
     def __unicode__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
@@ -2962,6 +2969,36 @@ class Inventory(TimeStampedModel):
                 card.save()
 
         return (status, msgs)
+
+    def apply(self):
+        """Apply this inventory to the stock. Changes each card's quantity of
+        the needed place and closes the inventory.
+        """
+        if self.place:
+            place = self.place
+        else:
+            place = Place.objects.get(id=1) # default place. That could be improved.
+
+        # Shall we set the quantities of these cards in the stock or add them to the existing ?
+        add_qty = False
+        # A basket didn't touch the stock, so we want to add this basket to it.
+        if self.basket:
+            add_qty = True
+
+        try:
+            for card_qty in self.inventorycopies_set.all():
+                place.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)
+
+        except Exception as e:
+            log.error("Error while applying the inventory {} to the default place: {}".format(self.id, e))
+            return False
+
+        self.closed = timezone.now()
+        self.applied = True
+        self.save()
+
+        return True # and messages ?
+
 
 def shelf_age_sort_key(it):
     """
