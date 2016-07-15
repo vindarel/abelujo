@@ -34,7 +34,7 @@ db:
 
 dbback:
 	# back up the db, append a timestamp
-	cp db.db{,.`date +%Y%m%d-%H%M%S`}
+	bash -c "cp db.db{,.`date +%Y%m%d-%H%M%S`}"
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
