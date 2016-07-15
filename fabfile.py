@@ -243,6 +243,19 @@ def update(client):
             res = run("make update")
 
     check_online(client.name)
+def dbback(name=None):
+    """Copy the db file, append a timestamp.
+    """
+    if not name:
+        clients = sorted(CFG.clients)
+
+    else:
+        clients = [fabutils.select_client_cfg(name, CFG)]
+
+    for client in clients:
+        with cd(fabutils.wd(client, CFG)):
+            # append a timestamp
+            run("cp db.db{,.`date +%Y%m%d-%H%M%S`}")
 
 def updatelight(name=None):
     """Everything except package managers (apt, npm, pip).

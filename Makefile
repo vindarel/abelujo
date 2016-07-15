@@ -32,6 +32,10 @@ db:
 	@python manage.py syncdb --noinput           # populate the db for django
 	@python manage.py loaddata dbfixture.json    # set admin user (admin/admin)
 
+dbback:
+	# back up the db, append a timestamp
+	cp db.db{,.`date +%Y%m%d-%H%M%S`}
+
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
 install:  debian pip pip-submodule db npm gulp translation-compile
