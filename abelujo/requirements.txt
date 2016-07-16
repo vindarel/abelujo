@@ -36,7 +36,7 @@ distance                # between two strings.
 clize==3                # build command line arguments
 tqdm                    # progress bar
 termcolor               # colorful terminal output
-xhtml2pdf               # produce pdf from html templates. Installs
+xhtml2pdf==0.0.6        # produce pdf from html templates. Installs
                         # Reportlab, Pypdf2 and Pillow, i.e. big dependencies.
 isbnlib<4               # isbn utils
 unicodecsv<0.15         # at last unicode support to read and write csv files. Lacking in the standard library.
