@@ -70,8 +70,7 @@ templatetags, to load new translations,...
 """
 CLIENTS = "clients.yaml"
 
-CFG = fabutils.get_yaml_cfg(CLIENTS)
-CFG = addict.Dict(CFG)
+CFG = fabutils.get_yaml_cfg(CLIENTS); CFG = addict.Dict(CFG)
 VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
 #: Live reload on code change.
@@ -364,7 +363,8 @@ def create():
     # Write into the config file
     with open(CLIENTS, "a") as f:
         f.write(CLIENT_TMPL.format(name, venv, port))
-        execute(install(name))
+
+    install(name)
 
 def file_upload(name, *files):
     """
@@ -382,7 +382,7 @@ def file_upload(name, *files):
 def create_venv(venv):
     """Create a new venv.
     """
-    run('virtualenv ~/.virtulanves/{}'.format(venv))
+    run('virtualenv ~/.virtualenvs/{}'.format(venv))
 
 def install(name):
     """Clone and install Abelujo into the given client directory.
@@ -393,6 +393,8 @@ def install(name):
 
     run gunicorn with the right port.
     """
+    CFG = fabutils.get_yaml_cfg(CLIENTS)
+    CFG = addict.Dict(CFG)
     client = fabutils.select_client_cfg(name, CFG)
     client = addict.Dict(client)
     wd = os.path.join(CFG.home, CFG.dir, client.name)
@@ -406,9 +408,9 @@ def install(name):
             # - create a venv
             create_venv(client.venv)
             with prefix(VENV_ACTIVATE.format(client.venv)):
-                # TODO:
                 # - install,
                 run('make install')
+                # TODO:
             # - create super user
             # - populate DB with initial data if any
             # The csv files may be in nested directories.

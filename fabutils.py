@@ -34,7 +34,7 @@ def select_client_cfg(letters, cfg, quiet=False):
         return []
     if not cl:
         if not quiet:
-            print "Nobody found with '{}'".format(sys.argv[1])
+            print "No client found with '{}'".format(sys.argv[1])
             print "existing clients:"
             print [it.name for it in cfg.clients]
             exit(1)
