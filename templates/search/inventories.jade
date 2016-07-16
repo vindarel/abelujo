@@ -66,6 +66,7 @@ table.table.table-striped.table-hover
     th {% trans "Progress" %}
     th {% trans "Number of copies" %}
     th {% trans "Value" %}
+    th(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
     th
 
   tbody
@@ -89,6 +90,11 @@ table.table.table-striped.table-hover
       td {{ inv.quantity }}
 
       td(title='{% trans "Value of all the copies in this inventory" %}') {{ inv.value }} €
+
+      if inv.applied
+          td.i.glyphicon.glyphicon-ok(title="already applied")
+      else
+          td
 
       td
         a(href="{{ inv.id }}")
