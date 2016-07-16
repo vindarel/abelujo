@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import datetime
 import os
 import sys
 from subprocess import check_output
@@ -9,8 +10,6 @@ from subprocess import check_output
 import addict
 import requests
 import termcolor
-
-import fabutils
 from fabric.api import cd
 from fabric.api import env
 from fabric.api import execute
@@ -19,6 +18,8 @@ from fabric.api import put
 from fabric.api import run
 from fabric.api import sudo
 from fabric.contrib.files import exists
+
+import fabutils
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -98,6 +99,9 @@ CLIENT_TMPL = """
 
 #: pretty console output
 COL_WIDTH = 10
+
+#: Date format (appending to backed up files)
+DATE_FORMAT = "%Y%m%d-%H:%M:%S"
 
 # Use ssh_config for passwords and cie
 # env.use_ssh_config = True
@@ -215,7 +219,6 @@ def check_online(client=None):
         else:
             print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green"))
 
-
 def save_port(name):
     """Save the port nb into the file port.txt
     """
@@ -242,9 +245,10 @@ def update(client):
         with prefix(VENV_ACTIVATE.format(client.venv)):
             res = run("make update")
 
-    check_online(client.name)
+    # check_online(client.name) # wait a bit before to check
+
 def dbback(name=None):
-    """Copy the db file, append a timestamp.
+    """Copy the db file locally (there), appendding a timestamp, and download it.
     """
     if not name:
         clients = sorted(CFG.clients)
@@ -254,8 +258,24 @@ def dbback(name=None):
 
     for client in clients:
         with cd(fabutils.wd(client, CFG)):
-            # append a timestamp
+            # Copy locally. Append a timestamp.
             run("cp db.db{,.`date +%Y%m%d-%H%M%S`}")
+
+            # Download
+            db_backed = "backup/db-{}-{}.sqlite".format(client.name, datetime.datetime.now().strftime(DATE_FORMAT))
+            cmd = "rsync -av {user}@{url}:/home/{user}/{dir}/{client_name}/{project_name}/{db_name} ./{db_backed}".format(
+                user=CFG.user,
+                url=CFG.url,
+                dir=CFG.dir.strip("/"),
+                client_name=client.name,
+                project_name=CFG.project_name,
+                db_name=CFG.db_name,
+                db_backed=db_backed
+                )
+
+            print("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue")))
+            print(cmd)
+            os.system(cmd)
 
 def updatelight(name=None):
     """Everything except package managers (apt, npm, pip).
