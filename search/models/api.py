@@ -894,11 +894,16 @@ def inventories_update(request, **kwargs):
                             log.error("Error creating the card {} to add to inventory {}: {}".
                                       format(card_dict['title'], inv.id, e))
 
-                pairs = [(card['id'], 1) for _nop, card in cards.iteritems()]
+                pairs = [(card['id'], 1) for __, card in cards.iteritems()]
 
             status, _msgs = inv.add_pairs(pairs)
 
             to_ret['status'] = status
+            nb_cards = inv.nb_cards()
+            to_ret['nb_cards'] = nb_cards
+            nb_copies = inv.nb_copies()
+            to_ret['nb_copies'] = nb_copies
+            to_ret['missing'] = inv._orig_cards_qty() - nb_copies
             if status == "success": # XXX import satuses from models
                 to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
 

@@ -2764,7 +2764,7 @@ class Inventory(TimeStampedModel):
     def progress(self):
         """Return the percentage of progress (int < 100).
         """
-        done_qty = self.inventorycopies_set.count()
+        done_qty = self.nb_copies()
         orig_qty = self._orig_cards_qty()
 
         progress = 0
@@ -2817,11 +2817,12 @@ class Inventory(TimeStampedModel):
 
         """
         copies = [it.to_dict() for it in self.inventorycopies_set.all()]
-        total = len(copies)
+        nb_cards = len(copies)
+        nb_copies = self.nb_copies()
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
         orig_cards_qty = self._orig_cards_qty()
-        missing = orig_cards_qty - total
+        missing = orig_cards_qty - nb_cards
         if self.shelf:
             shelf_dict = self.shelf.to_dict()
             inv_name = self.shelf.name
@@ -2840,7 +2841,8 @@ class Inventory(TimeStampedModel):
         state = {
             "copies": copies,
             "inv_name": inv_name,
-            "total_copies": total,
+            "nb_cards": nb_cards,
+            "nb_copies": nb_copies,
             "total_missing": missing,
             "shelf": shelf_dict,
             "place": place_dict,

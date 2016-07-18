@@ -64,6 +64,8 @@ div(ng-controller="inventoryNewController")
       .col-md-5
             div
               ul
+                li {% trans "Nb of cards" %}: {{ 'nb_cards'| ng }}
+                li {% trans "nb of copies" %}: {{ 'nb_copies'|ng }}
                 li {% trans "Total value" %}: {{ 'total_value' | ng }} €
                 li(ng-show="total_missing >= 0") {% trans "It remains" %} {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
                 li {% trans "You did "%} {{ 'progress_current' | ng }} %.

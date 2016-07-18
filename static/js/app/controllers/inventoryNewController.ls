@@ -20,7 +20,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines, reverse, join, reject} = require 'prelude-ls'
+    {sum, map, filter, lines, reverse, join, reject, round} = require 'prelude-ls'
 
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
@@ -37,6 +37,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.cards_to_show = []
     # Total value
     $scope.total_value = 0
+    # Nb of cards and copies
+    $scope.nb_cards = 0
+    $scope.nb_copies = 0
 
     $scope.tmpcard = undefined
     # A list of already selected cards' ids
@@ -71,6 +74,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             response.data.data
             $scope.state = response.data.data
             $scope.cards_fetched = $scope.state.copies
+            $scope.nb_cards = response.data.data.nb_cards
+            $scope.nb_copies = response.data.data.nb_copies
             # To show every single card:
             map ->
                 # it: has card and quantity properties only.
@@ -81,7 +86,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.selected_ids = map (.card.id), $scope.state.copies
             $scope.total_missing = $scope.state.total_missing
             #XXX update the progress bar on the fly
-            $scope.total_copies = $scope.state.total_copies
+            $scope.total_copies = $scope.state.nb_copies
             $scope.total_missing = $scope.state.total_missing
             $scope.updateProgress($scope.total_copies, $scope.total_missing)
             $scope.progressStyle = do
@@ -97,9 +102,11 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.update_total_value = ->
         """Total cost of the cards in this inventory.
         """
-        $scope.all
+        total = $scope.all
         |> map ( -> it.price * it.quantity)
         |> sum
+        total = round (total * 10)
+        total / 10
 
     $scope.updateProgress = (current, missing) !->
         if (current + missing != 0)
@@ -151,6 +158,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $scope.copy_selected = undefined
         $scope.setCardsToShow() # needed for init
         $scope.total_value += $scope.tmpcard.price * $scope.tmpcard.quantity
+        $scope.total_value = round($scope.total_value * 10) / 10
+        $scope.nb_cards += 1
+        $scope.nb_copies += $scope.tmpcard.quantity
 
         $scope.save()
 
@@ -175,6 +185,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.total_copies -= 1
             $scope.updateProgress $scope.total_copies, $scope.total_missing
             $scope.total_value -= card.price * card.quantity
+            $scope.total_value = round($scope.total_value * 10) / 10
+            $scope.nb_cards -= 1
+            $scope.nb_copies -= card.quantity
 
     $scope.updateCard = (index) !->
         """
@@ -184,11 +197,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             "ids_qties": "#{card.id},#{card.quantity};"
         $http.post "/api/inventories/#{$scope.inv_id}/update/", params
         .then (response) !->
-            # Update the progress bar.
-            $scope.total_missing -= 1
-            $scope.total_copies += 1
-            $scope.updateProgress $scope.total_copies, $scope.total_missing
-
             # update the total price. Since we listen for an ng-change
             # event, we don't know if we add or sub, so remove and add
             # again this card from the list.
@@ -197,6 +205,13 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             |> reject (.id == card.id)
             $scope.all.push card
             $scope.total_value = $scope.update_total_value!
+
+            $scope.nb_cards = response.data.nb_cards
+            $scope.nb_copies = response.data.nb_copies
+            $scope.total_copies = response.data.nb_copies
+            $scope.total_missing = response.data.missing
+            # Update the progress bar.
+            $scope.updateProgress $scope.nb_copies, $scope.total_missing
 
     $scope.save = ->
         """Send the new copies and quantities to be saved.
