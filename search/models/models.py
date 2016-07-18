@@ -1133,6 +1133,19 @@ class Card(TimeStampedModel):
         log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
         return self.is_in_deposits() and (in_deposits > 0) and (self.quantity > in_deposits)
 
+    @staticmethod
+    def never_sold(page=None, pagecount=20):
+        notsold = Card.objects.filter(in_stock=True).exclude(id__in = SoldCards.objects.all().values_list('id', flat=True))
+        if page is not None:
+            notsold = notsold[page:page + pagecount]
+        return notsold
+
+    @staticmethod
+    def never_sold_nb():
+        nb = Card.objects.filter(in_stock=True).exclude(id__in = SoldCards.objects.all().values_list('id', flat=True)).count()
+        return nb
+
+
 class PlaceCopies (models.Model):
     """Copies of a card present in a place.
     """

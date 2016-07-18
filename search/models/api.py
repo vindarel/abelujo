@@ -979,13 +979,11 @@ def stats_static(request, page=0, **kwargs):
     """Return the static stock.
     """
     PAGE = 20
-
-    notsold = Card.objects.exclude(id__in = SoldCards.objects.all().values_list('id', flat=True))
-
-    ret = [it.to_dict() for it in notsold[page:page + PAGE]]
+    notsold = Card.never_sold(page=page, pagecount=PAGE)
+    ret = [it.to_dict() for it in notsold]
 
     to_ret = {
-        'never_sold_nb': len(notsold),
+        'never_sold_nb': Card.never_sold_nb(),
         'never_sold_list': ret,
     }
 
