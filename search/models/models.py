@@ -3156,7 +3156,7 @@ class Stats(object):
 
         to_ret = {
             "best_sells": res[:limit],
-            "revenue": roundfloat(revenue),
+            "revenue": roundfloat(revenue) if revenue else 0,
             "nb_sold_cards": nb_sold_cards,
             "mean": roundfloat(sell_mean),
             }

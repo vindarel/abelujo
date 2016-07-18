@@ -193,4 +193,6 @@ def roundfloat(nb):
 
     return: a float
     """
+    if nb is None:
+        return 0.00
     return float(decimal.Decimal(nb).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))
