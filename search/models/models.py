@@ -364,7 +364,7 @@ class Card(TimeStampedModel):
     comment = models.TextField(blank=True)
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
-    in_stock = models.BooleanField(default=True)
+    in_stock = models.BooleanField(default=False)
 
     @property
     def ean(self):
@@ -3057,9 +3057,10 @@ class Stats(object):
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
         res['nb_cards'] = {'label': "",
-                           'value': Card.objects.count()}
+                           'value': Card.objects.filter(in_stock=True).count()}
         res['nb_books'] = {'label': "",
-                           'value': Card.objects.filter(card_type=type_book).count()}
+                           'value': Card.objects.filter(in_stock=True).
+                           filter(card_type=type_book).count()}
         res['nb_unknown'] = {'label': "",
                              'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought
