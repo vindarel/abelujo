@@ -64,7 +64,7 @@ table.table.table-striped.table-hover
     th {% trans "Created the" %}
     th {% trans "Inventory of..." %}
     th {% trans "Progress" %}
-    th {% trans "Number of copies" %}
+    th {% trans "Nb of titles/copies" %}
     th {% trans "Value" %}
     th(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
     th
@@ -87,7 +87,7 @@ table.table.table-striped.table-hover
 
       td {{ inv.progress }} %
 
-      td {{ inv.quantity }}
+      td {{ inv.nb_cards }} / {{ inv.nb_copies }}
 
       td(title='{% trans "Value of all the copies in this inventory" %}') {{ inv.value }} €
 

@@ -2775,12 +2775,17 @@ class Inventory(TimeStampedModel):
 
         return roundfloat(progress)
 
-    def quantity(self):
-        """Return the quantity of copies in it.
+    def nb_cards(self):
+        """Return the quantity of cards in it.
 
         - return: int
         """
         return self.inventorycopies_set.count() or 0
+
+    def nb_copies(self):
+        """How many exemplaries in total.
+        """
+        return sum([it.quantity for it in self.inventorycopies_set.all()])
 
     def value(self):
         """Total value.

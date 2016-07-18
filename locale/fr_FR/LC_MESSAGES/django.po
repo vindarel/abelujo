@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-16 13:02+0000\n"
-"PO-Revision-Date: 2016-07-16 15:08+0200\n"
+"POT-Creation-Date: 2016-07-18 16:24+0000\n"
+"PO-Revision-Date: 2016-07-18 18:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -176,21 +176,22 @@ msgstr "Attention: la vente de {} a échoué."
 msgid "Sell {} canceled with success."
 msgstr "La vente {} a été annulée avec succès"
 
-#: search/models/models.py:2983
+#: search/models/models.py:2988
 msgid "This inventory is already closed, you can't apply it again."
-msgstr "Cet inventaire est déjà fermé. Vous ne pouvez pas l'appliquer de nouveau."
+msgstr ""
+"Cet inventaire est déjà fermé. Vous ne pouvez pas l'appliquer de nouveau."
 
-#: search/models/models.py:3002
+#: search/models/models.py:3007
 #, fuzzy
 #| msgid "Internal error, sorry !"
 msgid "There was an internal error, sorry !"
 msgstr "Erreur interne :("
 
-#: search/models/models.py:3008
+#: search/models/models.py:3013
 msgid "The inventory got succesfully applied to your stock."
 msgstr "L'inventaire a été appliqué à votre stock avec succès."
 
-#: search/models/models.py:3099
+#: search/models/models.py:3104
 msgid "next appointments"
 msgstr "prochaines échéances"
 
@@ -488,7 +489,7 @@ msgstr "Supprimer cette liste"
 msgid "Export the list to the required format"
 msgstr "Exporter la liste au format requis"
 
-#: templates/search/baskets.jade:75 templates/search/inventories.jade:98
+#: templates/search/baskets.jade:75 templates/search/inventories.jade:104
 #: templates/search/inventory_terminate.jade:64
 #: templates/search/to_command.jade:46 templates/search/to_command.jade:68
 msgid "Export"
@@ -997,8 +998,8 @@ msgstr "Ajouter des exemplaires…"
 msgid "Delete this deposit"
 msgstr "Supprimer ce dépôt"
 
-#: templates/search/history.jade:38 templates/search/inventories.jade:101
-#: templates/search/inventories.jade:103
+#: templates/search/history.jade:38 templates/search/inventories.jade:107
+#: templates/search/inventories.jade:109
 msgid "Sells"
 msgstr "Ventes"
 
@@ -1116,35 +1117,43 @@ msgid "Progress"
 msgstr "Progression"
 
 #: templates/search/inventories.jade:67
-msgid "Number of copies"
-msgstr "Nombre d'exemplaires"
+msgid "Nb of titles/copies"
+msgstr "Nb de titres / d'exemplaires"
 
 #: templates/search/inventories.jade:68
 msgid "Value"
 msgstr "Valeur"
 
-#: templates/search/inventories.jade:91
+#: templates/search/inventories.jade:69
+msgid "Was this inventory already applied to your stock ?"
+msgstr "Cet inventaire a-t-il déjà été appliqué à votre stock ?"
+
+#: templates/search/inventories.jade:69
+msgid "Applied ?"
+msgstr "Appliqué ?"
+
+#: templates/search/inventories.jade:92
 msgid "Value of all the copies in this inventory"
 msgstr "Valeur de l'inventaire"
 
-#: templates/search/inventories.jade:95
+#: templates/search/inventories.jade:101
 msgid "Continue"
 msgstr "Continuer"
 
-#: templates/search/inventories.jade:101
+#: templates/search/inventories.jade:107
 msgid "Get the list of the cards sold with their quantity"
 msgstr "Récupérez la liste des notices de l'inventaire avec leur quantité"
 
-#: templates/search/inventories.jade:105 templates/search/inventories.jade:107
+#: templates/search/inventories.jade:111 templates/search/inventories.jade:113
 msgid "Full list"
 msgstr "Liste de l'inventaire"
 
-#: templates/search/inventories.jade:109
+#: templates/search/inventories.jade:115
 #: templates/search/inventory_terminate.jade:75
 msgid "isbn and quantities (Dilicom)"
 msgstr "isbn et quantités (Dilicom)"
 
-#: templates/search/inventories.jade:112
+#: templates/search/inventories.jade:118
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1173,7 +1182,9 @@ msgstr ""
 
 #: templates/search/inventory_terminate.jade:61
 msgid "Apply this inventory to your stock. This will modify your stock"
-msgstr "Appliquez cet inventaire à votre stock. Cette opération va le modifier. Veuillez vous référer à la documentation pour de plus amples précisions."
+msgstr ""
+"Appliquez cet inventaire à votre stock. Cette opération va le modifier. "
+"Veuillez vous référer à la documentation pour de plus amples précisions."
 
 #: templates/search/inventory_terminate.jade:61
 msgid "Apply to your stock"
@@ -1372,7 +1383,9 @@ msgstr "Liste complète"
 msgid ""
 "Export the list of all cards to command in a csv, suitable for LibreOffice "
 "and to give to other services, like Dilicom."
-msgstr "Exportez la liste de toutes les notices à commander au format csv, à ouvrir avec LibreOffice ou à utiliser avec d'autres services, comme Dilicom."
+msgstr ""
+"Exportez la liste de toutes les notices à commander au format csv, à ouvrir "
+"avec LibreOffice ou à utiliser avec d'autres services, comme Dilicom."
 
 #: templates/search/to_command.jade:51 templates/search/to_command.jade:73
 msgid "isbn and quantity"
