@@ -3016,6 +3016,8 @@ class Inventory(TimeStampedModel):
         try:
             for card_qty in self.inventorycopies_set.all():
                 place.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)
+                card_qty.card.in_stock = True
+                card_qty.card.save()
 
         except Exception as e:
             log.error("Error while applying the inventory {} to the default place: {}".format(self.id, e))
