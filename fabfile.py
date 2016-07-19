@@ -285,6 +285,18 @@ def updatelight(name=None):
     make("collectstatic", name)
     make("translation-compile", name)
     restart(name)
+def bundlescopy(name=None):
+    """Update, but don't run npm or bower, get the copies of their
+    directories (node_modules and bower_components).
+
+    Goal: win a few minutes, don't depend on npmjs, and *don't be
+    surprised by new mismatches*.
+    """
+    client = fabutils.select_client_cfg(name, CFG)
+    bower_components_remote = "/tmp/bower_components.tar.gz"
+    if exists(bower_components_remote):
+        wd = fabutils.wd(client, CFG)
+        run("cp {} {}".format(bower_components_remote, wd))
 
 def rebase(name=None):
     """Only run git rebase. That may be enough for light updates.
