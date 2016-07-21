@@ -90,7 +90,6 @@ env.user = CFG.user
 TIMEOUT = 15
 
 CLIENT_TMPL = """
-
   - name: {}
     venv: {}
     port: {}
@@ -140,7 +139,7 @@ def client_info(name=None):
     Prints to stdout.
     """
     if name:
-        client = fabutils.select_client_cfg(name, CFG)
+        client = fabutils.select_client_cfg(name)
         print(client)
 
     else:
@@ -163,6 +162,7 @@ def check_uptodate(client=None):
 
     client = fabutils.select_client_cfg(client, CFG)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    # that's local so it conuts the unpushed commits. should be remote
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
     with cd(wd):
         res = run("git rev-parse HEAD")
@@ -221,7 +221,7 @@ def check_online(client=None):
 def save_port(name):
     """Save the port nb into the file port.txt
     """
-    client = fabutils.select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
         run("echo {} > PORT.txt".format(client.port))
@@ -253,7 +253,7 @@ def dbback(name=None):
         clients = sorted(CFG.clients)
 
     else:
-        clients = [fabutils.select_client_cfg(name, CFG)]
+        clients = [fabutils.select_client_cfg(name)]
 
     for client in clients:
         with cd(fabutils.wd(client, CFG)):
@@ -292,7 +292,6 @@ def bundlescopy(name=None):
     Goal: win a few minutes, don't depend on npmjs, and *don't be
     surprised by new mismatches*.
     """
-    client = fabutils.select_client_cfg(name, CFG)
     bower_components_remote = "/tmp/bower_components.tar.gz"
     if exists(bower_components_remote):
         wd = fabutils.wd(client, CFG)
@@ -315,7 +314,7 @@ def rebase(name=None):
                 run(CMD_REBASE)
 
     if name:
-        client = fabutils.select_client_cfg(name, CFG)
+        client = fabutils.select_client_cfg(name)
         do_rebase(client)
 
 def ssh_to(client):
@@ -357,7 +356,7 @@ def create():
     - name: name of the client (and of the venv).
     """
     name = raw_input("Client name ? ")
-    exists = fabutils.select_client_cfg(name, CFG, quiet=True)
+    exists = fabutils.select_client_cfg(name, quiet=True)
     if exists:
         print("Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port']))
         exit(1)
@@ -385,7 +384,7 @@ def file_upload(name, *files):
         print("Usage: file_upload:name,path-to-file")
         exit(1)
 
-    client = fabutils.select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name)
     tmp_init_data = '/tmp/{}/'.format(client.name)
     if not exists(tmp_init_data):
         run('mkdir -p {}'.format(tmp_init_data))
@@ -433,7 +432,7 @@ def install(name):
 def kill(name):
     """
     """
-    client = fabutils.select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name)
     with cd(fabutils.wd(client, CFG)):
         if exists(PID_FILE):
             run(CMD_KILL)
@@ -444,7 +443,7 @@ def start(name):
 
     Read the port in PORT.txt
     """
-    client = fabutils.select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name)
     with cd(fabutils.wd(client, CFG)):
         with prefix(VENV_ACTIVATE.format(client.name)):
             gunicorn = GUNICORN.format(project_name=CFG.project_name, url=CFG.url)
@@ -460,7 +459,7 @@ def make(cmd, name=None):
     """Run any make command remotevy
     """
     if name:
-        client = fabutils.select_client_cfg(name, CFG)
+        client = fabutils.select_client_cfg(name)
         with cd(fabutils.wd(client, CFG)):
             with prefix(VENV_ACTIVATE.format(client.name)):
                 run("make {}".format(cmd))
@@ -484,7 +483,7 @@ def bower_package_version(package, names=None):
 
     else:
         name = names[0]
-        client = fabutils.select_client_cfg(name, CFG)
+        clients = [fabutils.select_client_cfg(name)]
         wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
         print(wd)
         with cd(wd):

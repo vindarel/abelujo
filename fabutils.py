@@ -7,6 +7,7 @@ import addict
 import termcolor
 import yaml
 
+CLIENTS = "clients.yaml"
 
 def get_yaml_cfg(afile):
     """From a yaml file, return the yaml structure.
@@ -20,13 +21,15 @@ def get_yaml_cfg(afile):
 
     return data
 
-def select_client_cfg(letters, cfg, quiet=False):
+def select_client_cfg(letters, quiet=False):
     """Get the client that matches the letters given as argument.
 
     exple: select_client("loc") will select localhost.
 
     return: the client's configuration dictionnary.
     """
+    cfg = get_yaml_cfg(CLIENTS); cfg = addict.Dict(cfg)
+
     clients = cfg.clients
     cl = filter(lambda it: it.name.startswith(letters), clients)
     if len(cl) > 1:
