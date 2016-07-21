@@ -41,7 +41,7 @@ dbback:
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  debian pip pip-submodule db npm gulp translation-compile
+install:  debian pip pip-submodule db npm gulp collectstatic translation-compile
 
 install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev gulp translation-compile
 
