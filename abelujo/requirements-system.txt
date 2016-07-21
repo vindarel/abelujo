@@ -1,0 +1,2 @@
+xhtml2pdf==0.0.6        # produce pdf from html templates. Installs
+                        # Reportlab, Pypdf2 and Pillow, i.e. big dependencies.

@@ -24,4 +24,6 @@ export WORKON_HOME=~/.venvs
 [[ -d $WORKON_HOME ]] || mkdir -p $WORKON_HOME
 # source /usr/local/bin/virtualenvwrapper.sh
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-mkvirtualenv $VENV_NAME
+# Install with access to system packages,
+# for some are too big and long to install and don't need to be that up to date (xml, pillow, ...)
+mkvirtualenv $VENV_NAME --system-site-packages

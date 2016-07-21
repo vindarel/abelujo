@@ -16,8 +16,11 @@ debian:
 	@sudo pip install virtualenvwrapper
 
 # Install in current directory
-pip: pip-submodule
+pip: pip-submodule pip-system
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
+
+pip-system:
+	sudo pip install -r abelujo/requirements-system.txt # venvs have access to them with --system-site-packages
 
 pip-dev: pip
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
