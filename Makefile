@@ -43,7 +43,7 @@ dbback:
 # build the app.
 install:  debian pip pip-submodule db npm gulp translation-compile
 
-install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm gulp translation-compile
+install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev gulp translation-compile
 
 # Install npm and bower packages
 npm:
@@ -51,11 +51,14 @@ npm:
 	npm install
 	@echo "Installing gulp globally... (needs root)"
 	# Don't install protractor globally, we'll have permission pb with the webdriver.
-	@sudo npm install -g gulp elementor
-	# Install or update Selenium etc (XXX: development only).
-	./node_modules/protractor/bin/webdriver-manager update
+	@sudo npm install -g gulp
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
+
+npm-dev:
+	sudo npm install -g elementor
+	# Install or update Selenium etc
+	./node_modules/protractor/bin/webdriver-manager update
 
 # Rebase main repo and submodules
 rebase:
