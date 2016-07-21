@@ -285,17 +285,29 @@ def updatelight(name=None):
     make("collectstatic", name)
     make("translation-compile", name)
     restart(name)
-def bundlescopy(name=None):
+    check_online(name)
+
+def bundles_upload(name=None):
     """Update, but don't run npm or bower, get the copies of their
     directories (node_modules and bower_components).
 
     Goal: win a few minutes, don't depend on npmjs, and *don't be
     surprised by new mismatches*.
     """
+    client = fabutils.select_client_cfg(name)
+    wd = fabutils.wd(client, CFG)
+    bower_components_tar = "bower_components.tar.gz"
+    bower_components_dir = "static/bower_components"
     bower_components_remote = "/tmp/bower_components.tar.gz"
+
+    if not exists(bower_components_remote):
+        os.system("tar cvf {} ".format(bower_components_tar, bower_components_dir))
+        fileupload(name, *bower_components_tar)
+
     if exists(bower_components_remote):
-        wd = fabutils.wd(client, CFG)
-        run("cp {} {}".format(bower_components_remote, wd))
+        run("cp {} {}".format(bower_components_remote, wd + "/"))
+        with cd(wd):
+            run("tar xvf {}".format(bower_components_tar))
 
 def rebase(name=None):
     """Only run git rebase. That may be enough for light updates.
@@ -404,13 +416,15 @@ def install(name):
 
     run gunicorn with the right port.
     """
-    CFG = fabutils.get_yaml_cfg(CLIENTS)
-    CFG = addict.Dict(CFG)
-    client = fabutils.select_client_cfg(name, CFG)
+    client = fabutils.select_client_cfg(name)
     client = addict.Dict(client)
     wd = os.path.join(CFG.home, CFG.dir, client.name)
     if not exists(wd):
         run("mkdir {}".format(wd, wd))
+
+    # Copy bower_components (experimental)
+    bundles_upload(client.name)
+
     with cd(wd):
         run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
         # save the port
