@@ -129,22 +129,15 @@ run-wsgi-debug:
 	# Disables: auto code reloading, multithreading.
 	python manage.py runmodwsgi --debug-mode --enable-debugger
 
-PORT=8001
+# Get our IP adress, only ipv4 form, trim whitespaces. Works for localhost.
+MAINIP := $(shell hostname --ip-address | cut -d " " -f 2 | tr -d '[[:space:]]')
 run-gunicorn:
 	# and static files are served by whitenoise.
-	# get the server ip: (only server, not localhost)
-	# option --reload to reload on code changes.
-	MAINIP=$(ip addr show dev eth0 | grep "inet" | awk 'NR==1{print $2}' | cut -d'/' -f 1)
-	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=$MAINIP:$(PORT) --reload --daemon
-	@echo "server running on port $(PORT)"
+	# option --reload to reload on code changes. use --daemon or C-z and bg
+	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=$(MAINIP):$(shell cat PORT.txt) --reload --pid=PID.txt --daemon
+	@echo "server running on port $(shell cat PORT.txt)"
 
 gunicorn: run-gunicorn
-
-PORT=8001
-gunicorn-localhost:
-	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=127.0.0.1:$(PORT) --reload
-	echo "server running on port 8001"
-
 
 # Run end to end tests only.
 e2e:
