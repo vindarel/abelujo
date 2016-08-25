@@ -28,9 +28,9 @@ div(ng-controller="dashboardController", ng-cloak="stats")
     .row.panel.panel-info
       h3.panel.panel-heading {% trans "Composition of the stock" %}
       div.panel.panel-body(ng-show="stats")
-        h4 {% trans "Total number of cards" %}: {{'stats.nb_cards.value'|ng}}
-        h4 {% trans "Number of books" %}: {{'stats.nb_books.value'|ng }}
-        h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %}: {{'stats.total_cost.value'|ng }} €
+        h4 {% trans "Number of products" %}: {{'stats.nb_products'|ng}}
+        h4 {% trans "Number of titles" %}: {{'stats.nb_titles'|ng }}
+        h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %}: {{'stats.total_cost'|ng }} €
       //- div(id="chart")
 
     .row.panel.panel-info
@@ -52,8 +52,8 @@ div(ng-controller="dashboardController", ng-cloak="stats")
       h3.panel.panel-heading {% trans "Comfort of the stock" %}
       div.panel.panel-body
         div(ng-show="stats")
-            div {% trans "Nb cards with no copy" %}: {{'stats.nb_cards_no_stock.value'|ng}}
-            div {% trans "Nb cards with one copy" %}: {{'stats.nb_cards_one_copy.value'|ng }}
+            div {% trans "Nb cards with no copy" %}: {{'stats.nb_cards_no_stock'|ng}}
+            div {% trans "Nb cards with one copy" %}: {{'stats.nb_cards_one_copy'|ng }}
         div(id="chartNoStock")
 
     .row.panel.panel-info

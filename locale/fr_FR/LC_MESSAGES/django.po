@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-18 17:19+0000\n"
-"PO-Revision-Date: 2016-07-18 19:21+0200\n"
+"POT-Creation-Date: 2016-08-25 22:50+0000\n"
+"PO-Revision-Date: 2016-08-26 00:52+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -752,84 +752,92 @@ msgstr "Ajouter aux listes:"
 msgid "Composition of the stock"
 msgstr "Composition du stock"
 
+#: templates/search/dashboard.jade:31
+msgid "Number of products"
+msgstr "Nombre de produits"
+
 #: templates/search/dashboard.jade:32
-msgid "Number of books"
-msgstr "Nombre de livres"
+msgid "Number of titles"
+msgstr "Nombre de titres"
 
 #: templates/search/dashboard.jade:33
+msgid "Number of copies"
+msgstr "Nombre de livres"
+
+#: templates/search/dashboard.jade:34
 msgid ""
 "Cost of each card by its quantity in stock, rounded to the upper decimal."
 msgstr ""
 "Coût de chaque notice multiplié par sa quantité en stock, arrondi à la "
 "décimale supérieure."
 
-#: templates/search/dashboard.jade:33
+#: templates/search/dashboard.jade:34
 msgid "Value of the stock"
 msgstr "Valeur du stock"
 
-#: templates/search/dashboard.jade:37
+#: templates/search/dashboard.jade:38
 msgid "Next deposits to pay"
 msgstr "Prochains dépôts à régler"
 
-#: templates/search/dashboard.jade:42 templates/search/deposits_view.jade:29
+#: templates/search/dashboard.jade:43 templates/search/deposits_view.jade:29
 msgid "Deposit"
 msgstr "Dépôt"
 
-#: templates/search/dashboard.jade:44
+#: templates/search/dashboard.jade:45
 msgid "due date"
 msgstr "échéance"
 
-#: templates/search/dashboard.jade:52
+#: templates/search/dashboard.jade:53
 msgid "Comfort of the stock"
 msgstr "Confort du stock"
 
-#: templates/search/dashboard.jade:55
+#: templates/search/dashboard.jade:56
 msgid "Nb cards with no copy"
 msgstr "Nb de notices sans exemplaire"
 
-#: templates/search/dashboard.jade:56
+#: templates/search/dashboard.jade:57
 msgid "Nb cards with one copy"
 msgstr "à exemplaire unique"
 
-#: templates/search/dashboard.jade:60
+#: templates/search/dashboard.jade:61
 msgid "Cost of the stock VS deposits"
 msgstr "Valeur comparée du stock et des dépôts"
 
-#: templates/search/dashboard.jade:67 templates/search/history_sells.jade:69
+#: templates/search/dashboard.jade:68 templates/search/history_sells.jade:69
 msgid "Revenue of current month"
 msgstr "Chiffre d'affaire de ce mois"
 
-#: templates/search/dashboard.jade:67 templates/search/dashboard.jade.py:72
+#: templates/search/dashboard.jade:68 templates/search/dashboard.jade.py:73
 #: templates/search/history_sells.jade:69
 #: templates/search/history_sells.jade:71
 msgid "€"
 msgstr "€"
 
-#: templates/search/dashboard.jade:70 templates/search/history_sells.jade:70
+#: templates/search/dashboard.jade:71 templates/search/history_sells.jade:70
 msgid "total cards sold"
 msgstr "articles vendus"
 
-#: templates/search/dashboard.jade:72 templates/search/history_sells.jade:71
+#: templates/search/dashboard.jade:73 templates/search/history_sells.jade:71
 msgid "mean"
 msgstr "panier moyen"
 
-#: templates/search/dashboard.jade:75 templates/search/history_sells.jade:72
+#: templates/search/dashboard.jade:76 templates/search/history_sells.jade:72
 msgid "Best 10 sells of this month"
 msgstr "Les 10 meilleures ventes du mois"
 
-#: templates/search/dashboard.jade:91
+#: templates/search/dashboard.jade:92
 msgid "Age of the stock per shelf"
 msgstr "Âge du stock par rayon"
 
-#: templates/search/dashboard.jade:94
+#: templates/search/dashboard.jade:95
 msgid "Choose a shelf to show the corresponding graph."
 msgstr "Choisissez un rayon pour afficher le graph correspondant"
 
-#: templates/search/dashboard.jade:118
+#: templates/search/dashboard.jade:119
 msgid "Cards never sold"
 msgstr "Notices jamais vendues"
 
-#: templates/search/dashboard.jade:120
+#: templates/search/dashboard.jade:121
 msgid "Excerpt of the list"
 msgstr "Extrait de la liste"
 
