@@ -80,7 +80,7 @@ def cards(request, **response_kwargs):
 
     """
     data = []
-    query = request.GET.get("query", [])
+    query = request.GET.get("query", "")
     query = query.split()
     distributor = request.GET.get("distributor")
     distributor_id = request.GET.get("distributor_id")
