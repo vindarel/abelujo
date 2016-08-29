@@ -3072,19 +3072,24 @@ class Stats(object):
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
-        res['nb_products'] = Card.objects.filter(in_stock=True).count()
-        res['nb_titles'] = Card.objects.filter(in_stock=True).\
-                           filter(card_type=type_book).count()
-        res['nb_copies'] = 0
-
-        res['nb_unknown'] = Card.objects.filter(card_type=type_unknown).count()
+        # label: needed for graph creation in js.
+        res['nb_products'] = {'label': _(u"Number of products"),
+                           'value': Card.objects.filter(in_stock=True).count()}
+        res['nb_titles'] = {'label': _(u"Number of book titles"),
+                           'value': Card.objects.filter(in_stock=True).
+                           filter(card_type=type_book).count()}
+        res['nb_unknown'] = {'label': _(u"Number of products of unknown type"),
+                             'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought
         # impossible atm
-        res['nb_bought'] = "<soon>"
+        res['nb_bought'] = {'label': "",
+                            'value': "<soon>"}
 
         # Cleanlyness: nb of cards with stock <= 0
-        res['nb_cards_no_stock'] = Card.objects.filter(quantity__lte=0).count()
-        res['nb_cards_one_copy'] = Card.objects.filter(quantity=1).count()
+        res['nb_cards_no_stock'] = {'label': _(u"Number of titles with no copy"),
+                                    'value': Card.objects.filter(quantity__lte=0).count()}
+        res['nb_cards_one_copy'] = {'label': _(u"Number of titles with one copy"),
+                                    'value': Card.objects.filter(quantity=1).count()}
 
         # Stock of deposits
         in_deposits = 0
@@ -3097,16 +3102,19 @@ class Stats(object):
                 if nb_current > 0:
                     in_deposits += nb_current
 
-        res['in_deposits'] = in_deposits
+        res['in_deposits'] = {'label': _(u"Number of books in deposits"),
+                              'value': in_deposits}
         # xxx: percentage cards we bought / in deposit / in both
 
         # Cost
-        res['deposits_cost'] = deposits_cost
+        res['deposits_cost'] = {'label': _(u"Total cost of the books in deposits"),
+                                'value': deposits_cost}
         # XXX: long query ! See comments for Card.quantity
         try:
             total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
-            # Round the float... or just {:.2f}.format.
-            res['total_cost'] = roundfloat(total_cost)
+            res['total_cost'] = {'label': _(u"Total cost of the stock"),
+                             # Round the float... or just {:.2f}.format.
+                                 'value': roundfloat(total_cost)}
         except Exception as e:
             log.error("Error with total_cost: {}".format(e))
 

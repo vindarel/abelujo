@@ -32,7 +32,7 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
             data: do
                 type: "pie"
                 columns: [
-                    [$scope.stats.nb_books.label, $scope.stats.nb_books.value]
+                    [$scope.stats.nb_titles.label, $scope.stats.nb_titles.value]
                     [$scope.stats.nb_unknown.label, $scope.stats.nb_unknown.value]
                 ]
 
@@ -55,7 +55,7 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
                 columns: [
                     [$scope.stats.nb_cards_no_stock.label, $scope.stats.nb_cards_no_stock.value]
                     [$scope.stats.nb_cards_one_copy.label, $scope.stats.nb_cards_one_copy.value]
-                    [$scope.stats.nb_books.label, $scope.stats.nb_books.value]
+                    [$scope.stats.nb_titles.label, $scope.stats.nb_titles.value]
                 ]
             color: do
                 pattern: ['#ff8c00', '#ffd700', '#6495ed']

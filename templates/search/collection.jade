@@ -104,7 +104,7 @@ div(ng-cloak, ng-controller="collectionController")
       button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
         i.glyphicon.glyphicon-th-list
 
-   .col-md-3 {% trans "Total number of cards" %}: {{'stats.nb_cards.value'|ng}}
+   .col-md-3 {% trans "Number of titles" %}: {{'stats.nb_titles.value'|ng}}
 
 
  table.row-border.hover(ng-show="cards.length != 0", datatable="ng")
