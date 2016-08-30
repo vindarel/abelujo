@@ -992,4 +992,4 @@ def stats_static(request, page=0, **kwargs):
 def stats_stock_age(request, **kwargs):
     shelf = request.GET.get('shelf_id')
     stats = Stats().stock_age(shelf)
-    return JsonResponse(stats)
+    return JsonResponse(stats, safe=False)
