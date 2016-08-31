@@ -88,12 +88,12 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
                     data: do
                         type: "pie"
                         columns: [
-                            ["3 months", data["0"].length],
-                            ["6 months", data["1"].length],
-                            ["12 months", data["2"].length],
-                            ["18 months", data["3"].length],
-                            ["24 months", data["4"].length],
-                            ["more than 24 months", data["5"].length],
+                            [gettext("3 months"), data["0"].length],
+                            [gettext("6 months"), data["1"].length],
+                            [gettext("12 months"), data["2"].length],
+                            [gettext("18 months"), data["3"].length],
+                            [gettext("24 months"), data["4"].length],
+                            [gettext("more than 24 months"), data["5"].length],
                         ]
                         onclick: (d, i) !->
                             # d: data, i: chart info
