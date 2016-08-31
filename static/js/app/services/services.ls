@@ -27,6 +27,19 @@ utils.factory 'utils', ($http) ->
                 return res[1]
             "en"
 
+        locale_language: (str) ->
+            """Take a short string specifying a language (exple: fr,
+            es; taken from the url) and return one that has meaning
+            for angular's $locale.
+            """
+            if str == "fr"
+                return "fr-fr"
+            if str == "es"
+                return "es-es"
+            if str == "de"
+                return "de-de"
+            "en-gb"
+
         url_id: (url) ->
             # extract an id
             re = /\/(\d+)/

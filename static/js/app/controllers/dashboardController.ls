@@ -14,9 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', '$timeout', '$window', '$log', 'utils', ($http, $scope, $timeout, $window, $log, utils) !->
+angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', '$timeout', '$window', '$log', 'utils', '$locale', 'tmhDynamicLocale', ($http, $scope, $timeout, $window, $log, utils, $locale, tmhDynamicLocale) !->
 
     {sum, map, filter, lines} = require 'prelude-ls'
+
+    $scope.language = utils.url_language($window.location.pathname)
+    # $locale.id can not be set, we have to use another plugin.
+    tmhDynamicLocale.set($scope.language) # mmh...
 
     $scope.stats = undefined
     $scope.sells_month = {}     # Keys are different stats: "best_sells" is a list, etc.
@@ -72,15 +76,13 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
           params = do
               shelf_id: $scope.shelf.pk
 
-          $log.info params
           $http.get "/api/stats/stock_age/", do
               params: params
 
           .then (response) !->
               data = response.data
               if data
-                  $log.info "shelf data:"
-                  $log.info data
+                  $log.info "Building the age shelf graph with new data"
                   chart-age = c3.generate do
                     bindto: \#chart-age
                     data: do
@@ -130,9 +132,9 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     ######################################################
     $scope.revenue_date = undefined
 
+
     $scope.today = ->
         $scope.revenue_date = new Date()
-        $log.info "date:" + $scope.revenue_date
     $scope.today!
 
     $scope.revenue_popup_status = do

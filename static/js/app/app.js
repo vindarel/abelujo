@@ -9,6 +9,8 @@ angular.module('abelujo', [
     'ngResource',
     'ngSanitize',
     'ngAnimate',
+    'ngLocale',
+    'tmh.dynamicLocale',
     'ui.router',
     'ui.select',
     'ui.bootstrap',
@@ -23,3 +25,10 @@ angular.module('abelujo', [
     'abelujo.directives',
     'abelujo.controllers'
 ]);
+
+// Tell the dynamic locale provider where to find translation files.
+angular.module('abelujo').config(function (tmhDynamicLocaleProvider) {
+    tmhDynamicLocaleProvider.localeLocationPattern('/static/bower_components/angular-i18n/angular-locale_{{locale}}.js');
+    tmhDynamicLocaleProvider.defaultLocale('fr'); // default locale
+    tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
+});
