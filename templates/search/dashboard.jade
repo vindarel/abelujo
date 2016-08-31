@@ -36,6 +36,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
     .row.panel.panel-info
       h3.panel.panel-heading {% trans "Next deposits to pay" %}
       div.panel.panel-body
+       div(ng-show="deposits.length")
         table.table.table-striped
           thead
             tr
@@ -47,6 +48,8 @@ div(ng-controller="dashboardController", ng-cloak="stats")
               th {{ 'depo.name' | ng }}
               th {{ 'depo.distributor' | ng }}
               th {{ 'depo.due_date' | ng }}
+
+       em(ng-hide="deposits.length") {% trans "No data" %}
 
     .row.panel.panel-info
       h3.panel.panel-heading {% trans "Comfort of the stock" %}
