@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import decimal
 import re
 import string
@@ -196,3 +197,9 @@ def roundfloat(nb):
     if nb is None:
         return 0.00
     return float(decimal.Decimal(nb).quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_UP))
+
+def date_last_day_of_month(anyday):
+    """Get a day (datetime), return a datetime at the last day of the month.
+    Return: datetime, as the input.
+    """
+    return (anyday.replace(day=1) + datetime.timedelta(days=32)).replace(day=1) - datetime.timedelta(days=1)

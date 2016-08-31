@@ -64,16 +64,36 @@ div(ng-controller="dashboardController", ng-cloak="stats")
 
   .col-lg-6
     .row.panel.panel-info
-      h3.panel.panel-heading {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
+      h3.panel.panel-heading {% trans "Revenue, monthly" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
       div.panel.panel-body
+
+        .col-md-4
+          p.input-group
+            input.form-control(
+              title='{% trans "Choose another month to see its stats" %}'
+              type='text'
+              uib-datepicker-popup='{{"revenue_date_format"|ng}}'
+              ng-model="revenue_date"
+              ng-change="revenue_change_month()"
+              is-open="revenue_popup_status.opened"
+              datepicker-options="datepicker_revenue_options"
+            )
+            span.input-group-btn
+              button.btn.btn-default(type='button', ng-click='revenue_open_datepicker($event)')
+                i.glyphicon.glyphicon-calendar
+
         .col-md-3
           div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
-        .col-md-9
+
+
+        .col-md-5
           div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
+
 
     .row.panel.panel-info
        h3.panel.panel-heading {% trans "Best 10 sells of this month" %}
        div.panel.panel-body
+         div(ng-show="sells_month.best_sells.length")
            table.table.table-striped(st-table="sells_month")
             thead
               tr
@@ -87,6 +107,9 @@ div(ng-controller="dashboardController", ng-cloak="stats")
               tr
                 td.text-center(colspan="5")
                   div(st-pagination="", st-items-by-page="10")
+
+         em(ng-hide="sells_month.best_sells.length") {% trans "No data" %}
+
      .row.panel.panel-info
       h3.panel.panel-heading {% trans "Age of the stock per shelf" %}
 

@@ -42,7 +42,7 @@ div.ng-cloak(ng-controller="sellController")
           p.input-group
             input.form-control(
               type='text'
-              uib-datepicker-popup='{{format}}'
+              uib-datepicker-popup='{{"format"|ng}}'
               ng-model='date'
               is-open='opened'
               datepicker-options='dateOptions'

@@ -44,6 +44,7 @@ from search.models.common import ALERT_WARNING
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
+from search.models.utils import date_last_day_of_month
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
@@ -2335,11 +2336,12 @@ class Sell(models.Model):
         return reverse("sell_details", args=(self.id,))
 
     @staticmethod
-    def search(card_id=None, date_min=None, count=False):
+    def search(card_id=None, date_min=None, count=False, date_max=None):
         """Search for the given card id in sells more recent than "date_min".
 
         - card_id: int. If not given, searches in all.
         - date_min: date obj
+        - date_max: date obj
         - count: if True, only return the count() of the result, not the result list.
 
         return: a list of Sell objects.
@@ -2353,6 +2355,9 @@ class Sell(models.Model):
             if date_min:
                 # dates must be timezone.now() for precision.
                 sells = sells.filter(created__gt=date_min)
+            if date_max:
+                sells = sells.filter(created__lt=date_max)
+
         except Exception as e:
             log.error("search for sells of card id {}: ".format(card_id), e)
             return sells
@@ -3130,17 +3135,26 @@ class Stats(object):
 
         return res
 
-    def best_sells_month(self, limit=10):
+    def sells_month(self, limit=10, year=None, month=None):
         """Best sells of the current month, total revenue, total nb of cards
         sold, average sell.
+        - year, month (int, month must be in [1..12]). If not, current year, and current month.
 
         """
         nb_sold_cards = 0
 
-        # Get the sells since the beginning of this month
-        now = timezone.now()
-        month_beg = now - timezone.timedelta(days=now.day - 1)
-        sells_obj = Sell.search(date_min=month_beg)
+        # Get the sells since the beginning of the given month
+        start_time = timezone.now()
+        if year is None:
+            year = start_time.year
+        if month is not None:
+            #TODO: check not in future
+            start_time = timezone.datetime(year=year, month=month, day=1)
+
+        month_beg = start_time - timezone.timedelta(days=start_time.day - 1)
+        month_end = date_last_day_of_month(month_beg)
+
+        sells_obj = Sell.search(date_min=month_beg, date_max=month_end)
 
         # Add the quantity sold of each card.
         best_sells = {} # title -> qty

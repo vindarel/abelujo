@@ -961,13 +961,41 @@ def stats(request, **kwargs):
     stock = stats.stock()
     return JsonResponse(stock)
 
+def to_int(string):
+    """Parse the string to int.
+    Return the int or None.
+    """
+    if not string:
+        return None
+    try:
+        return int(string)
+    except Exception as e:
+        log.error(u"Unable to parse {} to an int".format(string))
+        return None
+
 def stats_sells_month(request, **kwargs):
-    """Return the 10 best sells of this month.
+    """ Return some stats about a given month (the current one by default):
+    - best 10 sells
+    - total revenue
+    - number of products sold
+    - mean
+    Optional arguments:
+    - month (str): ...
+
+    Return: a dict
     """
     LIMIT = 10
+    month = None
+    year = None
+
     stats = Stats()
-    res = stats.best_sells_month(limit=LIMIT)
-    return JsonResponse(res, safe=False)
+    if request.GET.get('month'):
+        month = request.GET.get('month')
+        month = to_int(month)
+        year = to_int(request.GET.get('year'))
+
+    res = stats.sells_month(limit=LIMIT, year=year, month=month)
+    return JsonResponse(res)
 
 def stats_entries_month(request, **kwargs):
     """

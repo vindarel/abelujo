@@ -19,7 +19,7 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     {sum, map, filter, lines} = require 'prelude-ls'
 
     $scope.stats = undefined
-    $scope.sells_month = {}
+    $scope.sells_month = {}     # Keys are different stats: "best_sells" is a list, etc.
     $scope.stock_age_cards = [] # list of cards
 
     $http.get "/api/stats/"
@@ -124,6 +124,42 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     $http.get "/api/deposits/due_dates/"
     .then (response) !->
         $scope.deposits = response.data
+
+    ######################################################
+    # Month picker for the monthly revenue
+    ######################################################
+    $scope.revenue_date = undefined
+
+    $scope.today = ->
+        $scope.revenue_date = new Date()
+        $log.info "date:" + $scope.revenue_date
+    $scope.today!
+
+    $scope.revenue_popup_status = do
+        opened: false
+
+    $scope.revenue_open_datepicker = (event) ->
+        $scope.revenue_popup_status.opened = true
+
+    $scope.datepicker_revenue_options = do
+        minMode: "month"
+        formatYear: 'yyyy'
+        formatMonth: 'MMMM'
+        startingDay: 1
+
+    $scope.revenue_date_format = "MMMM"
+
+    $scope.revenue_change_month = !->
+        # if not date in future
+        params = do
+            year: $scope.revenue_date.getFullYear!
+            month: $scope.revenue_date.getMonth! + 1
+        $log.info "Calling monthly report for " + $scope.revenue_date
+        $http.get "/api/stats/sells/month", do
+            params: params
+        .then (response) !->
+            $scope.sells_month = response.data
+
 
     $window.document.title = "Abelujo" + " - " + gettext "dashboard"
 
