@@ -70,7 +70,7 @@ div
           div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
           div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
           h4 {% trans "Best 10 sells of this month" %}
-          table.table
+          table.table(ng-show="sells_month.best_sells.length")
             thead
               tr
                 th {% trans "Title" %}
@@ -83,5 +83,6 @@ div
               tr
                 td.text-center(colspan="5")
 
+          em(ng-hide="sells_month.best_sells.length") {% trans "No data" %}
 
 {% endblock history_sells %}
