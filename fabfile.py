@@ -101,6 +101,11 @@ COL_WIDTH = 10
 #: Date format (appending to backed up files)
 DATE_FORMAT = "%Y%m%d-%H:%M:%S"
 
+BOWER_COMPONENTS_TAR = "bower_components.tar.gz"
+BOWER_COMPONENTS_DIR = "static/bower_components"
+BOWER_COMPONENTS_REMOTE_DIR = "/tmp/bower_components"
+BOWER_COMPONENTS_REMOTE = "/tmp/bower_components.tar.gz"
+
 # Use ssh_config for passwords and cie
 # env.use_ssh_config = True
 
@@ -293,21 +298,41 @@ def bundles_upload(name=None):
 
     Goal: win a few minutes, don't depend on npmjs, and *don't be
     surprised by new mismatches*.
+
+    Beware, Work In Progress.
+    Still to do:
+    - check if our npm/bower dependencies changed, compared to what is currently uploaded
+    """
+
+    if not exists(BOWER_COMPONENTS_REMOTE_DIR):
+        run("mkdir {}".format(BOWER_COMPONENTS_REMOTE_DIR))
+
+    # The remote destination will be the same as our local source.
+    needs_bundle = fabutils.bundle_needs_update()
+    if needs_bundle:
+        cmd = "rsync -av --delete {dir} {user}@{url}:/tmp/".format(
+            user=CFG.user,
+            url=CFG.url,
+            dir=BOWER_COMPONENTS_DIR,
+        )
+        os.system(cmd)
+
+def bundles_deploy(name):
+    """After bundle_up, we have them in /tmp/.
+    Now, simply copy them into our client's static/bower_components or node_modules.
     """
     client = fabutils.select_client_cfg(name)
     wd = fabutils.wd(client, CFG)
-    bower_components_tar = "bower_components.tar.gz"
-    bower_components_dir = "static/bower_components"
-    bower_components_remote = "/tmp/bower_components.tar.gz"
 
-    if not exists(bower_components_remote):
-        os.system("tar cvf {} ".format(bower_components_tar, bower_components_dir))
-        fileupload(name, *bower_components_tar)
+    if not exists(BOWER_COMPONENTS_REMOTE_DIR):
+        print("Error: we can't find the bower components directory in remote /tmp.")
+        return
 
-    if exists(bower_components_remote):
-        run("cp {} {}".format(bower_components_remote, wd + "/"))
-        with cd(wd):
-            run("tar xvf {}".format(bower_components_tar))
+    client_dir = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name, "static")
+    if not exists(client_dir):
+        run("mkdir -p {}".format(client_dir))
+
+    run("cp -r {} {}".format(BOWER_COMPONENTS_REMOTE_DIR, client_dir))
 
 def rebase(name=None):
     """Only run git rebase. That may be enough for light updates.
@@ -427,6 +452,7 @@ def install(name):
 
     with cd(wd):
         run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
+        bundles_deploy(client.name)
         # save the port
         save_port(client.name)
         with cd(CFG.project_name):
@@ -443,8 +469,8 @@ def install(name):
             # - run gunicorn with the right port,
                 start(client.name)
 
-def kill(name):
-    """
+def stop(name):
+    """Stop the gunicorn process found in the pid file.
     """
     client = fabutils.select_client_cfg(name)
     with cd(fabutils.wd(client, CFG)):
