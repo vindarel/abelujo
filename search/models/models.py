@@ -1127,7 +1127,7 @@ class Card(TimeStampedModel):
 
         """
         # XXX not accurate. Dig in depositstates' nb_current
-        return sum([it.nb for it in self.depositcopies_set.all()])
+        return sum(self.depositcopies_set.all().values_list('nb', flat=True))
 
     def ambiguous_sell(self):
         in_deposits = self.quantity_deposits() # XXX not accurate TODO:
@@ -2803,12 +2803,13 @@ class Inventory(TimeStampedModel):
     def nb_copies(self):
         """How many exemplaries in total.
         """
-        return sum([it.quantity for it in self.inventorycopies_set.all()])
+        return sum(self.inventorycopies_set.all().values_list('quantity', flat=True))
 
     def value(self):
         """Total value.
         """
-        return sum([it.card.price * it.quantity for it in self.inventorycopies_set.all()])
+        return sum([it.card.price * it.quantity for it in
+                    self.inventorycopies_set.select_related('card').all()])
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original
@@ -2898,7 +2899,7 @@ class Inventory(TimeStampedModel):
             d_stock = self.shelf.cards_set()
             obj_name = self.shelf.name
         elif self.place:
-            stock_cards_set = self.place.placecopies_set.all()
+            stock_cards_set = self.place.placecopies_set.select_related('card').all()
             obj_name = self.place.name
         elif self.basket:
             stock_cards_set = self.basket.basketcopies_set.all()
