@@ -3,6 +3,9 @@
 ### Django extensions
 django_extensions==1.5    # more useful commands to manage.py (shell_plus).
 Werkzeug                  # runserver_plus: richer tracebacks and inline console.
+django-debug-toolbar==1.5 # debug toolbar in browser: inspect SQL queries and more.
+# git+https://github.com/djsutho/django-debug-toolbar-request-history.git  # make the toolbar work with ajax requests.
+django-debug-panel        # toolbar for ajax in chrome's dev tools.
 
 ### testing
 mock==1.0.1
