@@ -78,7 +78,7 @@ GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {proje
 #: File name whith the port number
 PID_FILE = "PID.txt"
 #: Kill a server instance
-CMD_KILL = "kill -9 $(cat {})".format(PID_FILE)
+CMD_KILL = "killall -9 $(cat {})".format(PID_FILE)
 
 #: Command to rebase a repo
 CMD_REBASE = "make rebase"
@@ -354,6 +354,8 @@ def rebase(name=None):
         client = fabutils.select_client_cfg(name)
         do_rebase(client)
 
+        check_online(name)
+
 def ssh_to(client):
     client = fabutils.select_client_cfg(client, CFG)
     cmd = "ssh -Y {}@{}".format(CFG.get('user'),
@@ -492,8 +494,10 @@ def start(name):
 def restart(name):
     """Restart a server.
     """
-    kill(name)
+    stop(name)
     start(name)
+
+    os.system("sleep 200; fab check_uptodate:{}".format(name))
 
 def make(cmd, name=None):
     """Run any make command remotevy
@@ -519,11 +523,13 @@ def bower_package_version(package, names=None):
     BOWER_PACKAGE_VERSION = './node_modules/bower/bin/bower list --offline'
 
     if not names:
-        print(usage)
+        clients = CFG.clients
 
     else:
         name = names[0]
         clients = [fabutils.select_client_cfg(name)]
+
+    for client in clients:
         wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
         print(wd)
         with cd(wd):

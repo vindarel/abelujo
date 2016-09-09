@@ -64,6 +64,7 @@ def print_client(client):
 def wd(client, cfg):
     """Get the working directory.
     """
+    cfg = get_yaml_cfg(CLIENTS); cfg = addict.Dict(cfg)
     return os.path.join(cfg.home, cfg.dir, client.name, cfg.project_name)
 
 def bundle_needs_update():
