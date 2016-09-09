@@ -928,10 +928,11 @@ class TestInventory(TestCase):
         self.inv.place = self.place
 
     def test_inventory_state(self):
-        res = self.inv.add_copy(self.card, nb=2)
+        self.inv.add_copy(self.card, nb=2)
         state = self.inv.state()
         self.assertEqual(state['total_missing'], 0)
-        self.assertEqual(state['total_copies'], 1)
+        self.assertEqual(state['nb_copies'], 2)
+        self.assertEqual(state['nb_cards'], 1)
 
     def test_add_copy(self):
         res = self.inv.add_copy(self.card, nb=2)
@@ -948,7 +949,7 @@ class TestInventory(TestCase):
         status, msgs = self.inv.add_pairs(pairs)
         # add_pairs *sets* the quantities
         state = self.inv.state()
-        self.assertEqual(state['total_copies'], 1)
+        self.assertEqual(state['nb_copies'], 1)
 
     def test_diff(self):
 
