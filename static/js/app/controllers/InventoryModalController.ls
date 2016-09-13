@@ -41,7 +41,6 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
     $http.get "/api/publishers/"
     .then (response) !->
         $scope.publishers = sort-by (.fields.name), response.data
-        $log.info response.data
 
     $scope.open = (size) !->
         modalInstance = $uibModal.open do

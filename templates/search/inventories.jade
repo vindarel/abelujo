@@ -61,16 +61,22 @@ div(ng-controller="InventoryModalController")
 table.table.table-striped.table-hover(ng-controller="inventoriesController")
   thead
    tr
-    th {% trans "Created the" %}
-    th {% trans "Inventory of..." %}
-    th {% trans "Progress" %}
-    th {% trans "Nb of titles/copies" %}
-    th {% trans "Value" %}
-    th(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
+    th.mouse-pointer(ng-click="sort_by('created')") {% trans "Created the" %}
+      span.caret
+    th.mouse-pointer(ng-click="sort_by('name')") {% trans "Inventory of..." %}
+      span.caret
+    th.mouse-pointer(ng-click="sort_by('progress')") {% trans "Progress" %}
+      span.caret
+    th.mouse-pointer(ng-click="sort_by('nb_cards')") {% trans "Nb of titles/copies" %}
+      span.caret
+    th.mouse-pointer(ng-click="sort_by('value')") {% trans "Value" %}
+      span.caret
+    th.mouse-pointer(ng-click="sort_by('applied')")(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
+      span.caret
     th
 
   tbody
-    tr(ng-repeat="inv in inventories")
+    tr.my-animated-item(ng-repeat="inv in inventories")
       td {{ 'inv.created'|ng  }}
       td {{ 'inv.name'|ng }}
       td {{ 'inv.progress'|ng  }} %

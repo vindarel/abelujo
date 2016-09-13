@@ -120,14 +120,14 @@ div(ng-cloak, ng-controller="basketsController")
 
    table.table.table-condensed.table-striped
      thead
-       th(ng-show="show_images")
-       th(ng-click="sort_by('title')") {% trans "Title" %}
+       th.mouse-pointer(ng-show="show_images")
+       th.mouse-pointer(ng-click="sort_by('title')") {% trans "Title" %}
          span.caret
-       th(ng-click="sort_by('quantity')") {% trans "In stock" %}
+       th.mouse-pointer(ng-click="sort_by('quantity')") {% trans "In stock" %}
          span.caret
-       th(ng-click="sort_by('price')") {% trans "Price" %}
+       th.mouse-pointer(ng-click="sort_by('price')") {% trans "Price" %}
          span.caret
-       th(ng-click="sort_by('basket_qty')")
+       th.mouse-pointer(ng-click="sort_by('basket_qty')")
          span.caret
 
 
@@ -142,7 +142,7 @@ div(ng-cloak, ng-controller="basketsController")
          td {{ 'get_total_copies()'|ng}}
          td
 
-       tr.repeated-item(
+       tr.my-animated-item(
           ng-repeat="it in copies"
           ng-mouseenter="show_buttons[$index] = true"
           ng-mouseleave="show_buttons[$index] = false")

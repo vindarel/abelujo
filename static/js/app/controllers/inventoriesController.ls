@@ -16,7 +16,7 @@
 
 angular.module "abelujo" .controller 'inventoriesController', ['$http', '$scope', '$log', 'utils', ($http, $scope, $log, utils) !->
 
-    # {sum, map, filter, lines} = require 'prelude-ls'
+    {sum, map, filter, lines, reverse, sort-by} = require 'prelude-ls'
 
     # $scope.language = utils.url_language($window.location.pathname)
 
@@ -24,11 +24,23 @@ angular.module "abelujo" .controller 'inventoriesController', ['$http', '$scope'
     $scope.alerts = []
 
     $http.get "/api/inventories/"
-    .then (response) ->
+    .then (response) !->
 
         if response.data.status == "error"
             $log.error "Error while getting inventories server side"
         $scope.inventories = response.data.data
         # $scope.alerts = response.data.alerts
+
+    $scope.last_sort = "name"
+    $scope.sort_by = (key) !->
+        if $scope.last_sort == key
+            $scope.inventories = $scope.inventories
+            |> reverse
+        else
+            $scope.inventories = $scope.inventories
+            |> sort-by ( -> it[key])
+            $scope.last_sort = key
+
+
 
 ]
