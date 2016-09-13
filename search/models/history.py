@@ -22,6 +22,7 @@ from datetime import date
 from common import ALERT_ERROR
 from common import ALERT_SUCCESS
 from common import ALERT_WARNING
+from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel
 from django.apps import apps
@@ -31,7 +32,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.http import quote
-from search.models.common import DATE_FORMAT
 
 log = logging.getLogger(__name__)
 

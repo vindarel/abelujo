@@ -487,11 +487,6 @@ def sell_details(request, pk):
         "total_price_init": total_price_init,
         })
 
-class InventoriesListView(ListView):
-    model = Inventory
-    template_name = "search/inventories.jade"
-    context_object_name = "inventories"
-
 class DepositsListView(ListView):
     model = Deposit
     template_name = "search/deposits.jade"
@@ -855,7 +850,15 @@ def inventory_export(request, pk):
     return response
 
 @login_required
-def inventories(request, pk):
+def inventories(request):
+    """Get all inventories.
+    """
+    template = "search/inventories.jade"
+    if request.method == 'GET':
+        return render(request, template)
+
+@login_required
+def inventory(request, pk):
     template = "search/inventory_view.jade"
     if request.method == "GET":
         if pk:

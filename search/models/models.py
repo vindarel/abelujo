@@ -2735,11 +2735,26 @@ class Inventory(TimeStampedModel):
 
         return name
 
-    def to_dict(self):
+    def to_dict(self, details=False):
+        """Return a dict ready to be serialized. Simplest form: id and name.
+
+        - details: if True, return also information about its state:
+        applied, closed, created, nb of cards and copies, proress, value.
+        """
         ret = {
             "id": self.id,
             "name": self.name,
             }
+
+        if details:
+            ret["applied"] = self.applied
+            ret["closed"] = self.closed.strftime(DATE_FORMAT) if self.closed else ""
+            ret["created"] = self.created.strftime(DATE_FORMAT) if self.created else ""
+            ret["nb_cards"] = self.nb_cards()
+            ret["nb_copies"] = self.nb_copies()
+            ret["progress"] = self.progress()
+            ret["value"] = self.value()
+
         return ret
 
     def add_copy(self, copy, nb=1, add=True):
@@ -2806,10 +2821,14 @@ class Inventory(TimeStampedModel):
         return sum(self.inventorycopies_set.all().values_list('quantity', flat=True))
 
     def value(self):
-        """Total value.
+        """Total value. Sum of public prices of all books in this inventory.
+
+        Return: a float, rounded to two decimals.
         """
-        return sum([it.card.price * it.quantity for it in
-                    self.inventorycopies_set.select_related('card').all()])
+        ret = sum([it.card.price * it.quantity for it in
+                   self.inventorycopies_set.select_related('card').all()])
+        ret = roundfloat(ret)
+        return ret
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original

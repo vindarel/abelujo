@@ -271,6 +271,7 @@ angular.module "abelujo" .controller "SearchResultsAddToInventoryModalController
     $scope.inventory = undefined
     $scope.alerts = []
 
+    #TODO: only get not closed ones.
     $http.get "/api/inventories"
     .then (response) ->
         $scope.inventories = response.data.data

@@ -832,8 +832,9 @@ def inventories(request, **kwargs):
 
         else:
             try:
-                invs = Inventory.objects.filter(closed=False)
-                invs = [it.to_dict() for it in invs]
+                # TODO: option to get opened ones. For search controller.
+                invs = Inventory.objects.all()
+                invs = [it.to_dict(details=True) for it in invs]
                 to_ret['data'] = invs
                 to_ret['status'] = ALERT_SUCCESS
 

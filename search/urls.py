@@ -22,7 +22,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from search.views import DepositsListView
-from search.views import InventoriesListView
 from search.admin import admin_site
 
 js_info_dict = { 'packages': ('search', '',), }
@@ -96,11 +95,11 @@ urlpatterns = patterns('',
     url(r'^history/entries/(?P<pk>\d+)', 'search.history_views.entry_details',
         name="history_entry"),
 
-    url(r'^inventories/$', login_required(InventoriesListView.as_view()),
+    url(r'^inventories/$', 'search.views.inventories',
         name="inventories"),
     url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.jade")),
         name="inventory_new"),
-    url(r'^inventories/(?P<pk>\d+)/?$', 'search.views.inventories',
+    url(r'^inventories/(?P<pk>\d+)/?$', 'search.views.inventory',
         name="inventory_view"),
     url(r'^inventories/(?P<pk>\d+)/delete', 'search.views.inventory_delete',
         name="inventory_delete"),

@@ -22,7 +22,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from search.views import DepositsListView
-from search.views import InventoriesListView
 
 js_info_dict = { 'packages': ('search', '',), }
 

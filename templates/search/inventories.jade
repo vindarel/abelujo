@@ -58,7 +58,7 @@ div(ng-controller="InventoryModalController")
 
   button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}
 
-table.table.table-striped.table-hover
+table.table.table-striped.table-hover(ng-controller="inventoriesController")
   thead
    tr
     th {% trans "Created the" %}
@@ -70,51 +70,35 @@ table.table.table-striped.table-hover
     th
 
   tbody
-  for inv in inventories
-    tr
-      td {{ inv.created }}
-      if inv.shelf
-        td {{ inv.shelf }}
-      else
-        if inv.place
-          td {{ inv.place }}
-        else
-          if inv.basket
-            td {{ inv.basket }}
-          else
-            if inv.publisher
-              td {{ inv.publisher.name }}
+    tr(ng-repeat="inv in inventories")
+      td {{ 'inv.created'|ng  }}
+      td {{ 'inv.name'|ng }}
+      td {{ 'inv.progress'|ng  }} %
+      td {{ 'inv.nb_cards'|ng  }} / {{ 'inv.nb_copies'|ng  }}
+      td(title='{% trans "Value of all the copies in this inventory" %}') {{ 'inv.value'|ng  }} €
 
-      td {{ inv.progress }} %
-
-      td {{ inv.nb_cards }} / {{ inv.nb_copies }}
-
-      td(title='{% trans "Value of all the copies in this inventory" %}') {{ inv.value }} €
-
-      if inv.applied
-          td.i.glyphicon.glyphicon-ok(title="already applied")
-      else
-          td
+      td.i.glyphicon.glyphicon-ok(title="already applied", ng-if="inv.applied")
+      td(ng-if="! inv.applied")
 
       td
-        a(href="{{ inv.id }}")
+        a(href="{{ 'inv.id'|ng  }}")
           button.btn.btn-primary {% trans "Continue" %}
 
         .btn-group
           button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
             span.caret
           ul.dropdown-menu
-            li: a(href="/inventories//inventories/{{ inv.id }}/export?report=bill&format=pdf", title='{% trans "Get the list of the cards sold with their quantity" %}') {% trans "Sells" %} - pdf
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=bill&format=pdf", title='{% trans "Get the list of the cards sold with their quantity" %}') {% trans "Sells" %} - pdf
 
-            li: a(href="/inventories/{{ inv.id }}/export?report=bill&format=csv") {% trans "Sells" %} - csv
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=bill&format=csv") {% trans "Sells" %} - csv
 
-            li: a(href="/inventories/{{ inv.id }}/export?report=listing&format=csv") {% trans "Full list" %} - csv
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=listing&format=csv") {% trans "Full list" %} - csv
 
-            li: a(href="/inventories/{{ inv.id }}/export?report=listing&format=pdf") {% trans "Full list" %} - pdf
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=listing&format=pdf") {% trans "Full list" %} - pdf
 
-            li: a(href="/inventories/{{ inv.id }}/export?report=simplelisting&format=csv") {% trans "isbn and quantities (Dilicom)" %} - csv
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=simplelisting&format=csv") {% trans "isbn and quantities (Dilicom)" %} - csv
 
-        a(href="{{ inv.id }}/delete")
+        a(href="{{ 'inv.id'|ng  }}/delete")
           button.btn.btn-danger {% trans "Delete" %}
 
 
