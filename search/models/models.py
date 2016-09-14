@@ -238,6 +238,9 @@ class Shelf(models.Model):
     #: Name of the shelf
     name = models.CharField(max_length=CHAR_LENGTH)
 
+    def get_absolute_url(self):
+        return "" # TODO: url parameters in stock search to reference a shelf.
+
     def __unicode__(self):
         #idea: show the nb of cards with that category.
         return u"{}".format(self.name)
@@ -1216,6 +1219,9 @@ class Place (models.Model):
     def __unicode__(self):
         return u"{}".format(self.name)
 
+    def get_absolute_url(self):
+        return "" # TODO: url paramaters for stock search
+
     @staticmethod
     def card_to_default_place(card_obj, nb=1):
         # Add the card to the default place (to the intermediate table).
@@ -1410,6 +1416,9 @@ class Basket(models.Model):
 
     def __unicode__(self):
         return u"{}".format(self.name)
+
+    def get_absolute_url(self):
+        return "/baskets/##{}".format(self.id)
 
     def to_dict(self):
         return {"name": self.name,
@@ -2735,6 +2744,21 @@ class Inventory(TimeStampedModel):
 
         return name
 
+    def get_absolute_url(self):
+        """
+        """
+        url = ""
+        if self.shelf:
+            url = self.shelf.get_absolute_url()
+        elif self.basket:
+            url = self.basket.get_absolute_url()
+        elif self.publisher:
+            url = self.publisher.get_absolute_url()
+        elif self.place:
+            url = self.place.get_absolute_url()
+
+        return url
+
     def to_dict(self, details=False):
         """Return a dict ready to be serialized. Simplest form: id and name.
 
@@ -2744,6 +2768,7 @@ class Inventory(TimeStampedModel):
         ret = {
             "id": self.id,
             "name": self.name,
+            "get_absolute_url": self.get_absolute_url(),
             }
 
         if details:

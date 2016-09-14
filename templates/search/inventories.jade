@@ -78,7 +78,7 @@ table.table.table-striped.table-hover(ng-controller="inventoriesController")
   tbody
     tr.my-animated-item(ng-repeat="inv in inventories")
       td {{ 'inv.created'|ng  }}
-      td {{ 'inv.name'|ng }}
+      td: a(href="{{ 'inv.get_absolute_url'|ng }}") {{ 'inv.name'|ng }}
       td {{ 'inv.progress'|ng  }} %
       td {{ 'inv.nb_cards'|ng  }} / {{ 'inv.nb_copies'|ng  }}
       td(title='{% trans "Value of all the copies in this inventory" %}') {{ 'inv.value'|ng  }} €
