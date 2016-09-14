@@ -42,5 +42,17 @@ angular.module "abelujo" .controller 'inventoriesController', ['$http', '$scope'
             $scope.last_sort = key
 
 
+    # XXX: adapted from inventoryTerminateController
+    $scope.validate = (index) !->
+        sure = confirm "Are you sure to apply this inventory to your stock ?"
+        if sure
+            inv = $scope.inventories[index]
+            $http.post "/api/inventories/#{inv.id}/apply"
+            .then (response) !->
+                status = response.data.status
+                $scope.alerts = response.data
+                if status == "success"
+                    inv.applied = true
+                    $scope.alerts = response.data.alerts
 
 ]

@@ -87,8 +87,15 @@ table.table.table-striped.table-hover(ng-controller="inventoriesController")
       td(ng-if="! inv.applied")
 
       td
-        a(href="{{ 'inv.id'|ng  }}")
-          button.btn.btn-primary {% trans "Continue" %}
+        .btn-group
+          button.btn.btn-primary.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Action" %}...
+            span.caret
+          ul.dropdown-menu
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}") {% trans "Continue" %}
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/terminate/") {% trans "Analyse" %}
+            li: a(href="#", ng-click="validate( $index )", title='{% trans "Apply this inventory to your stock. This will modify your stock" %}') {% trans "Apply to your stock" %}
+            li.divider(role="separator")
+            li: a(href="/inventories/{{ 'inv.id'|ng  }}/delete") {% trans "Delete" %}
 
         .btn-group
           button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
@@ -103,9 +110,6 @@ table.table.table-striped.table-hover(ng-controller="inventoriesController")
             li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=listing&format=pdf") {% trans "Full list" %} - pdf
 
             li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=simplelisting&format=csv") {% trans "isbn and quantities (Dilicom)" %} - csv
-
-        a(href="{{ 'inv.id'|ng  }}/delete")
-          button.btn.btn-danger {% trans "Delete" %}
 
 
 {% endblock content %}

@@ -782,10 +782,19 @@ def inventories(request, **kwargs):
     msgs = []
 
     if request.method == "POST":
-        params = json.loads(request.body)
-        place_id = params.get("place_id")
-        shelf_id = params.get("shelf_id")
-        publisher_id = params.get("publisher_id")
+        try:
+            params = json.loads(request.body)
+            place_id = params.get("place_id")
+            shelf_id = params.get("shelf_id")
+            publisher_id = params.get("publisher_id")
+        except Exception as e:
+            log.error(u'Error while getting query params for inventories: {}.\nrequest: {}'.
+                      format(e, request))
+            data = {
+                "status": ALERT_ERROR,
+                "datab": []
+                }
+            return JsonResponse(data, **kwargs)
 
         try:
             inv = Inventory()
@@ -952,8 +961,21 @@ def inventory_diff(request, pk, **kwargs):
 def inventory_apply(request, pk, **kwargs):
     """Apply this inv to the stock.
     """
-    res, to_ret = Inventory.apply_inventory(pk)
-    return JsonResponse(to_ret, safe=False)
+    if pk is None or pk == "undefined":
+        log.error(u'Error: you want to apply an inventory but its given pk is undefined')
+        to_ret = {
+            "status": ALERT_ERROR,
+            "datab": []
+            }
+        return JsonResponse(to_ret)
+
+    res, alerts = Inventory.apply_inventory(pk)
+    to_ret = {
+        "status": ALERT_SUCCESS,
+        "alerts": alerts,
+        "data": None
+        }
+    return JsonResponse(to_ret)
 
 def stats(request, **kwargs):
     """Return stats about the stock.
