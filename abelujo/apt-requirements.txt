@@ -16,3 +16,4 @@ postgresql-contrib
 libpq-dev
 # for Pillow / xhtml2pdf
 libjpeg-dev
+redis-server

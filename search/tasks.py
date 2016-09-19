@@ -1,4 +1,3 @@
-#!/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright 2014 - 2016 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
@@ -16,33 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Common classes to use in different model files.
-Avoid circular imports.
-"""
-from django.db import models
+import logging
+from huey.contrib.djhuey import db_task
 
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+from models import Inventory
 
-CHAR_LENGTH = 200
+logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
-# Statuses for the client (understood by bootstrap).
-ALERT_SUCCESS = "success"
-ALERT_ERROR = "error"
-ALERT_WARNING = "warning"
-ALERT_INFO = "info"
-
-PAYMENT_CHOICES = [
-    (0, "cash"),
-    (1, "check"),
-    (2, "credit card"),
-    (3, "gift"),
-    (4, "other"),
-    ]
-
-class TimeStampedModel(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
-        app_label = "search"
+@db_task()
+def inventory_apply_task(pk):
+    log.info("Starting task inventory apply of inventory {}".format(pk))
+    status, alerts = Inventory.apply_inventory(pk)
+    log.info("Task inventory apply finished for inventory {}".format(pk))
+    print "inv {} applied ! with status {} and alerts: {}".format(pk, status, alerts)

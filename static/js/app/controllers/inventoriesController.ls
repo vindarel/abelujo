@@ -44,15 +44,19 @@ angular.module "abelujo" .controller 'inventoriesController', ['$http', '$scope'
 
     # XXX: adapted from inventoryTerminateController
     $scope.validate = (index) !->
-        sure = confirm "Are you sure to apply this inventory to your stock ?"
-        if sure
-            inv = $scope.inventories[index]
-            $http.post "/api/inventories/#{inv.id}/apply"
-            .then (response) !->
-                status = response.data.status
-                $scope.alerts = response.data
-                if status == "success"
-                    inv.applied = true
+        inv = $scope.inventories[index]
+        if inv.applied
+            alert gettext "This inventory is already applied."
+        else
+            sure = confirm gettext "Are you sure to apply this inventory to your stock ?"
+            if sure
+                inv.ongoing = true
+                $http.post "/api/inventories/#{inv.id}/apply"
+                .then (response) !->
+                    status = response.data.status
                     $scope.alerts = response.data.alerts
+
+    $scope.closeAlert = (index) ->
+        $scope.alerts.splice index, 1
 
 ]

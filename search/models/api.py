@@ -28,8 +28,10 @@ from models import Stats
 from models import getHistory
 from search.models import history
 from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
+from search.tasks import inventory_apply_task
 from search.views import get_datasource_from_lang
 from search.views import postSearch
 from search.views import search_on_data_source
@@ -969,10 +971,24 @@ def inventory_apply(request, pk, **kwargs):
             }
         return JsonResponse(to_ret)
 
-    res, alerts = Inventory.apply_inventory(pk)
+    inv = Inventory.objects.get(id=pk)
+    if inv.applied:
+        return JsonResponse(
+            {"data": "already applied",
+             "alerts": [
+                 {"level": ALERT_INFO,
+                  "message": _(u"This inventory is already applied")}
+             ]})
+
+    # Run asynchronously:
+    inventory_apply_task(pk)
+
     to_ret = {
-        "status": ALERT_SUCCESS,
-        "alerts": alerts,
+        "status": ALERT_INFO,
+        "alerts": [
+            {"level": ALERT_INFO,
+             "message": _("The inventory is being applied. This may take a few minutes.")}
+            ],
         "data": None
         }
     return JsonResponse(to_ret)

@@ -3048,6 +3048,8 @@ class Inventory(TimeStampedModel):
     def apply(self):
         """Apply this inventory to the stock. Changes each card's quantity of
         the needed place and closes the inventory.
+
+        Return: a tuple status (bool), alerts (list of dicts with a level and a message).
         """
         if self.applied or (self.closed is not None and self.closed):
             return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]

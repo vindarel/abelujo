@@ -42,3 +42,6 @@ xhtml2pdf==0.0.6        # quickfix... see requirements-system.txt
 # deployment
 whitenoise              # serve static files. Easily, efficiently.
 gunicorn==19.4          # wsgi server
+
+huey==1.2               # task queue
+redis==2.10

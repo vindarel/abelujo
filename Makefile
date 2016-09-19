@@ -145,6 +145,9 @@ run-gunicorn:
 
 gunicorn: run-gunicorn
 
+taskqueue:
+	python manage.py run_huey
+
 # Run end to end tests only.
 e2e:
 	cd search/ && ./e2etests.sh

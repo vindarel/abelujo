@@ -150,9 +150,29 @@ which is a shortcut to access an object's attribute or method. We can also write
      cards_with_stock = all_cards
      |> filter ( -> it[quantity] > 0)
 
+Huey: run asynchronous tasks
+----------------------------
 
-Fabric
-------
+When a user action takes a long time and we want the server to respond
+quickly, or when we want to run periodic tasks: we need a tasks queue,
+and `Huey < https://huey.readthedocs.io/en/latest/ >`_ is one of them.
+
+The most common solution is Celery, but it's a huge beast, with many
+dependencies, and can be tricky to setup. Huey only depends on Redis
+and on its python binding. It's also straightforward to use. Django-rq
+could have been a solution, with the advantage of a Django dashboard.
+
+We use Huey to **apply inventories**. See ``search.tasks.py``. To create
+an async function we just add the ``db_task()`` decorator. Calling an
+async function is just a regular function call. See
+``search.models.api.py``.
+
+Another nice usage will be sending periodic emails, or checking that
+books prices didn't change.
+
+
+Fabric: run management commands to the remote server
+----------------------------------------------------
 
 `Fabric <http://docs.fabfile.org/en/latest/>`_ helps to run remote
 management commands to instances through ssh. See the ``fabfile.py``.
