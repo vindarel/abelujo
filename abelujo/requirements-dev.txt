@@ -1,7 +1,6 @@
 ### packages only needed for local development, not used on production.
 
 ### Django extensions
-django_extensions==1.5    # more useful commands to manage.py (shell_plus).
 Werkzeug                  # runserver_plus: richer tracebacks and inline console.
 
 ### testing

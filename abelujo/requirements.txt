@@ -22,6 +22,7 @@ psycopg2                # postgresql database engine.
 pytz			# timezone
 
 ### Django extensions
+django_extensions==1.7    # more useful commands to manage.py (shell_plus).
 mod_wsgi==4.4             # apache server for development.
 # mod_wsgi-httpd           # discard the system's apache httpd server if needed.
 
