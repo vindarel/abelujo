@@ -30,6 +30,8 @@ js_info_dict = { 'packages': ('search', '',), }
 urlpatterns = patterns('',
     # Access to the translations in javascript code:
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict,),
+    # Django Rest Framework browsable api
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     # url(r'^$', RedirectView.as_view(url='search/')),
     url(r'^$', 'search.views.dashboard', name="dashboard"),

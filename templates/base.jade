@@ -65,6 +65,7 @@ html(ng-app="abelujo")
             a(href="#").dropdown-toggle(data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false") {{'username'|ng}}
               span.caret
             ul.dropdown-menu
+              li: a(href="/preferences/") {% trans "Preferences" %}
               li: a(href="/logout/", title=' {% trans "Logout" %}') {% trans "Logout" %}  
                   i.glyphicon.glyphicon-log-out
 

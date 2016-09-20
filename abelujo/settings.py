@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     # Custom:
     'mod_wsgi.server',
     'huey.contrib.djhuey',
+    'rest_framework',
 
     'search',
 )

@@ -101,15 +101,22 @@ In the virtual env, run:
 Development
 ===========
 
-Django project (1.8), in python (2.7), with AngularJS (1.3)
+Django project (1.8), in python (2.7), with AngularJS (1.3) and the
+[Django Rest Framework](http://www.django-rest-framework.org)
+(partly).
 
-We use:
+
+We also use:
 
 - the [AngularJS](https://angularjs.org/) javascript framework with
     [LiveScript](http://livescript.net)
 -   [jade templates](http://jade-lang.com/), which compile to html,
     and pyjade for the Django integration
 -   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
+- the [Huey](https://huey.readthedocs.io/en/latest/django.html) asynchronous task queue.
+
+Read more about our [tools choices](http://dev.abelujo.cc/choices.html)
+to understand better what does what and how everything works together.
 
 See the developer documentation: http://dev.abelujo.cc/ This is
 [our database graph](http://dev.abelujo.cc/graph-db.png) (`make
