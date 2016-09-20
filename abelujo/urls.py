@@ -36,6 +36,9 @@ apipatterns = patterns("",
     # XXX: the strings returned by the api (called from JS) are not translated. See issue #14.
     url(r'^api/datasource/search/', 'search.models.api.datasource_search', name="api_search_datasource"),
 
+    # Meta info:
+    url(r'^api/userinfo?$', 'search.models.api.get_user_info', name="api_user_info"),
+
     url(r'^api/cards/create$', 'search.models.api.card_create', name="api_card_create"),
     url(r'^api/cards/?$', 'search.models.api.cards', name="api_cards"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', 'search.models.api.card_add',

@@ -31,7 +31,7 @@ html(ng-app="abelujo")
     script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')
       div {% block pagetitle %} {% endblock %}
 
-  body.container-fullwidth(style="padding-top: 60px;")
+  body.container-fullwidth(ng-controller="navbarController", style="padding-top: 60px;")
    nav.navbar.navbar-default.navbar-inverse.navbar-fixed-top.container-fluid(role="navigation")
       div.navbar-collapse
         ul.nav.navbar-nav
@@ -58,11 +58,16 @@ html(ng-app="abelujo")
                     a(href='/database') {% trans "All" %}
 
         ul.nav.navbar-nav.navbar-right
-          li(href="#")
-            a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
-          li(href="#")
-            a.text-right(href="/logout/", style="padding-left: 3px; padding-right: 5px", title=' {% trans "Logout" %}')
-              i.glyphicon.glyphicon-log-out
+          //- li(href="#")
+          //-   a.text-right(href="/admin", style="padding-right: 3px") {% trans "Admin" %}
+
+          li.dropdown
+            a(href="#").dropdown-toggle(data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false") {{'username'|ng}}
+              span.caret
+            ul.dropdown-menu
+              li: a(href="/logout/", title=' {% trans "Logout" %}') {% trans "Logout" %}  
+                  i.glyphicon.glyphicon-log-out
+
 
   #wrapper(ng-controller="baseController")
     #sidebar-wrapper

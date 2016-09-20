@@ -55,6 +55,12 @@ log = logging.getLogger(__name__)
 # in a dict (good practive influenced by the JsonResponse that likes a
 # dict better).
 
+def get_user_info(request, **response_kwargs):
+    """
+    """
+    data = {'data': {'username': request.user.username,}}
+    return JsonResponse(data)
+
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
 
