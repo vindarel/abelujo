@@ -1,0 +1,8 @@
+# Configuration to add to /etc/supervisord.conf
+# supervisord needs a restart.
+# todo: assure supervisor runs without run privileges.
+
+[program:huey-{venv}]
+command=/home/{user}/.virtualenvs/{venv}/bin/python manage.py run_huey
+directory=/home/{user}/{project_name}/{venv}/abelujo
+user={user}

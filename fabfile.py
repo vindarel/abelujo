@@ -356,6 +356,14 @@ def rebase(name=None):
 
         check_online(name)
 
+def task_queue_to_supervisor(name):
+    """
+    Add this project's conf to /etc/supervisord.conf
+    Needs a restart. Supervisord pidfile is at /tmp/supervisord.pid
+    """
+    pass
+
+
 def ssh_to(client):
     client = fabutils.select_client_cfg(client, CFG)
     cmd = "ssh -Y {}@{}".format(CFG.get('user'),

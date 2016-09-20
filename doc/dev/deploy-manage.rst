@@ -1,3 +1,12 @@
+Run Huey and Django in production with Supervisor
+=================================================
+
+`Supervisor < http://supervisord.org >`_ watches for daemon programs
+and restarts them automatially when it fails or when the computer
+starts up. It has third party web dashboards.
+
+The server must have an existing `/etc/supervisord.conf`.
+
 Deployment and website management
 =================================
 

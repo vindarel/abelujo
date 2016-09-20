@@ -17,3 +17,4 @@ libpq-dev
 # for Pillow / xhtml2pdf
 libjpeg-dev
 redis-server
+supervisor      # install with system, not pip, for it to restart with the system.
