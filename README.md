@@ -111,7 +111,9 @@ We use:
     and pyjade for the Django integration
 -   [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
 
-See the developer documentation: http://dev.abelujo.cc/
+See the developer documentation: http://dev.abelujo.cc/ This is
+[our database graph](http://dev.abelujo.cc/graph-db.png) (`make
+graphdb`).
 
 Note::
 
@@ -119,15 +121,7 @@ As a complement to the installion procedure above, you also need to install deve
 
     make pip-dev
 
-We get the data about books with some webscraping (discogs provides an
-api).
-
-You can have a look at the existing scrapers at
-[search/datasources](search/datasources/). Some abstraction work
-remains to be done. To implement your own, see the base class at
-`datasources/utils/baseScraper.py`. It's actually very simple, you
-just need to find a couple of xpath selectors.
-
+Additional management commands start with `my_`.
 
 Load testing data
 -----------------
@@ -140,6 +134,9 @@ It is possible to load a set of testing data::
 
 this will load aprroximately 400 Cards, Authors, Publishers and
 Baskets. There are already a default Place and Distributor.
+
+See also the scripts in `scripts/` to load data (specially shelves
+names), in different languages.
 
 Troubleshooting
 ---------------

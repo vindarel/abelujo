@@ -199,9 +199,13 @@ srcfile = ""
 odsimport:
 	python manage.py runscript -v2 odsimport --script-args=$(srcfile)
 
-doc:
+graphdb: doc/dev/graph-db.png
+	# DB graph with graphviz (apt-get install graphviz), and django_extensions
+	./manage.py graph_models  search | dot -Tpng -o doc/dev/graph-db.png
+
+doc: graphdb
 	# the chmod is for the host server to serve the files.
-	@cd doc/dev/ && make html && chmod 777 -R _build/html/
+	@cd doc/dev/ && make html && cp *png _build/html/ && chmod 777 -R _build/html/
 
 publish: doc
 	# publish on dev.abelujo.cc

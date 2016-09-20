@@ -15,6 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+You can produce a graph of the db with django_extension's
+
+    make graphdb
+
+and see it here: http://dev.abelujo.cc/graph-db.png
+"""
 import datetime
 import json
 import logging
