@@ -11,6 +11,8 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.utils.translation import ugettext as _
+
+from drfserializers import PreferencesSerializer
 from models import Alert
 from models import Author
 from models import Basket
@@ -20,6 +22,7 @@ from models import Deposit
 from models import Distributor
 from models import Inventory
 from models import Place
+from models import Preferences
 from models import Publisher
 from models import Sell
 from models import Shelf
@@ -60,6 +63,18 @@ def get_user_info(request, **response_kwargs):
     """
     data = {'data': {'username': request.user.username,}}
     return JsonResponse(data)
+
+def preferences(request, **response_kwargs):
+    """
+    """
+    try:
+        pref = Preferences.objects.first()
+    except Exception as e:
+        log.error('Error while getting the Preferences: {}'.format(e))
+        return JsonResponse({"status": ALERT_ERROR})
+
+    ret = PreferencesSerializer(pref).data
+    return JsonResponse(ret)
 
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
