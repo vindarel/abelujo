@@ -82,7 +82,7 @@ div(ng-controller="inventoriesController")
         span.caret
       th.mouse-pointer(ng-click="sort_by('value')") {% trans "Value" %}
         span.caret
-      th.mouse-pointer(ng-click="sort_by('applied')")(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
+      th.mouse-pointer(ng-click="sort_by('closed')")(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
         span.caret
       th
 
