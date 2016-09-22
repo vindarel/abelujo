@@ -23,9 +23,35 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-div(ng-controller="")
-  h3 {% trans "Preferences" %}
+div(ng-controller="preferencesController")
+  div
+    uib-alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
 
+  .row
+    .col-md-3
+      h3 {% trans "Preferences" %}
 
+    .col-md-6
+
+      form(name="userForm", ng-submit="save(userForm)", novalidate)
+         .row
+          .col-md-6
+            h4 {% trans "Default place" %}
+            div {% trans "This is the place to add products to by default." %}
+
+          .col-md-6
+            select.form-control(name="place", ng-model="place", ng-options="it.name for it in places")
+         .row
+            .col-md-6
+            .col-md-6
+              button.btn.btn-success(type="submit", ng-disabled="! userForm.$dirty") {% trans "OK" %}
+
+    .col-md-3
 
 {% endblock content %}

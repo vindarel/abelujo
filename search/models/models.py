@@ -1367,6 +1367,33 @@ class Preferences(models.Model):
     def __unicode__(self):
         return u"default place: %s" % (self.default_place.name,)
 
+    @staticmethod
+    def prefs():
+        """
+        Return a Preferences object.
+        """
+        return Preferences.objects.first()
+
+    @staticmethod
+    def setprefs(**kwargs):
+        """
+        Change preferences.
+
+        Return: tuple list of messages, status code.
+        """
+        status = ALERT_SUCCESS
+        prefs = Preferences.objects.first()
+        for key, val in kwargs.iteritems():
+            if key == 'default_place' and not prefs.default_place == val:
+                try:
+                    prefs.default_place = val
+                    prefs.save()
+                except Exception as e:
+                    log.error(u"Error while setting preferences: {}".format(e))
+                    status = ALERT_ERROR
+
+        return [], status
+
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).
     """

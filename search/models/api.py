@@ -66,15 +66,36 @@ def get_user_info(request, **response_kwargs):
 
 def preferences(request, **response_kwargs):
     """
+    Get or set preferences.
     """
-    try:
-        pref = Preferences.objects.first()
-    except Exception as e:
-        log.error('Error while getting the Preferences: {}'.format(e))
-        return JsonResponse({"status": ALERT_ERROR})
+    ret = {}
 
-    ret = PreferencesSerializer(pref).data
-    return JsonResponse(ret)
+    if request.method == 'GET':
+        try:
+            pref = Preferences.prefs()
+        except Exception as e:
+            log.error('Error while getting the Preferences: {}'.format(e))
+            return JsonResponse({"status": ALERT_ERROR,
+                                 'data':ret})
+
+        ret['data'] = PreferencesSerializer(pref).data
+        ret['status'] = ALERT_SUCCESS
+        return JsonResponse(ret)
+
+    elif request.method == 'POST':
+        status = ALERT_SUCCESS
+        msgs = []
+        try:
+            params = json.loads(request.body)
+        except Exception as e:
+            log.error(u'Error getting requests body on Preferences: {}'.format(e))
+
+        place_id = params.get('place_id')
+        place = Place.objects.get(id=place_id)
+        if place is not None:
+            msgs, status = Preferences.setprefs(default_place=place)
+
+        return JsonResponse({'status': status, 'alerts': msgs})
 
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.

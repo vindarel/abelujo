@@ -200,6 +200,13 @@ def get_datasource_from_lang(lang):
     else:
         return DEFAULT_DATASOURCE
 
+@login_required
+def preferences(request):
+    """
+    """
+    template = "search/preferences.jade"
+    return render(request, template)
+
 def search_on_data_source(data_source, search_terms, PAGE=1):
     """search with the appropriate scraper.
 

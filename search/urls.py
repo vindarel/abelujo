@@ -36,6 +36,9 @@ urlpatterns = patterns('',
     # url(r'^$', RedirectView.as_view(url='search/')),
     url(r'^$', 'search.views.dashboard', name="dashboard"),
     url(r'^database/?', admin_site.urls),
+
+    url(r'^preferences/?$', 'search.views.preferences', name="preferences"),
+
     url(r'^search/?$', 'search.views.search', name="card_search"),
 
     url(r'^stats/', 'search.views.dashboard', name="stats"),
