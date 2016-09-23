@@ -16,49 +16,62 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
 import json
 import os
-import yaml
 
+import yaml
 from tqdm import tqdm
 
 from search.models.models import Card
 from search.models.models import CardType
-from search.models.models import Shelf
 from search.models.models import Place
 from search.models.models import Preferences
+from search.models.models import Shelf
 
-"""Add and create objects to the database, from a yaml file.
+
+"""
+Set the VTA tax.
 
 Run with the runscript management command.
 
 Usage:
 
-./manage.py runscript add_objects --script-args=scripts/shelfs_fr.yaml
+./manage.py runscript set_vta --script-args=scripts/shelfs_fr.yaml
 """
-def run(*args):
-    """Define a yaml:
-    - model: name of the model
-    - from_string: string with space-separated names of objects to create.
 
+def run(*args):
+    """
     """
 
-    def add_object(model, name):
-        try:
-            obj, created = model.objects.get_or_create(name=name)
-        except Exception as e:
-            print e
+    LANG = "fr"
+    src = "scripts/init-data.yaml"
 
-    src = args[0]
     with open(src, "r") as f:
         data = yaml.load(f.read())
 
-    names = data.get('names')
-    print "We got: "
-    print names
-    model = globals()[data['model']]
-    print "Adding objects to {}...".format(data['model'])
-    for name in tqdm(names):
-        add_object(model, name.strip())
+    if not data:
+        print("No file data given")
+        exit(1)
 
-    print "Done."
+    lang = args[0] if args else LANG
+    langchoices = data.keys()
+    if lang not in langchoices:
+        print("The requested language ({}) isn't in the initial data. Choices: {}".format(lang, langchoices))
+        exit(1)
+
+    data = data[lang]
+    prefs = data['Preferences']
+    if not prefs['vat_book']:
+        print("We can't find a vat_book in {}".format(prefs))
+        exit(1)
+
+    vat_book = prefs['vat_book']
+
+    print("=== setting the vat for books...===")
+    msgs, status = Preferences.setprefs(vat_book=vat_book)
+    if status == "success":
+        print("==== ok ===")
+    else:
+        print("==== pb: {}".format(msgs))

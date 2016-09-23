@@ -1,0 +1,9 @@
+# Initial data for a new setup, sorted by language.
+
+fr: # yes, could be fr/fr or fr/be, but it's ok for now.
+  Preferences:
+    vat_book: 5.5
+
+es:
+  Preferences:
+    vat_book: 4
