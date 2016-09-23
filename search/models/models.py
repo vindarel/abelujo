@@ -1361,12 +1361,14 @@ class Preferences(models.Model):
     """
     #: What place to add the cards by default ? (we register them, then move them)
     default_place = models.OneToOneField(Place)
+    #: VAT, the tax
+    vat_book = models.FloatField(null=True, blank=True)
 
     class Meta:
         app_label = "search"
 
     def __unicode__(self):
-        return u"default place: %s" % (self.default_place.name,)
+        return u"default place: {}, vat: {}".format(self.default_place.name,self.vat_book)
 
     @staticmethod
     def prefs():
@@ -1383,21 +1385,35 @@ class Preferences(models.Model):
         Return: tuple list of messages, status code.
         """
         status = ALERT_SUCCESS
+        msgs = []
         prefs = Preferences.objects.first()
         if not prefs:
             return [{'level': ALERT_INFO,
                      'message': u"There is no preferences"}], ALERT_WARNING
 
         for key, val in kwargs.iteritems():
-            if key == 'default_place' and not prefs.default_place == val:
-                try:
-                    prefs.default_place = val
-                    prefs.save()
-                except Exception as e:
-                    log.error(u"Error while setting preferences: {}".format(e))
-                    status = ALERT_ERROR
+            if val is not None:
+                if key == 'default_place' and not prefs.default_place == val:
+                    try:
+                        prefs.default_place = val
+                        prefs.save()
+                    except Exception as e:
+                        log.error(u"Error while setting preferences: {}".format(e))
+                        status = ALERT_ERROR
 
-        return [], status
+                elif key == 'vat_book':
+                    try:
+                        prefs.vat_book = val
+                        prefs.save()
+                    except Exception as e:
+                        log.error(u"Error setting preferences VAT: {}".format(e))
+                        status = ALERT_ERROR
+                        msgs.append("Error with setting vat: {}".format(e))
+
+            else:
+                msgs.append({'level': ALERT_INFO, 'message': u"Value for preference {} is {}.".format(key, val)})
+
+        return msgs, status
 
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).

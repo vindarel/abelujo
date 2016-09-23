@@ -1059,3 +1059,9 @@ class TestPreferences(TestCase):
         place = prefs.default_place
 
         self.assertEqual(place, self.new_place)
+
+    def test_set_vat(self):
+        vat = 2
+        msgs, status = Preferences.setprefs(vat_book=vat)
+        self.assertEqual(status, ALERT_SUCCESS)
+        self.assertEqual(Preferences.prefs().vat_book, vat, msgs)

@@ -83,17 +83,29 @@ def preferences(request, **response_kwargs):
         return JsonResponse(ret)
 
     elif request.method == 'POST':
+        place = None
         status = ALERT_SUCCESS
         msgs = []
         try:
             params = json.loads(request.body)
         except Exception as e:
             log.error(u'Error getting requests body on Preferences: {}'.format(e))
+            return JsonResponse(
+                {'status': ALERT_ERROR,
+                 'message': u'Error getting Preferences: {}'.format(e)})
 
         place_id = params.get('place_id')
-        place = Place.objects.get(id=place_id)
-        if place is not None:
-            msgs, status = Preferences.setprefs(default_place=place)
+        if place_id:
+            try:
+                place = Place.objects.get(id=place_id)
+                if place is None:
+                    params.pop('place_id')
+            except Exception as e:
+                log.error(u"Error getting place with id {}: {}".format(place_id, e))
+                params.pop('place_id', None)
+
+        msgs, status = Preferences.setprefs(default_place=place,
+                                            vat_book=params.get('vat_book'))
 
         return JsonResponse({'status': status, 'alerts': msgs})
 
