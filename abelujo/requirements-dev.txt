@@ -20,4 +20,3 @@ sphinx==1.2.3           # documentation system.
 
 ### deployment
 fabric<2                # remote execution
-underwear               # easy deployment
