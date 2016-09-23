@@ -41,12 +41,22 @@ div(ng-controller="preferencesController")
 
       form(name="userForm", ng-submit="save(userForm)", novalidate)
          .row
+          h3 {% trans "About the shop" %}
           .col-md-6
             h4 {% trans "Default place" %}
-            div {% trans "This is the place to add products to by default." %}
+            //- div {% trans "This is the place to add products to by default." %}
 
           .col-md-6
             select.form-control(name="place", ng-model="place", ng-options="it.name for it in places")
+
+         .row
+          h3 {% trans "VAT" %}
+          //- .col-md-6
+            h4 {% trans "VAT on books" %}
+
+          .col-md-6
+            input(type="text", ng-model="vat_book")
+
          .row
             .col-md-6
             .col-md-6
