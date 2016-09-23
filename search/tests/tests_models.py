@@ -90,6 +90,12 @@ class PlaceFactory(DjangoModelFactory):
     is_stand = False
     can_sell = True
 
+class PreferencesFactory(DjangoModelFactory):
+    class Meta:
+        model = Preferences
+    default_place = PlaceFactory()
+    vat_book = "5.5"
+
 class InventoryFactory(DjangoModelFactory):
     class Meta:
         model = Inventory
@@ -1033,3 +1039,23 @@ class TestInventory(TestCase):
         self.inv.apply()
         self.assertEqual(self.place.quantities_total(), qty_before + 1)
         self.assertEqual(self.place.quantity_of(self.card), 1 + 1)
+
+class TestPreferences(TestCase):
+
+    def setUp(self):
+        self.preferences = PreferencesFactory()
+        self.preferences.default_place = PlaceFactory()
+        self.preferences.save()
+        self.new_place = PlaceFactory()
+
+    def tearDown(self):
+        pass
+
+    def test_set_preferences(self):
+        msgs, status = Preferences.setprefs(default_place=self.new_place)
+        self.assertEqual(status, ALERT_SUCCESS, "%s" % msgs)
+
+        prefs = Preferences.prefs()
+        place = prefs.default_place
+
+        self.assertEqual(place, self.new_place)

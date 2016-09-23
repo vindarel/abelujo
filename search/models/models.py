@@ -46,6 +46,7 @@ from django.utils.http import quote
 from django.utils.translation import ugettext as _
 from search.models import history
 from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.common import DATE_FORMAT
@@ -1383,6 +1384,10 @@ class Preferences(models.Model):
         """
         status = ALERT_SUCCESS
         prefs = Preferences.objects.first()
+        if not prefs:
+            return [{'level': ALERT_INFO,
+                     'message': u"There is no preferences"}], ALERT_WARNING
+
         for key, val in kwargs.iteritems():
             if key == 'default_place' and not prefs.default_place == val:
                 try:
