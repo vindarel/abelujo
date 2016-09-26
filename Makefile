@@ -3,7 +3,7 @@
 # Makefile: because we need more elaborate commands than manage.py
 
 # The target names are not a file produced by the commands of that target. Always out of date.
-.PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp tox
+.PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp tox migrations
 
 clone:
 	git clone --recursive https://gitlab.com/vindarel/abelujo.git
