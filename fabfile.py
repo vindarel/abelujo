@@ -78,7 +78,7 @@ GUNICORN = "gunicorn --env DJANGO_SETTINGS_MODULE={project_name}.settings {proje
 #: File name whith the port number
 PID_FILE = "PID.txt"
 #: Kill a server instance
-CMD_KILL = "killall -9 $(cat {})".format(PID_FILE)
+CMD_KILL = "kill -9 $(cat {})".format(PID_FILE)
 
 #: Command to rebase a repo
 CMD_REBASE = "make rebase"
