@@ -1637,7 +1637,10 @@ class Basket(models.Model):
         dep.distributor = distributor
         try:
             dep.save()
-            msgs = dep.add_copies(self.copies.all())
+            cards_qty = self.basketcopies_set.all()
+            copies = [it.card for it in cards_qty]
+            qties = [it.nb for it in cards_qty]
+            msgs = dep.add_copies(copies, quantities=qties)
             msgs += msgs
         except Exception as e:
             log.error("Basket to deposit: error adding copies: {}".format(e))
