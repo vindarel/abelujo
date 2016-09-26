@@ -24,28 +24,58 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-a(href="/admin/search/deposit/{{deposit.id}}") {% trans "edit" %}
-dl.dl-horizontal
-  dt {% trans "Deposit" %}
-  dd {{ deposit.name }}
-  dt {% trans "Distributor" %}
-  dd {{ deposit.distributor }}
-  dt {% trans "discount" %}
-  dd {{ distributor.discount }} %
-  dt {% trans "Deposit type" %}
-  dd {{ deposit.deposit_type }}
-  dt {% trans "Auto command" %}
-  dd {{ deposit.auto_command | yesno:"oui,non"}}
-  dt {% trans "Last deposit state" %}
-  dd {{ deposit.last_checkout_date }}
-  dt {% trans "Alerts" %}
-  dd {{ nb_alerts }}
+.row
+  .col-md-3
+   dl.dl-horizontal
+    dt {% trans "Deposit" %}
+    dd {{ deposit.name }}
 
-div {% trans "total init" %}: {{ total.total_price_init }}
-div {% trans "total sold" %}: {{ total.total_price_sold }}
-div {% trans "discount" %}: {{ total.discount }} %
-h4  {% trans "to pay" %}: {{ total.total_to_pay }}
-div {% trans "margin" %}: {{ total.margin }}
+    dt {% trans "Distributor" %}
+    dd: a(href="{{deposit.distributor.get_absolute_url}}") {{ deposit.distributor }}
+    dt {% trans "discount" %}
+    dd {{ distributor.discount }} %
+    dt {% trans "Deposit type" %}
+    dd {{ deposit.deposit_type }}
+    dt {% trans "Auto command" %}
+    dd {{ deposit.auto_command | yesno:"oui,non"}}
+  .col-md-3
+   dl.dl-horizontal
+    dt {% trans "Due date" %}
+    if deposit.due_date
+      dd {{ deposit.due_date }}
+    else
+      dd
+    dt {% trans "Last deposit state" %}
+      dd {{ deposit.last_checkout_date }}
+    dt {% trans "Alerts" %}
+    dd {{ nb_alerts }}
+
+  .col-md-4
+    div {% trans "total init" %}: {{ total.total_price_init }}
+    div {% trans "total sold" %}: {{ total.total_price_sold }}
+    div {% trans "discount" %}: {{ total.discount }} %
+    h4  {% trans "to pay" %}: {{ total.total_to_pay }}
+    div {% trans "margin" %}: {{ total.margin }}
+
+.row
+  .col-sm-4
+    .btn-group
+      button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+        span.caret
+      ul.dropdown-menu
+        li: a(href='{% url "deposit_checkout" deposit.id %}', title='{% trans "Save this deposit state" as deposit_state %}') {{ deposit_state }}
+
+        li: a(href="/admin/search/deposit/{{deposit.id}}") {% trans "edit" %}
+
+        {% trans "Add copies…" as deposit_add %}
+        li: a(href='{% url "deposit_add_copies" deposit.id %}', title="{{ deposit_add }}", value="{{ deposit_add }}", type="submit") {{ deposit_add }}
+
+      a(href="http://abelujo.cc/docs/deposits/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
+       i.glyphicon.glyphicon-question-sign
+
+
+//- {% trans "Delete this deposit" as deposit_delete %}
+//- a(href="{% url 'deposit_delete' deposit.id %}").btn.btn-danger(title="{{ deposit_delete }}", value="{{ deposit_delete }}", type="submit", on-click="alert('not implemented!');") {{ deposit_delete }}
 
 table.table.table-striped.table-hover
     tr
@@ -56,19 +86,11 @@ table.table.table-striped.table-hover
         th {% trans "current qty" %}
     for key, bal in cards_balance
       tr
-        td  {{ key.title }}
+        td: a(href="{{key.get_absolute_url}}")  {{ key.title }}
         td  {{ key.price }}
         td  {{ bal.nb_initial }}
         td  {{ bal.nb_sells }}
         td  {{ bal.nb_current }}
 
-{% trans "Save this deposit state" as deposit_state %}
-a(href='{% url "deposit_checkout" deposit.id %}').btn.btn-primary(title="{{ deposit_state }}", value="{{ deposit_state }}", type="submit") {{ deposit_state }}
-
-{% trans "Add copies…" as deposit_add %}
-a(href='{% url "deposit_add_copies" deposit.id %}').btn.btn-default(title="{{ deposit_add }}", value="{{ deposit_add }}", type="submit") {{ deposit_add }}
-
-//- {% trans "Delete this deposit" as deposit_delete %}
-//- a(href="{% url 'deposit_delete' deposit.id %}").btn.btn-danger(title="{{ deposit_delete }}", value="{{ deposit_delete }}", type="submit", on-click="alert('not implemented!');") {{ deposit_delete }}
 
 {% endblock content %}
