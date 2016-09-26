@@ -25,78 +25,110 @@
 
 
 .row
-  .col-lg-3
-  .col-lg-9
-    a(href="/stock/card/edit/{{object.pk}}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
-    a(href="{% url 'card_move' object.pk %}")
-      input.btn.btn-default(value="{% trans 'Move…' %}")
+  .col-lg-10
+    ul.nav.nav-tabs
+      li.active(role="presentation"): a(href="#") {% trans "Card details" %}
+      //- li(role="presentation", on-click="alert('Not implemented !')")
+        a(href="{{object.get_absolute_url}}/history") {% trans "History" %}
+
 .row
   .col-lg-3
-    .row
+    .btn-group
+      button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+        span.caret
+      ul.dropdown-menu
+        li: a(href="/stock/card/edit/{{object.pk}}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
+        li: a(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
+
+  .col-lg-7
+    h3 {{ object.title }}
+
+.row
+  .col-lg-3.my-border
+
+    .row(style="margin-left: 1px;")
       img.img-responsive(src="{{ object.img }}")
-    .row
+
+    .row(style="margin-left: 1px;")
       h4 {{ object.price }} €  ({{ object.card_type }})
       h4 {% trans "in stock" %}: {{ object.quantity }}
+      div {% trans "Minimal qty" %}: {{ object.threshold }}
       div isbn: {{ object.isbn }}
-      a(target="_blank", href="{{ object.details_url }}") {% trans "source" %}: {{ object.data_source }}
+      div {% trans "Source" %}: 
+        a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
 
-      div {% trans "Shelf" %}: {{ object.shelf }}
+      div {% trans "Shelf" %}: 
+        if object.shelf
+          {{ object.shelf }}
 
-      div.panel.panel-default {% trans "Comment" %}
-       div.panel-heading
-        div.panel-content {{ object.comment }}
+      div
+        span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
+            span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
+      div {% trans "Comment" %}: 
+        if object.comment
+          em.my-border {{ object.comment }}
+        else
+          div
 
   .col-lg-9
-    h3 {{ object.title }}
     h4 {{ object.display_authors }}
-    div {% trans "Publishers" %}:
-        ul.list-group
-            for pub in object.get_publishers
-                li.list-group-item
+    for pub in object.get_publishers
                   a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
 
     div {% trans "Distributor" %}:
+      .row
         ul.list-group
+          .col-md-3
             for dist in object.get_distributor
                 li.list-group-item
                   a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
 
     div {% trans "Presente in" %}:
+     .row
       ul.list-group
-        {% for place_copy in object.placecopies_set.all %}
-        li.list-group-item {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
-        {% endfor %}
+       .col-md-3
+        for place_copy in object.placecopies_set.all
+            li.list-group-item {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
 
-    div {% trans "Deposits" %}: {{ object.depositcopies_set.count }}
-      ul.list-group
-        {% for dep in object.depositcopies_set.all %}
-        li.list-group-item {{ dep.deposit.name }}: {{ dep.nb }}
-        {% endfor %}
+    div {% trans "Deposits" %}:
+      .row
+        .col-md-3
+          ul.list-group
+              for dep in object.deposit_set.all
+                li.list-group-item: a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
 
     div {% trans "Alerts" %}: {{ object.alert_set.count }}
 
     div {% trans "Last entry" %}:
       if not last_entry
-        span {% trans "unknown" %}
+        span {% trans "no data" %}
       else
         //- a(href="{{ last_entry.get_absolute_url }}")
           div {{last_entry.created }}
         span {{ last_entry.created }}
 
     div {% trans "Sells since the last entry" %}: {{ total_sold }}
-      if sells
-
-        ul.list-group
-          for sell in sells
-            a(href="{{ sell.get_absolute_url }}")
-                li.list-group-item {{ sell.created }}
-      else
-        span ---
+      .row
+        .col-md-3
+          if sells
+            ul.list-group
+              for sell in sells
+                a(href="{{ sell.get_absolute_url }}")
+                    li.list-group-item {{ sell.created }}
+          else
+            div
 
 .row
-    div.panel.panel-default {% trans "Summary" %}
-        div.panel-heading
-          div.panel-content {{ object.summary }}
+  .col-lg-10
+    hr
+    h4
+      span.glyphicon.glyphicon-align-left(style="padding-right: 1em;")
+      span {% trans "Summary" %}
+    hr
+    if object.summary
+      div {{ object.summary }}
+    else
+      div
 
 
 {% endblock content %}

@@ -2028,8 +2028,7 @@ class Deposit(TimeStampedModel):
         return res
 
     def get_absolute_url(self):
-        return self.id
-        # return quote(self.name)
+        return "/deposits/%i" % self.id
 
     def to_list(self):
         return self.to_dict()
