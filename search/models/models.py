@@ -112,7 +112,7 @@ class Distributor(TimeStampedModel):
     name = models.CharField(max_length=CHAR_LENGTH)
     #: The discount (in %). When we pay the distributor we keep the amount of
     # the discount.
-    discount = models.IntegerField(default=0, null=True, blank=True)
+    discount = models.FloatField(default=0, null=True, blank=True)
     #: Star the distributors to give precendence to our favourite ones.
     stars = models.IntegerField(default=0, null=True, blank=True)
     #: Contact: email adress. To complete, create a Contact class.
