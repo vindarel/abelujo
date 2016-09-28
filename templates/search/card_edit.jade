@@ -109,8 +109,8 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
           span
             h5 {% trans "Distributor" %}:
               span {{ 'distributor.repr ' | ng }}
-        div
 
+        span.col-lg-8
           ui-select(ng-model="distributor.selected")
             ui-select-match
               span(ng-bind="$select.selected.repr")
@@ -119,11 +119,14 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
               refresh="refreshDistributors($select.search, $select)",
               refresh-delay="100")
               span(ng-bind="item.name")
-          a(target="_blank", href="/admin/search/distributor/add")
-                i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a distributor" %}')
+
+        span
+            a(target="_blank", href="/admin/search/distributor/add",title='{% trans "Add a distributor" %}')
+              i.glyphicon.glyphicon-plus-sign()
 
 
-  input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate('view')", type="submit", ng-disabled="form.$invalid")
-  input.btn.btn-primary(value="{% trans 'Buy...' %}", ng-click="validate('buy')", type="submit", ng-disabled="form.$invalid")
+  .row
+    input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate('view')", type="submit", ng-disabled="form.$invalid")
+    input.btn.btn-primary(value="{% trans 'Buy...' %}", ng-click="validate('buy')", type="submit", ng-disabled="form.$invalid")
 
 {% endblock content %}
