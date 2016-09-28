@@ -222,10 +222,9 @@ def check_online(client=None):
             print(termcolor.colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port']))
         else:
             print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green"))
-
-def save_variables(name=None):
-    """Save the port nb into the file port.txt
-    and the ip into IP.txt (for gunicorn).
+def _save_variables(name):
+    """
+    for multiprocessing. Functions can only be pickled if they are at the toplevel.
     """
     if name:
         client = fabutils.select_client_cfg(name)
@@ -236,9 +235,24 @@ def save_variables(name=None):
             run("echo {} > IP.txt".format(ip))
 
     else:
+        print("_save_variables: give a name as argument.")
+
+def save_variables(name=None):
+    """Save the port nb into the file port.txt
+    and the ip into IP.txt (for gunicorn).
+    """
+
+    if name:
+        _save_variables(name)
+
+    else:
         yesno = raw_input("Set port and ip for all clients ? [Y/n]")
         if not yesno or fabutils.yes_answer(yesno):
-            print("to do !")
+            import multiprocessing
+            pool = multiprocessing.Pool(8)
+            sorted_clients = sorted(CFG.clients, key=lambda it: it.name)
+            names = [it.name for it in sorted_clients]
+            pool.map(_save_variables, names)
 
 def update(client):
     """Update a client.
