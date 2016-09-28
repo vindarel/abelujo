@@ -126,6 +126,11 @@ def diff_print(generator):
         else:
             print(line)
 
+def yes_answer(answer):
+    """
+    """
+    return answer in ["Y", "y", "yes", "O", "o"]
+
 def main():
     cfg_file = "clients.yaml"
     cfg = get_yaml_cfg(cfg_file)

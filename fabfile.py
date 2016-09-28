@@ -223,13 +223,22 @@ def check_online(client=None):
         else:
             print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green"))
 
-def save_port(name):
+def save_variables(name=None):
     """Save the port nb into the file port.txt
+    and the ip into IP.txt (for gunicorn).
     """
-    client = fabutils.select_client_cfg(name)
-    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
-    with cd(wd):
-        run("echo {} > PORT.txt".format(client.port))
+    if name:
+        client = fabutils.select_client_cfg(name)
+        wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+        ip = client.get('ip', CFG.ip)
+        with cd(wd):
+            run("echo {} > PORT.txt".format(client.port))
+            run("echo {} > IP.txt".format(ip))
+
+    else:
+        yesno = raw_input("Set port and ip for all clients ? [Y/n]")
+        if not yesno or fabutils.yes_answer(yesno):
+            print("to do !")
 
 def update(client):
     """Update a client.
@@ -245,7 +254,7 @@ def update(client):
     client = fabutils.select_client_cfg(client, CFG)
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
-        save_port(client.name)
+        save_variables(client.name)
         with prefix(VENV_ACTIVATE.format(client.venv)):
             res = run("make update")
 
@@ -456,7 +465,7 @@ def install(name):
         run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
         bundles_deploy(client.name)
         # save the port
-        save_port(client.name)
+        save_variables(client.name)
         with cd(CFG.project_name):
             # - create a venv
             create_venv(client.venv)

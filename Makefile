@@ -52,6 +52,8 @@ npm:
 	@echo "Installing gulp globally... (needs root)"
 	# Don't install protractor globally, we'll have permission pb with the webdriver.
 	@sudo npm install -g gulp
+	# Saving dev ip for gunicorn
+	echo "localhost" > IP.txt
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
@@ -136,12 +138,21 @@ run-wsgi-debug:
 	python manage.py runmodwsgi --debug-mode --enable-debugger
 
 # Get our IP adress, only ipv4 form, trim whitespaces. Works for localhost.
-MAINIP := $(shell hostname --ip-address | cut -d " " -f 2 | tr -d '[[:space:]]')
+# MAINIP := $(shell hostname --ip-address | cut -d " " -f 2 | tr -d '[[:space:]]')
+# put the IP in IP.txt: ok for dev and prod
 run-gunicorn:
 	# and static files are served by whitenoise.
 	# option --reload to reload on code changes. use --daemon or C-z and bg
-	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=$(MAINIP):$(shell cat PORT.txt) --reload --pid=PID.txt --daemon
-	@echo "server running on port $(shell cat PORT.txt)"
+	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=$(shell cat IP.txt):$(shell cat PORT.txt) --reload --pid=PID.txt
+	@echo "server running on $(shell cat IP.txt):$(shell cat PORT.txt)"
+
+gunicorn-daemon:
+	gunicorn --env DJANGO_SETTINGS_MODULE=abelujo.settings abelujo.wsgi --bind=$(shell cat IP.txt):$(shell cat PORT.txt) --reload --pid=PID.txt --daemon
+	@echo "server running on $(shell cat IP.txt):$(shell cat PORT.txt)"
+
+
+kill-gunicorn:
+	kill -9 $(shell cat PID.txt)
 
 gunicorn: run-gunicorn
 
