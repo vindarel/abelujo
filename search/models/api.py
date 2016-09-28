@@ -205,13 +205,14 @@ def card_create(request, **response_kwargs):
 
     Return: a tuple (card_id, status, alerts)
     """
+    msgs = {}
     if request.method == "POST":
         params = request.POST.copy()
         status = httplib.OK
         alerts = []
 
         isbn = params.get('isbn')
-        shelf = params.get('shelf')
+        shelf = params.get('shelf_id')
         # Mixed style from client (to fix).
         if params:
             card_dict = {
@@ -227,7 +228,7 @@ def card_create(request, **response_kwargs):
                 "year": params.get("year_published"),
             }
             if shelf:
-                card_dict['shelf'] = shelf
+                card_dict['shelf_id'] = shelf
 
         # we got the card dict
         else:

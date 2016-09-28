@@ -123,7 +123,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
                 i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a distributor" %}')
 
 
-  input.btn.btn-primary(value="{% trans 'View card' %}", ng-click="validate('view')", type="submit", ng-disabled="form.$invalid")
+  input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate('view')", type="submit", ng-disabled="form.$invalid")
   input.btn.btn-primary(value="{% trans 'Buy...' %}", ng-click="validate('buy')", type="submit", ng-disabled="form.$invalid")
 
 {% endblock content %}

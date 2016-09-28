@@ -14,13 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope', '$window', 'utils', '$filter', ($http, $scope, $window, utils, $filter) !->
+angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope', '$window', 'utils', '$filter', '$log', ($http, $scope, $window, utils, $filter, $log) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-    {sum, map, filter, lines} = require 'prelude-ls'
+    {sum, map, filter, lines, find} = require 'prelude-ls'
+
+    $scope.language = utils.url_language($window.location.pathname)
 
     $scope.authors_selected = []
     $scope.author_input = ""
@@ -43,11 +45,12 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.shelfs = []
 
     $scope.alerts = []
-    $scope.card_created_id = undefined
 
     $scope.ready = false
 
     card_id = utils.url_id($window.location.pathname) # can be null
+    $scope.card_created_id = card_id
+
     if card_id
         $http.get "/api/card/#{card_id}"
         .then (response) ->
@@ -60,6 +63,8 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             $scope.isbn = $scope.card.isbn
             $scope.details_url = $scope.card.details_url
             $scope.pubs_selected = $scope.card.publishers
+            $scope.shelf = $scope.shelfs
+            |> find ( -> it.fields.name == $scope.card.shelf)
 
             $scope.alerts = response.data.alerts
             $scope.ready = true # don't load the form if not ready
@@ -113,7 +118,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
         params = do
             title: $scope.title
             price: $scope.price
-            shelf: $scope.shelf.pk
+            shelf_id: $scope.shelf.pk
             authors: map (.pk), $scope.authors_selected # list of ids
             publishers: map (.pk), $scope.pubs_selected
             year_published: $scope.year_published
@@ -143,7 +148,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
         .then (response) ->
             $scope.alerts = response.data.alerts
             $scope.card_created_id = response.data.card_id
-            url = "/stock/card/#{$scope.card_created_id}/"
+            url = "/#{$scope.language}/stock/card/#{$scope.card_created_id}/"
             if next_view == "view"
                $window.location.href = url
             else if next_view == "buy"

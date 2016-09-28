@@ -979,6 +979,12 @@ class Card(TimeStampedModel):
             except Exception as e:
                 log.warning("couldn't get or create the shelf {}.".format(card.get('shelf')))
 
+        elif card.get('shelf_id'):
+            try:
+                card_shelf = Shelf.objects.get(id=card.get('shelf_id'))
+            except Exception as e:
+                log.warning("Creating/editing card: couldn't get shelf of id {}".format(card.get('shelf_id')))
+
         # Get the publishers:
         card_publishers = []
         if card.get("publishers_ids"):

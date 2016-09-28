@@ -37,7 +37,7 @@
       button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
         span.caret
       ul.dropdown-menu
-        li: a(href="/stock/card/edit/{{object.pk}}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
+        li: a(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
         li: a(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
 
   .col-lg-7
@@ -50,20 +50,30 @@
       img.img-responsive(src="{{ object.img }}")
 
     .row(style="margin-left: 1px;")
+
       h4 {{ object.price }} €  ({{ object.card_type }})
       h4 {% trans "in stock" %}: {{ object.quantity }}
-      div {% trans "Minimal qty" %}: {{ object.threshold }}
-      div isbn: {{ object.isbn }}
-      div {% trans "Source" %}: 
-        a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
-
-      div {% trans "Shelf" %}: 
-        if object.shelf
-          {{ object.shelf }}
-
-      div
-        span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
-            span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
+      table.table.table-condensed
+        tbody
+          tr
+            td {% trans "Minimal qty" %}
+            td {{ object.threshold }}
+          tr
+            td {% trans "isbn" %}
+            td {{ object.isbn }}
+          tr
+            td {% trans "Source" %}: 
+            td
+              a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
+          tr
+            td {% trans "Shelf" %}: 
+            td
+              if object.shelf
+                {{ object.shelf }}
+          tr
+            td
+              span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
+                  span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
       div {% trans "Comment" %}: 
         if object.comment
           em.my-border {{ object.comment }}
