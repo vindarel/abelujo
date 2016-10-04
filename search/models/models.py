@@ -2346,7 +2346,7 @@ class SoldCards(TimeStampedModel):
     price_sold = models.FloatField(default=DEFAULT_PRICE)
 
     def __unicode__(self):
-        ret = u"card id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
+        ret = u"card sold id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
         return ret
 
     def to_dict(self):
@@ -2356,6 +2356,9 @@ class SoldCards(TimeStampedModel):
                 "price_init": self.price_init,
                 "price_sold": self.price_sold,
                 }
+
+    def to_list(self):
+        return self.to_dict()
 
 class Sell(models.Model):
     """A sell represents a set of one or more cards that are sold:
@@ -2408,36 +2411,50 @@ class Sell(models.Model):
         return reverse("sell_details", args=(self.id,))
 
     @staticmethod
-    def search(card_id=None, date_min=None, count=False, date_max=None):
+    def search(card_id=None, date_min=None, count=False, date_max=None,
+               distributor_id=None,
+               to_list=False):
         """Search for the given card id in sells more recent than "date_min".
 
         - card_id: int. If not given, searches in all.
         - date_min: date obj
         - date_max: date obj
         - count: if True, only return the count() of the result, not the result list.
+        - distributor_id: int.
 
-        return: a list of Sell objects.
+        return: a list of soldcards objects.
         """
         sells = []
         try:
             if card_id:
-                sells = Sell.objects.filter(copies__id=card_id)
+                sells = SoldCards.objects.filter(card__id=card_id)
             else:
-                sells = Sell.objects.all()
+                sells = SoldCards.objects.all()
+
+
             if date_min:
                 # dates must be timezone.now() for precision.
                 sells = sells.filter(created__gt=date_min)
             if date_max:
                 sells = sells.filter(created__lt=date_max)
+            if distributor_id:
+                soldcards = SoldCards.objects.filter(card__distributor_id=distributor_id)
+                sells = soldcards
 
         except Exception as e:
-            log.error("search for sells of card id {}: ".format(card_id), e)
+            log.error(u"search for sells of card id {}: {}".format(card_id, e))
             return sells
 
         if count:
             return sells.count()
 
-        return sells.all()
+        sells = sells.order_by("-created")[:PAGE_SIZE]
+
+        sells = sells.all()
+        if to_list:
+            sells = [it.to_list() for it in sells]
+
+        return sells
 
     @staticmethod
     def nb_card_sold_in_sells(sells, card):
@@ -2472,10 +2489,10 @@ class Sell(models.Model):
         return ret
 
     @staticmethod
-    def sell_card(card, nb=1):
+    def sell_card(card, nb=1, **kwargs):
         """Sell a Card. Simple wrapper to Sell.sell_cards.
         """
-        return Sell.sell_cards(None, cards=[card])
+        return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
     def sell_cards(ids_prices_nb, date=None, payment=None, cards=[]):
@@ -2569,6 +2586,7 @@ class Sell(models.Model):
                                                  price_sold=price_sold,
                                                  price_init=card.price,
                                                  quantity=quantity)
+                sold.created = date
                 sold.save()
             except Exception as e:
                 alerts.append({"message": _(u"Warning: we couldn't sell {}.".format(card.id)),

@@ -108,7 +108,6 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
 
     $scope.refreshDistributors = (search, select) ->
         getDistributors()
-        console.log "refreshed distributor_list"
         select.refreshItems()
 
     # Post the form

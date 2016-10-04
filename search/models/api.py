@@ -438,8 +438,12 @@ def deposits_due_dates(request, **response_kwargs):
         return JsonResponse(depos, safe=False)
 
 def sell(request, **response_kwargs):
+    """
+    - GET: get one or query many.
+      - query args: date_min, date_min, distributor_id, card_id
 
-    """requested data: a list of dictionnaries with "id", "price_sold",
+    - POST: create a new sell.
+    requested data: a list of dictionnaries with "id", "price_sold",
     "quantity". See models.Sell.
 
     messages: we need, for the client, a list of dictionnaries:
@@ -475,7 +479,15 @@ def sell(request, **response_kwargs):
         return JsonResponse(to_ret)
 
     elif request.method == "GET":
-        log.error("Calling /api/sell with GET instead of POST.")
+        params = request.GET.copy()
+        sells = Sell.search(to_list=True, **params.dict())
+        status = ALERT_SUCCESS
+        ret = {
+            'data': sells,
+            'status': status,
+            'alerts': [],
+            }
+        return JsonResponse(ret)
 
 def sell_undo(request, pk, **response_kwargs):
     """Undo the given sell id: re-buy the cards.
@@ -498,12 +510,16 @@ TO_RET = {"status": ALERT_SUCCESS,
           "data": []}
 
 def history_sells(request, **response_kwargs):
+    """deprecated: use simply 'sell' above.
+    """
     alerts = []
+    status = ALERT_SUCCESS
     if request.method == "GET":
         params = request.GET.copy()
+        distributor_id = params.get('distributor_id')
         try:
             # hist, status, alerts = getHistory()
-            hist, status, alerts = Sell.history()
+            hist = Sell.search(to_list=True)
         except Exception as e:
             log.error(u"api/history error: {}".format(e))
             return HttpResponse(json.dumps(alerts), **response_kwargs)

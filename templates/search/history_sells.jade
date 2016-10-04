@@ -36,11 +36,12 @@ div
 
           tbody
             tr(ng-repeat="sell in sells")
-             td {{ 'sell.item.created' | ng }}
-             td {{ 'sell.item.total_price_sold' | ng }} €
+             em(ng-show="sells.length==0") {% trans "No data" %}
+             td {{ 'sell.created' | ng }}
+             td {{ 'sell.total_price_sold' | ng }} €
              td
                 .row.mouse-pointer(ng-click="sell.show_row = ! sell.show_row")
-                  span {{ 'sell.item.cards.length' | ng }} {% trans "titles" %}, {{'sell.item.total_copies_sold'|ng}}x
+                  span {{ 'sell.cards.length' | ng }} {% trans "titles" %}, {{'sell.total_copies_sold'|ng}}x
                 table.table.table-condensed(ng-show="show_details > 0 || sell.show_row == true")
                   thead
                     th.col-md-2(ng-show="show_details > 1 || sell.show_covers")
@@ -51,7 +52,7 @@ div
                     th.col-md-1 {% trans "quantity" %}
 
                   tbody
-                    tr(ng-repeat="card_sold in sell.item.cards")
+                    tr(ng-repeat="card_sold in sell.cards")
                       td(ng-show="show_details == 2 || sell.show_covers")
                         img.myImg(ng-show="card_sold.card.img", src="{{ 'card_sold.card.img' | ng }}")
                       td

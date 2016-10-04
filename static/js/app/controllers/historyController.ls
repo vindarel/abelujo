@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys) !->
+angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', '$resource', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys, $resource) !->
 
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
 
@@ -26,26 +26,31 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.show_details = 0
     $scope.show_tab = 'sells'
     $scope.last_sort = "created"
+    $scope.distributors = []
+    $scope.distributor = {}
+
+    Distributors = $resource('/api/distributors/:id')
+    getDistributors = !->
+        Distributors.query (res) !->
+            $scope.distributors = res
+
+    getDistributors!
 
     params = do
         query: ""
     $http.get "/api/history/sells", do
         params: params
     .then (response) ->
+        $scope.sells = []
         response.data.data.map (item) !->
             repr = "sell n° " + item.id
             created = Date.parse(item.created)
             created = created.toString("d-MMM-yyyy") # human representation
             item.created = created
-            $scope.history.push do
-                id: item.id
-                repr: repr
-                item: item
-                show_row: false
-                show_covers: false
-            $scope.to_show = $scope.history
-            $scope.sells = $scope.history
-            # |> filter (.item.model == 'Entry')
+            item.repr = repr
+            item.show_row = false
+            item.show_covers = false
+            $scope.sells.push item
 
             return do
                 repr: repr
@@ -102,6 +107,40 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             $scope.last_sort = key
 
         $log.info $scope.sells
+
+    $scope.refreshDistributors = (search, select) !->
+        "For ui-select"
+        getDistributors!
+        select.refreshItems!
+
+    # DistSells = $resource '/api/history/sells/'
+    DistSells = $resource '/api/sell/'
+
+    $scope.distChanged = !->
+        $log.info "changed: "
+        $log.info $scope.distributor.selected
+
+        $log.info "sells"
+        $log.info $scope.sells
+        $scope.sells = DistSells.get do
+            distributor_id: $scope.distributor.selected.id
+            , (resp) !->
+                # $scope.sells = resp.data
+
+                $scope.sells = []
+                resp.data.map (item) !->
+                    repr = "sell n° " + item.id
+                    created = Date.parse(item.created)
+                    created = created.toString("d-MMM-yyyy") # human representation
+                    item.created = created
+                    item.repr = repr
+                    item.show_row = false
+                    item.show_covers = false
+                    $scope.sells.push item
+
+                    return do
+                        repr: repr
+                        id: item.id
 
     # Keyboard shortcuts (hotkeys)
     hotkeys.bindTo($scope)

@@ -53,6 +53,7 @@ from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
 from search.models import Sell
+from search.models import SoldCards
 from search.models import Shelf
 from search.models import getHistory
 
@@ -872,6 +873,56 @@ class TestSells(TestCase):
 
         self.assertEqual(self.autobio.quantity_compute(), 1)
         self.assertEqual(self.autobio.quantity, 1)
+
+class TestSellSearch(TestCase):
+
+    # fixtures = ['test_sell_search']
+
+    def setUp(self):
+        # create a Card
+        self.autobio = CardFactory()
+        # a second card:
+        self.secondcard = CardFactory()
+        # mandatory: unknown card type
+        typ = CardType(name="unknown")
+        typ.save()
+        # a needed place:
+        self.place = PlaceFactory()
+        self.place.add_copy(self.autobio, nb=1)
+        self.place.add_copy(self.secondcard, nb=1)
+        # a Distributor:
+        self.dist = DistributorFactory()
+        # mandatory: preferences table
+        self.preferences = Preferences(default_place=self.place).save()
+
+    def tearDown(self):
+        pass
+
+    def test_search_sells_distributor(self):
+        # sell cards, only one of wanted distributor.
+        self.autobio.distributor = self.dist
+        self.autobio.save()
+        Sell.sell_cards(None, cards=[self.autobio, self.secondcard])
+        sells = Sell.search(distributor_id=self.dist.id)
+        self.assertEqual(len(sells), 1)
+
+        self.secondcard.distributor = self.dist
+        self.secondcard.save()
+        Sell.sell_card(self.secondcard)
+        sells = Sell.search(distributor_id=self.dist.id, to_list=True)
+        self.assertEqual(len(sells), 3)
+
+    def test_search_sells_card(self):
+        Sell.sell_card(self.autobio)
+        Sell.sell_card(self.secondcard)
+        sells = Sell.search(card_id=self.autobio.id)
+        self.assertEqual(len(sells), 1)
+
+    def test_search_sells_dates(self):
+        Sell.sell_card(self.autobio)
+        Sell.sell_card(self.secondcard, date=timezone.now() - timezone.timedelta(days=30))
+        sells = Sell.search(date_min=timezone.now() - timezone.timedelta(days=7))
+        self.assertEqual(len(sells), 1)
 
 class TestHistory(TestCase):
 

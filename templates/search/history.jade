@@ -39,6 +39,18 @@ div(ng-controller="historyController")
         uib-tab(heading='{% trans "Entries" %}', select="history_entries()")
         //- uib-tab(heading='{% trans "Movements" %}', select="filterHistory('InternalMovement')")
 
+    .col-md-3
+      ui-select(ng-model="distributor.selected", ng-change="distChanged()")
+        ui-select-match(placeholder="{% trans 'Distributor' %}")
+          span(ng-bind="$select.selected.repr")
+        ui-select-choices(
+          repeat="item in (distributors | filter:$select.search) track by item.id",
+          refresh="refreshDistributors($select.search, $select)",
+          refresh-delay="100")
+          span(ng-bind="item.name")
+
+    //- div dist: {{ 'distributor.selected' | ng }}
+
     button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
       i.glyphicon.glyphicon-th-list
 
