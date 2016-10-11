@@ -16,14 +16,15 @@
 
 angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', '$resource', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys, $resource) !->
 
-    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse, take, group-by, unique-by} = require 'prelude-ls'
 
     $scope.history = []
     $scope.sells_month = {}
-    $scope.to_show = []
+    $scope.back = []
     $scope.filterModel = 'All'
     $scope.alerts = []
-    $scope.show_details = 0
+    $scope.show_details = false
+    $scope.show_unique= false
     $scope.show_tab = 'sells'
     $scope.last_sort = "created"
     $scope.distributors = []
@@ -42,6 +43,12 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         params: params
     .then (response) ->
         $scope.sells = []
+        $scope.sells_month = 0
+        $scope.nb_sold_cards = response.data.data.length
+        response.data.data = utils.sells_total_sold response.data.data
+        $scope.best_sells = utils.best_sells response.data.data
+        $scope.sells_mean = utils.sells_mean response.data.data
+
         response.data.data.map (item) !->
             repr = "sell n° " + item.id
             created = Date.parse(item.created)
@@ -52,13 +59,16 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             item.show_covers = false
             $scope.sells.push item
 
+            $scope.sells_month += item.price_sold
+
             return do
                 repr: repr
                 id: item.id
 
-    $http.get "/api/stats/sells/month"
-    .then (response) !->
-        $scope.sells_month = response.data
+
+    # $http.get "/api/stats/sells/month"
+    # .then (response) !->
+        # $scope.sells_month = response.data
 
     $scope.history_entries = !->
         $http.get "/api/history/entries"
@@ -76,23 +86,23 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         $scope.show_tab = model
 
     $scope.sellUndo = (index) !->
-        sell = $scope.to_show[index]
-        $log.info "undo sell #{sell.item.id}"
+        sell = $scope.sells[index]
+        $log.info "undo sell #{sell.id}"
 
         sure = confirm gettext "Are you sure to undo this sell ?"
         if sure
-            $http.get "/api/sell/#{sell.item.id}/undo"
+            params = do
+                soldcard_id: sell.soldcard_id
+            $http.get "/api/sell/#{sell.sell_id}/undo", do
+                params: params
             .then (response) !->
-                $scope.alerts.push response.data.alerts
+                $scope.alerts = response.data.alerts
 
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
     $scope.toggle_details = !->
-        "0: show nothing, 1: show second tables, 2: show also covers"
-        $scope.show_details +=  1
-        if $scope.show_details == 3
-            $scope.show_details = 0
+        $scope.show_details = not $scope.show_details
 
     $scope.sort_by = (key) ->
         """Custom sort function. Smart-table is buggy and
@@ -103,10 +113,21 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             |> reverse
         else
             $scope.sells = $scope.sells
-            |> sort-by ( -> it.item[key])
+            |> sort-by ( -> it[key])
             $scope.last_sort = key
 
-        $log.info $scope.sells
+    $scope.filter_unique = !->
+        """
+
+        """
+        if $scope.show_unique
+            $scope.back = $scope.sells
+            $scope.sells = $scope.sells
+            |> unique-by (.card_id)
+
+        else
+            $scope.sells = $scope.back
+
 
     $scope.refreshDistributors = (search, select) !->
         "For ui-select"
@@ -117,17 +138,19 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     DistSells = $resource '/api/sell/'
 
     $scope.distChanged = !->
-        $log.info "changed: "
-        $log.info $scope.distributor.selected
-
-        $log.info "sells"
-        $log.info $scope.sells
         $scope.sells = DistSells.get do
             distributor_id: $scope.distributor.selected.id
             , (resp) !->
                 # $scope.sells = resp.data
 
                 $scope.sells = []
+                $scope.nb_sold_cards = resp.data.length
+                $scope.sells_month = 0
+
+                resp.data = utils.sells_total_sold resp.data
+                $scope.best_sells = utils.best_sells resp.data
+                $scope.sells_mean = utils.sells_mean resp.data
+
                 resp.data.map (item) !->
                     repr = "sell n° " + item.id
                     created = Date.parse(item.created)
@@ -138,9 +161,14 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
                     item.show_covers = false
                     $scope.sells.push item
 
+                    $scope.sells_month += item.price_sold
+
                     return do
                         repr: repr
                         id: item.id
+
+                if $scope.show_unique
+                    $scope.filter_unique!
 
     # Keyboard shortcuts (hotkeys)
     hotkeys.bindTo($scope)
@@ -149,6 +177,13 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         description: gettext "show or hide the book details in tables."
         callback: !->
             $scope.toggle_details!
+
+    .add do
+        combo: "f"
+        description: gettext "filter one title per line"
+        callback: !->
+            $scope.show_unique = not $scope.show_unique
+            $scope.filter_unique!
 
     $window.document.title = "Abelujo - " + gettext("History")
 

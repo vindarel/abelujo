@@ -2352,13 +2352,43 @@ class SoldCards(TimeStampedModel):
     def to_dict(self):
         return {"card_id": self.card.id,
                 "card": Card.to_dict(self.card),
+                "created": self.created,
                 "quantity": self.quantity,
                 "price_init": self.price_init,
                 "price_sold": self.price_sold,
+                "sell_id": self.sell.id,
+                "soldcard_id": self.id,
                 }
 
     def to_list(self):
         return self.to_dict()
+
+    @staticmethod
+    def undo(pk):
+        """
+        Undo the soldcard of the given pk: add it to the stock again.
+        """
+        msgs = []
+        try:
+            soldcard = SoldCards.objects.get(id=pk)
+        except Exception as e:
+            log.error(u'Error while trying to undo soldcard n° {}: {}'.format(pk, e))
+            return False, msgs
+
+        try:
+            status, msgs = soldcard.card.sell_undo(quantity=soldcard.quantity)
+        except Exception as e:
+            msg = u'Error while undoing the soldcard {}: {}'.format(pk, e)
+            msgs.append(msg)
+            log.error(msg)
+            status = False
+
+        # We keep the transaction visible, we don't delete the soldcard.
+        # Instead, it must appear as a new entry.
+
+        msgs.append({'message': u"Operation successful",
+                     'level': ALERT_SUCCESS})
+        return status, msgs
 
 class Sell(models.Model):
     """A sell represents a set of one or more cards that are sold:

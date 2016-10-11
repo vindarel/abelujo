@@ -490,13 +490,19 @@ def sell(request, **response_kwargs):
         return JsonResponse(ret)
 
 def sell_undo(request, pk, **response_kwargs):
-    """Undo the given sell id: re-buy the cards.
+    """Undo eithe a whole sell or the given soldcard.
+    - pk: objects id.
+    re-buy the card.
     """
     msgs = []
     status = True
     if request.method == "GET":
         if pk:
-            status, msgs = Sell.sell_undo(pk)
+            # We undo only 1 card, not the entire sell (grouping many cards).
+            if request.GET.get('soldcard_id') is not None:
+                status, msgs = SoldCards.undo(request.GET.get('soldcard_id'))
+            else:
+                status, msgs = Sell.sell_undo(pk)
         else:
             msgs.append({"message": u"Internal error: we didn't receive which sell to cancel.",
                          "status": ALERT_ERROR})

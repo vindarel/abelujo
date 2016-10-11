@@ -3,9 +3,9 @@
 angular.module 'abelujo.services', [] .value 'version', '0.1'
 
 utils = angular.module 'abelujo.services', []
-utils.factory 'utils', ($http) ->
+utils.factory 'utils', ['$http', '$log', ($http, $log) ->
 
-    {Obj, join, reject, sum, map, filter, find, lines} = require 'prelude-ls'
+    {Obj, join, reject, sum, map, filter, find, lines, sort-by, reverse, take, unique-by, mean, id, each} = require 'prelude-ls'
 
     do
         # We need not to pass the parameters encoded as json to Django,
@@ -70,3 +70,46 @@ utils.factory 'utils', ($http) ->
 
         shelfs: ->
             $http.get "/api/shelfs"
+
+        sells_total_sold: (sells) ->
+            """
+            - sells: list of objects, with a card_id and a quantity
+            - return: the sells with a new property, total_sold
+            """
+            for sell in sells
+                sell.total_sold = sells
+                |> filter (.card_id == sell.card_id)
+                |> map (.quantity)
+                |> sum
+
+            sells
+
+        best_sells: (sells) ->
+            """
+            - sells: list of objects, with a .total_sold (see function above)
+            - return: the 10 best sells
+            """
+            best_sells = sells
+            |> unique-by (.card_id)
+            |> sort-by (.total_sold)
+            |> reverse
+            |> take 10
+
+            best_sells
+
+        sells_mean: (sells) ->
+            """
+            - return the global mean of sells operation: how much in a sell by average.
+            """
+            for sell in sells
+                sell.total_sell = sells
+                |> filter (.sell_id == sell.sell_id)
+                |> map ( -> it.price_sold * it.quantity)
+                |> mean
+
+            sells
+            |> unique-by (.sell_id)
+            |> map (.total_sell)
+            |> mean
+
+]

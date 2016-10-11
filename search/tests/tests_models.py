@@ -874,6 +874,28 @@ class TestSells(TestCase):
         self.assertEqual(self.autobio.quantity_compute(), 1)
         self.assertEqual(self.autobio.quantity, 1)
 
+    def test_undo_soldcard(self):
+        """
+        Undo only a soldcard, not a whole sell with many cards.
+        """
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1
+                },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+        sell, status, msgs = Sell.sell_cards(to_sell)
+
+        # undo
+        status, msgs = SoldCards.undo(2)
+        self.assertEqual(True, status)
+        self.assertEqual(SoldCards.objects.count(), 2) # the soldcard object is still history.
+        self.assertEqual(SoldCards.objects.first().card_id,
+                         self.autobio.id)
+
 class TestSellSearch(TestCase):
 
     # fixtures = ['test_sell_search']

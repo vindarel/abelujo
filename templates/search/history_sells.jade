@@ -24,12 +24,34 @@
 
 div
     .row.ng-cloak
+      .col-md-3
+        ui-select(ng-model="distributor.selected", ng-change="distChanged()")
+          ui-select-match(placeholder="{% trans 'Distributor' %}")
+            span(ng-bind="$select.selected.repr")
+          ui-select-choices(
+            repeat="item in (distributors | filter:$select.search) track by item.id",
+            refresh="refreshDistributors($select.search, $select)",
+            refresh-delay="100")
+            span(ng-bind="item.name")
+
+      button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
+            i.glyphicon.glyphicon-th-list
+
+      input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
+      span {% trans "One title per line" %}
+
+
+    .row.ng-cloak
       .col-md-9
         table.table.table-condensed
           thead
             th.col-md-2(ng-click="sort_by('created')") {% trans "Date" %}
               span.caret
+            th(ng-click="sort_by('sell_id')") {% trans "Sell id" %}
+              span.caret
             th.col-md-1(ng-click="sort_by('total_price_sold')") {% trans "Amount" %}
+              span.caret
+            th(ng-click="sort_by('total_sold')") {% trans "Total copies sold" %}
               span.caret
             th {% trans "Titles" %}
             th.col-md-1
@@ -38,52 +60,40 @@ div
             tr(ng-repeat="sell in sells")
              em(ng-show="sells.length==0") {% trans "No data" %}
              td {{ 'sell.created' | ng }}
-             td {{ 'sell.total_price_sold' | ng }} €
+             td {{ 'sell.sell_id' | ng }}
+             td {{ 'sell.price_sold' | ng }} €
+             td {{ 'sell.total_sold' | ng }}
              td
-                .row.mouse-pointer(ng-click="sell.show_row = ! sell.show_row")
-                  span {{ 'sell.cards.length' | ng }} {% trans "titles" %}, {{'sell.total_copies_sold'|ng}}x
-                table.table.table-condensed(ng-show="show_details > 0 || sell.show_row == true")
-                  thead
-                    th.col-md-2(ng-show="show_details > 1 || sell.show_covers")
-                    th.col-md-6.mouse-pointer(ng-click="sell.show_covers = ! sell.show_covers") {% trans "Title" %}
-                      i.glyphicon.glyphicon-menu-down
-                    th.col-md-1 {% trans "price init" %}
-                    th.col-md-2 {% trans "price sold" %}
-                    th.col-md-1 {% trans "quantity" %}
-
-                  tbody
-                    tr(ng-repeat="card_sold in sell.cards")
-                      td(ng-show="show_details == 2 || sell.show_covers")
-                        img.myImg(ng-show="card_sold.card.img", src="{{ 'card_sold.card.img' | ng }}")
-                      td
-                        a(href="{{'card_sold.card.get_absolute_url'|ng}}")  {{ 'card_sold.card.title' | ng }}
-                      td {{'card_sold.price_init'|ng}} €
-                      td {{'card_sold.price_sold'|ng}} €
-                      td {{'card_sold.quantity'|ng}}
+               .row
+                 img.myImg.col-md-3(ng-show="show_details", src="{{ 'sell.card.img' | ng }}")
+                 a.col-md-9(href="{{ 'sell.card.get_absolute_url' | ng }}") {{ 'sell.card.title' | ng }}
 
              td
-                i.col-md-2.button.glyphicon.glyphicon-share-alt.mouse-pointer(ng-click="sellUndo($index)", title="{% trans 'Undo this sell' %}")
+                i.col-md-2.button.glyphicon.glyphicon-remove.mouse-pointer(
+                  ng-click="sellUndo($index)"
+                  title="{% trans 'Undo this sell' %}")
 
       .col-md-3.panel.panel-info
         div.panel-heading {% trans "Statistics" %}
         div.panel-body
-          h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
-          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
-          div {% trans "mean" %}: {{'sells_month.mean'|ng}} {% trans "€" %}
-          h4 {% trans "Best 10 sells of this month" %}
-          table.table(ng-show="sells_month.best_sells.length")
+          //- h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
+          h4 {% trans "Total sells" %}: {{'sells_month.toFixed(2)'|ng}} {% trans "€" %}
+          div {% trans "total cards sold" %}: {{'nb_sold_cards'|ng}}
+          div {% trans "mean" %}: {{'sells_mean.toFixed(2)'|ng}} {% trans "€" %}
+          h4 {% trans "Best 10 sells" %}
+          table.table(ng-show="best_sells.length")
             thead
               tr
                 th {% trans "Title" %}
                 th {% trans "Quantity sold" %}
             tbody
-              tr(ng-repeat="sell in sells_month.best_sells")
-                td {{ 'sell.title' | ng }}
-                td {{ 'sell.quantity' | ng }}
+              tr(ng-repeat="sell in best_sells")
+                td {{ 'sell.card.title' | ng }}
+                td {{ 'sell.total_sold' | ng }}
             tfoot
               tr
                 td.text-center(colspan="5")
 
-          em(ng-hide="sells_month.best_sells.length") {% trans "No data" %}
+          em(ng-hide="best_sells.length") {% trans "No data" %}
 
 {% endblock history_sells %}
