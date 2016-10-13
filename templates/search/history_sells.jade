@@ -42,20 +42,26 @@ div
 
 
       .col-md-3
-        ui-select(ng-model="distributor.selected", ng-change="distChanged()")
-          ui-select-match(placeholder="{% trans 'Distributor' %}")
-            span(ng-bind="$select.selected.repr")
-          ui-select-choices(
-            repeat="item in (distributors | filter:$select.search) track by item.id",
-            refresh="refreshDistributors($select.search, $select)",
-            refresh-delay="100")
-            span(ng-bind="item.name")
+        p.input-group
+          ui-select(ng-model="distributor.selected", ng-change="distChanged()")
+            ui-select-match(placeholder="{% trans 'Distributor' %}")
+              span(ng-bind="$select.selected.repr")
+            ui-select-choices(
+              repeat="item in (distributors | filter:$select.search) track by item.id",
+              refresh="refreshDistributors($select.search, $select)",
+              refresh-delay="100")
+              span(ng-bind="item.name")
 
-      button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
-            i.glyphicon.glyphicon-th-list
+          span.input-group-btn
+            button.btn.btn-default(ng-click="distErased()", title="cancel the distributor selection")
+              i.glyphicon.glyphicon-remove
 
-      input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
-      span {% trans "One title per line" %}
+      .col-md-3
+        button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
+              i.glyphicon.glyphicon-th-list
+
+          input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
+        span {% trans "One title per line" %}
 
 
     .row.ng-cloak

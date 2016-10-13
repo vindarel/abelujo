@@ -172,6 +172,11 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
                 if $scope.show_unique
                     $scope.filter_unique!
 
+    $scope.distErased = !->
+        # caching ? See later, rely on django.
+        $scope.distributor.selected = undefined
+        $scope.distChanged!
+
     # Keyboard shortcuts (hotkeys)
     hotkeys.bindTo($scope)
     .add do
