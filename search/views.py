@@ -273,7 +273,7 @@ def card_show(request, pk):
         if last_entry:
             sells = Sell.search(card.id, date_min=last_entry.created)
             if sells and card:
-                total_sold = Sell.nb_card_sold_in_sells(sells, card)
+                total_sold = len(sells)
 
     return render(request, template, {
         "object": card,

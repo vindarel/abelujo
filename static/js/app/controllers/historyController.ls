@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', '$resource', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys, $resource) !->
+angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', '$resource', 'tmhDynamicLocale', ($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys, $resource, tmhDynamicLocale) !->
 
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse, take, group-by, unique-by} = require 'prelude-ls'
 
@@ -139,7 +139,9 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.distChanged = !->
         $scope.sells = DistSells.get do
-            distributor_id: $scope.distributor.selected.id
+            distributor_id: $scope.distributor.selected.id if $scope.distributor.selected
+            month: $scope.user_date.getMonth! + 1 # +1: mismatch with python dates
+            year: $scope.user_date.getFullYear!
             , (resp) !->
                 # $scope.sells = resp.data
 
@@ -184,6 +186,35 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         callback: !->
             $scope.show_unique = not $scope.show_unique
             $scope.filter_unique!
+
+    ######################################################
+    # Month picker
+    ######################################################
+
+    $scope.user_date = undefined
+
+    $scope.today = ->
+        $scope.user_date = new Date()
+    $scope.today!
+
+    $scope.user_popup_status = do
+        opened: false
+
+    $scope.user_open_datepicker = (event) ->
+        $scope.user_popup_status.opened = true
+
+    $scope.datepicker_user_options = do
+        minMode: "month"
+        formatYear: 'yyyy'
+        formatMonth: 'MMMM'
+        startingDay: 1
+
+    $scope.user_date_format = "MMMM"
+
+    $scope.user_change_month = !->
+        # if not date in future
+
+        $scope.distChanged!
 
     $window.document.title = "Abelujo - " + gettext("History")
 

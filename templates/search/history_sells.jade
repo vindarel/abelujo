@@ -24,6 +24,23 @@
 
 div
     .row.ng-cloak
+
+      .col-md-3
+        p.input-group
+            input.form-control(
+              title='{% trans "Choose another month to see its stats" %}'
+              type='text'
+              uib-datepicker-popup='{{"user_date_format"|ng}}'
+              ng-model="user_date"
+              ng-change="user_change_month()"
+              is-open="user_popup_status.opened"
+              datepicker-options="datepicker_user_options"
+            )
+            span.input-group-btn
+              button.btn.btn-default(type='button', ng-click='user_open_datepicker($event)')
+                i.glyphicon.glyphicon-calendar
+
+
       .col-md-3
         ui-select(ng-model="distributor.selected", ng-change="distChanged()")
           ui-select-match(placeholder="{% trans 'Distributor' %}")

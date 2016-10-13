@@ -2443,6 +2443,8 @@ class Sell(models.Model):
     @staticmethod
     def search(card_id=None, date_min=None, count=False, date_max=None,
                distributor_id=None,
+               year=None,
+               month=None,
                to_list=False):
         """Search for the given card id in sells more recent than "date_min".
 
@@ -2450,6 +2452,7 @@ class Sell(models.Model):
         - date_min: date obj
         - date_max: date obj
         - count: if True, only return the count() of the result, not the result list.
+        - year, month: ints (month in 1..12)
         - distributor_id: int.
 
         return: a list of soldcards objects.
@@ -2461,14 +2464,23 @@ class Sell(models.Model):
             else:
                 sells = SoldCards.objects.all()
 
+            if month:
+                month = int(month)
+                year = int(year) if year else timezone.now().year
+
+                month_beg = timezone.datetime(year=year, month=month, day=1)
+                month_end = date_last_day_of_month(month_beg)
+                sells = sells.filter(created__gt=month_beg)
+                sells = sells.filter(created__lt=month_end)
 
             if date_min:
                 # dates must be timezone.now() for precision.
                 sells = sells.filter(created__gt=date_min)
             if date_max:
                 sells = sells.filter(created__lt=date_max)
+
             if distributor_id:
-                soldcards = SoldCards.objects.filter(card__distributor_id=distributor_id)
+                soldcards = sells.filter(card__distributor_id=distributor_id)
                 sells = soldcards
 
         except Exception as e:
@@ -2485,19 +2497,6 @@ class Sell(models.Model):
             sells = [it.to_list() for it in sells]
 
         return sells
-
-    @staticmethod
-    def nb_card_sold_in_sells(sells, card):
-        """We may have a list of sells in which one card was sold, among
-        others. Now we want to know how many of this given card were sold.
-
-        - sells: list of Sell objects
-        - card: Card object
-
-        return: int
-
-        """
-        return sum([len(se.soldcards_set.filter(card__id=card.id)) for se in sells])
 
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
