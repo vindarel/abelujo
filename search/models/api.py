@@ -121,7 +121,7 @@ def datasource_search(request, **response_kwargs):
     data = {"data": res,
             "alerts": traces,
             "status": 200,}
-    return JsonResponse(data, safe=False)
+    return JsonResponse(data)
 
 def cards(request, **response_kwargs):
     """search for cards in the stock with the given query, or return all of them (with

@@ -99,6 +99,12 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         .then (response) !->
             $window.document.title = "Abelujo - " + gettext("search") + " " + $scope.query
             $scope.cards = response.data.data
+
+            if response.data.data.length == 0
+                $scope.no_results = true
+            else
+                $scope.no_results = false
+
             for card in $scope.cards
                 card.selected = false
             $scope.results_page.push do
