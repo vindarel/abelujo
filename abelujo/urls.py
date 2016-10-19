@@ -75,6 +75,7 @@ apipatterns = patterns("",
     url(r'^api/sell/(?P<pk>\d+)/undo$', 'search.models.api.sell_undo', name="api_sell_undo"),
     url(r'^api/sell$', 'search.models.api.sell', name="api_sell"),
 
+    # Sells history
     url(r'^api/history/sells/?$', 'search.models.api.history_sells', name="api_history_sells"),
     url(r'^api/history/entries/?$', 'search.models.api.history_entries', name="api_history_entries"),
     url(r'^api/alerts$', 'search.models.api.alerts', name="api_alerts"),

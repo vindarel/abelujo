@@ -2352,7 +2352,7 @@ class SoldCards(TimeStampedModel):
     def to_dict(self):
         return {"card_id": self.card.id,
                 "card": Card.to_dict(self.card),
-                "created": self.created,
+                "created": self.created.strftime(DATE_FORMAT),
                 "quantity": self.quantity,
                 "price_init": self.price_init,
                 "price_sold": self.price_sold,

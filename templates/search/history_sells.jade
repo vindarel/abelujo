@@ -17,13 +17,21 @@
 {% block history_sells %}
 
 {% load i18n %}
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
 {% load ngfilter %}
 
 div
     .row.ng-cloak
+
+      .col-md-1
+        .btn-group
+           button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the selection' %}") {% trans "Export" %}
+             span.caret
+
+           ul.dropdown-menu
+             //- li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") {% trans "Export selection" %} - txt
+             //- li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") {% trans "Export selection" %} - pdf
+             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'user_date.getMonth() + 1' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=csv") {% trans "Export selection" %} - csv
+
 
       .col-md-3
         p.input-group

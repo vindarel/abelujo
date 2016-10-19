@@ -26,7 +26,7 @@
 
 div(ng-controller="historyController")
     div
-        alert(
+        alert.ng-cloak(
           ng-repeat="alert in alerts"
           type="{{ 'alert.level' | ng }}"
           close="closeAlert($item)"

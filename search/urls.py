@@ -92,13 +92,15 @@ urlpatterns = patterns('',
     url(r'^baskets/$', 'search.views.baskets',
         name="baskets"),
 
+    # Export sells history
+    url(r'^history/sells/export/?', 'search.views.history_sells_exports',
+        name="history_sells_exports"),
+
     url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
         name="search_history"),
 
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),
-
-        name="history_entry"),
 
     url(r'^inventories/$', 'search.views.inventories',
         name="inventories"),

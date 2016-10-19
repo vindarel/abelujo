@@ -43,6 +43,7 @@ from django.http import StreamingHttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import get_template
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -833,6 +834,55 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
                     # outsource,                # the HTML to convert
                     # dest=resultFile)           # file handle to recieve result
                     dest=response)
+
+    return response
+
+def history_sells_exports(request, **kwargs):
+    """
+    """
+    params = request.GET.copy()
+    outformat = params.get('format')
+    params.pop('format')
+    month = params.get('month', timezone.now().month)
+    year = params.get('year', timezone.now().year)
+    distributor_id = params.get('distributor_id')
+    filename = _(u"Sells history")
+    if year:
+        filename += " - {}".format(year)
+    if month:
+        filename += "-{}".format(month)
+
+    response = None
+
+    if outformat in ['csv']:
+        res = Sell.search(to_list=True,
+                          distributor_id=distributor_id,
+                          month=month,
+                          year=year)
+
+
+        pseudo_buffer = Echo()
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        content = writer.writerow("")
+
+        rows = [(it['created'],
+                 it['sell_id'],
+                 it['price_sold'],
+                 it['card']['title'],
+                 it['card']['distributor']['name'] if it['card']['distributor'] else "",
+                )
+                for it in res]
+        header = (_("date sold"),
+                  _("sell id"),
+                  _("price sold"),
+                  _("title"),
+                  _("distributor"),
+              )
+        rows.insert(0, header)
+        content = "".join([writer.writerow(row) for row in rows])
+
+        response = StreamingHttpResponse(content, content_type="text/csv")
+        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(filename)
 
     return response
 
