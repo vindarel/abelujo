@@ -98,7 +98,6 @@ urlpatterns = patterns('',
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),
 
-    url(r'^history/entries/(?P<pk>\d+)', 'search.history_views.entry_details',
         name="history_entry"),
 
     url(r'^inventories/$', 'search.views.inventories',
