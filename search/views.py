@@ -853,14 +853,12 @@ def history_sells_exports(request, **kwargs):
         filename += "-{}".format(month)
 
     response = None
+    res = Sell.search(to_list=True,
+                      distributor_id=distributor_id,
+                      month=month,
+                      year=year)
 
     if outformat in ['csv']:
-        res = Sell.search(to_list=True,
-                          distributor_id=distributor_id,
-                          month=month,
-                          year=year)
-
-
         pseudo_buffer = Echo()
         writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
         content = writer.writerow("")
@@ -883,6 +881,28 @@ def history_sells_exports(request, **kwargs):
 
         response = StreamingHttpResponse(content, content_type="text/csv")
         response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(filename)
+
+    elif outformat in ['txt']:
+        rows = [u"{}-+-{}-+-{}-+-{}-+-{}".format(
+                  _("date sold"),
+                  _("sell id"),
+                  _("price sold"),
+                  _("title"),
+                  _("distributor"),
+              )]
+        # format: {:min width.truncate}
+        # https://pyformat.info/
+        rows += sorted([u"{:10.10} {} {:5} {:30} {}".format(
+                 it['created'],
+                 it['sell_id'],
+                 it['price_sold'],
+                 truncate(it['card']['title']), # truncate long titles
+                 it['card']['distributor']['name'] if it['card']['distributor'] else "",
+                )
+                for it in res])
+        content = "\n".join(rows)
+        response = HttpResponse(content, content_type="text/raw")
+        response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)
 
     return response
 
