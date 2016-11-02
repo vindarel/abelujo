@@ -108,6 +108,8 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
             .catch (resp) !->
                 $log.info "Error when trying to remove the card " + card_id
 
+    $scope.dist_href = (name) ->
+        $window.location.href = "#" + name
     # Set focus:
     # angular.element('#default-input').trigger('focus')
 

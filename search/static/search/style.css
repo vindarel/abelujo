@@ -64,6 +64,12 @@
     background: #f8fb3d;
 }
 
+/* Make anchors appear below the fixed navbar  */
+.myanchor {
+    padding-top: 75px;
+    margin-top: -75px;
+}
+
 /* On bootstrap 3, badges don't have context classes any more. Use this to use the ones of labels: label-success etc */
 .label-as-badge {
     border-radius: 1em;

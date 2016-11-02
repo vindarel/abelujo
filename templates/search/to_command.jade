@@ -36,31 +36,46 @@ div(ng-cloak, ng-controller="basketToCommandController")
     )
       {{ 'alert.message' | ng }}
 
-  div.panel.panel-info
-      div.panel-heading {% trans "Help" %}
-      div.panel-body {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
-      div.panel-body {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
+  .col-md-2
+    ul.list-group
+     div(ng-repeat="(dist_name, cards) in sorted_cards")
+        li.list-group-item.mouse-pointer(
+          ng-class="{active: it[0].id == false}"
+          ng-click="dist_href(dist_name)"
+          popover-trigger="mouseenter"
+          popover-placement="left") {{ " dist_name " | ng }}
+            span.badge {{ " cards.length " | ng }}
+
+
+  .col-md-10
 
     .row
-      .col-md-1
+     .col-md-1
+      .btn-group
        button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-         span.caret
+           span.caret
        ul.dropdown-menu
-         li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+           li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-         li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+           li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-      .col-md-1
+     .col-md-1
          a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
             i.glyphicon.glyphicon-question-sign
 
-      .col-md-5
+     .col-md-5
         div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
+
+    div.panel.panel-info(style="margin-top: 5px;")
+        div.panel-heading {% trans "Help" %}
+        div.panel-body
+          div {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
+          div {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
 
     div(ng-repeat="(dist_name, cards) in sorted_cards")
           span
             .row
-             h4.col-md-6(id="{{ 'dist_name' | ng}}") {{ 'dist_name'|ng}}  
+             h4.col-md-6.myanchor(id="{{ 'dist_name' | ng}}") {{ 'dist_name'|ng}}  
               a(href="mailto:{{'grouped_dist[dist_name][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
                 i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_name][0].email' | ng}} {% trans ' with your desktop mail client' %}")
 
