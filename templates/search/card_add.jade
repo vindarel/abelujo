@@ -33,7 +33,7 @@ div.ng-cloak(ng-controller="cardAddController")
         td: select(ng-model="shelf", ng-options="it.fields.name for it in shelfs")
     table
       tr
-        td.my-narrow {% trans "distributor" %}
+        td.my-narrow {% trans "supplier" %}
         td
 
           ui-select.my-narrow(ng-model="distributor.selected", ng-change="filter_deposits()")
@@ -45,7 +45,7 @@ div.ng-cloak(ng-controller="cardAddController")
               refresh-delay="100",)
               span(ng-bind="item.name")
           a(target="_blank", href="/admin/search/distributor/add")
-                i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a distributor" %}')
+                i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a supplier" %}')
 
   .row(ng-show="filtered_deposits.length")
       h4 {% trans "Add to following deposits" %}:

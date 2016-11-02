@@ -31,7 +31,7 @@ if  depo_pubtype
     thead
       tr
         td {% trans "Deposit name" %}
-        td {% trans "Distributor" %}
+        td {% trans "Supplier" %}
         td {% trans "Last checkout" %}
         td {% trans "Alerts" %}
         td {% trans "Initial qty" %}
@@ -49,7 +49,7 @@ if  depo_pubtype
         td {{ dep.total_init_price }}
 
 else
-  h4 {% trans "No deposit of distributor's type" %}
+  h4 {% trans "No deposit of supplier's type" %}
 
 if depo_fix
   h3 {% trans "Deposits of the bookstore" %}
@@ -57,7 +57,7 @@ if depo_fix
    thead
     tr
         th {% trans "Deposit's name" %}
-        th {% trans "Distributor" %}
+        th {% trans "Supplier" %}
         th {% trans "Last deposit state" %}
 
         th {% trans "Alerts" %}

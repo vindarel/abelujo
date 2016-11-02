@@ -67,12 +67,12 @@ div(ng-controller="DepositCreateController")
           div.checkbox
               input(type="checkbox", ng-model="auto_command")
               | {% trans "Auto-command the cards" %}
-        b: div {% trans "Distributor" %}
+        b: div {% trans "Supplier" %}
         select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list', required)
           option(value="") ---
         div
           span {% trans "Look for cards" %} 
-          span.ng-cloak(ng-show="distributor")  {% trans "whose distributor is" %} {{ 'distributor ' | ng }}:
+          span.ng-cloak(ng-show="distributor")  {% trans "whose supplier is" %} {{ 'distributor ' | ng }}:
         input.nullable.form-control(
           type='text'
           typeahead-loading="loadingCards"

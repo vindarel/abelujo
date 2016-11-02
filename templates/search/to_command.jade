@@ -38,7 +38,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
   div.panel.panel-info
     div.panel-heading {% trans "Help" %}
-    div.panel-body {% trans "The cards to command are grouped by distributor. Check the quantity you want to command and send them an email." %}
+    div.panel-body {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
     div.panel-body {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
 
   .row
@@ -100,7 +100,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
   script(type="text/ng-template", id="commandModal.html")
     div.modal-header
       h3.modal-title {% trans "Command" %}
-      div {% trans "The cards are grouped by distributor. Please check the list and confirm." %}
+      div {% trans "The cards are grouped by supplier. Please check the list and confirm." %}
 
     div.modal-body
       div(ng-repeat="(dist_id, cards) in sorted_cards")

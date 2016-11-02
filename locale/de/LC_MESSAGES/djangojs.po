@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-25 16:16+0100\n"
+"POT-Creation-Date: 2016-11-02 15:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,98 +19,348 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: static/js/app/controllers/DepositCreateController.js:30
+#: static/js/build/abelujo.js:77
 msgid "fix deposit"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:31
+#: static/js/build/abelujo.js:78
 msgid "deposit of bookshops"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:35
+#: static/js/build/abelujo.js:82
 msgid "external deposit (for publisher)"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:36
+#: static/js/build/abelujo.js:83
 msgid "publisher deposit"
 msgstr ""
 
 #: static/js/app/controllers/DepositCreateController.js:207
+#: static/js/build/abelujo.js:254
 msgid "Deposits"
 msgstr ""
 
 #: static/js/app/controllers/alertsController.js:12
+#: static/js/build/abelujo.js:269
 msgid "not any more"
 msgstr ""
 
 #: static/js/app/controllers/alertsController.js:14
+#: static/js/build/abelujo.js:271
 msgid "yes"
 msgstr ""
 
 #: static/js/app/controllers/alertsController.js:17
+#: static/js/build/abelujo.js:274
 msgid "Alerts"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:15
+#: static/js/app/controllers/sellController.js:17
+#: static/js/build/abelujo.js:294 static/js/build/abelujo.js:1467
+#: static/js/build/livescript/controllers/collectionController.js:22
 msgid "all publication"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:16
-#: static/js/app/controllers/sellController.js:17
 #: static/js/app/controllers/sellController.js:18
 #: static/js/app/controllers/sellController.js:19
+#: static/js/app/controllers/sellController.js:20
+#: static/js/app/controllers/sellController.js:21
+#: static/js/build/abelujo.js:295 static/js/build/abelujo.js:296
+#: static/js/build/abelujo.js:297 static/js/build/abelujo.js:298
+#: static/js/build/abelujo.js:1470 static/js/build/abelujo.js:1471
+#: static/js/build/abelujo.js:1475 static/js/build/abelujo.js:1479
+#: static/js/build/abelujo.js:1483
+#: static/js/build/livescript/controllers/collectionController.js:25
+#: static/js/build/livescript/controllers/collectionController.js:26
+#: static/js/build/livescript/controllers/collectionController.js:30
+#: static/js/build/livescript/controllers/collectionController.js:34
+#: static/js/build/livescript/controllers/collectionController.js:38
 msgid "book"
 msgstr "buch"
 
-#: static/js/app/controllers/sellController.js:17
+#: static/js/app/controllers/sellController.js:19
+#: static/js/build/abelujo.js:296 static/js/build/abelujo.js:1474
+#: static/js/build/livescript/controllers/collectionController.js:29
 msgid "booklet"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:18
+#: static/js/app/controllers/sellController.js:20
+#: static/js/build/abelujo.js:297 static/js/build/abelujo.js:1478
+#: static/js/build/livescript/controllers/collectionController.js:33
 msgid "periodical"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:19
+#: static/js/app/controllers/sellController.js:21
+#: static/js/build/abelujo.js:298 static/js/build/abelujo.js:1482
+#: static/js/build/livescript/controllers/collectionController.js:37
 msgid "other print"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:20
-#: static/js/app/controllers/sellController.js:21
 #: static/js/app/controllers/sellController.js:22
+#: static/js/app/controllers/sellController.js:23
+#: static/js/app/controllers/sellController.js:24
+#: static/js/build/abelujo.js:299 static/js/build/abelujo.js:300
+#: static/js/build/abelujo.js:301 static/js/build/abelujo.js:1486
+#: static/js/build/abelujo.js:1487 static/js/build/abelujo.js:1491
+#: static/js/build/abelujo.js:1495
+#: static/js/build/livescript/controllers/collectionController.js:41
+#: static/js/build/livescript/controllers/collectionController.js:42
+#: static/js/build/livescript/controllers/collectionController.js:46
+#: static/js/build/livescript/controllers/collectionController.js:50
 msgid "CD"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:21
+#: static/js/app/controllers/sellController.js:23
+#: static/js/build/abelujo.js:300 static/js/build/abelujo.js:1490
+#: static/js/build/livescript/controllers/collectionController.js:45
 msgid "DVD"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:22
+#: static/js/app/controllers/sellController.js:24
+#: static/js/build/abelujo.js:301 static/js/build/abelujo.js:1494
+#: static/js/build/livescript/controllers/collectionController.js:49
 msgid "vinyl"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:23
+#: static/js/app/controllers/sellController.js:25
+#: static/js/build/abelujo.js:302 static/js/build/abelujo.js:1498
+#: static/js/build/abelujo.js:1499
+#: static/js/build/livescript/controllers/collectionController.js:53
+#: static/js/build/livescript/controllers/collectionController.js:54
 msgid "others"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:27
+#: static/js/app/controllers/sellController.js:29
+#: static/js/build/abelujo.js:306
 msgid "cash"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:28
+#: static/js/app/controllers/sellController.js:30
+#: static/js/build/abelujo.js:307
 msgid "cheque"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:29
+#: static/js/app/controllers/sellController.js:31
+#: static/js/build/abelujo.js:308
 msgid "visa card"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:30
+#: static/js/app/controllers/sellController.js:32
+#: static/js/build/abelujo.js:309
 msgid "gift"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:31
+#: static/js/app/controllers/sellController.js:33
+#: static/js/build/abelujo.js:310
 msgid "other"
 msgstr ""
 
-#: static/js/app/controllers/sellController.js:221
+#: static/js/app/controllers/sellController.js:262
+#: static/js/build/abelujo.js:539
 msgid "Sell"
+msgstr ""
+
+#: static/js/build/abelujo.js:797
+#: static/js/build/livescript/controllers/basketToCommandController.js:80
+msgid "total price: "
+msgstr ""
+
+#: static/js/build/abelujo.js:798
+#: static/js/build/livescript/controllers/basketToCommandController.js:81
+#, javascript-format
+msgid "total with {}% discount: "
+msgstr ""
+
+#: static/js/build/abelujo.js:799
+#: static/js/build/livescript/controllers/basketToCommandController.js:82
+msgid "Thank you."
+msgstr ""
+
+#: static/js/build/abelujo.js:806
+#: static/js/build/livescript/controllers/basketToCommandController.js:89
+msgid "Are you sure to remove the card '{}' from the command basket ?"
+msgstr ""
+
+#: static/js/build/abelujo.js:816
+#: static/js/build/livescript/controllers/basketToCommandController.js:99
+msgid "To command"
+msgstr ""
+
+#: static/js/build/abelujo.js:868 static/js/build/abelujo.js:900
+#: static/js/build/livescript/controllers/basketsController.js:50
+#: static/js/build/livescript/controllers/basketsController.js:82
+msgid "Baskets"
+msgstr ""
+
+#: static/js/build/abelujo.js:884
+#: static/js/build/livescript/controllers/basketsController.js:66
+msgid ""
+"You are going to delete the list {}. This can not be undone. Are you sure ?"
+msgstr ""
+
+#: static/js/build/abelujo.js:915
+#: static/js/build/livescript/controllers/basketsController.js:97
+msgid "éd."
+msgstr ""
+
+#: static/js/build/abelujo.js:970
+#: static/js/build/livescript/controllers/basketsController.js:152
+msgid "This basket has no copies to command !"
+msgstr ""
+
+#: static/js/build/abelujo.js:973
+#: static/js/build/livescript/controllers/basketsController.js:155
+msgid "Do you want to mark all the cards of this list to command ?"
+msgstr ""
+
+#: static/js/build/abelujo.js:991
+#: static/js/build/livescript/controllers/basketsController.js:173
+msgid "Are you sure to remove the card '{}' from the basket ?"
+msgstr ""
+
+#: static/js/build/abelujo.js:1061 static/js/build/abelujo.js:1616
+#: static/js/build/abelujo.js:1957 static/js/build/abelujo.js:2613
+#: static/js/build/livescript/controllers/basketsController.js:243
+#: static/js/build/livescript/controllers/collectionController.js:171
+#: static/js/build/livescript/controllers/historyController.js:161
+#: static/js/build/livescript/controllers/searchResultsController.js:216
+msgid "show or hide the book details in tables."
+msgstr ""
+
+#: static/js/build/abelujo.js:1067 static/js/build/abelujo.js:1622
+#: static/js/build/abelujo.js:2246 static/js/build/abelujo.js:2619
+#: static/js/build/livescript/controllers/basketsController.js:249
+#: static/js/build/livescript/controllers/collectionController.js:177
+#: static/js/build/livescript/controllers/inventoryNewController.js:207
+#: static/js/build/livescript/controllers/searchResultsController.js:222
+msgid "go to the search box"
+msgstr ""
+
+#: static/js/build/abelujo.js:1073
+#: static/js/build/livescript/controllers/basketsController.js:255
+msgid "hide or show your notes"
+msgstr ""
+
+#: static/js/build/abelujo.js:1079
+#: static/js/build/livescript/controllers/basketsController.js:261
+msgid "transform to a Deposit"
+msgstr ""
+
+#: static/js/build/abelujo.js:1085
+#: static/js/build/livescript/controllers/basketsController.js:267
+msgid "Create a new list"
+msgstr ""
+
+#: static/js/build/abelujo.js:1307
+#: static/js/build/livescript/controllers/cardAddController.js:143
+msgid "Add a card"
+msgstr ""
+
+#: static/js/build/abelujo.js:1443
+#: static/js/build/livescript/controllers/cardCreateController.js:134
+msgid "new card"
+msgstr ""
+
+#: static/js/build/abelujo.js:1570
+#: static/js/build/livescript/controllers/collectionController.js:125
+msgid "Stock"
+msgstr ""
+
+#: static/js/build/abelujo.js:1727
+#: static/js/build/livescript/controllers/dashboardController.js:62
+msgid "3 months"
+msgstr ""
+
+#: static/js/build/abelujo.js:1727
+#: static/js/build/livescript/controllers/dashboardController.js:62
+msgid "6 months"
+msgstr ""
+
+#: static/js/build/abelujo.js:1727
+#: static/js/build/livescript/controllers/dashboardController.js:62
+msgid "12 months"
+msgstr ""
+
+#: static/js/build/abelujo.js:1727
+#: static/js/build/livescript/controllers/dashboardController.js:62
+msgid "18 months"
+msgstr ""
+
+#: static/js/build/abelujo.js:1727
+#: static/js/build/livescript/controllers/dashboardController.js:62
+msgid "24 months"
+msgstr ""
+
+#: static/js/build/abelujo.js:1727
+#: static/js/build/livescript/controllers/dashboardController.js:62
+msgid "more than 24 months"
+msgstr ""
+
+#: static/js/build/abelujo.js:1794
+#: static/js/build/livescript/controllers/dashboardController.js:129
+msgid "dashboard"
+msgstr ""
+
+#: static/js/build/abelujo.js:1869
+#: static/js/build/livescript/controllers/historyController.js:73
+msgid "Are you sure to undo this sell ?"
+msgstr ""
+
+#: static/js/build/abelujo.js:1963
+#: static/js/build/livescript/controllers/historyController.js:167
+msgid "filter one title per line"
+msgstr ""
+
+#: static/js/build/abelujo.js:1990
+#: static/js/build/livescript/controllers/historyController.js:194
+msgid "History"
+msgstr ""
+
+#: static/js/build/abelujo.js:2022
+#: static/js/build/livescript/controllers/inventoriesController.js:30
+msgid "This inventory is already applied."
+msgstr ""
+
+#: static/js/build/abelujo.js:2024
+#: static/js/build/livescript/controllers/inventoriesController.js:32
+msgid "Are you sure to apply this inventory to your stock ?"
+msgstr ""
+
+#: static/js/build/abelujo.js:2240
+#: static/js/build/livescript/controllers/inventoryNewController.js:201
+msgid "show all cards inventoried"
+msgstr ""
+
+#: static/js/build/abelujo.js:2252
+#: static/js/build/livescript/controllers/inventoryNewController.js:213
+msgid "Inventory"
+msgstr ""
+
+#: static/js/build/abelujo.js:2333
+#: static/js/build/livescript/controllers/inventoryTerminateController.js:79
+msgid "Terminate inventory"
+msgstr ""
+
+#: static/js/build/abelujo.js:2379
+#: static/js/build/livescript/controllers/preferencesController.js:34
+msgid "Preferences updated"
+msgstr ""
+
+#: static/js/build/abelujo.js:2384
+#: static/js/build/livescript/controllers/preferencesController.js:39
+msgid "There seems to be a problem to save preferences."
+msgstr ""
+
+#: static/js/build/abelujo.js:2486 static/js/build/abelujo.js:2519
+#: static/js/build/livescript/controllers/searchResultsController.js:89
+#: static/js/build/livescript/controllers/searchResultsController.js:122
+msgid "search"
+msgstr ""
+
+#: static/js/build/abelujo.js:2504
+#: static/js/build/livescript/controllers/searchResultsController.js:107
+msgid "Internal error, sorry !"
 msgstr ""
