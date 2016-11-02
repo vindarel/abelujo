@@ -76,12 +76,14 @@ div(ng-cloak, ng-controller="basketToCommandController")
           table.table.table-condensed.table-striped
               thead
                 th {% trans "Title" %}
+                th {% trans "Author" %}
                 th {% trans "Price" %}
                 th {% trans "Quantity left" %}
                 th {% trans "To command" %}
               tbody
                 tr(ng-repeat="card in cards")
                   td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
+                  td.col-md-1 {{ 'card.authors_repr' | ng }}
                   td.col-md-1 {{ 'card.price' |ng }} €
                   td.col-md-1 {{ 'card.quantity' |ng }}
                   td.col-md-1
@@ -92,6 +94,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                 tr
                   td.col-md-7 {% trans "Total" %}
+                  td
                   td.col-md-1 {{ 'get_total_price(dist_name)' |ng}}  €
                   td.col-md-1
                   td.col-md-1 {{'get_total_copies(dist_name)'|ng}}
