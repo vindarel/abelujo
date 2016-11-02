@@ -39,23 +39,24 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies",
     .then (response) ->
         $scope.cards = response.data
-        $scope.sorted_cards = group-by (.distributor.id), $scope.cards
+        $scope.sorted_cards = group-by (.distributor.name), $scope.cards
 
     $http.get "/api/distributors",
     .then (response) !->
         $scope.distributors = response.data
-        $scope.grouped_dist = group-by (.id), $scope.distributors
+        $scope.grouped_dist = group-by (.name), $scope.distributors
 
-    $scope.save_quantity = (dist_id, index) !->
+    $scope.save_quantity = (dist_name, index) !->
+        dist_id = grouped_dist[dist_name][0].id
         card = $scope.sorted_cards[dist_id][index]
         utils.save_quantity card, AUTO_COMMAND_ID
 
-    $scope.get_total_copies = (dist_id) ->
-        copies = $scope.sorted_cards[dist_id]
+    $scope.get_total_copies = (dist_name) ->
+        copies = $scope.sorted_cards[dist_name]
         utils.total_copies copies
 
-    $scope.get_total_price = (dist_id) ->
-        copies = $scope.sorted_cards[dist_id]
+    $scope.get_total_price = (dist_name) ->
+        copies = $scope.sorted_cards[dist_name]
         total = utils.total_price(copies)
         return total
 
@@ -68,10 +69,10 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
-    $scope.get_body = (dist_id) ->
+    $scope.get_body = (dist_name) ->
         "Get the list of cards and their quantities for the email body.
         "
-        cards = $scope.sorted_cards[dist_id]
+        cards = $scope.sorted_cards[dist_name]
         |> filter (.threshold > 0)
         body = ""
         for card in cards
@@ -84,7 +85,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         |> sum
 
         discount = 0
-        pub = find (.id == parseInt(dist_id, 10)), $scope.distributors
+        pub = find (.id == parseInt($scope.sorted_cards[dist_name][0].distributor.id, 10)), $scope.distributors
         discount = pub.discount
         total_discount = total_price - total_price * discount / 100
 
@@ -92,17 +93,17 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         body += NEWLINE + gettext("total price: ") + total_price + " €"
         body += NEWLINE + gettext("total with {}% discount: ").replace("{}", discount) + total_discount + " €"
         body += NEWLINE + gettext("Thank you.")
-        $scope.bodies[dist_id] = body
+        $scope.bodies[dist_name] = body
         body
 
-    $scope.remove_from_selection = (dist_id, index_to_rm) !->
+    $scope.remove_from_selection = (dist_name, index_to_rm) !->
         "Remove the card from the list. Server call."
-        sure = confirm(gettext("Are you sure to remove the card '{}' from the command basket ?").replace("{}", $scope.sorted_cards[dist_id][index_to_rm].title))
+        sure = confirm(gettext("Are you sure to remove the card '{}' from the command basket ?").replace("{}", $scope.sorted_cards[dist_name][index_to_rm].title))
         if sure
-            card_id = $scope.sorted_cards[dist_id][index_to_rm].id
+            card_id = $scope.sorted_cards[dist_name][index_to_rm].id
             $http.post "/api/baskets/#{AUTO_COMMAND_ID}/remove/#{card_id}/",
             .then (response) !->
-                $scope.sorted_cards[dist_id].splice(index_to_rm, 1)
+                $scope.sorted_cards[dist_name].splice(index_to_rm, 1)
 
             .catch (resp) !->
                 $log.info "Error when trying to remove the card " + card_id

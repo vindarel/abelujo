@@ -37,64 +37,64 @@ div(ng-cloak, ng-controller="basketToCommandController")
       {{ 'alert.message' | ng }}
 
   div.panel.panel-info
-    div.panel-heading {% trans "Help" %}
-    div.panel-body {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
-    div.panel-body {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
+      div.panel-heading {% trans "Help" %}
+      div.panel-body {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
+      div.panel-body {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
 
-  .row
-    .col-md-1
-     button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-       span.caret
-     ul.dropdown-menu
-       li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+    .row
+      .col-md-1
+       button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+         span.caret
+       ul.dropdown-menu
+         li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-       li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+         li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-    .col-md-6
-       a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
-          i.glyphicon.glyphicon-question-sign
+      .col-md-1
+         a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
+            i.glyphicon.glyphicon-question-sign
 
-    .col-md-5
-      div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
+      .col-md-5
+        div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
 
-  div(ng-repeat="(dist_id, cards) in sorted_cards")
-        span
-          .row
-           h4.col-md-6 {{ 'grouped_dist[dist_id][0].name'|ng}}  
-            a(href="mailto:{{'grouped_dist[dist_id][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_id]' | ng }}", ng-click="get_body(dist_id)")
-              i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_id][0].email' | ng}} {% trans ' with your desktop mail client' %}")
+    div(ng-repeat="(dist_name, cards) in sorted_cards")
+          span
+            .row
+             h4.col-md-6(id="{{ 'dist_name' | ng}}") {{ 'dist_name'|ng}}  
+              a(href="mailto:{{'grouped_dist[dist_name][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
+                i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_name][0].email' | ng}} {% trans ' with your desktop mail client' %}")
 
-            div.btn-group
-              button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-                 span.caret
-               ul.dropdown-menu
-                 li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'dist_id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+              div.btn-group
+                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+                   span.caret
+                 ul.dropdown-menu
+                   li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-                 li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'dist_id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+                   li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
 
-        table.table.table-condensed.table-striped
-            thead
-              th {% trans "Title" %}
-              th {% trans "Price" %}
-              th {% trans "Quantity left" %}
-              th {% trans "To command" %}
-            tbody
-              tr(ng-repeat="card in cards")
-                td.col-md-7: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
-                td.col-md-1 {{ 'card.price' |ng }} €
-                td.col-md-1 {{ 'card.quantity' |ng }}
-                td.col-md-1
-                  input.my-number-input(type="number", min=0, max=99,
-                    ng-model="card.basket_qty"
-                    ng-change="save_quantity(dist_id, $index)")
-                  i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_id, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
+          table.table.table-condensed.table-striped
+              thead
+                th {% trans "Title" %}
+                th {% trans "Price" %}
+                th {% trans "Quantity left" %}
+                th {% trans "To command" %}
+              tbody
+                tr(ng-repeat="card in cards")
+                  td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
+                  td.col-md-1 {{ 'card.price' |ng }} €
+                  td.col-md-1 {{ 'card.quantity' |ng }}
+                  td.col-md-1
+                    input.my-number-input(type="number", min=0, max=99,
+                      ng-model="card.basket_qty"
+                      ng-change="save_quantity(dist_name, $index)")
+                    i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_name, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
 
-              tr
-                td.col-md-7 {% trans "Total" %}
-                td.col-md-1 {{ 'get_total_price(dist_id)' |ng}}  €
-                td.col-md-1
-                td.col-md-1 {{'get_total_copies(dist_id)'|ng}}
+                tr
+                  td.col-md-7 {% trans "Total" %}
+                  td.col-md-1 {{ 'get_total_price(dist_name)' |ng}}  €
+                  td.col-md-1
+                  td.col-md-1 {{'get_total_copies(dist_name)'|ng}}
 
   // we'll use the modal shortly !
   script(type="text/ng-template", id="commandModal.html")
@@ -103,8 +103,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
       div {% trans "The cards are grouped by supplier. Please check the list and confirm." %}
 
     div.modal-body
-      div(ng-repeat="(dist_id, cards) in sorted_cards")
-        h4 pub: {{ 'dist_id'|ng}}
+      div(ng-repeat="(dist_name, cards) in sorted_cards")
+        h4 pub: {{ 'dist_name'|ng}}
         div(ng-repeat="card in cards")
           div {{'card.title'|ng}}
 
