@@ -385,6 +385,15 @@ class Card(TimeStampedModel):
         """
         return self.isbn
 
+    @property
+    def price_discounted(self):
+        discount = self.distributor.discount if self.distributor else None
+        if discount and self.price is not None:
+            return roundfloat(self.price - self.price * discount / 100)
+
+        else:
+            return self.price
+
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
         price_sold. We want it to initialize the angular form.
@@ -572,6 +581,7 @@ class Card(TimeStampedModel):
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
             "price_sold": self.price_sold,
+            "price_discounted": self.price_discounted,
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,

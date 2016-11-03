@@ -61,6 +61,9 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         total = utils.total_price(copies)
         return total
 
+    $scope.get_total_price_discounted = (dist_name) ->
+        utils.total_price_discounted $scope.sorted_cards[dist_name]
+
     $scope.super_total_copies = ->
         utils.total_copies $scope.cards
 
