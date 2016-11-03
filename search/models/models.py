@@ -142,6 +142,7 @@ class Distributor(TimeStampedModel):
             "stars": self.stars,
             "email": self.email,
             "repr": self.__repr__(),
+            "get_absolute_url": self.get_absolute_url(),
         }
 
     @staticmethod

@@ -70,6 +70,10 @@
     margin-top: -75px;
 }
 
+a.my-black-link {
+    color: #37393A;
+}
+
 /* On bootstrap 3, badges don't have context classes any more. Use this to use the ones of labels: label-success etc */
 .label-as-badge {
     border-radius: 1em;

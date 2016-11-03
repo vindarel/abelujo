@@ -79,8 +79,9 @@ div(ng-cloak, ng-controller="basketToCommandController")
     div(ng-repeat="(dist_name, cards) in sorted_cards")
           span
             .row
-             h4.col-md-6.myanchor(id="{{ 'dist_name' | ng}}") {{ 'dist_name'|ng}}  
-              a(href="mailto:{{'grouped_dist[dist_name][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
+             a.my-black-link(href="{{ 'grouped_dist[dist_name][0].get_absolute_url' | ng}}")
+              h4.col-md-6.myanchor(id="{{ 'dist_name' | ng}}") {{ 'dist_name'|ng}}  
+               a(href="mailto:{{'grouped_dist[dist_name][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
                 i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_name][0].email' | ng}} {% trans ' with your desktop mail client' %}")
 
               div.btn-group
