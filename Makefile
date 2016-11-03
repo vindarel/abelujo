@@ -106,7 +106,7 @@ livescript: search/tests/integration-tests/*.ls
 	cd search/tests/integration-tests/ && lsc -c *.ls
 
 protractor: livescript
-	# you need: make run and make webdriver-start
+	@echo "you need: make run and make webdriver-start"
 	$(PROTRACTOR_CMD) $(PROTRACTOR_CONF)
 
 protractor-debug:
