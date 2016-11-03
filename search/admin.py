@@ -57,8 +57,8 @@ class DistributorAdmin(admin.ModelAdmin):
     class Meta:
         model = Distributor
 
-    list_display = ("name", "discount", "stars")
-    list_editable = ("discount", "stars")
+    list_display = ("name", "discount", "stars", "email")
+    list_editable = ("discount", "stars", "email")
 
 class BillAdmin(admin.ModelAdmin):
     class Meta:
