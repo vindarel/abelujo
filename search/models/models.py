@@ -387,12 +387,40 @@ class Card(TimeStampedModel):
 
     @property
     def price_discounted(self):
+        """Return the price minus its discount.
+        """
         discount = self.distributor.discount if self.distributor else None
         if discount and self.price is not None:
             return roundfloat(self.price - self.price * discount / 100)
 
         else:
             return self.price
+
+    @property
+    def price_discounted_excl_vat(self):
+        """
+        """
+        # helper function(s) to help client side. More robust here.
+        tax = Preferences.get_vat_book()
+        try:
+            return roundfloat(self.price_discounted - self.price_discounted * tax / 100)
+        except Exception:
+            return self.price_discounted
+
+    @property
+    def price_excl_vat(self):
+        """Return the price excluding the taxes, i.e. the price minus its
+        Value on Added Tax.
+
+        French: prix - TVA
+
+        return: a float
+        """
+        tax = Preferences.get_vat_book()
+        if tax:
+            return roundfloat(self.price - self.price * tax / 100)
+
+        return self.price
 
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
@@ -582,6 +610,8 @@ class Card(TimeStampedModel):
             "price": self.price,
             "price_sold": self.price_sold,
             "price_discounted": self.price_discounted,
+            "price_discounted_excl_vat": self.price_discounted_excl_vat,
+            "price_excl_vat": self.price_excl_vat,
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
@@ -1431,6 +1461,18 @@ class Preferences(models.Model):
                 msgs.append({'level': ALERT_INFO, 'message': u"Value for preference {} is {}.".format(key, val)})
 
         return msgs, status
+
+    @staticmethod
+    def get_vat_book():
+        """Return the vat on books, as set in the preferences.
+        """
+        try:
+            vat = Preferences.objects.first().vat_book
+        except Exception as e:
+            vat = None
+
+        return vat
+
 
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).

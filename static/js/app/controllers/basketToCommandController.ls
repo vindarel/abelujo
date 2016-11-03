@@ -64,6 +64,12 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.get_total_price_discounted = (dist_name) ->
         utils.total_price_discounted $scope.sorted_cards[dist_name]
 
+    $scope.get_total_price_excl_vat = (dist_name) ->
+        utils.total_price_excl_vat $scope.sorted_cards[dist_name]
+
+    $scope.get_total_price_discounted_excl_vat = (dist_name) ->
+        utils.total_price_discounted_excl_vat $scope.sorted_cards[dist_name]
+
     $scope.super_total_copies = ->
         utils.total_copies $scope.cards
 

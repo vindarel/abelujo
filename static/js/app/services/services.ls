@@ -57,6 +57,12 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
         total_price_discounted: (copies) ->
             sum(map ( -> it.price_discounted * it.basket_qty), copies).toFixed 2 # round a float
 
+        total_price_excl_vat: (copies) ->
+            sum(map ( -> it.price_excl_vat * it.basket_qty), copies).toFixed 2 # round a float
+
+        total_price_discounted_excl_vat: (copies) ->
+            sum(map ( -> it.price_discounted_excl_vat * it.basket_qty), copies).toFixed 2 # round a float
+
         total_copies: (copies) ->
             sum(map ( -> it.basket_qty), copies)
 

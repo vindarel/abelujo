@@ -84,7 +84,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                a(href="mailto:{{'grouped_dist[dist_name][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
                 i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_name][0].email' | ng}} {% trans ' with your desktop mail client' %}")
 
-              div.btn-group
+               div.btn-group
                 button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
                    span.caret
                  ul.dropdown-menu
@@ -127,6 +127,19 @@ div(ng-cloak, ng-controller="basketToCommandController")
                   td.col-md-1 {{ 'get_total_price_discounted(dist_name)' |ng}}  €
                   td
                   td.col-md-1 {{'get_total_copies(dist_name)'|ng}}
+
+                tr
+                  td(ng-show="show_images")
+                  td
+                    | {% trans "Total" %}
+                    | {# Translators: excl. tax: price excluding tax (french: HT). #}
+                    | {% trans "excl. tax" %}
+
+                  td
+                  td  {{ 'get_total_price_excl_vat(dist_name)' |ng}}  €
+                  td  {{ 'get_total_price_discounted_excl_vat(dist_name)' |ng}}  €
+                  td
+                  td
 
   // we'll use the modal shortly !
   script(type="text/ng-template", id="commandModal.html")
