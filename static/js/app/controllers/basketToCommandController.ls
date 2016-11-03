@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$scope', '$timeout', 'utils', '$window', '$log', ($http, $scope, $timeout, utils, $window, $log) !->
+angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$scope', '$timeout', 'utils', '$window', '$log', 'hotkeys', ($http, $scope, $timeout, utils, $window, $log, hotkeys) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
@@ -35,6 +35,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.bodies = {} # dist_id, email body
 
     $scope.language = utils.url_language($window.location.pathname)
+    $scope.show_images = false
 
     $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies",
     .then (response) ->
@@ -110,6 +111,20 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $scope.dist_href = (name) ->
         $window.location.href = "#" + name
+
+    $scope.toggle_images = !->
+        $scope.show_images = not $scope.show_images
+
+    ##############################
+    # Keyboard shortcuts (hotkeys)
+    # ############################
+    hotkeys.bindTo($scope)
+    .add do
+        combo: "d"
+        description: gettext "show or hide the book details in tables."
+        callback: !->
+            $scope.toggle_images!
+
     # Set focus:
     # angular.element('#default-input').trigger('focus')
 

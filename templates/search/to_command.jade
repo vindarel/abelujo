@@ -59,9 +59,13 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
            li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-     .col-md-1
+     .col-md-2
+      .btn-group
          a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
             i.glyphicon.glyphicon-question-sign
+
+         button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
+           i.glyphicon.glyphicon-th-list
 
      .col-md-5
         div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
@@ -90,6 +94,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
           table.table.table-condensed.table-striped
               thead
+                th(ng-show="show_images")
                 th {% trans "Title" %}
                 th {% trans "Author" %}
                 th {% trans "Price" %}
@@ -97,6 +102,10 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 th {% trans "To command" %}
               tbody
                 tr(ng-repeat="card in cards")
+                  td(ng-show="show_images")
+                    .col-md-6(ng-show="show_images")
+                      img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
+
                   td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
                   td.col-md-1 {{ 'card.price' |ng }} €
@@ -108,6 +117,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_name, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
 
                 tr
+                  td(ng-show="show_images")
                   td.col-md-7 {% trans "Total" %}
                   td
                   td.col-md-1 {{ 'get_total_price(dist_name)' |ng}}  €
