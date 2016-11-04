@@ -293,7 +293,9 @@ terminal windows:
 
    Some tests rely on the testing data that we load with `make data`.
 
-   You need at least nodejs v4 (so not Debian's default). See https://github.com/nodesource/distributions#installation-instructions
+   You need at least nodejs v4 (so not Debian's default). See
+   https://github.com/nodesource/distributions#installation-instructions
+   and the Node Version Manager: https://github.com/creationix/nvm
 
 We have also a Chrome extension to help us write Protractor tests:
 https://github.com/andresdominguez/elementor (requires Chrome >= 39).
