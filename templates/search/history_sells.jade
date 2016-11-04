@@ -109,6 +109,7 @@ div
         div.panel-body
           //- h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
           h4 {% trans "Total sells" %}: {{'sells_month.toFixed(2)'|ng}} {% trans "€" %}
+          div {% trans "Total" %} {% trans "excl. tax" %}: {{ 'total_sells_month_excl_tax.toFixed(2)' | ng }} {% trans "€" %}
           div {% trans "total cards sold" %}: {{'nb_sold_cards'|ng}}
           div {% trans "mean" %}: {{'sells_mean.toFixed(2)'|ng}} {% trans "€" %}
           h4 {% trans "Best 10 sells" %}

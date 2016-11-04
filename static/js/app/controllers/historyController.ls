@@ -19,7 +19,8 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse, take, group-by, unique-by} = require 'prelude-ls'
 
     $scope.history = []
-    $scope.sells_month = {}
+    $scope.sells_month = 0.0  # total revenue of sold cards. Float.
+    $scope.total_sells_month_excl_tax = 0.0  # same total, minus the vat.
     $scope.back = []
     $scope.filterModel = 'All'
     $scope.alerts = []
@@ -44,6 +45,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     .then (response) ->
         $scope.sells = []
         $scope.sells_month = 0
+        $scope.total_sells_month_excl_tax = 0
         $scope.nb_sold_cards = response.data.data.length
         response.data.data = utils.sells_total_sold response.data.data
         $scope.best_sells = utils.best_sells response.data.data
@@ -60,6 +62,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             $scope.sells.push item
 
             $scope.sells_month += item.price_sold
+            $scope.total_sells_month_excl_tax += item.price_sold_excl_tax
 
             return do
                 repr: repr
@@ -148,6 +151,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
                 $scope.sells = []
                 $scope.nb_sold_cards = resp.data.length
                 $scope.sells_month = 0
+                $scope.total_sells_month_excl_tax = 0  # total revenue of cards sold, minus the tax
 
                 resp.data = utils.sells_total_sold resp.data
                 $scope.best_sells = utils.best_sells resp.data
@@ -164,6 +168,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
                     $scope.sells.push item
 
                     $scope.sells_month += item.price_sold
+                    $scope.total_sells_month_excl_tax += item.price_sold_excl_tax
 
                     return do
                         repr: repr

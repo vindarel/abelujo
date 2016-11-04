@@ -1473,6 +1473,15 @@ class Preferences(models.Model):
 
         return vat
 
+    @staticmethod
+    def price_excl_tax(price):
+        """Given a price (float), return it minus the current tax.
+        """
+        tax = Preferences.get_vat_book()
+        if tax:
+            return roundfloat(price - price * tax / 100)
+        return price
+
 
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).
@@ -2409,6 +2418,7 @@ class SoldCards(TimeStampedModel):
                 "quantity": self.quantity,
                 "price_init": self.price_init,
                 "price_sold": self.price_sold,
+                "price_sold_excl_tax": Preferences.price_excl_tax(self.price_sold),
                 "sell_id": self.sell.id,
                 "soldcard_id": self.id,
                 }
