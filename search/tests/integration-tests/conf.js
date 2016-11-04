@@ -3,7 +3,7 @@
 // selenium capabilities: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 exports.config = {
   seleniumAddress: 'http://localhost:4444/wd/hub',
-  specs: ['spec.js'],
+  specs: ['lsspec.js'],
 
   capabilities: {
     // phantomJS isn't adviced.
