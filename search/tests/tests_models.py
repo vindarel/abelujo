@@ -1138,3 +1138,6 @@ class TestPreferences(TestCase):
         msgs, status = Preferences.setprefs(vat_book=vat)
         self.assertEqual(status, ALERT_SUCCESS)
         self.assertEqual(Preferences.prefs().vat_book, vat, msgs)
+
+    def test_price_excl_tax(self):
+        self.assertEqual(Preferences.price_excl_tax(10), 9.45)
