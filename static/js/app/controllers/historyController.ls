@@ -205,7 +205,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.today = ->
         $scope.user_date = new Date()
-    $scope.today!
 
     $scope.user_popup_status = do
         opened: false

@@ -38,6 +38,7 @@ div
             input.form-control(
               title='{% trans "Choose another month to see its stats" %}'
               type='text'
+              placeholder='{% trans "month" %}'
               uib-datepicker-popup='{{"user_date_format"|ng}}'
               ng-model="user_date"
               ng-change="user_change_month()"
