@@ -874,7 +874,7 @@ def history_sells_exports(request, **kwargs):
                   _("sell id"),
                   _("price sold"),
                   _("title"),
-                  _("distributor"),
+                  _("supplier"),
               )
         rows.insert(0, header)
         content = "".join([writer.writerow(row) for row in rows])
@@ -888,7 +888,7 @@ def history_sells_exports(request, **kwargs):
                   _("sell id"),
                   _("price sold"),
                   _("title"),
-                  _("distributor"),
+                  _("supplier"),
               )]
         # format: {:min width.truncate}
         # https://pyformat.info/
