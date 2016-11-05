@@ -3287,13 +3287,14 @@ class Stats(object):
         - how many products
         - how many titles
         - how many books (copies)
-        - cost of the stock
+        - value of the stock
+        - value of the stock, excl. vat
         - idem for stock in deposits
 
         return: a dict by default, a json if to_json is set to True.
 
-        Everything below needs unit tests.
         """
+        # XXX: Everything below needs unit tests.
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
@@ -3338,8 +3339,13 @@ class Stats(object):
         try:
             total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
             res['total_cost'] = {'label': _(u"Total cost of the stock"),
-                             # Round the float... or just {:.2f}.format.
+                                 # Round the float... or just {:.2f}.format.
                                  'value': roundfloat(total_cost)}
+            # The same, excluding vat.
+            total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
+            res['total_cost_excl_tax'] = {'label': _(u"Total cost of the stock, excl. tax"),
+                                          'value': total_cost_excl_tax}
+
         except Exception as e:
             log.error("Error with total_cost: {}".format(e))
 

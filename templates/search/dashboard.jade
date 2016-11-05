@@ -31,7 +31,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
         h4 {% trans "Number of products" %}: {{'stats.nb_products.value'|ng}}
         h4 {% trans "Number of titles" %}: {{'stats.nb_titles.value'|ng }}
         h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %}: {{'stats.total_cost.value'|ng }} €
-      //- div(id="chart")
+        h4(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}') {% trans "Value of the stock" %} {% trans "excl. tax" %}: {{'stats.total_cost_excl_tax.value'|ng }} €
 
     .row.panel.panel-info
       h3.panel.panel-heading {% trans "Next deposits to pay" %}
