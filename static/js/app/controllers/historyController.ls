@@ -143,7 +143,8 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.distChanged = !->
         $scope.sells = DistSells.get do
             distributor_id: $scope.distributor.selected.id if $scope.distributor.selected
-            month: $scope.user_date.getMonth! + 1 # +1: mismatch with python dates
+            # +1: mismatch with python dates
+            month: $scope.user_date.getMonth! + 1
             year: $scope.user_date.getFullYear!
             , (resp) !->
                 # $scope.sells = resp.data
@@ -205,6 +206,10 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.today = ->
         $scope.user_date = new Date()
+
+    $scope.getMonth = ->
+        if $scope.user_date
+            $scope.user_date.getMonth! + 1
 
     $scope.user_popup_status = do
         opened: false

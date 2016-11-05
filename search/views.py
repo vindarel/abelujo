@@ -838,7 +838,14 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
     return response
 
 def history_sells_exports(request, **kwargs):
-    """
+    """Export a list of Sells in csv or txt.
+    If no date nor distributor is given, export the first 50 results.
+
+    - month: int (starting at 1 for python, when it starts at 0 in js)
+    - year: int
+    - distributor_id: int
+
+    Return: a StreamingHttpResponse with the right content_type.
     """
     params = request.GET.copy()
     outformat = params.get('format')
