@@ -3360,6 +3360,12 @@ class Stats(object):
         sold, average sell.
         - year, month (int, month must be in [1..12]). If not, current year, and current month.
 
+        Return: a dict {
+            "best_sells": list of cards, max length "limit",
+            "revenue": total revenue (float)
+            "nb_sold_cards": int
+            "mean": mean of sells (float),
+            }
         """
         nb_sold_cards = 0
 
@@ -3380,16 +3386,14 @@ class Stats(object):
         best_sells = {} # title -> qty
         # and count the total revenue
         revenue = 0
-        for sell in sells_obj:
-            soldcards = sell.soldcards_set.all()
-            for soldcard in soldcards:
-                title = soldcard.card.title
-                qty = soldcard.quantity
-                nb_sold_cards += qty
-                revenue += qty * soldcard.price_sold
-                if not best_sells.get("title"):
-                    best_sells[title] = 0
-                best_sells[title] += qty
+        for soldcard in sells_obj:
+            title = soldcard.card.title
+            qty = soldcard.quantity
+            nb_sold_cards += qty
+            revenue += qty * soldcard.price_sold
+            if not best_sells.get("title"):
+                best_sells[title] = 0
+            best_sells[title] += qty
 
         # Put into a list.
         res = []
