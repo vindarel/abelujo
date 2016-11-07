@@ -27,7 +27,7 @@ CHAR_LENGTH = 200
 
 # Statuses for the client (understood by bootstrap).
 ALERT_SUCCESS = "success"
-ALERT_ERROR = "error"
+ALERT_ERROR = "danger"
 ALERT_WARNING = "warning"
 ALERT_INFO = "info"
 

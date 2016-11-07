@@ -407,7 +407,9 @@ def deposits(request, **response_kwargs):
         except Exception as e:
             log.error(u"api/deposit error: {}".format(e))
             msgs["status"] = httplib.INTERNAL_SERVER_ERROR
-            msgs["messages"].append(e)
+            msgs["messages"].append({"level": ALERT_ERROR,
+                                     "message": "internal error, sorry !"})
+
             return HttpResponse(json.dumps(msgs), **response_kwargs)
         msgs = {"status": status,
                 "alerts": depo_msgs}
