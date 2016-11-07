@@ -15,6 +15,11 @@ debian:
 	@sudo pip install --upgrade pip
 	@sudo pip install virtualenvwrapper
 
+# Rebase main repo and submodules
+rebase:
+	git pull --rebase
+	git submodule update --remote
+
 # Install in current directory
 pip: pip-submodule pip-system
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
@@ -62,11 +67,6 @@ npm-dev:
 	sudo npm install -g elementor
 	# Install or update Selenium etc
 	./node_modules/protractor/bin/webdriver-manager update
-
-# Rebase main repo and submodules
-rebase:
-	git pull --rebase
-	git submodule update --remote
 
 update:
 	make rebase
