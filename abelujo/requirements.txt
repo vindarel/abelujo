@@ -47,4 +47,4 @@ gunicorn==19.4          # wsgi server
 
 huey==1.2               # task queue
 redis==2.10
-
+honcho==0.7             # task supervisor based on a Procfile
