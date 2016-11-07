@@ -122,11 +122,17 @@ See the developer documentation: http://dev.abelujo.cc/ This is
 [our database graph](http://dev.abelujo.cc/graph-db.png) (`make
 graphdb`).
 
-Note::
+### Dev installation ###
 
-As a complement to the installion procedure above, you also need to install development dependencies that are listed in another requirements file::
+As a complement to the installion procedure above, you also need to
+install development dependencies that are listed in another
+requirements file::
 
     make pip-dev
+
+and npm packages to run end to end tests:
+
+    make npm-dev  # packages listed in devDependencies of packages.json
 
 Additional management commands start with `my_`.
 

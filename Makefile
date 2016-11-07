@@ -48,7 +48,7 @@ install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev 
 # Install npm and bower packages
 npm:
 	@echo "Installing Node and bower packages..."
-	npm install
+	npm install --production # don't install devDependencies
 	@echo "Installing gulp globally... (needs root)"
 	# Don't install protractor globally, we'll have permission pb with the webdriver.
 	@sudo npm install -g gulp
@@ -58,6 +58,7 @@ npm:
 	@echo "sudo apt-get install nodejs-legacy"
 
 npm-dev:
+	npm install # not in production, install also devDependencies
 	sudo npm install -g elementor
 	# Install or update Selenium etc
 	./node_modules/protractor/bin/webdriver-manager update
