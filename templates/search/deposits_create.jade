@@ -28,7 +28,7 @@ div(ng-controller="DepositCreateController")
 
  .row
     div
-      alert.ng-cloak(ng-repeat="alert in messages", type="{{alert.level}}", close="closeAlert($item)") {{ 'alert.message' | ng }}
+      uib-alert(ng-repeat="alert in messages", type="{{ 'alert.level' | ng}}", close="closeAlert($item)") {{ 'alert.message' | ng }}
 
  .row
    .col-lg-6

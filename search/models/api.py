@@ -389,7 +389,14 @@ def deposits(request, **response_kwargs):
             if len(cards_qty) != len(cards_id):
                 log.error("Creating deposit: the length of card ids and their qties is different.")
             cards_obj, card_msgs = Card.get_from_id_list(cards_id)
-            distributor_obj = Distributor.objects.get(name=params.get("distributor"))
+            distributor_obj = Distributor.objects.filter(name=params.get("distributor"))
+            if not distributor_obj:
+                return HttpResponse(json.dumps({
+                    "data": {},
+                    "messages": [{'level': ALERT_WARNING,
+                                 'message': _(u'Please provide a supplier'),}]
+                    }))
+            distributor_obj = distributor_obj[0]
 
             deposit_dict = {
                 "name"              : params.get("name"),

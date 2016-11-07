@@ -2263,8 +2263,8 @@ class Deposit(TimeStampedModel):
             qties = depo_dict.pop('quantities', [])
             dep = Deposit.objects.create(**depo_dict)
             msgs += dep.add_copies(copies_to_add, quantities=qties)
-            msgs.append({'level': "success",
-                            'message':_("The deposit was successfully created.")})
+            msgs.append({'level': ALERT_SUCCESS,
+                         'message':_("The deposit was successfully created.")})
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
             return ALERT_ERROR, msgs.append({'level': "danger",

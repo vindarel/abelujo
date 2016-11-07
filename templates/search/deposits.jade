@@ -27,20 +27,20 @@
 
 if  depo_pubtype
   h3 {% trans "External deposits" %}
-    table.table.table-striped.table-hover
+  table.table.table-striped.table-hover
     thead
       tr
-        td {% trans "Deposit name" %}
-        td {% trans "Supplier" %}
-        td {% trans "Last checkout" %}
-        td {% trans "Alerts" %}
-        td {% trans "Initial qty" %}
-        td {% trans "Total price" %}
+        th {% trans "Deposit name" %}
+        th {% trans "Supplier" %}
+        th {% trans "Last checkout" %}
+        th {% trans "Alerts" %}
+        th {% trans "Initial qty" %}
+        th {% trans "Total price" %}
 
     tbody
      for dep in depo_pubtype
       tr
-        td
+        td.col-md-3
             a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
         td {{ dep.distributor.name }}
         td {{ dep.last_checkout_date }}
@@ -69,7 +69,7 @@ if depo_fix
    tbody
     for dep in depo_fix
       tr
-        td
+        td.col-md-3
             a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
         td {{ dep.distributor.name }}
         td {{ dep.last_checkout_date }}

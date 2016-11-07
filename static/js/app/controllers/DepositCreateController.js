@@ -23,6 +23,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     $scope.cards_selected = [];
     // Remember the pairs card representation / object from the model.
     $scope.cards_fetched = [];
+    $scope.due_date = undefined;
 
     //TODO: use django-angular to limit code duplication.
     $scope.deposit_types = [
@@ -130,9 +131,9 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
         return $http.post("/api/deposits", params)
             .then(function(response){
-                $scope.messages = response.data.alerts;
-                $scope.cancelCurrentData();
+                $scope.messages = response.data.messages;
                 if (response.data.status == "success") {
+                    $scope.cancelCurrentData();
                     $window.location.href = "/deposits/";
                 };
                 return response.data;
