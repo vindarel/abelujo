@@ -659,7 +659,7 @@ class TestDeposits(TestCase):
         # Update the deposit state
         co = self.deposit.last_checkout()
         co.update()
-        bal = self.deposit.checkout_balance()
+        bal = self.deposit.checkout_balance() # xxx fails
         self.assertEqual(1, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
         self.assertEqual(2, bal["cards"][0][1].nb_current)
@@ -689,7 +689,7 @@ class TestDeposits(TestCase):
         # Check figures: how many copies we sold, how many we have
         co = self.deposit.last_checkout()
         co = co.update()
-        balance = co.balance()
+        balance = co.balance()  # xxx test fails
         self.assertEqual(balance["cards"][0][1].nb_current, 2)
         self.assertEqual(balance["cards"][0][1].nb_initial, 3)
         self.assertEqual(balance["cards"][0][1].nb_sells, 1)
@@ -981,7 +981,7 @@ class TestAlerts(TestCase):
 
     def test_get_alerts_nominal(self):
         self.assertTrue(self.alerts)
-        self.assertTrue(self.alerts[0].card.ambiguous_sell())
+        self.assertTrue(self.alerts[0].card.ambiguous_sell())  # xxx fails
 
     def test_add_deposits_of_card(self):
         self.alerts[0].add_deposits_of_card(self.card)

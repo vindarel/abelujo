@@ -139,7 +139,7 @@ class ApiTest(TestCase):
         self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)
 
     def test_history(self):
-        resp = self.c.get(reverse("api_history"))
+        resp = self.c.get(reverse("api_history_sells"))
         self.assertEqual(resp.status_code, httplib.OK)
 
     def test_alerts(self):

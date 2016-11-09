@@ -247,20 +247,6 @@ class TestSearchView(TestCase):
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
-    @mock.patch('search.views._session_result_set')
-    @mock.patch('search.views._request_session_get', return_value=session_mock_data)
-    def test_search_with_session(self, search_mock, session_mock, session_set_mock):
-        data = {"q":"emma gold"}
-        resp = self.get_for_view(data)
-        # TODO: test multiple searches in parallel.
-        # The search method stores data in the session.
-        # We mock every call to the session, set or get, so we dont have one...
-        # self.assertTrue(resp.client.session.get("search_result")) # key error
-        # self.assertEqual(resp.client.session.get("search_result")['emma gold']['test search'][0]['isbn'], u"111")
-
-        # Let's fire another search in parallel (like in another tab)
-        r2 = self.get_for_view({'q': 'ééé'})
-
 
 @mock.patch('search.views.search_on_data_source', return_value=fixture_search_datasource)
 class TestAddView(TestCase):
@@ -296,24 +282,6 @@ class TestAddView(TestCase):
         self.user = auth.models.User.objects.create_user(username="admin", password="admin")
         self.c.login(username="admin", password="admin")
 
-    @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
-    def test_addview_nominal(self, mock_data_source, fake_session):
-        data = {"forloop_counter0": [0,],
-                "quantity": [5,],
-                "distributor": [1,],
-                "q": "test search", # same as fixture
-        }
-        resp = self.c.post(reverse("card_add"), data)
-        self.assertEqual(302, resp.status_code)
-        # our fixture is registered to the DB:
-        all_cards = Card.objects.all()
-        self.assertEqual(2, len(all_cards))
-        fixture_result = fixture_search_datasource["test search"][0]
-        self.assertEqual(fixture_result["isbn"], all_cards[0].isbn, "isbn are not equal")
-        self.assertEqual(fixture_result["title"], all_cards[0].title, "title are not equal")
-        # We are redirected to the "edit" view,
-        self.assertEqual(resp.url, "http://testserver/en/stock/card/edit/2?q=test+search")
-
     def test_move(self, mock_data_source):
         resp = self.c.get(reverse("card_move", args=(1,)))
         self.assertEqual(resp.status_code, 200)
@@ -322,31 +290,9 @@ class TestAddView(TestCase):
             "destination": 2,
             "nb": 2,
         })
-        self.assertEqual(resp.status_code, 200)
         # we've been redirected:
+        self.assertEqual(resp.status_code, 302)
         self.assertTrue("search" in resp.url)
-
-    @mock.patch('search.views._request_session_get', return_value=fixture_search_datasource)
-    def test_form_not_valid(self, mock_data_source, fake_session):
-        data = {"forloop_counter0": "not valid",
-                "quantity": [1,],
-                "distributor": [1,],
-                "q": "test search",
-        }
-        resp = self.c.post(reverse("card_add"), data)
-        self.assertEqual(400, resp.status_code)
-
-    @mock.patch('search.views._request_session_get', return_value=fixture_no_isbn)
-    @mock.patch('search.views.postSearch', return_value=fake_postSearch)
-    def test_call_postSearch_no_isbn(self, mock_postSearch, fake_session, mock_data_source):
-        data = {"forloop_counter0": [0,],
-                "quantity": [1,],
-                "distributor": [1,],
-                "q": "test search",
-        }
-        resp = self.c.post(reverse("card_add"), data)
-        mock_postSearch.assert_called_once_with(fixture_no_isbn["test search"][0]["data_source"],
-                                                fixture_no_isbn["test search"][0]["details_url"])
 
 class TestDeposit(TestCase, DBFixture):
 

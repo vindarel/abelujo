@@ -993,7 +993,8 @@ class Card(TimeStampedModel):
                 # We already have objects.
                 card_authors = card["authors"]
         else:
-            log.warning(u"this card has no authors (ok for a CD): %s" % card.get('title'))
+            # not a big deal. Many tests fire this, and it's the search lib that ensures that.
+            log.info(u"this card has no authors (ok for a CD): %s" % card.get('title'))
 
         # Get and clean the ean/isbn (beware of form data)
         isbn = card.get("isbn", card.get("ean", ""))
@@ -1035,7 +1036,7 @@ class Card(TimeStampedModel):
         exists_list, _msgs = Card.exists(card)
         created = False
         if exists_list:
-            card_obj = exists_list
+            card_obj = exists_list.first()
             # Update fields, except isbn (as with "else" below)
             card_obj.distributor = card_distributor
             card_obj.save()
@@ -1670,7 +1671,8 @@ class Basket(models.Model):
         try:
             Basket.objects.get(name="auto_command").add_copy(card)
         except Exception as e:
-            log.error(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
+            # that's ok in most tests, but not in prod.
+            log.info(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
 
     def to_deposit(self, distributor=None, name=""):
         """Transform this basket to a deposit.
