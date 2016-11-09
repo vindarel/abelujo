@@ -97,7 +97,7 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], "success")
+        self.assertEqual(resp_data["status"], ALERT_SUCCESS)
 
     def test_deposits_add_pubtype(self):
         due_date = datetime.date.today()
@@ -106,7 +106,7 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], "success")
+        self.assertEqual(resp_data["status"], ALERT_SUCCESS)
         dep = models.Deposit.objects.order_by("created").first()
         self.assertEqual(dep.due_date, due_date)
         self.assertEqual(dep.dest_place.name, models.Place.objects.get(id=1).name)
@@ -194,7 +194,7 @@ class TestBaskets(TestCase):
         resp = self.c.post(reverse("api_basket_act", args=('1', 'remove', "1,")), content_type='application/json')
         data = json.loads(resp.content)
         self.assertTrue(data['status'])
-        self.assertEqual(data['msgs'][0]['level'], u'success')
+        self.assertEqual(data['msgs'][0]['level'], ALERT_SUCCESS)
 
     def test_basket_delete(self):
         resp = self.c.post(reverse("api_basket_delete", args=('1')),
@@ -206,7 +206,7 @@ class TestBaskets(TestCase):
         resp = self.c.post(reverse("api_basket_delete", args=('9')),
                            content_type='application/json')
         data = json.loads(resp.content)
-        self.assertEqual(data['status'], u'error')
+        self.assertEqual(data['status'], ALERT_ERROR)
 
 class TestPreferences(TestCase):
 
@@ -227,7 +227,7 @@ class TestPreferences(TestCase):
                            json.dumps({'vat_book': 2}),
                            content_type='application/json')
         res = json.loads(resp.content)
-        self.assertEqual("success", res['status'])
+        self.assertEqual(ALERT_SUCCESS, res['status'])
 
         # Bad place
         resp = self.c.post(reverse('api_preferences'),
@@ -235,7 +235,7 @@ class TestPreferences(TestCase):
                                        'default_place': "rst"}),
                            content_type='application/json')
         res = json.loads(resp.content)
-        self.assertEqual("success", res['status'])
+        self.assertEqual(ALERT_SUCCESS, res['status'])
 
 class TestUtils(TestCase):
 
