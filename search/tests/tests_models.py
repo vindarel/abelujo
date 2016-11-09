@@ -28,6 +28,7 @@ import factory
 from django.contrib import messages
 from django.core.management import call_command
 from django.test import TestCase
+from django.test import TransactionTestCase
 from django.utils import timezone
 from django.utils.six import StringIO
 from factory.django import DjangoModelFactory
@@ -512,7 +513,8 @@ class TestBaskets(TestCase):
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
         self.assertFalse(msgs)
 
-class TestDeposits(TestCase):
+class TestDeposits(TransactionTestCase):
+    # Run those in a TransactionTestCase, or we get pb with an atomic block, only during testing.
 
     def setUp(self):
         # a distributor
