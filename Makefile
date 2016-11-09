@@ -162,7 +162,7 @@ taskqueue:
 
 # run only unit tests.
 unit:
-	#TODO: use django-nose or move datasources.
+	# TODO: use django-nose or move datasources.
 	# With this pattern we don't run the tests from "datasources".
 	./manage.py test search.tests --pattern="tests_*.py"
 
@@ -195,7 +195,7 @@ data:
 # Code coverage analysis:
 cov:
 	coverage run --source='search/' --omit='*/admin.py,*/*LiveTest*' manage.py test search
-	#XXX: discogs unit tests are missing.
+	# XXX: discogs unit tests are missing.
 	coverage html
 	@echo -n "Current status:"
 	@coverage report | tail -n 1 | grep -o "..%"
