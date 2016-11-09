@@ -136,6 +136,11 @@ and npm packages to run end to end tests:
 
 Additional management commands start with `my_`.
 
+Run unit tests
+--------------
+
+    make unit
+
 Load testing data
 -----------------
 

@@ -168,7 +168,7 @@ unit:
 
 # Run test of an independent module.
 ods:
-	cd search/datasources/odslookup/tests/ && nosetests --nologcapture
+	cd search/datasources/bookshops/odslookup/tests/ && nosetests --nologcapture
 
 # Test the scrapers but not the ods module.
 testscrapers:
