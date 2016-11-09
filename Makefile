@@ -3,7 +3,7 @@
 # Makefile: because we need more elaborate commands than manage.py
 
 # The target names are not a file produced by the commands of that target. Always out of date.
-.PHONY: clean e2e unit test data cov odsimport doc install_script npm gulp tox migrations
+.PHONY: clean unit test data cov odsimport doc install_script npm gulp tox migrations
 
 clone:
 	git clone --recursive https://gitlab.com/vindarel/abelujo.git
@@ -160,10 +160,6 @@ gunicorn: run-gunicorn
 taskqueue:
 	python manage.py run_huey
 
-# Run end to end tests only.
-e2e:
-	cd search/ && ./e2etests.sh
-
 # run only unit tests.
 unit:
 	#TODO: use django-nose or move datasources.
@@ -180,7 +176,7 @@ testscrapers:
 	@cd search/datasources/deDE/buchwagner/ && nosetests
 
 # Run all tests possible.
-test: unit e2e ods testscrapers
+test: unit ods testscrapers
 
 # Build test virtual environments, test against multiple python versions.
 # see tox.ini
