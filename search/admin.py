@@ -29,20 +29,12 @@ from search.models import PlaceCopies
 from search.models import Publisher
 from search.models import Sell
 
+# Custom admin for the client admin:
+# show less things than the default admin,
+# in particular no need to show the intermediate classes.
 class MyAdmin(admin.AdminSite):
     site_header = 'Abelujo administration'
     site_title = 'Abelujo admin'
-
-admin_site = MyAdmin(name='myadmin')
-admin_site.register(Author)
-admin_site.register(Basket)
-admin_site.register(Distributor)
-admin_site.register(Deposit)
-admin_site.register(Place)
-admin_site.register(PlaceCopies)
-admin_site.register(Publisher)
-admin_site.register(Sell)
-admin_site.register(Shelf)
 
 class CardAdmin(admin.ModelAdmin):
     class Meta:
@@ -99,3 +91,15 @@ admin.site.register(Place)
 admin.site.register(PlaceCopies)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(Sell)
+
+admin_site = MyAdmin(name='myadmin')
+admin_site.register(Author)
+admin_site.register(Basket)
+admin_site.register(Card, CardAdmin)
+admin_site.register(Distributor)
+admin_site.register(Deposit, DepositAdmin)
+admin_site.register(Place)
+admin_site.register(PlaceCopies)
+admin_site.register(Publisher, PublisherAdmin)
+admin_site.register(Sell)
+admin_site.register(Shelf)
