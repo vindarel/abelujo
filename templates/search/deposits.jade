@@ -25,6 +25,8 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
+a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
+
 if  depo_pubtype
   h3 {% trans "External deposits" %}
   table.table.table-striped.table-hover
@@ -93,5 +95,4 @@ if depo_fix
 else
   h4 {% trans "No deposit of bookshop type" %}
 
-a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
 {% endblock content %}
