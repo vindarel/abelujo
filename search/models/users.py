@@ -29,7 +29,6 @@ class Address(models.Model):
     Distinguish the informations between a physical or a moral person ?
     """
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     name           = models.CharField(max_length=CHAR_LENGTH)
@@ -53,9 +52,6 @@ class Address(models.Model):
     comment        = models.TextField(blank=True, null=True)
 
 class BillCopies(models.Model):
-    class Meta:
-        app_label = "search"
-
     card = models.ForeignKey("search.Card")
     bill = models.ForeignKey("Bill")
     quantity = models.IntegerField(default=0)
@@ -74,9 +70,6 @@ class Bill(TimeStampedModel):
     When needed we want to associate a bill to a Card we buy.
 
     """
-    class Meta:
-        app_label = "search"
-
     # created and modified fields
     ref = models.CharField(max_length=CHAR_LENGTH)
     name = models.CharField(max_length=CHAR_LENGTH)

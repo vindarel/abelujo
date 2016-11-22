@@ -82,7 +82,6 @@ class Author(TimeStampedModel):
 
     class Meta:
         ordering = ('name',)
-        app_label = "search"
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -119,7 +118,6 @@ class Distributor(TimeStampedModel):
     email = models.EmailField(null=True, blank=True)
 
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -180,7 +178,6 @@ class Publisher (models.Model):
 
     class Meta:
         ordering = ("name",)
-        app_label = "search"
 
     def __unicode__(self):
         return u"{}, {}".format(self.id, self.name)
@@ -226,7 +223,6 @@ class Collection (models.Model):
     parent = models.ForeignKey("Collection", null=True, blank=True)
 
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -241,9 +237,6 @@ class Shelf(models.Model):
     For now, a Card has only one shelf.
 
     """
-    class Meta:
-        app_label = "search"
-
     #: Name of the shelf
     name = models.CharField(max_length=CHAR_LENGTH)
 
@@ -300,9 +293,6 @@ class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
     name = models.CharField(max_length=100, null=True)
-
-    class Meta:
-        app_label = "search"
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -431,7 +421,6 @@ class Card(TimeStampedModel):
         super(Card, self).save(*args, **kwargs)
 
     class Meta:
-        app_label = "search"
         ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
@@ -1221,9 +1210,6 @@ class PlaceCopies (models.Model):
     #: Number of copies
     nb = models.IntegerField(default=0)
 
-    class Meta:
-        app_label = "search"
-
     def __unicode__(self):
         return u"%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
@@ -1269,7 +1255,6 @@ class Place (models.Model):
     comment = models.TextField(null=True, blank=True)
 
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -1412,9 +1397,6 @@ class Preferences(models.Model):
     #: VAT, the tax
     vat_book = models.FloatField(null=True, blank=True)
 
-    class Meta:
-        app_label = "search"
-
     def __unicode__(self):
         return u"default place: {}, vat: {}".format(self.default_place.name,self.vat_book)
 
@@ -1491,9 +1473,6 @@ class BasketCopies(models.Model):
     basket = models.ForeignKey("Basket")
     nb = models.IntegerField(default=0)
 
-    class Meta:
-        app_label = "search"
-
     def __unicode__(self):
         return u"Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
 
@@ -1535,7 +1514,6 @@ class Basket(models.Model):
     comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True)
 
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -1726,7 +1704,6 @@ class BasketType (models.Model):
     name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
 
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -1738,9 +1715,6 @@ class DepositStateCopies(models.Model):
     - the number of cards,
     - its pourcentage,
     """
-    class Meta:
-        app_label = "search"
-
     card = models.ForeignKey(Card)
     deposit_state = models.ForeignKey("DepositState")
     sells = models.ManyToManyField("Sell")
@@ -1808,10 +1782,6 @@ class DepositState(models.Model):
     more.
 
     """
-
-    class Meta:
-        app_label = "search"
-
     deposit = models.ForeignKey("Deposit")
     # "created" could be inherited with TimeStampedModel but we want
     # it to be more precise (timezone.now())
@@ -1987,8 +1957,8 @@ class DepositCopies(TimeStampedModel):
     """doc
     """
     class Meta:
-        app_label = "search"
         # ordering = ("name",)
+        pass
 
     card = models.ForeignKey(Card)
     deposit = models.ForeignKey("Deposit")
@@ -2058,7 +2028,6 @@ class Deposit(TimeStampedModel):
 
 
     class Meta:
-        app_label = "search"
         ordering = ("name",)
 
     def __unicode__(self):
@@ -2396,10 +2365,6 @@ class Deposit(TimeStampedModel):
 
 
 class SoldCards(TimeStampedModel):
-
-    class Meta:
-        app_label = "search"
-
     card = models.ForeignKey(Card)
     sell = models.ForeignKey("Sell")
     #: Number of this card sold:
@@ -2468,10 +2433,6 @@ class Sell(models.Model):
 
     See "alerts": http://ruche.eu.org/wiki/Specifications_fonctionnelles#Alerte
     """
-
-    class Meta:
-        app_label = "search"
-
     created = models.DateTimeField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True)
     payment = models.CharField(choices=PAYMENT_CHOICES, #XXX: table
@@ -2801,10 +2762,6 @@ class Alert(models.Model):
     exemplary in (at least) one deposit AND it also has exemplaries
     not in deposits. We need to ask the user which exemplary to sell.
     """
-
-    class Meta:
-        app_label = "search"
-
     card = models.ForeignKey("Card")
     deposits = models.ManyToManyField(Deposit, blank=True)
     date_creation = models.DateField(auto_now_add=True)
@@ -2854,10 +2811,6 @@ class InventoryCopies(models.Model):
     """The list of cards of an inventory, plus other information:
     - the quantity of them
     """
-
-    class Meta:
-        app_label = "search"
-
     card = models.ForeignKey(Card)
     inventory = models.ForeignKey("Inventory")
     #: How many copies of it did we find in our stock ?
@@ -2881,10 +2834,6 @@ class Inventory(TimeStampedModel):
     yet). We list the copies we have in stock, and enter the missing
     ones.
     """
-
-    class Meta:
-        app_label = "search"
-
     #: List of cards and their quantities already "inventored".
     copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
     #: We can do the inventory of a shelf.
@@ -3280,9 +3229,6 @@ def shelf_age_sort_key(it):
         return 5
 
 class Stats(object):
-
-    class Meta:
-        app_label = "search"
 
     def stock(self, to_json=False):
         """Simple figures about our stock:

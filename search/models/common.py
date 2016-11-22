@@ -45,4 +45,3 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
-        app_label = "search"

@@ -42,9 +42,6 @@ class InternalMovement(TimeStampedModel):
     """An internal movement
     For a single Card (or a Basket).
     """
-    class Meta:
-        app_label = "search"
-
     origin = models.ForeignKey("search.Place", related_name="mvt_origin")
     dest = models.ForeignKey("search.Place", related_name="mvt_dest")
     card = models.ForeignKey("search.Card")
@@ -107,9 +104,6 @@ class Entry(TimeStampedModel):
     (3, "gift"),
     (4, "sell canceled"),
     )
-
-    class Meta:
-        app_label = "search"
 
     #: has a one-to-many relationship with EntryCopies
     #: through the attribute entrycopies_set
