@@ -30,10 +30,6 @@ from datetime import date
 from textwrap import dedent
 
 import pytz
-from toolz.dicttoolz import update_in
-from toolz.dicttoolz import valmap
-from toolz.itertoolz import groupby
-
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage
@@ -42,8 +38,13 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils import translation
 from django.utils.http import quote
 from django.utils.translation import ugettext as _
+from toolz.dicttoolz import update_in
+from toolz.dicttoolz import valmap
+from toolz.itertoolz import groupby
+
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -2076,7 +2077,13 @@ class Deposit(TimeStampedModel):
         return res
 
     def get_absolute_url(self):
-        return "/deposits/%i" % self.id
+        prefs = Preferences.prefs()
+        if prefs.language:
+            # should use a session.
+            # The Deposits page, a django view, can't read the *current* language (on url) for now.
+            translation.activate(prefs.language)
+
+        return reverse("deposits_view", args=(self.id,))
 
     def to_list(self):
         return self.to_dict()
