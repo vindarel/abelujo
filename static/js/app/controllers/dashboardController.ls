@@ -26,7 +26,11 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     $scope.sells_month = {}     # Keys are different stats: "best_sells" is a list, etc.
     $scope.stock_age_cards = [] # list of cards
 
-    $http.get "/api/stats/"
+    params = do
+        language: $scope.language
+
+    $http.get "/api/stats/", do
+        params: params
     .then (response) !->
         response.data.data
         $scope.stats = response.data

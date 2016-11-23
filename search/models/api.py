@@ -1088,6 +1088,11 @@ def inventory_apply(request, pk, **kwargs):
 def stats(request, **kwargs):
     """Return stats about the stock.
     """
+    language = request.GET.get("language")
+    # Translate the graph labels.
+    if language:
+        translation.activate(language)
+
     stats = Stats()
     stock = stats.stock()
     return JsonResponse(stock)
