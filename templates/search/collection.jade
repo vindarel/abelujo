@@ -136,7 +136,7 @@ div(ng-cloak, ng-controller="collectionController")
                 b isbn: 
                 span {{ 'card.isbn' |ng}}
         td
-          div {{ 'card.price' | ng}} €
+          div {{ 'card.price | currency' | ng}}
 
         td
           div(ng-repeat="author in card.authors")

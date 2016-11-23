@@ -92,7 +92,7 @@ div(ng-controller="inventoriesController")
         td: a(href="{{ 'inv.get_absolute_url'|ng }}") {{ 'inv.name'|ng }}
         td {{ 'inv.progress'|ng  }} %
         td {{ 'inv.nb_cards'|ng  }} / {{ 'inv.nb_copies'|ng  }}
-        td(title='{% trans "Value of all the copies in this inventory" %}') {{ 'inv.value'|ng  }} €
+        td(title='{% trans "Value of all the copies in this inventory" %}') {{ 'inv.value | currency'|ng  }}
 
         td.i.glyphicon.glyphicon-refresh(title="{% trans 'the inventory is being applied' %}", ng-if="inv.ongoing")
         td.i.glyphicon.glyphicon-ok(title="{{'inv.closed'|ng}}", ng-if="inv.applied")

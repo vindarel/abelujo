@@ -26,7 +26,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% load ngfilter %}
-
+{% load humanize %}
 
 .row
   .col-lg-10
@@ -55,7 +55,7 @@
 
     .row(style="margin-left: 1px;")
 
-      h4 {{ object.price }} €  ({{ object.card_type }})
+      h4 {{ object.price | floatformat:2 | intcomma}} {% trans "€" %} ({{ object.card_type }})
       h4 {% trans "in stock" %}: {{ object.quantity }}
       table.table.table-condensed
         tbody

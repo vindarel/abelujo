@@ -120,7 +120,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         td
           div(ng-repeat="pub in card.publishers")
             div {{ 'pub' | ng }}
-        td: div {{ 'card.price'|ng }}
+        td: div {{ 'card.price | currency'|ng }}
         td
           button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
 
