@@ -281,6 +281,7 @@ def card_show(request, pk):
         "sells": sells,
         "last_entry": last_entry,
         "total_sold": total_sold,
+        "page_title": "Abelujo - " + card.title[:50],
         })
 
 
@@ -509,6 +510,7 @@ class DepositsListView(ListView):
         fixtype = Deposit.objects.filter(deposit_type="fix").all()
         context["depo_fix"] = fixtype
         context["total_price_fix"] = sum([it.total_init_price for it in fixtype])
+        context["page_title"] = "Abelujo - " + _("Deposits")
         return context
 
 #  # for a comparison:
@@ -609,6 +611,7 @@ def deposits_view(request, pk):
         "total": balance["total"],
         "created": checkout.created,
         "distributor": checkout.deposit.distributor,
+        "page_title": "Abelujo - " + deposit.name
     })
 
 @login_required
