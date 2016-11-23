@@ -1264,7 +1264,9 @@ class Place (models.Model):
         return u"{}".format(self.name)
 
     def get_absolute_url(self):
-        return "" # TODO: url paramaters for stock search
+        prefs = Preferences.prefs()
+        return "/{}/databasesearch/place/{}/".format(prefs.language if prefs.language else "en",
+                                                    self.id) # TODO: url paramaters for stock search
 
     @staticmethod
     def card_to_default_place(card_obj, nb=1):
