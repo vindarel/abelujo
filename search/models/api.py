@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from drfserializers import PreferencesSerializer
@@ -138,6 +139,7 @@ def cards(request, **response_kwargs):
     data = []
     query = request.GET.get("query", "")
     query = query.split()
+    language = request.GET.get("language")
     distributor = request.GET.get("distributor")
     distributor_id = request.GET.get("distributor_id")
     card_type_id = request.GET.get("card_type_id")
@@ -146,6 +148,10 @@ def cards(request, **response_kwargs):
     shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
     bought = request.GET.get("in_stock")
+
+    # Set the language (for url prefix, error messages, etc)
+    if language:
+        translation.activate(language)
 
     data, msgs = Card.search(query, to_list=True,
                              distributor=distributor,

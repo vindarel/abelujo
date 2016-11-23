@@ -22,6 +22,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
     {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
 
+    $scope.language = utils.url_language($window.location.pathname)
+
     $scope.query = ""
     $scope.cards = []
     $scope.places = []
@@ -77,6 +79,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     # Get cards in stock
     params = do
         order_by: "-created" # valid django
+        language: $scope.language
     $http.get "/api/cards", do
         params: params
     .then (response) !->

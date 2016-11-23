@@ -1154,6 +1154,7 @@ class Card(TimeStampedModel):
         return card, [msg_success]
 
     def get_absolute_url(self):
+        # The current user language is given from the UI and set in the api point.
         return reverse("card_show", args=(self.id,))
 
     def display_year_published(self):
