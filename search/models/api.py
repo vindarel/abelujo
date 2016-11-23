@@ -106,7 +106,8 @@ def preferences(request, **response_kwargs):
                 params.pop('place_id', None)
 
         msgs, status = Preferences.setprefs(default_place=place,
-                                            vat_book=params.get('vat_book'))
+                                            vat_book=params.get('vat_book'),
+                                            language=params.get('language'))
 
         return JsonResponse({'status': status, 'alerts': msgs})
 

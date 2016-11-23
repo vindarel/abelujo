@@ -1398,6 +1398,9 @@ class Preferences(models.Model):
     default_place = models.OneToOneField(Place)
     #: VAT, the tax
     vat_book = models.FloatField(null=True, blank=True)
+    #: the default language: en, fr, es, de.
+    #: Useful for non-rest views that must set the language on the url or for UI messages.
+    language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
 
     def __unicode__(self):
         return u"default place: {}, vat: {}".format(self.default_place.name,self.vat_book)
@@ -1441,6 +1444,10 @@ class Preferences(models.Model):
                         log.error(u"Error setting preferences VAT: {}".format(e))
                         status = ALERT_ERROR
                         msgs.append("Error with setting vat: {}".format(e))
+
+                else:
+                    prefs.__setattr__(key, val)
+                    prefs.save()
 
             else:
                 msgs.append({'level': ALERT_INFO, 'message': u"Value for preference {} is {}.".format(key, val)})
