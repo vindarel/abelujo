@@ -1,6 +1,8 @@
 angular.module("abelujo").controller('sellController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$log', function ($http, $scope, $timeout, utils, $filter, $window, $log) {
     // utils: in services.js
 
+      $scope.language = utils.url_language($window.location.pathname);
+
       // set the xsrf token via cookies.
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
@@ -58,7 +60,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // messages for ui feedback: list of couple level/message
       $scope.alerts = undefined;
 
-      $scope.language = utils.url_language($window.location.pathname);
 
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
@@ -76,6 +77,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               params: {
                   "query": val,
                   "lang": $scope.language,
+                  "language": $scope.language,
                   "card_type_id": $scope.card_type.id
               }})
               .then(function(response){ // "then", not "success"
@@ -191,7 +193,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         var params = {
             "to_sell": [ids, prices, quantities],
             "date": $filter('date')($scope.date, $scope.format, 'UTC')
-                .toString($scope.format)
+                .toString($scope.format),
+            "language": $scope.language
         };
 
           // This is needed for Django to process the params to its

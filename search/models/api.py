@@ -471,6 +471,12 @@ def sell(request, **response_kwargs):
 
     if request.method == "POST":
         params = request.POST.copy()
+
+        language = params.get('language')
+        # Translate user messages returned to the UI.
+        if language:
+            translation.activate(language)
+
         #TODO: data validation
         if params.get("to_sell") == "null":
             pass #TODO: return and display an error.
