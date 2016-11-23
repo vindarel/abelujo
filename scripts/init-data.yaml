@@ -3,7 +3,9 @@
 fr: # yes, could be fr/fr or fr/be, but it's ok for now.
   Preferences:
     vat_book: 5.5
+    language: "fr"
 
 es:
   Preferences:
     vat_book: 4
+    language: "es"

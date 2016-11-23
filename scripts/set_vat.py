@@ -38,14 +38,13 @@ Run with the runscript management command.
 
 Usage:
 
-./manage.py runscript set_vta --script-args=scripts/shelfs_fr.yaml
+./manage.py runscript set_vta --script-args=fr [-v3]
 """
 
 def run(*args):
     """
     """
 
-    LANG = "fr"
     src = "scripts/init-data.yaml"
 
     with open(src, "r") as f:
@@ -55,6 +54,7 @@ def run(*args):
         print("No file data given")
         exit(1)
 
+    LANG = "fr"
     lang = args[0] if args else LANG
     langchoices = data.keys()
     if lang not in langchoices:
@@ -69,9 +69,22 @@ def run(*args):
 
     vat_book = prefs['vat_book']
 
-    print("=== setting the vat for books...===")
-    msgs, status = Preferences.setprefs(vat_book=vat_book)
-    if status == "success":
-        print("==== ok ===")
-    else:
-        print("==== pb: {}".format(msgs))
+    if vat_book != Preferences.get_vat_book():
+        print("=== setting the vat for books...===")
+        msgs, status = Preferences.setprefs(vat_book=vat_book)
+        if status == "success":
+            print("==== ok ===")
+        else:
+            print("==== pb: {}".format(msgs))
+
+    # Setting the default language.
+    if prefs["language"]:
+        print("=== Setting default language to {} ===".format(prefs["language"]))
+        try:
+            msgs, status = Preferences.setprefs(language=prefs["language"])
+            if msgs:
+                print(msgs)
+        except Exception as e:
+            print("Error: {}".format(e))
+
+    print("=== All done ===")
