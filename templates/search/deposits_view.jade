@@ -55,11 +55,11 @@
     dd {{ nb_alerts }}
 
   .col-md-4
-    div {% trans "total init" %}: {{ total.total_price_init }}
-    div {% trans "total sold" %}: {{ total.total_price_sold }}
+    div {% trans "total init" %}: {{ total.total_price_init }} {% trans "€" %}
+    div {% trans "total sold" %}: {{ total.total_price_sold }} {% trans "€" %}
     div {% trans "discount" %}: {{ total.discount }} %
-    h4  {% trans "to pay" %}: {{ total.total_to_pay }}
-    div {% trans "margin" %}: {{ total.margin }}
+    h4  {% trans "to pay" %}: {{ total.total_to_pay }} {% trans "€" %}
+    div {% trans "margin" %}: {{ total.margin }} {% trans "€" %}
 
 .row
   .col-sm-4
@@ -85,13 +85,17 @@ table.table.table-striped.table-hover
     tr
         th {% trans "Title" %}
         th {% trans "price" %}
+        th {% trans "price" %} {% trans "excl. tax" %}
+        th {% trans "price" %} {% trans "with discount" %}
         th {% trans "qty init" %}
         th {% trans "nb sold" %}
         th {% trans "current qty" %}
     for key, bal in cards_balance
       tr
         td: a(href="{{key.get_absolute_url}}")  {{ key.title }}
-        td  {{ key.price }}
+        td  {{ key.price }} {% trans "€" %}
+        td  {{ key.price_excl_vat }} {% trans "€" %}
+        td  {{ key.price_discounted }} {% trans "€" %}
         td  {{ bal.nb_initial }}
         td  {{ bal.nb_sells }}
         td  {{ bal.nb_current }}
