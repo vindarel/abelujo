@@ -28,6 +28,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% load ngfilter %}
+{% load humanize %}
 
 a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
 
@@ -52,7 +53,7 @@ if  depo_pubtype
         td {{ dep.last_checkout_date }}
         td {{ dep.nb_alerts }}
         td {{ dep.initial_nb_copies }}
-        td {{ dep.total_init_price }}
+        td {{ dep.total_init_price| floatformat:2 | intcomma  }}
 
 else
   h4 {% trans "No deposit of supplier's type" %}
@@ -82,7 +83,7 @@ if depo_fix
 
         td {{ dep.nb_alerts }}
         td {{ dep.init_qty }}
-        td {{ dep.total_init_price }}
+        td {{ dep.total_init_price | floatformat:2 | intcomma }} {% trans "€" %}
 
         td {{ dep.due_date }}
 
@@ -92,7 +93,7 @@ if depo_fix
 
     td
     td
-    td {{total_price_fix}}
+    td {{total_price_fix | floatformat:2 | intcomma }} {% trans "€" %}
 
     td
 

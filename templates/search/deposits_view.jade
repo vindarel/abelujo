@@ -27,6 +27,7 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load humanize %}
 
 .row
   .col-md-3
@@ -93,9 +94,9 @@ table.table.table-striped.table-hover
     for key, bal in cards_balance
       tr
         td: a(href="{{key.get_absolute_url}}")  {{ key.title }}
-        td  {{ key.price }} {% trans "€" %}
-        td  {{ key.price_excl_vat }} {% trans "€" %}
-        td  {{ key.price_discounted }} {% trans "€" %}
+        td  {{ key.price | floatformat:2 | intcomma  }} {% trans "€" %}
+        td  {{ key.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
+        td  {{ key.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
         td  {{ bal.nb_initial }}
         td  {{ bal.nb_sells }}
         td  {{ bal.nb_current }}
