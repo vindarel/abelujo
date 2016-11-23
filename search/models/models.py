@@ -921,7 +921,8 @@ class Card(TimeStampedModel):
 
             # Some cards have the same title, and not much more attributes.
             if no_authors and no_pubs:
-                return clist, msgs
+                msgs.append(_("There are cards with similar titles"))
+                return None, msgs  # similar titles though.
 
         return None, msgs
 
@@ -1025,7 +1026,7 @@ class Card(TimeStampedModel):
         exists_list, _msgs = Card.exists(card)
         created = False
         if exists_list:
-            card_obj = exists_list.first()
+            card_obj = exists_list
             # Update fields, except isbn (as with "else" below)
             card_obj.distributor = card_distributor
             card_obj.save()

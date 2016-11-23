@@ -114,7 +114,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
                 datasource: $scope.datasource.id
         , (response) ->
             $scope.alerts.push do
-                level: 'error'
+                level: 'danger'
                 message: gettext "Internal error, sorry !"
 
     # Initial search results, read the url's query params after the #
@@ -153,7 +153,12 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         .then (response) ->
             card_id = response.data.card_id
             # Card created in DB. Now add it to places, deposits, etc.
-            $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.id}"
+            if card_id
+                $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.id}"
+            else
+                $scope.alerts.push do
+                    level: 'danger'
+                    message: gettext "Server error… sorry !"
 
         , (response) ->
             ... # error

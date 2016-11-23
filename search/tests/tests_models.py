@@ -193,8 +193,10 @@ class TestCards(TestCase):
         doesnt_exist, msgs = Card.exists({"isbn": "whatever",
                                                "title":"a different title"})
         self.assertFalse(doesnt_exist)
+        # The same title is not enough.
         same_title, msgs = Card.exists({"title": self.fixture_title})
-        self.assertTrue(same_title)
+        self.assertFalse(same_title)
+        self.assertTrue(msgs)
         good_authors, msgs = Card.exists({"title": self.fixture_title,
                                           "authors": [self.GOLDMAN]})
         self.assertTrue(good_authors)
@@ -228,10 +230,10 @@ class TestCards(TestCase):
         other_authors, msgs = Card.exists({"title": self.fixture_title,
                                            "authors": [AuthorFactory()]})
         self.assertFalse(other_authors)
-        # only the same title. Should exist.
+        # only the same title. Not enough to find a similar card.
         no_pubs_no_authors, msgs = Card.exists({"title": self.fixture_title,})
-        self.assertTrue(no_pubs_no_authors)
-        self.assertEqual(len(no_pubs_no_authors), 2)
+        self.assertFalse(no_pubs_no_authors)
+        self.assertTrue(msgs)
 
         # TODO: and collection
 
