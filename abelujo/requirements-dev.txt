@@ -16,7 +16,7 @@ tox==1.9                # test in a fresh venv, against multiple python versions
 sphinx==1.2.3           # documentation system.
 
 ### packaging
-# platter               # package builder # not in pypi yet
+git+https://github.com/mitsuhiko/platter # package builder # not in pypi yet
 
 ### deployment
 fabric<2                # remote execution
