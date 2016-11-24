@@ -120,7 +120,8 @@ gulp:
 
 # Run the dev server
 run:
-	python manage.py runserver 8000
+	# python manage.py runserver 8000
+	python manage.py runserver_plus 8000
 
 run-wsgi:
 	# Run a development server using Apache and mod_wsgi, like in production.
