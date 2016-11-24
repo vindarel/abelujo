@@ -25,6 +25,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.card = {}
     $scope.ready = false
     $scope.shelf = {}
+    $scope.distributor = {}
 
     $scope.total_places = 0
     $scope.total_places_discount = 0
@@ -63,7 +64,11 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
                 "query": ""
         .then (response) ->
             $scope.distributor_list = response.data
-            $scope.distributor = $scope.distributor_list[0]
+            if response.data.length == 0
+                $scope.distributor = {}
+            else
+                $scope.distributor = $scope.distributor_list[0]
+
             response.data
 
     getDistributors()
