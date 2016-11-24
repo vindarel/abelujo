@@ -25,7 +25,7 @@
 {% bootstrap_javascript %}
 
 div.ng-cloak(ng-controller="cardAddController")
-  h3 {{ "card.title" | ng}} ({{ "card.price" | ng }}€)
+  h3 {{ "card.title" | ng}} ({{ "card.price | currency: '€'" | ng }})
   .row
     table
       tr
