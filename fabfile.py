@@ -306,13 +306,14 @@ def dbback(name=None):
 
 def updatelight(name=None):
     """Everything except package managers (apt, npm, pip).
+    Don't restart, but it may be needed.
     """
     rebase(name)
     make("migrate", name)
     make("gulp", name)
     make("collectstatic", name)
     make("translation-compile", name)
-    restart(name)
+    # restart(name)
     check_online(name)
 
 def bundles_upload(name=None):
