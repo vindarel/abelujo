@@ -179,6 +179,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',  # for intcomma currency filter only (card show).
     'django_extensions',
     'bootstrap3',
     'bootstrap_admin',
