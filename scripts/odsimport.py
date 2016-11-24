@@ -159,7 +159,7 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
             #XXX the logs will thrash stdout.
             card_obj, msgs = Card.from_dict(card)
             if card.get('title'):
-                place.add_copy(card_obj, nb=qty)
+                place.add_copy(card_obj, nb=qty, add=False)
         print "...done."
 
     if ADD_NOT_FOUND and cards.get('cards_not_found'):
