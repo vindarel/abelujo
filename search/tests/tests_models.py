@@ -237,6 +237,19 @@ class TestCards(TestCase):
 
         # TODO: and collection
 
+    def test_is_in_stock(self):
+        card_dict = self.autobio.to_list()
+        card_dict['id'] = None
+        other = {
+            "title": "doesn't exist",
+            "isbn": None,
+            }
+        cards = Card.is_in_stock([card_dict, other])
+        self.assertTrue(cards)
+        self.assertEqual(cards[0]['in_stock'], self.autobio.quantity)
+        self.assertEqual(cards[0]['id'], self.autobio.id)
+        self.assertFalse(cards[1]['in_stock'])
+
     def test_from_dict_no_authors(self):
         TITLE = "I am a CD without authors"
         to_add, msgs = Card.from_dict({"title":TITLE})

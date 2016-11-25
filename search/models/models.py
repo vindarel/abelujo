@@ -748,13 +748,14 @@ class Card(TimeStampedModel):
         if not cards:
             return cards
 
-        quantity = None
-        found_id = 0
+        if not (type(cards) == list):
+            cards = [cards]
+
         for card in cards:
+            quantity = None
+            found_id = 0
             try:
                 found, _ = Card.exists(card)
-                if type(found) == list:
-                    found = found[0]
                 if found:
                     quantity = found.quantity
                     found_id = found.id
