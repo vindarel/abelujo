@@ -56,11 +56,11 @@
     dd {{ nb_alerts }}
 
   .col-md-4
-    div {% trans "total init" %}: {{ total.total_price_init }} {% trans "€" %}
-    div {% trans "total sold" %}: {{ total.total_price_sold }} {% trans "€" %}
+    div {% trans "total init" %}: {{ total.total_price_init | floatformat:2 | intcomma}} {% trans "€" %}
+    div {% trans "total sold" %}: {{ total.total_price_sold | floatformat:2 | intcomma}} {% trans "€" %}
     div {% trans "discount" %}: {{ total.discount }} %
-    h4  {% trans "to pay" %}: {{ total.total_to_pay }} {% trans "€" %}
-    div {% trans "margin" %}: {{ total.margin }} {% trans "€" %}
+    h4  {% trans "to pay" %}: {{ total.total_to_pay | floatformat:2 | intcomma}} {% trans "€" %}
+    div {% trans "margin" %}: {{ total.margin | floatformat:2 | intcomma}} {% trans "€" %}
 
 .row
   .col-sm-4
