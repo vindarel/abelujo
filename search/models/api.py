@@ -396,14 +396,18 @@ def deposits(request, **response_kwargs):
             if len(cards_qty) != len(cards_id):
                 log.error("Creating deposit: the length of card ids and their qties is different.")
             cards_obj, card_msgs = Card.get_from_id_list(cards_id)
-            distributor_obj = Distributor.objects.filter(name=params.get("distributor"))
-            if not distributor_obj:
-                return HttpResponse(json.dumps({
-                    "data": {},
-                    "messages": [{'level': ALERT_WARNING,
-                                 'message': _(u'Please provide a supplier'),}]
-                    }))
-            distributor_obj = distributor_obj[0]
+
+            distributor_obj = None
+            if not (params.get('deposit_type') == 'publisher'):
+                distributor_obj = Distributor.objects.filter(name=params.get("distributor"))
+
+                if not distributor_obj:
+                    return HttpResponse(json.dumps({
+                        "data": {},
+                        "messages": [{'level': ALERT_WARNING,
+                                     'message': _(u'Please provide a supplier'),}]
+                        }))
+                distributor_obj = distributor_obj[0]
 
             deposit_dict = {
                 "name"              : params.get("name"),
@@ -416,6 +420,11 @@ def deposits(request, **response_kwargs):
                 "due_date"          : params.get("due_date"),
                 "dest_place"        : params.get("dest_place"),
             }
+
+            # that's a form validation...
+            if deposit_dict['due_date'] == 'undefined':
+                del deposit_dict['due_date']
+
             status, depo_msgs = Deposit.from_dict(deposit_dict)
 
         except Exception as e:

@@ -94,6 +94,11 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     $scope.getPlaces();
 
     $scope.addDeposit = function() {
+
+        if (! $scope.depositForm.$valid) {
+            return;
+        }
+
         var cards_id = [];
         var cards_qty = [];
 
@@ -107,6 +112,10 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
                 return card.quantity;
             });
         }
+        var due_date;
+        if ($scope.due_date) {
+            due_date = $scope.due_date.toString($scope.format)
+        }
         var params = {
             "name"              : $scope.deposit_name,
             "distributor"       : $scope.distributor,
@@ -116,7 +125,8 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
             "minimal_nb_copies" : $scope.minimal_nb_copies,
             "auto_command"      : $scope.auto_command,
             "dest_place"        : $scope.dest_place.id,
-            "due_date"          : $scope.due_date.toString($scope.format)
+            "due_date"          : due_date
+
         };
         // needed for Django to process the params to its request.POST dict.
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';

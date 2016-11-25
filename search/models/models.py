@@ -2226,7 +2226,9 @@ class Deposit(TimeStampedModel):
         status = ALERT_SUCCESS
         dep = None
         copies = depo_dict.pop('copies')  # add the copies after deposit creation.
-        copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
+        copies_to_add = copies
+        if depo_dict['distributor']:
+            copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
 
         # Check the cards are not already in a deposit.
         for copy in copies_to_add:
@@ -2266,7 +2268,9 @@ class Deposit(TimeStampedModel):
                 dep.dest_place = Place.objects.get(id=dest_place_id)
                 dep.save()
             except Exception as e:
-                log.error(u"{}".format(e))
+                log.error(u"Error adding a Deposit from dict: {}".format(e))
+                msgs.append({'level': ALERT_ERROR,
+                             'message': _("Error adding a deposit")})
 
         return status, msgs
 

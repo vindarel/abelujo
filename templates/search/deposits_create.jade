@@ -23,7 +23,6 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "New deposit" %}
 div(ng-controller="DepositCreateController")
 
  .row
@@ -31,11 +30,16 @@ div(ng-controller="DepositCreateController")
       uib-alert(ng-repeat="alert in messages", type="{{ 'alert.level' | ng}}", close="closeAlert($item)") {{ 'alert.message' | ng }}
 
  .row
+   .col-sm-1
    .col-lg-6
-    // form(action='/api/distributors', method='post')
-    form(method='post')
+    h3 {% trans "New deposit" %}
+    form(method='post', name="depositForm")
+      .row
         b: div {% trans "Name of the deposit" %}
-        input.form-control(type="text", ng-model="deposit_name", required, id="default-input")
+        input.form-control#default-input(type="text",
+          ng-model="deposit_name",
+          required,
+          ng-required='true')
 
         b: div {% trans "Type" %}
         select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
@@ -52,7 +56,7 @@ div(ng-controller="DepositCreateController")
                 ng-model='due_date'
                 is-open='opened'
                 datepicker-options='dateOptions'
-                ng-required='true'
+                ng-required='false'
                 close-text='Close'
                 required
               )
@@ -63,12 +67,14 @@ div(ng-controller="DepositCreateController")
         b: div {% trans "Minimum wanted quantity" %}
         input.form-control(type="number", ng-model="minimal_nb_copies",
           title='{% trans "This number can also be specified card-wise" %}')
+
         div.form-group
           div.checkbox
               input(type="checkbox", ng-model="auto_command")
               | {% trans "Auto-command the cards" %}
+
         b: div {% trans "Supplier" %}
-        select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list', required)
+        select.form-control(ng-model="distributor", ng-options='dist for dist in dist_list')
           option(value="") ---
         div
           span {% trans "Look for cards" %} 
@@ -82,27 +88,27 @@ div(ng-controller="DepositCreateController")
           typeahead-on-select="add_selected_card($item)"
         )
 
-  .row
-    div.list-group.ng-cloak(ng-show="cards_selected", ng-repeat="card in cards_selected ")
-     .col-lg-9
-          div {{ 'card.repr' | ng }}
+      .row
+        div.list-group.ng-cloak(ng-show="cards_selected", ng-repeat="card in cards_selected ")
+         .col-lg-9
+              div {{ 'card.repr' | ng }}
 
-     .col-lg-2
-            p.input-group
-                label.sr-only {% trans "Quantity" %}
-                span.input-group-addon X
-                input.form-control(
-                  type="number", min=0, max=99
-                  //- ng-model="{% verbatim %} cards_selected[$index].quantity {% endverbatim %}"
-                  ng-model="{% verbatim %} card.quantity {% endverbatim %}"
-                  ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
-                )
+         .col-lg-2
+                p.input-group
+                    label.sr-only {% trans "Quantity" %}
+                    span.input-group-addon X
+                    input.form-control(
+                      type="number", min=0, max=99
+                      //- ng-model="{% verbatim %} cards_selected[$index].quantity {% endverbatim %}"
+                      ng-model="{% verbatim %} card.quantity {% endverbatim %}"
+                      ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
+                    )
 
-     .col-lg-1
-            i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
-  .row
-    input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
-        // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
+         .col-lg-1
+                i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
+      .row
+        input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}", ng-click="addDeposit()")
+            // input.btn.btn-primary(type="submit", value="Enregistrer", ng-submit="addDeposit()")
 
 
 {% endblock content %}
