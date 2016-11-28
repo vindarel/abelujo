@@ -21,11 +21,112 @@ import re
 import string
 
 import addict
-
 # from models import getHistory # don't import model here-> circular
 from tabulate import tabulate
 
+from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_INFO
+from search.models.common import ALERT_SUCCESS
+from search.models.common import ALERT_WARNING
+
 MAX_CELL=30
+
+class Messages(object):
+    """List of messages for UI <-> api communication in json.
+    When adding a message, with a status, the global status is updated accordingly.
+
+    Usage:
+
+    >> msgs = Messages()
+    >> msgs.add_success(_("ok !"))
+    >> msgs.add_error("oh no") # -> global status is updated
+    >> return val, msgs.to_dict()
+
+    """
+
+    def __init__(self):
+        #: List of dicts with 'level' (str) and 'message' (str).
+        self.msgs = []
+        #: Global status. string, for bootstrap.
+        self._status = ALERT_SUCCESS
+
+    def __unicode__(self):
+        return self.msgs
+
+    def add(self, status, txt):
+        self.msgs.append({'level': status, 'message': txt})
+
+    def add_success(self, txt):
+        self.add(ALERT_SUCCESS, txt)
+
+    def add_error(self, txt):
+        self.add(ALERT_ERROR, txt)
+        self._status = ALERT_ERROR
+
+    def add_info(self, txt):
+        self.add(ALERT_INFO, txt)
+        if self._status in [ALERT_SUCCESS]:
+            self._status = ALERT_INFO
+
+    def add_warning(self, txt):
+        self.add(ALERT_WARNING, txt)
+        if self._status in [ALERT_SUCCESS, ALERT_INFO]:
+            self._status = ALERT_WARNING
+
+    def merge(self, msgs):
+        """
+        - msgs: Messages instance
+        """
+        # here we want status as int…
+        # error info success warning
+        self.msgs += msgs.msgs
+        self._status = self.check_status()
+
+    def append(self, msgs):
+        """
+        - msgs: list of messages
+        """
+        self.msgs += msgs
+        self._status = self.check_status()
+
+    def check_status(self):
+        """Find the global status again (happens after a merge of different messages).
+
+        Return: a status (str)
+        """
+        if any(map(lambda it: it['level'] == ALERT_ERROR, self.msgs)):
+            return ALERT_ERROR
+
+        if any(map(lambda it: it['level'] == ALERT_WARNING, self.msgs)):
+            return ALERT_WARNING
+
+        if any(map(lambda it: it['level'] == ALERT_INFO, self.msgs)):
+            return ALERT_INFO
+
+        return ALERT_SUCCESS
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, status):
+        """Avoid that, it messes with merge.
+        """
+        if status:
+            self._status = status
+
+    @property
+    def messages(self):
+        return self.msgs
+
+    def to_list(self):
+        return self.to_dict()
+
+    def to_dict(self):
+        return {'status': self._status,
+                'messages': self.msgs}
+
 
 def truncate(it):
     """Truncate only strings to MAX_CELL characters.

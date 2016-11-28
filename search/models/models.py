@@ -53,6 +53,7 @@ from search.models.common import ALERT_WARNING
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
+from search.models.utils import Messages
 from search.models.utils import date_last_day_of_month
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
@@ -655,7 +656,7 @@ class Card(TimeStampedModel):
         SIZE_LIMIT = 10 #TODO: pagination
         isbns = []
         cards = []
-        msgs = []
+        msgs = Messages()
 
         # Get all isbns, eans.
         if words:
@@ -715,8 +716,7 @@ class Card(TimeStampedModel):
                     cards.append(card)
                 except Exception as e:
                     log.error("Error searching for isbn {}: {}".format(isbn, e))
-                    msgs.append({'level': 'error',
-                                 'message': e})
+                    msgs.add_error(_("Error searching for isbn ".format(isbn)))
 
         # Sort
         if order_by:
@@ -735,7 +735,7 @@ class Card(TimeStampedModel):
         if to_list:
             cards = Card.obj_to_list(cards)
 
-        return cards, msgs
+        return cards, msgs.msgs
 
     @staticmethod
     def is_in_stock(cards):
@@ -776,17 +776,17 @@ class Card(TimeStampedModel):
         returns: a tuple Card objects, messages.
         """
         result = []
-        msgs = []
+        msgs = Messages()
 
         for id in cards_id:
             try:
                 card = Card.objects.get(id=id)
                 result.append(card)
             except ObjectDoesNotExist:
-                msg = "the card of id {} doesn't exist.".format(id)
+                msg = _("The card of id {} doesn't exist.".format(id))
                 log.debug(msg)
-                msgs.append({"level": messages.WARNING, "message": msg})
-        return result, msgs
+                msgs.add_warning(msg)
+        return result, msgs.msgs
 
     @staticmethod
     def sell(id=None, quantity=1, place_id=None):
@@ -838,7 +838,7 @@ class Card(TimeStampedModel):
 
         todo: manage the places we sell from correctly.
         """
-        msgs = []
+        msgs = Messages()
         if place_id:
             place_obj = self.placecopies_set.get(id=place_id)
         else:
@@ -858,7 +858,7 @@ class Card(TimeStampedModel):
         self.quantity = self.quantity + quantity
         self.save()
 
-        return True, msgs
+        return True, msgs.msgs
 
     def last_sell(self):
         """Return: the last sell datetime.
@@ -884,13 +884,13 @@ class Card(TimeStampedModel):
 
         returns: a tuple (the card object if it already exists, None oterwise / list of messages (str)).
         """
-        msgs = []
+        msgs = Messages()
         # Look for the same isbn/ean
         if card_dict.get('isbn') or card_dict.get('ean'):
             isbn = card_dict.get('isbn', card_dict.get('ean'))
             clist = Card.objects.filter(isbn=isbn).first()
             if clist:
-                return clist, msgs
+                return clist, msgs.msgs
 
         # Get the title.
         if not card_dict.get('title'):
@@ -919,14 +919,14 @@ class Card(TimeStampedModel):
 
                 # the card passed the filter: return it.
                 if not (no_authors and no_pubs):
-                    return obj, msgs
+                    return obj, msgs.msgs
 
             # Some cards have the same title, and not much more attributes.
             if no_authors and no_pubs:
-                msgs.append(_("There are cards with similar titles"))
-                return None, msgs  # similar titles though.
+                msgs.add_info(_("There are cards with similar titles"))
+                return None, msgs.msgs  # similar titles though.
 
-        return None, msgs
+        return None, msgs.msgs
 
     @staticmethod
     def from_dict(card, to_list=False):
@@ -959,6 +959,7 @@ class Card(TimeStampedModel):
 
         """
 
+        msgs = Messages()
         msg_success = _("The card was created successfully.")
         msg_exists = _("This card already exists.")
 
@@ -1026,6 +1027,7 @@ class Card(TimeStampedModel):
 
         # Check if the card already exists (it may not have an isbn).
         exists_list, _msgs = Card.exists(card)
+        msgs.append(_msgs)
         created = False
         if exists_list:
             card_obj = exists_list
@@ -1424,11 +1426,11 @@ class Preferences(models.Model):
         Return: tuple list of messages, status code.
         """
         status = ALERT_SUCCESS
-        msgs = []
+        msgs = Messages()
         prefs = Preferences.objects.first()
         if not prefs:
-            return [{'level': ALERT_INFO,
-                     'message': u"There is no preferences"}], ALERT_WARNING
+            msgs.add_info(_(u"There is no preferences"))
+            return msgs.status, msgs.msgs
 
         for key, val in kwargs.iteritems():
             if val is not None:
@@ -1446,17 +1448,16 @@ class Preferences(models.Model):
                         prefs.save()
                     except Exception as e:
                         log.error(u"Error setting preferences VAT: {}".format(e))
-                        status = ALERT_ERROR
-                        msgs.append("Error with setting vat: {}".format(e))
+                        msgs.add_error(_(u"Error while setting the vat"))
 
                 else:
                     prefs.__setattr__(key, val)
                     prefs.save()
 
             else:
-                msgs.append({'level': ALERT_INFO, 'message': u"Value for preference {} is {}.".format(key, val)})
+                msgs.add_info(_(u"Value for preference {} is {}.".format(key, val)))
 
-        return msgs, status
+        return msgs.status, msgs.msgs
 
     @staticmethod
     def get_vat_book():
@@ -1562,12 +1563,10 @@ class Basket(models.Model):
         - Return: a 3-tuple with the new basket object (None if a pb occurs), along with the status and messages.
         """
         status = True
-        msgs = []
+        msgs = Messages()
         if not name:
-            msg = {'level': ALERT_ERROR,
-                   'message': _("Please provide the name of the new basket")}
-            status = False
-            return None, status, msgs.append(msg)
+            msgs.add_error(_("Please provide the name of the new basket"))
+            return None, status, msgs.msgs
 
         try:
             b_obj = Basket.objects.create(name=name)
@@ -1576,12 +1575,10 @@ class Basket(models.Model):
                    'message': _("New basket created")}
         except Exception as e:
             log.error("Pb when trying to create a new basket: {}".format(e))
-            msgs.append({"level": ALERT_ERROR,
-                         "message": _("We could not create a new basket. This is an internal error.")})
-            return None, False, msgs
+            msgs.add_error(_("We could not create a new basket. This is an internal error."))
+            return None, False, msgs.msgs
 
-        msgs += msg
-        return b_obj, status, msgs
+        return b_obj, status, msgs.msgs
 
     def add_copy(self, card, nb=1):
         """Adds the given card to the basket.
@@ -1618,26 +1615,21 @@ class Basket(models.Model):
         """Remove the given card (id) from the basket.
         """
         status = True
-        msgs = []
-        msg = ""
+        msgs = Messages()
         try:
             inter_table = self.basketcopies_set.filter(card__id=card_id).get()
             inter_table.delete()
-            msgs.append({"level": ALERT_SUCCESS,
-                         "message":_(u"The card was successfully removed from the basket")})
+            msgs.add_success(_(u"The card was successfully removed from the basket"))
         except ObjectDoesNotExist as e:
             log.error(u"Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
             status = False
-            msg = {"level": ALERT_ERROR,
-                   "message": _(u"Card not found")}
+            msgs.add_error(_(u"Card not found"))
         except Exception as e:
             log.error(u"Error while trying to remove card {} from basket {}: {}".format(card_id, self.id, e))
             status = False
-            msg = {"level": ALERT_ERROR,
-                   "message":_(u"Could not remove the card from the command basket. This is an internal error.")}
+            msgs.add_error(_(u"Could not remove the card from the command basket. This is an internal error."))
 
-        msgs.append(msg)
-        return status, msgs
+        return status, msgs.msgs
 
     def quantity(self, card=None, card_id=None):
         """Return the total quantity of copies in it, or the quantity of the given card.
@@ -1676,7 +1668,7 @@ class Basket(models.Model):
 
         Return: a tuple the deposit object with a list of error messages
         """
-        msgs = []
+        msgs = Messages()
         if type(distributor) == int:
             try:
                 distributor = Distributor.objects.get(id=distributor)
@@ -1685,14 +1677,16 @@ class Basket(models.Model):
                 return None
 
         if not distributor:
-            msg = "Basket to deposit: no distributor. Abort."
+            msg = _(u"Basket to deposit: no distributor. Abort.")
             log.error(msg)
-            return None, [msg]
+            msgs.add_error(msg)
+            return None, msgs.msgs
 
         if not name:
-            msg = "Basket to deposit: no name given."
+            msg = _(u"Basket to deposit: no name given.")
             log.error(msg)
-            return None, [msg]
+            msgs.add_error(msg)
+            return None, msgs.msgs
 
         dep = Deposit(name=name)
         dep.distributor = distributor
@@ -1701,13 +1695,13 @@ class Basket(models.Model):
             cards_qty = self.basketcopies_set.all()
             copies = [it.card for it in cards_qty]
             qties = [it.nb for it in cards_qty]
-            msgs = dep.add_copies(copies, quantities=qties)
-            msgs += msgs
+            _msgs = dep.add_copies(copies, quantities=qties)
+            msgs.append(_msgs)
         except Exception as e:
             log.error("Basket to deposit: error adding copies: {}".format(e))
-            msgs.append(e)
+            msgs.add_error(_("Error adding copies"))
 
-        return dep, msgs
+        return dep, msgs.msgs
 
 
 class BasketType (models.Model):
@@ -1839,7 +1833,7 @@ class DepositState(models.Model):
 
         """
         # note: use this method only at the beginning, then use add_soldcard
-        msgs = []
+        msgs = Messages()
         status = True
         try:
             for (i, copy) in enumerate(copies):
@@ -1855,13 +1849,12 @@ class DepositState(models.Model):
                 depositstate_copy.nb_current += qty
                 depositstate_copy.save()
 
-            return status, msgs
+            return status, msgs.msgs
 
         except Exception as e:
             log.error(u"Error while adding a card to the deposit state: {}".format(e))
-            msgs.append({'level': messages.ERROR,
-                                'message': _("An error occured while adding a card to the deposit state.")})
-            return None, msgs
+            msgs.add_error(_("An error occured while adding a card to the deposit state."))
+            return None, msgs.msgs
 
     def add_soldcards(self, cards_sells):
         """Add cards to this deposit state.
@@ -1874,7 +1867,7 @@ class DepositState(models.Model):
             log.debug("This deposit state is closed.")
             return False, [_("This deposit state is closed ! We won't update it, sorry.")]
 
-        msgs = []
+        msgs = Messages()
         try:
             for it in cards_sells:
                 card = it.get('card')
@@ -1892,10 +1885,10 @@ class DepositState(models.Model):
 
         except Exception as e:
             log.error(u"adding cards to the DepositState: {}".format(e))
-            return msgs.append({'level': messages.ERROR,
-                                'message': _("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !")})
+            msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
+            return msgs.msgs
 
-        return True, msgs
+        return True, msgs.msgs
 
     def card_balance(self, card_id):
         """Get the balance of the given card. For each card sold, get:
@@ -2117,17 +2110,15 @@ class Deposit(TimeStampedModel):
             été ajoutée au dépôt car elle n'a pas
             le même distributeur (\"%s\" au lieu de \"%s\).""")
         filtered = []
-        msgs = []
+        msgs = Messages()
         for copy in copies:
             if copy.distributor and (copy.distributor.name == distributor):
                 filtered.append(copy)
             else:
                 cur_dist = copy.distributor.name if copy.distributor else _(u"none")
-                msgs.append({'level': ALERT_WARNING,
-                             'message': MSG_CARD_DIFFERENT_DIST %
-                             (copy.title, cur_dist, distributor)})
+                msgs.add_warning(MSG_CARD_DIFFERENT_DIST % (copy.title, cur_dist, distributor))
 
-        return filtered, msgs
+        return filtered, msgs.msgs
 
     @staticmethod
     def next_due_dates(to_list=False, count=None):
@@ -2159,10 +2150,10 @@ class Deposit(TimeStampedModel):
         - copies: list of Card objects or ids.
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
 
-        return: []
+        return: list of messages (Message.msgs)
 
         """
-        msgs = []
+        msgs = Messages()
         try:
             for (i, copy) in enumerate(copies):
                 if type(copy) == type('str'):
@@ -2192,14 +2183,14 @@ class Deposit(TimeStampedModel):
                     msg = u"Error: the distributor of card \"{}\" do not match the one of the deposit: {} and {}.".\
                           format(copy.title, copy.distributor.name, self.distributor.name)
                     log.error(msg + u"We should have filtered the copies before.")
-                    msgs.append(msg)
+                    msgs.add_warning(msg)
 
-            return msgs
+            return msgs.msgs
 
         except Exception as e:
             log.error(u"Error while adding a card to the deposit: {}".format(e))
-            return msgs.append({'level': messages.ERROR,
-                                'message': _("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !")})
+            msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
+            return msgs.msgs
 
     def add_copy(self, card_obj, nb=1):
         """Add a card object to this deposit.
@@ -2230,15 +2221,15 @@ class Deposit(TimeStampedModel):
             - message: string
 
         """
-        msgs = []
-        status = ALERT_SUCCESS
+        msgs = Messages()
         dep = None
         copies = depo_dict.pop('copies')  # add the copies after deposit creation.
         copies_to_add = copies
 
         # Remove the copies that don't belong to that deposit.
         if depo_dict['distributor']:
-            copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
+            copies_to_add, _msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
+            msgs.append(_msgs)
 
         # Check the cards are not already in a deposit.
         for copy in copies_to_add:
@@ -2251,9 +2242,9 @@ class Deposit(TimeStampedModel):
                 if len(copy_depos) > 1:
                     message += " (and {} others)".format(len(copy_depos) - 1)
                 message += "."
-                msgs.append(dict(level=messages.INFO, message=message))
+                msgs.add_info(message)
 
-                return ALERT_ERROR, msgs
+                return ALERT_ERROR, msgs.msgs
 
         # Normal case.
         dest_place_id = None
@@ -2263,31 +2254,26 @@ class Deposit(TimeStampedModel):
             depo_dict["auto_command"] = True  # TODO: form validation beforehand.
 
         if Deposit.objects.filter(name=depo_dict['name']):
-            msgs.append({
-                'level': ALERT_INFO,
-                'message': _("A deposit of that name already exists.")
-                })
-            return ALERT_INFO, msgs
+            msgs.add_info(_("A deposit of that name already exists."))
+            return ALERT_INFO, msgs.msgs
 
         try:
             qties = depo_dict.pop('quantities', [])
             dep = Deposit.objects.create(**depo_dict)
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
-            msgs.append({'level': ALERT_ERROR,
-                         'message': _("internal error, sorry !")})
-            return ALERT_ERROR, msgs
+            msgs.add_error(_("internal error, sorry !"))
+            return ALERT_ERROR, msgs.msgs
 
         try:
-            msgs += dep.add_copies(copies_to_add, quantities=qties)
-            msgs.append({'level': ALERT_SUCCESS,
-                         'message':_("The deposit was successfully created.")})
+            _msgs = dep.add_copies(copies_to_add, quantities=qties)
+            msgs.append(_msgs)
+            msgs.add_success(_("The deposit was successfully created."))
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
             dep.delete()
-            msgs.append({'level': ALERT_ERROR,
-                         'message': _("internal error, sorry !")})
-            return ALERT_ERROR, msgs
+            msgs.add_error(_("internal error, sorry !"))
+            return ALERT_ERROR, msgs.to_dict()
 
         # Link to the destination place, if any.
         if dep and dest_place_id:
@@ -2296,10 +2282,9 @@ class Deposit(TimeStampedModel):
                 dep.save()
             except Exception as e:
                 log.error(u"Error adding a Deposit from dict: {}".format(e))
-                msgs.append({'level': ALERT_ERROR,
-                             'message': _("Error adding a deposit")})
+                msgs.add_error(_("Error adding a deposit"))
 
-        return status, msgs
+        return msgs.status, msgs.msgs
 
     def nb_alerts(self):
         """Is the distributor of this deposit concerned by open alerts ? If
@@ -2349,7 +2334,7 @@ class Deposit(TimeStampedModel):
         return: tuple (DepositState object or None, list of messages (str))
         """
 
-        msgs = []
+        msgs = Messages()
         cur_depostate = DepositState.existing(self)
         if cur_depostate and not cur_depostate.closed:
             log.debug("a depositState already exists and is not closed.")
@@ -2383,13 +2368,14 @@ class Deposit(TimeStampedModel):
             for it in dep_copies:
                 quantities.append(it.nb)
 
-        status, msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
+        status, _msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
+        msgs.append(_msgs)
         if sold_cards:
             checkout.add_soldcards(sold_cards)
         else:
-            msgs.append(_("No cards were sold since the last deposit state."))
+            msgs.add_info(_("No cards were sold since the last deposit state."))
 
-        return checkout, msgs
+        return checkout, msgs.msgs
 
     def checkout_balance(self):
         """Get the balance of the ongoing checkout.
@@ -2448,27 +2434,28 @@ class SoldCards(TimeStampedModel):
         """
         Undo the soldcard of the given pk: add it to the stock again.
         """
-        msgs = []
+        msgs = Messages()
+        status = True
         try:
             soldcard = SoldCards.objects.get(id=pk)
         except Exception as e:
             log.error(u'Error while trying to undo soldcard n° {}: {}'.format(pk, e))
-            return False, msgs
+            return False, msgs.msgs
 
         try:
-            status, msgs = soldcard.card.sell_undo(quantity=soldcard.quantity)
+            status, _msgs = soldcard.card.sell_undo(quantity=soldcard.quantity)
+            msgs.append(_msgs)
         except Exception as e:
             msg = u'Error while undoing the soldcard {}: {}'.format(pk, e)
-            msgs.append(msg)
+            msgs.add_error(msg)
             log.error(msg)
             status = False
 
         # We keep the transaction visible, we don't delete the soldcard.
         # Instead, it must appear as a new entry.
 
-        msgs.append({'message': u"Operation successful",
-                     'level': ALERT_SUCCESS})
-        return status, msgs
+        msgs.add_success(_(u"Operation successful"))
+        return status, msgs.msgs
 
 class Sell(models.Model):
     """A sell represents a set of one or more cards that are sold:
@@ -2719,15 +2706,15 @@ class Sell(models.Model):
     @staticmethod
     def sell_undo(sell_id):
         status = False
-        msgs = []
+        msgs = Messages()
         try:
             sell = Sell.objects.get(id=sell_id)
             status, msgs = sell.undo()
         except Exception as e:
             log.error(u"Error while trying to undo sell id {}: {}".format(sell_id, e))
-            msgs.append({"message": u"Error while undoing sell {}".format(sell_id), "level": ALERT_ERROR})
+            msgs.add_error(_(u"Error while undoing sell {}".format(sell_id)))
 
-        return status, msgs
+        return status, msgs.msgs
 
     def undo(self):
         """Undo:
@@ -2742,16 +2729,17 @@ class Sell(models.Model):
                           "level": ALERT_WARNING}
 
         status = True
-        msgs = []
+        msgs = Messages()
         cards = []
         for soldcard in self.soldcards_set.all():
             card_obj = soldcard.card
             cards.append(card_obj)
             qty = soldcard.quantity
             try:
-                status, msgs = card_obj.sell_undo(quantity=qty, place_id=None)
+                status, _msgs = card_obj.sell_undo(quantity=qty, place_id=None)
+                msgs.append(_msgs)
             except Exception as e:
-                msgs.append(u"Error while undoing sell {}.".format(self.id))
+                msgs.add_error(_(u"Error while undoing sell {}.".format(self.id)))
                 log.error(u"Error while undoing sell {}: {}".format(self.id, e))
                 status = False
 
@@ -2768,11 +2756,10 @@ class Sell(models.Model):
                 log.error(u"Error while adding an Entry to the history for card {}:{}".format(self.id, e))
                 status = False
 
-            msgs.append({"message": _(u"Sell {} canceled with success.").format(self.id),
-                         "level": ALERT_SUCCESS})
+            msgs.add_success(_(u"Sell {} canceled with success.").format(self.id))
             log.debug(u"Sell {} canceled".format(self.id))
 
-        return status, msgs
+        return status, msgs.msgs
 
     @staticmethod
     def history(to_list=True):
@@ -2847,11 +2834,11 @@ class Alert(models.Model):
         """
         alerts = Alert.objects.all().order_by("-date_creation")
         # todo: the alert may be resolved if we sold the remaining copies.
-        msgs = []
+        msgs = Messages()
         status = ALERT_SUCCESS
         if to_list:
             alerts = [alert.obj_to_list() for alert in alerts]
-        return (alerts, status, msgs)
+        return (alerts, status, msgs.msgs)
 
     def add_deposits_of_card(self, card):
         for it in card.deposit_set.all():
@@ -3193,7 +3180,7 @@ class Inventory(TimeStampedModel):
         return: tuple status, messages
         """
         status = "success"
-        msgs = []
+        msgs = Messages()
         for pair in pairs:
             if not pair:
                 # beware void lists
@@ -3204,7 +3191,7 @@ class Inventory(TimeStampedModel):
                 self.add_copy(card, nb=int(qty), add=add)
             except Exception as e:
                 log.error(e)
-                msgs.append(e)
+                msgs.add_error(_("Internal error, sorry !"))
                 status = "error"
                 return None
 
@@ -3212,7 +3199,7 @@ class Inventory(TimeStampedModel):
                 card.shelf = self.shelf
                 card.save()
 
-        return (status, msgs)
+        return (status, msgs.msgs)
 
     @staticmethod
     def apply_inventory(pk):

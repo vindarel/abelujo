@@ -35,6 +35,7 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
+from search.models.utils import Messages
 from search.tasks import inventory_apply_task
 from search.views import get_datasource_from_lang
 from search.views import postSearch
@@ -86,7 +87,7 @@ def preferences(request, **response_kwargs):
     elif request.method == 'POST':
         place = None
         status = ALERT_SUCCESS
-        msgs = []
+        msgs = Messages()
         try:
             params = json.loads(request.body)
         except Exception as e:
@@ -105,11 +106,12 @@ def preferences(request, **response_kwargs):
                 log.error(u"Error getting place with id {}: {}".format(place_id, e))
                 params.pop('place_id', None)
 
-        msgs, status = Preferences.setprefs(default_place=place,
+        status, _msgs = Preferences.setprefs(default_place=place,
                                             vat_book=params.get('vat_book'),
                                             language=params.get('language'))
+        msgs.append(_msgs)
 
-        return JsonResponse({'status': status, 'alerts': msgs})
+        return JsonResponse({'status': status, 'alerts': msgs.msgs})
 
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
@@ -154,6 +156,7 @@ def cards(request, **response_kwargs):
     if language:
         translation.activate(language)
 
+    msgs = Messages()
     data, msgs = Card.search(query, to_list=True,
                              distributor=distributor,
                              distributor_id=distributor_id,
@@ -189,7 +192,7 @@ def card(request, **kwargs):
     """Get a card by id.
     """
     ret = {"data": []}
-    msgs = []
+    msgs = Messages()
     if request.method == 'GET':
         pk = kwargs.pop('pk')
         try:
@@ -200,11 +203,11 @@ def card(request, **kwargs):
             log.info("found card {}".format(pk))
 
         except Exception as e:
-            msg = "couldn't find card of id {}: {}".format(pk, e)
+            msg = _(u"couldn't find card of id {}: {}".format(pk, e))
             log.warning(msg)
-            msgs.append({"message": msg, "level": ALERT_ERROR})
+            msgs.add_error(msg)
 
-    ret["alerts"] = msgs
+    ret["alerts"] = msgs.msgs
     return JsonResponse(ret)
 
 def card_create(request, **response_kwargs):
@@ -393,8 +396,9 @@ def deposits(request, **response_kwargs):
         try:
             cards_id = list_from_coma_separated_ints(params.get("cards_id"))
             cards_qty = list_from_coma_separated_ints(params.get("cards_qty"))
-            if len(cards_qty) != len(cards_id):
-                log.error("Creating deposit: the length of card ids and their qties is different.")
+            if cards_qty and len(cards_qty) != len(cards_id):
+                log.info("Creating deposit: the length of card ids and their qties is different.")
+
             cards_obj, card_msgs = Card.get_from_id_list(cards_id)
 
             distributor_obj = None

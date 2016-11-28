@@ -19,6 +19,7 @@ from search.models.api import list_from_coma_separated_ints
 from search.models.api import list_to_pairs
 from search.models.common import (ALERT_SUCCESS,
                                   ALERT_ERROR,
+                                  ALERT_INFO,
                                   ALERT_WARNING)
 from tests_models import SellsFactory
 from tests_models import PlaceFactory
@@ -97,7 +98,8 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], ALERT_SUCCESS)
+        print resp_data
+        self.assertEqual(resp_data["status"], ALERT_WARNING)
 
     def test_deposits_add_pubtype(self):
         due_date = datetime.date.today()
@@ -106,7 +108,7 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], ALERT_SUCCESS)
+        self.assertEqual(resp_data["status"], ALERT_WARNING)
         dep = models.Deposit.objects.order_by("created").first()
         self.assertEqual(dep.due_date, due_date)
         self.assertEqual(dep.dest_place.name, models.Place.objects.get(id=1).name)
@@ -117,7 +119,7 @@ class ApiTest(TestCase):
         self.params["cards_id"] = ""
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
-        self.assertEqual(resp_data["alerts"][0]["level"], models.ALERT_SUCCESS)
+        self.assertEqual(resp_data["messages"][0]["level"], ALERT_SUCCESS)
 
     def test_sell_cards(self):
         self.params["to_sell"] = u"1,9.5,2"
@@ -227,7 +229,7 @@ class TestPreferences(TestCase):
                            json.dumps({'vat_book': 2}),
                            content_type='application/json')
         res = json.loads(resp.content)
-        self.assertEqual(ALERT_SUCCESS, res['status'])
+        self.assertEqual(ALERT_INFO, res['status'])
 
         # Bad place
         resp = self.c.post(reverse('api_preferences'),
@@ -235,7 +237,7 @@ class TestPreferences(TestCase):
                                        'default_place': "rst"}),
                            content_type='application/json')
         res = json.loads(resp.content)
-        self.assertEqual(ALERT_SUCCESS, res['status'])
+        self.assertEqual(ALERT_INFO, res['status'])
 
 class TestUtils(TestCase):
 

@@ -25,7 +25,6 @@ Note: to compare two objects, don't use assertEqual but the == operator.
 import datetime
 
 import factory
-from django.contrib import messages
 from django.core.management import call_command
 from django.test import TestCase
 from django.test import TransactionTestCase
@@ -334,7 +333,7 @@ class TestCards(TestCase):
         res, msgs = Card.get_from_id_list(cards_id)
         self.assertTrue(res)
         self.assertTrue(msgs)
-        self.assertEqual(msgs[0]["message"], "the card of id 2 doesn't exist.")
+        self.assertEqual(msgs[0]["message"], "The card of id 2 doesn't exist.")
 
     def test_quantity_to_zero(self):
         self.card2 = Card(title=self.fixture_title,
@@ -633,7 +632,7 @@ class TestDeposits(TransactionTestCase):
                                   'distributor': self.distributor,
                                   })
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
-        self.assertEqual(msgs[0]['level'], messages.WARNING)
+        self.assertEqual(msgs[0]['level'], ALERT_WARNING)
 
     def test_from_dict_bad_deposit_one_good(self):
         self.card.distributor = None
@@ -643,7 +642,7 @@ class TestDeposits(TransactionTestCase):
                                   'distributor': self.distributor,
                                   })
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
-        self.assertEqual(msgs[0]['level'], messages.WARNING)
+        self.assertEqual(msgs[0]['level'], ALERT_WARNING)
 
     def test_close_deposit(self):
         # Add cards
@@ -1148,8 +1147,8 @@ class TestPreferences(TestCase):
         pass
 
     def test_set_preferences(self):
-        msgs, status = Preferences.setprefs(default_place=self.new_place)
-        self.assertEqual(status, ALERT_SUCCESS, "%s" % msgs)
+        status, msgs = Preferences.setprefs(default_place=self.new_place)
+        self.assertEqual(status, ALERT_SUCCESS)
 
         prefs = Preferences.prefs()
         place = prefs.default_place
@@ -1158,7 +1157,7 @@ class TestPreferences(TestCase):
 
     def test_set_vat(self):
         vat = 2
-        msgs, status = Preferences.setprefs(vat_book=vat)
+        status, msgs = Preferences.setprefs(vat_book=vat)
         self.assertEqual(status, ALERT_SUCCESS)
         self.assertEqual(Preferences.prefs().vat_book, vat, msgs)
 
