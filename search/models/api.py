@@ -435,7 +435,7 @@ def deposits(request, **response_kwargs):
 
             return HttpResponse(json.dumps(msgs), **response_kwargs)
         msgs = {"status": status,
-                "alerts": depo_msgs}
+                "messages": depo_msgs}
 
         return JsonResponse(msgs)
 

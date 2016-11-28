@@ -1940,7 +1940,7 @@ class DepositState(models.Model):
             total_price_init = sum([it.total_price_init for it in sells])
             balance["total"]["total_price_init"] = total_price_init
             total_price_sold = sum([it.total_price_sold for it in sells])
-            discount = self.deposit.distributor.discount
+            discount = self.deposit.distributor.discount if self.deposit.distributor else 0
             total_to_pay = total_price_init * discount / 100 if discount else total_price_sold
             balance["total"]["total_to_pay"] = total_to_pay
             balance["total"]["discount"] = discount
@@ -2123,7 +2123,7 @@ class Deposit(TimeStampedModel):
                 filtered.append(copy)
             else:
                 cur_dist = copy.distributor.name if copy.distributor else _(u"none")
-                msgs.append({'level': messages.WARNING,
+                msgs.append({'level': ALERT_WARNING,
                              'message': MSG_CARD_DIFFERENT_DIST %
                              (copy.title, cur_dist, distributor)})
 
@@ -2173,7 +2173,8 @@ class Deposit(TimeStampedModel):
                     copy.distributor = self.distributor
                     copy.save
 
-                if copy.distributor and (copy.distributor.name == self.distributor.name):
+                if not self.distributor or \
+                   (copy.distributor and (copy.distributor.name == self.distributor.name)):
                     if len(quantities) == len(copies):
                         qty = quantities[i]
                     else:
@@ -2234,6 +2235,8 @@ class Deposit(TimeStampedModel):
         dep = None
         copies = depo_dict.pop('copies')  # add the copies after deposit creation.
         copies_to_add = copies
+
+        # Remove the copies that don't belong to that deposit.
         if depo_dict['distributor']:
             copies_to_add, msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
 
@@ -2258,16 +2261,33 @@ class Deposit(TimeStampedModel):
             dest_place_id = depo_dict.pop('dest_place')
         if depo_dict.get("auto_command") == "true":
             depo_dict["auto_command"] = True  # TODO: form validation beforehand.
+
+        if Deposit.objects.filter(name=depo_dict['name']):
+            msgs.append({
+                'level': ALERT_INFO,
+                'message': _("A deposit of that name already exists.")
+                })
+            return ALERT_INFO, msgs
+
         try:
             qties = depo_dict.pop('quantities', [])
             dep = Deposit.objects.create(**depo_dict)
+        except Exception as e:
+            log.error(u"Adding a Deposit from_dict error ! {}".format(e))
+            msgs.append({'level': ALERT_ERROR,
+                         'message': _("internal error, sorry !")})
+            return ALERT_ERROR, msgs
+
+        try:
             msgs += dep.add_copies(copies_to_add, quantities=qties)
             msgs.append({'level': ALERT_SUCCESS,
                          'message':_("The deposit was successfully created.")})
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
-            return ALERT_ERROR, msgs.append({'level': "danger",
-                                              'message': e})
+            dep.delete()
+            msgs.append({'level': ALERT_ERROR,
+                         'message': _("internal error, sorry !")})
+            return ALERT_ERROR, msgs
 
         # Link to the destination place, if any.
         if dep and dest_place_id:
