@@ -1925,7 +1925,14 @@ class DepositState(models.Model):
         "total": a dict with: total_price_init, total_price_sold, discount, total_to_pay, margin.
         """
         balance = {"cards": [],
-                   "total": {}}
+                   "total": {
+                       "total_price_init": 0,
+                       "total_price_sold": 0,
+                       "discount": 0,
+                       "total_to_pay": 0,
+                       "margin": 0,
+                   }}
+
         for card in self.copies.all():
             balance["cards"].append((card, self.card_balance(card.id)))
             depostate = self.depositstatecopies_set.first()

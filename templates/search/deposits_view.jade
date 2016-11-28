@@ -38,7 +38,10 @@
     dt {% trans "Supplier" %}
     dd: a(href="{{deposit.distributor.get_absolute_url}}") {{ deposit.distributor }}
     dt {% trans "discount" %}
-    dd {{ distributor.discount }} %
+    dd {{ distributor.discount }} 
+      if distributor.discount
+        span %
+
     dt {% trans "Deposit type" %}
     dd {{ deposit.deposit_type }}
     dt {% trans "Auto command" %}
