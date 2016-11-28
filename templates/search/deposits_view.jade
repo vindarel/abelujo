@@ -66,17 +66,14 @@
     div {% trans "margin" %}: {{ total.margin | floatformat:2 | intcomma}} {% trans "€" %}
 
 .row
-  .col-sm-4
+  .col-sm-8
     .btn-group
-      button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
-        span.caret
-      ul.dropdown-menu
-        li: a(href='{% url "deposit_checkout" deposit.id %}', title='{% trans "Save this deposit state" as deposit_state %}') {{ deposit_state }}
+      a.btn.btn-default(href='{% url "deposit_checkout" deposit.id %}', title='{% trans "Save this deposit state" as deposit_state %}') {% trans "Save" %}
 
-        li: a(href="/admin/search/deposit/{{deposit.id}}") {% trans "edit" %}
+      a.btn.btn-default(role="button", href="/admin/search/deposit/{{deposit.id}}") {% trans "edit" %}
 
-        {% trans "Add copies…" as deposit_add %}
-        li: a(href='{% url "deposit_add_copies" deposit.id %}', title="{{ deposit_add }}", value="{{ deposit_add }}", type="submit") {{ deposit_add }}
+      {% trans "Add copies…" as deposit_add %}
+      a.btn.btn-default(href='{% url "deposit_add_copies" deposit.id %}', title="{{ deposit_add }}", value="{{ deposit_add }}", type="submit") {{ deposit_add }}
 
       a(href="http://abelujo.cc/docs/deposits/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
        i.glyphicon.glyphicon-question-sign
