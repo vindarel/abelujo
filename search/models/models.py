@@ -1989,6 +1989,12 @@ class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (of many cards) from
     a distributor but didn't pay them yet.
 
+    A bookshop can only have one deposit per card.
+
+    On the contrary, someone acting as a publisher can also create
+    deposits: it sends copies to many bookshops. Thus a card can be in
+    many deposits of a type 'publisher'.
+
     Implementation details
     ---
 
@@ -2231,32 +2237,36 @@ class Deposit(TimeStampedModel):
             copies_to_add, _msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
             msgs.append(_msgs)
 
-        # Check the cards are not already in a deposit.
-        for copy in copies_to_add:
-            copy_depos = copy.deposit_set.all()
-            if copy_depos:
-                message=_(dedent(u"""Hey ! We won't create this deposit
-                because the card '{}' is already in the
-                deposit '{}'""".format(
-                    copy.title, copy_depos[0].name)))
-                if len(copy_depos) > 1:
-                    message += " (and {} others)".format(len(copy_depos) - 1)
-                message += "."
-                msgs.add_info(message)
+        # Check the cards are not already in a deposit. Allowed for a deposit of type publisher.
+        pub_type = depo_dict.get('deposit_type')
+        if not pub_type == 'publisher':
+            for copy in copies_to_add:
+                copy_depos = copy.deposit_set.all()
+                if copy_depos:
+                    message=_(dedent(u"""Hey ! We won't create this deposit
+                    because the card '{}' is already in the
+                    deposit '{}'""".format(
+                        copy.title, copy_depos[0].name)))
+                    if len(copy_depos) > 1:
+                        message += " (and {} others)".format(len(copy_depos) - 1)
+                    message += "."
+                    msgs.add_info(message)
 
-                return ALERT_ERROR, msgs.msgs
+                    return ALERT_ERROR, msgs.msgs
 
         # Normal case.
+        # Check name exists.
+        if Deposit.objects.filter(name=depo_dict['name']):
+            msgs.add_info(_("A deposit of that name already exists."))
+            return ALERT_INFO, msgs.msgs
+
         dest_place_id = None
         if depo_dict.get("dest_place"):
             dest_place_id = depo_dict.pop('dest_place')
         if depo_dict.get("auto_command") == "true":
             depo_dict["auto_command"] = True  # TODO: form validation beforehand.
 
-        if Deposit.objects.filter(name=depo_dict['name']):
-            msgs.add_info(_("A deposit of that name already exists."))
-            return ALERT_INFO, msgs.msgs
-
+        # Create the deposit.
         try:
             qties = depo_dict.pop('quantities', [])
             dep = Deposit.objects.create(**depo_dict)
@@ -2265,12 +2275,14 @@ class Deposit(TimeStampedModel):
             msgs.add_error(_("internal error, sorry !"))
             return ALERT_ERROR, msgs.msgs
 
+        # Add copies.
         try:
             _msgs = dep.add_copies(copies_to_add, quantities=qties)
             msgs.append(_msgs)
             msgs.add_success(_("The deposit was successfully created."))
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
+            # Delete previously created deposit (we want an atomic operation).
             dep.delete()
             msgs.add_error(_("internal error, sorry !"))
             return ALERT_ERROR, msgs.to_dict()

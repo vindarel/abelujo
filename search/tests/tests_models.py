@@ -53,8 +53,8 @@ from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
 from search.models import Sell
-from search.models import SoldCards
 from search.models import Shelf
+from search.models import SoldCards
 from search.models import getHistory
 
 
@@ -560,13 +560,39 @@ class TestDeposits(TransactionTestCase):
         balance = self.deposit.checkout_balance()
         # self.assertEqual(5, balance['cards'][0][1].nb_current) # TODO:
 
-    def test_one_depo_per_card(self):
+    def test_one_lib_depo_per_card(self):
+        """For a bookshop, only one deposit per card.
+        """
         self.card.distributor = self.distributor
+        # Our deposit has a copy
         msgs = self.deposit.add_copies([self.card,])
+        # and yet we try to create a new deposit with it: no.
         status, msgs = Deposit.from_dict({'name': 'new',
-                                           'copies': [self.card],
-                                           'distributor': self.distributor})
+                                          'copies': [self.card],
+                                          'deposit_type': 'lib', # see deposit types in models
+                                          'distributor': self.distributor})
         self.assertEqual(status, ALERT_ERROR)
+
+    def test_many_pub_depo_per_card(self):
+        """For a publisher, many external deposits per card.
+        """
+        self.card.distributor = self.distributor
+        msgs = self.deposit.add_copies([self.card])
+        # We create a new deposit with the card that's already in one.
+        name = 'new publisher depo'
+        status, msgs = Deposit.from_dict({
+            'name': name,
+            'copies': [self.card],
+            'deposit_type': 'publisher',
+            # in that case, the publisher is its own distributor
+            'distributor': None,
+        })
+        self.assertEqual(status, ALERT_SUCCESS)
+        pubs = Deposit.objects.all()
+        self.assertEqual(len(pubs), 2)
+        self.assertEqual(pubs[1].name, name)
+        self.assertEqual(pubs[1].deposit_type, 'publisher')
+        self.assertEqual(pubs[1].copies.first(), self.card)
 
     def test_no_distributor(self):
         """card with no dist will inherit it.
