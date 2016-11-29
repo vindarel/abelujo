@@ -1176,15 +1176,14 @@ class Card(TimeStampedModel):
         return self.deposit_set.count() > 0
 
     def quantity_deposits(self):
-        """Only the original quantity. Use a deposit.balance() for the
-        accureta number.
+        """Quantity of this card in deposits (actually, in deposits' states).
 
+        - Return: int
         """
-        # XXX not accurate. Dig in depositstates' nb_current
-        return sum(self.depositcopies_set.all().values_list('nb', flat=True))
+        return sum(self.depositstatecopies_set.all().values_list('nb_current', flat=True))
 
     def ambiguous_sell(self):
-        in_deposits = self.quantity_deposits() # XXX not accurate TODO:
+        in_deposits = self.quantity_deposits()
         log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
         return self.is_in_deposits() and (in_deposits > 0) and (self.quantity > in_deposits)
 
@@ -1967,7 +1966,7 @@ class DepositState(models.Model):
             return False, [_("The deposit state can not be closed. There are conflicting sells.")]
 
 class DepositCopies(TimeStampedModel):
-    """doc
+    """For every card in a deposit, its quantity and threshold.
     """
     class Meta:
         # ordering = ("name",)
@@ -2000,6 +1999,11 @@ class Deposit(TimeStampedModel):
 
     When we create the deposit, we must remember the original quantity
     of each card.
+
+    A deposit comes with a deposit state (sometimes called
+    "checkout"). A deposit has informations about cards, sometimes far
+    away in time, like at its creation, or the last time we paid the
+    supplier. So a deposit state stores the up to date information.
 
     There are two important classes to work with: Deposit and
     DepositState. Each take count of variables for each Card in
@@ -2153,6 +2157,8 @@ class Deposit(TimeStampedModel):
         distributors don't match, exit. If the given copies don't
         have a distributor yet, set it.
 
+        Always create a deposit_state.
+
         - copies: list of Card objects or ids.
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
 
@@ -2165,7 +2171,7 @@ class Deposit(TimeStampedModel):
                 if type(copy) == type('str'):
                     copy = Card.objects.get(id=copy)
 
-                if not copy.distributor:
+                if not copy.distributor and self.distributor:
                     # No distributor ? Ok, you receive this one.
                     copy.distributor = self.distributor
                     copy.save
@@ -2180,6 +2186,9 @@ class Deposit(TimeStampedModel):
                     if created:
                         deposit_copy.nb = qty
                         deposit_copy.save()
+                        # Create the first checkout, by default.
+                        # A deposit needs one to store the up to date cards info.
+                        checkout, _msgs = self.checkout_create()
                     else:
                         # Update the ongoing checkout
                         checkout = self.checkout_current()

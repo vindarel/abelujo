@@ -558,7 +558,17 @@ class TestDeposits(TransactionTestCase):
         # Bad length of 'quantities', will add 1 by default.
         self.deposit.add_copies([self.card], quantities=[10,11,12])
         balance = self.deposit.checkout_balance()
-        # self.assertEqual(5, balance['cards'][0][1].nb_current) # TODO:
+        self.assertEqual(5, balance['cards'][0][1].nb_current)
+
+    def test_quantity_deposits(self):
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card], quantities=[3])
+        self.assertEqual(self.card.depositstatecopies_set.first().nb_current, 3)
+        self.assertEqual(status, ALERT_SUCCESS, msgs)
+        self.assertEqual(self.card.quantity_deposits(), 3)
+        status, msgs = self.deposit.add_copies([self.card])
+        self.assertEqual(self.card.depositstatecopies_set.first().nb_current, 4)
+        self.assertEqual(self.card.quantity_deposits(), 4)
 
     def test_one_lib_depo_per_card(self):
         """For a bookshop, only one deposit per card.
@@ -673,7 +683,7 @@ class TestDeposits(TransactionTestCase):
     def test_close_deposit(self):
         # Add cards
         self.deposit.add_copies([self.card2], quantities=[3])
-        co, msgs = self.deposit.checkout_create()
+        co = self.deposit.checkout_current()
         self.assertFalse(co.closed)
         # Manipulate the objects
         co.closed = timezone.now()
@@ -693,7 +703,7 @@ class TestDeposits(TransactionTestCase):
         bal = self.deposit.checkout_balance()
         self.assertEqual(0, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        # self.assertEqual(3, bal["cards"][0][1].nb_current) # TODO:
+        self.assertEqual(3, bal["cards"][0][1].nb_current)
 
         # Sell a copy.
         self.sell.sell_cards(None, cards=[self.card2])
@@ -703,10 +713,10 @@ class TestDeposits(TransactionTestCase):
         co.update()
         bal = self.deposit.checkout_balance() # xxx fails
         print "TODO: balance.nb_sells"
-        # self.assertEqual(1, bal["cards"][0][1].nb_sells)
+        # self.assertEqual(1, bal["cards"][0][1].nb_sells) # TODO:
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
         print "TODO: balance nb_current"
-        # self.assertEqual(2, bal["cards"][0][1].nb_current)
+        # self.assertEqual(2, bal["cards"][0][1].nb_current) # TODO:
 
         # Close it and check again. We must not see a sell.
         self.deposit.checkout_close()
@@ -723,9 +733,9 @@ class TestDeposits(TransactionTestCase):
         ret, msgs = self.deposit.checkout_create()
         # We didn't sell anything yet but still should see the balance.
         bal = self.deposit.checkout_balance()
-        # self.assertEqual(0, bal["cards"][0][1].nb_sells) # TODO:
+        self.assertEqual(0, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        # self.assertEqual(3, bal["cards"][0][1].nb_current) # TODO:
+        self.assertEqual(3, bal["cards"][0][1].nb_current)
 
         # Sell a copy.
         self.sell.sell_cards(None, cards=[self.card2])
@@ -766,9 +776,9 @@ class TestDeposits(TransactionTestCase):
         Sell.sell_cards(None, cards=[self.card2])
         depo = DepositFactory(distributor=self.distributor)
         depo.add_copies([self.card2])
-        co, msgs = depo.checkout_create()
+        co = depo.checkout_current()
         balance = co.balance()
-        # self.assertEqual(1, balance["cards"][0][1].nb_current)
+        self.assertEqual(1, balance["cards"][0][1].nb_current)
         self.assertEqual(0, balance["cards"][0][1].nb_sells)
 
     def test_next_due_dates(self):
