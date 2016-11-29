@@ -550,7 +550,7 @@ class TestDeposits(TransactionTestCase):
 
     def test_nominal(self):
         self.card.distributor = self.distributor
-        msgs = self.deposit.add_copies([self.card,], quantities=[3])
+        status, msgs = self.deposit.add_copies([self.card,], quantities=[3])
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
         self.assertEqual(3, self.card.quantity_deposits())
         self.deposit.add_copies([self.card])
@@ -565,7 +565,7 @@ class TestDeposits(TransactionTestCase):
         """
         self.card.distributor = self.distributor
         # Our deposit has a copy
-        msgs = self.deposit.add_copies([self.card,])
+        status, msgs = self.deposit.add_copies([self.card,])
         # and yet we try to create a new deposit with it: no.
         status, msgs = Deposit.from_dict({'name': 'new',
                                           'copies': [self.card],
@@ -577,7 +577,7 @@ class TestDeposits(TransactionTestCase):
         """For a publisher, many external deposits per card.
         """
         self.card.distributor = self.distributor
-        msgs = self.deposit.add_copies([self.card])
+        statsu, msgs = self.deposit.add_copies([self.card])
         # We create a new deposit with the card that's already in one.
         name = 'new publisher depo'
         status, msgs = Deposit.from_dict({
@@ -598,7 +598,7 @@ class TestDeposits(TransactionTestCase):
         """card with no dist will inherit it.
         """
         self.card.distributor = None
-        msgs = self.deposit.add_copies([self.card,])
+        status, msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(len(msgs), 0)
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
 
@@ -606,7 +606,7 @@ class TestDeposits(TransactionTestCase):
         self.other_dist = DistributorFactory()
         self.card.distributor = self.other_dist
         self.card.save()
-        msgs = self.deposit.add_copies([self.card,])
+        status, msgs = self.deposit.add_copies([self.card,])
         self.assertEqual(len(msgs), 1)
         self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
 

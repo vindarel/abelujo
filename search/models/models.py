@@ -1695,7 +1695,7 @@ class Basket(models.Model):
             cards_qty = self.basketcopies_set.all()
             copies = [it.card for it in cards_qty]
             qties = [it.nb for it in cards_qty]
-            _msgs = dep.add_copies(copies, quantities=qties)
+            _status, _msgs = dep.add_copies(copies, quantities=qties)
             msgs.append(_msgs)
         except Exception as e:
             log.error("Basket to deposit: error adding copies: {}".format(e))
@@ -2156,7 +2156,7 @@ class Deposit(TimeStampedModel):
         - copies: list of Card objects or ids.
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
 
-        return: list of messages (Message.msgs)
+        return: status (bool), list of messages (Message.msgs)
 
         """
         msgs = Messages()
@@ -2191,12 +2191,12 @@ class Deposit(TimeStampedModel):
                     log.error(msg + u"We should have filtered the copies before.")
                     msgs.add_warning(msg)
 
-            return msgs.msgs
+            return msgs.status, msgs.msgs  # xxx: should return msgs, it has status inside.
 
         except Exception as e:
             log.error(u"Error while adding a card to the deposit: {}".format(e))
             msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
-            return msgs.msgs
+            return msgs.status, msgs.msgs
 
     def add_copy(self, card_obj, nb=1):
         """Add a card object to this deposit.
@@ -2277,7 +2277,7 @@ class Deposit(TimeStampedModel):
 
         # Add copies.
         try:
-            _msgs = dep.add_copies(copies_to_add, quantities=qties)
+            _status, _msgs = dep.add_copies(copies_to_add, quantities=qties)
             msgs.append(_msgs)
             msgs.add_success(_("The deposit was successfully created."))
         except Exception as e:
