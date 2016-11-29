@@ -1185,7 +1185,8 @@ class Card(TimeStampedModel):
     def ambiguous_sell(self):
         in_deposits = self.quantity_deposits()
         log.info("quantity in deposits: {} in total: {}".format(in_deposits, self.quantity))
-        return self.is_in_deposits() and (in_deposits > 0) and (self.quantity > in_deposits)
+        # or equal, because this check happens after a sell: the quantity has been decremented.
+        return  self.is_in_deposits() and  in_deposits > 0 and (self.quantity >= in_deposits)
 
     @staticmethod
     def never_sold(page=None, pagecount=20):

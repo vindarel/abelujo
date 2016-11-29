@@ -1038,8 +1038,7 @@ class TestAlerts(TestCase):
 
     def test_get_alerts_nominal(self):
         self.assertTrue(self.alerts)
-        print "TODO: ambiguous_sell"
-        # self.assertTrue(self.alerts[0].card.ambiguous_sell())  # xxx fails # TODO:
+        self.assertTrue(self.alerts[0].card.ambiguous_sell())
 
     def test_add_deposits_of_card(self):
         self.alerts[0].add_deposits_of_card(self.card)
