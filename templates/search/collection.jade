@@ -117,6 +117,7 @@ div(ng-cloak, ng-controller="collectionController")
       th {% trans "Publishers" %}
       th {% trans "Shelf" %}
       th {% trans "Quantity" %}
+      th {% trans "In deposits" %}
       th {% trans "Places" %}
 
     tbody
@@ -144,6 +145,7 @@ div(ng-cloak, ng-controller="collectionController")
         td {{ 'card.pubs_repr' | ng }}
         td {{ 'card.shelf' | ng }}
         td {{ 'card.quantity' | ng }}
+        td {{ 'card.qty_deposits' | ng }}
         td
           div(ng-show="card.places") {{ 'card.places' | ng}}
 

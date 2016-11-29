@@ -164,8 +164,9 @@ def cards(request, **response_kwargs):
                              card_type_id=card_type_id,
                              place_id=place_id,
                              shelf_id=shelf_id,
-                             order_by=order_by)
-    # TODO:return the msgs
+                             order_by=order_by,
+                             in_deposits=True)
+    # XXX: :return the msgs
 
     lang = request.GET.get("lang")
     # Search our stock on a keyword search, but search also the web on an isbn search,

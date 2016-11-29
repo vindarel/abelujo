@@ -562,7 +562,7 @@ class Card(TimeStampedModel):
 
         return ""
 
-    def to_list(self):
+    def to_list(self, in_deposits=False):
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
         auth = [{"fields": {'name': it.name}} for it in authors]
@@ -611,18 +611,26 @@ class Card(TimeStampedModel):
             "title": self.title,
             "threshold": self.threshold,
         }
+
+        if in_deposits:
+            res['qty_deposits'] = self.quantity_deposits()
+
         return res
 
     @staticmethod
-    def obj_to_list(cards):
+    def obj_to_list(cards, in_deposits=False):
         """Transform a list of Card objects to a python list.
 
         Used to save a search result in the session, which needs a
         serializable object, and for the api to encode to json.
         TODO: https://docs.djangoproject.com/en/1.6/topics/serialization/
+
+        - in_deposits: bool. If true, also include the quantity of the card in deposits.
+
+        Return: list of dicts.
         """
 
-        return [card.to_list() for card in cards]
+        return [card.to_list(in_deposits=in_deposits) for card in cards]
 
     @staticmethod
     def first_cards(nb, to_list=False):
@@ -637,7 +645,9 @@ class Card(TimeStampedModel):
     def search(words, card_type_id=None, distributor=None, distributor_id=None,
                to_list=False,
                publisher_id=None, place_id=None, shelf_id=None,
-               bought=False, order_by=None):
+               bought=False,
+               in_deposits=False,
+               order_by=None):
         """Search a card (by title, authors' names, ean/isbn).
 
         SIZE_LIMIT = 100
@@ -646,9 +656,7 @@ class Card(TimeStampedModel):
 
         - card_type_id: id referencing to CardType
 
-        - to_list: if True, we return a list of dicts, not Card
-          objects. Used to store the search result into the session,
-          which doesn't know how to store Card objects.
+        - to_list: if True, we return a list of dicts, not Card objects.
 
         returns: a 2-tuple: a list of objects or a list of dicts if to_list is
         specified, and a list of messages.
@@ -733,7 +741,7 @@ class Card(TimeStampedModel):
             cards = cards.object_list
 
         if to_list:
-            cards = Card.obj_to_list(cards)
+            cards = Card.obj_to_list(cards, in_deposits=in_deposits)
 
         return cards, msgs.msgs
 
