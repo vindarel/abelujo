@@ -473,6 +473,51 @@ def card_move(request, pk=None):
         "type": params.get('type'),
         })
 
+@login_required
+def collection_export(request, **kwargs):
+    """Export a search of our stock.
+    """
+    if request.method == 'GET':
+        query = request.GET.get('query')
+        formatt = request.GET.get('format')
+        query_list = query.split(" ")
+        distributor = request.GET.get("distributor")
+        distributor_id = request.GET.get("distributor_id")
+        card_type_id = request.GET.get("card_type_id")
+        publisher_id = request.GET.get("publisher_id")
+        place_id = request.GET.get("place_id")
+        shelf_id = request.GET.get("shelf_id")
+        order_by = request.GET.get("order_by")
+        bought = request.GET.get("in_stock")
+
+        # would rather validate request.GET and **
+        # or call api's cards search and get the json.
+        res, msgs = Card.search(query_list, to_list=True,
+                                distributor=distributor,
+                                distributor_id=distributor_id,
+                                publisher_id=publisher_id,
+                                card_type_id=card_type_id,
+                                place_id=place_id,
+                                shelf_id=shelf_id,
+                                order_by=order_by,
+                                in_deposits=True)
+
+        if formatt == 'txt':
+            content = ppcard(res)
+            response = HttpResponse(content, content_type="text/raw")
+            filename = u"Abelujo stock search"
+            if query:
+                filename += " - {}".format(query)
+            response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)
+            return response
+
+        else:
+            content = "This format isn't supported (yet)."
+
+    else:
+        content = "no search query"
+
+    return HttpResponse(content, content_type="text/raw")
 
 @login_required
 def collection(request):

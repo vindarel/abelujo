@@ -175,10 +175,12 @@ def ppcard(cards):
 
     args: a list of Card objects or list of dicts.
 
-    returns: a tabular representation
+    returns: a tabular representation, as text.
 
-    returns a text representation:
+    - returns: str
 
+    Exple:
+    >> ppcard(cards)
     ---------------------------------------------------------------------------------  -------------------  -------------  -----  -------------  --------------------
     Apprendre à désobeir ; petite histoire de l'école qui résiste                      Biberfeld, Laurence  libertalia     aucun  9782918059363  produit indisponible
     Bourgeois et bras nus ; guerre sociale durant le Révolution française (1793-1795)  Daniel Guérin        libertalia     aucun  9782918059295  produit indisponible
