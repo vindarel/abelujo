@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import unicodecsv
 import datetime
 import json
 import logging
@@ -23,15 +22,7 @@ import traceback
 import urllib
 import urlparse
 
-from unidecode import unidecode
-
-import datasources.bookshops.all.discogs.discogsScraper as discogs
-# The datasources imports must have the name as their self.SOURCE_NAME
-import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
-import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.bookshops.frFR.decitre.decitreScraper as decitre
-import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
-import models
+import unicodecsv
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -40,6 +31,7 @@ from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import get_template
@@ -47,6 +39,16 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+from unidecode import unidecode
+from xhtml2pdf import pisa
+
+import datasources.bookshops.all.discogs.discogsScraper as discogs
+# The datasources imports must have the name as their self.SOURCE_NAME
+import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
+import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellibro
+import datasources.bookshops.frFR.decitre.decitreScraper as decitre
+import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
+import models
 from models import Basket
 from models import Bill
 from models import Card
@@ -68,7 +70,6 @@ from search.models.utils import list_from_coma_separated_ints
 from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
 from search.models.utils import truncate
-from xhtml2pdf import pisa
 
 log = logging.getLogger(__name__)
 
@@ -265,7 +266,7 @@ def card_show(request, pk):
     sells = []
     total_sold = "0"
     if request.method == 'GET':
-        card = Card.objects.get(id=pk)
+        card = get_object_or_404(Card, id=pk)
 
         # Last time we entered this item
         last_entry = EntryCopies.last_entry(card)
