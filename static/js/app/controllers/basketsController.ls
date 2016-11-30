@@ -93,24 +93,15 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         $scope.alerts.splice index, 1
 
     $scope.getCards = (term) ->
-        params = do
-            query: term
+        args = do
+            term: term
+            language: $scope.language
             lang: $scope.language
-            # card_type_id: book only ?
-        $http.get "/api/cards/", do
-            params: params
-        .then (response) ->
-            map !->
-              repr = "#{it.title}, #{it.authors_repr}, " + gettext("éd.") + " " + it.pubs_repr
-              it.basket_qty = 1
-              $scope.cards_fetched.push do
-                  repr: repr
-                  id: it.id
-                  item: it
-              return do
-                repr: repr
-                id: it.id
-            , response.data
+
+        promise = utils.getCards args
+        promise.then (res) ->
+            $scope.cards_fetched = res
+            return res
 
     $scope.add_selected_card = (card_repr) !->
         """ Add the card selected from the autocomplete to the current list's copies.
