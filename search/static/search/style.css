@@ -9,11 +9,6 @@
     padding-top: 10px;
 }
 
-.my-border {
-    border: 1px solid; border-color: lightgray; padding: 1em 1em 1em 1em;
-    border-radius: 9px;
-}
-
 /* The 'database' dropdown will appear below the sidebar. Push it a bit on the right so that doesn't happen. */
 .push-right {
     margin-left: 25px;

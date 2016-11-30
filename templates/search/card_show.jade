@@ -38,17 +38,14 @@
 .row
   .col-lg-3
     .btn-group
-      button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
-        span.caret
-      ul.dropdown-menu
-        li: a(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
-        li: a(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
+      a.btn.btn-default(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
+      a.btn.btn-default(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
 
   .col-lg-7
     h3 {{ object.title }}
 
 .row
-  .col-lg-3.my-border
+  .col-lg-3
 
     .row(style="margin-left: 1px;")
       img.img-responsive(src="{{ object.img }}")
@@ -56,8 +53,7 @@
     .row(style="margin-left: 1px;")
 
       h4 {{ object.price | floatformat:2 | intcomma}} {% trans "€" %} ({{ object.card_type }})
-      h4 {% trans "in stock" %}: {{ object.quantity }}
-      table.table.table-condensed
+      table.table.table-condensed.table-bordered
         tbody
           tr
             td {% trans "Minimal qty" %}
@@ -84,53 +80,66 @@
         else
           div
 
-  .col-lg-9
+  .col-lg-5
     h4 {{ object.display_authors }}
-    for pub in object.get_publishers
+
+
+    table.table
+      tbody
+        tr
+          td {% trans "Publisher(s)" %}
+          td
+              for pub in object.get_publishers
                   a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
 
-    div {% trans "Supplier" %}:
-      .row
-        ul.list-group
-          .col-md-3
+        tr
+          td {% trans "Supplier" %}
+          td
             for dist in object.get_distributor
-                li.list-group-item
-                  a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
+                a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
 
-    div {% trans "Presente in" %}:
-     .row
-      ul.list-group
-       .col-md-3
-        for place_copy in object.placecopies_set.all
-            li.list-group-item {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
+        tr(class="{% if object.quantity > 0 %} active {% endif %}")
+          td {% trans "in stock" %}
+          td {{ object.quantity }}
 
-    div {% trans "Deposits" %}:
-      .row
-        .col-md-3
-          ul.list-group
+        tr
+          td {% trans "Presente in" %}
+          td
+            for place_copy in object.placecopies_set.all
+                div {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
+
+        tr
+          td {% trans "Deposits" %}
+          td
               for dep in object.deposit_set.all
-                li.list-group-item: a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
+                a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
 
-    div {% trans "Alerts" %}: {{ object.alert_set.count }}
+        tr(class="{% if object.quantity_deposits > 0 %} active {% endif %}")
+          td {% trans "In deposits" %}
+          td {{ object.quantity_deposits }}
 
-    div {% trans "Last entry" %}:
-      if not last_entry
-        span {% trans "no data" %}
-      else
-        //- a(href="{{ last_entry.get_absolute_url }}")
-          div {{last_entry.created }}
-        span {{ last_entry.created }}
+  .col-lg-3
+    table.table.table-condensed
+      tbody
 
-    div {% trans "Sells since the last entry" %}: {{ total_sold }}
-      .row
-        .col-md-3
-          if sells
-            ul.list-group
-              for sell in sells
-                a(href="{{ sell.get_absolute_url }}")
-                    li.list-group-item {{ sell.created }}
-          else
-            div
+        tr(class="{% if object.alert_set.count %} danger {% endif %}")
+          td  {% trans "Alerts" %}
+          td {{ object.alert_set.count }}
+
+        tr
+          td {% trans "Last entry" %}
+          td {{ last_entry.created }}
+            //- if not last_entry
+            //- span {% trans "no data" %}
+            //- else
+              //- a(href="{{ last_entry.get_absolute_url }}")
+                div {{last_entry.created }}
+              span {{ last_entry.created }}
+
+        tr
+          td {% trans "Sells since the last entry" %}
+          td {{ total_sold }}
+
 
 .row
   .col-lg-10
