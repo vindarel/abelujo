@@ -114,16 +114,19 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.validate = (next_view) ->
 
         # all params are optional except the title
+        if $scope.shelf
+            shelf_id = $scope.shelf.pk
+
         params = do
             title: $scope.title
             price: $scope.price
-            shelf_id: $scope.shelf.pk
             authors: map (.pk), $scope.authors_selected # list of ids
             publishers: map (.pk), $scope.pubs_selected
             year_published: $scope.year_published
             details_url: $scope.details_url
             has_isbn: $scope.has_isbn
             isbn: $scope.isbn
+            shelf_id: shelf_id
 
         type = $scope.type
         if type and type.fields.name is not undefined
