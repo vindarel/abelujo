@@ -121,4 +121,35 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
             |> map (.total_sell)
             |> mean
 
+        getCards: (args) ->
+            "Search cards, api call. Used in navbar's search, in baskets, etc.
+
+            Use as a promise:
+            >> promise = utils.getCards args
+            >> promise.then (results) ->
+                $scope.var = results
+            "
+            params = do
+                query: args.term
+                language: args.language
+                # card_type_id: book only ?
+
+            cards_fetched = []
+
+            $http.get "/api/cards/", do
+                params: params
+            .then (response) ->
+                map !->
+                  repr = "#{it.title}, #{it.authors_repr}, " + gettext("éd.") + " " + it.pubs_repr
+                  it.basket_qty = 1
+                  cards_fetched.push do
+                      repr: repr
+                      id: it.id
+                      item: it
+                  return do
+                    repr: repr
+                    id: it.id
+                , response.data
+                return cards_fetched
+
 ]

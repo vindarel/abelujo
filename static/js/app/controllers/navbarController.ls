@@ -14,14 +14,35 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$log', 'utils', ($http, $scope, $log, utils) !->
+angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$log', 'utils', '$window', ($http, $scope, $log, utils, $window) !->
 
-    {sum, map, filter} = require 'prelude-ls'
+    {sum, map, filter, find} = require 'prelude-ls'
 
     $scope.username = undefined
+    $scope.cards_fetched = [] # fetched from the autocomplete
+    $scope.copy_selected = undefined
+    $scope.language = utils.url_language($window.location.pathname)
 
     $http.get "/api/userinfo"
     .then (response) !->
         $scope.username = response.data.data.username
+
+    $scope.getCards = (term) ->
+        args = do
+            term: term
+            language: $scope.language
+
+        promise = utils.getCards args
+        promise.then (res) ->
+            $scope.cards_fetched = res
+            return res
+
+    $scope.go_to_card = (item) !->
+        $log.info item
+        card = $scope.cards_fetched
+        |> find (.id == item.id)
+        card = card.item
+        $log.info card
+        $window.location.href = card.get_absolute_url
 
 ]
