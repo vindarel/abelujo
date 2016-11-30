@@ -1,0 +1,56 @@
+// Copyright 2014 - 2016 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block pagetitle %}
+{{ page_title }}
+{% endblock pagetitle%}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load ngfilter %}
+{% load humanize %}
+
+.row
+  .col-lg-10
+    ul.nav.nav-tabs
+      li(role="presentation"): a(href="{% url 'card_show' card.pk %}") {% trans "Card details" %}
+      li.active(role="presentation")
+        a(href="{% url 'card_history' card.pk %}") {% trans "History" %}
+
+h3 {{ card.title }}
+
+.row
+  .col-lg-4
+    h4 {% trans "Last sells" %}
+
+    for sell in sells
+      div {{ sell.created }}
+
+  .col-lg-4
+    h4 {% trans "Last entries" %}
+
+  .col-lg-4
+    h4 {% trans "Last commands" %}
+    em {% trans "In development !" %}
+
+em {% trans "This page is under construction. What shall we put in here ?" %}
+
+{% endblock content %}

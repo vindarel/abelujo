@@ -282,7 +282,24 @@ def card_show(request, pk):
         "sells": sells,
         "last_entry": last_entry,
         "total_sold": total_sold,
-        "page_title": "Abelujo - " + card.title[:50],
+        "page_title": u"Abelujo - " + card.title[:50],
+        })
+
+def card_history(request, pk):
+    """Show the card's sells history."""
+    card = None
+    template = "search/card_history.jade"
+
+    if request.method == 'GET':
+        card = get_object_or_404(Card, pk=pk)
+
+        # Sells
+        sells = Sell.search(card.id)
+
+    return render(request, template, {
+        "card": card,
+        "sells": sells,
+        "page_title": u"Abelujo - {} - {}".format(_("History"), card.title),
         })
 
 

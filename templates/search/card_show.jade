@@ -32,8 +32,8 @@
   .col-lg-10
     ul.nav.nav-tabs
       li.active(role="presentation"): a(href="#") {% trans "Card details" %}
-      //- li(role="presentation", on-click="alert('Not implemented !')")
-        a(href="{{object.get_absolute_url}}/history") {% trans "History" %}
+      li(role="presentation")
+        a(href="{% url 'card_history' object.pk %}") {% trans "History" %}
 
 .row
   .col-lg-3
