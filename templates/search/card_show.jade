@@ -45,78 +45,91 @@
     h3 {{ object.title }}
 
 .row
-  .col-lg-3
+  .col-lg-9
+   .row
+    .col-lg-4
 
-    .row(style="margin-left: 1px;")
-      img.img-responsive(src="{{ object.img }}")
+      .row(style="margin-left: 1px;")
+        img.img-responsive(src="{{ object.img }}")
 
-    .row(style="margin-left: 1px;")
+      .row(style="margin-left: 1px;")
 
-      h4 {{ object.price | floatformat:2 | intcomma}} {% trans "€" %} ({{ object.card_type }})
-      table.table.table-condensed.table-bordered
+        h4 {{ object.price | floatformat:2 | intcomma}} {% trans "€" %} ({{ object.card_type }})
+        table.table.table-condensed.table-bordered
+          tbody
+            tr
+              td {% trans "isbn" %}
+              td {{ object.isbn }}
+            tr
+              td {% trans "Source" %}: 
+              td
+                a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
+            tr
+              td
+                span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
+                    span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
+        div {% trans "Comment" %}: 
+          if object.comment
+            em.my-border {{ object.comment }}
+          else
+            div
+
+    .col-lg-8
+      h4 {{ object.display_authors }}
+
+
+      table.table
         tbody
           tr
-            td {% trans "Minimal qty" %}
-            td {{ object.threshold }}
-          tr
-            td {% trans "isbn" %}
-            td {{ object.isbn }}
-          tr
-            td {% trans "Source" %}: 
+            td {% trans "Publisher(s)" %}
             td
-              a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
+                for pub in object.get_publishers
+                    div: a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
+
           tr
-            td {% trans "Shelf" %}: 
+            td {% trans "Supplier" %}
             td
-              if object.shelf
-                {{ object.shelf }}
+              for dist in object.get_distributor
+                  div: a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
           tr
+              td {% trans "Shelf" %}: 
+              td
+                if object.shelf
+                  {{ object.shelf }}
+
+          tr
+              td {% trans "Minimal qty" %}
+              td {{ object.threshold }}
+
+          tr(class="{% if object.quantity > 0 %} active {% elif object.quantity < 0 %} danger {% endif %}")
+            td {% trans "in stock" %}
+            td {{ object.quantity }}
+
+          tr
+            td {% trans "Presente in" %}
             td
-              span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
-                  span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
-      div {% trans "Comment" %}: 
-        if object.comment
-          em.my-border {{ object.comment }}
-        else
-          div
+              for place_copy in object.placecopies_set.all
+                  div {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
 
-  .col-lg-5
-    h4 {{ object.display_authors }}
+          tr
+            td {% trans "Deposits" %}
+            td
+                for dep in object.deposit_set.all
+                  div: a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
 
-
-    table.table
-      tbody
-        tr
-          td {% trans "Publisher(s)" %}
-          td
-              for pub in object.get_publishers
-                  a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
-
-        tr
-          td {% trans "Supplier" %}
-          td
-            for dist in object.get_distributor
-                a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
-
-        tr(class="{% if object.quantity > 0 %} active {% endif %}")
-          td {% trans "in stock" %}
-          td {{ object.quantity }}
-
-        tr
-          td {% trans "Presente in" %}
-          td
-            for place_copy in object.placecopies_set.all
-                div {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
-
-        tr
-          td {% trans "Deposits" %}
-          td
-              for dep in object.deposit_set.all
-                a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
-
-        tr(class="{% if object.quantity_deposits > 0 %} active {% endif %}")
-          td {% trans "In deposits" %}
-          td {{ object.quantity_deposits }}
+          tr(class="{% if object.quantity_deposits > 0 %} active {% elif object.quantity_deposits < 0 %} danger {% endif %}")
+            td {% trans "In deposits" %}
+            td {{ object.quantity_deposits }}
+   .row
+          hr
+          h4
+            span.glyphicon.glyphicon-align-left(style="padding-right: 1em;")
+            span {% trans "Summary" %}
+          hr
+          if object.summary
+            div(style="padding-left: 1em") {{ object.summary }}
+          else
+            div
 
   .col-lg-3
     table.table.table-condensed
@@ -139,19 +152,6 @@
         tr
           td {% trans "Sells since the last entry" %}
           td {{ total_sold }}
-
-
-.row
-  .col-lg-10
-    hr
-    h4
-      span.glyphicon.glyphicon-align-left(style="padding-right: 1em;")
-      span {% trans "Summary" %}
-    hr
-    if object.summary
-      div {{ object.summary }}
-    else
-      div
 
 
 {% endblock content %}
