@@ -363,6 +363,8 @@ class Card(TimeStampedModel):
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: link to the card's data source
     details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True)
+    #: date of publication
+    date_publication = models.DateField(blank=True, null=True)
     #: the summary (of the back cover)
     summary = models.TextField(null=True, blank=True)
     #: a user's comment
