@@ -20,6 +20,16 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
     $scope.language = utils.url_language($window.location.pathname)
 
+    $scope.not_available_status =
+        "Indisponible temporairement"
+        "Indisponible"
+        "Epuise"
+        "Epuisé"
+        ...
+
+    $scope.is_not_available = (label) ->
+        return label in $scope.not_available_status
+
     $scope.cards = []
     $scope.alerts = []
     $scope.page = 1

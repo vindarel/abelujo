@@ -115,6 +115,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                     span {{ 'card.isbn' |ng}}
 
               div(ng-show="show_images") {{ 'card.date_publication' | ng }}
+              div(
+                ng-class="{'text-danger': is_not_available(card.availability)}"
+                ng-show="show_images") {{ 'card.availability' | ng }}
 
         td
           div(ng-repeat="author in card.authors")
