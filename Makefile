@@ -114,6 +114,9 @@ protractor-debug:
 	$(PROTRACTOR_CMD)  --elementExplorer $(PROTRACTOR_CONF)
 	@echo "Chrome version must be >= 39.0"
 
+end2end:
+	testcafe chromium search/tests/integration-tests/testcafetest.js
+
 # Build static files
 gulp:
 	gulp
