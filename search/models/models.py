@@ -29,6 +29,7 @@ import operator
 from datetime import date
 from textwrap import dedent
 
+import dateparser
 import pytz
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -592,6 +593,7 @@ class Card(TimeStampedModel):
             "collection": self.collection.name.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
             "data_source": self.data_source,
+            "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
             "details_url": self.details_url,
             "distributor": dist,
             "isbn": self.isbn,
@@ -956,6 +958,7 @@ class Card(TimeStampedModel):
             has_isbn:   boolean
             isbn:       str
             details_url: url (string)
+            date_publication: string. Human readable date, coming from the scraped source. Gets parsed to a Date.
             card_type:  name of the type (string)
             location:   string
             in_stock:   bool
@@ -1035,6 +1038,13 @@ class Card(TimeStampedModel):
         if card.get("publishers_ids"):
             card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
 
+        # Get the publication date (from a human readable string)
+        date_publication = None
+        try:
+            date_publication = dateparser.parse(card.get('date_publication')) # also languages=['fr']
+        except Exception as e:
+            log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
+
         # Check if the card already exists (it may not have an isbn).
         exists_list, _msgs = Card.exists(card)
         msgs.append(_msgs)
@@ -1060,6 +1070,7 @@ class Card(TimeStampedModel):
                 has_isbn = card.get('has_isbn'),
                 img = card.get('img', ""),
                 details_url = card.get('details_url'),
+                date_publication = date_publication,
                 data_source = card.get('data_source'),
                 summary = card.get('summary'),
             )

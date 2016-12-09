@@ -143,6 +143,7 @@ div(ng-cloak, ng-controller="collectionController")
                .col-md-6
                 b isbn: 
                 span {{ 'card.isbn' |ng}}
+                div {{ 'card.date_publication | date: "mediumDate"' | ng }}
         td
           div {{ 'card.price | currency' | ng}}
 

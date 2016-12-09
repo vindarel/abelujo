@@ -86,6 +86,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         $scope.cards = response.data
         for elt in $scope.cards
             $scope.selected[elt.id] = false
+            elt.date_publication = Date.parse(elt.date_publication)
 
     $scope.validate = !->
         params = do

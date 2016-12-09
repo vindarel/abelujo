@@ -114,6 +114,8 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                     b isbn: 
                     span {{ 'card.isbn' |ng}}
 
+              div(ng-show="show_images") {{ 'card.date_publication' | ng }}
+
         td
           div(ng-repeat="author in card.authors")
             div {{ 'author' |ng}}
