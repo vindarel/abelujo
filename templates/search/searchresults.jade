@@ -119,6 +119,11 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                 ng-class="{'text-danger': is_not_available(card.availability)}"
                 ng-show="show_images") {{ 'card.availability' | ng }}
 
+              div(ng-show="show_images")
+                 a(ng-show='language == "fr" '
+                  target="_blank"
+                  href="https://framabee.org/?q=site:lmda.net {{'card.authors[0]'|ng}} {{ 'card.title' | ng }}") lmda.net
+
         td
           div(ng-repeat="author in card.authors")
             div {{ 'author' |ng}}
