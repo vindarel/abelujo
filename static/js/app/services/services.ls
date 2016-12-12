@@ -67,8 +67,11 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
             sum(map ( -> it.basket_qty), copies)
 
         save_quantity: (card, basket_id) !->
+            """Save this card in the given basket. Card has a quantity field.
+            """
             params = do
-                id_qty: "#{card.id},#{card.basket_qty}"
+                card_id: card.id
+                quantity: card.basket_qty
             $http.post "/api/baskets/#{basket_id}/update/", params
             .then (response) !->
                 alerts = response.data.msgs # unused

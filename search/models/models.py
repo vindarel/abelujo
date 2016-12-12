@@ -1615,6 +1615,22 @@ class Basket(models.Model):
         except Exception as e:
             log.error(u"Error while adding a card to basket %s: %s" % (self.name,e))
 
+    def set_copy(self, card=None, nb=1, card_id=None):
+        """Set the given card's quantity.
+        """
+        if not card and card_id:
+            try:
+                card = Card.objects.get(id=card_id)
+            except Exception as e:
+                log.error(u"Basket set_copy: couldn't get card of id {}: {}".format(card_id, e))
+
+        try:
+            basket_copy, created = self.basketcopies_set.get_or_create(card=card)
+            basket_copy.nb = nb
+            basket_copy.save()
+        except Exception as e:
+            log.error(u'Error while setting the cards {} quantity: {}'.format(card.id, e))
+
     def add_copies(self, card_ids):
         """Add the given list of card ids to this basket.
 

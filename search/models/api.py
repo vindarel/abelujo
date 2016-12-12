@@ -765,7 +765,10 @@ def baskets_create(request, **response_kwargs):
 def baskets_update(request, pk, **response_kwargs):
     """Update the given fields of basket of id 'pk'.
 
-    Note: currently only the comment.
+    Update:
+    - comment
+    - a card's quantity: set card_id and quantity fields in request.body.
+
     """
     to_ret = {"data": [],
               "alerts": [],
@@ -782,6 +785,11 @@ def baskets_update(request, pk, **response_kwargs):
         if comment is not None: # accept ""
             basket.comment = comment
             basket.save()
+
+        card_id = params.get('card_id')
+        quantity = params.get('quantity')
+        if card_id and quantity is not None:
+            basket.set_copy(card_id=card_id, nb=quantity)
 
         return JsonResponse(to_ret)
 
