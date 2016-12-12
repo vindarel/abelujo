@@ -28,7 +28,7 @@
     "devDependencies": {
         "protractor": "~4.0",
         "selenium-webdriver": "~3.0",
-        "testcafe": "latest",
+        "testcafe": "latest"
     },
 
     "private": true,
