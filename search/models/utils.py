@@ -29,7 +29,7 @@ from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 
-MAX_CELL=30
+MAX_CELL=60
 
 class Messages(object):
     """List of messages for UI <-> api communication in json.
