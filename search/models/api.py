@@ -10,9 +10,12 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
+from bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
+    reviews as frenchreviews
 from drfserializers import PreferencesSerializer
 from models import Alert
 from models import Author
@@ -324,6 +327,20 @@ def cardtype(request, **response_kwargs):
         data = CardType.search(query)
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
+
+def card_reviews(request, pk, **response_kwargs):
+    """Get some reviews on other websites.
+    """
+    if request.method == 'GET':
+        if pk:
+            # if a french card
+            card_obj = get_object_or_404(Card, id=pk)
+            card = {
+                'title': card_obj.title,
+                'authors': [card_obj.authors_repr],
+            }
+            revs = frenchreviews(card)
+            return JsonResponse(revs, safe=False)
 
 def shelfs(request, **response_kwargs):
     # Note: for easier search, replace and auto-generation, we choose

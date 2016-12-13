@@ -40,10 +40,13 @@ apipatterns = patterns("",
     url(r'^api/userinfo?$', 'search.models.api.get_user_info', name="api_user_info"),
     url(r'^api/preferences?$', 'search.models.api.preferences', name="api_preferences"),
 
+    # Card
     url(r'^api/cards/create$', 'search.models.api.card_create', name="api_card_create"),
     url(r'^api/cards/?$', 'search.models.api.cards', name="api_cards"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', 'search.models.api.card_add',
         name="api_card_add"),
+    url(r'^api/card/(?P<pk>\d+)/reviews/?$', 'search.models.api.card_reviews',
+        name="api_card_reviews"),
     url(r'^api/card/(?P<pk>\d+)', 'search.models.api.card', name="api_card"),
     url(r'^api/cardtype$', 'search.models.api.cardtype', name="api_cardtype"),
 

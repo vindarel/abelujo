@@ -68,11 +68,11 @@
               td
                 span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
                     span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
-        div {% trans "Comment" %}: 
-          if object.comment
-            em.my-border {{ object.comment }}
-          else
-            div
+        if object.comment
+          div {% trans "Comment" %}: 
+          em.my-border {{ object.comment }}
+        else
+          div
 
     .col-lg-8
       h4 {{ object.display_authors }}
@@ -121,15 +121,17 @@
             td {% trans "In deposits" %}
             td {{ object.quantity_deposits }}
    .row
-          hr
-          h4
-            span.glyphicon.glyphicon-align-left(style="padding-right: 1em;")
-            span {% trans "Summary" %}
-          hr
           if object.summary
+            hr
+            h4
+              span.glyphicon.glyphicon-align-left(style="padding-right: 1em;")
+              span {% trans "Summary" %}
             div(style="padding-left: 1em") {{ object.summary }}
           else
             div
+
+   .row
+          {% include "search/card_reviews.jade" %}
 
   .col-lg-3
     table.table.table-condensed
