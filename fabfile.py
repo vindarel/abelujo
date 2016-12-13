@@ -131,9 +131,14 @@ def odsimport(odsfile=None):
     """
     cmd = 'make odsimport odsfile={}'.format(odsfile)
 
-def openclient(client):
+def openclient(client=None):
     """Open the client page with a web browser.
     """
+    if not client:
+        print("Usage: openclient:<part of client name>")
+        client_info()
+        exit(0)
+
     client = fabutils.select_client_cfg(client, CFG)
     cmd = "firefox {}:{}/fr/ & 2>/dev/null".format(CFG.url, client.port)
     os.system(cmd)
