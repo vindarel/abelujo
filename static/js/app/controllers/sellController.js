@@ -81,7 +81,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
     $http.get("/api/places")
         .then(function(response) {
-            $scope.places = response.data;
+            $scope.places = [{"name": "", "id": undefined}];
+            $scope.places = $scope.places.concat(response.data);
         });
 
     $http.get("/api/deposits")
