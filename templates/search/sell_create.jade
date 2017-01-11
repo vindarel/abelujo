@@ -39,6 +39,14 @@ div.ng-cloak(ng-controller="sellController")
 
       .row
         .col-md-3
+         p.input-group
+          label.sr-only {% trans "Place" %}
+          select.form-control(
+            ng-model="place"
+            ng-options="it.name for it in places"
+          )
+
+        .col-md-3
           p.input-group
             input.form-control(
               type='text'
@@ -53,7 +61,7 @@ div.ng-cloak(ng-controller="sellController")
               button.btn.btn-default(type='button', ng-click='open($event)')
                 i.glyphicon.glyphicon-calendar
 
-        .col-md-9
+        .col-md-4
           p.input-group
             label.sr-only {% trans "Payment" %}
             select.form-control(

@@ -6,6 +6,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // set the xsrf token via cookies.
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
+
+    // List of places we can sell from.
+    $scope.places = [];
+    $scope.place = undefined;
+
       $scope.distributor = undefined;
       $scope.copy_selected = undefined;
     // List of the cards we're going to sell.
@@ -69,6 +74,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               });
 
           });
+
+    $http.get("/api/places")
+        .then(function(response) {
+            $scope.places = response.data;
+        });
 
       // Fetch cards for the autocomplete.
       // Livescript version: see basketsController.ls
@@ -188,13 +198,21 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               quantities = _.map($scope.cards_selected, function(card){
                   return card.quantity;
               });
+          } else {
+              return;
           }
 
+        var place_id = 0;
+        if ($scope.place) {
+            place_id = $scope.place.id;
+        }
+        $log.info($scope.place);
         var params = {
             "to_sell": [ids, prices, quantities],
             "date": $filter('date')($scope.date, $scope.format, 'UTC')
                 .toString($scope.format),
-            "language": $scope.language
+            "language": $scope.language,
+            "place_id": place_id
         };
 
           // This is needed for Django to process the params to its

@@ -810,30 +810,47 @@ class Card(TimeStampedModel):
         :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")
         """
-        # Why use a static method ? Because from the view, we get back
-        # an id and not a Card object. Why ? Because we want to store
-        # list of cards into the session, and we can't serialize Card
-        # objects as is, so we use lists of dicts (that we prefer over
-        # django serialization).
         try:
             card = Card.objects.get(id=id)
 
             # Get the place from where we sell it.
+            place_obj = None
             if place_id:
-                place_obj = card.placecopies_set.get(id=place_id)
+                try:
+                    # place_obj = card.placecopies_set.get(id=place_id)
+                    place_obj = Place.objects.get(id=place_id)
+                except ObjectDoesNotExist as e:
+                    log.warning(u'In Card.sell, can not get place of id {}: {}'.format(place_id, e))
+                    place_obj = Preferences.default_place()
+                except Exception as e:
+                    log.error(u'In Card.sell, error getting place of id {}: {}'.format(place_id, e))
+
+                # Get the intermediate table PlaceCopy, keeping the quantities.
+                place_copy = None
+                try:
+                    place_copy, created = place_obj.placecopies_set.get_or_create(card__id=id)
+                    if created:
+                        place_copy.nb = 0
+                        place_copy.save()
+                except Exception as e:
+                    log.error(u"Card.sell error filtering the place {} by id {}: {}".format(place_id, id, e))
+
+
             else:
+                # Take the first place this card is present in.
                 if card.placecopies_set.count():
                     # XXX: get the default place
                     # fix also the undo().
                     log.warning("selling: select the place: to finish")
-                    place_obj = card.placecopies_set.first()
+                    place_copy = card.placecopies_set.first()
                 else:
                     return False, "We can not sell card {}: it is not associated with any place.".format(card.title)
 
-            place_obj.nb = place_obj.nb - quantity
-            place_obj.save()
+            place_copy.nb -= quantity
+            place_copy.save()
             card.quantity = card.quantity - quantity
             card.save()
+
         except ObjectDoesNotExist as e:
             log.warning(u"Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")
@@ -1479,6 +1496,16 @@ class Preferences(models.Model):
                 msgs.add_info(_(u"Value for preference {} is {}.".format(key, val)))
 
         return msgs.status, msgs.msgs
+
+    @staticmethod
+    def get_default_place():
+        """Return the default place object.
+        """
+        try:
+            return Preferences.objects.first().default_place
+        except Exception as e:
+            log.error(u"Error getting the preferences' default place: {}".format(e))
+            return None
 
     @staticmethod
     def get_vat_book():
@@ -2646,7 +2673,7 @@ class Sell(models.Model):
         return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[]):
+    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
@@ -2656,6 +2683,7 @@ class Sell(models.Model):
         - cards: can be used as a shortcut to write tests. Price and quantity will be default.
         - date: a str (from javascript) which complies to the DATE_FORMAT,
           or a timezone.datetime object.
+        - place_id: int
 
         return: a 3-tuple (the Sell object, the global status, a list of messages).
 
@@ -2702,7 +2730,7 @@ class Sell(models.Model):
                 log.info(u"Alert created for card {}".format(card.title))
 
             try:
-                Card.sell(id=id, quantity=quantity)
+                Card.sell(id=id, quantity=quantity, place_id=place_id)
             except ObjectDoesNotExist:
                 msg = u"Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)

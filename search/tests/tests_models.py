@@ -869,6 +869,13 @@ class TestSells(TestCase):
         int_table = sell.soldcards_set.all()
         self.assertTrue(len(int_table), 1)
 
+    def test_sell_place_id(self):
+        status, msgs = Card.sell(id=self.autobio.id, place_id=1)
+        self.assertEqual(self.place.quantity_of(self.autobio), 0)
+
+        # bad place_id
+        status, msgs = Card.sell(id=self.autobio.id, place_id=9)
+
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
         self.place.add_copy(self.autobio) # 1 in deposit, 1 not: ambiguous

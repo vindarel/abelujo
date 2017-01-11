@@ -517,7 +517,8 @@ def sell(request, **response_kwargs):
         date = params.get("date")
 
         try:
-            sell, status, alerts = Sell.sell_cards(to_sell, date=date)
+            sell, status, alerts = Sell.sell_cards(to_sell, date=date,
+                                                   place_id=params.get('place_id'))
 
         except Exception as e:
             log.error(u"api/sell error: {}".format(e))
