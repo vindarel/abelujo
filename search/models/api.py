@@ -168,6 +168,7 @@ def cards(request, **response_kwargs):
                              publisher_id=publisher_id,
                              card_type_id=card_type_id,
                              place_id=place_id,
+                             deposit_id=deposit_id,
                              shelf_id=shelf_id,
                              order_by=order_by,
                              in_deposits=True)

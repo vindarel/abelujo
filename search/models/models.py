@@ -649,6 +649,7 @@ class Card(TimeStampedModel):
     def search(words, card_type_id=None, distributor=None, distributor_id=None,
                to_list=False,
                publisher_id=None, place_id=None, shelf_id=None,
+               deposit_id=None,
                bought=False,
                in_deposits=False,
                order_by=None):
@@ -702,6 +703,12 @@ class Card(TimeStampedModel):
         if cards and place_id:
             try:
                 cards = cards.filter(placecopies__place__id=place_id)
+            except Exception as e:
+                log.error(e)
+
+        if cards and deposit_id:
+            try:
+                cards = cards.filter(depositcopies__deposit__id=deposit_id)
             except Exception as e:
                 log.error(e)
 

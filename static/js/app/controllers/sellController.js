@@ -94,11 +94,23 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Fetch cards for the autocomplete.
       // Livescript version: see basketsController.ls
       $scope.getCards = function(val){
+
+          var deposit_id = undefined;
+          if ($scope.deposit) {
+              deposit_id = $scope.deposit.id;
+          }
+          var place_id = undefined;
+          if ($scope.place) {
+              place_id = $scope.place.id;
+          }
+
           return $http.get("/api/cards", {
               params: {
                   "query": val,
                   "lang": $scope.language,
                   "language": $scope.language,
+                  "deposit_id": deposit_id,
+                  "place_id": place_id,
                   "card_type_id": $scope.card_type.id
               }})
               .then(function(response){ // "then", not "success"
@@ -228,7 +240,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             "date": $filter('date')($scope.date, $scope.format, 'UTC')
                 .toString($scope.format),
             "language": $scope.language,
-            "place_id": place_id
+            "place_id": place_id,
+            "deposit_id": deposit_id
         };
 
           // This is needed for Django to process the params to its
