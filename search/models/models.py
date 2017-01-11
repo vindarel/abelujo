@@ -1920,6 +1920,37 @@ class DepositState(models.Model):
             msgs.add_error(_("An error occured while adding a card to the deposit state."))
             return None, msgs.msgs
 
+    def sell_card(self, card=None, nb=1, sell=None):
+        """Sell the given card: decrement its quantity.
+
+        - sell: a sell object created beforehand, to remember the sells and link to them.
+
+        Return: tuple status / messages (list of str)
+        """
+        msgs = Messages()
+        try:
+            copies = self.depositstatecopies_set.filter(card__id=card.id)
+        except Exception as e:
+            msgs.add_warning(_(u"The card {} was not found on this deposit.".format(card.title)))
+            return msgs.status, msgs.msgs
+
+        if not copies:
+            msgs.add_warning(_(u"The card {} was not found on this deposit.".format(card.title)))
+            return msgs.status, msgs.msgs
+
+        state_copy = copies[0]
+        state_copy.nb_current -= nb
+        # Remember the sell:
+        if sell:
+            state_copy.sells.add(sell)
+        else:
+            log.warning("You didn't specify a Sell object when selling from the deposit {}, and you should.".format(self.id))
+
+        state_copy.save()
+
+        return msgs.status, msgs.msgs
+
+
     def add_soldcards(self, cards_sells):
         """Add cards to this deposit state.
         Updates the sells if the card is already registered.
@@ -2372,6 +2403,62 @@ class Deposit(TimeStampedModel):
 
         return msgs.status, msgs.msgs
 
+    def sell_card(self, card=None, card_id=None, nb=1, sell=None):
+        """Sell a card from this deposit.
+
+        Decrement its quantity from the deposit state.
+
+        Return: a tuple status and list of messages.
+        """
+        msgs = Messages()
+        if not (card or card_id):
+            msgs.add_warning(_(u"Please provide a card or a card id."))
+            return msgs
+
+        if card_id:
+            try:
+                card = Card.objects.get(id=card_id)
+            except Exception as e:
+                log.error("Exception while getting card of id {}: {}".format(card_id, e))
+                msgs.add_error(_(u"The card of id {} does not exist is this deposit.".format(card_id)))
+                return msgs.status, msgs.msgs
+
+        if card:
+            try:
+                state = self.checkout_current()
+                status, _msgs = state.sell_card(card=card, sell=sell)
+                msgs.append(_msgs)
+
+            except ObjectDoesNotExist:
+                msgs.add_error(_(u"The requested card does not exist in the deposit."))
+                return msgs.status, msgs.msgs
+            except Exception as e:
+                log.error(u"Error selling card {} for deposit {}: {}".format(card_id, self.id, e))
+                msgs.add_error(_(u"Error selling the card {}".format(card.title)))
+                return msgs.status, msgs.msgs
+
+            msgs.add_success(_(u"The card '{}' was sold from deposit '{}'.".format(card.title, self.name)))
+            return msgs.status, msgs.msgs
+
+        else:
+            return None, []
+
+    def quantity_of(self, card):
+        """How many copies of this card do we have ?
+
+        - card: a card object.
+
+        Return: int
+        """
+        try:
+            balance = self.checkout_balance()
+            state_copies = balance['cards'][0][1]
+            qty = state_copies.nb_current
+            return qty
+        except Exception as e:
+            log.error(e)
+            return None
+
     def nb_alerts(self):
         """Is the distributor of this deposit concerned by open alerts ? If
         so, we can not start a deposit checkout.
@@ -2673,7 +2760,7 @@ class Sell(models.Model):
         return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None):
+    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None, deposit_id=None):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
@@ -2712,6 +2799,26 @@ class Sell(models.Model):
                 date = datetime.datetime.strptime(date, DATE_FORMAT)
                 date = pytz.utc.localize(date, pytz.UTC)
 
+        deposit_obj = None
+        if deposit_id:
+            try:
+                deposit_obj = Deposit.objects.get(id=deposit_id)
+            except ObjectDoesNotExist:
+                log.error(u"Couldn't get deposit of id {}.".format(deposit_id))
+            except Exception as e:
+                log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
+
+        # Create the Sell object.
+        try:
+            sell = Sell(created=date, payment=payment)
+            sell.save()
+        except Exception as e:
+            status = ALERT_ERROR
+            alerts.append({"message": "Ooops, we couldn't sell anything :S",
+                           "level": ALERT_ERROR})
+            log.error(u"Error on creating Sell object: {}".format(e))
+
+        # Decrement cards quantities from their place or deposit.
         for it in ids_prices_nb:
             # "sell" a card.
             id = it.get("id")
@@ -2730,24 +2837,29 @@ class Sell(models.Model):
                 log.info(u"Alert created for card {}".format(card.title))
 
             try:
-                Card.sell(id=id, quantity=quantity, place_id=place_id)
+                # Either sell from a deposit.
+                if deposit_obj:
+                    status, msgs = deposit_obj.sell_card(card_id=id, sell=sell)
+
+                # Either sell from a place or the default (selling) place.
+                else:
+                    Card.sell(id=id, quantity=quantity, place_id=place_id)
+
             except ObjectDoesNotExist:
                 msg = u"Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
                 alerts.append({"level": ALERT_ERROR, "message": msg})
                 status = ALERT_WARNING
+                sell.delete()
+                return None, status, msg
+            except Exception as e:
+                msg = u"Error selling card {}: {}".format(id, e)
+                log.error(msg)
+                status = ALERT_ERROR
+                sell.delete()
+                return None, status, msg
 
-        # Create the Sell.
-        try:
-            sell = Sell(created=date, payment=payment)
-            sell.save()
-        except Exception as e:
-            status = ALERT_ERROR
-            alerts.append({"message": "Ooops, we couldn't sell anything :S",
-                           "level": ALERT_ERROR})
-            log.error(u"Error on creating Sell object: {}".format(e))
-
-        # Add the cards and their attributes.
+        # Add the cards and their attributes in the Sell.
         for i, card in enumerate(cards_obj):
             price_sold = ids_prices_nb[i].get("price_sold", card.price)
             if not price_sold:

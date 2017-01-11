@@ -11,6 +11,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.places = [];
     $scope.place = undefined;
 
+    // List of deposits.
+    $scope.deposits = [];
+    $scope.deposit = undefined;
+
       $scope.distributor = undefined;
       $scope.copy_selected = undefined;
     // List of the cards we're going to sell.
@@ -78,6 +82,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $http.get("/api/places")
         .then(function(response) {
             $scope.places = response.data;
+        });
+
+    $http.get("/api/deposits")
+        .then(function(response) {
+            $scope.deposits = [{"name": "", "id": undefined}];
+            $scope.deposits = $scope.deposits.concat(response.data.data);
         });
 
       // Fetch cards for the autocomplete.
@@ -207,6 +217,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             place_id = $scope.place.id;
         }
         $log.info($scope.place);
+        var deposit_id = 0;
+        if ($scope.deposit) {
+            deposit_id = $scope.deposit.id;
+        }
+
         var params = {
             "to_sell": [ids, prices, quantities],
             "date": $filter('date')($scope.date, $scope.format, 'UTC')

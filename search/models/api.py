@@ -6,6 +6,7 @@ import json
 import logging
 
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -151,6 +152,7 @@ def cards(request, **response_kwargs):
     card_type_id = request.GET.get("card_type_id")
     publisher_id = request.GET.get("publisher_id")
     place_id = request.GET.get("place_id")
+    deposit_id = request.GET.get("deposit_id")
     shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
     bought = request.GET.get("in_stock")
@@ -515,7 +517,19 @@ def sell(request, **response_kwargs):
         to_sell = list_from_coma_separated_ints(params.get("to_sell"))
         to_sell = getSellDict(to_sell)
         date = params.get("date")
+        deposit_id = params.get("deposit_id")
 
+        # Sell from a deposit, then normal sell.
+        if deposit_id:
+            try:
+                deposit_obj = Deposit.objects.get(id=deposit_id)
+            except ObjectDoesNotExist:
+                log.error(u"Couldn't get deposit of id {}.".format(deposit_id))
+            except Exception as e:
+                log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
+
+
+        # Sell from a place.
         try:
             sell, status, alerts = Sell.sell_cards(to_sell, date=date,
                                                    place_id=params.get('place_id'))

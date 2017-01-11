@@ -876,6 +876,25 @@ class TestSells(TestCase):
         # bad place_id
         status, msgs = Card.sell(id=self.autobio.id, place_id=9)
 
+    def test_sell_deposit(self):
+        self.depo.add_copy(self.autobio)
+
+        # Generic Sell.sell_card:
+        sell, status, msgs = Sell.sell_cards(None, cards=[self.autobio], deposit_id=self.depo.id)
+        self.assertEqual(0, self.depo.quantity_of(self.autobio))
+
+        # deposit.sell
+        status, msgs = self.depo.sell_card(card_id=self.autobio.id)
+        self.assertEqual(status, ALERT_SUCCESS, msgs)
+        self.assertEqual(-1, self.depo.quantity_of(self.autobio))
+        balance = self.depo.checkout_balance()
+        state_copies = balance['cards'][0][1]
+        self.assertEqual(1, state_copies.nb_sells)
+
+        # bad card id
+        status, msgs = self.depo.sell_card(card_id=999)
+        self.assertEqual(status, ALERT_ERROR)
+
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
         self.place.add_copy(self.autobio) # 1 in deposit, 1 not: ambiguous
