@@ -1795,6 +1795,7 @@ class DepositStateCopies(models.Model):
     """
     card = models.ForeignKey(Card)
     deposit_state = models.ForeignKey("DepositState")
+    #: Remember sells about this card.
     sells = models.ManyToManyField("Sell")
     #: the current quantity of the card (at the date of the deposit state).
     nb_current = models.IntegerField(default=0)
@@ -1815,6 +1816,17 @@ class DepositStateCopies(models.Model):
         """the quantity of sold cards since the last deposit state.
         """
         return self.sells.count()
+
+    def add_sells(self, soldcards):
+        """Register sells.
+        """
+        # We could do that earlier.
+        for soldcard in soldcards:
+            sell = soldcard.sell
+            try:
+                self.sells.add(sell)
+            except Exception as e:
+                log.error(u"adding sells to {}: {}".format(self.id, e))
 
     @property
     def nb_initial(self):
@@ -1839,13 +1851,6 @@ class DepositStateCopies(models.Model):
         if len(ret) > 1:
             log.warning("a deposit has not a unique result for the intermediate table of a card")
         return ret[0].threshold
-
-    def add_sells(self, sells):
-        for sell in sells:
-            try:
-                self.sells.add(sell)
-            except Exception as e:
-                log.error("adding sells to {}: ".format(self.id), e)
 
 
 class DepositState(models.Model):
@@ -1978,7 +1983,7 @@ class DepositState(models.Model):
                 if created:
                     depostate_copy.save()
                 # Keep sells that are not already registered
-                ids = [it.id for it in depostate_copy.sells.all()]
+                ids = [it.id for it in depostate_copy.sells.all()] # values_list('id', flat=True)
                 to_add = filter(lambda it: it.id not in ids, sells)
                 depostate_copy.add_sells(to_add)
                 depostate_copy.nb_current -= len(to_add)
@@ -1988,7 +1993,7 @@ class DepositState(models.Model):
         except Exception as e:
             log.error(u"adding cards to the DepositState: {}".format(e))
             msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
-            return msgs.msgs
+            return msgs.status, msgs.msgs
 
         return True, msgs.msgs
 

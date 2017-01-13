@@ -712,8 +712,7 @@ class TestDeposits(TransactionTestCase):
         co = self.deposit.last_checkout()
         co.update()
         bal = self.deposit.checkout_balance() # xxx fails
-        print "TODO: balance.nb_sells"
-        # self.assertEqual(1, bal["cards"][0][1].nb_sells) # TODO:
+        self.assertEqual(1, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
         print "TODO: balance nb_current"
         # self.assertEqual(2, bal["cards"][0][1].nb_current) # TODO:
@@ -723,7 +722,7 @@ class TestDeposits(TransactionTestCase):
         co = self.deposit.last_checkout()
         co.update()
         bal = self.deposit.checkout_balance()
-        # self.assertEqual(0, bal["cards"][0][1].nb_sells) # TODO:
+        self.assertEqual(0, bal["cards"][0][1].nb_sells)
         # self.assertEqual(2, bal["cards"][0][1].nb_initial) # TODO:
         # self.assertEqual(2, bal["cards"][0][1].nb_current) # TODO:
 
@@ -747,8 +746,7 @@ class TestDeposits(TransactionTestCase):
         print "TODO: balance.nb_current"
         # self.assertEqual(balance["cards"][0][1].nb_current, 2)
         self.assertEqual(balance["cards"][0][1].nb_initial, 3)
-        print "TODO: balance.nb_sells"
-        # self.assertEqual(balance["cards"][0][1].nb_sells, 1)
+        self.assertEqual(balance["cards"][0][1].nb_sells, 1)
 
         # Close and check again.
         closed, msgs = self.deposit.checkout_close()
@@ -763,12 +761,12 @@ class TestDeposits(TransactionTestCase):
         # We started a new deposit state: the old "current" is the new "initial".
         # self.assertEqual(balance["cards"][0][1].nb_current, 2) # TODO:
         # self.assertEqual(balance["cards"][0][1].nb_initial, 2) # TODO:
-        # self.assertEqual(balance["cards"][0][1].nb_sells, 0) # TODO:
+        self.assertEqual(balance["cards"][0][1].nb_sells, 0)
         # test again, that we're not in a loop
         balance = self.deposit.checkout_balance()
         # self.assertEqual(balance["cards"][0][1].nb_current, 2)
         # self.assertEqual(balance["cards"][0][1].nb_initial, 2) # TODO:
-        # self.assertEqual(balance["cards"][0][1].nb_sells, 0)
+        self.assertEqual(balance["cards"][0][1].nb_sells, 0)
 
     def test_depostate_dates(self):
         """Don't count sells anterior from the creation of the deposit.
