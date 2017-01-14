@@ -39,43 +39,46 @@ div.ng-cloak(ng-controller="sellController")
 
       .row
         .col-md-3
-          form.form-inline
+          form
+            label {% trans "Date" %}
+            p.input-group
+              input.form-control(
+                type='text'
+                uib-datepicker-popup='{{"format"|ng}}'
+                ng-model='date'
+                is-open='opened'
+                datepicker-options='dateOptions'
+                ng-required='true'
+                close-text='Close'
+              )
+              span.input-group-btn
+                button.btn.btn-default(type='button', ng-click='open($event)')
+                  i.glyphicon.glyphicon-calendar
+
+        .col-md-3
+          form
+            label {% trans "Payment" %}
+            select.form-control(
+              ng-model="payment"
+              ng-options="elt.name for elt in payment_means"
+              required
+            )
+
+        .col-md-3
+          form
             label {% trans "Place" %}
             select.form-control(
                 ng-model="place"
                 ng-options="it.name for it in places"
           )
         .col-md-3
-          form.form-inline
+          form
             label {% trans "Deposit" %}
             select.form-control(
               ng-model="deposit"
               ng-options="it.name for it in deposits"
           )
 
-        .col-md-3
-          p.input-group
-            input.form-control(
-              type='text'
-              uib-datepicker-popup='{{"format"|ng}}'
-              ng-model='date'
-              is-open='opened'
-              datepicker-options='dateOptions'
-              ng-required='true'
-              close-text='Close'
-            )
-            span.input-group-btn
-              button.btn.btn-default(type='button', ng-click='open($event)')
-                i.glyphicon.glyphicon-calendar
-
-        .col-md-3
-          p.input-group
-            label.sr-only {% trans "Payment" %}
-            select.form-control(
-              ng-model="payment"
-              ng-options="elt.name for elt in payment_means"
-              required
-            )
 
       .row
         .col-md-3
