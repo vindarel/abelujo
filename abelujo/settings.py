@@ -19,12 +19,14 @@ import os
 
 # Django settings for abelujo project.
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # see:
 # STATIC_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static'))
+
+DEBUG = True
+if os.path.exists(os.path.join(BASE_DIR, "PROD.txt")):
+    DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -278,4 +280,3 @@ HUEY = {
         # 'url': None,  # Allow Redis config via a DSN.
     },
 }
-
