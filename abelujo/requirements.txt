@@ -40,7 +40,7 @@ isbnlib<4               # isbn utils
 unicodecsv<0.15         # at last unicode support to read and write csv files. Lacking in the standard library.
 setuptools>18           # for xhtml2pdf below
 xhtml2pdf==0.0.6        # quickfix... see requirements-system.txt
-dateparser              # parser for human readable dates
+dateparser==0.5         # parser for human readable dates
 
 # deployment
 whitenoise              # serve static files. Easily, efficiently.
@@ -49,4 +49,3 @@ gunicorn==19.4          # wsgi server
 huey==1.2               # task queue
 redis==2.10
 honcho==0.7             # task supervisor based on a Procfile
-
