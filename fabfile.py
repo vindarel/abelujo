@@ -279,6 +279,19 @@ def update(client):
 
     # check_online(client.name) # wait a bit before to check
 
+def updatelight(name=None):
+    """Everything except package managers (apt, npm, pip).
+    Don't restart, but it may be needed.
+    """
+    rebase(name)
+    make("set-prod", name)
+    make("migrate", name)
+    make("gulp", name)
+    make("collectstatic", name)
+    make("translation-compile", name)
+    # restart(name)
+    check_online(name)
+
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
     """
@@ -308,18 +321,6 @@ def dbback(name=None):
             print("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue")))
             print(cmd)
             os.system(cmd)
-
-def updatelight(name=None):
-    """Everything except package managers (apt, npm, pip).
-    Don't restart, but it may be needed.
-    """
-    rebase(name)
-    make("migrate", name)
-    make("gulp", name)
-    make("collectstatic", name)
-    make("translation-compile", name)
-    # restart(name)
-    check_online(name)
 
 def bundles_upload(name=None):
     """Update, but don't run npm or bower, get the copies of their

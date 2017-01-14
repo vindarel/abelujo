@@ -68,7 +68,11 @@ npm-dev:
 	# Install or update Selenium etc
 	./node_modules/protractor/bin/webdriver-manager update
 
+set-prod:
+	touch PROD.txt
+
 update:
+	make set-prod
 	make rebase
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
