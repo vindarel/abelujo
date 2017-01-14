@@ -545,7 +545,7 @@ class Card(TimeStampedModel):
         Return: str
         """
         publishers = self.publishers.all()
-        pubs_repr = ", ".join(it.name for it in publishers)
+        pubs_repr = ", ".join(it.name.capitalize() for it in publishers)
         return pubs_repr
 
     @property
