@@ -714,8 +714,8 @@ class TestDeposits(TransactionTestCase):
         bal = self.deposit.checkout_balance() # xxx fails
         self.assertEqual(1, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        print "TODO: balance nb_current"
-        # self.assertEqual(2, bal["cards"][0][1].nb_current) # TODO:
+        self.assertEqual(2, bal["cards"][0][1].nb_current)
+
         # re-do: nothing must change.
         co.update()
         bal = self.deposit.checkout_balance() # xxx fails
@@ -729,8 +729,8 @@ class TestDeposits(TransactionTestCase):
         co.update()
         bal = self.deposit.checkout_balance()
         self.assertEqual(0, bal["cards"][0][1].nb_sells)
-        # self.assertEqual(2, bal["cards"][0][1].nb_initial) # TODO:
-        # self.assertEqual(2, bal["cards"][0][1].nb_current) # TODO:
+        self.assertEqual(2, bal["cards"][0][1].nb_initial)
+        self.assertEqual(2, bal["cards"][0][1].nb_current)
 
     def test_depostate_first(self):
         # Add cards to the deposit.
@@ -749,8 +749,7 @@ class TestDeposits(TransactionTestCase):
         co = self.deposit.last_checkout()
         co = co.update()
         balance = co.balance()
-        print "TODO: balance.nb_current"
-        # self.assertEqual(balance["cards"][0][1].nb_current, 2)
+        self.assertEqual(balance["cards"][0][1].nb_current, 2)
         self.assertEqual(balance["cards"][0][1].nb_initial, 3)
         self.assertEqual(balance["cards"][0][1].nb_sells, 1)
 
@@ -759,19 +758,19 @@ class TestDeposits(TransactionTestCase):
         co = self.deposit.last_checkout()
         self.assertTrue(co.closed)
         co, _ = self.deposit.checkout_create()
-        ret, msgs = co.add_soldcards([{'card': self.card2, 'sells': []}])
+        ret, msgs = co.update_soldcards([{'card': self.card2, 'sells': []}])
         self.assertFalse(msgs)
         self.assertTrue(ret)
 
         balance = self.deposit.checkout_balance() # creates a new checkout
         # We started a new deposit state: the old "current" is the new "initial".
-        # self.assertEqual(balance["cards"][0][1].nb_current, 2) # TODO:
-        # self.assertEqual(balance["cards"][0][1].nb_initial, 2) # TODO:
+        self.assertEqual(balance["cards"][0][1].nb_current, 2)
+        self.assertEqual(balance["cards"][0][1].nb_initial, 2)
         self.assertEqual(balance["cards"][0][1].nb_sells, 0)
         # test again, that we're not in a loop
         balance = self.deposit.checkout_balance()
-        # self.assertEqual(balance["cards"][0][1].nb_current, 2)
-        # self.assertEqual(balance["cards"][0][1].nb_initial, 2) # TODO:
+        self.assertEqual(balance["cards"][0][1].nb_current, 2)
+        self.assertEqual(balance["cards"][0][1].nb_initial, 2)
         self.assertEqual(balance["cards"][0][1].nb_sells, 0)
 
     def test_depostate_dates(self):
