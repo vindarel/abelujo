@@ -511,7 +511,7 @@ class Card(TimeStampedModel):
         try:
             return self.publishers.filter(id=pub)
         except Exception as e:
-            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, pud, e))
+            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, pub, e))
             return None
 
     def has_distributor(self, dist):
