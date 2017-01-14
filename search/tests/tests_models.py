@@ -716,6 +716,12 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
         print "TODO: balance nb_current"
         # self.assertEqual(2, bal["cards"][0][1].nb_current) # TODO:
+        # re-do: nothing must change.
+        co.update()
+        bal = self.deposit.checkout_balance() # xxx fails
+        self.assertEqual(1, bal["cards"][0][1].nb_sells)
+        self.assertEqual(3, bal["cards"][0][1].nb_initial)
+        self.assertEqual(2, bal["cards"][0][1].nb_current)
 
         # Close it and check again. We must not see a sell.
         self.deposit.checkout_close()

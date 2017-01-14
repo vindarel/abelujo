@@ -1963,7 +1963,7 @@ class DepositState(models.Model):
         return msgs.status, msgs.msgs
 
 
-    def add_soldcards(self, cards_sells):
+    def update_soldcards(self, cards_sells):
         """Add cards to this deposit state.
         Updates the sells if the card is already registered.
 
@@ -1984,7 +1984,7 @@ class DepositState(models.Model):
                     depostate_copy.save()
                 # Keep sells that are not already registered
                 ids = [it.id for it in depostate_copy.sells.all()] # values_list('id', flat=True)
-                to_add = filter(lambda it: it.id not in ids, sells)
+                to_add = filter(lambda it: it.sell.id not in ids, sells)
                 depostate_copy.add_sells(to_add)
                 depostate_copy.nb_current -= len(to_add)
                 depostate_copy.nb_to_return = -1 #TODO: see DepositCopies due_date
@@ -2059,7 +2059,7 @@ class DepositState(models.Model):
             sells = Sell.search(card_id=card.id, date_min=self.created).all()
             sold_cards.append({"card": card, "sells": sells})
 
-        self.add_soldcards(sold_cards)
+        self.update_soldcards(sold_cards)
         return self
 
     def close(self):
@@ -2120,7 +2120,7 @@ class Deposit(TimeStampedModel):
     To create a Deposit:
     - create the base object
     - add copies to it with deposit.add_copies
-    - add sells with add_soldcards
+    - add sells with update_soldcards
 
 
     Sometimes we want to see the actual state of the deposit: how many
@@ -2556,7 +2556,7 @@ class Deposit(TimeStampedModel):
         status, _msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
         msgs.append(_msgs)
         if sold_cards:
-            checkout.add_soldcards(sold_cards)
+            checkout.update_soldcards(sold_cards)
         else:
             msgs.add_info(_("No cards were sold since the last deposit state."))
 
