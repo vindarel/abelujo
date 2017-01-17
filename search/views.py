@@ -18,11 +18,11 @@
 import datetime
 import json
 import logging
+import tempfile
 import traceback
 import urllib
 import urlparse
 
-import unicodecsv
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -40,8 +40,8 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from unidecode import unidecode
-from xhtml2pdf import pisa
 
+import barcode
 import datasources.bookshops.all.discogs.discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
 import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
@@ -49,6 +49,7 @@ import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellib
 import datasources.bookshops.frFR.decitre.decitreScraper as decitre
 import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
 import models
+import unicodecsv
 from models import Basket
 from models import Bill
 from models import Card
@@ -70,6 +71,8 @@ from search.models.utils import list_from_coma_separated_ints
 from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
 from search.models.utils import truncate
+from weasyprint import CSS
+from weasyprint import HTML
 
 log = logging.getLogger(__name__)
 
@@ -870,37 +873,46 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         response = HttpResponse(content, content_type="text/raw")
 
     elif format in ['pdf']:
-        with open("pdfexport.pdf", "w+b"):
-            date = datetime.date.today()
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
+        date = datetime.date.today()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
-            template = get_template('pdftemplates/pdf-barcode.jade')
-            if report == "listing":
-                cards_qties = [(it.card, it.quantity) for it in copies_set]
-            elif report == "bill":
-                quantity_header = _("Quantity sold")
-                for it in rows:
-                    if not is_isbn(it[0].isbn):
-                        it[0].isbn = "0000000000000"
+        template = get_template('pdftemplates/pdf-barcode.jade')
+        if report == "listing":
+            cards_qties = [(it.card, it.quantity) for it in copies_set]
+        elif report == "bill":
+            quantity_header = _("Quantity sold")
+            for it in rows:
+                if not is_isbn(it[0].isbn):
+                    it[0].isbn = "0000000000000"
 
-                cards_qties = rows
+            cards_qties = rows
 
-            total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
-            total_qty = sum([it[1] for it in cards_qties])
-            sourceHtml = template.render({'cards_qties': cards_qties,
-                                          'list_name': name,
-                                          'total': total,
-                                          'total_qty': total_qty,
-                                          'barcode': format == 'pdf',
-                                          'quantity_header': quantity_header,
-                                          'date': date})
+        total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
+        total_qty = sum([it[1] for it in cards_qties])
 
-            pisaStatus = pisa.CreatePDF(
-                    sourceHtml,
-                    # outsource,                # the HTML to convert
-                    # dest=resultFile)           # file handle to recieve result
-                    dest=response)
+        # barcode
+        EAN = barcode.get_barcode_class('ean13')
+        for card, __ in cards_qties:
+            with tempfile.TemporaryFile() as fp:
+                ean = EAN(card.ean)
+                fullname = ean.save(fp.name) # to svg by default
+                # We'll include the barcode as a base64-encoded string.
+                eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
+                card.eanbase64 = eanbase64
+
+        sourceHtml = template.render({'cards_qties': cards_qties,
+                                      'list_name': name,
+                                      'total': total,
+                                      'total_qty': total_qty,
+                                      'barcode': format == 'pdf',
+                                      'quantity_header': quantity_header,
+                                      'date': date})
+
+        outhtml = HTML(string=sourceHtml).write_pdf()
+
+        response = HttpResponse(outhtml, content_type='application/pdf')
+        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
     return response
 

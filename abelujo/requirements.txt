@@ -38,8 +38,9 @@ tqdm                    # progress bar
 termcolor               # colorful terminal output
 isbnlib<4               # isbn utils
 unicodecsv<0.15         # at last unicode support to read and write csv files. Lacking in the standard library.
-setuptools>18           # for xhtml2pdf below
-xhtml2pdf==0.0.6        # quickfix... see requirements-system.txt
+WeasyPrint
+pybarcode
+pillow                  # needs libfreetype6-dev installed
 dateparser==0.5         # parser for human readable dates
 
 # deployment

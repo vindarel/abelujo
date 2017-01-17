@@ -40,7 +40,7 @@ head
         for card_qty in cards_qties
           tr
             if barcode
-              td <pdf:barcode value="{{ card_qty.0.isbn }}" type="ean13" humanreadable="1" align="baseline" />
+              td: img(alt="" src="data:image/png;base64,{{ card_qty.0.eanbase64 }}")
             td {{ forloop.counter }} - {{ card_qty.0.title }}
             td(style='{text-align: center;}') {{ card_qty.0.price }} €
             td(style='{text-align: center;}') {{ card_qty.1 }}
