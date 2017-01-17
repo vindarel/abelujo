@@ -72,6 +72,7 @@ set-prod:
 	touch PROD.txt
 
 update:
+	apt-get update  # prevents unreachable sources, sometimes.
 	make set-prod
 	make rebase
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
