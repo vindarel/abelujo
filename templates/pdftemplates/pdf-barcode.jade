@@ -41,6 +41,8 @@ head
           tr
             if barcode
               td: img(alt="" src="data:image/png;base64,{{ card_qty.0.eanbase64 }}")
+            if covers
+              td: img(src="{{ card_qty.0.img }}")
             td {{ forloop.counter }} - {{ card_qty.0.title }}
             td(style='{text-align: center;}') {{ card_qty.0.price }} €
             td(style='{text-align: center;}') {{ card_qty.1 }}
@@ -49,6 +51,8 @@ head
       tfoot
         tr
           if barcode
+            td
+          if covers
             td
           td
             b {% trans "Total" %}

@@ -306,3 +306,12 @@ def date_last_day_of_month(anyday):
     Return: datetime, as the input.
     """
     return (anyday.replace(day=1) + datetime.timedelta(days=32)).replace(day=1) - datetime.timedelta(days=1)
+
+def _is_truthy(txt):
+    """
+    - txt: string
+    """
+    # should be automatic !
+    if txt in ['true', 't', u'true', 'yes']:
+        return True
+    return False

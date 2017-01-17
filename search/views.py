@@ -71,6 +71,7 @@ from search.models.utils import list_from_coma_separated_ints
 from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
 from search.models.utils import truncate
+from search.models.utils import _is_truthy
 from weasyprint import CSS
 from weasyprint import HTML
 
@@ -779,14 +780,21 @@ def basket_export(request, pk):
     elif distributor_id:
         distributor_id = int(distributor_id)
 
+    barcodes = _is_truthy(request.GET.get('barcodes'))
+    covers = _is_truthy(request.GET.get('covers'))
+
     if copies_set and report and format:
         response = _export_response(copies_set, report=report, format=format,
                                     distributor_id=distributor_id,
+                                    barcodes=barcodes,
+                                    covers=covers,
                                     name=basket.name)
 
     return response
 
-def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None):
+def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None,
+                     covers=False,
+                     barcodes=False):
     """Build the response with the right data (a bill ? just a list ?).
 
     - copies_set: list of objects, like basketcopies_set: has attributes card and quantity.
@@ -892,20 +900,22 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         total_qty = sum([it[1] for it in cards_qties])
 
         # barcode
-        EAN = barcode.get_barcode_class('ean13')
-        for card, __ in cards_qties:
-            with tempfile.TemporaryFile() as fp:
-                ean = EAN(card.ean)
-                fullname = ean.save(fp.name) # to svg by default
-                # We'll include the barcode as a base64-encoded string.
-                eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
-                card.eanbase64 = eanbase64
+        if barcodes:
+            EAN = barcode.get_barcode_class('ean13')
+            for card, __ in cards_qties:
+                with tempfile.TemporaryFile() as fp:
+                    ean = EAN(card.ean)
+                    fullname = ean.save(fp.name) # to svg by default
+                    # We'll include the barcode as a base64-encoded string.
+                    eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
+                    card.eanbase64 = eanbase64
 
         sourceHtml = template.render({'cards_qties': cards_qties,
                                       'list_name': name,
                                       'total': total,
                                       'total_qty': total_qty,
-                                      'barcode': format == 'pdf',
+                                      'barcode': barcodes,
+                                      'covers': covers,
                                       'quantity_header': quantity_header,
                                       'date': date})
 
@@ -1005,9 +1015,13 @@ def inventory_export(request, pk):
 
     report = request.GET.get('report')
     format = request.GET.get('format')
+    barcodes = _is_truthy(request.GET.get('barcodes'))
+    covers = _is_truthy(request.GET.get('covers'))
 
     response = _export_response(copies_set, report=report, format=format,
                                 inv=inv,
+                                barcodes=barcodes,
+                                covers=covers,
                                 name=inv.name)
 
     return response
