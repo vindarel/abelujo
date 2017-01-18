@@ -7,6 +7,10 @@ head
       margin: 2cm;
       size: a4 portrait;
 
+        @top-right{
+          content: "Page " counter(page) " of " counter(pages);
+        }
+
         @frame header_frame {
             -pdf-frame-content: header_content;
             left: 50pt; width: 512pt; top: 50pt; height: 40pt;
