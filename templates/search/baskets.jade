@@ -78,6 +78,8 @@ div(ng-cloak, ng-controller="basketsController")
      ul.dropdown-menu
        li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") txt
 
+       li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=csv&report=listing") {% trans "List" %} - csv
+
        li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=csv&report=simplelisting") {% trans "isbn and quantity (Dilicom)" %} - csv
 
        li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing&barcodes=true") {% trans "List, with barcodes" %} - pdf
