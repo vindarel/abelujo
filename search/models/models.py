@@ -319,6 +319,18 @@ class CardType(models.Model):
 
         return data
 
+class Barcode64(TimeStampedModel):
+    """SVG barcodes encoded as base64, to be included into an html img tag
+    for pdf generation:
+
+        img(alt="" src="data:image/png;base64,{{ barcode64 }}
+
+    They are created automatically. See the `card_saved_callback` method.
+
+    """
+    ean = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    barcodebase64 = models.CharField(max_length=TEXT_LENGTH, null=True, blank=True)
+
 
 class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
