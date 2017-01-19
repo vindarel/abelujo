@@ -26,6 +26,7 @@ import datetime
 import json
 import logging
 import operator
+import tempfile
 from datetime import date
 from textwrap import dedent
 
@@ -46,6 +47,7 @@ from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
 
+import barcode
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -330,6 +332,21 @@ class Barcode64(TimeStampedModel):
     """
     ean = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     barcodebase64 = models.CharField(max_length=TEXT_LENGTH, null=True, blank=True)
+
+    def __unicode__(self):
+        return "ean: {}".format(self.ean)
+
+    @staticmethod
+    def ean2barcode(ean):
+        """Return the base64 barcode (str).
+        """
+        EAN = barcode.get_barcode_class('ean13')
+        with tempfile.TemporaryFile() as fp:
+            ean = EAN(ean)
+            fullname = ean.save(fp.name) # to svg by default
+            # We'll include the barcode as a base64-encoded string.
+            eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
+            return eanbase64
 
 
 class Card(TimeStampedModel):

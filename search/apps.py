@@ -18,5 +18,12 @@
 from django.apps import AppConfig
 
 class SearchConfig(AppConfig):
+    """Configuration for the app. Instantiate inside __init__.py.
+    """
     name = "search" # used for the db.
     verbose_name = "Abejulo"
+
+    def ready(self):
+        """Start signals.
+        """
+        import search.signals.signals
