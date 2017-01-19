@@ -341,13 +341,30 @@ class Barcode64(TimeStampedModel):
         """Return the base64 barcode (str).
         """
         EAN = barcode.get_barcode_class('ean13')
-        with tempfile.TemporaryFile() as fp:
-            ean = EAN(ean)
-            fullname = ean.save(fp.name) # to svg by default
-            # We'll include the barcode as a base64-encoded string.
-            eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
-            return eanbase64
+        if not ean:
+            log.warning('Barcode generation: with have a null ean.')
+            return None
 
+        with tempfile.TemporaryFile() as fp:
+            try:
+                ean = EAN(ean)
+                fullname = ean.save(fp.name) # to svg by default
+                # We'll include the barcode as a base64-encoded string.
+                eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
+                return eanbase64
+            except Exception as e:
+                # this well may be an invalid ean. Shall we erase it ?
+                log.warning(u'Barcode generation: error with ean {}: {}'.format(ean, e))
+                return
+
+    @staticmethod
+    def create_save(ean):
+        base64 = Barcode64.ean2barcode(ean)
+        if base64:
+            try:
+                Barcode64(ean=ean, barcodebase64=base64).save()
+            except Exception as e:
+                log.error(u'could not save barcode of ean {}: {}'.format(ean, e))
 
 class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
