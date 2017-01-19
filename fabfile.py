@@ -541,6 +541,17 @@ def make(cmd, name=None):
     else:
         print("no client name given")
 
+def cmd(cmd, name=None):
+    """Run any command to client "name".
+    """
+    if not name:
+        print("Please give a client name.")
+    else:
+        client = fabutils.select_client_cfg(name)
+        with cd(fabutils.wd(client, CFG)):
+            with prefix(VENV_ACTIVATE.format(client.name)):
+                run(cmd)
+
 def bower_package_version(package, names=None):
     """What's the installed packages version ?
 
