@@ -41,7 +41,6 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from unidecode import unidecode
 
-import barcode
 import datasources.bookshops.all.discogs.discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
 import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
@@ -50,6 +49,7 @@ import datasources.bookshops.frFR.decitre.decitreScraper as decitre
 import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
 import models
 import unicodecsv
+from models import Barcode64
 from models import Basket
 from models import Bill
 from models import Card
@@ -900,15 +900,24 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         total_qty = sum([it[1] for it in cards_qties])
 
         # barcode
+        import time
+        start = time.time()
         if barcodes:
-            EAN = barcode.get_barcode_class('ean13')
             for card, __ in cards_qties:
-                with tempfile.TemporaryFile() as fp:
-                    ean = EAN(card.ean)
-                    fullname = ean.save(fp.name) # to svg by default
-                    # We'll include the barcode as a base64-encoded string.
-                    eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
-                    card.eanbase64 = eanbase64
+                # Find or create the base64 barcode.
+                search = Barcode64.objects.filter(ean=card.ean)
+                if not search:
+                    eanbase64 = Barcode64.ean2barcode(card.ean)
+                    try:
+                        if eanbase64:
+                            log.info("---- saving a base64 for ean {}".format(card.ean))
+                            Barcode64(ean=card.ean, barcodebase64=eanbase64).save()
+                    except Exception as e:
+                        log.error(u'Error saving barcode of ean {}: {}'.format(card.ean, e))
+                else:
+                    eanbase64 = search[0].barcodebase64
+
+                card.eanbase64 = eanbase64
 
         sourceHtml = template.render({'cards_qties': cards_qties,
                                       'list_name': name,
@@ -919,9 +928,14 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
                                       'quantity_header': quantity_header,
                                       'date': date})
 
+        genstart = time.time()
         outhtml = HTML(string=sourceHtml).write_pdf()
+        genend = time.time()
+        log.info("------ html generation is taking {}".format(genend - genstart))
 
         response = HttpResponse(outhtml, content_type='application/pdf')
+        end = time.time()
+        log.info("-------- generating barcodes for {} cards took {}".format(len(cards_qties), end - start))
         response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
     return response
