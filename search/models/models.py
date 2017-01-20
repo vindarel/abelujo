@@ -1491,6 +1491,8 @@ class Preferences(models.Model):
     """
     Default preferences.
     """
+    #: Name of the asso/group running this project. To appear in bills and emails.
+    asso_name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)  # XXX to use in preferences
     #: What place to add the cards by default ? (we register them, then move them)
     default_place = models.OneToOneField(Place)
     #: VAT, the tax
