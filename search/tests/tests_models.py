@@ -1240,6 +1240,9 @@ class TestCommands(TestCase):
     def setUp(self):
         self.card = CardFactory()
         self.publisher = PublisherFactory()
+        # A Command:
+        self.com = Command(publisher=self.publisher)
+        self.com.save()
 
     def tearDown(self):
         pass
@@ -1254,3 +1257,6 @@ class TestCommands(TestCase):
         self.assertFalse(com.payment_sent)
         self.assertFalse(com.received)
         self.assertTrue(com.supplier_name)
+
+    def test_nb_ongoing(self):
+        self.assertTrue(Command.nb_ongoing())

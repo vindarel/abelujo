@@ -3785,6 +3785,13 @@ class Command(TimeStampedModel):
     def __unicode__(self):
         return "command {} for {}".format(self.id, self.supplier_name)
 
+    @staticmethod
+    def nb_ongoing():
+        """Return the number of ongoing commands (to be more defined).
+        """
+        res = Command.objects.filter(date_received__isnull=True).count()
+        return res
+
     def add_copy(self, card_obj, nb=1):
         """Add a given card object to the command.
         """
