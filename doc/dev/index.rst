@@ -11,6 +11,7 @@ Contents:
    angular-crash-course
    webscraping.rst
    django-dev.rst
+   api-dev.rst
    clientside-dev.rst
    deploy-manage.rst
    codingstyle.rst

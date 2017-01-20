@@ -15,24 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Django Rest Framework serializers of our models.
-http://www.django-rest-framework.org/api-guide/serializers/
-"""
+from rest_framework import viewsets
 
-from rest_framework import serializers
+from search.models import Command
 
-from models import Command
-from models import Preferences
+from search.models.drfserializers import CommandSerializer
 
-
-class PreferencesSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Preferences
-        depth = 1 # include the place name and co
-
-class CommandSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Command
+class CommandViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `detail` actions.
+    """
+    queryset = Command.objects.filter(date_received__isnull=True).all()
+    serializer_class = CommandSerializer

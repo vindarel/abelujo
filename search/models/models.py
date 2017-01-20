@@ -3794,6 +3794,10 @@ class Command(TimeStampedModel):
         res = Command.objects.filter(date_received__isnull=True).count()
         return res
 
+    def to_dict(self):
+        # Use the serializer in drfserializers.py.
+        pass
+
     def add_copy(self, card_obj, nb=1):
         """Add a given card object to the command.
         """

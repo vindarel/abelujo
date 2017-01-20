@@ -23,11 +23,18 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from search.views import DepositsListView
 
+from search.drfviews import CommandViewSet
+
+from rest_framework.routers import DefaultRouter
+
 js_info_dict = { 'packages': ('search', '',), }
 
 urlpatterns = i18n_patterns("",
     url("^", include("search.urls")),
 )
+
+router = DefaultRouter()
+router.register(r'commands', CommandViewSet)
 
 apipatterns = patterns("",
     # Exclude /api/ from i18n so than we
@@ -74,6 +81,7 @@ apipatterns = patterns("",
     url(r'^api/deposits/due_dates/$', 'search.models.api.deposits_due_dates', name="api_deposits_due_dates"),
     url(r'^api/deposits/?$', 'search.models.api.deposits', name="api_deposits"),
 
+    url(r'^api/', include(router.urls)),
     # Sell
     url(r'^api/sell/(?P<pk>\d+)/undo$', 'search.models.api.sell_undo', name="api_sell_undo"),
     url(r'^api/sell$', 'search.models.api.sell', name="api_sell"),
