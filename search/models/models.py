@@ -53,6 +53,8 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
+from search.models.common import CHAR_LENGTH
+from search.models.common import TEXT_LENGTH
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TimeStampedModel
@@ -62,8 +64,6 @@ from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
 
-CHAR_LENGTH = 200
-TEXT_LENGTH = 10000
 PAGE_SIZE = 50
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
 # and the ui in general (datejs).
@@ -3701,3 +3701,101 @@ class Stats(object):
 
     def stock_age(self, shelf):
         return self._shelf_age(shelf)
+
+class CommandCopies(TimeStampedModel):
+    """Intermediate table between a Command and its Cards. Records the
+    number of exemplaries for each card.
+    """
+    card = models.ForeignKey("Card")
+    command = models.ForeignKey("Command")
+    quantity = models.IntegerField(default=0)
+
+    @property
+    def qty(self):
+        return self.quantity
+
+    # def __unicode__(self):
+        # pass
+
+    # def to_dict(self):
+        # pass
+
+class Command(TimeStampedModel):
+    """A command records that some cards were ordered to a supplier.
+    We have to track when we receive the command and when we pay.
+    """
+
+    #: Name
+    name = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
+    #: Command to supplier: a publisher or a distributor (see `supplier`).
+    publisher = models.ForeignKey("Publisher", blank=True, null=True)
+    distributor = models.ForeignKey("Distributor", blank=True, null=True)
+    #: Copies in it:
+    copies = models.ManyToManyField(Card, through="CommandCopies", blank=True)
+    #: Date of reception. To check if the command was received, use the received property.
+    date_received = models.DateField(blank=True, null=True)
+    #: Date of reception of the bill from the supplier. See also the `bill_received` property
+    date_bill_received = models.DateField(blank=True, null=True)
+    #: When did we send the payment ? See also `payment_sent`.
+    date_payment_sent = models.DateField(blank=True, null=True)
+    #: When did the supplier accept the payment ? See also `paid`.
+    date_paid = models.DateField(blank=True, null=True)
+
+    #: Short comment
+    comment = models.TextField(blank=True, null=True)
+
+    @property
+    def supplier(self):
+        """
+        """
+        return self.publisher or self.distributor
+
+    @property
+    def supplier_name(self):
+        """Return the publisher distributor name (str).
+        """
+        if self.publisher:
+            return self.publisher.name
+        elif self.distributor:
+            return self.distributor.name
+        return None
+
+    @property
+    def received(self):
+        """Was this command received ?
+        Return: boolean.
+        """
+        return self.date_received is not None
+
+    @property
+    def bill_received(self):
+        """Did we receive the bill, from the supplier ?
+        Return: boolea
+        """
+        return self.date_bill_received is not None
+
+    @property
+    def payment_sent(self):
+        return self.date_payment_sent is not None
+
+    @property
+    def paid(self):
+        return self.date_paid is not None
+
+    def __unicode__(self):
+        return "command {} for {}".format(self.id, self.supplier_name)
+
+    def add_copy(self, card_obj, nb=1):
+        """Add a given card object to the command.
+        """
+        try:
+            cmdcopy, created = self.commandcopies_set.get_or_create(card=card_obj)
+            cmdcopy.quantity += nb
+            cmdcopy.save()
+        except Exception as e:
+            log.error(u'Error while adding card {} to command {}: {}'.format(card_obj.id,
+                                                                             self.id,
+                                                                             e))
+            return False
+
+        return cmdcopy.quantity

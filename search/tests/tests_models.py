@@ -43,6 +43,8 @@ from search.models import BasketType
 from search.models import Card
 from search.models import CardType
 from search.models import Collection
+from search.models import Command
+from search.models import CommandCopies
 from search.models import Deposit
 from search.models import DepositCopies
 from search.models import DepositState
@@ -96,6 +98,11 @@ class PreferencesFactory(DjangoModelFactory):
         model = Preferences
     default_place = PlaceFactory()
     vat_book = "5.5"
+
+class PublisherFactory(DjangoModelFactory):
+    class Meta:
+        model = Publisher
+    name = factory.Sequence(lambda n: "publisher test %s" % n)
 
 class InventoryFactory(DjangoModelFactory):
     class Meta:
@@ -1227,3 +1234,23 @@ class TestPreferences(TestCase):
 
     def test_price_excl_tax(self):
         self.assertEqual(Preferences.price_excl_tax(10), 9.45)
+
+class TestCommands(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory()
+        self.publisher = PublisherFactory()
+
+    def tearDown(self):
+        pass
+
+    def test_initial(self):
+        com = Command(publisher=self.publisher)
+        com.save()
+        qty = com.add_copy(self.card)
+        self.assertTrue(com)
+        self.assertEqual(1, qty)
+        self.assertFalse(com.bill_received)
+        self.assertFalse(com.payment_sent)
+        self.assertFalse(com.received)
+        self.assertTrue(com.supplier_name)
