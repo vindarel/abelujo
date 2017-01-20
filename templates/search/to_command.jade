@@ -36,6 +36,13 @@ div(ng-cloak, ng-controller="basketToCommandController")
     )
       {{ 'alert.message' | ng }}
 
+  ul.nav.nav-tabs.nav-justified
+    li.active(role="presentation")
+      a(href="#") {% trans "To command" %}
+    li(role="presentation")
+      a(href="ongoing") {% trans "Commands ongoing" %}  
+        span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
+
   .col-md-2
     ul.list-group
      div(ng-repeat="(dist_name, cards) in sorted_cards")

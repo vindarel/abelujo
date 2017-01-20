@@ -1,0 +1,52 @@
+// Copyright 2014 - 2016 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block auto_command_nb %} {{ auto_command_nb }} {% endblock %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load ngfilter %}
+
+div(ng-cloak, ng-controller="CommandsOngoingController")
+
+  div
+    uib-alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
+  ul.nav.nav-tabs.nav-justified
+    li(role="presentation")
+      a(href="{{ 'commands_url' | ng }}") {% trans "To command" %}
+    li.active(role="presentation")
+      a(href="ongoing") {% trans "Commands ongoing" %}  
+        span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
+
+  .row
+    .col-md-1
+    .col-md-4
+      div(ng-repeat="command in commands")
+        div date: {{ 'command.date_received' | ng }}
+
+{% endblock content %}

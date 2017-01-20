@@ -86,8 +86,12 @@ urlpatterns = patterns('',
     url(r'^deposits/(?P<pk>\d+)/add', 'search.views.deposit_add_copies',
         name="deposit_add_copies"),
 
+    # Commands:
+    url(r'^commands/ongoing/?',
+            login_required(TemplateView.as_view(template_name="search/commands_ongoing.jade"))),
     url(r'^commands/', 'search.views.basket_auto_command',
         name="basket_auto_command"),
+
 
     url(r'^baskets/(?P<pk>\d+)/export/$', 'search.views.basket_export', name="basket_export"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',
