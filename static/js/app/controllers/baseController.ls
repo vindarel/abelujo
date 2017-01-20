@@ -32,6 +32,11 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
             $scope.auto_command_total = response.data
             return response.data.data
 
+    $http.get("/api/commands/nb_ongoing")
+    .then (response) ->
+        $scope.ongoing_commands_nb = response.data.data
+        return response.data.data
+
     # Goal: Grab what url we're on to highlight the active menu bar,
     # with ng-class.
     $scope.url = ""

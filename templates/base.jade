@@ -108,8 +108,9 @@ html(ng-app="abelujo")
             a(href='{% url "baskets" %}') {% trans "Baskets" %}
 
           li(ng-class="{active: url == 'commands' }")
-            a(href='{% url "basket_auto_command" %}') {% trans "To command" %}
-              span.badge.ng-cloak {{ "auto_command_total" | ng }}
+            a(href='{% url "basket_auto_command" %}') {% trans "Commands" %}
+              span.badge.ng-cloak(title='{% trans "Number of cards needing a command." %}') {{ "auto_command_total" | ng }}
+              span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}') {{ "ongoing_commands_nb" | ng }}
 
           li(ng-class="{active: url == 'history' }")
             a(href='{% url "search_history" %}') {% trans "History" %}

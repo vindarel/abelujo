@@ -23,6 +23,7 @@ from models import Author
 from models import Basket
 from models import Card
 from models import CardType
+from models import Command
 from models import Deposit
 from models import Distributor
 from models import Inventory
@@ -1219,3 +1220,14 @@ def stats_stock_age(request, **kwargs):
     shelf = request.GET.get('shelf_id')
     stats = Stats().stock_age(shelf)
     return JsonResponse(stats, safe=False)
+
+def commands_ongoing(request, **kwargs):
+    """
+    """
+    if request.method == 'GET':
+        nb = Command.nb_ongoing()
+        to_ret = {
+            'status': ALERT_SUCCESS,
+            'data': nb,
+            }
+        return JsonResponse(to_ret)
