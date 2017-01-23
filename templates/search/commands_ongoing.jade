@@ -45,8 +45,13 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
 
   .row
     .col-md-1
-    .col-md-4
-      div(ng-repeat="command in commands")
-        div date: {{ 'command.date_received' | ng }}
+    .col-md-9
+      div.panel.panel-info(style="margin-top: 5px;")
+          div.panel-heading {% trans "Attention" %}
+          div.panel-body
+            div Page under construction !
+
+      //- div(ng-repeat="command in commands")
+          div date: {{ 'command.date_received' | ng }}
 
 {% endblock content %}

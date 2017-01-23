@@ -48,6 +48,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         $scope.grouped_dist = group-by (.name), $scope.distributors
 
     $scope.save_quantity = (dist_name, index) !->
+        # model card.basket_qty is saved.
         dist_id = grouped_dist[dist_name][0].id
         card = $scope.sorted_cards[dist_id][index]
         utils.save_quantity card, AUTO_COMMAND_ID
@@ -117,6 +118,29 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
             .catch (resp) !->
                 $log.info "Error when trying to remove the card " + card_id
+
+    $scope.validate_command = (dist_name) !->
+        """Validate the command. We'll wait for it. Remove the list from the ToCommand basket.
+        """
+        $log.info "validate " + dist_name
+        cards = $scope.sorted_cards[dist_name]
+        ids_qties = []
+        map ->
+            ids_qties.push "#{it.id}, #{it.basket_qty};"
+        , cards
+        $log.info "card ids_qties: " + ids_qties
+
+        params = do
+            ids_qties: ids_qties
+        $http.post "/api/commands/create/", params
+        .then (response) !->
+            $log.info response.data
+            if response.data.status == 'success'
+                $log.info "success !"
+                $scope.sorted_cards[dist_name] = []
+
+            else
+                $scope.alerts = response.data.alerts
 
     $scope.dist_href = (name) ->
         $window.location.href = "#" + name

@@ -127,6 +127,12 @@ class Messages(object):
         return {'status': self._status,
                 'messages': self.msgs}
 
+    def to_alerts(self):
+        # to test more.
+        return [{'status': it.level,
+                 'messages': it.message}
+                for it in self.msgs]
+
 
 def truncate(it):
     """Truncate only strings to MAX_CELL characters.
@@ -291,6 +297,14 @@ def list_from_coma_separated_ints(str):
         return [toIntOrFloat(it) for it in str.strip(",").split(",")]
     else:
         return []
+
+def ids_qties_to_pairs(string):
+    pairs = []
+    if string:
+        together = string.split(';')
+        pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
+        return pairs
+    return None
 
 def roundfloat(nb):
     """Round the given float to two decimals.

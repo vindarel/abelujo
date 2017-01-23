@@ -49,6 +49,7 @@ from search.views import search_on_data_source
 from .utils import is_isbn
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
+from .utils import ids_qties_to_pairs
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -1231,3 +1232,22 @@ def commands_ongoing(request, **kwargs):
             'data': nb,
             }
         return JsonResponse(to_ret)
+
+def commands_create(request, **kwargs):
+    """Create a new command with given list of ids and their quantities.
+    """
+    if request.method == "POST":
+        params = json.loads(request.body)
+        ids_qties = params.get('ids_qties')
+        if ids_qties:
+            ids_qties = ids_qties[0]
+            ids_qties = ids_qties_to_pairs(ids_qties)
+            cmd, msgs = Command.new_command(ids_qties=ids_qties)
+
+            to_ret = {
+                'status': msgs.status,
+                'alerts': msgs.to_alerts(),
+                }
+            return JsonResponse(to_ret)
+
+    return JsonResponse({'status': 'not implemented error'})

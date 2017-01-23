@@ -1750,6 +1750,12 @@ class Basket(models.Model):
 
         return status, msgs.msgs
 
+    def remove_copies(self, card_ids):
+        """Remove a list of card ids.
+        """
+        for id in card_ids:
+            self.remove_copy(id)
+
     def quantity(self, card=None, card_id=None):
         """Return the total quantity of copies in it, or the quantity of the given card.
 
@@ -3798,9 +3804,23 @@ class Command(TimeStampedModel):
         # Use the serializer in drfserializers.py.
         pass
 
-    def add_copy(self, card_obj, nb=1):
+    def add_copy(self, card_obj, card_id=None, nb=1):
         """Add a given card object to the command.
+
+        Return: a tuple quantity of the card, a dict of Messages (status, list of messages).
         """
+        msgs = Messages()
+
+        if card_id:
+            try:
+                card_obj = Card.objects.get(id=card_id)
+            except ObjectDoesNotExist:
+                log.warning(u'The card of id {} to add to the command {} does not exist'.format(
+                    card_id,
+                    self.id))
+                msgs.add_error(u"The card of id {} does not exist".format(card_id))
+                return None, msgs
+
         try:
             cmdcopy, created = self.commandcopies_set.get_or_create(card=card_obj)
             cmdcopy.quantity += nb
@@ -3809,6 +3829,29 @@ class Command(TimeStampedModel):
             log.error(u'Error while adding card {} to command {}: {}'.format(card_obj.id,
                                                                              self.id,
                                                                              e))
-            return False
+            msgs.add_error(u"An error occured while adding the card {} to the command.".format(card_id))
+            return False, msgs
 
-        return cmdcopy.quantity
+        return cmdcopy.quantity, msgs
+
+    @staticmethod
+    def new_command(ids_qties=None):
+        """Create a command, remove the cards from the ToCommand list.
+
+        Return: the new Command object, with a Messages dict.
+        """
+        msgs = Messages()
+        cmd = Command()
+        cmd.save()
+        ids_qties = filter(lambda it: not (not it), ids_qties)
+        for id, nb in ids_qties:
+            nb = int(nb)
+            __, messages = cmd.add_copy(None, card_id=id, nb=nb)
+            msgs.merge(messages)
+
+        # Remove from the ToCommand basket.
+        tocmd = Basket.objects.get(id=1)
+        ids = [it[0] for it in ids_qties]
+        tocmd.remove_copies(ids)
+
+        return cmd, msgs
