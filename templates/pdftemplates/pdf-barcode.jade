@@ -1,7 +1,9 @@
+{% load staticfiles %}
 {% load i18n %}
 !!! 5
 html
 head
+  link(rel='stylesheet', type='text/css', href='{% static "search/style.css" %}')
   style.
     @page {
       margin: 2cm;
