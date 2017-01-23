@@ -94,7 +94,7 @@ migrations:
 	git add search/migrations/*.py
 
 migrate:
-	python manage.py migrate
+	python manage.py migrate --noinput
 
 collectstatic:
 	python manage.py collectstatic --noinput
@@ -120,6 +120,7 @@ protractor-debug:
 	@echo "Chrome version must be >= 39.0"
 
 end2end:
+	# it was buggy on Firefox (waiting for async/await ?).
 	testcafe chromium search/tests/integration-tests/testcafetest.js
 
 # Build static files
