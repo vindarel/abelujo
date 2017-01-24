@@ -3794,11 +3794,27 @@ class Command(TimeStampedModel):
         return "command {} for {}".format(self.id, self.supplier_name)
 
     @staticmethod
-    def nb_ongoing():
-        """Return the number of ongoing commands (to be more defined).
+    def ongoing():
+        """Return a queryset of ongoing commands (to be more defined).
+        Return: a queryset, so to apply .all() or .count().
         """
-        res = Command.objects.filter(date_received__isnull=True).count()
+        res = Command.objects.filter(date_received__isnull=True)\
+                             .exclude(Q(publisher__isnull=True) & Q(distributor__isnull=True))
         return res
+
+    @staticmethod
+    def nb_ongoing():
+        """Return: int.
+        """
+        return Command.ongoing().count()
+
+    def nb_copies(self):
+        """Return the number of copies of this command.
+        """
+        try:
+            return sum([it.quantity for it in self.commandcopies_set.all()])
+        except Exception as e:
+            return None
 
     def to_dict(self):
         # Use the serializer in drfserializers.py.

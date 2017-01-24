@@ -16,14 +16,13 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 from rest_framework import viewsets
-
 from search.models import Command
-
 from search.models.drfserializers import CommandSerializer
+
 
 class CommandViewSet(viewsets.ReadOnlyModelViewSet):
     """
     This viewset automatically provides `list` and `detail` actions.
     """
-    queryset = Command.objects.filter(date_received__isnull=True).all()
+    queryset = Command.ongoing()
     serializer_class = CommandSerializer

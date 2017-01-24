@@ -36,3 +36,22 @@ class CommandSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Command
+        fields = ('id',
+                  'name',
+                  'publisher',
+                  'distributor',
+                  'copies',
+                  'date_received',
+                  'date_bill_received',
+                  'date_payment_sent',
+                  'date_paid',
+                  'comment',
+
+                  # and inherited fields:
+                  'created',
+
+                  # and properties:
+                  'supplier_id',
+                  'supplier_name',
+                  'nb_copies',
+        )
