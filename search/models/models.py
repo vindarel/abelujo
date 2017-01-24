@@ -3759,6 +3759,14 @@ class Command(TimeStampedModel):
         return self.publisher or self.distributor
 
     @property
+    def supplier_id(self):
+        if self.publisher:
+            return self.publisher.id
+        elif self.distributor:
+            return self.distributor.id
+        return None
+
+    @property
     def supplier_name(self):
         """Return the publisher distributor name (str).
         """

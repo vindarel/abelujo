@@ -1236,13 +1236,19 @@ def commands_ongoing(request, **kwargs):
 def commands_create(request, **kwargs):
     """Create a new command with given list of ids and their quantities.
     """
+    msgs = Messages()
     if request.method == "POST":
         params = json.loads(request.body)
         ids_qties = params.get('ids_qties')
+        publisher_id = params.get('publisher_id')
+        distributor_id = params.get('distributor_id')
         if ids_qties:
             ids_qties = ids_qties[0]
             ids_qties = ids_qties_to_pairs(ids_qties)
-            cmd, msgs = Command.new_command(ids_qties=ids_qties)
+            cmd, msgs = Command.new_command(ids_qties=ids_qties,
+                                            publisher_id=publisher_id,
+                                            distributor_id=distributor_id)
+            msgs.append(msgs)
 
             to_ret = {
                 'status': msgs.status,

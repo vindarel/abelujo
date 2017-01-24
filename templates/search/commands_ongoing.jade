@@ -44,14 +44,36 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
         span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
 
   .row
-    .col-md-1
-    .col-md-9
+    .col-md-12
       div.panel.panel-info(style="margin-top: 5px;")
           div.panel-heading {% trans "Attention" %}
           div.panel-body
             div Page under construction !
 
-      //- div(ng-repeat="command in commands")
-          div date: {{ 'command.date_received' | ng }}
+      table.table.table-condensed.table-striped
+        thead
+          th {% trans "id" %}
+          th {% trans "Supplier" %}
+          th {% trans "Date sent" %}
+          th {% trans "Date received" %}
+          th {% trans "Bill received" %}
+          th {% trans "Payment sent" %}
+          th {% trans "Payment accepted" %}
+          th {% trans "Quantity" %}
+          th {% trans "Total" %}
+          th {% trans "Total incl. taxes" %}
+
+        tbody
+          tr(ng-repeat="cmd in commands")
+            td {{ 'cmd.id' | ng }}
+            td {{ 'cmd.supplier_name' | ng }}
+            td {{ 'cmd.created' | ng }}
+            td {{ 'cmd.date_received' | ng }}
+            td {{ 'cmd.bill_received' | ng }}
+            td {{ 'cmd.date_payment_sent' | ng }}
+            td {{ 'cmd.date_paid' | ng }}
+            td {{ 'cmd.nb_copies' | ng }}
+            td
+            td {{ 'cmd.total_cost' | ng }}
 
 {% endblock content %}
