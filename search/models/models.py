@@ -54,9 +54,9 @@ from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.common import CHAR_LENGTH
-from search.models.common import TEXT_LENGTH
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
+from search.models.common import TEXT_LENGTH
 from search.models.common import TimeStampedModel
 from search.models.utils import Messages
 from search.models.utils import date_last_day_of_month
@@ -3827,6 +3827,10 @@ class Command(TimeStampedModel):
         """
         msgs = Messages()
 
+        if not (card_obj or card_id):
+            msgs.add_error("Adding a copy to a command without giving a card. Abort.")
+            return msgs.status, msgs.msgs
+
         if card_id:
             try:
                 card_obj = Card.objects.get(id=card_id)
@@ -3851,19 +3855,48 @@ class Command(TimeStampedModel):
         return cmdcopy.quantity, msgs
 
     @staticmethod
-    def new_command(ids_qties=None):
+    def new_command(ids_qties=None, publisher_id=None, distributor_id=None):
         """Create a command, remove the cards from the ToCommand list.
 
         Return: the new Command object, with a Messages dict.
         """
         msgs = Messages()
+
+        # We must have a publisher or distributor.
+        dist_obj = None
+        pub_obj = None
+        if not (distributor_id or publisher_id):
+            msgs.add_error("Provide a publisher_id for the new command.")
+            return None, msgs
+
+        elif distributor_id:
+            dist_obj = Distributor.objects.get(id=distributor_id)
+
+        elif publisher_id:
+            try:
+                pub_obj = Publisher.objects.get(id=publisher_id) # XXX refacto: catch error and return msgs
+            except ObjectDoesNotExist:
+                msgs.add_error(u"The publisher of id {} does not seem to exist".format(publisher_id))
+
+        if not (dist_obj or pub_obj):
+            return None, msgs.status
+
         cmd = Command()
         cmd.save()
         ids_qties = filter(lambda it: not (not it), ids_qties)
+        if not ids_qties:
+            msgs.add_error("Creating a command with no card ids. Abort.")
+            return None, msgs
+
         for id, nb in ids_qties:
             nb = int(nb)
             __, messages = cmd.add_copy(None, card_id=id, nb=nb)
             msgs.merge(messages)
+
+        # Register the supplier
+        cmd.publisher = pub_obj
+        cmd.distributor = dist_obj
+        cmd.save()
 
         # Remove from the ToCommand basket.
         tocmd = Basket.objects.get(id=1)

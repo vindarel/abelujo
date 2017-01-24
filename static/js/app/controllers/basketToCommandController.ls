@@ -42,7 +42,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         $scope.cards = response.data
         $scope.sorted_cards = group-by (.distributor.name), $scope.cards
 
-    $http.get "/api/distributors",
+    $http.get "/api/publishers", #TODO: fetch suppliers= publishers + distributors
     .then (response) !->
         $scope.distributors = response.data
         $scope.grouped_dist = group-by (.name), $scope.distributors
@@ -122,25 +122,33 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.validate_command = (dist_name) !->
         """Validate the command. We'll wait for it. Remove the list from the ToCommand basket.
         """
-        $log.info "validate " + dist_name
-        cards = $scope.sorted_cards[dist_name]
-        ids_qties = []
-        map ->
-            ids_qties.push "#{it.id}, #{it.basket_qty};"
-        , cards
-        $log.info "card ids_qties: " + ids_qties
+        if confirm gettext "Do you want to order this command for #{dist_name} ?\n
+            The cards will be removed from this list."
+            $log.info "validate " + dist_name
+            cards = $scope.sorted_cards[dist_name]
+            ids_qties = []
+            map ->
+                ids_qties.push "#{it.id}, #{it.basket_qty};"
+            , cards
+            $log.info "card ids_qties: " + ids_qties
 
-        params = do
-            ids_qties: ids_qties
-        $http.post "/api/commands/create/", params
-        .then (response) !->
-            $log.info response.data
-            if response.data.status == 'success'
-                $log.info "success !"
-                $scope.sorted_cards[dist_name] = []
+            cards = $scope.sorted_cards[dist_name]
 
-            else
-                $scope.alerts = response.data.alerts
+            #TODO: distributors and publishers = suppliers
+            params = do
+                ids_qties: ids_qties
+                distributor_id: cards[0].distributor.id
+                # distributor_id: undefined # XXX don't mix pub and dist
+
+            $http.post "/api/commands/create/", params
+            .then (response) !->
+                $log.info response.data
+                if response.data.status == 'success'
+                    $log.info "success !"
+                    $scope.sorted_cards[dist_name] = []
+
+                else
+                    $scope.alerts = response.data.alerts
 
     $scope.dist_href = (name) ->
         $window.location.href = "#" + name
