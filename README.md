@@ -72,6 +72,7 @@ type `workon \<TAB\> abelujo`.
 
 To install the dependencies, create and populate the database, run:
 
+    # may be needed: pip install --upgrade pip
     make install
 
 We are done ! Now to try Abelujo, run the development server like this:

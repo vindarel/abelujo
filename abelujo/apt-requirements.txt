@@ -24,6 +24,7 @@ redis-server
 # for Weasyprint
 python-cffi
 libcairo2
+libffi-dev
 libpango1.0-0
 libgdk-pixbuf2.0-0
 shared-mime-info

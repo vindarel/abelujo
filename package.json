@@ -18,7 +18,6 @@
         "http-server": "~0.6.1",
         "karma": "~0.10",
         "karma-phantomjs-launcher": "~0.1",
-        "phantomjs": "~1.9",
         "shelljs": "~0.2.6",
         "yargs": "1.2.1",
         "livescript": "latest",
@@ -27,6 +26,7 @@
 
     "devDependencies": {
         "protractor": "~4.0",
+        "phantomjs": "~1.9",
         "selenium-webdriver": "~3.0",
         "testcafe": "latest"
     },
