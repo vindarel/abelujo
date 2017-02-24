@@ -28,6 +28,7 @@ js_info_dict = { 'packages': ('search', '',), }
 
 # i18n_patterns is taken care of in the root url conf.
 urlpatterns = patterns('',
+    #pylint: disable=bad-continuation
     # Access to the translations in javascript code:
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict,),
     # Django Rest Framework browsable api

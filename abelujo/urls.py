@@ -18,25 +18,22 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView
-from django.views.generic.base import RedirectView
-from search.views import DepositsListView
 
 from search.drfviews import CommandViewSet
 
 from rest_framework.routers import DefaultRouter
 
-js_info_dict = { 'packages': ('search', '',), }
+js_info_dict = {
+    'packages': ('search', '',),
+}
 
-urlpatterns = i18n_patterns("",
-    url("^", include("search.urls")),
-)
+urlpatterns = i18n_patterns("", url("^", include("search.urls")))
 
 router = DefaultRouter()
 router.register(r'commands', CommandViewSet)
 
 apipatterns = patterns("",
+    # pylint: disable=bad-continuation
     # Exclude /api/ from i18n so than we
     # don't bother of the language prefix in
     # js code.
@@ -118,7 +115,7 @@ apipatterns = patterns("",
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-)
+) #pylint: disable=bad-continuation
 
 urlpatterns += apipatterns
 
@@ -130,7 +127,7 @@ urlpatterns += [
     url("^logout/", "django.contrib.auth.views.logout",
         {"template_name": "registration/logout.jade",},
         name="logout"),
-    ]
+]
 
 # the following does include a login/ too, but the first one will match.
-urlpatterns += [ url('^', include('django.contrib.auth.urls'))]
+urlpatterns += [url('^', include('django.contrib.auth.urls'))]

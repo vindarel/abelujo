@@ -246,6 +246,9 @@ translation-compile:
 flake8:
 	flake8 --config=setup.cfg abelujo *.py
 
+pylint:
+	pylint abelujo search
+
 clean:
 	find . -name "*.pyc" -exec rm {} +
 	rm -rf htmlcov

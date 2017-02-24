@@ -1360,7 +1360,7 @@ class Place (models.Model):
     def get_absolute_url(self):
         prefs = Preferences.prefs()
         return "/{}/databasesearch/place/{}/".format(prefs.language if prefs.language else "en",
-                                                    self.id) # TODO: url paramaters for stock search
+                                                     self.id) # TODO: url paramaters for stock search
 
     @staticmethod
     def card_to_default_place(card_obj, nb=1):
@@ -2947,7 +2947,7 @@ class Sell(models.Model):
                 sold.save()
             except Exception as e:
                 alerts.append({"message": _(u"Warning: we couldn't sell {}.".format(card.id)),
-                              "level": ALERT_WARNING})
+                               "level": ALERT_WARNING})
                 log.error(u"Error on adding the card {} to the sell {}: {}".format(card.id,
                                                                                    sell.id,
                                                                                    e))
@@ -3120,9 +3120,9 @@ class InventoryCopies(models.Model):
 
     def __unicode__(self):
         return u"Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
-                                                   self.quantity,
-                                                   self.card.title,
-                                                   self.card.id)
+                                                               self.quantity,
+                                                               self.card.title,
+                                                               self.card.id)
 
     def to_dict(self):
         return {
@@ -3550,10 +3550,10 @@ class Stats(object):
         res = {}
         # label: needed for graph creation in js.
         res['nb_products'] = {'label': _(u"Number of products"),
-                           'value': Card.objects.filter(in_stock=True).count()}
+                              'value': Card.objects.filter(in_stock=True).count()}
         res['nb_titles'] = {'label': _(u"Number of book titles"),
-                           'value': Card.objects.filter(in_stock=True).
-                           filter(card_type=type_book).count()}
+                            'value': Card.objects.filter(in_stock=True).
+                            filter(card_type=type_book).count()}
         res['nb_unknown'] = {'label': _(u"Number of products of unknown type"),
                              'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought

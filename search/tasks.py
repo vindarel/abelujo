@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Huey asynchronous tasks.
+"""
+
 import logging
 from huey.contrib.djhuey import db_task
 

@@ -85,7 +85,7 @@ DEFAULT_DATASOURCE = "librairiedeparis"
 
 def get_places_choices():
     return [(0, _("All"))] + [(it.id, it.name)
-                               for it in Place.objects.all()]
+                              for it in Place.objects.all()]
 
 class MyNumberInput(TextInput):
     # render an IntegerField with a "number" html5 widget, not text.
@@ -152,8 +152,8 @@ class AddToDepositForm(forms.Form):
     """When we view our stock, choose to add the card to a deposit.
     """
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                 label=_(u"Add to the deposit:"),
-                                 required=False)
+                                label=_(u"Add to the deposit:"),
+                                required=False)
 
 def get_bills_choices():
     bills = Bill.objects.all()
@@ -244,7 +244,7 @@ def postSearch(data_source, details_url):
     """
     try:
         # Allow a scraper not to have the postSearch method.
-        res =  getattr(globals()[data_source], "postSearch")(details_url)
+        res = getattr(globals()[data_source], "postSearch")(details_url)
     except Exception as e:
         log.warning(e)
         res = {}
@@ -341,7 +341,7 @@ class CardMoveTypeForm(forms.Form):
     choices = [(1, "Pay these cards"),
                (2, "Add to a deposit"),
                (3, "Internal movement"),
-               ]
+    ]
     typ = forms.ChoiceField(choices=choices)
 PAYMENT_MEANS = [
     (1, "cash"),
@@ -355,14 +355,14 @@ class BuyForm(forms.Form):
     payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
     bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
     quantity = forms.FloatField(label=_("Quantity"))
-    place  = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
+    place = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
 
 class MoveDepositForm(forms.Form):
     choices = forms.ChoiceField(choices=get_deposits_choices())
 
 class MoveInternalForm(forms.Form):
     origin = forms.ChoiceField(choices=get_places_choices())
-    destination  = forms.ChoiceField(choices=get_places_choices())
+    destination = forms.ChoiceField(choices=get_places_choices())
     nb = forms.IntegerField()
 
 @login_required
@@ -396,7 +396,7 @@ def card_buy(request, pk=None):
                 bill_obj = Bill.objects.get(id=bill)
                 # Link to the bill:
                 try:
-                    bill_obj.add_copy(card,nb=nb)
+                    bill_obj.add_copy(card, nb=nb)
                 except Exception as e:
                     log.error(e)
 
@@ -416,10 +416,10 @@ def card_buy(request, pk=None):
             return HttpResponseRedirect(reverse("card_search"))
 
     return render(request, template, {
-            "form": form,
-            "card": card,
-            "buying_price": buying_price,
-            })
+        "form": form,
+        "card": card,
+        "buying_price": buying_price,
+    })
 
 @login_required
 def card_move(request, pk=None):
@@ -828,7 +828,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
             # Sort quantities first, then by title.
             rows = sorted(rows)
-            rows = sorted(rows, key = lambda it: it[1] > 0, reverse=True) # with quantities first
+            rows = sorted(rows, key = lambda it: it[1] > 0, reverse=True)  # with quantities first
 
         else:
             log.eror("Implementation error: if you want a bill, that's certainely from an inventory, but we don't have the 'inv' object.")
@@ -985,7 +985,7 @@ def history_sells_exports(request, **kwargs):
                   _("price sold"),
                   _("title"),
                   _("supplier"),
-              )
+        )
         rows.insert(0, header)
         content = "".join([writer.writerow(row) for row in rows])
 
@@ -994,22 +994,22 @@ def history_sells_exports(request, **kwargs):
 
     elif outformat in ['txt']:
         rows = [u"{}-+-{}-+-{}-+-{}-+-{}".format(
-                  _("date sold"),
-                  _("sell id"),
-                  _("price sold"),
-                  _("title"),
-                  _("supplier"),
-              )]
+            _("date sold"),
+            _("sell id"),
+            _("price sold"),
+            _("title"),
+            _("supplier"),
+        )]
         # format: {:min width.truncate}
         # https://pyformat.info/
         rows += sorted([u"{:10.10} {} {:5} {:30} {}".format(
-                 it['created'],
-                 it['sell_id'],
-                 it['price_sold'],
-                 truncate(it['card']['title']), # truncate long titles
-                 it['card']['distributor']['name'] if it['card']['distributor'] else "",
-                )
-                for it in res])
+            it['created'],
+            it['sell_id'],
+            it['price_sold'],
+            truncate(it['card']['title']), # truncate long titles
+            it['card']['distributor']['name'] if it['card']['distributor'] else "",
+        )
+                        for it in res])
         content = "\n".join(rows)
         response = HttpResponse(content, content_type="text/raw")
         response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)

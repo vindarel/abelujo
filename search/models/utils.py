@@ -167,7 +167,7 @@ def _ppcard_listofdicts(cards):
             elt.price,
             elt.quantity,
         ]
-            for elt in ncards]
+        for elt in ncards]
 
     return tab
 
@@ -207,7 +207,7 @@ def ppcard(cards):
                 elt.price,
                 elt.quantity,
             ]
-               for elt in cards]
+            for elt in cards]
 
 
     headers = [

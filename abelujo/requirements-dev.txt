@@ -15,6 +15,7 @@ tox==1.9                # test in a fresh venv, against multiple python versions
 ### utils
 sphinx==1.2.3           # documentation system.
 flake8                  # linter
+pylint
 
 ### packaging
 git+https://github.com/mitsuhiko/platter # package builder # not in pypi yet

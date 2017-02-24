@@ -15,9 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
 import logging
-from datetime import date
 
 from common import ALERT_ERROR
 from common import ALERT_SUCCESS
@@ -31,7 +29,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
-from django.utils.http import quote
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +59,7 @@ class InternalMovement(TimeStampedModel):
                "nb": self.nb,
                "created": self.created.strftime(DATE_FORMAT),
                "model": self.__class__.__name__,
-               }
+        }
         return ret
 
 class EntryCopies(TimeStampedModel):
@@ -99,10 +96,10 @@ class Entry(TimeStampedModel):
     """
 
     ENTRY_TYPES_CHOICES = (
-    (1, "purchase"),
-    (2, "deposit"),
-    (3, "gift"),
-    (4, "sell canceled"),
+        (1, "purchase"),
+        (2, "deposit"),
+        (3, "gift"),
+        (4, "sell canceled"),
     )
 
     #: has a one-to-many relationship with EntryCopies
@@ -137,10 +134,10 @@ class Entry(TimeStampedModel):
         } for it in ec]
         try:
             ret = {"created": self.created.strftime(DATE_FORMAT),
-                "model": self.__class__.__name__,
-                "type": self.ENTRY_TYPES_CHOICES[self.typ - 1][1],
+                   "model": self.__class__.__name__,
+                   "type": self.ENTRY_TYPES_CHOICES[self.typ - 1][1],
                    "payment": PAYMENT_CHOICES[payment - 1][1] if payment else "",
-                "copies": copies}
+                   "copies": copies}
         except Exception as e:
             log.error(e)
             return {}
