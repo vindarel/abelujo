@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-20 19:17+0000\n"
-"PO-Revision-Date: 2017-01-20 20:19+0100\n"
+"PO-Revision-Date: 2017-02-24 12:36+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -299,7 +299,7 @@ msgstr "Erreur interne :("
 
 #: search/models/models.py:3502
 msgid "The inventory got succesfully applied to your stock."
-msgstr "L'inventaire a été appliqué à votre stock avec succès."
+msgstr "L'inventaire a été appliqué à votre fonds avec succès."
 
 #: search/models/models.py:3546 templates/search/dashboard.jade:35
 msgid "Number of products"
@@ -331,11 +331,11 @@ msgstr "Valeur totale des livres en dépôts"
 
 #: search/models/models.py:3585
 msgid "Total cost of the stock"
-msgstr "Valeur du stock"
+msgstr "Valeur du fonds"
 
 #: search/models/models.py:3590
 msgid "Total cost of the stock, excl. tax"
-msgstr "Valeur totale du stock HT"
+msgstr "Valeur totale du fonds HT"
 
 #: search/models/models.py:3599
 msgid "next appointments"
@@ -803,7 +803,7 @@ msgstr "Valider"
 
 #: templates/search/card_buy.jade:30 templates/search/searchresults.jade:135
 msgid "Add to your stock"
-msgstr "Ajouter à votre stock"
+msgstr "Ajouter à votre fonds"
 
 #: templates/search/card_buy.jade:31
 msgid "public price"
@@ -1043,7 +1043,7 @@ msgstr "Action"
 
 #: templates/search/dashboard.jade:29
 msgid "Composition of the stock"
-msgstr "Composition du stock"
+msgstr "Composition du fonds"
 
 #: templates/search/dashboard.jade:41 templates/search/dashboard.jade.py:44
 msgid ""
@@ -1054,7 +1054,7 @@ msgstr ""
 
 #: templates/search/dashboard.jade:41 templates/search/dashboard.jade.py:44
 msgid "Value of the stock"
-msgstr "Valeur du stock"
+msgstr "Valeur du fonds"
 
 #. Translators: excl. tax: price excluding tax (french: HT).
 #: templates/search/dashboard.jade:44 templates/search/deposits_view.jade:89
@@ -1084,7 +1084,7 @@ msgstr "Aucune donnée à afficher"
 
 #: templates/search/dashboard.jade:66
 msgid "Comfort of the stock"
-msgstr "Confort du stock"
+msgstr "Confort du fonds"
 
 #: templates/search/dashboard.jade:69
 msgid "Nb cards with no copy"
@@ -1096,7 +1096,7 @@ msgstr "à exemplaire unique"
 
 #: templates/search/dashboard.jade:74
 msgid "Cost of the stock VS deposits"
-msgstr "Valeur comparée du stock et des dépôts"
+msgstr "Valeur comparée du fonds et des dépôts"
 
 #: templates/search/dashboard.jade:81
 msgid "Revenue, monthly"
@@ -1120,7 +1120,7 @@ msgstr "Les 10 meilleures ventes du mois"
 
 #: templates/search/dashboard.jade:128
 msgid "Age of the stock per shelf"
-msgstr "Âge du stock par rayon"
+msgstr "Âge du fonds par rayon"
 
 #: templates/search/dashboard.jade:131
 msgid "Choose a shelf to show the corresponding graph."
@@ -1448,7 +1448,7 @@ msgstr "Valeur"
 
 #: templates/search/inventories.jade:85
 msgid "Was this inventory already applied to your stock ?"
-msgstr "Cet inventaire a-t-il déjà été appliqué à votre stock ?"
+msgstr "Cet inventaire a-t-il déjà été appliqué à votre fonds ?"
 
 #: templates/search/inventories.jade:85
 msgid "Applied ?"
@@ -1476,14 +1476,12 @@ msgstr "Analyser…"
 #: templates/search/inventories.jade:108
 #: templates/search/inventory_terminate.jade:61
 msgid "Apply this inventory to your stock. This will modify your stock"
-msgstr ""
-"Appliquez cet inventaire à votre stock. Cette opération va le modifier. "
-"Veuillez vous référer à la documentation pour de plus amples précisions."
+msgstr "Appliquez cet inventaire à votre fonds. Cette opération va le modifier. Veuillez vous référer à la documentation pour plus d'informations."
 
 #: templates/search/inventories.jade:108
 #: templates/search/inventory_terminate.jade:61
 msgid "Apply to your stock"
-msgstr "Appliquer à votre stock"
+msgstr "Appliquer à votre fonds"
 
 #: templates/search/inventories.jade:110
 msgid "Delete"
@@ -1599,7 +1597,7 @@ msgstr "Il reste"
 
 #: templates/search/inventory_view.jade:70
 msgid "non-inventoried cards in the stock."
-msgstr "articles non inventoriés dans le stock."
+msgstr "articles non inventoriés dans le fonds."
 
 #: templates/search/inventory_view.jade:71
 msgid "You did "
@@ -1678,7 +1676,7 @@ msgstr "Résultats suivants"
 
 #: templates/search/searchresults.jade:108
 msgid "This card is already in your stock"
-msgstr "Cette notice est déjà dans votre stock."
+msgstr "Cette notice est déjà dans votre fonds."
 
 #: templates/search/searchresults.jade:135
 msgid "Add…"
@@ -1873,7 +1871,7 @@ msgstr ""
 #~ msgstr "titres sélectionnés."
 
 #~ msgid "Total cost"
-#~ msgstr "Valeur du stock"
+#~ msgstr "Valeur du fonds"
 
 #~ msgid ""
 #~ "Cost of each card by its quantity in stock, rounded to the upper "
@@ -1894,10 +1892,7 @@ msgstr ""
 #~ msgid ""
 #~ "Here you can compare the inventory with the real stock, and take actions, "
 #~ "like exporting a bill in pdf or update the stock."
-#~ msgstr ""
-#~ "Ici vous pouvez comparer l'inventaire avec les informations actuelles du "
-#~ "stock, et prendre des actions, comme exporter la facture correspondante "
-#~ "en pdf ou mettre à jour le stock."
+#~ msgstr "Ici vous pouvez comparer l'inventaire avec les informations actuelles du fonds, et prendre des actions, comme exporter la facture correspondante en pdf ou mettre à jour le fonds."
 
 #~ msgid "Coming soon:"
 #~ msgstr "Fonctionnalité en cours de développement !"
@@ -1953,14 +1948,10 @@ msgstr ""
 #~ msgstr "Partie du titre, nom de l'auteur, etc."
 
 #~ msgid "The following cards appear only in the stock"
-#~ msgstr ""
-#~ "Les notices suivantes apparaissent dans le stock mais pas dans "
-#~ "l'inventaire"
+#~ msgstr "Les notices suivantes apparaissent dans le fonds mais pas dans l'inventaire"
 
 #~ msgid "The following appear in both, but have a difference of quantity"
-#~ msgstr ""
-#~ "Les notices suivantes n'ont pas la même quantité que celle indiquée dans "
-#~ "le stock"
+#~ msgstr "Les notices suivantes n'ont pas la même quantité que celle indiquée dans le fonds"
 
 #~ msgid "The isbn will be downloaded when you press enter."
 #~ msgstr "Le n°isbn sera téléchargé à l'enregistrement de la notice."

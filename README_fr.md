@@ -7,8 +7,8 @@ Projet actuellement en chantier. Il est néanmoins possible de:
     utilise les résultats de [librairie-de-paris](http://www.librairie-de-paris.fr/) ou [Decitre](https://www.decitre.fr),
 -   rechercher des **CDs** (via [discogs.com](http://www.discogs.com)),
 -   chercher des notices espagnoles ou allemandes,
--   ajouter des exemplaires au stock,
--   chercher dans son stock, voir quelques statistiques des meilleurs
+-   ajouter des exemplaires au fonds,
+-   chercher dans son fonds, voir quelques statistiques des meilleurs
 -   effectuer des ventes, voir les conflits à la vente, voir l'historique (global, par notice),
 -   créer des dépôts, **faire un état de dépôt**,
 -   faire des **inventaires**,

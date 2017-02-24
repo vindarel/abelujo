@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-02 15:28+0100\n"
-"PO-Revision-Date: 2016-09-23 21:02+0200\n"
+"PO-Revision-Date: 2017-02-24 12:36+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -269,7 +269,7 @@ msgstr "nouvelle notice"
 #: static/js/build/abelujo.js:1570
 #: static/js/build/livescript/controllers/collectionController.js:125
 msgid "Stock"
-msgstr "Stock"
+msgstr "Fonds"
 
 #: static/js/build/abelujo.js:1727
 #: static/js/build/livescript/controllers/dashboardController.js:62
@@ -329,7 +329,7 @@ msgstr "Cet inventaire est déjà appliqué"
 #: static/js/build/abelujo.js:2024
 #: static/js/build/livescript/controllers/inventoriesController.js:32
 msgid "Are you sure to apply this inventory to your stock ?"
-msgstr "Êtes-vous sûr(e) d'appliquer cet inventaire au stock ?"
+msgstr "Êtes-vous sûr(e) d'appliquer cet inventaire au fonds ?"
 
 #: static/js/build/abelujo.js:2240
 #: static/js/build/livescript/controllers/inventoryNewController.js:201
