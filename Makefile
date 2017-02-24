@@ -243,6 +243,9 @@ translation-files:
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart
 
+flake8:
+	flake8 --config=setup.cfg abelujo *.py
+
 clean:
 	find . -name "*.pyc" -exec rm {} +
 	rm -rf htmlcov
