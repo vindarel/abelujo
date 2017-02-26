@@ -25,9 +25,6 @@
     },
 
     "devDependencies": {
-        "protractor": "~4.0",
-        "phantomjs": "~1.9",
-        "selenium-webdriver": "~3.0",
         "testcafe": "latest"
     },
 
