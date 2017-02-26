@@ -39,6 +39,8 @@ Feedback welcomed at ehvince at mailz dot org.
 Installation
 ============
 
+Instructions for Debian 8.
+
 Get the sources:
 
     git clone --recursive https://gitlab.com/vindarel/abelujo.git
@@ -63,7 +65,8 @@ Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,
 or do the following:
 
-    source venv_create.sh
+    source venv_create.sh # [venvname] (optional argument)
+    workon abelujo
 
 now your shell prompt should show you are in the `abelujo`
 virtualenv. To quit the virutal env, type `deactivate`. To enter it,
@@ -72,8 +75,9 @@ type `workon \<TAB\> abelujo`.
 
 To install the dependencies, create and populate the database, run:
 
-    # may be needed: pip install --upgrade pip
+    pip install --upgrade pip
     make install
+    # and if bower asks for the version of Angular, choose version #1.30.20.
 
 We are done ! Now to try Abelujo, run the development server like this:
 

@@ -26,6 +26,7 @@ djangorestframework==3.4 # REST framework. Serve API, serialize models, explore 
 django_extensions==1.7    # more useful commands to manage.py (shell_plus).
 mod_wsgi==4.4             # apache server for development.
 # mod_wsgi-httpd           # discard the system's apache httpd server if needed.
+Werkzeug                  # runserver_plus: richer tracebacks and inline console.
 
 ### utils
 toolz                   # pure, lazy, composable functional programming.
@@ -38,7 +39,8 @@ tqdm                    # progress bar
 termcolor               # colorful terminal output
 isbnlib<4               # isbn utils
 unicodecsv<0.15         # at last unicode support to read and write csv files. Lacking in the standard library.
-WeasyPrint==0.34 # upgrade cffi ?
+cairocffi==0.6          # for weasyprint. Later version fails.
+WeasyPrint==0.34
 pybarcode
 pillow                  # needs libfreetype6-dev installed
 dateparser==0.5         # parser for human readable dates
@@ -50,3 +52,6 @@ gunicorn==19.4          # wsgi server
 huey==1.2               # task queue
 redis==2.10
 honcho==0.7             # task supervisor based on a Procfile
+
+# temporary fixes ?
+html5lib==1.0b8         # for "cannot import viewkeys" runtime error.
