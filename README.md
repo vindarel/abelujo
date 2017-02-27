@@ -77,7 +77,7 @@ To install the dependencies, create and populate the database, run:
 
     pip install --upgrade pip
     make install
-    # and if bower asks for the version of Angular, choose version #1.30.20.
+    # and if bower asks for the version of Angular, choose version #1.3.20.
 
 We are done ! Now to try Abelujo, run the development server like this:
 
