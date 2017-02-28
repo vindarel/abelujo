@@ -69,7 +69,7 @@ apipatterns = patterns("",
     url(r'^api/baskets/(?P<pk>\d+)/inventories/?$',
         'search.models.api.baskets_inventory_get_or_create', name="api_baskets_inventories"),
     # Add or remove card(s)
-    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z_]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"), #action: add, remove, update
+    url(r'^api/baskets/(?P<pk>\d+)/(?P<action>[a-z_]+)/(?P<card_id>\d+)?/?', 'search.models.api.basket', name="api_basket_act"),  # action: add, remove, update
     # Simple info
     url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
 
@@ -115,7 +115,7 @@ apipatterns = patterns("",
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-) #pylint: disable=bad-continuation
+)  # pylint: disable=bad-continuation
 
 urlpatterns += apipatterns
 
@@ -125,7 +125,7 @@ urlpatterns += [
         {"template_name": "registration/login.jade"},
         name="login"),
     url("^logout/", "django.contrib.auth.views.logout",
-        {"template_name": "registration/logout.jade",},
+        {"template_name": "registration/logout.jade", },
         name="logout"),
 ]
 

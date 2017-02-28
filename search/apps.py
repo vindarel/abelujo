@@ -26,4 +26,4 @@ class SearchConfig(AppConfig):
     def ready(self):
         """Start signals.
         """
-        import search.signals.signals
+        import search.signals.signals  #pylint: disable=W0612

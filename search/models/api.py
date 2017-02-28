@@ -113,8 +113,8 @@ def preferences(request, **response_kwargs):
                 params.pop('place_id', None)
 
         status, _msgs = Preferences.setprefs(default_place=place,
-                                            vat_book=params.get('vat_book'),
-                                            language=params.get('language'))
+                                             vat_book=params.get('vat_book'),
+                                             language=params.get('language'))
         msgs.append(_msgs)
 
         return JsonResponse({'status': status, 'alerts': msgs.msgs})
@@ -425,14 +425,14 @@ def deposits(request, **response_kwargs):
             cards_obj, card_msgs = Card.get_from_id_list(cards_id)
 
             distributor_obj = None
-            if not (params.get('deposit_type') == 'publisher'):
+            if not params.get('deposit_type') == 'publisher':
                 distributor_obj = Distributor.objects.filter(name=params.get("distributor"))
 
                 if not distributor_obj:
                     return HttpResponse(json.dumps({
                         "data": {},
                         "messages": [{'level': ALERT_WARNING,
-                                     'message': _(u'Please provide a supplier'),}]
+                                      'message': _(u'Please provide a supplier'),}]
                         }))
                 distributor_obj = distributor_obj[0]
 
@@ -473,7 +473,7 @@ def deposits(request, **response_kwargs):
         res = {"data": depos_list,
                "msgs": msgs,
                "status": httplib.OK,
-               }
+        }
         return JsonResponse(res)
 
 def deposits_due_dates(request, **response_kwargs):
@@ -771,8 +771,8 @@ def baskets(request, **kwargs):
                 log.error(e)
                 status = httplib.INTERNAL_SERVER_ERROR
                 msgs.append({"level": "error",
-                            "msg": "There was an error. We can not load the baskets, sorry."
-                            })
+                             "msg": "There was an error. We can not load the baskets, sorry."
+                })
 
         data = [it.to_dict() for it in data]
         # we can't mix serializers and a custom to_ret
@@ -1107,8 +1107,6 @@ def inventories_remove(request, **kwargs):
     return JsonResponse(to_ret)
 
 def inventory_diff(request, pk, **kwargs):
-    """
-    """
     diff, name, total_copies_in_inv, total_copies_in_stock = Inventory.diff_inventory(pk, to_dict=True)
     to_ret = {'cards': diff,
               'total_copies_in_inv': total_copies_in_inv,

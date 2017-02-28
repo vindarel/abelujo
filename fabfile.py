@@ -70,7 +70,8 @@ templatetags, to load new translations,...
 """
 CLIENTS = "clients.yaml"
 
-CFG = fabutils.get_yaml_cfg(CLIENTS); CFG = addict.Dict(CFG)
+CFG = fabutils.get_yaml_cfg(CLIENTS)
+CFG = addict.Dict(CFG)
 VENV_ACTIVATE = "source ~/.virtualenvs/{}/bin/activate"
 #: the gunicorn command: read the port from PORT.txt, write the pid to PID.txt (so as to kill it).
 #: Live reload on code change.
@@ -111,8 +112,8 @@ BOWER_COMPONENTS_REMOTE = "/tmp/bower_components.tar.gz"
 
 # Notes:
 
-            # with quiet():
-    # have_build_dir = run("test -e /tmp/build").succeeded
+# with quiet():
+#     have_build_dir = run("test -e /tmp/build").succeeded
 
 # When used in a task, the above snippet will not produce any run:
 # test -e /tmp/build line, nor will any stdout/stderr display, and
@@ -184,14 +185,14 @@ def check_uptodate(client=None):
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
             if res in git_last_commits:
                 index = git_last_commits.index(res)
-                print(termcolor.colored("- {}", 'blue').format(client.name) +\
-                    " is " +\
-                    termcolor.colored("{}", "yellow").format(index) +\
+                print(termcolor.colored("- {}", 'blue').format(client.name) +
+                    " is " +
+                    termcolor.colored("{}", "yellow").format(index) +
                     " commits behind")
             else:
-                print(termcolor.colored("- {}", "blue").format(client.name) +\
-                    " is more than " +\
-                    termcolor.colored("{}", "red").format(max_count) +\
+                print(termcolor.colored("- {}", "blue").format(client.name) +
+                    " is more than " +
+                    termcolor.colored("{}", "red").format(max_count) +
                     " commits behind.")
 
 def _request_call(url):
@@ -316,7 +317,7 @@ def dbback(name=None):
                 project_name=CFG.project_name,
                 db_name=CFG.db_name,
                 db_backed=db_backed
-                )
+            )
 
             print("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue")))
             print(cmd)

@@ -36,7 +36,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'db.db',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
@@ -111,13 +111,13 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR, "static"), # all that are not related to a certain app
+    os.path.join(BASE_DIR, "static"),  # all that are not related to a certain app
 )
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder', # looks for "static" in the app folder
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',  # looks for "static" in the app folder
     'django.contrib.staticfiles.finders.FileSystemFinder',
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )

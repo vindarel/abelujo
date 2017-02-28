@@ -33,7 +33,8 @@ def select_client_cfg(letters, quiet=False):
 
     return: the client's configuration dictionnary.
     """
-    cfg = get_yaml_cfg(CLIENTS); cfg = addict.Dict(cfg)
+    cfg = get_yaml_cfg(CLIENTS)
+    cfg = addict.Dict(cfg)
 
     clients = cfg.clients
     cl = filter(lambda it: it.name.startswith(letters), clients)
@@ -64,7 +65,8 @@ def print_client(client):
 def wd(client, cfg):
     """Get the working directory.
     """
-    cfg = get_yaml_cfg(CLIENTS); cfg = addict.Dict(cfg)
+    cfg = get_yaml_cfg(CLIENTS)
+    cfg = addict.Dict(cfg)
     return os.path.join(cfg.home, cfg.dir, client.name, cfg.project_name)
 
 def bundle_needs_update():
@@ -101,7 +103,7 @@ def bundle_needs_update():
         package_cache_lines = open(package_cache, "r").readlines()
         diff = difflib.unified_diff(package_cache_lines, package_lines)
         diff_print(diff)
-        ret = True # they don't seem equal, they need an update
+        ret = True  # they don't seem equal, they need an update
 
     if not filecmp.cmp(bower_json, bower_cache):
         print(termcolor.colored("bower.json seems to have changed", "yellow"))
@@ -137,6 +139,7 @@ def main():
     cfg = addict.Dict(cfg)
     client = select_client_cfg(sys.argv[1], cfg)
     ssh_to(client, config=cfg)
+
 
 if __name__ == "__main__":
     exit(main())

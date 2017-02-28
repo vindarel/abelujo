@@ -17,18 +17,15 @@
 
 import logging
 
+from django.db import models
+from django.db.models import Q
+
 from common import ALERT_ERROR
 from common import ALERT_SUCCESS
 from common import ALERT_WARNING
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel
-from django.apps import apps
-from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.db import models
-from django.db.models import Q
 
 log = logging.getLogger(__name__)
 
@@ -188,8 +185,6 @@ class Entry(TimeStampedModel):
 
     @staticmethod
     def history(to_dict=True, to_list=True, page=None, page_size=PAGE_SIZE):
-        """
-        """
         alerts = []
         entries = []
 

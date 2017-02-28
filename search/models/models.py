@@ -75,11 +75,11 @@ DEPOSIT_TYPES_CHOICES = [
     ("Dépôt de libraire", (
         ("lib", "dépôt de libraire"),
         ("fix", "dépôt fixe"),
-      )),
+    )),
     ("Dépôt de distributeur", (
         ("dist", "dépôt de distributeur"),
     )),
-    ]
+]
 
 
 class Author(TimeStampedModel):
@@ -813,7 +813,7 @@ class Card(TimeStampedModel):
         if not cards:
             return cards
 
-        if not (type(cards) == list):
+        if not type(cards) == list:
             cards = [cards]
 
         for card in cards:
@@ -1644,7 +1644,7 @@ class Basket(models.Model):
                 "id": self.id,
                 "length": self.copies.count(),
                 "comment": self.comment,
-                }
+        }
 
     @staticmethod
     def auto_command_nb():
@@ -2206,7 +2206,7 @@ class Deposit(TimeStampedModel):
     due_date = models.DateField(blank=True, null=True)
     #: minimal number of copies to have in stock. When not, do an action (raise an alert).
     minimal_nb_copies = models.IntegerField(blank=True, null=True, default=0,
-                                        verbose_name="Nombre minimun d'exemplaires")
+                                            verbose_name="Nombre minimun d'exemplaires")
     #: auto-command when the minimal nb of copies is reached ?
     # (for now: add to the "to command" basket).
     auto_command = models.BooleanField(default=True, verbose_name="Automatiquement marquer les fiches à commander")
@@ -2663,7 +2663,7 @@ class SoldCards(TimeStampedModel):
                 "price_sold_excl_tax": Preferences.price_excl_tax(self.price_sold),
                 "sell_id": self.sell.id,
                 "soldcard_id": self.id,
-                }
+               }
 
     def to_list(self):
         return self.to_dict()
@@ -3426,9 +3426,8 @@ class Inventory(TimeStampedModel):
                               'stock': val['quantity'],
                               'inv': 0,
                               'diff': val['quantity'],
-                              }
+                             }
         # we must have all cards in d_dif and all info.
-
 
         if to_dict:
             # Update each sub-dict in place, to replace the card obj with its to_dict.

@@ -53,5 +53,4 @@ class CommandSerializer(serializers.ModelSerializer):
                   # and properties:
                   'supplier_id',
                   'supplier_name',
-                  'nb_copies',
-        )
+                  'nb_copies')

@@ -16,13 +16,10 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import json
 import logging
-import tempfile
-import traceback
 import urllib
-import urlparse
 
+import unicodecsv
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -38,8 +35,8 @@ from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import ListView
-from django.views.generic.detail import DetailView
-from unidecode import unidecode
+from weasyprint import CSS
+from weasyprint import HTML
 
 import datasources.bookshops.all.discogs.discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
@@ -48,32 +45,24 @@ import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellib
 import datasources.bookshops.frFR.decitre.decitreScraper as decitre
 import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
 import models
-import unicodecsv
 from models import Barcode64
 from models import Basket
 from models import Bill
 from models import Card
-from models import CardType
 from models import Deposit
-from models import DepositState
 from models import Distributor
 from models import Inventory
 from models import Place
 from models import Preferences
 from models import Publisher
 from models import Sell
-from models import Shelf
 from models import Stats
 from search.models import Entry
 from search.models import EntryCopies
+from search.models.utils import _is_truthy
 from search.models.utils import is_isbn
-from search.models.utils import list_from_coma_separated_ints
-from search.models.utils import list_to_pairs
 from search.models.utils import ppcard
 from search.models.utils import truncate
-from search.models.utils import _is_truthy
-from weasyprint import CSS
-from weasyprint import HTML
 
 log = logging.getLogger(__name__)
 
@@ -1018,8 +1007,6 @@ def history_sells_exports(request, **kwargs):
 
 @login_required
 def inventory_export(request, pk):
-    """
-    """
     try:
         inv = Inventory.objects.get(id=pk)
     except Exception as e:
