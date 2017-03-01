@@ -131,7 +131,7 @@ div(ng-cloak, ng-controller="basketsController")
          span.caret
        th.mouse-pointer(ng-click="sort_by('quantity')") {% trans "In stock" %}
          span.caret
-       th.mouse-pointer(ng-click="sort_by('price')") {% trans "Price" %}
+       th.mouse-pointer.text-right(ng-click="sort_by('price')") {% trans "Price" %}
          span.caret
        th.mouse-pointer(ng-click="sort_by('basket_qty')")
          span.caret
@@ -162,8 +162,8 @@ div(ng-cloak, ng-controller="basketsController")
            div(ng-show="show_images") {{'it.authors_repr'|ng}}
          td {{ 'it.pubs_repr' | ng }}
 
-         td {{ 'it.quantity' | ng}}
-         td {{ 'it.price' | ng }} €
+         td.text-right {{ 'it.quantity' | ng}}
+         td.text-right {{ 'it.price | number:2' | ng }} €
          td
           input.my-number-input(type="number", min=0, max=99,
             ng-model="it.basket_qty"

@@ -85,21 +85,21 @@
 table.table.table-striped.table-hover
     tr
         th {% trans "Title" %}
-        th {% trans "price" %}
-        th {% trans "price" %} {% trans "excl. tax" %}
-        th {% trans "price" %} {% trans "with discount" %}
-        th {% trans "qty init" %}
-        th {% trans "nb sold" %}
-        th {% trans "current qty" %}
+        th.text-right {% trans "price" %}
+        th.text-right {% trans "price" %} {% trans "excl. tax" %}
+        th.text-right {% trans "price" %} {% trans "with discount" %}
+        th.text-right {% trans "qty init" %}
+        th.text-right {% trans "nb sold" %}
+        th.text-right {% trans "current qty" %}
     for key, bal in cards_balance
       tr
         td: a(href="{{key.get_absolute_url}}")  {{ key.title }}
-        td  {{ key.price | floatformat:2 | intcomma  }} {% trans "€" %}
-        td  {{ key.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
-        td  {{ key.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
-        td  {{ bal.nb_initial }}
-        td  {{ bal.nb_sells }}
-        td  {{ bal.nb_current }}
+        td.text-right  {{ key.price | floatformat:2 | intcomma  }} {% trans "€" %}
+        td.text-right  {{ key.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
+        td.text-right  {{ key.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
+        td.text-right  {{ bal.nb_initial }}
+        td.text-right  {{ bal.nb_sells }}
+        td.text-right  {{ bal.nb_current }}
 
 
 {% endblock content %}

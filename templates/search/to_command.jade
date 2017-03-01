@@ -107,10 +107,10 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 th(ng-show="show_images")
                 th {% trans "Title" %}
                 th {% trans "Author" %}
-                th {% trans "Price" %}
-                th {% trans "Discount" %} {{ 'grouped_dist[dist_name][0].discount' | ng}}%
-                th {% trans "Quantity left" %}
-                th {% trans "To command" %}
+                th.text-right {% trans "Price" %}
+                th.text-right {% trans "With discount" %} {{ 'grouped_dist[dist_name][0].discount' | ng}}
+                th.text-right {% trans "Quantity left" %}
+                th.text-right {% trans "To command" %}
               tbody
                 tr(ng-repeat="card in cards")
                   td(ng-show="show_images")
@@ -119,9 +119,9 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                   td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
-                  td.col-md-1 {{ 'card.price' |ng }} €
-                  td.col-md-1 {{ 'card.price_discounted' |ng }} €
-                  td.col-md-1 {{ 'card.quantity' |ng }}
+                  td.col-md-1.text-right {{ 'card.price | number:2' |ng }} €
+                  td.col-md-1.text-right {{ 'card.price_discounted | number:2' |ng }} €
+                  td.col-md-1.text-right {{ 'card.quantity' |ng }}
                   td.col-md-1
                     input.my-number-input(type="number", min=0, max=99,
                       ng-model="card.basket_qty"
@@ -130,10 +130,10 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                 tr
                   td(ng-show="show_images")
-                  td.col-md-7 {% trans "Total" %}
+                  td.col-md-7.text-right {% trans "Total" %}
                   td
-                  td.col-md-1 {{ 'get_total_price(dist_name)' |ng}}  €
-                  td.col-md-1 {{ 'get_total_price_discounted(dist_name)' |ng}}  €
+                  td.col-md-1.text-right {{ 'get_total_price(dist_name)' |ng}}  €
+                  td.col-md-1.text-right {{ 'get_total_price_discounted(dist_name)' |ng}}  €
                   td
                   td.col-md-1 {{'get_total_copies(dist_name)'|ng}}
 
@@ -145,8 +145,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     | {% trans "excl. tax" %}
 
                   td
-                  td  {{ 'get_total_price_excl_vat(dist_name)' |ng}}  €
-                  td  {{ 'get_total_price_discounted_excl_vat(dist_name)' |ng}}  €
+                  td.text-right  {{ 'get_total_price_excl_vat(dist_name)' |ng}}  €
+                  td.text-right  {{ 'get_total_price_discounted_excl_vat(dist_name)' |ng}}  €
                   td
                   td
 

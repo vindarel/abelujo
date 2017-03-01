@@ -52,8 +52,8 @@ if  depo_pubtype
         td {{ dep.distributor.name }}
         td {{ dep.last_checkout_date }}
         td {{ dep.nb_alerts }}
-        td {{ dep.initial_nb_copies }}
-        td {{ dep.total_init_price| floatformat:2 | intcomma  }}
+        td.text-right {{ dep.initial_nb_copies }}
+        td.text-right {{ dep.total_init_price| floatformat:2 | intcomma  }} {% trans "€" %}
 
 else
   h4 {% trans "No deposit of supplier's type" %}
@@ -82,18 +82,18 @@ if depo_fix
         td {{ dep.last_checkout_date }}
 
         td {{ dep.nb_alerts }}
-        td {{ dep.init_qty }}
-        td {{ dep.total_init_price | floatformat:2 | intcomma }} {% trans "€" %}
+        td.text-right {{ dep.init_qty }}
+        td.text-right {{ dep.total_init_price | floatformat:2 | intcomma }} {% trans "€" %}
 
         td {{ dep.due_date }}
 
-    td {% trans "Total" %}
+    td.text-right {% trans "Total" %}
     td
     td
 
     td
     td
-    td {{total_price_fix | floatformat:2 | intcomma }} {% trans "€" %}
+    td.text-right {{total_price_fix | floatformat:2 | intcomma }} {% trans "€" %}
 
     td
 
