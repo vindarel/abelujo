@@ -39,11 +39,11 @@ html(ng-app="abelujo")
         ul.nav.navbar-nav
           li
             a Abelujo
-          li.push-right(href="#")
+          li.push-right#dashboard(href="#")
             a(href='{% url "stats" %}') {% trans "Statistics" %} 
               i.glyphicon.glyphicon-stats
 
-          li.dropdown.push-right
+          li#database.dropdown.push-right
             a.dropdown-toggle(href="#", data-toggle="dropdown", role="button", title='{% trans "Access everything on the database" %}') {% trans "Database" %}
               span.caret
             ul.dropdown-menu
@@ -59,7 +59,7 @@ html(ng-app="abelujo")
                 li(href="#")
                     a(href='/database') {% trans "All" %}
 
-        form.navbar-form.navbar-left
+        form#titlesearch.navbar-form.navbar-left
           .form-group
             input.form-control(
               style="background-color: #F7F7F9"
@@ -91,7 +91,7 @@ html(ng-app="abelujo")
     #sidebar-wrapper
 
         ul.sidebar-nav.nav.nav-pills.nav-stacked
-          li(ng-class="{active: url == 'collection' }")
+          li#mystock(ng-class="{active: url == 'collection' }")
             a(href='{% url "card_collection" %}') {% trans "My stock" %}
 
           li(ng-class="{active: url == 'search' }")
