@@ -39,13 +39,13 @@ div(ng-cloak, ng-controller="basketToCommandController")
   ul.nav.nav-tabs.nav-justified
     li.active(role="presentation")
       a(href="#") {% trans "To command" %}
-    li(role="presentation")
+    li#ongoing(role="presentation")
       a(href="ongoing") {% trans "Commands ongoing" %}  
         span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
 
   .col-md-2
     ul.list-group
-     div(ng-repeat="(dist_name, cards) in sorted_cards")
+     div#suppliers(ng-repeat="(dist_name, cards) in sorted_cards")
         li.list-group-item.mouse-pointer(
           ng-class="{active: it[0].id == false}"
           ng-click="dist_href(dist_name)"
@@ -59,7 +59,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
     .row
      .col-md-1
       .btn-group
-       button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+       button#export.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
            span.caret
        ul.dropdown-menu
            li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
@@ -74,8 +74,11 @@ div(ng-cloak, ng-controller="basketToCommandController")
          button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
            i.glyphicon.glyphicon-th-list
 
+         button.btn.btn-default(ng-click="start_tour()")
+           i.glyphicon.glyphicon-info-sign
+
      .col-md-5
-        div {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
+        h4 {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
 
     div.panel.panel-info(style="margin-top: 5px;")
         div.panel-heading {% trans "Help" %}
@@ -99,7 +102,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                    li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-               button.btn.btn-success(ng-click="validate_command(dist_name)",
+               button#ok.btn.btn-success(ng-click="validate_command(dist_name)",
                  title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
 
           table.table.table-condensed.table-striped

@@ -46,6 +46,7 @@ var vendorJsFiles = [
     'static/bower_components/angular-datatables/dist/angular-datatables.min.js',
     'static/bower_components/angular-loading-bar/build/loading-bar.min.js',
     'static/bower_components/angular-hotkeys/build/hotkeys.min.js',
+    'static/bower_components/bootstrap-tour/build/js/bootstrap-tour.min.js',
 ];
 
 var appFiles = [
@@ -56,6 +57,7 @@ var appFiles = [
 var vendorCSSFiles = [
     'static/bower_components/angular-ui-select/dist/select.min.css',
     'static/bower_components/c3/c3.min.css',
+    'static/bower_components/bootstrap-tour/build/css/bootstrap-tour.min.css',
     // warning: set headers in base.jade !
 ];
 

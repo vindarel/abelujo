@@ -13,6 +13,7 @@
         "angular-ui-router": "latest",
         "angular-ui-select": "*",
         "bootstrap": "3.3",
+        "bootstrap-tour": "0.11",
         "jquery"   : "3.1.1",
         "underscore": "latest",
         "prelude-ls": "1.1.2",
