@@ -144,6 +144,8 @@ div(ng-cloak, ng-controller="collectionController")
                 b isbn: 
                 span {{ 'card.isbn' |ng}}
                 div {{ 'card.date_publication | date: "mediumDate"' | ng }}
+                div(ng-show="show_images && card.fmt") {{ 'card.fmt' | ng }}
+
         td
           div {{ 'card.price | currency' | ng}}
 

@@ -61,6 +61,11 @@
               td {% trans "isbn" %}
               td {{ object.isbn }}
             tr
+              td
+                | {# Translators: format like pocket or big (livre de poche) #}
+                | {% trans "format" %}
+              td {{ object.fmt }}
+            tr
               td {% trans "Source" %}: 
               td
                 a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}

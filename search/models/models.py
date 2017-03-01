@@ -414,6 +414,8 @@ class Card(TimeStampedModel):
     date_publication = models.DateField(blank=True, null=True)
     #: the summary (of the back cover)
     summary = models.TextField(null=True, blank=True)
+    #: Book format (pocket, big)
+    fmt = models.TextField(null=True, blank=True)
     #: a user's comment
     comment = models.TextField(blank=True)
     #: Did we buy this card once, or did we register it only to use in
@@ -642,7 +644,7 @@ class Card(TimeStampedModel):
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
             "details_url": self.details_url,
             "distributor": dist,
-            "isbn": self.isbn,
+            "fmt": self.fmt,
             "get_absolute_url": get_absolute_url,
             "img": self.img,
             "isbn": self.isbn if self.isbn else u"",
@@ -1137,6 +1139,7 @@ class Card(TimeStampedModel):
                 price = card.get('price',  0),
                 price_sold = card.get('price_sold',  0),
                 isbn = isbn,
+                fmt = card.get('fmt'),
                 has_isbn = card.get('has_isbn'),
                 img = card.get('img', ""),
                 details_url = card.get('details_url'),
