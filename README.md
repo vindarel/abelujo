@@ -41,6 +41,8 @@ Installation
 
 Instructions for Debian 8.
 
+(see below to install without sudo)
+
 Get the sources:
 
     git clone --recursive https://gitlab.com/vindarel/abelujo.git
@@ -67,6 +69,7 @@ or do the following:
 
     source venv_create.sh # [venvname] (optional argument)
     workon abelujo
+    pip install --upgrade pip  # v9 or above is recommended.
 
 now your shell prompt should show you are in the `abelujo`
 virtualenv. To quit the virutal env, type `deactivate`. To enter it,
@@ -75,7 +78,6 @@ type `workon \<TAB\> abelujo`.
 
 To install the dependencies, create and populate the database, run:
 
-    pip install --upgrade pip
     make install
     # and if bower asks for the version of Angular, choose version #1.3.20.
 
@@ -88,6 +90,16 @@ We are done ! Now to try Abelujo, run the development server like this:
 and open your browser to <http://127.0.0.1:8000>.
 
 Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
+
+
+Install without sudo
+--------------------
+
+    make debian-nosudo
+    make install-nosudo
+
+please read the Makefile in this particular case.
+
 
 How to update
 -------------

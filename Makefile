@@ -9,6 +9,12 @@ clone:
 	git clone --recursive https://gitlab.com/vindarel/abelujo.git
 
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
+debian-nosudo:
+	@grep -v "^#" abelujo/apt-requirements.txt | xargs apt-get install -y
+	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs apt-get install -y
+	pip install --upgrade pip
+	pip install virtualenvwrapper
+
 debian:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs sudo apt-get install -y
@@ -24,8 +30,13 @@ rebase:
 pip: pip-submodule pip-system
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
 
+pip-nosudo: pip-submodule pip-system-nosudo
+	pip install -r abelujo/requirements.txt
+
 pip-system:
 	sudo pip install -r abelujo/requirements-system.txt # venvs have access to them with --system-site-packages
+pip-system-nosudo:
+	pip install -r abelujo/requirements-system.txt
 
 pip-dev: pip
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
@@ -46,16 +57,24 @@ dbback:
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  debian pip pip-submodule db npm gulp collectstatic translation-compile
+install:  debian pip pip-submodule db npm-system npm gulp collectstatic translation-compile
+
+# xxx: there must be a better way (to do the same task with and without sudo)
+install-nosudo:  debian-nosudo pip-nosudo db npm-system-nosudo npm gulp collectstatic translation-compile
 
 install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev gulp translation-compile
 
 # Install npm and bower packages
+npm-system:
+	@echo "Installing gulp globally... (needs root)"
+	@sudo npm install -g gulp
+npm-system-nosudo:
+	@echo "Installing gulp globally... (needs root)"
+	npm install -g gulp
+
 npm:
 	@echo "Installing Node and bower packages..."
 	npm install --production # don't install devDependencies
-	@echo "Installing gulp globally... (needs root)"
-	@sudo npm install -g gulp
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
