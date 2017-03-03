@@ -10,8 +10,8 @@ install:
   #   - triggers
   script:
     - make debian-nosudo
-    - source venv_create.sh
-    - workon abelujo
+    - virtualenv .
+    - source bin/activate
     - echo "working on abelujo venv"
     - echo "upgranding pip"
     - pip install -U pip
