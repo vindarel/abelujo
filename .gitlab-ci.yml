@@ -12,5 +12,8 @@ install:
     - make debian-nosudo
     - source venv_create.sh
     - workon abelujo
+    - echo "working on abelujo venv"
+    - echo "upgranding pip"
     - pip install -U pip
+    - echo "running install-nosudo"
     - make install-nosudo
