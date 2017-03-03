@@ -1,0 +1,17 @@
+# https://docs.gitlab.com/ce/ci/yaml/README.html
+
+image: python:2.7
+
+before_script:
+  - make debian
+  - make install
+
+install:
+  only:
+    - triggers
+  script:
+    - make debian
+    - source venv_create.sh
+    - workon abelujo
+    - pip install -U pip
+    - make install
