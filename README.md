@@ -41,6 +41,8 @@ Installation
 
 Instructions for Debian 8.
 
+[![build status](https://gitlab.com/vindarel/abelujo/badges/master/build.svg)](https://gitlab.com/vindarel/abelujo/commits/master)
+
 (see below to install without sudo)
 
 Get the sources:

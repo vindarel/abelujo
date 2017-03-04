@@ -9,10 +9,12 @@ before_script:
   - apt-get update  # for docker
 
 install:
+  # every commit don't need to fire this test.
   # only:
   #   - triggers
   script:
     - make debian-nosudo
+    # mkvirtualenv fails with no output :/
     - virtualenv .
     - source bin/activate
     - echo "working on abelujo venv"
