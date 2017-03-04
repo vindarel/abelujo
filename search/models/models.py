@@ -3724,6 +3724,22 @@ class CommandCopies(TimeStampedModel):
     def qty(self):
         return self.quantity
 
+    @property
+    def value_inctaxes(self):
+        try:
+            return self.card.price * self.quantity
+        except Exception as e:
+            log.error("Error getting price for value: {}".format(e))
+            return 0
+
+    @property
+    def value(self):
+        try:
+            return self.card.price_discounted * self.quantity
+        except Exception as e:
+            log.error("Error getting discounted value: {}".format(e))
+            return 0
+
     # def __unicode__(self):
         # pass
 
@@ -3823,6 +3839,18 @@ class Command(TimeStampedModel):
         """
         try:
             return sum([it.quantity for it in self.commandcopies_set.all()])
+        except Exception as e:
+            return None
+
+    def total_value_inctaxes(self):
+        try:
+            return sum([it.value_inctaxes for it in self.commandcopies_set.all()])
+        except Exception as e:
+            return None
+
+    def total_value(self):
+        try:
+            return sum([it.value for it in self.commandcopies_set.all()])
         except Exception as e:
             return None
 

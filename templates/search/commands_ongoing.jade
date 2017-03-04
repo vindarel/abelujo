@@ -59,21 +59,21 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
           th {% trans "Bill received" %}
           th {% trans "Payment sent" %}
           th {% trans "Payment accepted" %}
-          th {% trans "Quantity" %}
-          th {% trans "Total" %}
-          th {% trans "Total incl. taxes" %}
+          th.text-right {% trans "Quantity" %}
+          th.text-right {% trans "Total" %}
+          th.text-right {% trans "Total incl. taxes" %}
 
         tbody
           tr(ng-repeat="cmd in commands")
             td {{ 'cmd.id' | ng }}
             td {{ 'cmd.supplier_name' | ng }}
-            td {{ 'cmd.created' | ng }}
-            td {{ 'cmd.date_received' | ng }}
+            td {{ 'cmd.created | date: "short" ' | ng }}
+            td {{ 'cmd.date_received | date: "short" ' | ng }}
             td {{ 'cmd.bill_received' | ng }}
             td {{ 'cmd.date_payment_sent' | ng }}
             td {{ 'cmd.date_paid' | ng }}
-            td {{ 'cmd.nb_copies' | ng }}
-            td
-            td {{ 'cmd.total_cost' | ng }}
+            td.text-right {{ 'cmd.nb_copies' | ng }}
+            td.text-right {{ 'cmd.total_value | number:2' | ng }} {% trans "€" %}
+            td.text-right {{ 'cmd.total_value_inctaxes | number:2' | ng }} {% trans "€" %}
 
 {% endblock content %}
