@@ -27,6 +27,7 @@ angular.module('abelujo', [
 ]);
 
 // Tell the dynamic locale provider where to find translation files.
+// (a bit later: for bootstrap datepicker I guess).
 angular.module('abelujo').config(function (tmhDynamicLocaleProvider) {
     tmhDynamicLocaleProvider.localeLocationPattern('/static/bower_components/angular-i18n/angular-locale_{{locale}}.js');
     tmhDynamicLocaleProvider.defaultLocale('fr'); // default locale

@@ -25,7 +25,18 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
+
 div(ng-cloak, ng-controller="CommandsOngoingController")
+
+  div
+        uib-alert.ng-cloak(
+          ng-repeat="alert in alerts"
+          type="{{ 'alert.level' | ng }}"
+          close="closeAlert($item)"
+          ng-click="utils.closeAlert($item)"
+        )
+          {{ 'alert.message' | ng }}
+
 
   div
     uib-alert(
@@ -48,7 +59,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
       div.panel.panel-info(style="margin-top: 5px;")
           div.panel-heading {% trans "Attention" %}
           div.panel-body
-            div Page under construction !
+            div This page is still under construction !
 
       table.table.table-condensed.table-striped
         thead
@@ -64,14 +75,82 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
           th.text-right {% trans "Total incl. taxes" %}
 
         tbody
-          tr(ng-repeat="cmd in commands")
+          tr(ng-repeat="cmd in commands", ng-mouseenter="show_icon[$index]=true", ng-mouseleave="show_icon[$index]=false")
             td {{ 'cmd.id' | ng }}
             td {{ 'cmd.supplier_name' | ng }}
-            td {{ 'cmd.created | date: "short" ' | ng }}
-            td {{ 'cmd.date_received | date: "short" ' | ng }}
-            td {{ 'cmd.bill_received' | ng }}
-            td {{ 'cmd.date_payment_sent' | ng }}
-            td {{ 'cmd.date_paid' | ng }}
+
+            td {{ 'cmd.created | date: "short" ' | ng }}  
+
+            td
+             .row
+              .col-md-9
+                  {{ 'cmd.date_received | date: "short" ' | ng }}  
+
+              .col-md-3
+                    i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_received')", style="padding: 5px")
+                    span(
+                      type="hidden"
+                      title='{% trans "" %}'
+                      uib-datepicker-popup='{{"command_date_format"|ng}}'
+                      ng-model="command_date[cmd.id].date_received"
+                      ng-change="command_set_date(cmd.id, 'date_received')"
+                      is-open="command_popup_status[cmd.id].date_received.opened"
+                      datepicker-options="datepicker_command_options"
+                    )
+
+            // let's copy n paste instead of making a directive. We couldn't iterate over an array of date labels for the difficulty to make {{ 'cmd[date_label]' | ng }} work as intented. A jade mixin wouldn't help. Maybe jinja macro ?
+            td
+             .row
+              .col-md-9
+                  {{ 'cmd.date_bill_received | date: "short" ' | ng }}  
+
+              .col-md-3
+                    i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_bill_received')", style="padding: 5px")
+                    span(
+                      type="hidden"
+                      title='{% trans "" %}'
+                      uib-datepicker-popup='{{"command_date_format"|ng}}'
+                      ng-model="command_date[cmd.id].date_bill_received"
+                      ng-change="command_set_date(cmd.id, 'date_bill_received')"
+                      is-open="command_popup_status[cmd.id].date_bill_received.opened"
+                      datepicker-options="datepicker_command_options"
+                    )
+
+            td
+             .row
+              .col-md-9
+                  {{ 'cmd.date_payment_sent | date: "short" ' | ng }}  
+
+              .col-md-3
+                    i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_payment_sent')", style="padding: 9px")
+                    span(
+                      type="hidden"
+                      title='{% trans "" %}'
+                      uib-datepicker-popup='{{"command_date_format"|ng}}'
+                      ng-model="command_date[cmd.id].date_payment_sent"
+                      ng-change="command_set_date(cmd.id, 'date_payment_sent')"
+                      is-open="command_popup_status[cmd.id].date_payment_sent.opened"
+                      datepicker-options="datepicker_command_options"
+                    )
+
+            td
+             .row
+              .col-md-9
+                  {{ 'cmd.date_paid | date: "short" ' | ng }}  
+
+              .col-md-3
+                    i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_paid')", style="padding: 5px")
+                    span(
+                      type="hidden"
+                      title='{% trans "" %}'
+                      uib-datepicker-popup='{{"command_date_format"|ng}}'
+                      ng-model="command_date[cmd.id].date_paid"
+                      ng-change="command_set_date(cmd.id, 'date_paid')"
+                      is-open="command_popup_status[cmd.id].date_paid.opened"
+                      datepicker-options="datepicker_command_options"
+                    )
+
+
             td.text-right {{ 'cmd.nb_copies' | ng }}
             td.text-right {{ 'cmd.total_value | number:2' | ng }} {% trans "€" %}
             td.text-right {{ 'cmd.total_value_inctaxes | number:2' | ng }} {% trans "€" %}

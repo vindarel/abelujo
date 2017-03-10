@@ -81,6 +81,7 @@ apipatterns = patterns("",
     # Commands, from DRF's router:
     url(r'^api/commands/nb_ongoing', 'search.models.api.commands_ongoing', name="api_commands_ongoing"),
     url(r'^api/commands/create', 'search.models.api.commands_create', name="api_commands_create"),
+    url(r'^api/commands/(?P<pk>\d+)/update/?$', 'search.models.api.commands_update', name="api_commands_update"),
     url(r'^api/', include(router.urls)),
 
     # Sell

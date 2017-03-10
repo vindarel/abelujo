@@ -7,9 +7,7 @@ import logging
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -34,7 +32,6 @@ from models import Sell
 from models import Shelf
 from models import SoldCards
 from models import Stats
-from models import getHistory
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -43,13 +40,12 @@ from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
 from search.tasks import inventory_apply_task
 from search.views import get_datasource_from_lang
-from search.views import postSearch
 from search.views import search_on_data_source
 
+from .utils import ids_qties_to_pairs
 from .utils import is_isbn
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
-from .utils import ids_qties_to_pairs
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -1052,7 +1048,6 @@ def inventories_update(request, **kwargs):
                 # searching on the web: they don't have an id, except
                 # if they already existed in the stock.
                 # If that's not the case, create the card.
-                cards_obj = []
                 for _nop, card_dict in cards.iteritems():
                     if not card_dict.get('id'):
                         try:
@@ -1255,3 +1250,30 @@ def commands_create(request, **kwargs):
             return JsonResponse(to_ret)
 
     return JsonResponse({'status': 'not implemented error'})
+
+def commands_update(request, **kwargs):
+    msgs = Messages()
+    to_ret = {
+        'status': msgs.status,
+        'alerts': msgs.to_alerts(),
+    }
+
+    if request.method == 'POST':
+        params = json.loads(request.body)
+        date = params.get('date')
+        date_label = params.get('date_label')
+        cmd_id = params.get('cmd_id')
+
+        # A bit of argument data validation.
+        if not date or not date_label or not cmd_id:
+            log.warning(u"command update: we don't have date, date_label or the command id: {}, {}, {}"
+                        .format(date, date_label, cmd_id))
+
+            to_ret['status'] = ALERT_ERROR
+            return JsonResponse(to_ret)
+
+        msgs = Command.update_date_attr(cmd_id, date_label, date)
+        to_ret['status'] = msgs.status
+        to_ret['alerts'] = msgs.to_alerts()
+
+    return JsonResponse(to_ret)

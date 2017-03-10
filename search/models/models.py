@@ -3824,7 +3824,7 @@ class Command(TimeStampedModel):
         """Return a queryset of ongoing commands (to be more defined).
         Return: a queryset, so to apply .all() or .count().
         """
-        res = Command.objects.filter(date_received__isnull=True)\
+        res = Command.objects.filter(date_paid__isnull=True)\
                              .exclude(Q(publisher__isnull=True) & Q(distributor__isnull=True))
         return res
 
@@ -3942,3 +3942,41 @@ class Command(TimeStampedModel):
         tocmd.remove_copies(ids)
 
         return cmd, msgs
+
+    @staticmethod
+    def update_date_attr(cmd_id, label, date):
+        """
+        Update the given attr with val.
+
+        - cmd_id: id (int or str)
+        - label: str
+        - date: str in right format (see commons.DATE_FORMAT).
+
+        return: Messages object.
+        """
+        msgs = Messages()
+        try:
+            date = datetime.datetime.strptime(date, DATE_FORMAT)
+        except ValueError as e:
+            log.warning(u"commands update: error on date format: {}".format(e))
+            return msgs.add_error(u"Date format is not valid.")
+
+        try:
+            cmd_obj = Command.objects.get(id=cmd_id)
+        except ObjectDoesNotExist as e:
+            return msgs.add_error(u"The queried command does not exist.")
+
+        if label not in dir(cmd_obj):
+            return msgs.add_error(u"The date to change doesn't seem to exist.")
+
+        # At last, update the attribute.
+        try:
+            setattr(cmd_obj, label, date)
+            cmd_obj.save()
+        except Exception as e:
+            log.error(u"Error updating command {} with attribute {} and value {}: {}".format(
+                cmd_id, label, date, e))
+            return msgs.add_error(u"Internal error.")
+
+        msgs.add_success(_(u"Command updated succesfully."))
+        return msgs
