@@ -1265,7 +1265,7 @@ def commands_update(request, **kwargs):
         cmd_id = params.get('cmd_id')
 
         # A bit of argument data validation.
-        if not date or not date_label or not cmd_id:
+        if not all([date, date_label, cmd_id]):
             log.warning(u"command update: we don't have date, date_label or the command id: {}, {}, {}"
                         .format(date, date_label, cmd_id))
 
