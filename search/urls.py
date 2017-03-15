@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-from search.views import DepositsListView
+from search import views
 from search.admin import admin_site
 
 js_info_dict = { 'packages': ('search', '',), }
@@ -70,7 +70,7 @@ urlpatterns = patterns('',
     url(r'^collection/', 'search.views.collection',
         name="card_collection"),
 
-    url(r'^deposits/$', login_required(DepositsListView.as_view()),
+    url(r'^deposits/$', login_required(views.DepositsListView.as_view()),
         name="deposits"),
     url(r'^deposits/addcard', "search.views.deposits_add_card",
         name="deposits_add_card"),
@@ -90,10 +90,11 @@ urlpatterns = patterns('',
     # Commands:
     url(r'^commands/ongoing/?',
             login_required(TemplateView.as_view(template_name="search/commands_ongoing.jade"))),
-    url(r'^commands/', 'search.views.basket_auto_command',
+    url(r'^commands/(?P<pk>\d+)/?$', login_required(views.CommandDetailView.as_view()), name="commands_view"),
+    url(r'^commands/?$', 'search.views.basket_auto_command',
         name="basket_auto_command"),
 
-
+    # Baskets:
     url(r'^baskets/(?P<pk>\d+)/export/$', 'search.views.basket_export', name="basket_export"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',
         login_required(TemplateView.as_view(template_name="search/inventory_view.jade"))),

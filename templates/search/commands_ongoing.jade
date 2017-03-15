@@ -77,7 +77,8 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
         tbody
           tr(ng-repeat="cmd in commands", ng-mouseenter="show_icon[$index]=true", ng-mouseleave="show_icon[$index]=false")
             td {{ 'cmd.id' | ng }}
-            td {{ 'cmd.supplier_name' | ng }}
+            td
+              a(href="/commands/{{ 'cmd.id' | ng }}") {{ 'cmd.supplier_name | uppercase' | ng }}
 
             td {{ 'cmd.created | date: "short" ' | ng }}  
 

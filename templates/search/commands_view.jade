@@ -1,0 +1,108 @@
+// Copyright 2014 - 2016 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block auto_command_nb %} {{ auto_command_nb }} {% endblock %}
+
+{% block pagetitle %}
+{{ page_title }}
+{% endblock pagetitle%}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load humanize %}
+
+.row
+  h4
+    span {% trans "Command #" %} {{ object.id }}  
+    span(style="{% if object.received %} background-color: lightgreen; {% else %} background-color: red; {% endif %}")  {% if not object.received %} {% trans "ongoing" %} {% else %} {% trans "received" %} {% endif %}
+
+.row
+ .col-md-4
+  table.table.table-condensed
+    tbody
+        tr
+          td {% trans "Supplier" %}
+          td
+            span {{ object.supplier_name | upper }}
+            if object.supplier.discount
+              span ( {{ object.supplier.discount }} %)
+            else
+              span   ({% trans "no discount" %})
+
+        tr
+          td {% trans "Created" %}
+          td {{ object.created }}
+
+        tr
+          td {% trans "Received" %}
+          td {{ object.date_received_label }}
+
+ .col-md-3
+  table.table.table-condensed
+    tbody
+        tr
+          td {% trans "Bill received" %}
+          td {{ object.date_bill_received_label }}
+
+        tr
+          td {% trans "Payment sent" %}
+          td {{ object.date_payment_sent_label }}
+
+        tr
+          td {% trans "Paid" %}
+          td {{ object.date_paid_label }}
+
+ .col-md-3
+  table.table.table-condensed
+    tbody
+        tr
+          td {% trans "total value" %}
+          td.text-right {{ object.total_value | floatformat:2 | intcomma }} {% trans "€" %}
+        tr
+          td {% trans "total value, incl. taxes" %}
+          td.text-right {{ object.total_value_inctaxes | floatformat:2 | intcomma }} {% trans "€" %}
+        tr
+          td {% trans "nb of copies" %}
+          td.text-right {{ object.nb_copies }}
+
+
+.row
+  h4 {% trans "Cards ordered" %}
+
+  table.table.table-striped.table-hover
+    tr
+        th {% trans "Title" %}
+        th.text-right {% trans "quantity" %}
+        th.text-right {% trans "price" %}
+        th.text-right {% trans "price" %} {% trans "excl. tax" %}
+        th.text-right {% trans "price" %} {% trans "with discount" %}
+        th.text-right {% trans "quantity ordered" %}
+    for it in object.commandcopies_set.all
+      tr
+        td: a(href="{{it.card.get_absolute_url}}")  {{ it.card.title }}
+        td.text-right {{ it.quantity }}
+        td.text-right  {{ it.card.price | floatformat:2 | intcomma  }} {% trans "€" %}
+        td.text-right  {{ it.card.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
+        td.text-right  {{ it.card.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
+        td.text-right {{ it.quantity }}
+
+
+{% endblock content %}

@@ -34,6 +34,7 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.views.generic import DetailView
 from django.views.generic import ListView
 from weasyprint import CSS
 from weasyprint import HTML
@@ -49,6 +50,7 @@ from models import Barcode64
 from models import Basket
 from models import Bill
 from models import Card
+from models import Command
 from models import Deposit
 from models import Distributor
 from models import Inventory
@@ -1075,3 +1077,14 @@ def dashboard(request):
     return render(request, template, {
         "stats_stock": stock,
         })
+
+# def commands_view(request):
+#     template = "search/commands_view.jade"
+#     cmds = Command.get
+#     return render(request, template, {
+#         "cmds": cmds,
+#         })
+
+class CommandDetailView(DetailView):
+    model = Command
+    template_name = "search/commands_view.jade"

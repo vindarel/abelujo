@@ -3802,6 +3802,26 @@ class Command(TimeStampedModel):
         return self.date_received is not None
 
     @property
+    def date_received_label(self):
+        """See other _label property below.
+        """
+        return self.date_received or ""
+
+    @property
+    def date_bill_received_label(self):
+        # btw, no much need of refactoring with one date_label(label)
+        # method and getattr, because we can't pass arguments in
+        # templates.
+        return self.date_bill_received or ""
+
+    @property
+    def date_payment_sent_label(self):
+        """
+        Return the date or "", for UI.
+        """
+        return self.date_payment_sent or ""
+
+    @property
     def bill_received(self):
         """Did we receive the bill, from the supplier ?
         Return: boolea
@@ -3815,6 +3835,13 @@ class Command(TimeStampedModel):
     @property
     def paid(self):
         return self.date_paid is not None
+
+    @property
+    def date_paid_label(self):
+        """Helps the UI to not display "None" (django template).
+        Return: date object or "".
+        """
+        return self.date_paid or ""
 
     def __unicode__(self):
         return "command {} for {}".format(self.id, self.supplier_name)
