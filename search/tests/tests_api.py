@@ -1,6 +1,6 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2016 The Abelujo Developers
+# Copyright 2014 - 2017 The Abelujo Developers
 import datetime
 import httplib
 import json
