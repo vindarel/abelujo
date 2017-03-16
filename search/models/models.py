@@ -3759,13 +3759,13 @@ class Command(TimeStampedModel):
     #: Copies in it:
     copies = models.ManyToManyField(Card, through="CommandCopies", blank=True)
     #: Date of reception. To check if the command was received, use the received property.
-    date_received = models.DateField(blank=True, null=True)
+    date_received = models.DateTimeField(blank=True, null=True)
     #: Date of reception of the bill from the supplier. See also the `bill_received` property
-    date_bill_received = models.DateField(blank=True, null=True)
+    date_bill_received = models.DateTimeField(blank=True, null=True)
     #: When did we send the payment ? See also `payment_sent`.
-    date_payment_sent = models.DateField(blank=True, null=True)
+    date_payment_sent = models.DateTimeField(blank=True, null=True)
     #: When did the supplier accept the payment ? See also `paid`.
-    date_paid = models.DateField(blank=True, null=True)
+    date_paid = models.DateTimeField(blank=True, null=True)
 
     #: Short comment
     comment = models.TextField(blank=True, null=True)
