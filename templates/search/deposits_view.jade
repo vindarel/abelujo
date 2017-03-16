@@ -30,47 +30,78 @@
 {% load humanize %}
 
 .row
-  .col-md-3
-   dl.dl-horizontal
-    dt {% trans "Deposit" %}
-    dd {{ deposit.name }}
+  .col-md-12
+    h4 {% trans "Deposit" %}  {{ deposit.name | upper }}
 
-    dt {% trans "Supplier" %}
-    dd: a(href="{{deposit.distributor.get_absolute_url}}") {{ deposit.distributor }}
-    dt {% trans "discount" %}
-    dd {{ distributor.discount }} 
-      if distributor.discount
-        span %
-
-    dt {% trans "Deposit type" %}
-    dd {{ deposit.deposit_type }}
-    dt {% trans "Auto command" %}
-    dd {{ deposit.auto_command | yesno:"oui,non"}}
+.row
   .col-md-3
-   dl.dl-horizontal
-    dt {% trans "Due date" %}
-    if deposit.due_date
-      dd {{ deposit.due_date }}
-    else
-      dd
-    dt {% trans "Last deposit state" %}
-      dd {{ deposit.last_checkout_date }}
-    dt {% trans "Alerts" %}
-    dd {{ nb_alerts }}
+   table.table.table-condensed
+     tbody
+       tr
+        td {% trans "Supplier" %}
+        td: a(href="{{deposit.distributor.get_absolute_url}}") {{ deposit.distributor }}
+
+       tr
+        td {% trans "discount" %}
+        td
+          span {{ distributor.discount }} 
+          if distributor.discount
+            span %
+
+       tr
+        td {% trans "Deposit type" %}
+        td {{ deposit.deposit_type }}
+
+       tr
+        td {% trans "Auto command" %}
+        td {{ deposit.auto_command | yesno:"oui,non"}}
+
+  .col-md-3
+   table.table.table-condensed
+     tbody
+       tr
+          td {% trans "Due date" %}
+          if deposit.due_date
+            td {{ deposit.due_date }}
+          else
+            td
+
+       tr
+        td {% trans "Last deposit state" %}
+        td {{ deposit.last_checkout_date }}
+       tr
+        td {% trans "Alerts" %}
+        td {{ nb_alerts }}
 
   .col-md-4
-    div {% trans "total init" %}: {{ total.total_price_init | floatformat:2 | intcomma}} {% trans "€" %}
-    div {% trans "total sold" %}: {{ total.total_price_sold | floatformat:2 | intcomma}} {% trans "€" %}
-    div {% trans "discount" %}: {{ total.discount }} %
-    h4  {% trans "to pay" %}: {{ total.total_to_pay | floatformat:2 | intcomma}} {% trans "€" %}
-    div {% trans "margin" %}: {{ total.margin | floatformat:2 | intcomma}} {% trans "€" %}
+    table.table.table-condensed
+      tbody
+        tr
+          td {% trans "total init" %}
+          td.text-right {{ total.total_price_init | floatformat:2 | intcomma}} {% trans "€" %}
+
+        tr
+          td {% trans "total sold" %}
+          td.text-right {{ total.total_price_sold | floatformat:2 | intcomma}} {% trans "€" %}
+
+        tr
+          td {% trans "discount" %}
+          td.text-right {{ total.discount }} %
+
+        tr
+          td: h4  {% trans "to pay" %}
+          td: h4.text-right {{ total.total_to_pay | floatformat:2 | intcomma}} {% trans "€" %}
+
+        tr
+          td {% trans "margin" %}
+          td.text-right {{ total.margin | floatformat:2 | intcomma}} {% trans "€" %}
 
 .row
   .col-sm-8
     .btn-group
-      a.btn.btn-default(href='{% url "deposit_checkout" deposit.id %}', title='{% trans "Save this deposit state" as deposit_state %}') {% trans "Save" %}
+      a.btn.btn-default(href='{% url "deposit_checkout" deposit.id %}', title='{% trans "Save this deposit state" as deposit_state %}') {% trans "Deposit state" %}
 
-      a.btn.btn-default(role="button", href="/admin/search/deposit/{{deposit.id}}") {% trans "edit" %}
+      a.btn.btn-default(role="button", href="/admin/search/deposit/{{deposit.id}}") {% trans "Edit" %}
 
       {% trans "Add copies…" as deposit_add %}
       a.btn.btn-default(href='{% url "deposit_add_copies" deposit.id %}', title="{{ deposit_add }}", value="{{ deposit_add }}", type="submit") {{ deposit_add }}
