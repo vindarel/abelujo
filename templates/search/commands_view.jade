@@ -1,4 +1,4 @@
-// Copyright 2014 - 2016 The Abelujo Developers
+// Copyright 2014 - 2017 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 {% load humanize %}
 
 .row
+ .col-md-12
   h4
     span {% trans "Command #" %} {{ object.id }}  
     span(style="{% if object.received %} background-color: lightgreen; {% else %} background-color: red; {% endif %}")  {% if not object.received %} {% trans "ongoing" %} {% else %} {% trans "received" %} {% endif %}
@@ -90,9 +91,10 @@
 
 
 .row
-  h4 {% trans "Cards ordered" %}
+  .col-md-12
+    h4 {% trans "Cards ordered" %}
 
-  table.table.table-striped.table-hover
+   table.table.table-striped.table-hover
     tr
         th {% trans "Title" %}
         th.text-right {% trans "quantity" %}
