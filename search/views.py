@@ -1078,12 +1078,6 @@ def dashboard(request):
         "stats_stock": stock,
         })
 
-# def commands_view(request):
-#     template = "search/commands_view.jade"
-#     cmds = Command.get
-#     return render(request, template, {
-#         "cmds": cmds,
-#         })
 
 class CommandDetailView(DetailView):
     model = Command

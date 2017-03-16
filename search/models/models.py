@@ -30,7 +30,9 @@ import tempfile
 from datetime import date
 from textwrap import dedent
 
+import barcode
 import dateparser
+import pendulum
 import pytz
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -47,7 +49,6 @@ from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
 
-import barcode
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -3800,6 +3801,31 @@ class Command(TimeStampedModel):
         Return: boolean.
         """
         return self.date_received is not None
+
+    @property
+    def received_delta(self):
+        """
+        Delta, in days, between the date we sent it (created) and received it.
+        """
+        diff = ""
+        if self.created and self.date_received:
+            created = pendulum.instance(self.created)
+            received = pendulum.instance(self.date_received)
+            diff = created.diff(received).in_days()
+
+        return diff
+
+    @property
+    def paid_delta(self):
+        """
+        Delta, in days, between the creation and the day it was paid (thus finished).
+        """
+        diff = ""
+        if self.created and self.date_paid:
+            created = pendulum.instance(self.created)
+            paid = pendulum.instance(self.date_paid)
+            diff = created.diff(paid).in_days()
+        return diff
 
     @property
     def date_received_label(self):

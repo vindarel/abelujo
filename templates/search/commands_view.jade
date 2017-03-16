@@ -53,7 +53,9 @@
 
         tr
           td {% trans "Received" %}
-          td {{ object.date_received_label }}
+          td
+            div {{ object.date_received_label }}
+            div(title='{% trans "Days between the date of creation of the command and its reception." %}') {% if object.date_received %} (+{{ object.received_delta }} {% trans "days" %}) {% endif %}
 
  .col-md-3
   table.table.table-condensed
@@ -68,7 +70,10 @@
 
         tr
           td {% trans "Paid" %}
-          td {{ object.date_paid_label }}
+          td
+            div {{ object.date_paid_label }}
+            div(title='{% trans "Days between the date of creation of the command and the day it is paid." %}') {% if object.date_paid %} (+{{ object.paid_delta }} {% trans "days" %}) {% endif %}
+
 
  .col-md-3
   table.table.table-condensed
