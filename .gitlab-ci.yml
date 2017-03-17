@@ -8,7 +8,7 @@ variables:
 before_script:
   - apt-get update -qy  # for docker
 
-install:
+install and test:
   # every commit don't need to fire this test.
   # only:
   #   - triggers
@@ -22,3 +22,5 @@ install:
     - pip install -U pip
     - echo "running install-nosudo"
     - make install-nosudo
+    - python manage.py check
+    - make unit
