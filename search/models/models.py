@@ -3113,14 +3113,21 @@ class Alert(models.Model):
         for it in card.deposit_set.all():
             self.deposits.add(it)
 
-class InventoryCopies(models.Model):
+class InventoryCopiesBase(models.Model):
     """The list of cards of an inventory, plus other information:
     - the quantity of them
     """
     card = models.ForeignKey(Card)
-    inventory = models.ForeignKey("Inventory")
     #: How many copies of it did we find in our stock ?
     quantity = models.IntegerField(default=0)
+
+    class Meta:
+        abstract = True
+
+
+class InventoryCopies(InventoryCopiesBase):
+    # we inherit card and quantity.
+    inventory = models.ForeignKey("Inventory")
 
     def __unicode__(self):
         return u"Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
@@ -3133,6 +3140,7 @@ class InventoryCopies(models.Model):
             "card": self.card.to_dict(),
             "quantity": self.quantity,
             }
+
 
 class InventoryBase(TimeStampedModel):
     """An inventory can happen for a place or a shelf. Once we begin it we
@@ -3166,6 +3174,7 @@ class Inventory(InventoryBase):
     #: List of cards and their quantities already "inventored".
     copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
     #: We can do the inventory of a shelf.
+    # XXX: use InventoryBase now that we have it.
     shelf = models.ForeignKey("Shelf", blank=True, null=True)
     #: we can also do the inventory of a whole place.
     place = models.ForeignKey("Place", blank=True, null=True)
