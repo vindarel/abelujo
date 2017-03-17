@@ -6,7 +6,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
-  - apt-get update  # for docker
+  - apt-get update -qy  # for docker
 
 install:
   # every commit don't need to fire this test.
