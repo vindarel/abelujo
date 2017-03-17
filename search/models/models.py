@@ -3775,6 +3775,16 @@ class CommandCopies(TimeStampedModel):
     # def to_dict(self):
         # pass
 
+class InventoryCommnandCopies(InventoryCopiesBase):
+    # we inherit card and quantity.
+    inventory = models.ForeignKey("InventoryCommnand")
+
+
+class InventoryCommnand(InventoryBase):
+    #: List of cards and their quantities already "inventoried".
+    copies = models.ManyToManyField(Card, through="InventoryCommnandCopies", blank=True)
+
+
 class Command(TimeStampedModel):
     """A command records that some cards were ordered to a supplier.
     We have to track when we receive the command and when we pay.
@@ -3795,6 +3805,8 @@ class Command(TimeStampedModel):
     date_payment_sent = models.DateTimeField(blank=True, null=True)
     #: When did the supplier accept the payment ? See also `paid`.
     date_paid = models.DateTimeField(blank=True, null=True)
+    #: Inventory of the parcel we received, to check its content.
+    inventory = models.OneToOneField('InventoryCommnand', blank=True, null=True)
 
     #: Short comment
     comment = models.TextField(blank=True, null=True)
