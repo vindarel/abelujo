@@ -1250,7 +1250,7 @@ class TestCommands(TestCase):
     def test_initial(self):
         com = Command(publisher=self.publisher)
         com.save()
-        qty = com.add_copy(self.card)
+        qty, msgs = com.add_copy(self.card)
         self.assertTrue(com)
         self.assertEqual(1, qty)
         self.assertFalse(com.bill_received)
