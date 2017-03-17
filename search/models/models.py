@@ -3134,11 +3134,34 @@ class InventoryCopies(models.Model):
             "quantity": self.quantity,
             }
 
-class Inventory(TimeStampedModel):
+class InventoryBase(TimeStampedModel):
     """An inventory can happen for a place or a shelf. Once we begin it we
     can't manipulate the stock from there (at least in the specs, not
     yet). We list the copies we have in stock, and enter the missing
     ones.
+
+    InventoryBase shares fields for other inventorie classes. This
+    helps to distinguish, in the code and in the DB, inventories of
+    different objects. For example, doing the inventory of a shelf or
+    of a command's parcel we just received is the same process, but is
+    a different thing for the user. Now they are in two different DB
+    tables.
+    """
+    # By TimeStampedModel, we get "created" and "modified".
+    #: Closed or still active ?
+    closed = models.DateTimeField(blank=True, null=True)
+    #: Did we apply it ?
+    applied = models.BooleanField(default=False)
+
+    class Meta:
+        # this class isn't a DB table by itself. It just shares some
+        # fields. No DB change inplied.
+        abstract = True
+
+
+class Inventory(InventoryBase):
+    """
+    We can do inventories of baskets, publishers, places, shelves.
     """
     #: List of cards and their quantities already "inventored".
     copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
@@ -3151,10 +3174,6 @@ class Inventory(TimeStampedModel):
     #: At last, we can also do "inventories" of baskets, meaning we compare it
     # with a newly received command, or a pack of cards returned.
     basket = models.ForeignKey("Basket", blank=True, null=True)
-    #: Closed or still active ?
-    closed = models.DateTimeField(blank=True, null=True)
-    #: Did we apply it ?
-    applied = models.BooleanField(default=False)
 
     def __unicode__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
