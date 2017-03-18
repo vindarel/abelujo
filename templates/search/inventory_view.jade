@@ -13,108 +13,13 @@
 
 // You should have received a copy of the GNU General Public License
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
 {% extends "base.jade" %}
 
 {% block content %}
 
-{% load i18n %}
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% load ngfilter %}
+- var controller = 'inventoryNewController'
 
-div(ng-controller="inventoryNewController")
-  h3 {% trans "Inventory of " %} {{ 'cur_inv' | ng }}
-  div {{ 'alerts ' | ng }}
-  form(method="get")
-
-    .row
-      .col-lg-7
-       .row
-        p.input-group
-            input.nullable.form-control(
-                type='text'
-                typeahead-loading="loadingCards"
-                ng-model='{% verbatim %}copy_selected{% endverbatim %}'
-                uib-typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue, card_type_id) {% endverbatim %}'
-                typeahead-min-length="3"
-                typeahead-on-select="add_selected_card($item)"
-                title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
-                id="default-input"
-                placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
-            )
-
-            span.input-group-btn
-                button.btn.btn-default
-                    i.glyphicon.glyphicon-search
-       .row
-        .col-md-10
-         .col-md-2
-           btn.btn.btn-success(ng-click="terminate()") {% trans "Analyse…" %}
-         .col-md-1
-           a(href="http://abelujo.cc/docs/inventories/", target="_blank")
-              btn.btn.btn-default( title='{% trans "Read the documentation" %}')
-               i.glyphicon.glyphicon-question-sign
-
-         .col-lg-3
-          input(type="checkbox", ng-model="showAll", ng-change="setCardsToShow()")
-          span(ng-click="toggleCardsToShow()") {% trans "Show all cards inventoried" %}
-
-
-      .col-md-5
-            div
-              ul
-                li {% trans "Nb of cards" %}: {{ 'nb_cards'| ng }}
-                li {% trans "nb of copies" %}: {{ 'nb_copies'|ng }}
-                li {% trans "Total value" %}: {{ 'total_value' | ng }} €
-                li(ng-show="total_missing >= 0") {% trans "It remains" %} {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
-                li {% trans "You did "%} {{ 'progress_current' | ng }} %.
-                  div.progress
-                    div.progress-bar.progress-bar-info(role="progress-bar"
-                      aria-valuenow="{{ progress_current }}"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                      ng-style="progressStyle"
-                      title="Inventory: {{ progress_current }}% done") {{ 'progress_current ' | ng }}
-                      span.sr-only {{ 'progress_current ' | ng }}
-
-
-
-  div(ng-show="cards_to_show.length > 0")
-   table.table.table-condensed(datatable="ng")
-    thead
-        tr
-          th {% trans "Title" %}
-          th {% trans "Author" %}
-          th {% trans "Price" %}
-          th {% trans "Quantity" %}
-          th
-
-    tbody
-        tr.repeated-item(ng-show="cards_to_show", ng-repeat="card in cards_to_show")
-
-         td.col-md-6
-          a(href="{{ 'card.details_url ' | ng }}") {{ 'card.title' | ng }}
-         td.col-md-3
-          span {{ 'card.authors_repr' | ng }}
-          i.glyphicon.glyphicon-warning-sign(
-            ng-show="{% verbatim %} cards_to_show[$index].ambiguous_sell {% endverbatim %}"
-            title="{% trans 'There is a conflict with deposits.' %}")
-          i.glyphicon.glyphicon-exclamation-s
-
-         td.col-md-1 {{ 'card.price' | ng }}  €
-
-         td.col-md-2
-            p.input-group
-                label.sr-only {% trans "Quantity" %}
-                span.input-group-addon X
-                input.form-control(
-                    type="number", min=0, max=99
-                    ng-model="cards_to_show[$index].quantity"
-                    ng-change="updateCard($index)"
-                )
-
-         td.col-md-1
-           i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
+include search/inventory_view_component.jade
 
 {% endblock content %}
