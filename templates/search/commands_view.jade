@@ -91,8 +91,15 @@
 
 
 .row
+ .col-md-12
+    form(method='GET', name="receive_parcel", action="/commands/{{object.id}}/receive", value="foo")
+
+      button.btn.btn-primary(type="submit") {% if not object.inventory %} {% trans "Receive a parcel" %} {% else %} {% trans "See the parcel" %} {% endif %}
+        i.glyphicon.glyphicon-download-alt
+
+.row
   .col-md-12
-    h4 {% trans "Cards ordered" %}
+    h4 {% trans "Cards you ordered" %}
 
    table.table.table-striped.table-hover
     tr

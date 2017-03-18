@@ -23,6 +23,7 @@ import unicodecsv
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.forms.widgets import TextInput
 from django.http import HttpResponse
@@ -54,6 +55,7 @@ from models import Command
 from models import Deposit
 from models import Distributor
 from models import Inventory
+from models import InventoryCommnand
 from models import Place
 from models import Preferences
 from models import Publisher
@@ -1051,7 +1053,7 @@ def inventory(request, pk):
 
 @login_required
 def inventory_delete(request, pk):
-    #XXX should be a post, but we're doing it from a button...
+    #XXX should be a post
     if request.method == "GET":
         if pk:
             try:
@@ -1082,3 +1084,29 @@ def dashboard(request):
 class CommandDetailView(DetailView):
     model = Command
     template_name = "search/commands_view.jade"
+
+@login_required
+def command_receive(request, pk):
+    """
+    GET: get the inventory state for this command.
+    POST: create a new one.
+    """
+    template = "search/command_receive.jade"
+    cmd = None
+    inventory = None
+
+    try:
+        cmd = Command.objects.get(id=pk)
+    except ObjectDoesNotExist as e:
+        log.warning(e)
+        messages.add_message(request, messages.ERROR,
+                             u"Internal erorr: the command you requested does not exist.")
+        return HttpResponseRedirect(reverse("commands_view", args=(pk,)))
+
+    if not cmd.inventory:
+        inv = InventoryCommnand()
+        inv.save()
+        cmd.inv = inv
+        cmd.save()
+
+    return render(request, template)

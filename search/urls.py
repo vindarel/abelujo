@@ -90,6 +90,7 @@ urlpatterns = patterns('',
     # Commands:
     url(r'^commands/ongoing/?',
             login_required(TemplateView.as_view(template_name="search/commands_ongoing.jade"))),
+    url(r'^commands/(?P<pk>\d+)/receive?$', views.command_receive, name="commands_receive"),
     url(r'^commands/(?P<pk>\d+)/?$', login_required(views.CommandDetailView.as_view()), name="commands_view"),
     url(r'^commands/?$', 'search.views.basket_auto_command',
         name="basket_auto_command"),
