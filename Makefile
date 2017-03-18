@@ -203,6 +203,10 @@ testscrapers:
 # Run all tests possible.
 test: unit ods testscrapers
 
+testcafe:
+	# Firefox has pbs with the new syntax (async/await).
+	cd search/tests/integration-tests/ && testcafe chromium testcafetest.js
+
 # Build test virtual environments, test against multiple python versions.
 # see tox.ini
 tox:
