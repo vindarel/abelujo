@@ -20,7 +20,13 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
+    # Come on, I want a string.contains method.
+    # String.prototype.contains = function(it) { return this.indexOf(it) != -1; }
+    String.prototype.contains = (it) -> it.indexOf(it) != -1
+
     {sum, map, filter, lines, reverse, join, reject, round} = require 'prelude-ls'
+
+    $scope.language = utils.url_language($window.location.pathname)
 
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
@@ -46,13 +52,46 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.selected_ids = []
     existing_card = undefined
 
+    # ##############################################################################
+    # This controller serves for all inventories, in all url:
+    # inventories of shelves, places, baskets (/en/inventories/xx) and
+    # inventorie of a command's parcel (/en/commands/xx/receive).
+    # ##############################################################################
+    is_default_inventory = false
+    is_command_receive = false
+    pathname = $window.location.pathname
+
+    if "inventories".contains pathname
+        is_default_inventory = true
+        $log.info "found default inventory"
+        api_inventory_id = "/api/inventories/{inv_or_cmd_id}/"
+        api_inventory_id_remove = api_inventory_id + "remove/"
+        api_inventory_id_update = api_inventory_id + "update/"
+        api_inventory_id_diff = api_inventory_id + "diff/"
+        url_inventory_id_terminate = "/#{$scope.language}/inventories/{inv_or_cmd_id}/terminate/"
+    else if "commands".contains pathname
+        is_command_receive = true
+        $log.info "found a command inventory."
+        api_inventory_id = "/api/commands/{inv_or_cmd_id}/receive/"
+        api_inventory_id_remove = api_inventory_id + "remove/"
+        api_inventory_id_update = api_inventory_id + "update/"
+        api_inventory_id_diff = api_inventory_id + "receive/"
+        url_inventory_id_terminate = "/#{$scope.language}/commands/{inv_or_cmd_id}/receive/terminate/"
+
+    else
+        $log.error "What are we doing the inventory of ??"
+        ...
+
+    get_api = (api) ->
+        api.replace "{inv_or_cmd_id}", $scope.inv_or_cmd_id
+
+
+    ##################### inventory controller #####################################
     # If we're on page /../inventories/XX/, get info of inventory XX.
-    #XXX use angular routing
-    $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
+    $scope.inv_or_cmd_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
+    $log.info "found inv_or_cmd_id: ", $scope.inv_or_cmd_id
     $scope.cur_inv = ""
     $scope.progress_current = 0
-
-    $scope.language = utils.url_language($window.location.pathname)
 
     $scope.setCardsToShow = !->
         " Show all the cards inventoried, or the current ones. "
@@ -67,10 +106,12 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $scope.showAll = ! $scope.showAll
         $scope.setCardsToShow!
 
-    if $scope.inv_id
+    if $scope.inv_or_cmd_id
 
-        $http.get "/api/inventories/#{$scope.inv_id}/"
+        $log.info "using api_inventory_id: ", get_api api_inventory_id
+        $http.get get_api api_inventory_id
         .then (response) ->
+            $log.info "Response of api_inventory_id"
             response.data.data
             $scope.state = response.data.data
             $scope.cards_fetched = $scope.state.copies
@@ -177,7 +218,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
         params = do
             "card_id": card.id
-        $http.post "/api/inventories/#{$scope.inv_id}/remove/", params
+        $log.info "calling api_inventory_id_remove: ", api_inventory_id_remove
+        $http.post get_api(api_inventory_id_remove), params
         .then (response) !->
             $scope.cards_to_show.splice index_to_rm, 1
             # Update the progress bar.
@@ -195,7 +237,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         card = $scope.cards_to_show[index]
         params = do
             "ids_qties": "#{card.id},#{card.quantity};"
-        $http.post "/api/inventories/#{$scope.inv_id}/update/", params
+
+        $log.info "using api_inventory_id_update: ", api_inventory_id_update
+        $http.post get_api(api_inventory_id_update), params
         .then (response) !->
             # update the total price. Since we listen for an ng-change
             # event, we don't know if we add or sub, so remove and add
@@ -223,7 +267,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
         params = do
             "ids_qties": join "", ids_qties
-        $http.post "/api/inventories/#{$scope.inv_id}/update/", params
+        $http.post get_api(api_inventory_id_update), params
         .then (response) !->
             $scope.alerts = response.data.msgs
             # Update the progress bar.
@@ -235,9 +279,12 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             return response.data.status
 
     $scope.terminate = !->
-        $http.get "/api/inventories/#{$scope.inv_id}/diff/"
+        $log.info "using api_inventory_id_diff: ", api_inventory_id_diff
+        $http.get get_api api_inventory_id_diff
         .then (response) !->
-            $window.location.href = "/#{$scope.language}/inventories/#{$scope.inv_id}/terminate/"
+            $log.info "using url_inventory_id_terminate: ", get_api url_inventory_id_terminate
+            $window.location.href = get_api url_inventory_id_terminate
+
     ######################
     # keyboard shortcuts
     # ####################
