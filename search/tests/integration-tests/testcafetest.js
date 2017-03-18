@@ -21,6 +21,8 @@
 // Unfortunately, we can't use Livescript yet:
 // https://github.com/gkz/LiveScript/pull/836
 
+import { Selector } from 'testcafe';
+
 fixture `abelujo`
     .page `http://localhost:8000/en/`;
 
@@ -50,4 +52,18 @@ test('see the deposits list', async t => {
     const location = await t.eval( () => window.location);
     await t.expect(location.pathname).eql('/en/deposits/');
     // and test something useful !
+});
+
+fixture `deposits view`
+    .page `http://localhost:8000/en/inventories/1`;
+
+test('see an inventory', async t => {
+    await login(t);
+    const location = await t.eval( () => window.location);
+    // Yes, the test is dependent of the DB state :S
+    await t.expect(location.pathname).eql('/en/inventories/1');
+    const title = await Selector('#title').textContent;
+    // Here "default place" shows that some variables are loaded,
+    // i.e. some api calls worked.
+    await t.expect(title).eql('Inventory of default place');
 });

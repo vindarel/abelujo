@@ -28,7 +28,7 @@
 {% load ngfilter %}
 
 div(ng-controller=controller)
-  h3 {% trans "Inventory of " %} {{ 'cur_inv' | ng }}
+  h3#title {% trans "Inventory of " %}{{ 'cur_inv' | ng }}
   div {{ 'alerts ' | ng }}
   form(method="get")
 
