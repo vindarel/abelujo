@@ -59,7 +59,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
       div.panel.panel-info(style="margin-top: 5px;")
           div.panel-heading {% trans "Attention" %}
           div.panel-body
-            div This page is still under construction !
+            div This page has the basic features working but is still under construction. Expect changes.
 
       table.table.table-condensed.table-striped
         thead
@@ -85,7 +85,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
             td
              .row
               .col-md-9
-                  {{ 'cmd.date_received | date: "short" ' | ng }}  
+                  span {{ 'cmd.date_received | date: "short" ' | ng }}  
 
               .col-md-3
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_received')", style="padding: 5px")
