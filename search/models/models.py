@@ -3292,6 +3292,28 @@ class InventoryBase(TimeStampedModel):
 
         return state
 
+    def add_copy(self, copy, nb=1, add=True):
+        """copy: a Card object.
+
+        Add the quantities only if 'add' is True (the clientside may
+        ask to *set* the quantity, not add them).
+
+        """
+        if type(nb) == type("str"):
+            nb = int(nb)
+        try:
+            inv_copies, created = self.copies_set.get_or_create(card=copy)
+            if add:
+                inv_copies.quantity += nb
+            else:
+                inv_copies.quantity = nb
+            inv_copies.save()
+        except Exception as e:
+            log.error(e)
+            return None
+
+        return inv_copies.quantity
+
 class Inventory(InventoryBase):
     """
     We can do inventories of baskets, publishers, places, shelves.
@@ -3345,28 +3367,6 @@ class Inventory(InventoryBase):
             url = self.place.get_absolute_url()
 
         return url
-
-    def add_copy(self, copy, nb=1, add=True):
-        """copy: a Card object.
-
-        Add the quantities only if 'add' is True (the clientside may
-        ask to *set* the quantity, not add them).
-
-        """
-        if type(nb) == type("str"):
-            nb = int(nb)
-        try:
-            inv_copies, created = self.inventorycopies_set.get_or_create(card=copy)
-            if add:
-                inv_copies.quantity += nb
-            else:
-                inv_copies.quantity = nb
-            inv_copies.save()
-        except Exception as e:
-            log.error(e)
-            return None
-
-        return inv_copies.quantity
 
     def remove_card(self, card_id):
         """

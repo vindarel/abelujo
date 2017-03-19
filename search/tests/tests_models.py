@@ -1258,11 +1258,11 @@ class TestCommands(TestCase):
         com.save()
         qty, msgs = com.add_copy(self.card)
         self.assertTrue(com)
+        self.assertTrue(com.supplier_name)
         self.assertEqual(1, qty)
         self.assertFalse(com.bill_received)
         self.assertFalse(com.payment_sent)
         self.assertFalse(com.received)
-        self.assertTrue(com.supplier_name)
 
     def test_nb_ongoing(self):
         self.assertTrue(Command.nb_ongoing())
@@ -1273,3 +1273,9 @@ class TestCommands(TestCase):
     def test_inventory_command_state(self):
         inv = self.com.get_inventory()
         inv.state()
+
+    def test_inventory_command_update(self):
+        inv = self.com.get_inventory()
+        qty = inv.add_copy(self.card, nb=2)
+        self.assertEqual(qty, 2)
+        self.assertFalse(self.com.received)
