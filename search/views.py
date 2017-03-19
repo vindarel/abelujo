@@ -76,9 +76,6 @@ DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 #: Default datasource to be used when searching isbn, if source not supplied.
 DEFAULT_DATASOURCE = "librairiedeparis"
 
-def get_places_choices():
-    return [(0, _("All"))] + [(it.id, it.name)
-                              for it in Place.objects.all()]
 
 class MyNumberInput(TextInput):
     # render an IntegerField with a "number" html5 widget, not text.

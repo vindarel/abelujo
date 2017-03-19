@@ -1244,6 +1244,12 @@ class TestCommands(TestCase):
         self.com = Command(publisher=self.publisher)
         self.com.save()
 
+        # A default place in Preferences (to import views).
+        self.preferences = PreferencesFactory()
+        self.preferences.default_place = PlaceFactory()
+        self.preferences.save()
+        self.new_place = PlaceFactory()
+
     def tearDown(self):
         pass
 
@@ -1260,3 +1266,10 @@ class TestCommands(TestCase):
 
     def test_nb_ongoing(self):
         self.assertTrue(Command.nb_ongoing())
+
+    def test_inventory_command(self):
+        inv = self.com.get_inventory()
+
+    def test_inventory_command_state(self):
+        inv = self.com.get_inventory()
+        inv.state()

@@ -3177,6 +3177,78 @@ class InventoryBase(TimeStampedModel):
         """
         raise NotImplementedError
 
+    @property
+    def name(self):
+        raise NotImplementedError
+
+    def get_absolute_url(self):
+        raise NotImplementedError
+
+    def _orig_cards_qty(self):
+        """Return the number of copies to inventory (the ones in the original
+        shelf, place, etc.
+        """
+        raise NotImplementedError
+
+
+    def nb_copies(self):
+        """How many exemplaries in total.
+        """
+        return sum(self.copies_set.all().values_list('quantity', flat=True))
+
+    def nb_cards(self):
+        """Return the quantity of cards in it.
+
+        - return: int
+        """
+        return self.inventorycopies_set.count() or 0
+
+    def progress(self):
+        """Return the percentage of progress (int < 100).
+        """
+        done_qty = self.nb_copies()
+        orig_qty = self._orig_cards_qty()
+
+        progress = 0
+        if orig_qty:
+            progress = done_qty / float(orig_qty) * 100
+        elif done_qty:
+            progress = 100
+
+        return roundfloat(progress)
+
+    def value(self):
+        """Total value. Sum of public prices of all books in this inventory.
+
+        Return: a float, rounded to two decimals.
+        """
+        ret = sum([it.card.price * it.quantity for it in
+                   self.inventorycopies_set.select_related('card').all()])
+        ret = roundfloat(ret)
+        return ret
+
+    def to_dict(self, details=False):
+        """Return a dict ready to be serialized. Simplest form: id and name.
+
+        - details: if True, return also information about its state:
+        applied, closed, created, nb of cards and copies, proress, value.
+        """
+        ret = {
+            "id": self.id,
+            "name": self.name,
+            "get_absolute_url": self.get_absolute_url(),
+            }
+
+        if details:
+            ret["applied"] = self.applied
+            ret["closed"] = self.closed.strftime(DATE_FORMAT) if self.closed else ""
+            ret["created"] = self.created.strftime(DATE_FORMAT) if self.created else ""
+            ret["nb_cards"] = self.nb_cards()
+            ret["nb_copies"] = self.nb_copies()
+            ret["progress"] = self.progress()
+            ret["value"] = self.value()
+
+        return ret
 
     def state(self):
         """Get the current state:
@@ -3191,16 +3263,16 @@ class InventoryBase(TimeStampedModel):
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
         orig_cards_qty = self._orig_cards_qty()
         missing = orig_cards_qty - nb_cards
-        if self.shelf:
+        if hasattr(self, "shelf") and self.shelf:
             shelf_dict = self.shelf.to_dict()
             inv_name = self.shelf.name
-        elif self.place:
+        elif hasattr(self, "place") and self.place:
             place_dict = self.place.to_dict()
             inv_name = self.place.name
-        elif self.publisher:
+        elif hasattr(self, "publisher") and self.publisher:
             pub_dict = self.publisher.to_dict()
             inv_name = self.publisher.name
-        elif self.basket:
+        elif hasattr(self, "basket") and self.basket:
             basket_dict = self.basket.to_dict()
             inv_name = self.basket.name
         else:
@@ -3245,7 +3317,6 @@ class Inventory(InventoryBase):
     def copies_set(self):
         return self.inventorycopies_set
 
-
     @property
     def name(self):
         name = ""
@@ -3274,29 +3345,6 @@ class Inventory(InventoryBase):
             url = self.place.get_absolute_url()
 
         return url
-
-    def to_dict(self, details=False):
-        """Return a dict ready to be serialized. Simplest form: id and name.
-
-        - details: if True, return also information about its state:
-        applied, closed, created, nb of cards and copies, proress, value.
-        """
-        ret = {
-            "id": self.id,
-            "name": self.name,
-            "get_absolute_url": self.get_absolute_url(),
-            }
-
-        if details:
-            ret["applied"] = self.applied
-            ret["closed"] = self.closed.strftime(DATE_FORMAT) if self.closed else ""
-            ret["created"] = self.created.strftime(DATE_FORMAT) if self.created else ""
-            ret["nb_cards"] = self.nb_cards()
-            ret["nb_copies"] = self.nb_copies()
-            ret["progress"] = self.progress()
-            ret["value"] = self.value()
-
-        return ret
 
     def add_copy(self, copy, nb=1, add=True):
         """copy: a Card object.
@@ -3334,42 +3382,6 @@ class Inventory(InventoryBase):
             return False
 
         return True
-
-    def progress(self):
-        """Return the percentage of progress (int < 100).
-        """
-        done_qty = self.nb_copies()
-        orig_qty = self._orig_cards_qty()
-
-        progress = 0
-        if orig_qty:
-            progress = done_qty / float(orig_qty) * 100
-        elif done_qty:
-            progress = 100
-
-        return roundfloat(progress)
-
-    def nb_cards(self):
-        """Return the quantity of cards in it.
-
-        - return: int
-        """
-        return self.inventorycopies_set.count() or 0
-
-    def nb_copies(self):
-        """How many exemplaries in total.
-        """
-        return sum(self.inventorycopies_set.all().values_list('quantity', flat=True))
-
-    def value(self):
-        """Total value. Sum of public prices of all books in this inventory.
-
-        Return: a float, rounded to two decimals.
-        """
-        ret = sum([it.card.price * it.quantity for it in
-                   self.inventorycopies_set.select_related('card').all()])
-        ret = roundfloat(ret)
-        return ret
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original
@@ -3800,6 +3812,42 @@ class InventoryCommand(InventoryBase):
     #: List of cards and their quantities already "inventoried".
     copies = models.ManyToManyField(Card, through="InventoryCommandCopies", blank=True)
 
+    @property
+    def copies_set(self):
+        return self.inventorycommandcopies_set
+
+    @property
+    def name(self):
+        return self.command.name
+
+    def get_absolute_url(self):
+        self.command.get_absolute_url()
+
+    def _orig_cards_qty(self):
+        # the nb of copies to inventory (the ones in the original place).
+        cards_qty = self.command.commandcopies_set.count()
+        return cards_qty
+
+    def state(self):
+        copies = [it.to_dict() for it in self.copies_set.all()]
+        nb_cards = len(copies)
+        nb_copies = self.nb_copies()
+        inv_name = ""
+        orig_cards_qty = self._orig_cards_qty()
+        missing = orig_cards_qty - nb_cards
+        inv_name = self.command.name
+        inv_dict = self.to_dict()
+
+        return {
+            "copies": copies,
+            "inv_name": inv_name,
+            "nb_cards": nb_cards,
+            "nb_copies": nb_copies,
+            "total_missing": missing,
+            "object": inv_dict,
+            "command": inv_dict,
+        }
+
 
 class Command(TimeStampedModel):
     """A command records that some cards were ordered to a supplier.
@@ -3826,6 +3874,9 @@ class Command(TimeStampedModel):
 
     #: Short comment
     comment = models.TextField(blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse("commands_view", args=(self.id,))
 
     @property
     def supplier(self):
