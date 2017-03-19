@@ -22,5 +22,6 @@ install and test:
     - pip install -U pip
     - echo "running install-nosudo"
     - make install-nosudo
+    - make pip-dev
     - python manage.py check
     - make unit
