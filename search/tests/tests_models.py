@@ -1286,3 +1286,16 @@ class TestCommands(TestCase):
         status = inv.remove_card(self.card.id)
         self.assertTrue(status)
         self.assertEqual(0, inv.nb_copies())
+
+    def test_add_pairs(self):
+        # Same as abvoe
+        pairs = []
+        inv = self.com.get_inventory()
+        status, msgs = inv.add_pairs(pairs)
+        pairs = [(1, 3)]
+        status, msgs = inv.add_pairs(pairs)
+        pairs = [(1, 1)]
+        status, msgs = inv.add_pairs(pairs)
+        # add_pairs *sets* the quantities
+        state = inv.state()
+        self.assertEqual(state['nb_copies'], 1)

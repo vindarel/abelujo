@@ -3124,6 +3124,12 @@ class InventoryCopiesBase(models.Model):
     class Meta:
         abstract = True
 
+    def to_dict(self):
+        return {
+            "card": self.card.to_dict(),
+            "quantity": self.quantity,
+            }
+
 
 class InventoryCopies(InventoryCopiesBase):
     # we inherit card and quantity.
@@ -3134,12 +3140,6 @@ class InventoryCopies(InventoryCopiesBase):
                                                                self.quantity,
                                                                self.card.title,
                                                                self.card.id)
-
-    def to_dict(self):
-        return {
-            "card": self.card.to_dict(),
-            "quantity": self.quantity,
-            }
 
 
 class InventoryBase(TimeStampedModel):
@@ -3329,6 +3329,36 @@ class InventoryBase(TimeStampedModel):
 
         return True
 
+    def add_pairs(self, pairs, add=False):
+        """Save the given copies.
+
+        - pairs: list of pairs (lists) with an id and its quantity
+        - add: bool. If True, add the quantities. If False, just set it (client side need).
+
+        return: tuple status, messages
+        """
+        status = "success"
+        msgs = Messages()
+        for pair in pairs:
+            if not pair:
+                # beware void lists
+                continue
+            id, qty = pair
+            try:
+                card = Card.objects.get(id=id)
+                self.add_copy(card, nb=int(qty), add=add)
+            except Exception as e:
+                log.error(e)
+                msgs.add_error(_("Internal error, sorry !"))
+                status = "error"
+                return None
+
+            if hasattr(self, "shelf") and self.shelf:
+                card.shelf = self.shelf
+                card.save()
+
+        return (status, msgs.msgs)
+
 class Inventory(InventoryBase):
     """
     We can do inventories of baskets, publishers, places, shelves.
@@ -3494,36 +3524,6 @@ class Inventory(InventoryBase):
             d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
 
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
-
-    def add_pairs(self, pairs, add=False):
-        """Save the given copies.
-
-        - pairs: list of pairs (lists) with an id and its quantity
-        - add: bool. If True, add the quantities. If False, just set it (client side need).
-
-        return: tuple status, messages
-        """
-        status = "success"
-        msgs = Messages()
-        for pair in pairs:
-            if not pair:
-                # beware void lists
-                continue
-            id, qty = pair
-            try:
-                card = Card.objects.get(id=id)
-                self.add_copy(card, nb=int(qty), add=add)
-            except Exception as e:
-                log.error(e)
-                msgs.add_error(_("Internal error, sorry !"))
-                status = "error"
-                return None
-
-            if self.shelf:
-                card.shelf = self.shelf
-                card.save()
-
-        return (status, msgs.msgs)
 
     @staticmethod
     def apply_inventory(pk):
