@@ -3314,6 +3314,21 @@ class InventoryBase(TimeStampedModel):
 
         return inv_copies.quantity
 
+    def remove_card(self, card_id):
+        """
+
+        - return: status (bool)
+        """
+        try:
+            inv_copies = self.copies_set.get(card__id=card_id)
+            inv_copies.delete()
+
+        except Exception as e:
+            log.error(e)
+            return False
+
+        return True
+
 class Inventory(InventoryBase):
     """
     We can do inventories of baskets, publishers, places, shelves.
@@ -3367,21 +3382,6 @@ class Inventory(InventoryBase):
             url = self.place.get_absolute_url()
 
         return url
-
-    def remove_card(self, card_id):
-        """
-
-        - return: status (bool)
-        """
-        try:
-            inv_copies = self.inventorycopies_set.get(card__id=card_id)
-            inv_copies.delete()
-
-        except Exception as e:
-            log.error(e)
-            return False
-
-        return True
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original

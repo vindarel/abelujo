@@ -1279,3 +1279,10 @@ class TestCommands(TestCase):
         qty = inv.add_copy(self.card, nb=2)
         self.assertEqual(qty, 2)
         self.assertFalse(self.com.received)
+
+    def test_inventory_command_remove(self):
+        inv = self.com.get_inventory()
+        qty = inv.add_copy(self.card, nb=2)
+        status = inv.remove_card(self.card.id)
+        self.assertTrue(status)
+        self.assertEqual(0, inv.nb_copies())
