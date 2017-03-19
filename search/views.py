@@ -102,9 +102,12 @@ class AddForm(forms.Form):
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
-    default_place = Preferences.objects.first().default_place
-    ret = [ (default_place.id, default_place.name) ] + [ (p.id, p.name) for p in not_stands \
-                                                         if not p.id == default_place.id]
+    preferences = Preferences.objects.first()
+    ret = []
+    if preferences:
+        default_place= preferences.default_place
+        ret = [ (default_place.id, default_place.name) ] + [ (p.id, p.name) for p in not_stands \
+                                                             if not p.id == default_place.id]
     return ret
 
 class DepositForm(forms.ModelForm):

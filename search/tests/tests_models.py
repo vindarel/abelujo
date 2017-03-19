@@ -1245,10 +1245,10 @@ class TestCommands(TestCase):
         self.com.save()
 
         # A default place in Preferences (to import views).
-        self.preferences = PreferencesFactory()
-        self.preferences.default_place = PlaceFactory()
-        self.preferences.save()
-        self.new_place = PlaceFactory()
+        # self.preferences = PreferencesFactory()
+        # self.preferences.default_place = PlaceFactory()
+        # self.preferences.save()
+        # self.new_place = PlaceFactory()
 
     def tearDown(self):
         pass
