@@ -3166,6 +3166,59 @@ class InventoryBase(TimeStampedModel):
         # fields. No DB change inplied.
         abstract = True
 
+    @property
+    def copies_set(self):
+        """
+        The reference to the intermediate table, like inventorycopies_set.
+        For an InventoryCommnand, will be inventorycommandcopies_set.
+        Goal: have generic methods, like state().
+
+        Return: an object.
+        """
+        raise NotImplementedError
+
+
+    def state(self):
+        """Get the current state:
+        - list of copies already inventoried and their quantities,
+        - list of copies not found te be searched for (and their quantities)
+
+        """
+        copies = [it.to_dict() for it in self.copies_set.all()]
+        nb_cards = len(copies)
+        nb_copies = self.nb_copies()
+        inv_name = ""
+        shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
+        orig_cards_qty = self._orig_cards_qty()
+        missing = orig_cards_qty - nb_cards
+        if self.shelf:
+            shelf_dict = self.shelf.to_dict()
+            inv_name = self.shelf.name
+        elif self.place:
+            place_dict = self.place.to_dict()
+            inv_name = self.place.name
+        elif self.publisher:
+            pub_dict = self.publisher.to_dict()
+            inv_name = self.publisher.name
+        elif self.basket:
+            basket_dict = self.basket.to_dict()
+            inv_name = self.basket.name
+        else:
+            log.error("Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
+
+        state = {
+            "copies": copies,
+            "inv_name": inv_name,
+            "nb_cards": nb_cards,
+            "nb_copies": nb_copies,
+            "total_missing": missing,
+            "shelf": shelf_dict,
+            "place": place_dict,
+            "basket": basket_dict,
+            "publisher": pub_dict,
+        }
+
+        return state
 
 class Inventory(InventoryBase):
     """
@@ -3187,6 +3240,11 @@ class Inventory(InventoryBase):
     def __unicode__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
         return u"{}: {}".format(self.id, inv_obj.name)
+
+    @property
+    def copies_set(self):
+        return self.inventorycopies_set
+
 
     @property
     def name(self):
@@ -3330,48 +3388,6 @@ class Inventory(InventoryBase):
             log.error("We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
 
         return cards_qty
-
-    def state(self):
-        """Get the current state:
-        - list of copies already inventored and their quantities,
-        - list of copies not found te be searched for (and their quantities)
-
-        """
-        copies = [it.to_dict() for it in self.inventorycopies_set.all()]
-        nb_cards = len(copies)
-        nb_copies = self.nb_copies()
-        inv_name = ""
-        shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
-        orig_cards_qty = self._orig_cards_qty()
-        missing = orig_cards_qty - nb_cards
-        if self.shelf:
-            shelf_dict = self.shelf.to_dict()
-            inv_name = self.shelf.name
-        elif self.place:
-            place_dict = self.place.to_dict()
-            inv_name = self.place.name
-        elif self.publisher:
-            pub_dict = self.publisher.to_dict()
-            inv_name = self.publisher.name
-        elif self.basket:
-            basket_dict = self.basket.to_dict()
-            inv_name = self.basket.name
-        else:
-            log.error("Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
-
-        state = {
-            "copies": copies,
-            "inv_name": inv_name,
-            "nb_cards": nb_cards,
-            "nb_copies": nb_copies,
-            "total_missing": missing,
-            "shelf": shelf_dict,
-            "place": place_dict,
-            "basket": basket_dict,
-            "publisher": pub_dict,
-        }
-
-        return state
 
     @staticmethod
     def diff_inventory(pk, **kwargs):
