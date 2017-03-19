@@ -3170,7 +3170,7 @@ class InventoryBase(TimeStampedModel):
     def copies_set(self):
         """
         The reference to the intermediate table, like inventorycopies_set.
-        For an InventoryCommnand, will be inventorycommandcopies_set.
+        For an InventoryCommand, will be inventorycommandcopies_set.
         Goal: have generic methods, like state().
 
         Return: an object.
@@ -3791,14 +3791,14 @@ class CommandCopies(TimeStampedModel):
     # def to_dict(self):
         # pass
 
-class InventoryCommnandCopies(InventoryCopiesBase):
+class InventoryCommandCopies(InventoryCopiesBase):
     # we inherit card and quantity.
-    inventory = models.ForeignKey("InventoryCommnand")
+    inventory = models.ForeignKey("InventoryCommand")
 
 
-class InventoryCommnand(InventoryBase):
+class InventoryCommand(InventoryBase):
     #: List of cards and their quantities already "inventoried".
-    copies = models.ManyToManyField(Card, through="InventoryCommnandCopies", blank=True)
+    copies = models.ManyToManyField(Card, through="InventoryCommandCopies", blank=True)
 
 
 class Command(TimeStampedModel):
@@ -3822,7 +3822,7 @@ class Command(TimeStampedModel):
     #: When did the supplier accept the payment ? See also `paid`.
     date_paid = models.DateTimeField(blank=True, null=True)
     #: Inventory of the parcel we received, to check its content.
-    inventory = models.OneToOneField('InventoryCommnand', blank=True, null=True)
+    inventory = models.OneToOneField('InventoryCommand', blank=True, null=True)
 
     #: Short comment
     comment = models.TextField(blank=True, null=True)

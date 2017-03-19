@@ -55,7 +55,7 @@ from models import Command
 from models import Deposit
 from models import Distributor
 from models import Inventory
-from models import InventoryCommnand
+from models import InventoryCommand
 from models import Place
 from models import Preferences
 from models import Publisher
@@ -1104,7 +1104,7 @@ def command_receive(request, pk):
         return HttpResponseRedirect(reverse("commands_view", args=(pk,)))
 
     if not cmd.inventory:
-        inv = InventoryCommnand()
+        inv = InventoryCommand()
         inv.save()
         cmd.inv = inv
         cmd.save()
