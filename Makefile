@@ -38,7 +38,7 @@ pip-system:
 pip-system-nosudo:
 	pip install -r abelujo/requirements-system.txt
 
-pip-dev: pip
+pip-dev:
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
 
 pip-submodule:
