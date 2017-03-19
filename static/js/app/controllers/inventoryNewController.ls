@@ -22,7 +22,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
     # Come on, I want a string.contains method.
     # String.prototype.contains = function(it) { return this.indexOf(it) != -1; }
-    String.prototype.contains = (it) -> it.indexOf(it) != -1
+    String.prototype.contains = (it) -> this.indexOf(it) != -1
 
     {sum, map, filter, lines, reverse, join, reject, round} = require 'prelude-ls'
 
@@ -69,13 +69,13 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         api_inventory_id_update = api_inventory_id + "update/"
         api_inventory_id_diff = api_inventory_id + "diff/"
         url_inventory_id_terminate = "/#{$scope.language}/inventories/{inv_or_cmd_id}/terminate/"
-    else if "commands".contains pathname
+    else if pathname.contains "commands"
         is_command_receive = true
         $log.info "found a command inventory."
         api_inventory_id = "/api/commands/{inv_or_cmd_id}/receive/"
         api_inventory_id_remove = api_inventory_id + "remove/"
         api_inventory_id_update = api_inventory_id + "update/"
-        api_inventory_id_diff = api_inventory_id + "receive/"
+        api_inventory_id_diff = api_inventory_id + "diff/"
         url_inventory_id_terminate = "/#{$scope.language}/commands/{inv_or_cmd_id}/receive/terminate/"
 
     else
