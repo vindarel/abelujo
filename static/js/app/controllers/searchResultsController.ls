@@ -122,7 +122,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
                 page: $scope.page
                 query: $scope.query
                 datasource: $scope.datasource.id
-        , (response) ->
+        , (response) !->
             $scope.alerts.push do
                 level: 'danger'
                 message: gettext "Internal error, sorry !"
@@ -150,17 +150,14 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
 
-    $scope.closeAlert = (index) ->
-        $scope.alerts.splice index, 1
-
-    $scope.closeAlert = (index) ->
+    $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
     $scope.create_and_add = (card) !->
         params = do
             card: card
         $http.post "/api/cards/create", params
-        .then (response) ->
+        .then (response) !->
             card_id = response.data.card_id
             # Card created in DB. Now add it to places, deposits, etc.
             if card_id
@@ -248,7 +245,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
 ]
 
-angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) ->
+angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) !->
 
     {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
 
@@ -256,7 +253,7 @@ angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($h
     $scope.alerts = []
 
     $http.get "/api/baskets"
-    .then (response) ->
+    .then (response) !->
         $scope.baskets = response.data.data
 
     $scope.ok = !->
@@ -285,7 +282,7 @@ angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($h
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
 
-angular.module "abelujo" .controller "SearchResultsAddToInventoryModalController", ($http, $scope, $uibModalInstance, $window, $log, utils, cards_selected) ->
+angular.module "abelujo" .controller "SearchResultsAddToInventoryModalController", ($http, $scope, $uibModalInstance, $window, $log, utils, cards_selected) !->
 
     {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
 
@@ -294,7 +291,7 @@ angular.module "abelujo" .controller "SearchResultsAddToInventoryModalController
 
     #TODO: only get not closed ones.
     $http.get "/api/inventories"
-    .then (response) ->
+    .then (response) !->
         $scope.inventories = response.data.data
 
     $scope.ok = !->

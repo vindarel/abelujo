@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$window', 'utils', ($http, $scope, $window, utils) !->
+angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$window', ($http, $scope, $window) !->
 
     {Obj, join, reject, sum, map, filter, lines} = require 'prelude-ls'
 

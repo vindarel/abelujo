@@ -64,7 +64,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
         return $http.get("/api/cards", {
             params: {
                 "query": val,
-                "distributor": $scope.distributor,
+                "distributor": $scope.distributor
             }})
             .then(function(response){ // "then", not "success"
                 return response.data.map(function(item){
@@ -114,7 +114,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
         }
         var due_date;
         if ($scope.due_date) {
-            due_date = $scope.due_date.toString($scope.format)
+            due_date = $scope.due_date.toString($scope.format);
         }
         var params = {
             "name"              : $scope.deposit_name,
@@ -135,9 +135,9 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
         // Encode them like url parameters.
         // xxx: put in service
         $http.defaults.transformRequest = utils.transformRequestAsFormPost; // don't transfrom params to json.
-        var config = {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-        };
+        // var config = {
+        //     headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        // };
 
         return $http.post("/api/deposits", params)
             .then(function(response){
@@ -145,7 +145,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
                 if (response.data.status == "success") {
                     $scope.cancelCurrentData();
                     $window.location.href = "/deposits/";
-                };
+                }
                 return response.data;
             });
     };
@@ -166,6 +166,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
         $scope.cards_selected.splice(index_to_rm, 1);
     };
 
+    /*jshint unused:false */
     $scope.reset_card_list_following_dist = function(dist_name){
         // rather on-select ?
         //TODO: don't rm card if good dist.
@@ -215,6 +216,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     // Focus:
     angular.element('#default-input').trigger('focus');
 
-    $window.document.title = "Abelujo - " + gettext("Deposits")
+    $window.document.title = "Abelujo - " + gettext("Deposits");
 
 }]);

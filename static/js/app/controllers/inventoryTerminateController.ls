@@ -98,7 +98,7 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
                 status = response.data.status
                 $scope.alerts = response.data
 
-    $scope.closeAlert = (index) ->
+    $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
     # Set focus:

@@ -8,7 +8,7 @@ angular.module("abelujo").controller('alertsController', ['$http', '$scope', '$t
         });
 
     $scope.print_ambiguous = function(i) {
-        if ($scope.alerts[i].card.ambiguous_sell == false) {
+        if ($scope.alerts[i].card.ambiguous_sell === false) {
             return gettext("not any more");
         }
         return gettext("yes");

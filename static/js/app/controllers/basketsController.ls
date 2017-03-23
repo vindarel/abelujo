@@ -128,7 +128,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             card_ids: coma_sep
         $http.post "/api/baskets/#{basket_id}/add/", params
         .then (response) !->
-            null
+            $log.info "added cards to basket"
             # $scope.alerts = response.data.msgs # the confirmation alert should be less intrusive
         , (response) !->
             ... # error
@@ -190,7 +190,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         # Get or create the inventory, redirect to that inventory page
         $http.get "/api/baskets/#{$scope.cur_basket.id}/inventories/"
         .then (response) !->
-            inv_id = response.data.data['inv_id']
+            inv_id = response.data.data.inv_id
             # What url scheme ? We want to include the inv id to re-use the inventory controller.
             # baskets/<basket_id>/inventory/<inv id>/, or
             #  /inventories/<inv id>
@@ -223,7 +223,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
 
-    $scope.sort_by = (key) ->
+    $scope.sort_by = (key) !->
         if $scope.last_sort == key
             $scope.copies = $scope.copies
             |> reverse
@@ -289,7 +289,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     # Initialize the tour
 
-    $scope.start_tour = ->
+    $scope.start_tour = !->
         tour.init()
         tour.setCurrentStep(0)  # the second time would start from the end.
         # Start the tour
@@ -322,7 +322,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 #####################
 # New basket modal
 # ###################
-angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils) ->
+angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils) !->
 
     utils.set_focus!
 
@@ -355,7 +355,7 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
 ########################
 # Basket to deposit modal
 # ######################
-angular.module "abelujo" .controller "BasketToDepositModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, basket_id) ->
+angular.module "abelujo" .controller "BasketToDepositModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, basket_id) !->
 
     $scope.distributor_list = []
     $scope.distributor = {}

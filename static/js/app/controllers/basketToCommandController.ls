@@ -38,7 +38,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.show_images = false
 
     $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies",
-    .then (response) ->
+    .then (response) !->
         $scope.cards = response.data
         $scope.sorted_cards = group-by (.distributor.name), $scope.cards
 
@@ -77,7 +77,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.super_total_price = ->
         utils.total_price $scope.cards
 
-    $scope.closeAlert = (index) ->
+    $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
     $scope.get_body = (dist_name) ->
@@ -150,7 +150,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
                 else
                     $scope.alerts = response.data.alerts
 
-    $scope.dist_href = (name) ->
+    $scope.dist_href = (name) !->
         $window.location.href = "#" + name
 
     $scope.toggle_images = !->
@@ -188,7 +188,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     # Initialize the tour
 
-    $scope.start_tour = ->
+    $scope.start_tour = !->
         tour.init()
         tour.setCurrentStep(0)  # the second time would start from the end.
         # Start the tour

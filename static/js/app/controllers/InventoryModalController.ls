@@ -31,7 +31,7 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
     $http.get "/api/places"
         .then (response) !->
             $scope.places = response.data
-            $scope.data['places'] = response.data
+            $scope.data.places = response.data
 
     $http.get "/api/shelfs"
         .then (response) !->
@@ -71,7 +71,7 @@ angular.module "abelujo" .controller "InventoryModalController", ($http, $scope,
               $log.info "modal dismissed"
 
 
-angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelfs, shelf, publishers, publisher, utils) ->
+angular.module "abelujo" .controller "ModalInstanceCtrl", ($http, $scope, $uibModalInstance, places, $window, $log, place, shelfs, shelf, publishers, publisher, utils) !->
 
     $scope.places = places
     $scope.place = place

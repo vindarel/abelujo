@@ -95,15 +95,15 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             in_stock: true
 
         if $scope.publisher
-            params['publisher_id'] = $scope.publisher.pk
+            params.publisher_id = $scope.publisher.pk
         if $scope.place
-            params['place_id'] = $scope.place.id
+            params.place_id = $scope.place.id
         if $scope.card_type
-            params['card_type'] = $scope.card_type
+            params.card_type = $scope.card_type
         if $scope.shelf
-            params['shelf_id'] = $scope.shelf.pk
+            params.shelf_id = $scope.shelf.pk
         if $scope.distributor
-            params['distributor_id'] = $scope.distributor.id
+            params.distributor_id = $scope.distributor.id
 
         $http.get "/api/cards", do
             params: params
@@ -122,7 +122,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
     $window.document.title = "Abelujo - " + gettext("Stock")
 
-    $scope.closeAlert = (index) ->
+    $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
     $scope.toggle_images = !->
@@ -180,7 +180,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
 ]
 
-angular.module "abelujo" .controller "CollectionModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) ->
+angular.module "abelujo" .controller "CollectionModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) !->
 
     {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
 
@@ -188,7 +188,7 @@ angular.module "abelujo" .controller "CollectionModalControllerInstance", ($http
     $scope.alerts = []
 
     $http.get "/api/baskets"
-    .then (response) ->
+    .then (response) !->
         $scope.baskets = response.data.data
 
     $scope.ok = !->

@@ -180,8 +180,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
     $scope.discount_apply = function(index){
         var price_sold;
-        price_sold = $scope.cards_selected[index]['price_orig'];
-        $scope.cards_selected[index]['price_sold'] = price_sold - price_sold * $scope.cards_selected[index].quick_discount.discount / 100;
+        price_sold = $scope.cards_selected[index].price_orig;
+        $scope.cards_selected[index].price_sold = price_sold - price_sold * $scope.cards_selected[index].quick_discount.discount / 100;
 
         $scope.updateTotalPrice();
     };
@@ -190,7 +190,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         // Set the same discount to all cards
         var discount = $scope.discounts.global_discount;
         for(var card = 0; card < $scope.cards_selected.length; card++) {
-            $scope.cards_selected[card]['quick_discount'] = discount;
+            $scope.cards_selected[card].quick_discount = discount;
             $scope.discount_apply(card);
         }
     };
@@ -207,7 +207,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       });
 
     $scope.sellCards = function() {
-          var to_sell = [];
           var ids = [];
           var prices = [];
           var quantities = [];
@@ -251,9 +250,9 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           // We need not to pass the parameters encoded as json to Django.
           // Encode them like url parameters.
           $http.defaults.transformRequest = utils.transformRequestAsFormPost; // don't transfrom params to json.
-          var config = {
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-          };
+          // var config = {
+          //     headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+          // };
 
           return $http.post("/api/sell", params)
               .then(function(response){
