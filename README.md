@@ -89,7 +89,7 @@ We are done ! Now to try Abelujo, run the development server like this:
     # or set the port with:
     # python manage.py runserver 9876
 
-and open your browser to <http://127.0.0.1:8000>.
+and open your browser to <http://127.0.0.1:8000> (admin/admin).
 
 Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 
