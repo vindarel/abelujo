@@ -3314,6 +3314,7 @@ class InventoryBase(TimeStampedModel):
 
         return inv_copies.quantity
 
+
     def remove_card(self, card_id):
         """
 
@@ -3358,6 +3359,103 @@ class InventoryBase(TimeStampedModel):
                 card.save()
 
         return (status, msgs.msgs)
+
+    @staticmethod
+    def diff_inventory(pk, **kwargs):
+        try:
+            obj = Inventory.objects.get(id=pk)
+            return obj.diff(**kwargs)
+        except Exception as e:
+            log.error(u"Error getting inventory: {}".format(e))
+            return None
+
+    def diff(self, to_dict=False):
+        """Diff the inventory's state with the database: get
+        - which cards are ok,
+        - which ones are missing from the inventory,
+        - which are missing from the
+        database,
+        - which are in the database but with the wrong quantity.
+
+        - return a tuple with the diff, the object name, total copies in the inv, total in stock.
+
+        """
+        d_stock = None
+        inv_cards_set = self.copies_set.all()
+        obj_name = ""
+        if hasattr(self, "shelf") and self.shelf:
+            d_stock = self.shelf.cards_set()
+            obj_name = self.shelf.name
+        elif hasattr(self, "place") and self.place:
+            stock_cards_set = self.place.placecopies_set.select_related('card').all()
+            obj_name = self.place.name
+        elif hasattr(self, "basket") and self.basket:
+            stock_cards_set = self.basket.basketcopies_set.all()
+            obj_name = self.basket.name
+        elif hasattr(self, "publisher") and self.publisher:
+            cards = self.publisher.card_set.all()
+            d_stock = {it.id: {'card': it, 'quantity': it.quantity} for it in cards}
+            obj_name = self.publisher.name
+        elif hasattr(self, "command") and self.command:
+            cards = self.command.commandcopies_set.all()  # ?? XXX
+            obj_name = self.command.name
+            stock_cards_set = self.command.commandcopies_set.all() # ?? XXX
+        else:
+            log.error("An inventory without place nor shelf nor basket nor publisher nor command... that shouldn't happen.")
+
+        # Cards of the inventory:
+        d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
+        # Total copies inventoried
+        total_copies_in_inv = sum([it.quantity for it in inv_cards_set.all()])
+        # Cards of the stock (the reference)
+        if d_stock is None:
+            d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
+        total_copies_in_stock = sum([it['quantity'] for _, it in d_stock.iteritems()])
+
+        # cards in stock but not in the inventory:
+        in_stock = list(set(d_stock) - set(d_inv)) # list of ids
+        in_stock = {it: d_stock[it] for it in in_stock}
+
+        # cards in the inventory but not in stoc:
+        in_inv = list(set(d_inv) - set(d_stock))
+        in_inv = {it: d_inv[it] for it in in_inv}
+
+        # Difference of quantities:
+        # diff = quantity original - quantity found in inventory
+        d_diff = {} # its quantity is: "how many the inventory has more or less compared with the stock"
+        for id, val in d_inv.iteritems():
+            d_diff[id] = {}
+            d_diff[id]['in_orig'] = True # i.e. in place/basket of origin, we get the diff from
+            d_diff[id]['in_inv'] = True
+            d_diff[id]['inv'] = val['quantity']
+            d_diff[id]['card'] = val['card']
+            if d_stock.get(id):
+                d_diff[id]['diff'] = d_stock[id]['quantity'] - val['quantity']
+                d_diff[id]['stock'] = d_stock[id]['quantity']
+                d_stock[id]['inv'] = val['quantity']
+
+            else:
+                d_diff[id]['in_orig'] = False
+                d_diff[id]['stock'] = 0
+                d_diff[id]['diff'] = d_inv[id]['quantity']
+
+        # Add the cards in the inv but not in the origin
+        for id, val in d_stock.iteritems():
+            if not d_inv.get(id):
+                d_diff[id] = {'in_inv': False,
+                              'in_orig': True,
+                              'card': val['card'],
+                              'stock': val['quantity'],
+                              'inv': 0,
+                              'diff': val['quantity'],
+                             }
+        # we must have all cards in d_dif and all info.
+
+        if to_dict:
+            # Update each sub-dict in place, to replace the card obj with its to_dict.
+            d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
+
+        return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
 class Inventory(InventoryBase):
     """
@@ -3430,100 +3528,6 @@ class Inventory(InventoryBase):
             log.error("We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
 
         return cards_qty
-
-    @staticmethod
-    def diff_inventory(pk, **kwargs):
-        try:
-            obj = Inventory.objects.get(id=pk)
-            return obj.diff(**kwargs)
-        except Exception as e:
-            log.error(u"Error getting inventory: {}".format(e))
-            return None
-
-    def diff(self, to_dict=False):
-        """Diff the inventory's state with the database: get
-        - which cards are
-        ok,
-        - which ones are missing from the inventory,
-        - which are missing from the
-        database,
-        - which are in the database but with the wrong quantity.
-
-        - return a tuple with the diff, the object name, total copies in the inv, total in stock.
-
-        """
-        d_stock = None
-        inv_cards_set = self.inventorycopies_set.all()
-        obj_name = ""
-        if self.shelf:
-            d_stock = self.shelf.cards_set()
-            obj_name = self.shelf.name
-        elif self.place:
-            stock_cards_set = self.place.placecopies_set.select_related('card').all()
-            obj_name = self.place.name
-        elif self.basket:
-            stock_cards_set = self.basket.basketcopies_set.all()
-            obj_name = self.basket.name
-        elif self.publisher:
-            cards = self.publisher.card_set.all()
-            d_stock = {it.id: {'card': it, 'quantity': it.quantity} for it in cards}
-            obj_name = self.publisher.name
-        else:
-            log.error("An inventory without place nor shelf nor basket nor publisher... that shouldn't happen.")
-
-        # Cards of the inventory:
-        d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
-        # Total copies inventoried
-        total_copies_in_inv = sum([it.quantity for it in inv_cards_set.all()])
-        # Cards of the stock (the reference)
-        if d_stock is None:
-            d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
-        total_copies_in_stock = sum([it['quantity'] for _, it in d_stock.iteritems()])
-
-        # cards in stock but not in the inventory:
-        in_stock = list(set(d_stock) - set(d_inv)) # list of ids
-        in_stock = {it: d_stock[it] for it in in_stock}
-
-        # cards in the inventory but not in stoc:
-        in_inv = list(set(d_inv) - set(d_stock))
-        in_inv = {it: d_inv[it] for it in in_inv}
-
-        # Difference of quantities:
-        # diff = quantity original - quantity found in inventory
-        d_diff = {} # its quantity is: "how many the inventory has more or less compared with the stock"
-        for id, val in d_inv.iteritems():
-            d_diff[id] = {}
-            d_diff[id]['in_orig'] = True # i.e. in place/basket of origin, we get the diff from
-            d_diff[id]['in_inv'] = True
-            d_diff[id]['inv'] = val['quantity']
-            d_diff[id]['card'] = val['card']
-            if d_stock.get(id):
-                d_diff[id]['diff'] = d_stock[id]['quantity'] - val['quantity']
-                d_diff[id]['stock'] = d_stock[id]['quantity']
-                d_stock[id]['inv'] = val['quantity']
-
-            else:
-                d_diff[id]['in_orig'] = False
-                d_diff[id]['stock'] = 0
-                d_diff[id]['diff'] = d_inv[id]['quantity']
-
-        # Add the cards in the inv but not in the origin
-        for id, val in d_stock.iteritems():
-            if not d_inv.get(id):
-                d_diff[id] = {'in_inv': False,
-                              'in_orig': True,
-                              'card': val['card'],
-                              'stock': val['quantity'],
-                              'inv': 0,
-                              'diff': val['quantity'],
-                             }
-        # we must have all cards in d_dif and all info.
-
-        if to_dict:
-            # Update each sub-dict in place, to replace the card obj with its to_dict.
-            d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
-
-        return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
     @staticmethod
     def apply_inventory(pk):
@@ -4140,3 +4144,16 @@ class Command(TimeStampedModel):
 
         msgs.add_success(_(u"Command updated succesfully."))
         return msgs
+
+    def get_inventory(self):
+        """
+        Create an inventory of the parcel (to check its content) if it doesn't exist.
+        """
+
+        if not self.inventory:
+            inv = InventoryCommand()
+            inv.save()
+            self.inventory = inv
+            self.save()
+
+        return self.inventory

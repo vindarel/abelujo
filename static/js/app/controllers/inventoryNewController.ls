@@ -61,7 +61,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     is_command_receive = false
     pathname = $window.location.pathname
 
-    if "inventories".contains pathname
+    if pathname.contains "inventories"
         is_default_inventory = true
         $log.info "found default inventory"
         api_inventory_id = "/api/inventories/{inv_or_cmd_id}/"

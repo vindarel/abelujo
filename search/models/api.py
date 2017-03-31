@@ -25,6 +25,7 @@ from models import Command
 from models import Deposit
 from models import Distributor
 from models import Inventory
+from models import InventoryCommand
 from models import Place
 from models import Preferences
 from models import Publisher
@@ -1215,6 +1216,10 @@ def stats_stock_age(request, **kwargs):
     stats = Stats().stock_age(shelf)
     return JsonResponse(stats, safe=False)
 
+###############################################################################
+### Commands
+###############################################################################
+
 def commands_ongoing(request, **kwargs):
     """
     """
@@ -1277,3 +1282,68 @@ def commands_update(request, **kwargs):
         to_ret['alerts'] = msgs.to_alerts()
 
     return JsonResponse(to_ret)
+
+def _get_command_or_return(pk):
+    """
+    Return the command object, or return a request with an error message.
+    """
+    msgs = Messages()
+    to_ret = {
+        'status': msgs.status,
+        'alerts': msgs.to_alerts(),
+    }
+    try:
+        cmd = Command.objects.get(id=pk)
+    except ObjectDoesNotExist as e:
+        log.warning(u"Command {} does not exist. {}".format(pk, e))
+        msgs.add_error(u"Command {} does not exist.")
+        to_ret['status'] = msgs.status
+        to_ret['alerts'] = msgs.to_alerts()
+        return JsonResponse(to_ret)
+
+    return cmd
+
+
+def command_receive(request, pk, **kwargs):
+    msgs = Messages()
+    to_ret = {
+        'status': msgs.status,
+        'alerts': msgs.to_alerts(),
+    }
+    cmd = _get_command_or_return(pk)
+    inv = cmd.get_inventory()
+    state = inv.state()
+    to_ret['data'] = state
+
+    return JsonResponse(to_ret)
+
+
+def command_receive_update(request, pk, **kwargs):
+    msgs = Messages()
+    to_ret = {
+        'status': msgs.status,
+        'alerts': msgs.to_alerts(),
+    }
+    if request.method == 'POST':
+        if request.body and pk:
+            try:
+                cmd = Command.objects.get(id=pk)
+                inv_obj = cmd.get_inventory()
+            except ObjectDoesNotExist:
+                return
+            ids_qties = json.loads(request.body)
+            ids_qties = ids_qties_to_pairs(ids_qties['ids_qties'])
+            status, _msgs = inv_obj.add_pairs(ids_qties)
+            msgs.append(_msgs)
+            to_ret['status'] = msgs.status
+            to_ret['alerts'] = msgs.to_alerts()
+
+            return JsonResponse(to_ret)
+
+    raise NotImplementedError
+
+def command_receive_remove(request, pk, **kwargs):
+    raise NotImplementedError
+
+def command_receive_diff(request, pk, **kwargs):
+    raise NotImplementedError

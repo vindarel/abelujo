@@ -50,6 +50,7 @@ from search.models import DepositCopies
 from search.models import DepositState
 from search.models import Distributor
 from search.models import Inventory
+from search.models import InventoryCommand
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Preferences
@@ -1287,7 +1288,7 @@ class TestCommands(TestCase):
         self.assertTrue(status)
         self.assertEqual(0, inv.nb_copies())
 
-    def test_add_pairs(self):
+    def test_inventory_command_add_pairs(self):
         # Same as abvoe
         pairs = []
         inv = self.com.get_inventory()
@@ -1299,3 +1300,13 @@ class TestCommands(TestCase):
         # add_pairs *sets* the quantities
         state = inv.state()
         self.assertEqual(state['nb_copies'], 1)
+        # if that fails, we do not save the objects in db.
+        self.assertTrue(InventoryCommand.objects.get(id=inv.id))
+        ask_again_inv = InventoryCommand.objects.get(id=inv.id)
+        ask_again_state = ask_again_inv.state()
+        self.assertEqual(ask_again_state['nb_copies'], 1)
+
+    def test_inventory_command_remove(self):
+        inv = self.com.get_inventory()
+        qty = inv.add_copy(self.card, nb=2)
+        res_tuple = inv.diff()
