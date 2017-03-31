@@ -33,7 +33,7 @@
  .col-md-12
   h4
     span {% trans "Command #" %} {{ object.id }}  
-    span(style="{% if object.received %} background-color: lightgreen; {% else %} background-color: red; {% endif %}")  {% if not object.received %} {% trans "ongoing" %} {% else %} {% trans "received" %} {% endif %}
+    span(style="{% if object.received %} background-color: lightgreen; {% else %} background-color: red; {% endif %}")  {% if not object.received %} {% trans "ongoing" %} {% else %}{# Translators: it is about a command. In french: female noun, une commande reçuE. #} {% trans "received" %} {% endif %}
 
 .row
  .col-md-4
