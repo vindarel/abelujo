@@ -87,7 +87,6 @@ set-prod:
 	touch PROD.txt
 
 update:
-	apt-get update  # prevents unreachable sources, sometimes.
 	make set-prod
 	make rebase
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
@@ -99,6 +98,7 @@ update:
 	gulp
 	make collectstatic
 	make translation-compile 	# gunicorn needs a restart
+	# echo "it's good to do an apt-get update once in a while"  # prevents unreachable sources, sometimes.
 	@echo "For development, don't forget make pip-dev"
 
 update-dev: update pip-dev pip-submodule-dev
