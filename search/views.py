@@ -40,27 +40,27 @@ from django.views.generic import ListView
 from weasyprint import CSS
 from weasyprint import HTML
 
-import datasources.bookshops.all.discogs.discogsScraper as discogs
+from search.datasources.bookshops.all.discogs import discogsScraper as discogs
 # The datasources imports must have the name as their self.SOURCE_NAME
-import datasources.bookshops.deDE.buchlentner.buchlentnerScraper as buchlentner
-import datasources.bookshops.esES.casadellibro.casadellibroScraper as casadellibro
-import datasources.bookshops.frFR.decitre.decitreScraper as decitre
-import datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper as librairiedeparis
+from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner
+from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro
+from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre
+from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis
 import models
-from models import Barcode64
-from models import Basket
-from models import Bill
-from models import Card
-from models import Command
-from models import Deposit
-from models import Distributor
-from models import Inventory
-from models import InventoryCommand
-from models import Place
-from models import Preferences
-from models import Publisher
-from models import Sell
-from models import Stats
+from search.models import Barcode64
+from search.models import Basket
+from search.models import Bill
+from search.models import Card
+from search.models import Command
+from search.models import Deposit
+from search.models import Distributor
+from search.models import Inventory
+from search.models import InventoryCommand
+from search.models import Place
+from search.models import Preferences
+from search.models import Publisher
+from search.models import Sell
+from search.models import Stats
 from search.models import Entry
 from search.models import EntryCopies
 from search.models.utils import _is_truthy
