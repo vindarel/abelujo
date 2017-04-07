@@ -3839,7 +3839,7 @@ class InventoryCommand(InventoryBase):
         inv_name = ""
         orig_cards_qty = self._orig_cards_qty()
         missing = orig_cards_qty - nb_cards
-        inv_name = u"#{} - {}".format(self.command.id, self.command.supplier_name)
+        inv_name = _(u"command #{} - {}").format(self.command.id, self.command.supplier_name)
         inv_dict = self.to_dict()
 
         return {

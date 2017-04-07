@@ -28,59 +28,76 @@
 {% load ngfilter %}
 
 div(ng-controller=controller)
-  h3#title {% trans "Inventory of command " %}{{ 'cur_inv' | ng }}
-  div {{ 'alerts ' | ng }}
+  .row
+    .col-lg-4
+      h3#title {% trans "Inventory of " %}{{ 'cur_inv' | ng }}
+
+    div {{ 'alerts ' | ng }}
   form(method="get")
 
     .row
-      .col-lg-7
-       .row
-        p.input-group
-            input.nullable.form-control(
-                type='text'
-                typeahead-loading="loadingCards"
-                ng-model='{% verbatim %}copy_selected{% endverbatim %}'
-                uib-typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue, card_type_id) {% endverbatim %}'
-                typeahead-min-length="3"
-                typeahead-on-select="add_selected_card($item)"
-                title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
-                id="default-input"
-                placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
-            )
+            div.col-md-4
+              table.table.table-condensed
+               tbody
+                tr
+                  td{% trans "Nb of cards" %}
+                  td {{ 'nb_cards'| ng }}
+                tr
+                  td{% trans "nb of copies" %}
+                  td {{ 'nb_copies'|ng }}
+            div.col-md-4
+              table.table.table-condensed
+                tr
+                  td(ng-show="total_missing >= 0") {% trans "It remains" %}
+                  td {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
+            div.col-md-4
+              table.table.table-condensed
+                tr
+                  td {% trans "Total value" %}
+                  td {{ 'total_value' | ng }} €
 
-            span.input-group-btn
-                button.btn.btn-default
-                    i.glyphicon.glyphicon-search
+    .row
        .row
         .col-md-10
          .col-md-2
            btn.btn.btn-success(ng-click="terminate()") {% trans "Analyse…" %}
-         .col-md-1
            a(href="http://abelujo.cc/docs/inventories/", target="_blank")
               btn.btn.btn-default( title='{% trans "Read the documentation" %}')
                i.glyphicon.glyphicon-question-sign
 
-         .col-lg-3
+         .col-lg-8
           input(type="checkbox", ng-model="showAll", ng-change="setCardsToShow()")
           span(ng-click="toggleCardsToShow()") {% trans "Show all cards inventoried" %}
 
+       .row
+         .col-md-8
+          p.input-group
+              input.nullable.form-control(
+                  type='text'
+                  typeahead-loading="loadingCards"
+                  ng-model='{% verbatim %}copy_selected{% endverbatim %}'
+                  uib-typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue, card_type_id) {% endverbatim %}'
+                  typeahead-min-length="3"
+                  typeahead-on-select="add_selected_card($item)"
+                  title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
+                  id="default-input"
+                  placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
+              )
 
-      .col-md-5
-            div
-              ul
-                li {% trans "Nb of cards" %}: {{ 'nb_cards'| ng }}
-                li {% trans "nb of copies" %}: {{ 'nb_copies'|ng }}
-                li {% trans "Total value" %}: {{ 'total_value' | ng }} €
-                li(ng-show="total_missing >= 0") {% trans "It remains" %} {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
-                li {% trans "You did "%} {{ 'progress_current' | ng }} %.
-                  div.progress
-                    div.progress-bar.progress-bar-info(role="progress-bar"
-                      aria-valuenow="{{ progress_current }}"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                      ng-style="progressStyle"
-                      title="Inventory: {{ progress_current }}% done") {{ 'progress_current ' | ng }}
-                      span.sr-only {{ 'progress_current ' | ng }}
+              span.input-group-btn
+                  button.btn.btn-default
+                      i.glyphicon.glyphicon-search
+
+         .col-md-4
+                   div {{ 'progress_current' | ng }} %.
+                     div.progress
+                      div.progress-bar.progress-bar-info(role="progress-bar"
+                        aria-valuenow="{{ progress_current }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        ng-style="progressStyle"
+                        title="Inventory: {{ progress_current }}% done") {{ 'progress_current ' | ng }}
+                        span.sr-only {{ 'progress_current ' | ng }}
 
 
 
