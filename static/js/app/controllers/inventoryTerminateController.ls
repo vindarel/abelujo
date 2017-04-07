@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
+angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$log', ($http, $scope, $timeout, utils, $filter, $window, $log) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.
@@ -22,6 +22,39 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
 
     {sum, map, filter, lines, join, Obj} = require 'prelude-ls'
 
+    # ##############################################################################
+    # This controller is used as well for USUAL INVENTORIES as for COMMANDS.
+    # ##############################################################################
+    is_default_inventory = false
+    is_command_receive = false
+    pathname = $window.location.pathname
+
+    $scope.inv_or_cmd_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
+
+    String.prototype.contains = (it) -> this.indexOf(it) != -1
+    if pathname.contains "inventories"
+        is_default_inventory = true
+        $log.info "found default inventory"
+        api_inventory_id = "/api/inventories/{inv_or_cmd_id}/"
+    else if pathname.contains "commands"
+        is_command_receive = true
+        $log.info "found a command inventory."
+        api_inventory_id = "/api/commands/{inv_or_cmd_id}/receive/"
+
+    else
+        $log.error "What are we doing the inventory of ??"
+        ...
+
+    # Common url end points:
+    api_inventory_id_diff = api_inventory_id + "diff/"
+    api_inventory_id_apply = api_inventory_id + "apply/"
+
+    # Disambiguate url for inventory or commands' parcels.
+    get_api = (api) ->
+        api.replace "{inv_or_cmd_id}", $scope.inv_or_cmd_id
+
+
+    ##################### inventory controller #####################################
     # The cards fetched from the autocomplete.
     $scope.cards_fetched = []
     # The autocomplete choice.
@@ -55,7 +88,7 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
     $scope.language = utils.url_language($window.location.pathname)
 
-    $http.get "/api/inventories/#{$scope.inv_id}/diff/"
+    $http.get get_api api_inventory_id_diff
     .then (response) !->
         # $scope.alerts = response.data.msgs
         $scope.diff = response.data.cards

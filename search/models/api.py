@@ -1346,4 +1346,16 @@ def command_receive_remove(request, pk, **kwargs):
     raise NotImplementedError
 
 def command_receive_diff(request, pk, **kwargs):
-    raise NotImplementedError
+    msgs = Messages()
+    to_ret = {
+        'status': msgs.status,
+        'alerts': msgs.to_alerts(),
+    }
+    cmd = _get_command_or_return(pk)
+    inv = cmd.get_inventory()
+    diff, obj_name, total_copies_in_inv, total_copies_in_stock = inv.diff(to_dict=True)
+    to_ret = {'cards': diff,
+              'total_copies_in_inv': total_copies_in_inv,
+              'total_copies_in_stock': total_copies_in_stock,
+              'name': obj_name}
+    return JsonResponse(to_ret)

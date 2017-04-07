@@ -3397,9 +3397,9 @@ class InventoryBase(TimeStampedModel):
             d_stock = {it.id: {'card': it, 'quantity': it.quantity} for it in cards}
             obj_name = self.publisher.name
         elif hasattr(self, "command") and self.command:
-            cards = self.command.commandcopies_set.all()  # ?? XXX
-            obj_name = self.command.name
-            stock_cards_set = self.command.commandcopies_set.all() # ?? XXX
+            cards = self.command.commandcopies_set.all()
+            obj_name = self.command.title
+            stock_cards_set = self.command.commandcopies_set.all()
         else:
             log.error("An inventory without place nor shelf nor basket nor publisher nor command... that shouldn't happen.")
 
@@ -3786,6 +3786,10 @@ class CommandCopies(TimeStampedModel):
         return self.quantity
 
     @property
+    def nb(self):
+        return self.quantity
+
+    @property
     def value_inctaxes(self):
         try:
             return self.card.price * self.quantity
@@ -3839,7 +3843,7 @@ class InventoryCommand(InventoryBase):
         inv_name = ""
         orig_cards_qty = self._orig_cards_qty()
         missing = orig_cards_qty - nb_cards
-        inv_name = _(u"command #{} - {}").format(self.command.id, self.command.supplier_name)
+        inv_name = self.command.title
         inv_dict = self.to_dict()
 
         return {
@@ -3982,6 +3986,13 @@ class Command(TimeStampedModel):
 
     def __unicode__(self):
         return "command {} for {}".format(self.id, self.supplier_name)
+
+    @property
+    def title(self):
+        """
+        Used for example in the inventory UI title.
+        """
+        return _(u"command #{} - {}").format(self.id, self.supplier_name)
 
     @staticmethod
     def ongoing():

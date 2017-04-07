@@ -1085,6 +1085,7 @@ class CommandDetailView(DetailView):
     model = Command
     template_name = "search/commands_view.jade"
 
+
 @login_required
 def command_receive(request, pk):
     """
@@ -1109,4 +1110,12 @@ def command_receive(request, pk):
         cmd.inv = inv
         cmd.save()
 
+    return render(request, template)
+
+
+@login_required
+def command_receive_terminate(request, pk):
+    """
+    """
+    template = "search/inventory_terminate.jade"
     return render(request, template)
