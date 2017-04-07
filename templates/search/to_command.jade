@@ -40,7 +40,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
     li.active(role="presentation")
       a(href="#") {% trans "To command" %}
     li#ongoing(role="presentation")
-      a(href="ongoing") {% trans "Commands ongoing" %}  
+      a(href="/commands/ongoing") {% trans "Commands ongoing" %}  
         span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
 
   .col-md-2
