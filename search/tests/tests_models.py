@@ -1300,7 +1300,7 @@ class TestCommands(TestCase):
         # add_pairs *sets* the quantities
         state = inv.state()
         self.assertEqual(state['nb_copies'], 1)
-        # if that fails, we do not save the objects in db.
+        # if that fails, that means we did not save the objects in db.
         self.assertTrue(InventoryCommand.objects.get(id=inv.id))
         ask_again_inv = InventoryCommand.objects.get(id=inv.id)
         ask_again_state = ask_again_inv.state()
@@ -1310,3 +1310,45 @@ class TestCommands(TestCase):
         inv = self.com.get_inventory()
         qty = inv.add_copy(self.card, nb=2)
         res_tuple = inv.diff()
+
+    def test_inventory_command_diff(self):
+        inv = self.com.get_inventory()
+        res = inv.diff()
+
+class TestCommandsReceive(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory()
+        self.publisher = PublisherFactory()
+        # A Command:
+        self.com = Command(publisher=self.publisher)
+        self.com.save()
+
+        # add cards to the command
+        self.com.add_copy(self.card)
+
+        # add cards to the command's inventory
+        self.inv = self.com.get_inventory()
+        self.inv.add_copy(self.card)
+
+        # A default place in Preferences (to apply the parcel somewhere).
+        self.preferences = PreferencesFactory()
+        self.preferences.default_place = PlaceFactory()
+        self.preferences.save()
+        self.new_place = PlaceFactory()
+
+
+    def tearDown(self):
+        pass
+
+    def test_inventory_command_state(self):
+        # may be redundant with test of add_pairs
+        state = self.inv.state()
+        self.assertEqual(state['total_missing'], 0)
+        self.assertEqual(state['nb_cards'], 1)
+
+    def test_inventory_command_apply(self):
+        self.assertEqual(self.preferences.default_place.quantity_of(self.card), 0)
+        self.inv.apply()
+        self.assertTrue(self.inv.applied)
+        self.assertEqual(self.preferences.default_place.quantity_of(self.card), 1)

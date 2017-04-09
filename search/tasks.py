@@ -22,7 +22,7 @@ Huey asynchronous tasks.
 import logging
 from huey.contrib.djhuey import db_task
 
-from models import Inventory
+from models import Inventory, InventoryCommand
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -32,4 +32,10 @@ def inventory_apply_task(pk):
     log.info("Starting task inventory apply of inventory {}".format(pk))
     status, alerts = Inventory.apply_inventory(pk)
     log.info("Task inventory apply finished for inventory {}".format(pk))
-    print "inv {} applied ! with status {} and alerts: {}".format(pk, status, alerts)
+
+
+@db_task()
+def command_inventory_apply_task(pk):
+    log.info("Starting task inventory apply of InventoryCommand {}".format(pk))
+    status, alerts = InventoryCommand.apply_inventory(pk)  # add the quantity to the stock.
+    log.info("Task inventory apply finished for InventoryCommand {}".format(pk))

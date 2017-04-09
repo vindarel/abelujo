@@ -25,21 +25,23 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     # ##############################################################################
     # This controller is used as well for USUAL INVENTORIES as for COMMANDS.
     # ##############################################################################
-    is_default_inventory = false
-    is_command_receive = false
+    $scope.is_default_inventory = false
+    $scope.is_command_receive = false
     pathname = $window.location.pathname
 
     $scope.inv_or_cmd_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
 
     String.prototype.contains = (it) -> this.indexOf(it) != -1
     if pathname.contains "inventories"
-        is_default_inventory = true
+        $scope.is_default_inventory = true
         $log.info "found default inventory"
         api_inventory_id = "/api/inventories/{inv_or_cmd_id}/"
+        base_url_inventory_view = "/inventories/{inv_or_cmd_id}/"
     else if pathname.contains "commands"
-        is_command_receive = true
+        $scope.is_command_receive = true
         $log.info "found a command inventory."
         api_inventory_id = "/api/commands/{inv_or_cmd_id}/receive/"
+        base_url_inventory_view = "/commands/{inv_or_cmd_id}/receive/terminate/"
 
     else
         $log.error "What are we doing the inventory of ??"
@@ -52,6 +54,9 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     # Disambiguate url for inventory or commands' parcels.
     get_api = (api) ->
         api.replace "{inv_or_cmd_id}", $scope.inv_or_cmd_id
+
+    $scope.get_base_url = ->
+        base_url_inventory_view.replace "{inv_or_cmd_id}", $scope.inv_or_cmd_id
 
 
     ##################### inventory controller #####################################
@@ -126,10 +131,11 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $scope.validate = !->
         sure = confirm "Are you sure to apply this inventory to your stock ?"
         if sure
-            $http.post "/api/inventories/#{$scope.inv_id}/apply"
+            $log.info "post to ", get_api api_inventory_id_apply
+            $http.post get_api api_inventory_id_apply
             .then (response) !->
                 status = response.data.status
-                $scope.alerts = response.data
+                $scope.alerts = response.data.alerts
 
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1

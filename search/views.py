@@ -63,18 +63,17 @@ from search.models import Sell
 from search.models import Stats
 from search.models import Entry
 from search.models import EntryCopies
+from search.models.api import _get_command_or_return
 from search.models.utils import _is_truthy
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import truncate
 
+
 log = logging.getLogger(__name__)
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
-
-#: Default datasource to be used when searching isbn, if source not supplied.
-DEFAULT_DATASOURCE = "librairiedeparis"
 
 
 class MyNumberInput(TextInput):
@@ -180,51 +179,12 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     rev_url = reverse(url_name) + "?" + params
     return rev_url
 
-def get_datasource_from_lang(lang):
-    """From a lang (str), return the name (str) of the datasource module.
-
-    And for CDs ? The client should be in "recordsop" mode.
-    """
-    if not lang:
-        return DEFAULT_DATASOURCE
-
-    if lang.startswith("fr"):
-        return "librairiedeparis"
-    elif lang.startswith("de"):
-        return "buchlentner"
-    elif lang.startswith("es"):
-        return "casadellibro"
-    elif lang == "discogs":
-        return lang
-    else:
-        return DEFAULT_DATASOURCE
-
 @login_required
 def preferences(request):
     """
     """
     template = "search/preferences.jade"
     return render(request, template)
-
-def search_on_data_source(data_source, search_terms, PAGE=1):
-    """search with the appropriate scraper.
-
-    data_source is the name of an imported module.
-    search_terms: list of strings.
-
-    return: a couple (search results, stacktraces). Search result is a
-    list of dicts.
-    """
-    # get the imported module by name.
-    # They all must have a class Scraper.
-    scraper = getattr(globals()[data_source], "Scraper")
-    # res, traces = scraper(*search_terms).search()
-    res, traces = scraper(search_terms, PAGE=PAGE).search()
-
-    # Check if we already have these cards in stock (with isbn).
-    res = Card.is_in_stock(res)
-
-    return res, traces
 
 def postSearch(data_source, details_url):
     """Call the postSearch function of the module imported with the name
@@ -1119,3 +1079,24 @@ def command_receive_terminate(request, pk):
     """
     template = "search/inventory_terminate.jade"
     return render(request, template)
+
+
+@login_required
+def command_receive_export(request, pk):
+    cmd = _get_command_or_return(pk)
+    inv = cmd.get_inventory()
+    copies_set = inv.copies_set.all()
+    inv_name = inv.name or inv.command.title
+
+    report = request.GET.get('report')
+    format = request.GET.get('format')
+    barcodes = _is_truthy(request.GET.get('barcodes'))
+    covers = _is_truthy(request.GET.get('covers'))
+
+    response = _export_response(copies_set, report=report, format=format,
+                                inv=inv,
+                                barcodes=barcodes,
+                                covers=covers,
+                                name=inv_name)
+
+    return response

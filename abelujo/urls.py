@@ -89,6 +89,7 @@ apipatterns = patterns("",
     url(r'^api/commands/(?P<pk>\d+)/receive/remove/?$', 'search.models.api.command_receive_remove', name="api_command_receive_remove"),
     url(r'^api/commands/(?P<pk>\d+)/receive/update/?$', 'search.models.api.command_receive_update', name="api_command_receive_update"),
     url(r'^api/commands/(?P<pk>\d+)/receive/diff/?$', 'search.models.api.command_receive_diff', name="api_command_receive_diff"),
+    url(r'^api/commands/(?P<pk>\d+)/receive/apply/?$', 'search.models.api.command_receive_apply', name="api_command_receive_apply"),
 
 
     # Sell

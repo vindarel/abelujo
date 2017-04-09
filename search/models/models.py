@@ -1477,7 +1477,10 @@ class Place (models.Model):
         """
         try:
             place_copies = self.placecopies_set.filter(card__id=card.id).first()
-            return place_copies.nb
+            if place_copies:
+                return place_copies.nb
+            else:
+                return 0
         except Exception as e:
             log.error(e)
             return None
@@ -3457,6 +3460,48 @@ class InventoryBase(TimeStampedModel):
 
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
+
+    @staticmethod
+    def apply_inventory(pk):
+        raise NotImplementedError
+
+    def apply(self, add_qty=False):
+        """Apply this inventory to the stock. Changes each card's quantity of
+        the needed place and closes the inventory.
+
+        Return: a tuple status (bool), alerts (list of dicts with a level and a message).
+        """
+        if self.applied or (self.closed is not None and self.closed):
+            return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]
+
+        if hasattr(self, "place") and self.place:
+            place = self.place
+        else:
+            place = Place.objects.get(id=1) # default place. That could be improved.
+
+        # Shall we set the quantities of these cards in the stock or add them to the existing ?
+        add_qty = False
+        # A basket didn't touch the stock, so we want to add this basket to it.
+        if hasattr(self, "basket") and self.basket:
+            add_qty = True
+
+        try:
+            for card_qty in self.copies_set.all():
+                place.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)
+                card_qty.card.in_stock = True
+                card_qty.card.save()
+
+        except Exception as e:
+            log.error("Error while applying the inventory {} to the default place: {}".format(self.id, e))
+            return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
+
+        self.closed = timezone.now()
+        self.applied = True
+        self.save()
+
+        return True, [{"level": ALERT_SUCCESS, "message": _("The inventory got succesfully applied to your stock.")}]
+
+
 class Inventory(InventoryBase):
     """
     We can do inventories of baskets, publishers, places, shelves.
@@ -3533,42 +3578,6 @@ class Inventory(InventoryBase):
     def apply_inventory(pk):
         inv = Inventory.objects.get(id=pk)
         return inv.apply()
-
-    def apply(self):
-        """Apply this inventory to the stock. Changes each card's quantity of
-        the needed place and closes the inventory.
-
-        Return: a tuple status (bool), alerts (list of dicts with a level and a message).
-        """
-        if self.applied or (self.closed is not None and self.closed):
-            return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]
-
-        if self.place:
-            place = self.place
-        else:
-            place = Place.objects.get(id=1) # default place. That could be improved.
-
-        # Shall we set the quantities of these cards in the stock or add them to the existing ?
-        add_qty = False
-        # A basket didn't touch the stock, so we want to add this basket to it.
-        if self.basket:
-            add_qty = True
-
-        try:
-            for card_qty in self.inventorycopies_set.all():
-                place.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)
-                card_qty.card.in_stock = True
-                card_qty.card.save()
-
-        except Exception as e:
-            log.error("Error while applying the inventory {} to the default place: {}".format(self.id, e))
-            return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
-
-        self.closed = timezone.now()
-        self.applied = True
-        self.save()
-
-        return True, [{"level": ALERT_SUCCESS, "message": _("The inventory got succesfully applied to your stock.")}]
 
 
 def shelf_age_sort_key(it):
@@ -3856,6 +3865,10 @@ class InventoryCommand(InventoryBase):
             "command": inv_dict,
         }
 
+    @staticmethod
+    def apply_inventory(pk, add_qty=True):
+        inv = InventoryCommand.objects.get(id=pk)
+        return inv.apply(add_qty=add_qty)
 
 class Command(TimeStampedModel):
     """A command records that some cards were ordered to a supplier.

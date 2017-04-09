@@ -39,9 +39,9 @@ from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
-from search.tasks import inventory_apply_task
-from search.views import get_datasource_from_lang
-from search.views import search_on_data_source
+from search.tasks import command_inventory_apply_task, inventory_apply_task
+from search.views_utils import get_datasource_from_lang
+from search.views_utils import search_on_data_source
 
 from .utils import ids_qties_to_pairs
 from .utils import is_isbn
@@ -1358,4 +1358,40 @@ def command_receive_diff(request, pk, **kwargs):
               'total_copies_in_inv': total_copies_in_inv,
               'total_copies_in_stock': total_copies_in_stock,
               'name': obj_name}
+    return JsonResponse(to_ret)
+
+def command_receive_apply(request, pk, **kwargs):
+    """
+    Apply this inv to the stock, asynchronously (huey task).
+    """
+    if pk is None or pk == "undefined":
+        log.error(u'Error: you want to apply an inventory but its given pk is undefined')
+        to_ret = {
+            "status": ALERT_ERROR,
+            "datab": []
+            }
+        return JsonResponse(to_ret)
+
+    cmd = _get_command_or_return(pk)
+    inv = cmd.get_inventory()
+    if inv.applied:
+        return JsonResponse(
+            {"data": "already applied",
+             "alerts": [
+                 {"level": ALERT_INFO,
+                  "message": _(u"This inventory is already applied")}
+             ]})
+
+    # Run asynchronously:
+    command_inventory_apply_task(pk)
+
+    to_ret = {
+        "status": ALERT_INFO,
+        "alerts": [
+            {"level": ALERT_INFO,
+             "message": _("The inventory is being applied. This may take a few minutes.")}
+            ],
+        "data": None
+        }
+
     return JsonResponse(to_ret)

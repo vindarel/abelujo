@@ -208,7 +208,7 @@ class TestSells(TestCase):
         self.assertTrue(resp.status_code, "200")
 
 
-@mock.patch('search.views.search_on_data_source', return_value=(fixture_search_datasource, []))
+@mock.patch('search.views_utils.search_on_data_source', return_value=(fixture_search_datasource, []))
 class TestSearchView(TestCase):
 
     def setUp(self):
@@ -247,7 +247,7 @@ class TestSearchView(TestCase):
         self.assertEqual(resp.status_code, 200)
 
 
-@mock.patch('search.views.search_on_data_source', return_value=fixture_search_datasource)
+@mock.patch('search.views_utils.search_on_data_source', return_value=fixture_search_datasource)
 class TestAddView(TestCase):
 
     def setUp(self):
