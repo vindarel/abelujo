@@ -31,4 +31,6 @@ div(ng-controller="cardReviewsController")
     a(href="{{ 'review.url' | ng }}", target="_blank") {{ 'review.title' | ng }}
     div(title="{{ 'review.long_summary' | ng }}") {{ 'review.short_summary' | ng }} ...
 
+  em(ng-hide="reviews") {% trans "We didn't find any review of this specific book on the targetted websites." %}
+
 {% endblock reviews %}
