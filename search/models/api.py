@@ -337,10 +337,7 @@ def card_reviews(request, pk, **response_kwargs):
         if pk:
             # if a french card
             card_obj = get_object_or_404(Card, id=pk)
-            card = {
-                'title': card_obj.title,
-                'authors': [card_obj.authors_repr],
-            }
+            card = card_obj.to_list()
             revs = frenchreviews(card)
             return JsonResponse(revs, safe=False)
 
