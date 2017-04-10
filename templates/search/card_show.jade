@@ -160,5 +160,20 @@
           td {% trans "Sells since the last entry" %}
           td {{ total_sold }}
 
+        tr
+          td {% trans "Pending commands" %}
+          td
+            if not pending_commands
+              div 0
+            else
+                ul
+                  for cmd in pending_commands
+                    li
+                      | x{{ cmd.qty }} -
+                      | <a href="{{ cmd.command.get_absolute_url }}">{{ cmd.command.title }}</a> -
+                      | {{ cmd.command.created }}
+
+
+
 
 {% endblock content %}

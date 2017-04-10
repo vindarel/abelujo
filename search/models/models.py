@@ -1295,6 +1295,22 @@ class Card(TimeStampedModel):
         nb = Card.objects.filter(in_stock=True).exclude(id__in = SoldCards.objects.all().values_list('id', flat=True)).count()
         return nb
 
+    def commands_received(self, to_list=False):
+        """
+        Return a list of this card's last received commands, sorted the most recent one first.
+        """
+        # Get command_copies objects (card, quantity) of commands *received*.
+        cmd_copies = self.commandcopies_set.filter(command__date_received__isnull=False).all()
+
+        return cmd_copies
+
+    def commands_pending(self):
+        """
+        Return the pending commands (not received).
+        """
+        cmd_copies = self.commandcopies_set.filter(command__date_received__isnull=True).all()
+        return cmd_copies
+
 
 class PlaceCopies (models.Model):
     """Copies of a card present in a place.

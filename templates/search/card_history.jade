@@ -28,6 +28,8 @@
 {% load ngfilter %}
 {% load humanize %}
 
+em.bg-danger {% trans "This page is under construction. What shall we put in here ?" %}
+
 .row
   .col-lg-10
     ul.nav.nav-tabs
@@ -41,6 +43,9 @@ h3 {{ card.title }}
   .col-lg-4
     h4 {% trans "Last sells" %}
 
+    if not sells
+      em {% trans "This card has no no registered sells." %}
+
     for sell in sells
       div {{ sell.created }}
 
@@ -48,9 +53,25 @@ h3 {{ card.title }}
     h4 {% trans "Last entries" %}
 
   .col-lg-4
-    h4 {% trans "Last commands" %}
-    em {% trans "In development !" %}
+   .row
+    h4 {% trans "Pending commands" %}
+    if not pending_commands
+      div: em {% trans "There is no pending commands." %}
+    else
+      ul
+        for cmd in pending_commands
+          li
+            | x{{ cmd.qty }} -
+            | <a href="{{ cmd.command.get_absolute_url }}">{{ cmd.command.title }}</a> -
+            | {{ cmd.command.created }}
 
-em {% trans "This page is under construction. What shall we put in here ?" %}
+
+   .row
+      h4 {% trans "Last commands" %}
+      if not commands
+          div: em {% trans "You did not receive parcels for this card." %}
+
+      for cmd in commands
+          div {{ cmd.name }}
 
 {% endblock content %}

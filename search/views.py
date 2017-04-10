@@ -225,6 +225,9 @@ def card_show(request, pk):
     if request.method == 'GET':
         card = get_object_or_404(Card, id=pk)
 
+        # Ongoing commands.
+        pending_commands = card.commands_pending()
+
         # Last time we entered this item
         last_entry = EntryCopies.last_entry(card)
 
@@ -239,11 +242,12 @@ def card_show(request, pk):
         "sells": sells,
         "last_entry": last_entry,
         "total_sold": total_sold,
+        "pending_commands": pending_commands,
         "page_title": u"Abelujo - " + card.title[:50],
         })
 
 def card_history(request, pk):
-    """Show the card's sells history."""
+    """Show the card's sells, entries and commands history."""
     card = None
     template = "search/card_history.jade"
 
@@ -253,9 +257,15 @@ def card_history(request, pk):
         # Sells
         sells = Sell.search(card.id)
 
+        # Commands
+        pending_commands = card.commands_pending()
+        commands = card.commands_received()
+
     return render(request, template, {
         "card": card,
         "sells": sells,
+        "pending_commands": pending_commands,
+        "commands": commands,
         "page_title": u"Abelujo - {} - {}".format(_("History"), card.title),
         })
 
