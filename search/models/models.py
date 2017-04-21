@@ -2541,9 +2541,11 @@ class Deposit(TimeStampedModel):
         """
         try:
             balance = self.checkout_balance()
-            state_copies = balance['cards'][0][1]
-            qty = state_copies.nb_current
-            return qty
+            if balance and len(balance['cards']):
+                state_copies = balance['cards'][0][1]
+                qty = state_copies.nb_current
+                return qty
+            return 0
         except Exception as e:
             log.error(e)
             return None

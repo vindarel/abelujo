@@ -1337,6 +1337,14 @@ class TestCommandsReceive(TestCase):
         self.preferences.save()
         self.new_place = PlaceFactory()
 
+        # A distributor.
+        self.distributor = DistributorFactory()
+        self.distributor.save()
+
+        # A deposit.
+        self.deposit = DepositFactory()
+        self.deposit.save()
+        self.deposit.distributor = self.distributor
 
     def tearDown(self):
         pass
@@ -1352,3 +1360,6 @@ class TestCommandsReceive(TestCase):
         self.inv.apply()
         self.assertTrue(self.inv.applied)
         self.assertEqual(self.preferences.default_place.quantity_of(self.card), 1)
+
+    def test_inventory_command_apply_to_deposit(self):
+        self.assertEqual(self.deposit.quantity_of(self.card), 0)
