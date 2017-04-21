@@ -152,13 +152,15 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # i18n in url patterns
+    # (before CommonMiddleware for i18n urls withouth a trailing slash to redict correcly).
+    # see https://stackoverflow.com/questions/8092695/404-on-requests-without-trailing-slash-to-i18n-urls
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # warning: csrf disabled.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # i18n in url patterns:
-    'django.middleware.locale.LocaleMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
