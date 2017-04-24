@@ -15,6 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from search.datasources.bookshops.all.discogs import discogsScraper as discogs
+# The datasources imports must have the name as their self.SOURCE_NAME
+from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner
+from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro
+from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre
+from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis
+from search.models import Card
+
 #: Default datasource to be used when searching isbn, if source not supplied.
 DEFAULT_DATASOURCE = "librairiedeparis"
 
