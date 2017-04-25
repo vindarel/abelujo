@@ -27,8 +27,9 @@ rebase:
 	git submodule update --remote
 
 # Install in current directory
-pip: pip-submodule pip-system
+pip: pip-submodule
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
+	make pip-system
 
 pip-nosudo: pip-submodule pip-system-nosudo
 	pip install -r abelujo/requirements.txt
