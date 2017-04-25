@@ -71,7 +71,7 @@ install-nosudo:  debian-nosudo pip-nosudo db npm-system-nosudo npm gulp collects
 
 install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev gulp translation-compile
 
-# Install npm and bower packages
+# Install npm packages
 npm-system:
 	@echo "Installing gulp globally... (needs root)"
 	@sudo npm install -g gulp
@@ -80,7 +80,7 @@ npm-system-nosudo:
 	yarn install -g gulp
 
 npm:
-	@echo "Installing Node and bower packages..."
+	@echo "Installing Node packages..."
 	yarn install --production # don't install devDependencies
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
@@ -264,7 +264,7 @@ translation-files:
 	python manage.py makemessages  --ignore="collectedstatic/*" --ignore="node_modules/*" -a -e py,html,jade
 	# Same for js files:
 	# (we may want to translate js in admin/)
-	django-admin.py makemessages -d djangojs --ignore="doc/dev/_build/*" --ignore="static/js/build/vendor.js" --ignore="static/bower_components/*" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
+	django-admin.py makemessages -d djangojs --ignore="doc/dev/_build/*" --ignore="static/js/build/vendor.js" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
 
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart
