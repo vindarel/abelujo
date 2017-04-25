@@ -57,13 +57,17 @@ Install the required dependencies for Debian (Ubuntu/LinuxMint/etc):
 
     make debian
     # a shortcut for
-    # sudo apt-get install python-pip nodejs nodejs-legacy npm
+    # sudo apt-get install python-pip nodejs nodejs-legacy
     # sudo pip install --upgrade pip
 	# sudo pip install virtualenvwrapper
-	# sudo npm install gulp -g  # a JS build system.
+	# sudo yarn install gulp -g  # a JS build system. (warn: -g is deprecated)
     # Debian users have to install nodejs-legacy if the node command doesn't give you a javascript shell.
-    # Debian wheezy 7.8: install npm with
-    # curl https://www.npmjs.com/install.sh | sudo sh
+    # Unixes: install yarn (and not npm) with
+    # curl -o- -L https://yarnpkg.com/install.sh | bash
+
+Also install the Nodejs platform and the yarn package manager (instead of npm):
+
+     sudo make install-nodejs
 
 Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,
@@ -80,7 +84,6 @@ type `workon \<TAB\> abelujo`.
 
 To install the dependencies, create and populate the database, run:
 
-    sudo make install-nodejs  # you can skip this step if you know how to install nodejs and npm
     make install
     # and if bower asks for the version of Angular, choose version #1.3.20.
 

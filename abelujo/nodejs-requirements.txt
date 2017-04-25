@@ -4,4 +4,3 @@
 
 nodejs
 nodejs-legacy
-npm

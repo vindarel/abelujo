@@ -56,8 +56,10 @@ dbback:
 	bash -c "cp db.db{,.`date +%Y%m%d-%H%M%S`}"
 
 install-nodejs:
-	echo "Installing nodejs and npm with debian packages: sudo make install-nodejs."
+	echo "Installing nodejs with debian packages: sudo make install-nodejs."
 	@grep -v "^#" abelujo/nodejs-requirements.txt | xargs apt-get install -y
+	@echo "Installing the yarn package manager..."
+	curl -o- -L https://yarnpkg.com/install.sh | bash
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
@@ -74,18 +76,18 @@ npm-system:
 	@sudo npm install -g gulp
 npm-system-nosudo:
 	@echo "Installing gulp globally... (needs root)"
-	npm install -g gulp
+	yarn install -g gulp
 
 npm:
 	@echo "Installing Node and bower packages..."
-	npm install --production # don't install devDependencies
+	yarn install --production # don't install devDependencies
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
 npm-dev:
-	npm install # not in production, install also devDependencies
+	yarn install # not in production, install also devDependencies
 
 set-prod:
 	touch PROD.txt
@@ -97,7 +99,7 @@ update:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	make pip
 	make pip-submodule
-	make npm # that's horribly long. Bundle static files and send them somehow.
+	make npm  # actually now yarn. Wishing to fix long and undpredictable builds.
 	python manage.py migrate
 	gulp
 	make collectstatic
