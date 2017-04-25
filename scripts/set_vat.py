@@ -38,7 +38,7 @@ Run with the runscript management command.
 
 Usage:
 
-./manage.py runscript set_vta --script-args=fr [-v3]
+./manage.py runscript set_vat --script-args=fr [-v3]
 """
 
 def run(*args):
