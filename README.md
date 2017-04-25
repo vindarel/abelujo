@@ -80,6 +80,7 @@ type `workon \<TAB\> abelujo`.
 
 To install the dependencies, create and populate the database, run:
 
+    sudo make install-nodejs  # you can skip this step if you know how to install nodejs and npm
     make install
     # and if bower asks for the version of Angular, choose version #1.3.20.
 

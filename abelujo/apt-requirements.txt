@@ -11,9 +11,6 @@ libxml2-dev
 libxslt1-dev
 apache2
 apache2-dev
-nodejs
-nodejs-legacy
-npm
 postgresql-contrib
 libpq-dev
 # for Pillow / xhtml2pdf

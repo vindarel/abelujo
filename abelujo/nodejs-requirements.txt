@@ -1,0 +1,7 @@
+# This is a way to install nodejs and npm on Debian, but power users
+# might want to use NodeSource:
+# https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+
+nodejs
+nodejs-legacy
+npm

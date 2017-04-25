@@ -55,6 +55,10 @@ dbback:
 	# back up the db, append a timestamp
 	bash -c "cp db.db{,.`date +%Y%m%d-%H%M%S`}"
 
+install-nodejs:
+	echo "Installing nodejs and npm with debian packages: sudo make install-nodejs."
+	@grep -v "^#" abelujo/nodejs-requirements.txt | xargs apt-get install -y
+
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
 install:  debian pip pip-submodule db npm-system npm gulp collectstatic translation-compile
