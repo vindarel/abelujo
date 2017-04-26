@@ -21,6 +21,9 @@ install:
   #   - triggers
   script:
     - make debian-nosudo
+    - make install-yarn
+    - node --version
+    - yarn --version
     # mkvirtualenv fails with no output :/
     - virtualenv .
     - source bin/activate

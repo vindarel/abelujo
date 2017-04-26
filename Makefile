@@ -59,6 +59,9 @@ dbback:
 install-nodejs:
 	echo "Installing nodejs with debian packages: sudo make install-nodejs."
 	@grep -v "^#" abelujo/nodejs-requirements.txt | xargs apt-get install -y
+	make install-yarn
+
+install-yarn:
 	@echo "Installing the yarn package manager..."
 	# curl -o- -L https://yarnpkg.com/install.sh | bash  # fails in gitlab CI, seems lacking in path "yarn installed but doesn't seem to be working".
 	# export PATH="$HOME/.yarn/bin:$PATH"
