@@ -84,7 +84,7 @@ npm-system:
 	@sudo npm install -g gulp
 npm-system-nosudo:
 	@echo "Installing gulp globally... (needs root)"
-	yarn install -g gulp
+	yarn global add gulp
 
 npm:
 	@echo "Installing Node packages..."
