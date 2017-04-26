@@ -14,6 +14,7 @@ install:
   #   - triggers
   script:
     - make debian-nosudo
+    - make install-nodejs
     # mkvirtualenv fails with no output :/
     - virtualenv .
     - source bin/activate
