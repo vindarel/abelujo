@@ -63,7 +63,7 @@ install-nodejs:
 	# curl -o- -L https://yarnpkg.com/install.sh | bash  # fails in gitlab CI, seems lacking in path "yarn installed but doesn't seem to be working".
 	# export PATH="$HOME/.yarn/bin:$PATH"
 	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+	echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 	apt-get update && apt-get install yarn
 
 # Install everything: Django requirements, the DB, node packages, and
