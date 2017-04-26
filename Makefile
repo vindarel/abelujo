@@ -61,6 +61,7 @@ install-nodejs:
 	@grep -v "^#" abelujo/nodejs-requirements.txt | xargs apt-get install -y
 	@echo "Installing the yarn package manager..."
 	curl -o- -L https://yarnpkg.com/install.sh | bash
+	export PATH="$HOME/.yarn/bin:$PATH"
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
