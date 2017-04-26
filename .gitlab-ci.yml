@@ -1,6 +1,8 @@
 # https://docs.gitlab.com/ce/ci/yaml/README.html
 
-image: python:2.7
+# We try a ready image with nodejs and python, instead of the python:2.7
+# Easier, but we don't test nodejs installation.
+image: beevelop/nodejs-python
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -19,7 +21,6 @@ install:
   #   - triggers
   script:
     - make debian-nosudo
-    - make install-nodejs
     # mkvirtualenv fails with no output :/
     - virtualenv .
     - source bin/activate
