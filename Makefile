@@ -57,9 +57,10 @@ dbback:
 	bash -c "cp db.db{,.`date +%Y%m%d-%H%M%S`}"
 
 install-nodejs:
-	echo "Installing nodejs with debian packages: sudo make install-nodejs."
-	@grep -v "^#" abelujo/nodejs-requirements.txt | xargs apt-get install -y
-	make install-yarn
+	@echo "Installing nodejs from a new deb source..."
+	curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+	sudo apt-get install -y nodejs
+	sudo make install-yarn
 
 install-yarn:
 	@echo "Installing the yarn package manager..."
