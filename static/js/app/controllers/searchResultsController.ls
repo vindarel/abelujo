@@ -125,7 +125,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         , (response) !->
             $scope.alerts.push do
                 level: 'danger'
-                message: gettext "Internal error, sorry !"
+                message: gettext "Internal error, sorry ! We've been notified about it."
 
     # Initial search results, read the url's query params after the #
     search_obj = $location.search()

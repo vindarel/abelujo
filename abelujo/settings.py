@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 import os
+import raven
 
 # Django settings for abelujo project.
 
@@ -194,10 +195,10 @@ INSTALLED_APPS = (
     'mod_wsgi.server',
     'huey.contrib.djhuey',
     'rest_framework',
+    'raven.contrib.django.raven_compat',  # sentry
 
     'search',
 )
-
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
@@ -282,3 +283,19 @@ HUEY = {
         # 'url': None,  # Allow Redis config via a DSN.
     },
 }
+
+
+# private token for Sentry. It is sent to the server by a fabric task.
+RAVEN_CONFIG = {}
+
+if os.path.exists(os.path.join(BASE_DIR, "sentry.txt")):
+    dsn = ""
+    with open("sentry.txt", "r") as f:
+        dsn = f.read()
+
+        RAVEN_CONFIG = {
+            'dsn': dsn,
+            # If you are using git, you can also automatically configure the
+            # release based on the git info.
+            'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+        }

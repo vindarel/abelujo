@@ -27,6 +27,16 @@ Available commands so far:
 - check a bower package version
 - ...
 
+Setup Sentry (Raven)
+====================
+
+See the `save_variables` fabric task and how the settings read the
+Sentry token in a `sentry.txt` file if present. Fabric is in charge of
+sending the token to a remote instance on its installation.
+
+Test with `python manage.py raven test`.
+
+
 Abelujo administration, custom management commands
 ==================================================
 

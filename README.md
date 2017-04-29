@@ -160,6 +160,23 @@ and npm packages to run end to end tests:
 
 Additional management commands start with `my_`.
 
+
+## Configure services
+
+### Sentry
+
+Put your
+[Sentry](https://docs.sentry.io/clients/python/integrations/django/)
+private token in a `sentry.txt` file. The settings will see and read
+it.
+
+To get Fabric send it to the remote instance on install (`fab install`
+calls `fab save_variables`), add the token into your `clients.yaml`
+under `sentry_token` (see the fabfile).
+
+Test with `python manage.py raven test` and see the new message in your dashboard.
+
+
 Run unit tests
 --------------
 

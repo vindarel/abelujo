@@ -230,22 +230,27 @@ def check_online(client=None):
             print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green"))
 def _save_variables(name):
     """
-    for multiprocessing. Functions can only be pickled if they are at the toplevel.
+    Another def for multiprocessing. Functions can only be pickled if they are at the toplevel.
     """
     if name:
         client = fabutils.select_client_cfg(name)
         wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
         ip = client.get('ip', CFG.ip)
+        sentry_token = CFG.get('sentry_token')
         with cd(wd):
             run("echo {} > PORT.txt".format(client.port))
             run("echo {} > IP.txt".format(ip))
+            run("echo {} > sentry.txt".format(sentry_token))
 
     else:
         print("_save_variables: give a name as argument.")
 
 def save_variables(name=None):
-    """Save the port nb into the file port.txt
-    and the ip into IP.txt (for gunicorn).
+    """Save some directory-specific variables into their txt files:
+
+    - the port nb into the file port.txt
+    - the ip into IP.txt (for gunicorn)
+    - the Sentry token into sentry.txt
     """
 
     if name:

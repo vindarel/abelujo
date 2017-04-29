@@ -57,3 +57,4 @@ honcho==0.7             # task supervisor based on a Procfile
 html5lib==1.0b8         # for "cannot import viewkeys" runtime error.
 
 pendulum==1.1           # easy timezone, diffs, human info, etc
+raven                   # sentry

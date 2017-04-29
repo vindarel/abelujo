@@ -202,3 +202,20 @@ management and test command line tool we can use for:
 Abelujo only runs on python2.7 at the moment. Tox helps us test that
 our application installs and runs correctly in a fresh virtual
 environment.
+
+
+Sentry (Raven)
+--------------
+
+`Sentry <https://docs.sentry.io/clients/python/integrations/django/`_
+is a tool that sends all uncaught exceptions to an online app. Logs on
+steroids.
+
+We have to create an account on give our sentry token to an Abelujo
+instance. See the fabfile and its `save_variables` task. We put the
+token in a `sentry.txt` file which Django settings read if the file
+exists. Fabric is in charge of sending the token to a remote server on
+installation.
+
+Test with `python manage.py raven test` and see the new log in your
+dashboard.
