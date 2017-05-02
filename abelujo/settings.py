@@ -230,19 +230,24 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logging.log'),
+        },
 
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins', ],
-            'level': 'ERROR',
+            'handlers': ['mail_admins', 'file'],
+            'level': 'WARNING',
             'propagate': True,
         },
 
         # catch all:
         '': {
-            'handlers': ['mail_admins', 'console'],
+            'handlers': ['mail_admins', 'console', 'file'],
             'level': 'WARNING',
             'propagate': True,
         }
