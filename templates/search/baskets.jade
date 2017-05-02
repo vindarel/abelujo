@@ -60,7 +60,7 @@ div(ng-cloak, ng-controller="basketsController")
 
      ul.dropdown-menu
        li
-         a(href="#", title='', ng-click="open_new_basket('sm')") {% trans "Create a basket" %} 
+         a(href="#", title='', ng-click="open_new_basket('sm')") {% trans "Create a list" %} 
            i.glyphicon.glyphicon-plus
 
        li.divider(role="separator")
@@ -175,7 +175,7 @@ div(ng-cloak, ng-controller="basketsController")
 
  script(type="text/ng-template", id="basketModal.html")
     div.modal-header
-      h3.modal-title {% trans "Create a basket" %}
+      h3.modal-title {% trans "Create a list" %}
 
     div.modal-body
       label {% trans "Name" %}

@@ -107,7 +107,7 @@ html(ng-app="abelujo")
             a(href='{% url "deposits" %}') {% trans "Deposits" %}
 
           li(ng-class="{active: url == 'baskets' }")
-            a(href='{% url "baskets" %}') {% trans "Baskets" %}
+            a(href='{% url "baskets" %}') {% trans "Lists" %}
 
           li(ng-class="{active: url == 'commands' }")
             a(href='{% url "basket_auto_command" %}') {% trans "Commands" %}
