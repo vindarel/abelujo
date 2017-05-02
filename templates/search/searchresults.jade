@@ -38,32 +38,27 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
       {{ 'alert.message' | ng }}
 
  .row
-  .col-md-10
    form(ng-submit="validate()")
-    div.form-group
-      label.col-md-4 {% trans "Source" %}
-      div.col-md-8
+    div
+      div.col-md-2
         select.form-control(ng-model="datasource", ng-options="elt.name for elt in datasources")
-      label.col-md-4 {% trans "Search terms" %}
-      div.col-md-8
+      div.col-md-4
+       div.input-group
         input.form-control#default-input(
           ng-model="query"
           type="text"
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
-  .col-md-2
-
- .row
-   .col-md-10
-     input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}")
-     span  {% trans "or" %}: 
-     a(href="{% url 'card_edit' %}") {% trans "Add a card manually" %}
-   .col-md-2
+        span.input-group-btn
+          button.btn.btn-primary(ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}") {% trans "Search" %}
+      div.col-md-2
+        span  {% trans "or" %}: 
+            a(href="{% url 'card_edit' %}") {% trans "Add a card manually" %}
 
  .row(ng-show="cards.length != 0")
     .col-md-10
      .btn-group
-       button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+       button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
          span.caret
 
        ul.dropdown-menu
@@ -145,7 +140,13 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
             li.mouse-pointer: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
               span(aria-hidden="true") &raquo;
 
- div(ng-show="no_results") {% trans "No results" %}
+ div(ng-show="no_results")
+  .row
+   .col-md-2
+   .col-md-4
+      div.panel.panel-info
+        div.panel-body
+         div {% trans "No results !" %}
 
  script(type="text/ng-template", id="SearchResultsModal.html")
     div.modal-header
