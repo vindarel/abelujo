@@ -70,7 +70,7 @@ from search.models.utils import ppcard
 from search.models.utils import truncate
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('sentry_logger')  # also to file
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.

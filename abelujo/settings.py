@@ -207,6 +207,10 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+venv = os.environ.get('VIRTUAL_ENV', 'abelujo default tag')
+# this venv is used as a token to differentiate client installations in the logs.
+if venv:
+    venv = os.path.split(venv)[-1]
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -236,6 +240,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'logging.log'),
         },
+        'sentry': {
+            'level': 'WARNING', # To capture more than ERROR, change to WARNING, INFO, etc.
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'tags': {'custom-tag': venv},
+        },
 
     },
     'loggers': {
@@ -250,7 +259,13 @@ LOGGING = {
             'handlers': ['mail_admins', 'console', 'file'],
             'level': 'WARNING',
             'propagate': True,
+        },
+        'sentry_logger': {
+            'handlers': ['file', 'sentry'],
+            'level': 'WARNING',
+            'propagate': True,
         }
+
     }
 }
 

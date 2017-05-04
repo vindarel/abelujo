@@ -49,8 +49,7 @@ from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
-log = logging.getLogger(__name__)
-
+log = logging.getLogger('sentry_logger')  # also to file
 
 # To search objects and send them as json:
 # - call the search method of the model

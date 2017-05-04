@@ -70,7 +70,7 @@ PAGE_SIZE = 50
 # and the ui in general (datejs).
 DEFAULT_PRICE = 0
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('sentry_logger')  # also to file
 
 DEPOSIT_TYPES_CHOICES = [
     ("Dépôt de libraire", (
@@ -573,7 +573,7 @@ class Card(TimeStampedModel):
         try:
             return self.distributor.id == dist
         except Exception as e:
-            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, dist, e))
+            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, dist, e), extra={'stack': True})
             return None
 
     def has_no_distributor(self):
