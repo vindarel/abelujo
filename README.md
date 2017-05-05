@@ -182,19 +182,10 @@ Run unit tests
 
     make unit
 
-Load testing data
------------------
+Load data
+---------
 
-It is possible to load a set of testing data::
-
-    make data
-    # a shortcut for
-    # ./manage.py loaddata dumpdata.json
-
-this will load aprroximately 400 Cards, Authors, Publishers and
-Baskets. There are already a default Place and Distributor.
-
-See also the scripts in `scripts/` to load data (specially shelves
+See the scripts in `scripts/` to load data (specially shelves
 names), in different languages.
 
 Troubleshooting

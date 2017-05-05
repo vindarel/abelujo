@@ -231,11 +231,6 @@ tox:
 ci:
 	source ci-testing.sh
 
-# Load sample data, for testing purposes.
-data:
-	./manage.py loaddata dumpdata-big
-	@echo "Loaded 400 cards in the database."
-
 # Code coverage analysis:
 cov:
 	coverage run --source='search/' --omit='*/admin.py,*/*LiveTest*' manage.py test search
