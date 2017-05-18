@@ -21,12 +21,13 @@
 
 html(ng-app="abelujo")
   head
+    // warning: also set in gulpfile.js
     link(rel='stylesheet', type='text/css', href='{% static "search/style.css" %}')
-    link(rel='stylesheet', type='text/css', href='{% static "bower_components/angular-ui-select/dist/select.css" %}')
-    link(rel='stylesheet', type='text/css', href='{% static "bower_components/datatables/media/css/jquery.dataTables.min.css" %}')
-    link(rel='stylesheet', type='text/css', href='{% static "bower_components/angular-loading-bar/build/loading-bar.min.css" %}')
-    link(rel='stylesheet', type='text/css', href='{% static "bower_components/angular-hotkeys/build/hotkeys.min.css" %}')
-    link(href='{% static "bower_components/bootstrap-tour/build/css/bootstrap-tour.min.css', rel='stylesheet')
+    link(rel='stylesheet', type='text/css', href='{% static "css/select.min.css" %}')
+    link(rel='stylesheet', type='text/css', href='{% static "css/jquery.dataTables.min.css" %}')
+    link(rel='stylesheet', type='text/css', href='{% static "css/loading-bar.min.css" %}')
+    link(rel='stylesheet', type='text/css', href='{% static "css/hotkeys.min.css" %}')
+    link(href='{% static "css/bootstrap-tour.min.css', rel='stylesheet')
 
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")

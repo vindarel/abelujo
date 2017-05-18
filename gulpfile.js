@@ -13,39 +13,44 @@ var jshint = require('gulp-jshint');
 var bg = require("gulp-bg");
 
 var vendorJsFiles = [
-  // 'static/bower_components/jquery/jquery.min.js', // load separately and first (needed by autocomplete_light and django_bootstrap).
+  // 'static/bower_components/jquery/jquery.min.js', // load separately and first (needed by django_bootstrap).
     // jquery: for bootstrap and datatables.
     // to load before bootstrap.
     // jquery must come before angular and datatables.
-    'static/bower_components/jquery/dist/jquery.min.js',
-    'static/bower_components/datatables/media/js/jquery.dataTables.min.js',
-  'static/bower_components/angularjs/angular.min.js',
-  'static/bower_components/angular-bootstrap/ui-bootstrap.min.js',
-  'static/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
-  'static/bower_components/angular-resource/angular-resource.min.js',
-  'static/bower_components/angular-route/angular-route.min.js',
-  'static/bower_components/angular-sanitize/angular-sanitize.min.js',
-  'static/bower_components/angular-cookies/angular-cookies.min.js',
-  'static/bower_components/angular-animate/angular-animate.min.js',
-  'static/bower_components/angular-i18n/angular-locale_fr-fr.js',
-  'static/bower_components/angular-i18n/angular-locale_es-es.js',
-  'static/bower_components/angular-i18n/angular-locale_de-de.js',
-  'static/bower_components/angular-i18n/angular-locale_en-gb.js',
-  'static/bower_components/angular-dynamic-locale/tmhDynamicLocale.min.js',
-  'static/bower_components/angular-ui-router/release/angular-ui-router.min.js',
-  'static/bower_components/angular-ui-select/dist/select.js',
-  'static/bower_components/underscore/underscore-min.js',
-  'static/bower_components/underscore/underscore-min.js',
-  'static/bower_components/prelude-ls/browser/prelude-browser-min.js',
-  // 'static/bower_components/bootstrap/**/*.js',
-    'static/bower_components/datejs/build/production/date.min.js',
-    'static/bower_components/c3/c3.min.js',
-    'static/bower_components/d3/d3.min.js',
-    'static/bower_components/angular-smart-table/dist/smart-table.min.js',
-    'static/bower_components/angular-datatables/dist/angular-datatables.min.js',
-    'static/bower_components/angular-loading-bar/build/loading-bar.min.js',
-    'static/bower_components/angular-hotkeys/build/hotkeys.min.js',
-    'static/bower_components/bootstrap-tour/build/js/bootstrap-tour.min.js',
+    'node_modules/jquery/jquery.min.js',
+    'node_modules/datatables/media/js/jquery.dataTables.min.js',
+  'node_modules/angular/angular.min.js',
+  'node_modules/bootstrap/dist/js/bootstrap.min.js',
+  'node_modules/bootstrap-tour/build/js/bootstrap-tour.min.js',
+  'node_modules/angular-ui-bootstrap/ui-bootstrap.min.js',
+  'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
+  'node_modules/angular-resource/angular-resource.min.js',
+  'node_modules/angular-route/angular-route.min.js',
+  'node_modules/angular-sanitize/angular-sanitize.min.js',
+  'node_modules/angular-cookies/angular-cookies.min.js',
+  'node_modules/angular-animate/angular-animate.min.js',
+  'node_modules/angular-i18n/angular-locale_fr-fr.js',
+  'node_modules/angular-i18n/angular-locale_es-es.js',
+  'node_modules/angular-i18n/angular-locale_de-de.js',
+  'node_modules/angular-i18n/angular-locale_en-gb.js',
+  'node_modules/angular-dynamic-locale/tmhDynamicLocale.min.js',
+  'node_modules/angular-ui-router/release/angular-ui-router.min.js',
+  'node_modules/angular-ui-select/select.js',
+  'node_modules/underscore/underscore-min.js',
+  'node_modules/underscore/underscore-min.js',
+  // 'node_modules/prelude-ls/**/*.js', // needed ? TODO: YES, needed !
+  'static/bower_components/prelude-ls/browser/prelude-browser-min.js', // xxx bower here
+
+  'node_modules/bootstrap/js/*.js',  // XXX TODO ! uibModalProvider (?)
+  // 'static/bower_components/bootstrap/**/*.js', // working ? not sure, it includes bootstrap's gruntfile and "module.exports" stuff, not for browsers.
+
+    'node_modules/datejs/build/production/date.min.js',  // XXX
+    'node_modules/c3/c3.min.js',
+    'node_modules/d3/d3.min.js',
+    'node_modules/angular-smart-table/dist/smart-table.min.js',
+    'node_modules/angular-datatables/dist/angular-datatables.min.js',
+    'node_modules/angular-loading-bar/build/loading-bar.min.js',
+    'node_modules/angular-hotkeys/build/hotkeys.min.js',
 ];
 
 var appFiles = [
@@ -54,17 +59,22 @@ var appFiles = [
 ];
 
 var vendorCSSFiles = [
-    'static/bower_components/angular-ui-select/dist/select.min.css',
-    'static/bower_components/c3/c3.min.css',
-    'static/bower_components/bootstrap-tour/build/css/bootstrap-tour.min.css',
-    // warning: set headers in base.jade !
+    // warning: also set headers in base.jade !
+    'node_modules/angular-ui-select/select.min.css',
+    'node_modules/c3/c3.min.css',
+    'node_modules/bootstrap/dist/css/bootstrap.min.css',
+    'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
+    'node_modules/bootstrap-tour/build/css/bootstrap-tour.min.css',
+    'node_modules/datatables/media/css/jquery.dataTables.min.css',
+    'node_modules/angular-loading-bar/build/loading-bar.min.css',
+    'node_modules/angular-hotkeys/build/hotkeys.min.css',
 ];
 
 // Include files to test with karma
 var testFiles = [
-  'static/bower_components/angular/angular.js',
-  'static/bower_components/angular-route/angular-route.js',
-  'static/bower_components/angular-mocks/angular-mocks.js',
+  'node_modules/angular/angular.js',
+  'node_modules/angular-route/angular-route.js',
+  'node_modules/angular-mocks/angular-mocks.js',
   'static/js/app/**/*.js',
   'static/js/app/controllers/**/*.js',
   'static/js/test/unit/**/*.js'
@@ -105,6 +115,16 @@ gulp.task('concatjs:vendor', function () {
     .pipe(gulp.dest('static/js/build'));
 });
 
+// for djangos bootstrap3, we want bootstrap's js alone, not concatenated.
+gulp.task('bootstrap', function () {
+  return gulp.src('node_modules/bootstrap/dist/js/bootstrap.min.js')
+    .pipe(gulp.dest('static/js'));
+});
+// same for angular-locale, see app.js. Shitty installation though...
+gulp.task('angularlocale', function () {
+    return gulp.src('/node_modules/angular-i18n/*.js')
+        .pipe(gulp.dest('static/js/'));
+});
 
 // Concatenate js app files
 gulp.task('concatjs:app', ['compile:livescript'], function () {
@@ -165,4 +185,4 @@ gulp.task('livescript', ['compile:livescript']);
 // Default Task
 // gulp.task('default', ['less', 'test', 'concat']);
 //XXX warning of mixing ls and js for same file.
-gulp.task('default', ['css', 'less', 'concat',]);
+gulp.task('default', ['css', 'less', 'bootstrap', 'angularlocale', 'concat',]);

@@ -10,10 +10,6 @@ angular-animate@1.3:
   version "1.3.20"
   resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.3.20.tgz#d1707c727f8ad0df21c4a2dec20cd7fc4945b52a"
 
-angular-bootstrap@0.12:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/angular-bootstrap/-/angular-bootstrap-0.12.2.tgz#de9900a7db087a7e9da47304a9c2f77f9c069827"
-
 angular-cookies@1.3:
   version "1.3.20"
   resolved "https://registry.yarnpkg.com/angular-cookies/-/angular-cookies-1.3.20.tgz#590ed18501815a7898aa734e411d409ef390348b"
@@ -62,6 +58,10 @@ angular-sanitize@1.4.9:
 angular-smart-table@2.1:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/angular-smart-table/-/angular-smart-table-2.1.8.tgz#521f32a465e7334e073c5c1ae093c59c2b8fca50"
+
+angular-ui-bootstrap@0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-0.14.3.tgz#d96ce604c84bbd706ba34aabca1d5a7376e18ba6"
 
 angular-ui-router@0.2.17:
   version "0.2.17"
@@ -1872,11 +1872,11 @@ isobject@^2.0.0:
   dependencies:
     isarray "1.0.0"
 
-jquery@>=1.11.0, jquery@>=1.8:
+jquery@>=1.11.0, jquery@>=1.7:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
 
-jquery@>=1.7, jquery@~1.9:
+jquery@>=1.8, jquery@~1.9:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.9.1.tgz#e4cd4835faaefbade535857613c0fc3ff2adaf34"
 
@@ -2173,7 +2173,7 @@ lodash.values@~2.4.1:
   dependencies:
     lodash.keys "~2.4.1"
 
-lodash@3.7.x:
+lodash@3.7.x, lodash@^3.0.1:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.7.0.tgz#3678bd8ab995057c07ade836ed2ef087da811d45"
 
@@ -2188,10 +2188,6 @@ lodash@4.16.4:
 lodash@^2.4.1:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-2.4.2.tgz#fadd834b9683073da179b3eae6d9c0d15053f73e"
-
-lodash@^3.0.1:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
 lodash@~1.0.1:
   version "1.0.2"
@@ -2598,10 +2594,6 @@ promisify-event@^1.0.0:
   resolved "https://registry.yarnpkg.com/promisify-event/-/promisify-event-1.0.0.tgz#bd7523ea06b70162f370979016b53a686c60e90f"
   dependencies:
     pinkie-promise "^2.0.0"
-
-punycode@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
 qrcode-terminal@^0.10.0:
   version "0.10.0"
@@ -3189,15 +3181,9 @@ to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
 
-tough-cookie@2.3.0:
+tough-cookie@2.3.0, tough-cookie@>=0.12.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.0.tgz#38f67cc4fc1b3acd9f8643b92aa3cf138e4acbfc"
-
-tough-cookie@>=0.12.0:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.2.tgz#f081f76e4c85720e6c37a5faced737150d84072a"
-  dependencies:
-    punycode "^1.4.1"
 
 tree-kill@^1.1.0:
   version "1.1.0"
