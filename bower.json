@@ -1,0 +1,27 @@
+{
+  "name": "abelujo",
+  "description": "abelujo",
+  "main": "",
+  "authors": [
+    "vindarel <ehvince@mailz.org>"
+  ],
+  "license": "GPLv3",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/bower_components/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "prelude-ls": "^1.1.2"
+  }
+}

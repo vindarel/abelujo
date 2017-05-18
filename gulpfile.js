@@ -38,7 +38,7 @@ var vendorJsFiles = [
   'node_modules/angular-ui-select/select.js',
   'node_modules/underscore/underscore-min.js',
   'node_modules/underscore/underscore-min.js',
-  // 'node_modules/prelude-ls/**/*.js', // needed ? TODO: YES, needed !
+  // 'node_modules/prelude-ls/**/*.js', // see issue #62. To be removed from bower eventually.
   'static/bower_components/prelude-ls/browser/prelude-browser-min.js', // xxx bower here
 
   'node_modules/bootstrap/js/*.js',
