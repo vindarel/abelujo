@@ -23,7 +23,8 @@
   ],
   "dependencies": {
     "prelude-ls": "^1.1.2",
-    "angular-i18n": "^1.6.4"
+    "angular-i18n": "^1.6.4",
+    "bootstrap": "^3.3.7"
   },
   "resolutions": {
     "angular-i18n": "1.3"

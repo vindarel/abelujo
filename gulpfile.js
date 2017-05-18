@@ -36,8 +36,7 @@ var vendorJsFiles = [
   'node_modules/underscore/underscore-min.js',
   // 'node_modules/prelude-ls/**/*.js', // see issue #62. To be removed from bower eventually.
   'static/bower_components/prelude-ls/browser/prelude-browser-min.js', // xxx bower here
-
-  'node_modules/bootstrap/js/*.js',
+    'node_modules/bootstrap/js/*.js', // needed despite of settings.py
 
     'node_modules/datejs/build/production/date.min.js',  // XXX
     'node_modules/c3/c3.min.js',
@@ -110,12 +109,6 @@ gulp.task('concatjs:vendor', function () {
     .pipe(gulp.dest('static/js/build'));
 });
 
-// for djangos bootstrap3, we want bootstrap's js alone, not concatenated.
-gulp.task('bootstrap', function () {
-  return gulp.src('node_modules/bootstrap/dist/js/bootstrap.min.js')
-    .pipe(gulp.dest('static/js'));
-});
-
 // Concatenate js app files
 gulp.task('concatjs:app', ['compile:livescript'], function () {
   console.log("warning: we deactived jshint.");
@@ -175,4 +168,4 @@ gulp.task('livescript', ['compile:livescript']);
 // Default Task
 // gulp.task('default', ['less', 'test', 'concat']);
 //XXX warning of mixing ls and js for same file.
-gulp.task('default', ['css', 'less', 'bootstrap', 'angularlocale', 'concat',]);
+gulp.task('default', ['css', 'less', 'concat',]);
