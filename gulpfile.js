@@ -41,8 +41,7 @@ var vendorJsFiles = [
   // 'node_modules/prelude-ls/**/*.js', // needed ? TODO: YES, needed !
   'static/bower_components/prelude-ls/browser/prelude-browser-min.js', // xxx bower here
 
-  'node_modules/bootstrap/js/*.js',  // XXX TODO ! uibModalProvider (?)
-  // 'static/bower_components/bootstrap/**/*.js', // working ? not sure, it includes bootstrap's gruntfile and "module.exports" stuff, not for browsers.
+  'node_modules/bootstrap/js/*.js',
 
     'node_modules/datejs/build/production/date.min.js',  // XXX
     'node_modules/c3/c3.min.js',
