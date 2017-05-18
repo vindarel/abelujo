@@ -50,7 +50,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
         span.input-group-btn
-          button.btn.btn-primary(ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}") {% trans "Search" %}
+          button.btn.btn-primary#submit-button(ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}") {% trans "Search" %}
       div.col-md-2
         span  {% trans "or" %}: 
             a(href="{% url 'card_edit' %}") {% trans "Add a card manually" %}
@@ -89,7 +89,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
       th
 
     tbody
-      tr(ng-repeat="card in cards")
+      tr#card(ng-repeat="card in cards")
 
         td
           input(type="checkbox", ng-model="card.selected")
