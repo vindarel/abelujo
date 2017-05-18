@@ -29,10 +29,6 @@ var vendorJsFiles = [
   'node_modules/angular-sanitize/angular-sanitize.min.js',
   'node_modules/angular-cookies/angular-cookies.min.js',
   'node_modules/angular-animate/angular-animate.min.js',
-  'node_modules/angular-i18n/angular-locale_fr-fr.js',
-  'node_modules/angular-i18n/angular-locale_es-es.js',
-  'node_modules/angular-i18n/angular-locale_de-de.js',
-  'node_modules/angular-i18n/angular-locale_en-gb.js',
   'node_modules/angular-dynamic-locale/tmhDynamicLocale.min.js',
   'node_modules/angular-ui-router/release/angular-ui-router.min.js',
   'node_modules/angular-ui-select/select.js',
@@ -118,11 +114,6 @@ gulp.task('concatjs:vendor', function () {
 gulp.task('bootstrap', function () {
   return gulp.src('node_modules/bootstrap/dist/js/bootstrap.min.js')
     .pipe(gulp.dest('static/js'));
-});
-// same for angular-locale, see app.js. Shitty installation though...
-gulp.task('angularlocale', function () {
-    return gulp.src('/node_modules/angular-i18n/*.js')
-        .pipe(gulp.dest('static/js/'));
 });
 
 // Concatenate js app files
