@@ -32,8 +32,9 @@ from django.dispatch import receiver
 
 from search.models.models import Barcode64
 from search.models.models import Card
+from search.models.utils import get_logger
 
-log = logging.getLogger(__name__)
+log = get_logger()
 
 @receiver(post_save, sender=Card, dispatch_uid="barcode64_signal")
 def card_saved_callback(sender, **kwargs):

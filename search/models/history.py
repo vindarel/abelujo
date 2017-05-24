@@ -26,8 +26,9 @@ from common import ALERT_WARNING
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel
+from search.models.utils import get_logger
 
-log = logging.getLogger(__name__)
+log = get_logger()
 
 CHAR_MAX_LENGTH = 200
 PAGE_SIZE = 50

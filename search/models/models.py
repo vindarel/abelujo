@@ -64,13 +64,14 @@ from search.models.utils import date_last_day_of_month
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
+from search.models.utils import get_logger
 
 PAGE_SIZE = 50
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
 # and the ui in general (datejs).
 DEFAULT_PRICE = 0
 
-log = logging.getLogger('sentry_logger')  # also to file
+log = get_logger()
 
 DEPOSIT_TYPES_CHOICES = [
     ("Dépôt de libraire", (

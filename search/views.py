@@ -65,12 +65,12 @@ from search.models import Entry
 from search.models import EntryCopies
 from search.models.api import _get_command_or_return
 from search.models.utils import _is_truthy
+from search.models.utils import get_logger
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import truncate
 
-
-log = logging.getLogger('sentry_logger')  # also to file
+log = get_logger()
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.

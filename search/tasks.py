@@ -23,9 +23,9 @@ import logging
 from huey.contrib.djhuey import db_task
 
 from models import Inventory, InventoryCommand
+from search.models.utils import get_logger
 
-logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
-log = logging.getLogger(__name__)
+log = get_logger()
 
 @db_task()
 def inventory_apply_task(pk):

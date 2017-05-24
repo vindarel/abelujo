@@ -17,6 +17,7 @@
 
 import datetime
 import decimal
+import logging
 import re
 import string
 
@@ -24,12 +25,24 @@ import addict
 # from models import getHistory # don't import model here-> circular
 from tabulate import tabulate
 
+from abelujo import settings
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 
 MAX_CELL=60
+
+
+def get_logger():
+    """Get the appropriate logger for PROD or DEBUG mode. On local
+    development, don't use the sentry_logger (throws errors).
+    """
+    if settings.DEBUG:
+        return logging.getLogger('debug_logger')
+    else:
+        return logging.getLogger('sentry_logger')
+
 
 class Messages(object):
     """List of messages for UI <-> api communication in json.

@@ -21,7 +21,9 @@ from django.db import models
 from common import CHAR_LENGTH
 from common import TimeStampedModel
 
-log = logging.getLogger(__name__)
+from search.models.utils import get_logger
+
+log = get_logger()
 
 class Address(models.Model):
     """Contact information.

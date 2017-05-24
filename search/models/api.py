@@ -39,6 +39,7 @@ from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
+from search.models.utils import get_logger
 from search.tasks import command_inventory_apply_task, inventory_apply_task
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
@@ -49,7 +50,7 @@ from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
-log = logging.getLogger('sentry_logger')  # also to file
+log = get_logger()
 
 # To search objects and send them as json:
 # - call the search method of the model
