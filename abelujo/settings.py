@@ -313,15 +313,12 @@ HUEY = {
 
 # private token for Sentry. It is sent to the server by a fabric task.
 RAVEN_CONFIG = {}
-
-if os.path.exists(os.path.join(BASE_DIR, "sentry.txt")):
+raven_sentry_file = os.path.join(BASE_DIR, "sentry.txt")
+if os.path.exists(raven_sentry_file):
     dsn = ""
-    with open("sentry.txt", "r") as f:
+    with open(raven_sentry_file, "r") as f:
         dsn = f.read()
 
         RAVEN_CONFIG = {
             'dsn': dsn,
-            # If you are using git, you can also automatically configure the
-            # release based on the git info.
-            'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
         }
