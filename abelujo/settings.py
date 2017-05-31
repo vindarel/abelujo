@@ -195,10 +195,12 @@ INSTALLED_APPS = (
     'mod_wsgi.server',
     'huey.contrib.djhuey',
     'rest_framework',
-    'raven.contrib.django.raven_compat',  # sentry
 
     'search',
 )
+
+if not DEBUG:
+    INSTALLED_APPS += 'raven.contrib.django.raven_compat'  # sentry
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
