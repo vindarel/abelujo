@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
+from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
     reviews as frenchreviews
 from drfserializers import PreferencesSerializer
 from models import Alert
