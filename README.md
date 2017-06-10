@@ -43,7 +43,15 @@ Instructions for Debian 8.
 
 [![build status](https://gitlab.com/vindarel/abelujo/badges/master/build.svg)](https://gitlab.com/vindarel/abelujo/commits/master)
 
-(see below to install without sudo)
+Either do the quick way:
+
+    curl -sS https://gitlab.com/vindarel/abelujo/raw/master/install.sh | bash -
+
+this will clone the repo in the current directory and install all its dependencies.
+
+or read below for the detailed instructions.
+
+See after to install without sudo.
 
 Get the sources:
 

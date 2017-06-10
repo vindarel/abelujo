@@ -24,7 +24,8 @@ if [[ -d abelujo ]] ; then
     run_and_open
 
 else
-    echo "********* Do not use this script if you cloned this repository, it will not work. *********"
+    echo "********* Installing Abelujo...                                       *********"
+    echo "********* (if you cloned this repository, no need to use this script.)*********"
     git clone --recursive http://gitlab.com/vindarel/abelujo/ || (echo "The installation failed. Feel free to email us the results." ; exit 1)
 
     cd abelujo
@@ -40,7 +41,7 @@ else
     make install
     sudo make install-nodejs
     virtualenv ./
-    venv_activate
+    source bin/activate
     pip install --upgrade pip
     make install
     run_and_open
