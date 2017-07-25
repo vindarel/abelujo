@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-02 17:47+0000\n"
-"PO-Revision-Date: 2017-05-02 19:49+0200\n"
+"PO-Revision-Date: 2017-07-25 14:46+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -499,12 +499,12 @@ msgstr "Base de données"
 
 #: templates/base.jade:51
 msgid "List and edit the bookshop\\'s places"
-msgstr "Voyez et modifiez les lieus (de vente, de stockage) de la librairie"
+msgstr "Voyez et modifiez les lieux (de vente, de stockage) de la librairie"
 
 #: templates/base.jade:51 templates/search/collection.jade:78
 #: templates/search/collection.jade:128
 msgid "Places"
-msgstr "Lieus"
+msgstr "Lieux"
 
 #: templates/base.jade:53
 msgid "List and edit the shelves"
@@ -550,7 +550,7 @@ msgstr "Préférences"
 
 #: templates/base.jade:86
 msgid "Logout"
-msgstr "Se déconneter"
+msgstr "Se déconnecter"
 
 #: templates/base.jade:95
 msgid "My stock"
