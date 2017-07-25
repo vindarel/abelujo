@@ -200,7 +200,7 @@ INSTALLED_APPS = (
 )
 
 if not DEBUG:
-    INSTALLED_APPS += 'raven.contrib.django.raven_compat'  # sentry
+    INSTALLED_APPS += ('raven.contrib.django.raven_compat',)  # sentry
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
