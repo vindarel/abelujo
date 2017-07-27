@@ -3,7 +3,7 @@
 # Makefile: because we need more elaborate commands than manage.py
 
 # The target names are not a file produced by the commands of that target. Always out of date.
-.PHONY: clean unit test data cov odsimport doc install_script npm gulp tox migrations
+.PHONY: clean unit test data cov odsimport doc install_script npm gulp tox migrations shell
 
 clone:
 	git clone --recursive https://gitlab.com/vindarel/abelujo.git
@@ -196,6 +196,9 @@ kill-gunicorn:
 	kill -9 $(shell cat PID.txt)
 
 gunicorn: run-gunicorn
+
+shell:
+	python manage.py shell_plus
 
 taskqueue:
 	python manage.py run_huey
