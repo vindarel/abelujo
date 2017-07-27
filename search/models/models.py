@@ -872,15 +872,16 @@ class Card(TimeStampedModel):
 
             # Get the place from where we sell it.
             place_obj = None
-            if place_id:
+            if place_id and place_id != 0:
                 try:
                     # place_obj = card.placecopies_set.get(id=place_id)
                     place_obj = Place.objects.get(id=place_id)
                 except ObjectDoesNotExist as e:
-                    log.warning(u'In Card.sell, can not get place of id {}: {}'.format(place_id, e))
-                    place_obj = Preferences.default_place()
+                    log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
+                    place_obj = Preferences.get_default_place()
                 except Exception as e:
-                    log.error(u'In Card.sell, error getting place of id {}: {}'.format(place_id, e))
+                    log.error(u'In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
+                    return False, u"An error occured :( "
 
                 # Get the intermediate table PlaceCopy, keeping the quantities.
                 place_copy = None
