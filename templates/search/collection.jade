@@ -154,8 +154,8 @@ div(ng-cloak, ng-controller="collectionController")
             div {{ 'author.fields.name' |ng}}
         td {{ 'card.pubs_repr' | ng }}
         td {{ 'card.shelf' | ng }}
-        td {{ 'card.quantity' | ng }}
-        td {{ 'card.qty_deposits' | ng }}
+        td.text-right {{ 'card.quantity' | ng }}
+        td.text-right {{ 'card.qty_deposits' | ng }}
         td
           div(ng-show="card.places") {{ 'card.places' | ng}}
 

@@ -36,6 +36,10 @@
     text-align: left;
 }
 
+.text-right {
+    "text-align: right";
+}
+
 .myImg {
     height: 150px;
 }
