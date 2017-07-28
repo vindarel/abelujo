@@ -66,7 +66,7 @@ from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
 from search.models.utils import get_logger
 
-PAGE_SIZE = 50
+PAGE_SIZE = 500
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
 # and the ui in general (datejs).
 DEFAULT_PRICE = 0
