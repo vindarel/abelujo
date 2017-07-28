@@ -72,10 +72,10 @@ def run(*args):
     if vat_book != Preferences.get_vat_book():
         print("=== setting the vat for books...===")
         msgs, status = Preferences.setprefs(vat_book=vat_book)
-        if status == "success":
+        if status.lower() in ["success", u"success"]:
             print("==== ok ===")
         else:
-            print("==== pb: {}".format(msgs))
+            print("==== There might be a pb: {}".format(msgs))
 
     # Setting the default language.
     if prefs["language"]:
