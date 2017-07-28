@@ -3622,6 +3622,18 @@ def shelf_age_sort_key(it):
     else:
         return 5
 
+def get_total_cost():
+    """Calculate the total cost of My Stock.
+    """
+    try:
+        price_qties =  [(it.price, it.quantity) for it in Card.objects.all()]
+        price_qties = filter(lambda it: it[0] is not None, price_qties)
+        total_cost = sum([it[0] * it[1] for it in price_qties])
+        return total_cost
+    except Exception as e:
+        log.error(u"Error calculating the total cost of the stock: {}".format(e))
+
+
 class Stats(object):
 
     def stock(self, to_json=False):
@@ -3679,7 +3691,7 @@ class Stats(object):
                                 'value': deposits_cost}
         # XXX: long query ! See comments for Card.quantity
         try:
-            total_cost = sum([it.price * it.quantity for it in Card.objects.all()])
+            total_cost = get_total_cost()
             res['total_cost'] = {'label': _(u"Total cost of the stock"),
                                  # Round the float... or just {:.2f}.format.
                                  'value': roundfloat(total_cost)}
