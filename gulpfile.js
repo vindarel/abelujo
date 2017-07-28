@@ -34,17 +34,19 @@ var vendorJsFiles = [
   'node_modules/angular-ui-select/select.js',
   'node_modules/underscore/underscore-min.js',
   'node_modules/underscore/underscore-min.js',
-  // 'node_modules/prelude-ls/**/*.js', // see issue #62. To be removed from bower eventually.
-  'static/bower_components/prelude-ls/browser/prelude-browser-min.js', // xxx bower here
+   // 'node_modules/prelude-ls/**/*.js', // see issue #62. To be removed from bower eventually.
     'node_modules/bootstrap/js/*.js', // needed despite of settings.py
-
-    'node_modules/datejs/build/production/date.min.js',  // XXX
     'node_modules/c3/c3.min.js',
     'node_modules/d3/d3.min.js',
     'node_modules/angular-smart-table/dist/smart-table.min.js',
     'node_modules/angular-datatables/dist/angular-datatables.min.js',
     'node_modules/angular-loading-bar/build/loading-bar.min.js',
     'node_modules/angular-hotkeys/build/hotkeys.min.js',
+
+    // the browser stuff is installed and included by bower.
+    'static/bower_components/prelude-ls/browser/prelude-browser-min.js', // xxx bower here
+    'static/bower_components/datejs/build/production/date.min.js',
+
 ];
 
 var appFiles = [
