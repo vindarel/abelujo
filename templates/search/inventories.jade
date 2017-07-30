@@ -57,6 +57,13 @@ div(ng-controller="InventoryModalController")
 
 
   button.btn.btn-primary(ng-click="open('lg')") {% trans "New" %}
+  .btn-group
+     a.btn.btn-default(role="button"
+                       href="http://abelujo.cc/docs/inventories/"
+                       target="_blank",
+                       title='{% trans "Read the documentation" %}')
+       i.glyphicon.glyphicon-question-sign
+
 
 div(ng-controller="inventoriesController")
   div

@@ -108,8 +108,15 @@ div(ng-cloak, ng-controller="collectionController")
          li: a(href="/stock/export?query={{ 'query' | ng }}&format=txt&publisher_id={{ 'publisher.pk' | ng}}&place_id={{ 'place.id' | ng}}&card_type={{ 'card_type' | ng}}&shelf_id={{ 'shelf.pk' | ng}}&distributor_id={{ 'distributor.id' | ng}}", ng-show="selected", title='{% trans "Export the selection to txt" %}'){% trans 'Selection to txt' %}
 
 
-      button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
-        i.glyphicon.glyphicon-th-list
+      .btn-group
+        button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+          i.glyphicon.glyphicon-th-list
+
+        a.btn.btn-default(role="button"
+                          href="http://abelujo.cc/docs/view_stock/"
+                          target="_blank",
+                          title='{% trans "Read the documentation" %}')
+          i.glyphicon.glyphicon-question-sign
 
       span(style="margin-top: 18px; margin-left: 7px") {% trans "Number of titles" %}: {{'stats.nb_titles.value'|ng}}
 

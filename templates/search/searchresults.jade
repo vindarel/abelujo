@@ -67,8 +67,17 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
         li: a(href="#", ng-click="open_inv_select()", title='{% trans "Add the cards selected to an ongoing inventory" %}') {% trans "Add to inventory…" %}
 
-     button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
+     .btn-group
+       button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
          i.glyphicon.glyphicon-th-list
+
+       a.btn.btn-default(role="button"
+                         href="http://abelujo.cc/docs/new_card/"
+                         target="_blank",
+                         title='{% trans "Read the documentation" %}')
+          i.glyphicon.glyphicon-question-sign
+
+
 
     .col-md-2
        nav(style="float: right;")

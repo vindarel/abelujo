@@ -112,6 +112,15 @@ div.ng-cloak(ng-controller="sellController")
         .col-md-3
           input.btn.btn-success(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
           input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
+
+          .btn-group
+             a.btn.btn-default(role="button"
+                               href="http://abelujo.cc/docs/sell/"
+                               target="_blank",
+                               title='{% trans "Read the documentation" %}')
+               i.glyphicon.glyphicon-question-sign
+
+
       .row(ng-show="cards_selected.length > 0")
           h3.col-md-6 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} €
           .col-md-2

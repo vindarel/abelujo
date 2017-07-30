@@ -32,6 +32,14 @@
 
 a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
 
+.btn-group
+  a.btn.btn-default(role="button"
+                    href="http://abelujo.cc/docs/deposits/"
+                    target="_blank",
+                    title='{% trans "Read the documentation" %}')
+     i.glyphicon.glyphicon-question-sign
+
+
 if  depo_pubtype
   h3 {% trans "External deposits" %}
   table.table.table-striped.table-hover
