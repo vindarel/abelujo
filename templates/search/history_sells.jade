@@ -77,15 +77,15 @@ div
       .col-md-9
         table.table.table-condensed
           thead
-            th.col-md-2(ng-click="sort_by('created')") {% trans "Date" %}
+            th.col-md-2.mouse-pointer(ng-click="sort_by('created')") {% trans "Date" %}
               span.caret
-            th(ng-click="sort_by('sell_id')") {% trans "Sell id" %}
+            th.mouse-pointer(ng-click="sort_by('sell_id')") {% trans "Sell id" %}
               span.caret
-            th.col-md-1(ng-click="sort_by('total_price_sold')") {% trans "Amount" %}
+            th.col-md-1.mouse-pointer(ng-click="sort_by('total_price_sold')") {% trans "Amount" %}
               span.caret
-            th(ng-click="sort_by('total_sold')") {% trans "Total copies sold" %}
+            th.mouse-pointer(ng-click="sort_by('total_sold')") {% trans "Total copies sold" %}
               span.caret
-            th {% trans "Titles" %}
+            th.mouse-pointer {% trans "Titles" %}
             th.col-md-1
 
           tbody
