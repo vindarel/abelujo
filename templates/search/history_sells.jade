@@ -22,16 +22,6 @@
 div
     .row.ng-cloak
 
-      .col-md-1
-        .btn-group
-           button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the selection' %}") {% trans "Export" %}
-             span.caret
-
-           ul.dropdown-menu
-             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=txt") {% trans "Export selection" %} - txt
-             //- li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") {% trans "Export selection" %} - pdf
-             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=csv") {% trans "Export selection" %} - csv
-
 
       .col-md-3
         p.input-group
@@ -65,12 +55,33 @@ div
             button.btn.btn-default(ng-click="distErased()", title="cancel the distributor selection")
               i.glyphicon.glyphicon-remove
 
-      .col-md-3
-        button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
-              i.glyphicon.glyphicon-th-list
+    .row
+       .col-md-1
+        .btn-group
+           button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the selection' %}") {% trans "Export" %}
+             span.caret
 
-          input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
-        span {% trans "Group per title" %}
+           ul.dropdown-menu
+             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=txt") {% trans "Export selection" %} - txt
+             //- li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") {% trans "Export selection" %} - pdf
+             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=csv") {% trans "Export selection" %} - csv
+
+
+       .col-md-2
+        .btn-group
+          button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
+              i.glyphicon.glyphicon-th-list
+          a.btn.btn-default(role="button"
+                            href="http://abelujo.cc/docs/hist/"
+                            target="_blank",
+                            title='{% trans "Read the documentation" %}')
+             i.glyphicon.glyphicon-question-sign
+
+       .col-md-2
+         .checkbox
+          label
+            input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
+            span {% trans "Group per title" %}
 
 
     .row.ng-cloak
