@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-01 00:23+0200\n"
-"PO-Revision-Date: 2017-08-01 00:40+0200\n"
+"PO-Revision-Date: 2017-08-01 00:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -186,10 +186,8 @@ msgstr ""
 
 #: static/js/build/abelujo.js:900
 #: static/js/build/livescript/controllers/basketToCommandController.js:115
-#, fuzzy
-#| msgid "Do you want to mark all the cards of this list to command ?"
 msgid "Do you want to order this command for "
-msgstr "Voulez-vous marquer toutes les notices de cette liste à commander ?"
+msgstr "Voulez-vous passer cette commande à "
 
 #: static/js/build/abelujo.js:932 static/js/build/abelujo.js:1202
 #: static/js/build/abelujo.js:1817 static/js/build/abelujo.js:2323
@@ -209,10 +207,8 @@ msgstr "Les commandes sont groupées par fournisseur."
 
 #: static/js/build/abelujo.js:942
 #: static/js/build/livescript/controllers/basketToCommandController.js:157
-#, fuzzy
-#| msgid "To command"
 msgid "Commands"
-msgstr "À commander"
+msgstr "Commandes"
 
 #: static/js/build/abelujo.js:948
 #: static/js/build/livescript/controllers/basketToCommandController.js:163
@@ -238,10 +234,8 @@ msgstr "Vous pouvez envoyer un courriel pré-rempli à votre fournisseur, ou té
 
 #: static/js/build/abelujo.js:956
 #: static/js/build/livescript/controllers/basketToCommandController.js:171
-#, fuzzy
-#| msgid "To command"
 msgid "Ongoing commands"
-msgstr "À commander"
+msgstr "Commandes en cours"
 
 #: static/js/build/abelujo.js:957
 #: static/js/build/livescript/controllers/basketToCommandController.js:172
@@ -523,15 +517,11 @@ msgstr "chercher"
 
 #: static/js/build/abelujo.js:2997
 #: static/js/build/livescript/controllers/searchResultsController.js:113
-#, fuzzy
-#| msgid "Internal error, sorry !"
 msgid "Internal error, sorry ! We've been notified about it."
-msgstr "Une erreur interne est survenue, oups !"
+msgstr "Une erreur interne est survenue :( Nous en avons été informé."
 
 #: static/js/build/abelujo.js:3040
 #: static/js/build/livescript/controllers/searchResultsController.js:156
-#, fuzzy
-#| msgid "Internal error, sorry !"
 msgid "Server error… sorry !"
 msgstr "Une erreur interne est survenue, oups !"
 
