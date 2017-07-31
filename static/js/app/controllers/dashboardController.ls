@@ -173,15 +173,15 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
       # storage: false  # for dev
       steps:
           * element: "\#mystock",
-            title: "Welcome to Abelujo !",
-            content: "The interesting stuff will happen in these menus ! Remember that we have  documentation on our website."
+            title: gettext "Welcome to Abelujo !",
+            content: gettext "The interesting stuff will happen in these menus ! Remember that we have  documentation on our website."
           * element: "\#database"
-            title: "Fine grain database"
-            content: "This menu is to fine tune the content of your database. You shouldn't need to look at it yet."
+            title: gettext "Fine grain database"
+            content: gettext "This menu is to fine tune the content of your database. You shouldn't need to look at it yet."
             placement: "bottom"
           * element: "\#titlesearch"
-            title: "Quick navigation"
-            content: "This little box is to quickly go to the card of a title you have in stock. Type a few letters, press Enter and see the bibliographic and stock information. \n Enjoy !"
+            title: gettext "Quick navigation"
+            content: gettext "This little box is to quickly go to the card of a title you have in stock. Type a few letters, press Enter and see the bibliographic and stock information. \n Enjoy !"
             placement: "bottom"
 
     # Initialize the tour

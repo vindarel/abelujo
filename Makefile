@@ -268,9 +268,10 @@ html: doc
 translation-files:
 	# py, html, jade files and all locales:
 	python manage.py makemessages  --ignore="collectedstatic/*" --ignore="node_modules/*" -a -e py,html,jade
-	# Same for js files:
+	# Same for js files (djangojs flag) (compile .ls files before):
 	# (we may want to translate js in admin/)
-	django-admin.py makemessages -d djangojs --ignore="doc/dev/_build/*" --ignore="static/js/build/vendor.js" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
+	# check the --ignore flags...
+	django-admin.py makemessages -d djangojs --ignore="doc/dev/_build/*" --ignore="static/js/build/vendor.js" --ignore="static/lib/*" --ignore="./static/bower_components/" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
 
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart

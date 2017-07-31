@@ -276,15 +276,15 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         storage: false  # doesn't prevent to start from last step the second time.
         steps:
           * element: "\#actions",
-            title: "Actions",
-            content: "Be aware that you can make something out of your list. You can add the books to be ordered, or transform the list into a deposit or again compare it with a parcel you just received."
+            title: gettext "Actions",
+            content: gettext "Be aware that you can make something out of your list. You can add the books to be ordered, or transform the list into a deposit or again compare it with a parcel you just received."
           * element: "\#search",
-            title: "Search titles",
-            content: "Here you can search any book by isbn, like with a barcode scanner. Keywords will search into your stock."
+            title: gettext "Search titles",
+            content: gettext "Here you can search any book by isbn, like with a barcode scanner. Keywords will search into your stock."
             placement: "bottom"
           * element: "\#quantity",
-            title: "In real time"
-            content: "When you change the quantities the value is saved automatically."
+            title: gettext "In real time"
+            content: gettext "When you change the quantities the value is saved automatically."
             placement: "left"
 
     # Initialize the tour

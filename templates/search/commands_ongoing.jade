@@ -91,7 +91,6 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_received')", style="padding: 5px")
                     span(
                       type="hidden"
-                      title='{% trans "" %}'
                       uib-datepicker-popup='{{"command_date_format"|ng}}'
                       ng-model="command_date[cmd.id].date_received"
                       ng-change="command_set_date(cmd.id, 'date_received')"
@@ -109,7 +108,6 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_bill_received')", style="padding: 5px")
                     span(
                       type="hidden"
-                      title='{% trans "" %}'
                       uib-datepicker-popup='{{"command_date_format"|ng}}'
                       ng-model="command_date[cmd.id].date_bill_received"
                       ng-change="command_set_date(cmd.id, 'date_bill_received')"
@@ -126,7 +124,6 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_payment_sent')", style="padding: 9px")
                     span(
                       type="hidden"
-                      title='{% trans "" %}'
                       uib-datepicker-popup='{{"command_date_format"|ng}}'
                       ng-model="command_date[cmd.id].date_payment_sent"
                       ng-change="command_set_date(cmd.id, 'date_payment_sent')"
@@ -143,7 +140,6 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_paid')", style="padding: 5px")
                     span(
                       type="hidden"
-                      title='{% trans "" %}'
                       uib-datepicker-popup='{{"command_date_format"|ng}}'
                       ng-model="command_date[cmd.id].date_paid"
                       ng-change="command_set_date(cmd.id, 'date_paid')"
