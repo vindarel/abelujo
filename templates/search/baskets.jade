@@ -129,7 +129,7 @@ div(ng-cloak, ng-controller="basketsController")
    div.middle(ng-hide="copies.length", style="height: 80%; width: 30%")
      img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
 
-   table.table.table-condensed.table-striped(ng-show="copies.length")
+   table.table.table-condensed.table-striped(ng-cloak, ng-show="copies.length")
      thead
        th.mouse-pointer(ng-show="show_images")
        th.mouse-pointer(ng-click="sort_by('title')") {% trans "Title" %}

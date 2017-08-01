@@ -87,7 +87,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
             li.mouse-pointer: a(ng-click="next_results()", aria-label="Next", title="{% trans 'Next results' %}")
               span(aria-hidden="true") &raquo;
 
- table.table.table-striped(ng-show="cards.length != 0")
+  div.middle(ng-cloak, ng-hide="cards.length"): em {% trans "Search cards by key words or by isbn." %}
+
+ table.table.table-striped(ng-cloak, ng-show="cards.length != 0")
     thead
       th: input(type="checkbox", ng-click="toggleAll()")
       th(ng-show="show_images")
