@@ -10,11 +10,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
-    reviews as frenchreviews
 from drfserializers import PreferencesSerializer
 from models import Alert
 from models import Author
@@ -33,6 +32,8 @@ from models import Sell
 from models import Shelf
 from models import SoldCards
 from models import Stats
+from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
+    reviews as frenchreviews
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -40,11 +41,13 @@ from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
 from search.models.utils import get_logger
-from search.tasks import command_inventory_apply_task, inventory_apply_task
+from search.tasks import command_inventory_apply_task
+from search.tasks import inventory_apply_task
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 
 from .utils import ids_qties_to_pairs
+from .utils import is_invalid
 from .utils import is_isbn
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
@@ -582,15 +585,21 @@ TO_RET = {"status": ALERT_SUCCESS,
 
 def history_sells(request, **response_kwargs):
     """deprecated: use simply 'sell' above.
+
+    - params: month= int[1,12], the current month by default.
     """
     alerts = []
     status = ALERT_SUCCESS
     if request.method == "GET":
         params = request.GET.copy()
         distributor_id = params.get('distributor_id')
+        month = params.get('month')
+        if not month and not is_invalid(month):
+            month = timezone.now().month
+
         try:
             # hist, status, alerts = getHistory()
-            hist = Sell.search(to_list=True)
+            hist = Sell.search(month=month, to_list=True)
         except Exception as e:
             log.error(u"api/history error: {}".format(e))
             return HttpResponse(json.dumps(alerts), **response_kwargs)

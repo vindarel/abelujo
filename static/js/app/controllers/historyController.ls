@@ -38,7 +38,9 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     getDistributors!
 
+    cur_month = new Date().getMonth()
     params = do
+        month: cur_month + 1  # + 1 fo
         query: ""
     $http.get "/api/history/sells", do
         params: params
@@ -202,10 +204,10 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     # Month picker
     ######################################################
 
-    $scope.user_date = undefined
-
     $scope.today = ->
         $scope.user_date = new Date()
+
+    $scope.user_date = $scope.today!
 
     $scope.getMonth = ->
         if $scope.user_date
