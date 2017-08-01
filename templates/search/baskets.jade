@@ -125,7 +125,11 @@ div(ng-cloak, ng-controller="basketsController")
        textarea(cols=80, rows=6, ng-model="cur_basket.comment")
      button.button.btn.btn-default(ng-click="save_basket()") {% trans "Save" %}
 
-   table.table.table-condensed.table-striped
+   div.middle(style="height: 30%; width: 30%"): em(ng-hide="copies.length") {% trans "This list has no books inside… yet." %}
+   div.middle(ng-hide="copies.length", style="height: 80%; width: 30%")
+     img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
+
+   table.table.table-condensed.table-striped(ng-show="copies.length")
      thead
        th.mouse-pointer(ng-show="show_images")
        th.mouse-pointer(ng-click="sort_by('title')") {% trans "Title" %}
