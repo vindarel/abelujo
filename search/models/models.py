@@ -887,12 +887,13 @@ class Card(TimeStampedModel):
                 # Get the intermediate table PlaceCopy, keeping the quantities.
                 place_copy = None
                 try:
-                    place_copy, created = place_obj.placecopies_set.get_or_create(card__id=id)
+                    place_copy, created = place_obj.placecopies_set.get_or_create(card=card)
                     if created:
                         place_copy.nb = 0
                         place_copy.save()
                 except Exception as e:
                     log.error(u"Card.sell error filtering the place {} by id {}: {}".format(place_id, id, e))
+                    return (None, _(u"Une erreur est survenue :S (nous avons été alerté)."))  # xxx to be propagated
 
 
             else:
