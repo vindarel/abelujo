@@ -33,9 +33,10 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.distributor_list = []
     $scope.distributors_selected = []
     $scope.has_isbn = false
-    $scope.isbn = null
+    $scope.isbn = ""
     $scope.year_published = undefined
     $scope.details_url = undefined
+    $scope.title = null
 
     $scope.type = ""
     $scope.card = {}
@@ -43,6 +44,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
 
     $scope.shelf = {"fields": {"pk": 0}}
     $scope.shelfs = []
+    $scope.shelf_id = ""
 
     $scope.alerts = []
 
@@ -118,15 +120,12 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             shelf_id = $scope.shelf.pk
 
         params = do
-            title: $scope.title
-            price: $scope.price
             authors: map (.pk), $scope.authors_selected # list of ids
             publishers: map (.pk), $scope.pubs_selected
-            year_published: $scope.year_published
-            details_url: $scope.details_url
-            has_isbn: $scope.has_isbn
-            isbn: $scope.isbn
-            shelf_id: shelf_id
+
+        for it in ["title", "year_published", "has_isbn", "price", "isbn", "shelf_id", "details_url"]
+            if $scope[it]
+                params[it] = $scope[it]
 
         type = $scope.type
         if type and type.fields.name is not undefined
