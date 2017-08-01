@@ -190,6 +190,10 @@ Run unit tests
 
     make unit
 
+Code coverage:
+
+    make cov  # and open your browser at htmlcov/index.html
+
 Load data
 ---------
 

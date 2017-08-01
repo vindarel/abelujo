@@ -236,7 +236,12 @@ ci:
 
 # Code coverage analysis:
 cov:
-	coverage run --source='search/' --omit='*/admin.py,*/*LiveTest*' manage.py test search
+	coverage run --source='search/' \
+		--omit='*/admin.py,*/*LiveTest*' \
+		--omit='search/migrations/*' \
+		--omit='migrations/*' \
+		--omit='search/datasources/*' \
+		manage.py test search.tests --pattern="tests_*.py"
 	# XXX: discogs unit tests are missing.
 	coverage html
 	@echo -n "Current status:"
