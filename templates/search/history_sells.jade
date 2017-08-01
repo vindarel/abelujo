@@ -77,7 +77,7 @@ div
                             title='{% trans "Read the documentation" %}')
              i.glyphicon.glyphicon-question-sign
 
-       .col-md-2
+       .col-md-2(ng-show="sells.length")
          .checkbox
           label
             input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
@@ -86,7 +86,13 @@ div
 
     .row.ng-cloak
       .col-md-9
-        table.table.table-condensed
+
+        div.middle(ng-show="sells.length==0", style="height: 30%; width: 60%")
+          em(style="inline: block") {% trans "We have no sells to show for this month." %}
+        div.middle(ng-show="sells.length==0", style="height: 70%; width: 60%")
+          img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
+
+        table.table.table-condensed(ng-hide="sells.length==0")
           thead
             th.col-md-2.mouse-pointer(ng-click="sort_by('created')") {% trans "Date" %}
               span.caret
@@ -101,7 +107,6 @@ div
 
           tbody
             tr(ng-repeat="sell in sells")
-             em(ng-show="sells.length==0") {% trans "No data" %}
              td {{ 'sell.created' | ng }}
              td {{ 'sell.sell_id' | ng }}
              td {{ 'sell.price_sold' | ng }} €
@@ -120,23 +125,24 @@ div
         div.panel-heading {% trans "Statistics" %}
         div.panel-body
           //- h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
-          h4 {% trans "Total sells" %}: {{'sells_month.toFixed(2)'|ng}} {% trans "€" %}
-          div {% trans "Total" %} {% trans "excl. tax" %}: {{ 'total_sells_month_excl_tax.toFixed(2)' | ng }} {% trans "€" %}
-          div {% trans "total cards sold" %}: {{'nb_sold_cards'|ng}}
-          div {% trans "mean" %}: {{'sells_mean.toFixed(2)'|ng}} {% trans "€" %}
-          h4 {% trans "Best 10 sells" %}
-          table.table(ng-show="best_sells.length")
-            thead
-              tr
-                th {% trans "Title" %}
-                th {% trans "Quantity sold" %}
-            tbody
-              tr(ng-repeat="sell in best_sells")
-                td {{ 'sell.card.title' | ng }}
-                td {{ 'sell.total_sold' | ng }}
-            tfoot
-              tr
-                td.text-center(colspan="5")
+          div(ng-show="best_sells.length")
+            h4 {% trans "Total sells" %}: {{'sells_month.toFixed(2)'|ng}} {% trans "€" %}
+            div {% trans "Total" %} {% trans "excl. tax" %}: {{ 'total_sells_month_excl_tax.toFixed(2)' | ng }} {% trans "€" %}
+            div {% trans "total cards sold" %}: {{'nb_sold_cards'|ng}}
+            div {% trans "mean" %}: {{'sells_mean.toFixed(2)'|ng}} {% trans "€" %}
+            h4 {% trans "Best 10 sells" %}
+            table.table(ng-show="best_sells.length")
+                thead
+                tr
+                    th {% trans "Title" %}
+                    th {% trans "Quantity sold" %}
+                tbody
+                tr(ng-repeat="sell in best_sells")
+                    td {{ 'sell.card.title' | ng }}
+                    td {{ 'sell.total_sold' | ng }}
+                tfoot
+                tr
+                    td.text-center(colspan="5")
 
           em(ng-hide="best_sells.length") {% trans "No data" %}
 

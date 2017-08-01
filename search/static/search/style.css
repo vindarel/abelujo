@@ -40,6 +40,15 @@
     "text-align: right";
 }
 
+.middle {
+  height: 50%;
+  width: 50%;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+}
+
 .myImg {
     height: 150px;
 }
