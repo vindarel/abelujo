@@ -61,6 +61,7 @@ from search.models.common import TEXT_LENGTH
 from search.models.common import TimeStampedModel
 from search.models.utils import Messages
 from search.models.utils import date_last_day_of_month
+from search.models.utils import is_invalid
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
@@ -1102,11 +1103,12 @@ class Card(TimeStampedModel):
             except Exception as e:
                 log.warning("couldn't get or create the shelf {}.".format(card.get('shelf')))
 
-        elif card.get('shelf_id'):
+        elif card.get('shelf_id') and not is_invalid(card.get('shelf_id')):
             try:
                 card_shelf = Shelf.objects.get(id=card.get('shelf_id'))
             except Exception as e:
-                log.warning("Creating/editing card: couldn't get shelf of id {}".format(card.get('shelf_id')))
+                log.info(u"Creating/editing card: couldn't get shelf of id {}. We won't register a shelf for this card.".
+                         format(card.get('shelf_id')))
 
         # Get the publishers:
         card_publishers = []

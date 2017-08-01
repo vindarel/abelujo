@@ -342,3 +342,9 @@ def _is_truthy(txt):
     if txt in ['true', 't', u'true', 'yes']:
         return True
     return False
+
+
+def is_invalid(txt):
+    """When JS client sends "undefined" strings instead of nothing.
+    """
+    return txt not in ['undefined', 0, "0"]
