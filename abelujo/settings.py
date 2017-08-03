@@ -324,3 +324,7 @@ if os.path.exists(raven_sentry_file):
         RAVEN_CONFIG = {
             'dsn': dsn,
         }
+
+import warnings
+import ruamel.yaml
+warnings.simplefilter('ignore', ruamel.yaml.error.UnsafeLoaderWarning)
