@@ -40,7 +40,8 @@ div
                 i.glyphicon.glyphicon-calendar
 
 
-      .col-md-3
+      // Not sure it's working well enough. Disabling before redesign.
+      //- .col-md-3
         p.input-group
           ui-select(ng-model="distributor.selected", ng-change="distChanged()")
             ui-select-match(placeholder="{% trans 'Distributor' %}")
