@@ -209,7 +209,6 @@ def card(request, **kwargs):
             card = card.to_list()
             ret['data'] = card
             ret['alerts'] = msgs
-            log.info("found card {}".format(pk))
 
         except Exception as e:
             msg = _(u"couldn't find card of id {}: {}".format(pk, e))

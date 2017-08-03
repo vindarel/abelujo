@@ -901,7 +901,6 @@ class Card(TimeStampedModel):
                 if card.placecopies_set.count():
                     # XXX: get the default place
                     # fix also the undo().
-                    log.warning("selling: select the place: to finish")
                     place_copy = card.placecopies_set.first()
                 else:
                     return False, "We can not sell card {}: it is not associated with any place.".format(card.title)
@@ -1075,9 +1074,6 @@ class Card(TimeStampedModel):
             else:
                 # We already have objects.
                 card_authors = card["authors"]
-        else:
-            # not a big deal. Many tests fire this, and it's the search lib that ensures that.
-            log.info(u"this card has no authors (ok for a CD): %s" % card.get('title'))
 
         # Get and clean the ean/isbn (beware of form data)
         isbn = card.get("isbn", card.get("ean", ""))
@@ -1806,9 +1802,11 @@ class Basket(models.Model):
         """
         try:
             Basket.objects.get(name="auto_command").add_copy(card)
+        except ObjectDoesNotExist:
+            # that's ok, specially in tests.
+            pass
         except Exception as e:
-            # that's ok in most tests, but not in prod.
-            log.info(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
+            log.error(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
 
     def to_deposit(self, distributor=None, name=""):
         """Transform this basket to a deposit.
@@ -2966,7 +2964,6 @@ class Sell(models.Model):
                 alert.add_deposits_of_card(card)
                 #TODO: ajouter les messages pour la UI
                 # msgs.append
-                log.info(u"Alert created for card {}".format(card.title))
 
             try:
                 # Either sell from a deposit.
@@ -3004,7 +3001,6 @@ class Sell(models.Model):
             quantity = ids_prices_nb[i].get("quantity", 1)
 
             try:
-                log.info(u"Selling {} copies of {} at {}.".format(quantity, card.__unicode__(), price_sold))
                 sold = sell.soldcards_set.create(card=card,
                                                  price_sold=price_sold,
                                                  price_init=card.price,

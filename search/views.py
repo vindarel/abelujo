@@ -172,7 +172,6 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     qparam['source'] = cleaned_data.get("source")
     if "q" in cleaned_data.keys():
         qparam['q'] = cleaned_data["q"]
-    log.debug("on recherche: ", qparam)
     # construct the query parameters of the form
     # q=query+param&source=discogs
     params = urllib.urlencode(qparam)

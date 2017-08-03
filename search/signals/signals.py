@@ -33,6 +33,7 @@ from django.dispatch import receiver
 from search.models.models import Barcode64
 from search.models.models import Card
 from search.models.utils import get_logger
+from search.models.utils import is_isbn
 
 log = get_logger()
 
@@ -43,11 +44,12 @@ def card_saved_callback(sender, **kwargs):
     Generate the barcode base64 if it doesn't exist.
     """
     card = kwargs['instance']
-    if not Barcode64.objects.filter(ean=card.ean):
-        # save the barcode
-        base64 = Barcode64.ean2barcode(card.ean)
-        try:
-            barcode = Barcode64(ean=card.ean, barcodebase64=base64)
-            barcode.save()
-        except Exception as e:
-            log.error(u'Error while saving barcode base 64 of ean {}: {}'.format(card.ean, e))
+    if is_isbn(card.ean):
+        if not Barcode64.objects.filter(ean=card.ean):
+            # save the barcode
+            base64 = Barcode64.ean2barcode(card.ean)
+            try:
+                barcode = Barcode64(ean=card.ean, barcodebase64=base64)
+                barcode.save()
+            except Exception as e:
+                log.error(u'Error while saving barcode base 64 of ean {}: {}'.format(card.ean, e))
