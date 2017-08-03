@@ -126,23 +126,23 @@ div
       .col-md-3.panel.panel-info
         div.panel-heading {% trans "Statistics" %}
         div.panel-body
-          div(ng-show="best_sells.length")
-            h4 {% trans "Total sells" %}: {{'sells_month.toFixed(2)'|ng}} {% trans "€" %}
-            div {% trans "Total" %} {% trans "excl. tax" %}: {{ 'total_sells_month_excl_tax.toFixed(2)' | ng }} {% trans "€" %}
-            div {% trans "total cards sold" %}: {{'nb_sold_cards'|ng}}
-            div {% trans "mean" %}: {{'sells_mean.toFixed(2)'|ng}} {% trans "€" %}
+          div
+            //- h4 {% trans "Total sells" %}: {{'stats_month.nb_sold_cards.toFixed(2)'|ng}} {% trans "€" %}
+            h4 {% trans "Total" %} {% trans "excl. tax" %}: {{ 'stats_month.revenue.toFixed(2)' | ng }} {% trans "€" %}
+            div {% trans "total cards sold" %}: {{'stats_month.nb_sold_cards'|ng}}
+            div {% trans "mean" %}: {{'stats_month.mean.toFixed(2)'|ng}} {% trans "€" %}
             h4 {% trans "Best 10 sells" %}
-            table.table(ng-show="best_sells.length")
+            table.table
                 thead
-                tr
+                  tr
                     th {% trans "Title" %}
                     th {% trans "Quantity sold" %}
                 tbody
-                tr(ng-repeat="sell in best_sells")
-                    td {{ 'sell.card.title' | ng }}
-                    td {{ 'sell.total_sold' | ng }}
+                  tr(ng-repeat="it in stats_month.best_sells")
+                    td {{ 'it.title' | ng }}
+                    td {{ 'it.quantity' | ng }}
                 tfoot
-                tr
+                  tr
                     td.text-center(colspan="5")
 
 {% endblock history_sells %}

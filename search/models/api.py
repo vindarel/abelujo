@@ -551,7 +551,7 @@ def sell(request, **response_kwargs):
         sells = Sell.search(to_list=True, **params.dict())
         status = ALERT_SUCCESS
         ret = {
-            'data': sells,
+            'data': sells['data'],
             'status': status,
             'alerts': [],
             }

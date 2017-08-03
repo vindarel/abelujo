@@ -2138,8 +2138,8 @@ class DepositState(models.Model):
         """
         sold_cards = []
         for card in self.deposit.copies.all():
-            sells = Sell.search(card_id=card.id, date_min=self.created).all()
-            sold_cards.append({"card": card, "sells": sells})
+            sells_dict = Sell.search(card_id=card.id, date_min=self.created)
+            sold_cards.append({"card": card, "sells": sells_dict['data']})
 
         self.update_soldcards(sold_cards)
         return self
@@ -2619,8 +2619,8 @@ class Deposit(TimeStampedModel):
         checkout = DepositState(deposit=self, created=now)
         checkout.save()
         for card in self.copies.all():
-            sells = Sell.search(card_id=card.id, date_min=now).all() # few chances we sell cards between now() and now
-            sold_cards.append({"card": card, "sells": sells})
+            sells_dict = Sell.search(card_id=card.id, date_min=now) # few chances we sell cards between now() and now
+            sold_cards.append({"card": card, "sells": sells_dict['data']})
 
         quantities = []
         if last_checkout:
@@ -2778,7 +2778,7 @@ class Sell(models.Model):
                year=None,
                month=None,
                page=None,
-               page_size=PAGE_SIZE,
+               page_size=None,
                sortby=None,
                sortorder=0, # "-"
                to_list=False):
@@ -2852,14 +2852,12 @@ class Sell(models.Model):
 
         # Pagination.
         total = len(sells)
-        if page is not None:
+        if page is not None and page_size is not None:
             try:
                 sells = sells[page_size * (page - 1):page_size * page]
             except IndexError:
                 log.info("Sells pagination: index error.")
                 sells = []
-        else:
-            sells = sells[:PAGE_SIZE]  # much bigger.
 
         if to_list:
             sells = [it.to_list() for it in sells]
@@ -3775,22 +3773,23 @@ class Stats(object):
         if year is None:
             year = start_time.year
         if month is not None:
+            month = int(month)
             #TODO: check not in future
             start_time = timezone.datetime(year=year, month=month, day=1)
 
         month_beg = start_time - timezone.timedelta(days=start_time.day - 1)
         month_end = date_last_day_of_month(month_beg)
 
-        sells_obj = Sell.search(date_min=month_beg, date_max=month_end)
+        sells_obj = Sell.search(date_min=month_beg, date_max=month_end, page_size=None)
 
         # Add the quantity sold of each card.
         best_sells = {} # title -> qty
         # and count the total revenue
+        nb_sold_cards = sells_obj['total']
         revenue = 0
-        for soldcard in sells_obj:
+        for soldcard in sells_obj['data']:
             title = soldcard.card.title
             qty = soldcard.quantity
-            nb_sold_cards += qty
             revenue += qty * soldcard.price_sold
             if not best_sells.get("title"):
                 best_sells[title] = 0
@@ -3815,6 +3814,7 @@ class Stats(object):
             "revenue": roundfloat(revenue) if revenue else 0,
             "nb_sold_cards": nb_sold_cards,
             "mean": roundfloat(sell_mean),
+            # nb of sells
             }
 
         return to_ret

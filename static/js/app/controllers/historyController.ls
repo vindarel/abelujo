@@ -37,7 +37,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.user_date = $scope.today!
 
-    # $scope.cur_month = new Date().getMonth() + 1
     $scope.page = 1
     $scope.page_size = 3
     $scope.page_max = 1
@@ -54,7 +53,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.get_history = !->
         params = do
-            # month: $scope.cur_month
             month: $scope.user_date.getMonth! + 1
             page: $scope.page
             page_size: $scope.page_size
@@ -117,9 +115,17 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         $scope.page = $scope.page_max
         $scope.get_history!
 
-    # $http.get "/api/stats/sells/month"
-    # .then (response) !->
-        # $scope.sells_month = response.data
+
+    # Get stats.
+    $scope.get_stats = !->
+        stats_params = do
+            month: $scope.user_date.getMonth! + 1
+        $http.get "/api/stats/sells/month", do
+            params: stats_params
+        .then (response) !->
+            $scope.stats_month = response.data
+    $scope.get_stats!
+
 
     $scope.history_entries = !->
         $http.get "/api/history/entries"
@@ -257,6 +263,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.user_change_month = !->
         # if not date in future
         $scope.get_history!
+        $scope.get_stats!
 
     $window.document.title = "Abelujo - " + gettext("History")
 

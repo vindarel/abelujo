@@ -1020,25 +1020,26 @@ class TestSellSearch(TestCase):
         self.autobio.save()
         Sell.sell_cards(None, cards=[self.autobio, self.secondcard])
         sells = Sell.search(distributor_id=self.dist.id)
+        sells = sells['data']
         self.assertEqual(len(sells), 1)
 
         self.secondcard.distributor = self.dist
         self.secondcard.save()
         Sell.sell_card(self.secondcard)
         sells = Sell.search(distributor_id=self.dist.id, to_list=True)
-        self.assertEqual(len(sells), 3)
+        self.assertEqual(len(sells['data']), 3)
 
     def test_search_sells_card(self):
         Sell.sell_card(self.autobio)
         Sell.sell_card(self.secondcard)
         sells = Sell.search(card_id=self.autobio.id)
-        self.assertEqual(len(sells), 1)
+        self.assertEqual(len(sells['data']), 1)
 
     def test_search_sells_dates(self):
         Sell.sell_card(self.autobio)
         Sell.sell_card(self.secondcard, date=timezone.now() - timezone.timedelta(days=30))
         sells = Sell.search(date_min=timezone.now() - timezone.timedelta(days=7))
-        self.assertEqual(len(sells), 1)
+        self.assertEqual(len(sells['data']), 1)
 
 class TestHistory(TestCase):
 
