@@ -63,7 +63,7 @@ div
 
            ul.dropdown-menu
              li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=txt") {% trans "Export selection" %} - txt
-             //- li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=txt&report=listing") {% trans "Export selection" %} - pdf
+
              li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=csv") {% trans "Export selection" %} - csv
 
 
@@ -77,40 +77,28 @@ div
                             title='{% trans "Read the documentation" %}')
              i.glyphicon.glyphicon-question-sign
 
-       .col-md-2(ng-show="sells.length")
-         .checkbox
-          label
-            input(type="checkbox", ng-click="filter_unique()", ng-model="show_unique")
-            span {% trans "Group per title" %}
-
-
     .row.ng-cloak
       .col-md-9
 
         div.middle(ng-show="sells.length==0", style="height: 30%; width: 60%")
-          em(style="inline: block") {% trans "We have no sells to show for this month." %}
+          em(style="inline: block") {% trans "No data." %}
         div.middle(ng-show="sells.length==0", style="height: 70%; width: 60%")
           img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
 
-        table.table.table-condensed(ng-hide="sells.length==0")
+        table.table.table-striped.table-condensed(ng-hide="sells.length==0")
           thead
             th.col-md-2.mouse-pointer(ng-click="sort_by('created')") {% trans "Date" %}
               span.caret
-            th.mouse-pointer(ng-click="sort_by('sell_id')") {% trans "Sell id" %}
+            th.col-md-1.mouse-pointer(ng-click="sort_by('price')") {% trans "Price" %}
               span.caret
-            th.col-md-1.mouse-pointer(ng-click="sort_by('total_price_sold')") {% trans "Amount" %}
+            th.mouse-pointer(ng-click="sort_by('title')") {% trans "Titles" %}
               span.caret
-            th.mouse-pointer(ng-click="sort_by('total_sold')") {% trans "Total copies sold" %}
-              span.caret
-            th.mouse-pointer {% trans "Titles" %}
             th.col-md-1
 
           tbody
             tr(ng-repeat="sell in sells")
              td {{ 'sell.created' | ng }}
-             td {{ 'sell.sell_id' | ng }}
              td {{ 'sell.price_sold' | ng }} €
-             td {{ 'sell.total_sold' | ng }}
              td
                .row
                  img.myImg.col-md-3(ng-show="show_details", src="{{ 'sell.card.img' | ng }}")
@@ -121,10 +109,22 @@ div
                   ng-click="sellUndo($index)"
                   title="{% trans 'Undo this sell' %}")
 
+        ul.pagination.pagination-sm.no-margin.pull-right(ng-show="sells.length")
+            li: a(ng-click="firstPage()")
+                  span.glyphicon.glyphicon-step-backward
+            li: a(ng-click="previousPage()")
+                  span.glyphicon.glyphicon-menu-left
+            li: span {{ 'page' | ng }}/{{ 'page_max' | ng }}
+            li.mouse-pointer: a(ng-click="nextPage()", title='{% trans "next page" %}')
+                  span.glyphicon.glyphicon-menu-right
+            li: a(ng-click="lastPage()")
+                  span.glyphicon.glyphicon-step-forward
+
+
+
       .col-md-3.panel.panel-info
         div.panel-heading {% trans "Statistics" %}
         div.panel-body
-          //- h4 {% trans "Revenue of current month" %}: {{'sells_month.revenue'|ng}} {% trans "€" %}
           div(ng-show="best_sells.length")
             h4 {% trans "Total sells" %}: {{'sells_month.toFixed(2)'|ng}} {% trans "€" %}
             div {% trans "Total" %} {% trans "excl. tax" %}: {{ 'total_sells_month_excl_tax.toFixed(2)' | ng }} {% trans "€" %}
@@ -143,7 +143,5 @@ div
                 tfoot
                 tr
                     td.text-center(colspan="5")
-
-          em(ng-hide="best_sells.length") {% trans "No data" %}
 
 {% endblock history_sells %}

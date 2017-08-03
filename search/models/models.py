@@ -67,7 +67,7 @@ from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
 from search.models.utils import get_logger
 
-PAGE_SIZE = 500
+PAGE_SIZE = 20
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
 # and the ui in general (datejs).
 DEFAULT_PRICE = 0
@@ -2777,6 +2777,10 @@ class Sell(models.Model):
                distributor_id=None,
                year=None,
                month=None,
+               page=None,
+               page_size=PAGE_SIZE,
+               sortby=None,
+               sortorder=0, # "-"
                to_list=False):
         """Search for the given card id in sells more recent than "date_min".
 
@@ -2786,10 +2790,16 @@ class Sell(models.Model):
         - count: if True, only return the count() of the result, not the result list.
         - year, month: ints (month in 1..12)
         - distributor_id: int.
+        - page: int
 
         return: a list of soldcards objects.
         """
         sells = []
+        if page is not None:
+            page = int(page)
+        if page_size is not None:
+            page_size = int(page_size)
+
         try:
             if card_id:
                 sells = SoldCards.objects.filter(card__id=card_id)
@@ -2822,13 +2832,41 @@ class Sell(models.Model):
         if count:
             return sells.count()
 
-        sells = sells.order_by("-created")[:PAGE_SIZE]
+        # Sorting.
+        # Built in DRF ?
+        sortsign = "-"
+        if sortorder in [0, "0"]:
+            sortsign = "-"
+        else:
+            sortsign = ""
+        if sortby is None:
+            sells = sells.order_by(sortsign + "created")
+        elif sortby == "sell__id":
+            sells = sells.order_by("-sell__id")  # TODO:
+        elif sortby == "created":
+            sells = sells.order_by(sortsign + "created")
+        elif "price" in sortby:
+            sells = sells.order_by(sortsign + "price_sold")
+        elif "title" in sortby:
+            sells = sells.order_by(sortsign + "card__title")
 
-        sells = sells.all()
+        # Pagination.
+        total = len(sells)
+        if page is not None:
+            try:
+                sells = sells[page_size * (page - 1):page_size * page]
+            except IndexError:
+                log.info("Sells pagination: index error.")
+                sells = []
+        else:
+            sells = sells[:PAGE_SIZE]  # much bigger.
+
         if to_list:
             sells = [it.to_list() for it in sells]
 
-        return sells
+        return {"data": sells,
+                "total": total,
+                }
 
     def to_list(self):
         """Return this object as a python list, ready to be serialized or

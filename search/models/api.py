@@ -586,20 +586,31 @@ TO_RET = {"status": ALERT_SUCCESS,
 def history_sells(request, **response_kwargs):
     """deprecated: use simply 'sell' above.
 
-    - params: month= int[1,12], the current month by default.
+    - params: - month= int[1,12], the current month by default.
+              - page
     """
     alerts = []
     status = ALERT_SUCCESS
     if request.method == "GET":
         params = request.GET.copy()
         distributor_id = params.get('distributor_id')
+        page = params.get('page', 1)
+        if page is not None:
+            page = int(page)
+        page_size = params.get('page_size')
+        if page_size is not None:
+            page_size = int(page_size)
+        sortby = params.get('sortby')
+        sortorder = params.get('sortorder', 0)
         month = params.get('month')
         if not month and not is_invalid(month):
             month = timezone.now().month
 
         try:
             # hist, status, alerts = getHistory()
-            hist = Sell.search(month=month, to_list=True)
+            hist = Sell.search(month=month, page=page, page_size=page_size,
+                               sortby=sortby, sortorder=sortorder,
+                               to_list=True)
         except Exception as e:
             log.error(u"api/history error: {}".format(e))
             return HttpResponse(json.dumps(alerts), **response_kwargs)

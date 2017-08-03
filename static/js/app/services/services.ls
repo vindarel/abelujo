@@ -83,19 +83,6 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
         shelfs: ->
             $http.get "/api/shelfs"
 
-        sells_total_sold: (sells) ->
-            """
-            - sells: list of objects, with a card_id and a quantity
-            - return: the sells with a new property, total_sold
-            """
-            for sell in sells
-                sell.total_sold = sells
-                |> filter (.card_id == sell.card_id)
-                |> map (.quantity)
-                |> sum
-
-            sells
-
         best_sells: (sells) ->
             """
             - sells: list of objects, with a .total_sold (see function above)

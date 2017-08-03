@@ -31,6 +31,20 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.distributors = []
     $scope.distributor = {}
 
+
+    $scope.today = ->
+        $scope.user_date = new Date()
+
+    $scope.user_date = $scope.today!
+
+    # $scope.cur_month = new Date().getMonth() + 1
+    $scope.page = 1
+    $scope.page_size = 3
+    $scope.page_max = 1
+    $scope.sortby = ""
+    $scope.sortorder = 0  # 0: default, 1 other
+    # $scope.cache_per_month_per_page = {}  # key: month -> dict with key: page
+
     Distributors = $resource('/api/distributors/:id')
     getDistributors = !->
         Distributors.query (res) !->
@@ -38,38 +52,70 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     getDistributors!
 
-    cur_month = new Date().getMonth()
-    params = do
-        month: cur_month + 1  # + 1 fo
-        query: ""
-    $http.get "/api/history/sells", do
-        params: params
-    .then (response) ->
-        $scope.sells = []
-        $scope.sells_month = 0
-        $scope.total_sells_month_excl_tax = 0
-        $scope.nb_sold_cards = response.data.data.length
-        response.data.data = utils.sells_total_sold response.data.data
-        $scope.best_sells = utils.best_sells response.data.data
-        $scope.sells_mean = utils.sells_mean response.data.data
+    $scope.get_history = !->
+        params = do
+            # month: $scope.cur_month
+            month: $scope.user_date.getMonth! + 1
+            page: $scope.page
+            page_size: $scope.page_size
+            sortby: $scope.sortby
+            sortorder: $scope.sortorder
+        $http.get "/api/history/sells", do
+            params: params
+        .then (response) ->
+            $scope.sells = []
+            $scope.sells_month = 0
+            $scope.total_sells_month_excl_tax = 0
+            $scope.nb_sold_cards = response.data.data.total
+            $scope.get_page_max response.data.data.total
+            # $scope.best_sells = utils.best_sells response.data.data
+            # $scope.sells_mean = utils.sells_mean response.data.data
 
-        response.data.data.map (item) !->
-            repr = "sell n° " + item.id
-            created = Date.parse(item.created)
-            created = created.toString("d-MMM-yyyy") # human representation
-            item.created = created
-            item.repr = repr
-            item.show_row = false
-            item.show_covers = false
-            $scope.sells.push item
+            response.data.data.data.map (item) !->
+                repr = "sell n° " + item.id
+                created = Date.parse(item.created)
+                created = created.toString("d-MMM-yyyy") # human representation
+                item.created = created
+                item.repr = repr
+                item.show_row = false
+                item.show_covers = false
+                $scope.sells.push item
 
-            $scope.sells_month += item.price_sold
-            $scope.total_sells_month_excl_tax += item.price_sold_excl_tax
+                $scope.sells_month += item.price_sold
+                $scope.total_sells_month_excl_tax += item.price_sold_excl_tax
 
-            return do
-                repr: repr
-                id: item.id
+                return do
+                    repr: repr
+                    id: item.id
 
+    $scope.get_history!
+
+    $scope.get_page_max = ! ->
+        # Get the nb of pages. 16 elements / 3 elts per page = 5.xx, 16%3 = 1 --> 6 pages.
+        add_one_page = (total, page_size) ->
+            if (total % page_size == 0)
+                return 0
+            return 1
+
+        $scope.page_max = Math.floor($scope.nb_sold_cards / this.page_size) + add_one_page($scope.nb_sold_cards, $scope.page_size)
+
+    $scope.nextPage = !->
+        if $scope.page < $scope.page_max
+            $scope.page += 1
+            $scope.get_history!
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+            $scope.get_history!
+
+    $scope.firstPage = !->
+        $scope.page = 1
+        $scope.get_history!
+
+    $scope.lastPage = !->
+        $scope.page = $scope.page_max
+        $scope.get_history!
 
     # $http.get "/api/stats/sells/month"
     # .then (response) !->
@@ -113,25 +159,9 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         """Custom sort function. Smart-table is buggy and
         under-documented. Didn't find a good table for angular.
         """
-        if $scope.last_sort == key
-            $scope.sells = $scope.sells
-            |> reverse
-        else
-            $scope.sells = $scope.sells
-            |> sort-by ( -> it[key])
-            $scope.last_sort = key
-
-    $scope.filter_unique = !->
-        """
-
-        """
-        if $scope.show_unique
-            $scope.back = $scope.sells
-            $scope.sells = $scope.sells
-            |> unique-by (.card_id)
-
-        else
-            $scope.sells = $scope.back
+        $scope.sortby = key
+        $scope.sortorder = ($scope.sortorder + 1) % 2
+        $scope.get_history!
 
 
     $scope.refreshDistributors = (search, select) !->
@@ -147,20 +177,22 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             distributor_id: $scope.distributor.selected.id if $scope.distributor.selected
             # +1: mismatch with python dates
             month: $scope.user_date.getMonth! + 1
+            page: $scope.page
+            page_size: $scope.page_size
+            sortby: $scope.sortby
+            sortorder: $scope.sortorder
             year: $scope.user_date.getFullYear!
             , (resp) !->
-                # $scope.sells = resp.data
-
                 $scope.sells = []
-                $scope.nb_sold_cards = resp.data.length
+                $scope.nb_sold_cards = resp.data.data.length
                 $scope.sells_month = 0
                 $scope.total_sells_month_excl_tax = 0  # total revenue of cards sold, minus the tax
 
-                resp.data = utils.sells_total_sold resp.data
-                $scope.best_sells = utils.best_sells resp.data
-                $scope.sells_mean = utils.sells_mean resp.data
+                # $scope.best_sells = utils.best_sells resp.data.data
+                # $scope.sells_mean = utils.sells_mean resp.data
 
-                resp.data.map (item) !->
+                sells = resp.data.data
+                sells.map (item) !->
                     repr = "sell n° " + item.id
                     created = Date.parse(item.created)
                     created = created.toString("d-MMM-yyyy") # human representation
@@ -204,11 +236,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     # Month picker
     ######################################################
 
-    $scope.today = ->
-        $scope.user_date = new Date()
-
-    $scope.user_date = $scope.today!
-
     $scope.getMonth = ->
         if $scope.user_date
             $scope.user_date.getMonth! + 1
@@ -229,8 +256,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
 
     $scope.user_change_month = !->
         # if not date in future
-
-        $scope.distChanged!
+        $scope.get_history!
 
     $window.document.title = "Abelujo - " + gettext("History")
 
