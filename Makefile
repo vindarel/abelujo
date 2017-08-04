@@ -101,7 +101,10 @@ npm-dev:
 set-prod:
 	touch PROD.txt
 
-update:
+stash:
+	git stash save "update (stashing yarn)"
+
+update: stash
 	make set-prod
 	make rebase
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
