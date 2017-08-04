@@ -38,7 +38,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.user_date = $scope.today!
 
     $scope.page = 1
-    $scope.page_size = 3
+    $scope.page_size = 15
     $scope.page_max = 1
     $scope.sortby = ""
     $scope.sortorder = 0  # 0: default, 1 other
