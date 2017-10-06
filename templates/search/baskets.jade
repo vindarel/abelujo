@@ -25,7 +25,7 @@
 {% load ngfilter %}
 
 div(ng-cloak, ng-controller="basketsController")
- div
+ .row
     uib-alert(
       ng-repeat="alert in alerts"
       type="{{ 'alert.level' | ng }}"
@@ -34,7 +34,8 @@ div(ng-cloak, ng-controller="basketsController")
     )
       {{ 'alert.message' | ng }}
 
- .col-md-3
+ .row
+  .col-md-3
    div(ng-hide="baskets.length != 0")
      h4
        a(href="#", ng-click="open_new_basket('sm')") {% trans "Create a basket" %} 
@@ -50,11 +51,11 @@ div(ng-cloak, ng-controller="basketsController")
           popover-placement="left") {{ " it.name " | ng }}
             span.badge {{ " it.length " | ng }}
 
- .col-md-9
-  .row
-   .col-md-6
+  .col-md-9
+   .row
+    .col-md-6
 
-    .btn-group
+     .btn-group
       .dropdown
 
          button#actions.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
@@ -73,7 +74,7 @@ div(ng-cloak, ng-controller="basketsController")
            li.divider(role="separator")
            li: a(href="#", ng-click="delete_basket()", title='{% trans "Delete this list. This can not be undone" %}') {% trans "Delete this list" %}
 
-    .btn-group.dro
+     .btn-group
       .dropdown
        button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
          span.caret
@@ -89,7 +90,7 @@ div(ng-cloak, ng-controller="basketsController")
 
          li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing&barcodes=false&covers=true") {% trans "List, with covers" %} - pdf
 
-    .btn-group
+     .btn-group
        button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
          i.glyphicon.glyphicon-th-list
 
@@ -102,10 +103,10 @@ div(ng-cloak, ng-controller="basketsController")
        a.btn.btn-default(href="http://abelujo.cc/docs/lists/", target="_blank", title='{% trans "Read the documentation" %}')
          i.glyphicon.glyphicon-question-sign
 
-   .col-md-2
+    .col-md-2
 
-   .col-md-6
-     form#search
+    .col-md-6
+       form#search
           p.input-group
             input.nullable.form-control#default-input(
               type='text'
