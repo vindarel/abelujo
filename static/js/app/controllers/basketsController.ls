@@ -327,6 +327,10 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
     utils.set_focus!
 
     $scope.ok = !->
+        if typeof ($scope.new_name) == "undefined" || $scope.new_name == ""
+            $uibModalInstance.dismiss('cancel')
+            return
+
         $log.info "create new basket !"
 
         #  This is needed for Django to process the params to its
@@ -370,7 +374,7 @@ angular.module "abelujo" .controller "BasketToDepositModalControllerInstance", (
 
     $scope.ok = !->
         $log.info $scope.distributor.selected
-        $log.info $scope.new_name
+        $log.info "creating new basket: ", $scope.new_name
 
         params = do
             distributor_id: $scope.distributor.selected.id

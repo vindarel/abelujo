@@ -191,6 +191,7 @@ div(ng-cloak, ng-controller="basketsController")
       input#default-input(type="text", ng-model="new_name")
 
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
+      button.btn(ng-click="cancel()") {% trans "Cancel" %}
 
  script(type="text/ng-template", id="basketToDepositModal.html")
     div.modal-header
