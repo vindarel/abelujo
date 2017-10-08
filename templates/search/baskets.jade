@@ -169,8 +169,9 @@ div(ng-cloak, ng-controller="basketsController")
             .col-md-6(ng-show="show_images")
               img.myImg(ng-show="it.img", src="{{ 'it.img' | ng }}")
          td
-           a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
-           div(ng-show="show_images") {{'it.authors_repr'|ng}}
+           .col-md-12
+            a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
+            div(ng-show="show_images") {{'it.authors_repr'|ng}}
          td {{ 'it.pubs_repr' | ng }}
 
          td.text-right {{ 'it.quantity' | ng}}
