@@ -83,11 +83,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
             td {{ 'cmd.created | date: "short" ' | ng }}  
 
             td
-             .row
-              .col-md-9
-                  span {{ 'cmd.date_received | date: "short" ' | ng }}  
-
-              .col-md-3
+                    span {{ 'cmd.date_received | date: "short" ' | ng }}  
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_received')", style="padding: 5px")
                     span(
                       type="hidden"
@@ -100,11 +96,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
 
             // let's copy n paste instead of making a directive. We couldn't iterate over an array of date labels for the difficulty to make {{ 'cmd[date_label]' | ng }} work as intented. A jade mixin wouldn't help. Maybe jinja macro ?
             td
-             .row
-              .col-md-9
-                  {{ 'cmd.date_bill_received | date: "short" ' | ng }}  
-
-              .col-md-3
+                    span {{ 'cmd.date_bill_received | date: "short" ' | ng }}  
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_bill_received')", style="padding: 5px")
                     span(
                       type="hidden"
@@ -116,11 +108,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
                     )
 
             td
-             .row
-              .col-md-9
-                  {{ 'cmd.date_payment_sent | date: "short" ' | ng }}  
-
-              .col-md-3
+                    span {{ 'cmd.date_payment_sent | date: "short" ' | ng }}  
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_payment_sent')", style="padding: 9px")
                     span(
                       type="hidden"
@@ -132,11 +120,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
                     )
 
             td
-             .row
-              .col-md-9
-                  {{ 'cmd.date_paid | date: "short" ' | ng }}  
-
-              .col-md-3
+                    span {{ 'cmd.date_paid | date: "short" ' | ng }}  
                     i.mouse-pointer.glyphicon.glyphicon-calendar(ng-show="show_icon[$index]", ng-click="command_open_datepicker($event, cmd.id, 'date_paid')", style="padding: 5px")
                     span(
                       type="hidden"
