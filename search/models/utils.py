@@ -143,7 +143,8 @@ class Messages(object):
     def to_alerts(self):
         # to test more.
         return [{'status': it['level'],
-                 'messages': it['message']}
+                 'level': it['level'],
+                 'message': it['message']}
                 for it in self.msgs]
 
 

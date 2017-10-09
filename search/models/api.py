@@ -1262,7 +1262,7 @@ def commands_create(request, **kwargs):
             cmd, msgs = Command.new_command(ids_qties=ids_qties,
                                             publisher_id=publisher_id,
                                             distributor_id=distributor_id)
-            msgs.append(msgs)
+            msgs.merge(msgs)
 
             to_ret = {
                 'status': msgs.status,
