@@ -71,7 +71,10 @@ def run(*args):
 
     if vat_book != Preferences.get_vat_book():
         print("=== setting the vat for books...===")
-        msgs, status = Preferences.setprefs(vat_book=vat_book)
+        try:
+            msgs, status = Preferences.setprefs(vat_book=vat_book)
+        except Exception as e:
+            print("Error: {}".format(e))
         if status.lower() in ["success", u"success"]:
             print("==== ok ===")
         else:
