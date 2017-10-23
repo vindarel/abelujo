@@ -389,8 +389,8 @@ class Card(TimeStampedModel):
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
     #: The current quantity of this card in Places. It is equal to the sum of quantities in each place.
-    # It may seem redundant but it's needed for effective queries.
-    quantity = models.IntegerField(null=True, blank=True, default=0)
+    # (below: evil try of optimization: to remove).
+    quantity = models.IntegerField(null=True, blank=True, default=0) # TODO: remove. Do not use. Use quantity_compute or place.quantity_of.
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=1)
     #: Publisher of the card:
@@ -879,10 +879,11 @@ class Card(TimeStampedModel):
                     place_obj = Place.objects.get(id=place_id)
                 except ObjectDoesNotExist as e:
                     log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
+                    # xxx: test here
                     place_obj = Preferences.get_default_place()
                 except Exception as e:
                     log.error(u'In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
-                    return False, u"An error occured :( "
+                    return False, _(u"An error occured :( We prefer to stop this sell.")
 
                 # Get the intermediate table PlaceCopy, keeping the quantities.
                 place_copy = None
@@ -2340,7 +2341,7 @@ class Deposit(TimeStampedModel):
 
         return next
 
-    def add_copies(self, copies, nb=1, quantities=[]):
+    def add_copies(self, copies, nb=1, quantities=[], **kwargs):
         """Add the given list of copies objects to this deposit. If their
         distributors don't match, exit. If the given copies don't
         have a distributor yet, set it.
@@ -2395,10 +2396,13 @@ class Deposit(TimeStampedModel):
             msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
             return msgs.status, msgs.msgs
 
-    def add_copy(self, card_obj, nb=1):
+    def add_copy(self, card_obj, nb=1, add=True):
         """Add a card object to this deposit.
+
+        - nb (int): quantity to add
+        - add (bool): if False, do not add the quantities but set them.
         """
-        self.add_copies([card_obj], nb=nb)
+        self.add_copies([card_obj], nb=nb, add=add)
 
     @staticmethod
     def get_from_kw(**kwargs):

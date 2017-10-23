@@ -845,17 +845,25 @@ class TestSells(TestCase):
                    {"id": self.secondcard.id,
                     "quantity": 2,
                     "price_sold": p2}]
+        self.assertEqual(self.place.quantity_of(self.autobio), 1)
         sell, status, msgs = Sell.sell_cards(to_sell)
+        self.assertEqual(self.place.quantity_of(self.autobio), 0)
         self.assertEqual(ALERT_SUCCESS, status)
 
         int_table = sell.soldcards_set.all()
         self.assertEqual(len(int_table), 2)
-        # check prices
+        # Check prices
         self.assertEqual(int_table[0].price_sold, p1)
         self.assertEqual(int_table[1].price_sold, p2)
-        # check quantities
+        # Check quantities
         self.assertEqual(int_table[0].card.quantity, 0)
         self.assertEqual(int_table[1].card.quantity, -1)
+        # Check quantities through Card.quantity
+        self.assertEqual(self.autobio.quantity_compute(), 0)
+        ### Sell again:
+        sell, status, msgs = Sell.sell_cards(to_sell)
+        self.assertEqual(self.autobio.quantity_compute(), -1)
+        self.assertEqual(self.place.quantity_of(self.autobio), -1)
 
     def test_sell_none(self):
         to_sell = []
