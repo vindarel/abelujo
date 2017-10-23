@@ -143,13 +143,15 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.
         """
-        if not $scope.cur_basket.copies.length
+        $log.info "cur_basket: ", $scope.cur_basket
+        $log.info "copies: ", $scope.copies
+        if not $scope.copies.length
             alert gettext "This basket has no copies to command !"
             return
 
         sure = confirm gettext("Do you want to mark all the cards of this list to command ?")
         if sure
-            to_add = $scope.cur_basket.copies
+            to_add = $scope.copies
             |> map (.id)
 
             coma_sep = join ",", to_add # TODO custom quantities
@@ -157,7 +159,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 card_ids: coma_sep
             $http.post "/api/baskets/#{COMMAND_BASKET_ID}/add/", params
             .then (response) !->
-                $scope.alerts = response.data.msgs
+                # $scope.alerts = response.data.msgs
+                $scope.alerts = response.data.alerts
 
 
     $scope.remove_from_selection = (index_to_rm) !->
