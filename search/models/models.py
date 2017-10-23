@@ -3524,7 +3524,7 @@ class InventoryBase(TimeStampedModel):
     def apply_inventory(pk):
         raise NotImplementedError
 
-    def apply(self, add_qty=False):
+    def apply(self, add_qty=False, deposit_obj=None):
         """Apply this inventory to the stock. Changes each card's quantity of
         the needed place and closes the inventory.
 
@@ -3533,12 +3533,15 @@ class InventoryBase(TimeStampedModel):
         if self.applied or (self.closed is not None and self.closed):
             return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]
 
-        if hasattr(self, "place") and self.place:
-            place = self.place
+        # Choose where to apply this inventory.
+        if deposit_obj:
+            place_or_deposit = deposit_obj
+        elif hasattr(self, "place") and self.place:
+            place_or_deposit = self.place
         else:
-            place = Place.objects.get(id=1) # default place. That could be improved.
+            place_or_deposit = Place.objects.get(id=1) # default place. That could be improved.
 
-        # Shall we set the quantities of these cards in the stock or add them to the existing ?
+        # Shall we set the quantities of these cards in the stock or sum them to the existing ?
         add_qty = False
         # A basket didn't touch the stock, so we want to add this basket to it.
         if hasattr(self, "basket") and self.basket:
@@ -3546,12 +3549,13 @@ class InventoryBase(TimeStampedModel):
 
         try:
             for card_qty in self.copies_set.all():
-                place.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)
+                place_or_deposit.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)
                 card_qty.card.in_stock = True
                 card_qty.card.save()
 
         except Exception as e:
-            log.error("Error while applying the inventory {} to the default place: {}".format(self.id, e))
+            log.error("Error while applying the inventory {} to {}: {}"
+                      .format(self.id, place_or_deposit, e))
             return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
         self.closed = timezone.now()
@@ -3735,6 +3739,7 @@ class Stats(object):
                                  # Round the float... or just {:.2f}.format.
                                  'value': roundfloat(total_cost)}
             # The same, excluding vat.
+            # xxx: all Cards will not be books.
             total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
             res['total_cost_excl_tax'] = {'label': _(u"Total cost of the stock, excl. tax"),
                                           'value': total_cost_excl_tax}
