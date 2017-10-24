@@ -26,16 +26,18 @@ import datetime
 import json
 import logging
 import operator
+import os
 import tempfile
+import urllib
 from datetime import date
 from textwrap import dedent
 
-import barcode
 import dateparser
 import pendulum
 import pytz
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -49,6 +51,7 @@ from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
 
+import barcode
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -61,11 +64,11 @@ from search.models.common import TEXT_LENGTH
 from search.models.common import TimeStampedModel
 from search.models.utils import Messages
 from search.models.utils import date_last_day_of_month
+from search.models.utils import get_logger
 from search.models.utils import is_invalid
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
-from search.models.utils import get_logger
 
 PAGE_SIZE = 20
 #: Date format used to jsonify dates, used by angular-ui (datepicker)
@@ -409,7 +412,7 @@ class Card(TimeStampedModel):
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
     img = models.URLField(null=True, blank=True)
-    #: the cover, saved on the file system (also "cover" alias).
+    #: the cover, saved on the file system. Use card.cover to get the most relevant.
     imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
@@ -470,13 +473,35 @@ class Card(TimeStampedModel):
 
         return self.price
 
+    @property
+    def cover(self):
+        """
+        Return the url of the file on disk if it exists, the remote url otherwise.
+        """
+        if not self.imgfile:
+            return self.img
+        return self.imgfile.url
+
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
-        price_sold. We want it to initialize the angular form.
+        price_sold and save covers on disk. We want it to initialize the angular form.
         """
         # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
         self.price_sold = self.price
+
         super(Card, self).save(*args, **kwargs)
+
+        # Save cover.
+        # After, otherwise unique constraint error.
+        if self.img and (not self.imgfile) and self.img != "":
+            try:
+                tmp_path, httpmessages = urllib.urlretrieve(self.img)
+                self.imgfile.save(
+                    os.path.basename(self.img),
+                    File(open(tmp_path)))
+            except Exception as e:
+                log.error("Error retrieving the cover from url: {}".format(e))
+
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
@@ -652,6 +677,7 @@ class Card(TimeStampedModel):
             "fmt": self.fmt,
             "get_absolute_url": get_absolute_url,
             "img": self.img,
+            "cover": self.cover, # either the url, either the saved file on file system.
             "isbn": self.isbn if self.isbn else u"",
             "model": self.__class__.__name__, # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),

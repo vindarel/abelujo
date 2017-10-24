@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', ($http, $scope, $timeout, utils, $filter, $window) !->
+angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$log', ($http, $scope, $timeout, utils, $filter, $window, $log) !->
     # utils: in services.js
 
     # set the xsrf token via cookies.

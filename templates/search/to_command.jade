@@ -118,7 +118,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 tr(ng-repeat="card in cards")
                   td(ng-show="show_images")
                     .col-md-6(ng-show="show_images")
-                      img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
+                      img.myImg(ng-show="card.cover", src="{{ 'card.cover' | ng }}")
 
                   td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}

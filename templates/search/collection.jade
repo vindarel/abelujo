@@ -139,7 +139,7 @@ div(ng-cloak, ng-controller="collectionController")
         td: input(type="checkbox", ng-model="selected[card.id]")
         td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
-              img.myImg(ng-show="card.img", src="{{ 'card.img' | ng }}")
+              img.myImg(ng-show="card.cover", src="{{ 'card.cover' | ng }}")
         td
           .row
             .col-md-9

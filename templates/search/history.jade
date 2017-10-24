@@ -62,7 +62,7 @@ div(ng-controller="historyController")
                    th
                  tr(ng-repeat="item in hist.copies")
                   td(ng-show="show_details == 1")
-                    img.myImg(ng-show="item.card.img", src="{{ 'item.card.img' | ng }}")
+                    img.myImg(ng-show="item.card.cover", src="{{ 'item.card.cover' | ng }}")
                   td.col-md-8
                     a(href="{{ 'item.card.get_absolute_url' | ng }}") {{ 'item.card.title' | ng }}
 

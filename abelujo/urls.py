@@ -13,11 +13,14 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import patterns
+from django.conf.urls.static import static
 from django.conf.urls import url
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
+
 
 from search.drfviews import CommandViewSet
 
@@ -140,3 +143,6 @@ urlpatterns += [
 
 # the following does include a login/ too, but the first one will match.
 urlpatterns += [url('^', include('django.contrib.auth.urls'))]
+
+# Serve media (images).
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
