@@ -409,6 +409,8 @@ class Card(TimeStampedModel):
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
     img = models.URLField(null=True, blank=True)
+    #: the cover, saved on the file system (also "cover" alias).
+    imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: link to the card's data source
