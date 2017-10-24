@@ -52,6 +52,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     # Get the card
     re = /(\d)+/
     card_id = $window.location.pathname.match(re)
+    card_id = card_id[0]
     $http.get "/api/card/" + card_id, do
         params: {}
     .then (response) !->
