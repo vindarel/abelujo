@@ -81,11 +81,12 @@ install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev 
 
 # Install npm packages
 npm-system:
-	@echo "Installing gulp globally... (needs root)"
-	@sudo npm install -g gulp
+	@echo "Installing gulp and brunch globally... (needs root)"
+	@sudo npm install -g gulp brunch
+
 npm-system-nosudo:
-	@echo "Installing gulp globally... (needs root)"
-	yarn global add gulp
+	@echo "Installing gulp and brunch globally... (needs root)"
+	yarn global add gulp brunch
 
 npm:
 	@echo "Installing Node packages..."
