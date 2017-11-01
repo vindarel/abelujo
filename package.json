@@ -47,6 +47,7 @@
         "yargs": "1.2.1"
     },
     "devDependencies": {
+        "auto-reload-brunch": "^2.7.1",
         "brunch": "^2.10.12",
         "javascript-brunch": "^2.10.0",
         "pug-brunch": "^1.0.2",
