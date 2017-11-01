@@ -1,6 +1,9 @@
 module.exports = {
   paths: {
-    watched: ['static/vue'],
+    watched: [
+      'static/vue',
+      'templates/search',
+    ],
   },
   files: {
     javascripts: {joinTo: 'app.js'},
