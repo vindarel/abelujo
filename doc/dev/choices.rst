@@ -9,16 +9,10 @@ Why AngularJS ?
 framework to build dynamic user interfaces. It does double-data
 binding at its core.
 
-Why not JQuery, Ember or <anothe popular JS framework> ?
+We are transitioning to Vuejs, which is waaaaay better (better doc,
+better error messages, easier creation of components and unit tests).
 
-Angular isn't comparable with JQuery. See the basics: https://angularjs.org/#the-basics
-
-Why not a simple library that does double data binding (like view.js)
-? Because we will use all the power of Angular (we need js functions
-as controllers, unit tests, end to end tests, and the like).
-
-Ember has a similar scope. But besides technical details, it appears
-we already have significant experience with Angular.
+Angularjs is now deprecated in favor of Angular2.
 
 Read our Angular crash course to learn how to add Angular to a Django
 project, how to build everything, and how everything works.
@@ -82,6 +76,8 @@ django-bower VS gulpfile
 Gulp
 ----
 
+.. Note:: we are now using Brunch with Vuejs.
+
 `Gulp <https://github.com/gulpjs/gulp>`_ defines itself as the
 streaming build system. We configure actions to:
 
@@ -97,6 +93,13 @@ The defined actions are (see ``gulpfile.js``):
 - ``gulp`` by default runs ``less`` and ``concat``
 - ``gulp run``
 - ``gulp watch``: auto browser reload.
+
+Brunch
+------
+
+A loader, like Webpack but simpler (less configuration to
+write), sufficient for our needs. http://brunch.io/
+
 
 LiveScript
 ----------

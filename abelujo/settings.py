@@ -184,6 +184,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'brunch',  # before staticfiles
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # for intcomma currency filter only (card show).
     'django_extensions',
@@ -329,3 +330,7 @@ if os.path.exists(raven_sentry_file):
 import warnings
 import ruamel.yaml
 warnings.simplefilter('ignore', ruamel.yaml.error.UnsafeLoaderWarning)
+
+# Brunch: live reload of static assets.
+BRUNCH_DIR = BASE_DIR
+BRUNCH_SERVER = True  # livereload, do not refresh the browser to see changes.

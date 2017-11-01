@@ -165,6 +165,9 @@ run:
 	# python manage.py runserver 8000
 	python manage.py runserver_plus 8000
 
+watch:
+	python manage.py runserver 8000  # to use brunch's livereload, not on runserver_plus.
+
 run-wsgi:
 	# Run a development server using Apache and mod_wsgi, like in production.
 	# required: run collectstatic.
