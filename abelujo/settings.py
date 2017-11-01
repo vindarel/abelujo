@@ -104,6 +104,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, "static"),  # all that are not related to a certain app
+    os.path.join(BASE_DIR, "public"),  # for brunch and vue.
 )
 
 # List of finder classes that know how to find static files in
