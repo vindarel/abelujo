@@ -264,14 +264,14 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
 angular.module "abelujo" .controller "SearchResultsModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, selected) !->
 
-    {Obj, join, sum, map, filter, lines} = require 'prelude-ls'
+    {Obj, join, sum, map, filter, lines, tail} = require 'prelude-ls'
 
     $scope.selected_baskets = {}
     $scope.alerts = []
 
     $http.get "/api/baskets"
     .then (response) !->
-        $scope.baskets = response.data.data
+        $scope.baskets = tail response.data.data  # remove auto_command
 
     $scope.ok = !->
 
