@@ -558,6 +558,19 @@ def cmd(cmd, name=None):
             with prefix(VENV_ACTIVATE.format(client.name)):
                 run(cmd)
 
+
+def script(script, name=None):
+    """
+    Run script `script` to client `name`.
+    """
+    if not name:
+        print("Please give a client name.")
+        return
+    client = fabutils.select_client_cfg(name)
+    com = "python manage.py runscript {}".format(script)
+    cmd(com, name)
+
+
 def bower_package_version(package, names=None):
     """What's the installed packages version ?
 
