@@ -26,6 +26,9 @@
         "bootstrap": "^3.3.7",
         "bootstrap-tour": "0.11",
         "bower": "latest",
+        "brunch": "^2.10.12",
+        "javascript-brunch": "^2.10.0",
+        "vue-brunch": "^2.0.1",
         "c3": "latest",
         "datatables": "1.10",
         "gulp": "latest",
@@ -48,11 +51,7 @@
     },
     "devDependencies": {
         "auto-reload-brunch": "^2.7.1",
-        "brunch": "^2.10.12",
-        "javascript-brunch": "^2.10.0",
-        "pug-brunch": "^1.0.2",
-        "testcafe": "latest",
-        "vue-brunch": "^2.0.1"
+        "testcafe": "latest"
     },
     "private": true,
     "scripts": {

@@ -131,7 +131,7 @@ migrate:
 	python manage.py migrate --noinput
 
 collectstatic:
-	brunch build  # --production. Create public/ dir.
+	./node_modules/brunch/bin/brunch build  # --production. Create public/ dir.
 	python manage.py collectstatic --noinput
 
 # Run the tests of the UI in a browser.
