@@ -16,11 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import os
-import yaml
-
-from tqdm import tqdm
 
 from search.models.models import Card
 from abelujo.settings import MEDIA_ROOT
@@ -37,6 +33,9 @@ Usage:
 def run(*args):
 
     covdir = os.path.join(MEDIA_ROOT, "covers")
+    if not os.path.exists(covdir):
+        os.mkdir(covdir)
+
     l1 = len(os.listdir(covdir))
     print "Covers in directory: {}".format(l1)
     for card in Card.objects.all():
