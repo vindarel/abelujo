@@ -430,6 +430,9 @@ class Card(TimeStampedModel):
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ('sortkey', 'year_published', 'title')
+
     @property
     def ean(self):
         """Can't be used in queries, use isbn.
@@ -492,7 +495,13 @@ class Card(TimeStampedModel):
         super(Card, self).save(*args, **kwargs)
 
         # Save cover.
-        # After, otherwise unique constraint error.
+        # After super, otherwise unique constraint error.
+        self.save_cover()
+
+    def save_cover(self):
+        """
+        Save this cover on disk if not done already.
+        """
         if self.img and (not self.imgfile) and self.img != "":
             try:
                 tmp_path, httpmessages = urllib.urlretrieve(self.img)
@@ -501,10 +510,6 @@ class Card(TimeStampedModel):
                     File(open(tmp_path)))
             except Exception as e:
                 log.error("Error retrieving the cover from url: {}".format(e))
-
-
-    class Meta:
-        ordering = ('sortkey', 'year_published', 'title')
 
     def __unicode__(self):
         """To pretty print a list of cards, see models.utils.ppcard.
