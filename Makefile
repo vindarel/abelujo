@@ -23,6 +23,7 @@ debian:
 
 # Rebase main repo and submodules
 rebase:
+	git stash save "for make rebase"
 	git pull --rebase
 	git submodule update --remote
 
