@@ -693,7 +693,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
             except Exception as e:
                 log.error(u'Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
 
-        # Add cards from card dicts, not in db yet (from the search view).
+        # Add cards from card dicts, not in db yet (from the Searchresults view).
         elif action and action == "add" and req.get('cards'):
             # req: dict where keys are an index (useless, js dependency) and values, the card dicts.
             cards = req['cards'].values()
@@ -813,11 +813,12 @@ def baskets_create(request, **response_kwargs):
 def baskets_update(request, pk, **response_kwargs):
     """Update the given fields of basket of id 'pk'.
 
-    Update:
-    - comment
+    What to update:
+    - the comment
     - a card's quantity: set card_id and quantity fields in request.body.
 
     """
+    # see also baskets and its actions above.
     to_ret = {"data": [],
               "alerts": [],
               "status": ALERT_SUCCESS,}
@@ -826,6 +827,7 @@ def baskets_update(request, pk, **response_kwargs):
             basket = Basket.objects.get(id=pk)
         except Exception as e:
             log.error("Basket update: {}".format(e))
+            return JsonResponse(to_ret)
 
         # fields are in request.body
         params = json.loads(request.body)

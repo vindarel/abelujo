@@ -171,6 +171,23 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             ... # error
 
     ########################################################
+    # Modal add to Command
+    ########################################################
+    $scope.add_to_command = (size) !->
+        to_add = Obj.filter (.selected == true), $scope.cards
+
+        keys = Obj.keys to_add
+        if not keys.length
+            alert "Please select some cards first"
+            return
+
+        params = do
+            cards: to_add
+        $http.post "/api/baskets/1/add/", params
+        .then (response) !->
+            card_id = response.data.card_id
+
+    ########################################################
     # Modal choose a list
     ########################################################
     $scope.open_list_select = (size) !->

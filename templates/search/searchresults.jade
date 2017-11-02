@@ -62,6 +62,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
          span.caret
 
        ul.dropdown-menu
+        li: a(href="#", ng-click="add_to_command()", title='{% trans "Mark this card to command." %}'){% trans 'Add to the command…' %}
 
         li: a(href="#", ng-click="open_list_select()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
 
