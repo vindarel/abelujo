@@ -31,13 +31,14 @@ head
           content: "Abelujo http://abelujo.cc/ - free software for bookshops"
         }
     }
+
   body
 
     h2#header_content(style="{text-align: center;}")  {{ list_name }}
     em {{ date }}
 
     table
-      thead
+      thead(style="background-color: lightgrey")
         tr
           if barcode
             th
@@ -58,7 +59,7 @@ head
         endfor
 
       tfoot
-        tr
+        tr(style="background-color: lightgrey")
           if barcode
             td
           if covers
