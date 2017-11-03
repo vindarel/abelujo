@@ -9,8 +9,8 @@ head
       margin: 2cm;
       size: a4 portrait;
 
-        @top-right{
-          content: "Page " counter(page) " of " counter(pages);
+        @bottom-right{
+          content: counter(page) " / " counter(pages);
         }
 
         @frame header_frame {
@@ -30,7 +30,6 @@ head
         @bottom-center {
           content: "Abelujo http://abelujo.cc/ - free software for bookshops"
         }
-
     }
   body
 
