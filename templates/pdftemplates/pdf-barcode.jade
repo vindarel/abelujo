@@ -27,11 +27,15 @@ head
             left: 50pt; width: 512pt; top: 772pt; height: 20pt;
         }
 
+        @bottom-center {
+          content: "Abelujo http://abelujo.cc/ - free software for bookshops"
+        }
+
     }
   body
 
-    h2#header_content(style="{text-align: center;}")  {{ list_name }}, {{ date }}
-    //- div#footer_content(style="{text-align: center;}") {% trans "page" %} <pdf:pagenumber> / <pdf:pagecount> 
+    h2#header_content(style="{text-align: center;}")  {{ list_name }}
+    em {{ date }}
 
     table
       thead
