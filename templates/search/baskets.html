@@ -1,0 +1,17 @@
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<div id="baskets">
+  <baskets
+     baskets_url="/api/baskets">
+  </baskets>
+</div>
+
+{% endblock content %}

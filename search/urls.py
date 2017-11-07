@@ -103,6 +103,7 @@ urlpatterns = patterns('',
         login_required(TemplateView.as_view(template_name="search/inventory_view.jade"))),
     url(r'^baskets/$', 'search.views.baskets',
         name="baskets"),
+    url(r'^lists', login_required(TemplateView.as_view(template_name="search/baskets.html"))),
 
     # Export sells history
     url(r'^history/sells/export/?', 'search.views.history_sells_exports',

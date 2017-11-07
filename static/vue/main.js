@@ -1,19 +1,31 @@
 "use strict";
+/* eslint-disable no-new */
 
 import Vue from "vue";
-/* import Vue from "vue/dist/vue.js";*/
-// warning: https://stackoverflow.com/questions/39488660/vue-js-2-0-not-rendering-anything
+Vue.use(require("vue-resource"));
 
 import Hello from "./hello.vue"
+import CardAdd from "./cardAdd.vue"
+import Baskets from "./baskets.vue"
 
-console.log("----- init vue !")
+if (document.getElementById("abelujo")) {
+  new Vue({
+    el: "#abelujo",
+    components: {
+      Hello,
+      CardAdd,
+    },
+    data: {
+    },
+  });
+}
 
-/* eslint-disable no-new */
-new Vue({
-  el: "#abelujo",
-  components: {
-    Hello,
-  },
-  data: {
-  },
-});
+if (document.getElementById("baskets")) {
+  new Vue({
+    el: "#baskets",
+    components: {
+      Baskets,
+    },
+    data: {},
+  });
+}
