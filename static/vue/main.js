@@ -26,7 +26,6 @@ Vue.use(VueProgressBar, options);
 Vue.use(VueResourceProgressBarInterceptor); // unsure it's working
 
 import Hello from "./hello.vue"
-import CardAdd from "./cardAdd.vue"
 import Baskets from "./baskets.vue"
 
 if (document.getElementById("abelujo")) {
@@ -34,7 +33,6 @@ if (document.getElementById("abelujo")) {
     el: "#abelujo",
     components: {
       Hello,
-      CardAdd,
     },
     data: {
     },
