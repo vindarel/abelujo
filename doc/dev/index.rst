@@ -14,6 +14,7 @@ Contents:
    api-dev.rst
    clientside-dev.rst
    deploy-manage.rst
+   ci.rst
    codingstyle.rst
    editors.rst
 

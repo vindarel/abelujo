@@ -197,6 +197,24 @@ Code coverage:
 
     make cov  # and open your browser at htmlcov/index.html
 
+Testing the installation script in Docker
+-----------------------------------------
+
+Given you have Docker already installed, run the installation script
+in a fresh Ubuntu 16.04 with:
+
+    chmod +x dockentry.sh
+    docker run  -v "$(pwd)/docker":/home/docker/ -ti ubuntu:16.04 /home/docker/dockentry.sh
+
+The script given as argument creates a user with sudo rights and then
+calls the installation script.
+
+You can also simply step into the image and run scripts manually from
+there.
+
+See a bit more in doc/dev/ci.rst.
+
+
 Load data
 ---------
 

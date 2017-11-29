@@ -232,21 +232,15 @@ To run python unit tests::
 
     make unit # or ./manage.py test search.tests.testfile.someClass.some_method
 
-Python's end-to-end tests::
-
-    make e2e
-
 To run the javascript unit tests::
 
     TODO !
 
-To run the javascript end-to-end tests (with Protractor), open 3
+To run the javascript end-to-end tests, open 2
 terminal windows:
 
 - run our web app with the usual `make run` (or `./manage.py runserver`)
-- start the webdriver: `make webdriver-start`
-- at last, run the tests: `make protractor`. We also have a debugger
-  mode with `make protractor-debug` (requires Chrome >= 39).
+- run the tests: `make testcafe`.
 
 .. note::
 
@@ -255,21 +249,6 @@ terminal windows:
    You need at least nodejs v4 (so not Debian's default). See
    https://github.com/nodesource/distributions#installation-instructions
    and the Node Version Manager: https://github.com/creationix/nvm
-
-We have also a Chrome extension to help us write Protractor tests:
-https://github.com/andresdominguez/elementor (requires Chrome >= 39).
- Once we launch it::
-
-     elementor # <url, i.e. http://localhost:8000/en/sell >
-
- we have a Chrome window open with a new extension installed (the red
- icon next to the url bar) where we can enter protractor selectors and
- see the result.
-
-About Protractor:
-
-- https://angular.github.io/protractor/#/getting-started
-- api documentation: https://angular.github.io/protractor/#/api
 
 
 Tests coverage
