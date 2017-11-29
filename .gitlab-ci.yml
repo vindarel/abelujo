@@ -16,9 +16,9 @@ before_script:
   - apt-get update -qy  # for docker
 
 install:
-  # every commit don't need to fire this test.
-  # only:
-  #   - triggers
+  # Build everything only when a new tag is pushed. A waste to do everytime.
+  only:
+    - tags
   script:
     - make debian-nosudo
     - make install-yarn
