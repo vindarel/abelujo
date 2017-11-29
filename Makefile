@@ -44,7 +44,7 @@ pip-dev:
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
 
 pip-submodule:
-	cd search/datasources && pip install -r requirements.txt
+	cd search/datasources && python setup.py install
 
 pip-submodule-dev:
 	cd search/datasources && pip install -r requirements-dev.txt
