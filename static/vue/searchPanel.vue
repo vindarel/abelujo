@@ -10,10 +10,14 @@
         <tr v-for="(it, index) in cards" :key="it.id">
           <card-item
               :card="it"
-              card_height="100px"
-              @clicked="addCard">
+              show_images="true"
+              card_height="100px">
           </card-item>
-        </tr>
+          <td class="col-md-1" >
+            <button @click="addCard(index)" class="btn btn-small">
+              <i class="glyphicon glyphicon-plus"/>
+            </button>
+          </td></tr>
       </tbody>
     </table>
   </div>
@@ -42,9 +46,9 @@
     },
 
     methods: {
-      addCard: function (card) {
-        console.log("--- add ", card);
-        this.$emit("onAddCard", card);
+      addCard: function (index) {
+        console.log("--- add ", this.cards[index]);
+        this.$emit("onAddCard", this.cards[index]);
       },
 
       search: function (e) {

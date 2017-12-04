@@ -1,12 +1,11 @@
 <template>
   <div>
-    <td class="col-md-4">
+    <td v-if="show_images" >
       <img :src="card.img" :height="card_height"/>
     </td>
-    <td class="col-md-8">
+    <td>
       <a :href="card.search_url"> {{ card.title }} </a>
-      <div> {{ card.authors_repr }} </div>
-      <button @click="clicked"> Add </button>
+      <div v-if="show_images" > {{ card.authors_repr }} </div>
     </td>
   </div>
 </template>
@@ -25,6 +24,10 @@
         type: String,
         required: false,
       },
+      show_images: {
+        type: Boolean,
+        default: false,
+      },
     },
 
     data: function () {
@@ -33,10 +36,6 @@
     },
 
     methods: {
-      clicked: function (e) {
-        console.log("--- card item clicked ", this.card);
-        this.$emit("clicked", this.card);
-      },
     },
 
     mounted: function () {
