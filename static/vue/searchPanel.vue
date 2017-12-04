@@ -5,19 +5,32 @@
       <input type="submit" value="Search">
     </form>
 
-    <div v-for="(it, index) in cards" :key="it.id">
-      <span> Title: {{ it.title }} </span>
-      <button @click="addCard(index)"> Add => </button>
-    </div>
+    <table>
+      <tbody>
+        <tr v-for="(it, index) in cards" :key="it.id">
+          <card-item
+              :card="it"
+              card_height="100px"
+              @clicked="addCard">
+          </card-item>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
 
+  import CardItem from "./cardItem";
+
   export default {
     name: 'SearchPanel',
     props: {
       url: String, // search api url.
+    },
+
+    components: {
+      CardItem,
     },
 
     data: function () {
@@ -29,9 +42,9 @@
     },
 
     methods: {
-      addCard: function (index) {
-        console.log("--- add ", this.cards[index]);
-        this.$emit("onAddCard", this.cards[index]);
+      addCard: function (card) {
+        console.log("--- add ", card);
+        this.$emit("onAddCard", card);
       },
 
       search: function (e) {

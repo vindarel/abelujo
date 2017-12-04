@@ -13,14 +13,19 @@
       </div>
     </div>
 
-    <div v-for="it in cards">
-      <div> title: {{ it.title }} </div>
-    </div>
+    <table class="table-condensed">
+      <tbody>
+        <tr v-for="it in cards">
+          <card-item :card="it"/>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
   import SearchPanel from "./searchPanel.vue"
+  import CardItem from "./cardItem";
 
   // todo: a simple list view of all the cards with some succinct info, like Deposits.
   // It's still possible to easily switch of baskets from within one.
@@ -35,6 +40,7 @@
     },
     components: {
       SearchPanel,
+      CardItem,
     },
 
     data: function () {
