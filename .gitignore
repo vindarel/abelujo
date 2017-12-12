@@ -1,0 +1,15 @@
+*.pyc
+*.mo
+*.json
+*~
+*#
+*sqlite
+static/bower_components/
+db.db*
+node_modules/
+*.back
+/collectedstatic/
+/collectedstatic.tar.gz
+/htmlcov/
+/static/
+/public/
