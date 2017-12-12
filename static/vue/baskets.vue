@@ -59,6 +59,7 @@
   export default {
     name: 'Baskets',
     props: {
+      id: undefined,  // current basket id.
       baskets_url: {
         String,
         required: true,
@@ -93,6 +94,19 @@
 
     mounted: function () {
       console.log("--- Baskets component is mounted");
+
+      const url = "/api/baskets/" + this.id;
+      console.log("api: ", url);
+      $.ajax({
+        url: url,
+        success: res => {
+          console.log("--- current basket ", res);
+          // We get the list of copies, no other basket info.
+          this.cards = res;
+          console.log("Got cards: ", this.cards);
+        }
+      });
+
       $.ajax({
         url: this.baskets_url,
         success: res => {

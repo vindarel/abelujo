@@ -107,7 +107,7 @@ urlpatterns = patterns('',
     # Simple presentation:
     url(r'^lists/?$', 'search.views.basket_list', name="basket_list"),
     # Vue app
-    url(r'^lists/(?P<pk>\d+)/?$', login_required(TemplateView.as_view(template_name="search/basket_view.html")), name="basket_view"),
+    url(r'^lists/(?P<pk>\d+)/?$', 'search.views.basket_view', name="basket_view"),
 
     # Export sells history
     url(r'^history/sells/export/?', 'search.views.history_sells_exports',

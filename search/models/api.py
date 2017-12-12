@@ -648,7 +648,7 @@ def auto_command_total(request, **response_kwargs):
 
 
 def basket(request, pk, action="", card_id="", **kwargs):
-    """Get the list of cards or act on the given basket (POST):
+    """Get the list of cards or act on the given basket. On POST:
     - add: add many cards,
     - remove: remove card(s),
     - update: one card
@@ -677,6 +677,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         return JsonResponse(to_ret) # also return error message.
 
     if request.method == "GET":
+        # xxx: use to_ret[data]
         ret = [it.to_dict() for it in basket.basketcopies_set.all()]
         return JsonResponse(ret, safe=False)
 

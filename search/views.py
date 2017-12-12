@@ -726,6 +726,15 @@ def basket_list(request):
         })
 
 @login_required
+def basket_view(request, pk):
+    template = 'search/basket_view.html'
+    if request.method == "GET":
+        basket = Basket.objects.get(pk=pk)
+        return render(request, template, {
+            'basket': basket,
+        })
+
+@login_required
 def basket_export(request, pk):
     """Export the given basket to txt, csv or pdf, with or without barcodes.
 
