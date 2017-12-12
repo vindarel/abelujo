@@ -411,7 +411,7 @@ class Card(TimeStampedModel):
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True)
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
-    img = models.URLField(null=True, blank=True)
+    cover = models.URLField(null=True, blank=True)
     #: the cover, saved on the file system. Use card.cover to get the most relevant.
     imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
@@ -477,12 +477,12 @@ class Card(TimeStampedModel):
         return self.price
 
     @property
-    def cover(self):
+    def img(self):
         """
         Return the url of the file on disk if it exists, the remote url otherwise.
         """
         if not self.imgfile:
-            return self.img
+            return self.cover
         return self.imgfile.url
 
     def save(self, *args, **kwargs):
