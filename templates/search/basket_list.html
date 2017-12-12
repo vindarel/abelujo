@@ -22,7 +22,7 @@
     {% for it in baskets %}
     <tr>
       <td>
-        <a href="{% url 'basket_vue' it.id %}"> {{ it.name }}</a>
+        <a href="{% url 'basket_view' it.id %}" title="{% if it.comment %} {{ it.comment }} {% endif %}"> {{ it.name }}</a>
       </td>
       <td> {{ it.quantity }} </td>
     </tr>
