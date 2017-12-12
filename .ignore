@@ -1,0 +1,9 @@
+# for ag, silver searcher
+
+*.min.js
+*.json
+.json
+*/node_modules/
+/node_modules/
+collectedstatic/
+static/bower_components/
