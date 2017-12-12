@@ -1678,8 +1678,6 @@ class Basket(models.Model):
     # This class is really similar to PlaceCopies. Do something about it.
     #: Name of the basket
     name = models.CharField(max_length=CHAR_LENGTH)
-    #: Short description
-    descrition = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
     #: Type of the basket (preparation of a command, a stand, other, etc)
     basket_type = models.ForeignKey("BasketType", null=True, blank=True)
     #: Copies in it:
