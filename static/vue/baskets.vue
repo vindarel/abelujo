@@ -56,9 +56,6 @@
   import SearchPanel from "./searchPanel.vue"
   import CardItem from "./cardItem";
 
-  // todo: a simple list view of all the cards with some succinct info, like Deposits.
-  // It's still possible to easily switch of baskets from within one.
-
   export default {
     name: 'Baskets',
     props: {

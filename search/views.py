@@ -714,6 +714,18 @@ def baskets(request):
         return render(request, template)
 
 @login_required
+def basket_list(request):
+    """
+    Simple list of baskets. Vue stuff only on a basket page.
+    """
+    template = 'search/basket_list.html'
+    if request.method == "GET":
+        baskets = Basket.objects.all()[1:]  # not the auto_command
+        return render(request, template, {
+            'baskets': baskets,
+        })
+
+@login_required
 def basket_export(request, pk):
     """Export the given basket to txt, csv or pdf, with or without barcodes.
 

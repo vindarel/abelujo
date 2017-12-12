@@ -1,0 +1,34 @@
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<div class="btn-group">
+  <a type="button" class="btn btn-default" href="http://abelujo.cc/docs/lists/" target="_blank">
+    <i class="glyphicon glyphicon-question-sign"></i>
+  </a>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <th> {% trans "Name" %} </th>
+    <th> {% trans "Quantity" %} </th>
+  </thead>
+  <tbody>
+    {% for it in baskets %}
+    <tr>
+      <td>
+        <a href="{% url 'basket_vue' it.id %}"> {{ it.name }}</a>
+      </td>
+      <td> {{ it.quantity }} </td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+{% endblock content %}
