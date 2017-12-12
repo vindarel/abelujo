@@ -88,12 +88,20 @@
 
       toggle_images: function () {
         this.show_images = ! this.show_images;
+        if (typeof (Storage) !== "undefined") {
+          localStorage.setItem("show_images", JSON.stringify(this.show_images));
+        }
       },
 
     },
 
     mounted: function () {
       console.log("--- Baskets component is mounted");
+
+      // Read from localStorage.
+      if (typeof (Storage) !== 'undefined') {
+        this.show_images = JSON.parse(localStorage.getItem('show_images'));
+      }
 
       const url = "/api/baskets/" + this.id;
       console.log("api: ", url);
