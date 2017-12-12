@@ -10,7 +10,8 @@
         <tr v-for="(it, index) in cards" :key="it.id">
           <card-item
               :card="it"
-              show_images="true"
+              :show_images="true"
+              :external_url="true"
               card_height="100px">
           </card-item>
           <td class="col-md-1" >

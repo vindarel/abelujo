@@ -4,7 +4,7 @@
       <img :src="card.img" :height="card_height"/>
     </td>
     <td>
-      <a :href="card.search_url"> {{ card.title }} </a>
+      <a :href="url"> {{ card.title }} </a>
       <div v-if="show_images" > {{ card.authors_repr }} </div>
     </td>
   </div>
@@ -28,11 +28,24 @@
         type: Boolean,
         default: false,
       },
+      external_url: {
+        type: Boolean,
+        default: false,
+      },
     },
 
     data: function () {
       return {
       }
+    },
+
+    computed: {
+      url() {
+        if (this.external_url) {
+          return this.card.details_url;
+        }
+        return this.card.get_absolute_url;
+      },
     },
 
     methods: {
