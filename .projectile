@@ -1,0 +1,15 @@
+-/node_modules/
+-node_modules/
+-/static/bower_components/
+-static/bower_components/
+-/static/js/build/
+-/django_tables2
+-/django_extensions
+-/bootstrap
+-/grappelli
+-/_build/
+-/doc/dev/_build/
+-/collectedstatic/
+-collectedstatic/
+-htmlcov/
+-/htmlcov/
