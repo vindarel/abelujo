@@ -1,8 +1,16 @@
 <template>
   <div class="row">
     <form action="" method="get" @submit="search">
-      <input id="GET-name" type="text" name="name" v-model="query">
-      <input type="submit" value="Search">
+      <p class="input-group">
+        <input id="GET-name" type="text" name="name" v-model="query"
+            class="form-control"
+            placeholder="search...">
+        <span class="input-group-btn" >
+          <button class="btn btn-default" type="submit" value="Search">
+            <i class="glyphicon glyphicon-search"></i>
+          </button>
+        </span>
+      </p>
     </form>
 
     <table>
