@@ -169,7 +169,11 @@ run:
 	python manage.py runserver_plus 8000
 
 watch:
+	# limitation: does not stop on breakpoints.
 	python manage.py runserver 8000  # to use brunch's livereload, not on runserver_plus.
+
+brunch:
+	brunch watch
 
 run-wsgi:
 	# Run a development server using Apache and mod_wsgi, like in production.
