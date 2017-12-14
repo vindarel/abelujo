@@ -77,6 +77,7 @@
         api_cards: "/api/datasource/search",
         cards: [], // list of dicts
         show_images: false,
+        page: 1,
       }
     },
 
@@ -93,6 +94,27 @@
         }
       },
 
+      get_cards: function () {
+        const url = "/api/baskets/" + this.id;
+        $.ajax({
+          url: url,
+          data: {
+            /* page: this.page,*/
+          },
+          success: res => {
+            console.log("--- current basket ", res);
+            // We get the list of copies, no other basket info.
+            this.cards = res;
+            console.log("Got cards: ", this.cards);
+          }
+        });
+      },
+
+      next_page: function () {
+        this.get_cards();
+        this.page += 1;
+      },
+
     },
 
     mounted: function () {
@@ -103,17 +125,7 @@
         this.show_images = JSON.parse(localStorage.getItem('show_images'));
       }
 
-      const url = "/api/baskets/" + this.id;
-      console.log("api: ", url);
-      $.ajax({
-        url: url,
-        success: res => {
-          console.log("--- current basket ", res);
-          // We get the list of copies, no other basket info.
-          this.cards = res;
-          console.log("Got cards: ", this.cards);
-        }
-      });
+      this.get_cards();
 
       $.ajax({
         url: this.baskets_url,

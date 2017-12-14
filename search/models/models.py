@@ -949,6 +949,7 @@ class Card(TimeStampedModel):
             return (None, "La notice n'existe pas.")
         except Exception as e:
             log.error(u"Error selling a card: {}.".format(e))
+            # Didn't return an error message, returned OK !
 
         if card.quantity <= 0:
             Basket.add_to_auto_command(card)

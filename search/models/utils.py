@@ -33,6 +33,7 @@ from search.models.common import ALERT_WARNING
 
 MAX_CELL=60
 
+PAGE_SIZE = 25
 
 def get_logger():
     """Get the appropriate logger for PROD or DEBUG mode. On local
@@ -349,3 +350,8 @@ def is_invalid(txt):
     """When JS client sends "undefined" strings instead of nothing.
     """
     return txt not in ['undefined', 0, "0"]
+
+
+def page_start_index(page, size=PAGE_SIZE):
+    page = int(page)
+    return max((page - 1) * size, 0)

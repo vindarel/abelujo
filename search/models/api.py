@@ -41,6 +41,7 @@ from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
 from search.models.utils import get_logger
+from search.models.utils import page_start_index
 from search.tasks import command_inventory_apply_task
 from search.tasks import inventory_apply_task
 from search.views_utils import get_datasource_from_lang
@@ -65,6 +66,10 @@ log = get_logger()
 # 'data', 'alerts' and 'msgs', some just a list. Everything should be
 # in a dict (good practive influenced by the JsonResponse that likes a
 # dict better).
+
+
+PAGE_SIZE = 25
+
 
 def get_user_info(request, **response_kwargs):
     """
@@ -678,7 +683,12 @@ def basket(request, pk, action="", card_id="", **kwargs):
 
     if request.method == "GET":
         # xxx: use to_ret[data]
-        ret = [it.to_dict() for it in basket.basketcopies_set.all()]
+        page = request.GET.get('page')
+        copies = basket.basketcopies_set.all()
+        if page:
+            page = int(page)
+            copies = copies[page_start_index(page) : page * PAGE_SIZE]
+        ret = [it.to_dict() for it in copies]
         return JsonResponse(ret, safe=False)
 
     elif request.method == 'POST':
@@ -1227,8 +1237,7 @@ def stats_entries_month(request, **kwargs):
 def stats_static(request, page=0, **kwargs):
     """Return the static stock.
     """
-    PAGE = 20
-    notsold = Card.never_sold(page=page, pagecount=PAGE)
+    notsold = Card.never_sold(page=page, pagecount=PAGE_SIZE)
     ret = [it.to_dict() for it in notsold]
 
     to_ret = {
