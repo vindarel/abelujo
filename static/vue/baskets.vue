@@ -8,9 +8,7 @@
     </div>
 
     <div class="col-md-8">
-      <div v-for="it in baskets" :key="it.id">
-        <div> {{ it.name }} </div>
-      </div>
+      <h3> {{ name }} </h3>
 
       <div class="btn-group">
         <button class="btn btn-default" @click="toggle_images" >
@@ -26,6 +24,13 @@
           <i class="glyphicon glyphicon-question-sign"/>
         </button>
       </div>
+
+      <pagination-bullets
+          :current_page="page"
+          :page_count="page_count"
+          @previous_page="previous_page"
+          @next_page="next_page">
+      </pagination-bullets>
 
       <table class="table table-condensed table-striped">
         <thead>
@@ -46,6 +51,15 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- component but still duplicated call to it ! -->
+      <pagination-bullets
+          :current_page="page"
+          :page_count="page_count"
+          @previous_page="previous_page"
+          @next_page="next_page">
+      </pagination-bullets>
+
     </div>
 
 
@@ -53,8 +67,10 @@
 </template>
 
 <script>
+
   import SearchPanel from "./searchPanel.vue"
   import CardItem from "./cardItem";
+  import PaginationBullets from "./pagination";
 
   export default {
     name: 'Baskets',
@@ -68,6 +84,7 @@
     components: {
       SearchPanel,
       CardItem,
+      PaginationBullets,
     },
 
     data: function () {
@@ -78,6 +95,8 @@
         cards: [], // list of dicts
         show_images: false,
         page: 1,
+        page_count: undefined,
+        name: "",
       }
     },
 
@@ -99,22 +118,30 @@
         $.ajax({
           url: url,
           data: {
-            /* page: this.page,*/
+            page: this.page,
           },
           success: res => {
             console.log("--- current basket ", res);
             // We get the list of copies, no other basket info.
-            this.cards = res;
+            this.cards = res.data;
+            this.page_count = res.page_count;
+            this.name = res.basket_name;
             console.log("Got cards: ", this.cards);
           }
         });
       },
 
       next_page: function () {
-        this.get_cards();
         this.page += 1;
+        this.get_cards();
       },
 
+      previous_page: function () {
+        this.page -= 1;
+        if (this.page > 0) {
+          this.get_cards();
+        }
+      },
     },
 
     mounted: function () {
@@ -126,14 +153,6 @@
       }
 
       this.get_cards();
-
-      $.ajax({
-        url: this.baskets_url,
-        success: res => {
-          console.log("--- baskets", res);
-          this.baskets = res.data;
-        }
-      });
     },
   }
 </script>

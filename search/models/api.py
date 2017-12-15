@@ -42,6 +42,7 @@ from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
 from search.models.utils import get_logger
 from search.models.utils import page_start_index
+from search.models.utils import get_page_count
 from search.tasks import command_inventory_apply_task
 from search.tasks import inventory_apply_task
 from search.views_utils import get_datasource_from_lang
@@ -685,11 +686,15 @@ def basket(request, pk, action="", card_id="", **kwargs):
         # xxx: use to_ret[data]
         page = request.GET.get('page')
         copies = basket.basketcopies_set.all()
+        page_count = get_page_count(copies) # xxx: use DRF
         if page:
             page = int(page)
             copies = copies[page_start_index(page) : page * PAGE_SIZE]
         ret = [it.to_dict() for it in copies]
-        return JsonResponse(ret, safe=False)
+        to_ret['data'] = ret
+        to_ret['page_count'] = page_count
+        to_ret['basket_name'] = basket.name
+        return JsonResponse(to_ret, safe=False)
 
     elif request.method == 'POST':
         # json request

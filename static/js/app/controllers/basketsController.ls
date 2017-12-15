@@ -69,7 +69,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
                 .then (response) !->
                     $scope.baskets[index].copies = response.data.data
-                    $scope.copies = response.data
+                    $scope.copies = response.data.data
                     |> sort-by (.title)
 
             else

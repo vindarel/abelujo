@@ -355,3 +355,10 @@ def is_invalid(txt):
 def page_start_index(page, size=PAGE_SIZE):
     page = int(page)
     return max((page - 1) * size, 0)
+
+
+def get_page_count(entries, size=PAGE_SIZE):
+    page_count = len(entries) / size
+    if (PAGE_SIZE * page_count) > len(entries):
+        page_count += 1
+    return page_count

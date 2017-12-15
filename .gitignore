@@ -11,5 +11,5 @@ node_modules/
 /collectedstatic/
 /collectedstatic.tar.gz
 /htmlcov/
-/static/
+/static/bower_components/
 /public/
