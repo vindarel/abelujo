@@ -867,6 +867,66 @@ def baskets_update(request, pk, **response_kwargs):
 
         return JsonResponse(to_ret)
 
+def baskets_add_card(request, pk, **response_kwargs):
+    """Add a Card to Basket pk.
+
+    *newer Vue api*
+
+    Card can be already in stock (with an id) or not. In that case it
+    will created from the given json.
+
+    Works for a Card without id (from a keywords search from new Vue UI).
+
+    Return:
+    - data: <new id>
+    """
+    to_ret = {"data": [],
+              "alerts": [],
+              "status": ALERT_SUCCESS,}
+    created = False
+    if request.method == 'POST':
+        try:
+            b_obj = Basket.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return
+
+        card = json.loads(request.body)
+        if card:
+            card_id = card.get('id')
+            if card_id:
+                try:
+                    card_obj = Card.objects.get(id=card_id)
+
+                except ObjectDoesNotExist:
+                    log.error(u"Card of id {} doesn't exist.".format(card_id))
+                    return JsonResponse({'status': ALERT_ERROR,
+                                         'message': u"The card {} does not exist.".format(card_id)})
+
+            else:
+                try:
+                    card_obj, created = Card.from_dict(card)
+                except Exception as e:
+                    log.error(u"Error creating card: {}".format(e))
+
+            # Add or increment the card.
+            try:
+                b_obj.add_copy(card_obj)
+            except Exception as e:
+                log.error("Error adding card {} to basket {}: {}".format(card.id, b_obj.id, e))
+                return JsonResponse({'status': ALERT_ERROR,
+                                     'message': u"Error, could not add card '{}'".format(card_obj.title)})
+
+            # update the card's id in client.
+            to_ret = {"data": {"card": card_obj.to_dict(),
+                               "basket_qty": b_obj.quantity(card=card_obj),
+                               "created": created}}
+            return JsonResponse(to_ret)
+
+        else:
+            # no data
+            pass
+
+
 def baskets_delete(request, pk, **kw):
     """Delete the given basket.
     """

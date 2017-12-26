@@ -8,7 +8,7 @@
     </div>
 
     <div class="col-md-8">
-      <h3> {{ name }} </h3>
+      <h3> {{ basket_name }} </h3>
 
       <div class="btn-group">
         <button class="btn btn-default" @click="toggle_images" >
@@ -17,9 +17,10 @@
         <button class="btn btn-default">
           <i class="glyphicon glyphicon-pencil"/>
         </button>
-        <button class="btn btn-default">
+        <a href="http://abelujo.cc/docs/lists/" target="_blank"
+            class="btn btn-default">
           <i class="glyphicon glyphicon-info-sign"/>
-        </button>
+        </a>
         <button class="btn btn-default">
           <i class="glyphicon glyphicon-question-sign"/>
         </button>
@@ -39,6 +40,7 @@
           <th> Publisher </th>
           <th> In stock </th>
           <th> Price </th>
+          <td> Quantity </td>
           <th></th>
         </thead>
         <tbody>
@@ -48,7 +50,8 @@
                 card_height="150px"/>
             <td> {{ it.pubs_repr }} </td>
             <td> {{ it.quantity }} </td>
-            <td> {{ it.price }} </td>
+            <td> {{ it.price }} € </td> <!--TODO: currency -->
+            <td> {{ it.basket_qty }} </td>
           </tr>
         </tbody>
       </table>
@@ -100,14 +103,34 @@
         page: 1,
         page_count: undefined,
         data_length: 0,
-        name: "",
+        basket_name: "",
       }
     },
 
     methods: {
       onAddCard: function (card) {
-        console.log("-- received ", card);
-        this.cards.push(card);
+        this.save_card_to_basket(card);
+      },
+
+      save_card_to_basket: function (card) {
+        const url = "/api/baskets/{}/add".replace("{}", this.id);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(card),
+          success: res => {
+            card.id = res.data.card.id;
+            if (res.data.created) {
+              this.cards.splice(0, 0, card);
+            } else {
+              var index = _.findIndex(this.cards, ['id', res.data.card.id]);
+              this.cards[index].basket_qty = res.data.basket_qty;
+            }
+            // xxx: notification
+            console.log("added card succesfully. id: ", res.data.card.id, "created ? ", res.data.created);
+          }
+        });
       },
 
       toggle_images: function () {
@@ -125,13 +148,11 @@
             page: this.page,
           },
           success: res => {
-            console.log("--- current basket ", res);
             // We get the list of copies, no other basket info.
             this.cards = res.data;
             this.page_count = res.page_count;
             this.data_length = res.data_length;
-            this.name = res.basket_name;
-            console.log("Got cards: ", this.cards);
+            this.basket_name = res.basket_name;
           }
         });
       },
@@ -154,8 +175,6 @@
     },
 
     mounted: function () {
-      console.log("--- Baskets component is mounted");
-
       // Read from localStorage.
       if (typeof (Storage) !== 'undefined') {
         this.show_images = JSON.parse(localStorage.getItem('show_images'));

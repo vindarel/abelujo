@@ -361,4 +361,4 @@ def get_page_count(entries, size=PAGE_SIZE):
     page_count = len(entries) / size
     if (PAGE_SIZE * page_count) > len(entries):
         page_count += 1
-    return page_count
+    return page_count or 1

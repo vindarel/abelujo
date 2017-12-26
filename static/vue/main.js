@@ -25,7 +25,6 @@ Vue.use(VueResource);
 Vue.use(VueProgressBar, options);
 Vue.use(VueResourceProgressBarInterceptor); // unsure it's working
 
-import Hello from "./hello.vue"
 import Baskets from "./baskets.vue"
 
 if (document.getElementById("abelujo")) {
