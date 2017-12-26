@@ -28,6 +28,7 @@
       <pagination-bullets
           :current_page="page"
           :page_count="page_count"
+          :data_length="data_length"
           @previous_page="previous_page"
           @next_page="next_page">
       </pagination-bullets>
@@ -56,6 +57,7 @@
       <pagination-bullets
           :current_page="page"
           :page_count="page_count"
+          :data_length="data_length"
           @previous_page="previous_page"
           @next_page="next_page">
       </pagination-bullets>
@@ -96,6 +98,7 @@
         show_images: false,
         page: 1,
         page_count: undefined,
+        data_length: 0,
         name: "",
       }
     },
@@ -125,6 +128,7 @@
             // We get the list of copies, no other basket info.
             this.cards = res.data;
             this.page_count = res.page_count;
+            this.data_length = res.data_length;
             this.name = res.basket_name;
             console.log("Got cards: ", this.cards);
           }
@@ -132,14 +136,18 @@
       },
 
       next_page: function () {
-        this.page += 1;
-        this.get_cards();
+        if (this.page < this.page_count) {
+          this.page += 1;
+          this.get_cards();
+        }
       },
 
       previous_page: function () {
-        this.page -= 1;
-        if (this.page > 0) {
-          this.get_cards();
+        if (this.page > 1) {
+          this.page -= 1;
+          if (this.page > 0) {
+            this.get_cards();
+          }
         }
       },
     },

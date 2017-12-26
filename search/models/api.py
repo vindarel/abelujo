@@ -686,13 +686,13 @@ def basket(request, pk, action="", card_id="", **kwargs):
         # xxx: use to_ret[data]
         page = request.GET.get('page')
         copies = basket.basketcopies_set.all()
-        page_count = get_page_count(copies) # xxx: use DRF
+        to_ret['data_length'] = len(copies)
+        to_ret['page_count'] = get_page_count(copies) # better with DRF
         if page:
             page = int(page)
             copies = copies[page_start_index(page) : page * PAGE_SIZE]
         ret = [it.to_dict() for it in copies]
         to_ret['data'] = ret
-        to_ret['page_count'] = page_count
         to_ret['basket_name'] = basket.name
         return JsonResponse(to_ret, safe=False)
 
