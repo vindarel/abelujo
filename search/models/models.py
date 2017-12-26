@@ -1179,7 +1179,7 @@ class Card(TimeStampedModel):
                 isbn = isbn,
                 fmt = card.get('fmt'),
                 has_isbn = card.get('has_isbn'),
-                img = card.get('img', ""),
+                cover = card.get('img', ""),
                 details_url = card.get('details_url'),
                 date_publication = date_publication,
                 data_source = card.get('data_source'),
