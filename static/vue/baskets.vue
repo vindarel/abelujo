@@ -69,6 +69,7 @@
 </template>
 
 <script>
+  var _ = require('lodash');
 
   import SearchPanel from "./searchPanel.vue"
   import CardItem from "./cardItem";

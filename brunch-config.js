@@ -10,6 +10,9 @@ module.exports = {
     stylesheets: {joinTo: 'app.css'}
   },
   npm: {
+    globals: {
+      lodash: 'lodash',
+    },
     aliases: {
       vue: "vue/dist/vue.js"
     }

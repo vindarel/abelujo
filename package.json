@@ -42,6 +42,7 @@
         "javascript-brunch": "^2.10.0",
         "jquery": "~1.9",
         "livescript": "latest",
+        "lodash": "^4.17.4",
         "prelude-ls": "1.1.2",
         "shelljs": "~0.2.6",
         "underscore": "^1.8.3",
