@@ -128,6 +128,8 @@ def preferences(request, **response_kwargs):
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
 
+    If query is an isbn, search into our DB first.
+
     Parameters:
     - query (str)
     - datasource (str): librairiedeparis, ...
@@ -135,13 +137,24 @@ def datasource_search(request, **response_kwargs):
 
     - return: a JsonResponse with data, alerts, and status.
     """
+    res = []
+    traces = []
     query = request.GET.get('query')
     if not query:
         log.debug("No search query given.")
         return JsonResponse({'error': 'no search query given.'})
-    datasource = request.GET.get('datasource', 'librairiedeparis')
-    page = request.GET.get('page', 1)
-    res, traces = search_on_data_source(datasource, query, PAGE=page)
+
+    query_isbn = is_isbn(query)
+    if query_isbn:
+        res = Card.objects.get(isbn=query)
+        if res:
+            res = [res.to_dict()]
+
+    if not query_isbn or not res:
+        datasource = request.GET.get('datasource', 'librairiedeparis')
+        page = request.GET.get('page', 1)
+        res, traces = search_on_data_source(datasource, query, PAGE=page)
+
     data = {"data": res,
             "alerts": traces,
             "status": 200,}
