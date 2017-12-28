@@ -41,8 +41,8 @@
           <th> Title </th>
           <th> Publisher </th>
           <th> In stock </th>
-          <th> Price </th>
-          <td> Quantity </td>
+          <th> </th>
+          <td> </td>
           <th></th>
         </thead>
         <tbody>
@@ -53,7 +53,13 @@
             <td> {{ it.pubs_repr }} </td>
             <td> {{ it.quantity }} </td>
             <td> {{ it.price }} € </td> <!--TODO: currency -->
-            <td> {{ it.basket_qty }} </td>
+            <td>
+              <input class="my-number-input"
+                  type="number"
+                  min="0" max="9999"
+                  v-model="it.basket_qty"
+                  @click="basket_qty_updated(it)">
+            </td>
           </tr>
         </tbody>
       </table>
@@ -173,6 +179,24 @@
             this.get_cards();
           }
         }
+      },
+
+      basket_qty_updated: function (card) {
+        "API call. Update the card's quantity."
+        const url = "/api/baskets/{}/update".replace("{}", this.id);
+        $.ajax({
+          url: url,
+          type: 'POST',
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify({
+            card_id: card.id,
+            quantity: card.basket_qty,
+          }),
+          success: res => {
+            console.log("updated card quantity to ", card.basket_qty, "( ", card.title, " )");
+            // xxx: notification and message from server.
+          }
+        });
       },
     },
 
