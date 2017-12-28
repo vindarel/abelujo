@@ -9,6 +9,66 @@
 
     <div class="col-md-8">
       <div class="btn-group">
+        <div class="dropdown">
+          <button id="actions" class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> List
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="#" title="" @click="not_implemented()"> Create a command…
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+            <li>
+              <a href="#" title="" @click="not_implemented()"> Receive a command…
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+            <li class="divider" role="separator"></li>
+            <li>
+              <a href="#" title="" @click="not_implemented()"> Transform as deposit…
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="btn-group">
+        <div class="dropdown">
+          <button id="actions" class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Export
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a :href="export_url('?format=txt&report=listing')" title=""> txt
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+            <li>
+              <a :href="export_url('?format=csv&report=listing')" title=""> csv (Excel, LibreOffice)
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+            <li>
+              <a :href="export_url('?format=pdf&report=listing')" title=""> pdf
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+            <li>
+              <a :href="export_url('?format=pdf&report=listing&barcodes=true')" title=""> pdf, with barcodes
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+            <li>
+              <a :href="export_url('?format=pdf&report=listing&barcodes=false&covers=true')"" title=""> pdf, with covers
+                <i class="glyphicon glyphicon-right"> </i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="btn-group">
         <button class="btn btn-default" @click="toggle_images" >
           <i class="glyphicon glyphicon-th-list"/>
         </button>
@@ -198,6 +258,19 @@
           }
         });
       },
+
+      export_url: function (tail) {
+        // default argument to "" ?
+        if (typeof tail == 'undefined') {
+          tail = "";
+        }
+        return "/baskets/" + this.id + "/export" + tail;
+      },
+
+      not_implemented: function () {
+        alert("We have to finish this !");
+      },
+
     },
 
     mounted: function () {
