@@ -8,8 +8,6 @@
     </div>
 
     <div class="col-md-8">
-      <h3> {{ basket_name }} </h3>
-
       <div class="btn-group">
         <button class="btn btn-default" @click="toggle_images" >
           <i class="glyphicon glyphicon-th-list"/>
@@ -26,13 +24,17 @@
         </button>
       </div>
 
-      <pagination-bullets
-          :current_page="page"
-          :page_count="page_count"
-          :data_length="data_length"
-          @previous_page="previous_page"
-          @next_page="next_page">
-      </pagination-bullets>
+      <div class="row">
+        <h3 class="col-md-8" > {{ basket_name }} </h3>
+        <pagination-bullets
+            class="col-md-4"
+            :current_page="page"
+            :page_count="page_count"
+            :data_length="data_length"
+            @previous_page="previous_page"
+            @next_page="next_page">
+        </pagination-bullets>
+      </div>
 
       <table class="table table-condensed table-striped">
         <thead>
