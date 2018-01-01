@@ -86,7 +86,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
           div {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
           div {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
 
-    div(ng-repeat="(dist_name, cards) in sorted_cards")
+    div#distributors(ng-repeat="(dist_name, cards) in sorted_cards")
           span
             .row
              a.my-black-link(href="{{ 'grouped_dist[dist_name][0].get_absolute_url' | ng}}")

@@ -39,7 +39,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies",
     .then (response) !->
-        $scope.cards = response.data
+        $scope.cards = response.data.data
         $scope.sorted_cards = group-by (.distributor.name), $scope.cards
 
     $http.get "/api/publishers", #TODO: fetch suppliers= publishers + distributors

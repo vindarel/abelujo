@@ -67,3 +67,14 @@ test('see an inventory', async t => {
     // i.e. some api calls worked.
     await t.expect(title).eql('Inventory of default place');
 });
+
+fixture `To Command`
+    .page `http://localhost:8000/en/commands/`;
+
+test('see the To Command list', async t => {
+    await login(t);
+    const location = await t.eval( () => window.location);
+    await t.expect(location.pathname).eql('/en/commands/');
+    const title = await Selector('#distributors').count;
+    await t.expect(title).eql(1);
+});
