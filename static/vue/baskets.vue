@@ -15,7 +15,7 @@
           </button>
           <ul class="dropdown-menu">
             <li>
-              <a href="#" title="" @click="not_implemented()"> Create a command…
+              <a href="#" title="" @click="mark_command()"> Command all
                 <i class="glyphicon glyphicon-right"> </i>
               </a>
             </li>
@@ -265,6 +265,26 @@
           tail = "";
         }
         return "/baskets/" + this.id + "/export" + tail;
+      },
+
+      mark_command: function () {
+        if (! this.cards.length) {
+          // xxx notification
+          alert("This basket has no copies to command.");
+        }
+
+        const url = "/api/baskets/1/add/";  // default to_command basket.
+        $.ajax({
+          url: url,
+          type: 'POST',
+          contentType: 'application/json; charset=utf-8',
+          data: JSON.stringify({
+            'cards': this.cards,
+          }),
+          success: res => {
+            console.log("success ", res); // xxx notification
+          }
+        });
       },
 
       not_implemented: function () {

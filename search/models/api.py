@@ -730,10 +730,13 @@ def basket(request, pk, action="", card_id="", **kwargs):
             except Exception as e:
                 log.error(u'Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
 
-        # Add cards from card dicts, not in db yet (from the Searchresults view).
+        # Add cards from card dicts, not in db yet (from the Searchresults view or a Vue Basket).
         elif action and action == "add" and req.get('cards'):
             # req: dict where keys are an index (useless, js dependency) and values, the card dicts.
-            cards = req['cards'].values()
+            # From a Vue Basket: we get usual dicts.
+            cards = req.get('cards')
+            if type(cards) != list:
+                cards = req['cards'].values()
             # Create the new cards in the DB.
             ids = []
             for card in cards:

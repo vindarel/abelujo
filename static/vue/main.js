@@ -31,7 +31,6 @@ if (document.getElementById("abelujo")) {
   new Vue({
     el: "#abelujo",
     components: {
-      Hello,
     },
     data: {
     },
