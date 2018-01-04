@@ -181,7 +181,7 @@
       },
 
       save_card_to_basket: function (card) {
-        const url = "/api/baskets/{}/add".replace("{}", this.id);
+        const url = "/api/v2/baskets/{}/add".replace("{}", this.id);
         $.ajax({
           url: url,
           type: 'POST',
