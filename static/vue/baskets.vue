@@ -20,7 +20,7 @@
               </a>
             </li>
             <li>
-              <a href="#" title="" @click="not_implemented()"> Receive a command…
+              <a href="#" title="" @click="not_implemented()"> Receive a parcel…
                 <i class="glyphicon glyphicon-right"> </i>
               </a>
             </li>
