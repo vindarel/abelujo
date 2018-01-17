@@ -3637,19 +3637,7 @@ class Inventory(InventoryBase):
         return name
 
     def get_absolute_url(self):
-        """
-        """
-        url = ""
-        if self.shelf:
-            url = self.shelf.get_absolute_url()
-        elif self.basket:
-            url = self.basket.get_absolute_url()
-        elif self.publisher:
-            url = self.publisher.get_absolute_url()
-        elif self.place:
-            url = self.place.get_absolute_url()
-
-        return url
+        return reverse('inventory_view', args=(self.id,))
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original

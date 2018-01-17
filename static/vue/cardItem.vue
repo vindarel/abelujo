@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding-bottom: 3px">
     <td v-if="show_images" >
       <img :src="card.img" :height="card_height"/>
     </td>

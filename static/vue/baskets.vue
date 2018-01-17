@@ -20,7 +20,7 @@
               </a>
             </li>
             <li>
-              <a href="#" title="" @click="not_implemented()"> Receive a parcel…
+              <a href="#" title="" @click="receive_command()"> Receive a parcel…
                 <i class="glyphicon glyphicon-right"> </i>
               </a>
             </li>
@@ -306,6 +306,26 @@
             console.log("success ", res); // xxx notification
           }
         });
+      },
+
+      receive_command: function () {
+        // Get or create an inventory, redirect to that inventory page.
+        const url = "/api/baskets/{id}/inventories/".replace('{id}', this.id);
+        let res = window.location.pathname.match("/([a-z][a-z])/");
+        let lang;
+        if (res) {
+          lang = res[1];
+        }
+        console.log("lang: ", lang, res);
+        $.ajax({
+          url: url,
+          success: res => {
+            console.log("success ", res);
+            if (res.status && lang) {
+              window.location.href = "/{lang}/inventories/{id}/".replace('{lang}', lang).replace('{id}', res.data.inv_id);
+            }
+          }
+        })
       },
 
       not_implemented: function () {
