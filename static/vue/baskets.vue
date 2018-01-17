@@ -104,9 +104,10 @@
           <th> </th>
           <td> </td>
           <th></th>
+          <th></th>
         </thead>
         <tbody>
-          <tr v-for="it in cards">
+          <tr v-for="(it, index) in cards">
             <card-item :card="it"
                 :show_images="show_images"
                 card_height="150px"/>
@@ -119,6 +120,10 @@
                   min="0" max="9999"
                   v-model="it.basket_qty"
                   @click="basket_qty_updated(it)">
+            </td>
+            <td>
+              <i class="glyphicon glyphicon-remove mouse-pointer"
+                  @click="remove_card(it, index)"></i>
             </td>
           </tr>
         </tbody>
@@ -192,7 +197,7 @@
             if (res.data.created) {
               this.cards.splice(0, 0, card);
             } else {
-              var index = _.findIndex(this.cards, ['id', res.data.card.id]);
+              let index = _.findIndex(this.cards, ['id', res.data.card.id]);
               this.cards[index].basket_qty = res.data.basket_qty;
             }
             // xxx: notification
@@ -223,6 +228,22 @@
             this.basket_name = res.basket_name;
           }
         });
+      },
+
+      remove_card: function (card, index) {
+        console.log("got ", card);
+        let sure = confirm("Are you sure to remove the card from the selection ?");
+        if (sure) {
+          let card_id = card.id;
+          $.ajax({
+            url: "/api/baskets/{ID}/remove/{card_id}/".replace("{ID}", this.id).replace("{card_id}", card_id),
+            type: 'POST',
+            success: res => {
+              console.log("card deleted: ", card.id, card.title);
+              this.cards.splice(index, 1);
+            }
+          });
+        }
       },
 
       next_page: function () {
