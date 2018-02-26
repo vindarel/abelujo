@@ -70,6 +70,9 @@ from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import truncate
 
+from views_utils import Echo
+from views_utils import cards2csv
+
 log = get_logger()
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
@@ -441,12 +444,15 @@ def card_move(request, pk=None):
 
 @login_required
 def collection_export(request, **kwargs):
-    """Export a search of our stock.
+    """Export a search of our stock or all of it.
+
+    - format: text, csv.
+    - select: all, selection.
     """
     if request.method == 'GET':
-        query = request.GET.get('query')
         formatt = request.GET.get('format')
-        query_list = query.split(" ")
+        select = request.GET.get('select')
+        query = request.GET.get('query')
         distributor = request.GET.get("distributor")
         distributor_id = request.GET.get("distributor_id")
         card_type_id = request.GET.get("card_type_id")
@@ -456,34 +462,51 @@ def collection_export(request, **kwargs):
         order_by = request.GET.get("order_by")
         bought = request.GET.get("in_stock")
 
+        # Export all the stock or a custom search ?
         # would rather validate request.GET and **
         # or call api's cards search and get the json.
-        res, msgs = Card.search(query_list, to_list=True,
-                                distributor=distributor,
-                                distributor_id=distributor_id,
-                                publisher_id=publisher_id,
-                                card_type_id=card_type_id,
-                                place_id=place_id,
-                                shelf_id=shelf_id,
-                                order_by=order_by,
-                                in_deposits=True)
+        msgs = []
+        if select == "selection":
+            query_list = query.split(" ")
+            res, msgs = Card.search(query_list, to_list=True,
+                                    distributor=distributor,
+                                    distributor_id=distributor_id,
+                                    publisher_id=publisher_id,
+                                    card_type_id=card_type_id,
+                                    place_id=place_id,
+                                    shelf_id=shelf_id,
+                                    order_by=order_by,
+                                    in_deposits=True)
 
+        elif select == "all":
+            res = Card.objects.filter(in_stock=True).all()
+
+        # Which format ?
         if formatt == 'txt':
+            content_type = "text/raw"
             content = ppcard(res)
-            response = HttpResponse(content, content_type="text/raw")
-            filename = u"Abelujo stock search"
-            if query:
-                filename += " - {}".format(query)
-            response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)
-            return response
+
+        elif formatt == "csv":
+            content_type = "text/csv"
+            cards = [it.to_dict() for it in res]
+            content = cards2csv(cards)
 
         else:
-            content = "This format isn't supported (yet)."
+            content = "This format isn't supported."
+
+        # Build the response.
+        response = HttpResponse(content, content_type=content_type)
+        filename = u"Abelujo stock search"
+        if query:
+            filename += " - {}".format(query)
+
+        response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)
+        return response
 
     else:
         content = "no search query"
 
-    return HttpResponse(content, content_type="text/raw")
+    return HttpResponse(content, content_type=content_type)
 
 @login_required
 def collection(request):
@@ -697,15 +720,6 @@ def basket_auto_command(request):
     template = "search/to_command.jade"
     if request.method == "GET":
         return render(request, template)
-
-class Echo(object):
-    """An object that implements just the write method of the file-like
-    interface.
-    """
-    # taken from Django docs
-    def write(self, value):
-        """Write the value by returning it, instead of storing in a buffer."""
-        return value
 
 @login_required
 def baskets(request):

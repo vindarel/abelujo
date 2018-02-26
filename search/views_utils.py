@@ -15,12 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.utils.translation import ugettext as _
+
+import unicodecsv
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs
-# The datasources imports must have the name as their self.SOURCE_NAME
-from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner
-from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro
+from search.datasources.bookshops.deDE.buchlentner import \
+    buchlentnerScraper as buchlentner
+from search.datasources.bookshops.esES.casadellibro import \
+    casadellibroScraper as casadellibro
 from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre
-from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis
+from search.datasources.bookshops.frFR.librairiedeparis import \
+    librairiedeparisScraper as librairiedeparis
 from search.models import Card
 
 #: Default datasource to be used when searching isbn, if source not supplied.
@@ -65,3 +70,39 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     res = Card.is_in_stock(res)
 
     return res, traces
+
+
+class Echo(object):
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    # taken from Django docs
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+def cards2csv(cards):
+    pseudo_buffer = Echo()
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+    content = writer.writerow("")
+
+    rows = [(it['title'],
+             it['authors_repr'],
+             it['price'],
+             it['quantity'],
+             it['shelf'],
+             it['isbn'],
+         )
+            for it in cards]
+
+    header = (_("title"),
+              _("authors"),
+              _("price"),
+              _("quantity"),
+              _("shelf"),
+              _("isbn"),
+    )
+    rows.insert(0, header)
+    content = "".join([writer.writerow(row) for row in rows])
+    return content
