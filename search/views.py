@@ -501,7 +501,7 @@ def collection_export(request, **kwargs):
         if query:
             filename += " - {}".format(query)
 
-        response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)
+        response['Content-Disposition'] = u'attachment; filename="{}.{}"'.format(filename, formatt)
         return response
 
     else:
