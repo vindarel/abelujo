@@ -32,10 +32,12 @@ import urllib
 from datetime import date
 from textwrap import dedent
 
+import barcode
 import dateparser
 import pendulum
 import pytz
 from django.contrib import messages
+from django.core.cache import cache as djcache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.core.paginator import EmptyPage
@@ -51,7 +53,6 @@ from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
 
-import barcode
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -648,7 +649,15 @@ class Card(TimeStampedModel):
 
         return ""
 
+
     def to_list(self, in_deposits=False):
+        """
+        Cache results for a few minutes (specially for csv export of all the stock).
+        """
+        timeout = 60 * 20  # seconds
+        if djcache.get(self.id):
+            return djcache.get(self.id)
+
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
         auth = [{"fields": {'name': it.name}} for it in authors]
@@ -703,6 +712,7 @@ class Card(TimeStampedModel):
         if in_deposits:
             res['qty_deposits'] = self.quantity_deposits()
 
+        djcache.set(self.id, res, timeout)
         return res
 
     @staticmethod
@@ -720,6 +730,7 @@ class Card(TimeStampedModel):
 
         return [card.to_list(in_deposits=in_deposits) for card in cards]
 
+
     @staticmethod
     def first_cards(nb, to_list=False):
         """get the first n cards from our collection (very basic, to test)
@@ -728,6 +739,15 @@ class Card(TimeStampedModel):
         if to_list:
             ret = Card.obj_to_list(ret)
         return ret
+
+
+    @staticmethod
+    def cards_in_stock():
+        """Return all cards in stock (will not return ones that are only in
+        deposits or in lists).
+        """
+        return Card.objects.filter(in_stock=True).order_by('id').all()
+
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, distributor_id=None,

@@ -479,7 +479,8 @@ def collection_export(request, **kwargs):
                                     in_deposits=True)
 
         elif select == "all":
-            res = Card.objects.filter(in_stock=True).all()
+            # res = Card.objects.filter(in_stock=True).all()
+            res = Card.cards_in_stock()
 
         # Which format ?
         if formatt == 'txt':
@@ -488,7 +489,7 @@ def collection_export(request, **kwargs):
 
         elif formatt == "csv":
             content_type = "text/csv"
-            cards = [it.to_dict() for it in res]
+            cards = [it.to_list() for it in res]
             content = cards2csv(cards)
 
         else:

@@ -25,6 +25,7 @@ pytz			# timezone
 djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc
 django_extensions==1.7    # more useful commands to manage.py (shell_plus).
 django-brunch==1.0        # build Vue files.
+django-redis-cache==1.7.1
 mod_wsgi==4.4             # apache server for development.
 # mod_wsgi-httpd           # discard the system's apache httpd server if needed.
 Werkzeug                  # runserver_plus: richer tracebacks and inline console.

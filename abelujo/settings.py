@@ -167,6 +167,14 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'localhost:6379',
+    },
+}
+
 ROOT_URLCONF = 'abelujo.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
