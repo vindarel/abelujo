@@ -187,6 +187,14 @@ under `sentry_token` (see the fabfile).
 
 Test with `python manage.py raven test` and see the new message in your dashboard.
 
+### Start Redis
+
+We need Redis for long operations (dowloading the whole stock as csv, huey task runner,…).
+
+    redis-server &
+
+see [#83](https://gitlab.com/vindarel/abelujo/issues/83).
+
 
 Run unit tests
 --------------
