@@ -94,17 +94,7 @@ to::
     local all all trust
 
 
-Populate the DB with testing data
----------------------------------
-
-Run:::
-
-    make data
-
-This will add cards, publishers and everything to the database so than
-you can test it for real.
-
-Populate the DB with real initial data
+Populate the DB with our initial data
 --------------------------------------
 
 We may enjoy some initial data to start working with Abelujo: typical
@@ -116,7 +106,8 @@ and create them in the database. The usage is::
 
     ./manage.py runscript add_objects --script-args=scripts/categories_fr.yaml
 
-This tool isn't considered finished. For more info, see the sources !
+This tool isn't considered finished, you are fully in your right to ask for a simpler command.
+For more info, ask and see the sources !
 
 
 Write custom CSS
@@ -132,36 +123,16 @@ command.
 Write JavaScript in Livescript
 ------------------------------
 
-Livescript is awesome::
+We used LiveScript but we're now switching to Vue.js with plain Javascript.::
 
     * http://livescript.net
 
-You have livescript installed and configured if you ran `make install`
-(or `make npm`), but nevertheless this is how you would do it
-manually.
-
-To install LiveScript and its main library:::
-
-    npm install livescript prelude-ls -g
-
 The LiveScript executable and repl is `lsc`.
 
-Now to compile LiveScript files you could do it manually, but to
-automate the process we use gulp so we need the ``gulp-livescript``
-extension. It is installed with the `make install` (which calls `make
-npm`) command.
+Now to compile LiveScript files run `make gulp`.
 
-We wrote a target in the gulpfile. Now you can run `gulp livescript`
-to compile all the ``*.ls`` files found in ``static/js/app/`` and
-concatenate them *with the other javascript sources* in
-``static/js/build/abelujo.js``. This file is loaded in the html
-template ``base.jade`` in a `script` tag::
 
-      script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
-
-   which is necessary for the browser to load and run our javascript application.
-
-  You can recompile everything on every change with::
+You can recompile everything on every change with::
 
     gulp watch
 
