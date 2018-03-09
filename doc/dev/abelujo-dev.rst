@@ -207,13 +207,12 @@ browser. Some pages do a lot of logic with javascript. The selling
 page, for example: it asks for data to the server, it does some
 calculation and it gives some data back to the server to be registered
 in the database. We need to test all that too. This is doable with the
-`protractor <https://angular.github.io/protractor/>`_ test framework
-from AngularJS.
+`testcafe <https://devexpress.github.io/testcafe/>`_ test framework.
 
 Now we know how to test each part of our application. Great, but this
 isn't enough. Nothing guarantees that those parts work happily
 together ! We then need **integration tests**. They are fortunately
-done partly with protractor (because it launches a real web browser
+done partly with **testcafe** (because it launches a real web browser
 with the current state of the application we can test the interaction
 with the server).
 
