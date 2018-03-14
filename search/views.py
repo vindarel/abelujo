@@ -290,6 +290,7 @@ class CardMoveForm(forms.Form):
                        'step':1, 'value': 1,
                        'style': 'width: 70px'}))
 
+
 class CardMove2BasketForm(forms.Form):
     # needs refacto etc… too complicating and unecessary.
     def __init__(self, *args, **kwargs):
@@ -302,12 +303,15 @@ class CardMove2BasketForm(forms.Form):
                        'step':1, 'value': 0,
                        'style': 'width: 70px'}))
 
+
 class CardMoveTypeForm(forms.Form):
     choices = [(1, "Pay these cards"),
                (2, "Add to a deposit"),
                (3, "Internal movement"),
     ]
     typ = forms.ChoiceField(choices=choices)
+
+
 PAYMENT_MEANS = [
     (1, "cash"),
     (2, "credit card"),
@@ -316,19 +320,26 @@ PAYMENT_MEANS = [
     (5, "lost"),
     ]
 
+
 class BuyForm(forms.Form):
     payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
     bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
     quantity = forms.FloatField(label=_("Quantity"))
     place = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
 
+
 class MoveDepositForm(forms.Form):
     choices = forms.ChoiceField(choices=get_deposits_choices())
 
+
 class MoveInternalForm(forms.Form):
-    origin = forms.ChoiceField(choices=get_places_choices())
-    destination = forms.ChoiceField(choices=get_places_choices())
     nb = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['origin'] = forms.ChoiceField(choices=get_places_choices())
+        self.fields['destination'] = forms.ChoiceField(choices=get_places_choices())
+
 
 @login_required
 def card_buy(request, pk=None):
