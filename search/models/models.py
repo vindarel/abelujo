@@ -392,9 +392,6 @@ class Card(TimeStampedModel):
     #: price_sold is only used to generate an angular form, it is not
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
-    #: The current quantity of this card in Places. It is equal to the sum of quantities in each place.
-    # (below: evil try of optimization: to remove).
-    quantity = models.IntegerField(null=True, blank=True, default=0) # TODO: remove. Do not use. Use quantity_compute or place.quantity_of.
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=1)
     #: Publisher of the card:
@@ -533,11 +530,19 @@ class Card(TimeStampedModel):
         """
         return "; ".join([aut.name for aut in self.authors.all()])
 
+    @property
+    def quantity(self):
+        """
+        Return the total quantity of this card in stock, i.e. in all the Places.
+        """
+        return self.quantity_compute()
+
+    @quantity.setter
+    def quantity(self, val):
+        raise NotImplementedError
+
     def quantity_compute(self):
         """Return the quantity of this card in all places (not deposits).
-
-        Utility function, primarily used for a data migration. Use the
-        Card.quantity field to query the db.
 
         return: int
         """
@@ -1230,8 +1235,6 @@ class Card(TimeStampedModel):
                     collection_obj, created = Collection.objects.get_or_create(name=collection)
                     card_obj.collection = collection_obj
                     card_obj.save()
-                    if created:
-                        log.debug("--- new collection created: %s" % (collection,))
                 except Exception as e:
                     log.error(u"--- error while adding the collection: %s" % (e,))
 
@@ -1266,8 +1269,6 @@ class Card(TimeStampedModel):
                         pub = pub.lower()
                         pub_obj, created = Publisher.objects.get_or_create(name=pub)
                         card_obj.publishers.add(pub_obj)
-                        if created:
-                            log.debug("--- new publisher created: %s" % (pub,))
 
                     card_obj.save()
                 except Exception, e:
@@ -1510,10 +1511,6 @@ class Place (models.Model):
             else:
                 place_copy.nb = nb
             place_copy.save()
-
-            # Keep in sync the card's quantity field.
-            card.quantity += nb
-            card.save()
 
             # A card could be in the DB but only in a list
             # (basket). Now it's bought at least once.

@@ -556,6 +556,14 @@ class TestDeposits(TransactionTestCase):
         self.sell = SellsFactory()
         # self.sell.sell_cards(None, cards=[self.card2])
 
+        # a needed place:
+        self.place_name = "test place"
+        self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
+        self.place.save()
+        # Preferences
+        self.preferences = Preferences.objects.create(default_place=self.place)
+        self.preferences.save()
+
     def test_nominal(self):
         self.card.distributor = self.distributor
         status, msgs = self.deposit.add_copies([self.card,], quantities=[3])
@@ -1016,8 +1024,8 @@ class TestSellSearch(TestCase):
         self.place.add_copy(self.secondcard, nb=1)
         # a Distributor:
         self.dist = DistributorFactory()
-        # mandatory: preferences table
-        self.preferences = Preferences(default_place=self.place).save()
+        # Preferences
+        self.preferences = Preferences.objects.create(default_place=self.place).save()
 
     def tearDown(self):
         pass
