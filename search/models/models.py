@@ -1465,6 +1465,9 @@ class Place (models.Model):
             pc.nb = pc.nb - nb
             pc.save()
             dest_copies = dest.placecopies_set.filter(card__id=card.id).first()
+            if not dest_copies:
+                dest_copies = dest.placecopies_set.create(card=card, place=dest)
+                dest_copies.save()
             dest_copies.nb += nb
             dest_copies.save()
             mvt = history.InternalMovement(origin=self, dest=dest, card=card, nb=nb)
