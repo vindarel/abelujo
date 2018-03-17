@@ -24,16 +24,16 @@ angular.module "abelujo" .controller 'preferencesController', ['$http', '$scope'
     $scope.place = undefined
     $scope.vat_book = undefined
 
-    $scope.language_choices =
-        * id: "en"
-          name: gettext "English"
-        * id: "fr"
-          name: gettext "French"
-        * id: "es"
-          name: gettext "Spanish"
-        * id: "de"
-          name: gettext "German"
-    $scope.user_language = $scope.language_choices[0]
+    # $scope.language_choices =
+    #     * id: "en"
+    #       name: gettext "English"
+    #     * id: "fr"
+    #       name: gettext "French"
+    #     * id: "es"
+    #       name: gettext "Spanish"
+    #     * id: "de"
+    #       name: gettext "German"
+    # $scope.user_language = $scope.language_choices[0]
 
     Places = $resource("/api/places/:id")
 
@@ -49,15 +49,15 @@ angular.module "abelujo" .controller 'preferencesController', ['$http', '$scope'
 
             $scope.vat_book = $scope.preferences.vat_book
 
-            $scope.user_language = $scope.language_choices
-            |> find (.id == $scope.preferences.language)
+            # $scope.user_language = $scope.language_choices
+            # |> find (.id == $scope.preferences.language)
 
     $scope.save = (userForm) !->
         if userForm.$valid
             params = do
                 place_id: $scope.place.id
                 vat_book: $scope.vat_book
-                language: $scope.user_language.id
+                # language: $scope.user_language.id
             $http.post "/api/preferences", params
             .then (response) !->
                 if response.data.status == "success"
