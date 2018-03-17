@@ -1588,7 +1588,14 @@ class Preferences(models.Model):
         """
         Return a Preferences object.
         """
-        return Preferences.objects.first()
+        prefs = Preferences.objects.first()
+        # One should be created at Abelujo creation.
+        if not prefs:
+            prefs = Preferences.objects.create(default_place=Place.objects.first())
+            prefs.save()
+
+        return prefs
+
 
     @staticmethod
     def setprefs(**kwargs):
