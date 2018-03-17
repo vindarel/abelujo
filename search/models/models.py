@@ -1626,9 +1626,6 @@ class Preferences(models.Model):
                     prefs.__setattr__(key, val)
                     prefs.save()
 
-            else:
-                msgs.add_info(_(u"Value for preference {} is {}.".format(key, val)))
-
         return msgs.status, msgs.msgs
 
     @staticmethod
