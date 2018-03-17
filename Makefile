@@ -205,8 +205,8 @@ gunicorn-daemon:
 	@echo "server running on $(shell cat IP.txt):$(shell cat PORT.txt)"
 
 
-kill-gunicorn:
-	kill -9 $(shell cat PID.txt)
+gunicorn-restart:
+	kill -HUP $(shell cat PID.txt)
 
 gunicorn: run-gunicorn
 
