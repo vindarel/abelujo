@@ -227,7 +227,7 @@ class TestPreferences(TestCase):
                            json.dumps({'vat_book': 2}),
                            content_type='application/json')
         res = json.loads(resp.content)
-        self.assertEqual(ALERT_INFO, res['status'])
+        self.assertEqual(ALERT_SUCCESS, res['status'])
 
         # Bad place
         resp = self.c.post(reverse('api_preferences'),
@@ -235,7 +235,7 @@ class TestPreferences(TestCase):
                                        'default_place': "rst"}),
                            content_type='application/json')
         res = json.loads(resp.content)
-        self.assertEqual(ALERT_INFO, res['status'])
+        self.assertEqual(ALERT_SUCCESS, res['status'])
 
 class TestUtils(TestCase):
 
