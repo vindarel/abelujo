@@ -546,9 +546,7 @@ class Card(TimeStampedModel):
 
         return: int
         """
-        quantity = 0
-        if self.placecopies_set.count():
-            quantity = sum([pl.nb for pl in self.placecopies_set.all()])
+        quantity = sum([pl.quantity_of(self) for pl in Place.objects.all()])
         return quantity
 
     @staticmethod

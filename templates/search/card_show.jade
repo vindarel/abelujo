@@ -116,8 +116,11 @@ div#abelujo
           tr
             td {% trans "Presente in" %}
             td
-              for place_copy in object.placecopies_set.all
-                  div {{ place_copy.place.name }} : {{ place_copy.nb}} exemplaires
+              table
+                for name_qty in places_quantities
+                  tr
+                    td {{ name_qty.0 }} 
+                    td  {{ name_qty.1 }}
 
           tr
             td {% trans "Deposits" %}

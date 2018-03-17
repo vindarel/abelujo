@@ -223,6 +223,8 @@ def card_show(request, pk):
     template = "search/card_show.jade"
     card = None
     sells = []
+    places = Place.objects.all()
+    places_quantities = []
     total_sold = "0"
     if request.method == 'GET':
         card = get_object_or_404(Card, id=pk)
@@ -233,6 +235,11 @@ def card_show(request, pk):
         # Last time we entered this item
         last_entry = EntryCopies.last_entry(card)
 
+        # Quantity per place.
+        for place in places:
+            places_quantities.append((place.name,
+                                      place.quantity_of(card)))
+
         # Sells since the last entry
         if last_entry:
             sells = Sell.search(card.id, date_min=last_entry.created)
@@ -242,6 +249,7 @@ def card_show(request, pk):
     return render(request, template, {
         "object": card,
         "sells": sells,
+        "places_quantities": places_quantities,
         "last_entry": last_entry,
         "total_sold": total_sold,
         "pending_commands": pending_commands,
