@@ -37,21 +37,3 @@ sending the token to a remote instance on its installation.
 Test with `python manage.py raven test`.
 
 
-Abelujo administration, custom management commands
-==================================================
-
-In addition to using the fabfile commands, an Abelujo administrator
-may need to work manually on websites. Here some tips and pointers.
-
-
-Re-initialize quantities to zero
---------------------------------
-
-Use our custom management command `my_reset_quantities` (all our
-custom commands start with `my_` for better exploration).::
-
-        ./manage.py my_reset_quantities
-
-If you wish to be more precise (set to n copies instead of zero, reset
-for only a place), this needs more work. See the method
-`Card.quantities_to_zero` and the same on `Place`.
