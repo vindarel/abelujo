@@ -5,6 +5,8 @@
 # The target names are not a file produced by the commands of that target. Always out of date.
 .PHONY: clean unit test data cov odsimport doc install_script npm gulp tox migrations shell
 
+all: test
+
 clone:
 	git clone --recursive https://gitlab.com/vindarel/abelujo.git
 
