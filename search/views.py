@@ -223,7 +223,7 @@ def card_show(request, pk):
     template = "search/card_show.jade"
     card = None
     sells = []
-    places = Place.objects.all()
+    places = Place.objects.order_by("id").all()
     places_quantities = []
     total_sold = "0"
     if request.method == 'GET':
