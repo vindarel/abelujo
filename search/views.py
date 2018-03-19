@@ -340,6 +340,17 @@ class MoveDepositForm(forms.Form):
     choices = forms.ChoiceField(choices=get_deposits_choices())
 
 
+class CardPlacesAddForm(forms.Form):
+    """
+    Add exemplaries to some Places, from the Card view.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        for place in Place.objects.order_by("id").all():
+            self.fields[place.id] = forms.IntegerField(required=False, label=place.name)
+
+
 class MoveInternalForm(forms.Form):
     nb = forms.IntegerField()
 
@@ -404,6 +415,40 @@ def card_buy(request, pk=None):
         "card": card,
         "buying_price": buying_price,
     })
+
+@login_required
+def card_places_add(request, pk=None):
+    """
+    Add the given card to Places.
+    """
+    template = "search/card_places_add.jade"
+    params = request.GET
+
+    if request.method == 'GET':
+        form = CardPlacesAddForm()
+        return render(request, template, {
+            "form": form,
+            "pk": pk,
+            "type": params.get('type'),
+        })
+
+    else:
+        back_to = reverse("card_show", args=(pk,))
+        form = CardPlacesAddForm(request.POST)
+        if form.is_valid():
+            for (id, nb) in form.data.iteritems():  # cleaned_data won't have nothing...
+                if nb:
+                    place = Place.objects.get(id=id)
+                    if place:
+                        card = Card.objects.get(id=pk)
+                        try:
+                            place.add_copy(card, nb=int(nb))
+                        except Exception as e:
+                            log.error("Adding Card {} to Place {}: if this happens, that's because of lacking form validation ! {}".format(pk, id, e))
+
+        return HttpResponseRedirect(back_to)
+
+
 
 @login_required
 def card_move(request, pk=None):
