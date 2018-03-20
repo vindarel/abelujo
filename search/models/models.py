@@ -3752,9 +3752,11 @@ class Stats(object):
 
         # Cleanlyness: nb of cards with stock <= 0
         res['nb_cards_no_stock'] = {'label': _(u"Number of titles with no copy"),
-                                    'value': Card.objects.filter(quantity__lte=0).count()}
+                                    # 'value': Card.objects.filter(quantity__lte=0).count()}
+                                    'value': -1}  # TODO:
         res['nb_cards_one_copy'] = {'label': _(u"Number of titles with one copy"),
-                                    'value': Card.objects.filter(quantity=1).count()}
+                                    # 'value': Card.objects.filter(quantity=1).count()}
+                                    'value': -1}  # TODO:
 
         # Stock of deposits
         in_deposits = 0
