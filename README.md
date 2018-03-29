@@ -239,6 +239,15 @@ If you get:
 it is probably because you pulled the sources and didn't update your
 DB. Use database migrations (`make migrate`).
 
+Uninstall
+---------
+
+To uninstall Javascript and Python libraries, see `make uninstall[-js, -pip]`.
+
+The most worth it is to uninstall JS libs from `node_modules`, that
+frees a couple MB up.
+
+
 Documentation
 -------------
 

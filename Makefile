@@ -302,6 +302,25 @@ flake8:
 pylint:
 	pylint abelujo search
 
+uninstall-js:
+	echo "##### Removing local JS libraries"
+	rm -rf node_modules/
+	echo "##### Uninstalling nodejs and yarn"
+	sudo apt-get uninstall nodejs yarn
+
+uninstall-pip:
+	echo "This depends on how you created the python virtual env."
+	echo "If you used mkvirtualenv, do"
+	echo "\t rmvirtualenv abelujo"
+	echo "Otherwise, delete ~/.venvs/abelujo or ~/.virtualenvs/abelujo or abelujo/env/"
+
+uninstall-python:
+	echo "We don't see why you would need this :]"
+	echo "You shouldn't remove python libraries on your system."
+
+uninstall:
+	echo "See these subcommands: uninstall-js, uninstall-pip (and uninstall-python)."
+
 clean:
 	find . -name "*.pyc" -exec rm {} +
 	rm -rf htmlcov
