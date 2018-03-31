@@ -485,7 +485,9 @@ def card_move(request, pk=None):
             # url = request.META['HTTP_REFERER']
             # qparams = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
             qparams = {'q': request.POST.get('q')}
-            back_to = request.session.get("back_to", reverse("card_search"))
+            back_to = request.session.get("back_to")
+            if not back_to:
+                back_to = reverse("card_show", args=(pk,))
             # back_to += "?" + urlparse.urlsplit(url).query
             back_to += "?" + urllib.urlencode(qparams)
             # XXX back_to should be set more than once, per-search.
