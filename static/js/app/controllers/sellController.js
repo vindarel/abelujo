@@ -41,6 +41,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           {name: gettext("cheque"), id:2},
           {name: gettext("visa card"), id:3},
           {name: gettext("gift"), id:4},
+          {name: gettext("transfer"), id:6},
           {name: gettext("other"), id:5},
       ];
       $scope.payment = $scope.payment_means[0];

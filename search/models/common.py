@@ -20,7 +20,7 @@
 Avoid circular imports.
 """
 from django.db import models
-
+from django.utils.translation import ugettext as _
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -33,12 +33,14 @@ ALERT_ERROR = "danger"
 ALERT_WARNING = "warning"
 ALERT_INFO = "info"
 
+# warning: keep ids in sync with the UI in sellController.
 PAYMENT_CHOICES = [
-    (0, "cash"),
-    (1, "check"),
-    (2, "credit card"),
-    (3, "gift"),
-    (4, "other"),
+    (0, _("cash")),
+    (1, _("check")),
+    (2, _("credit card")),
+    (3, _("gift")),
+    (5, _("transfer")),
+    (4, _("other")),
     ]
 
 class TimeStampedModel(models.Model):
