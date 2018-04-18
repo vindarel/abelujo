@@ -27,30 +27,9 @@ A user connected to his session can change his password. Go to the
 Database interface and see a drop-down button at the top right corner
 with an option to change the password.
 
-An administrator can also do it from the Python prompt.
+An administrator can also do it from the command line::
 
-Start it::
-
-  make shell
-
-Look at all users::
-
-  User.objects.all()
-
-Find your user by id::
-
-  user = User.objects.filter(id=1).first()
-
-Change the password::
-
-  user.set_password("new password")
-
-Save in DB::
-
-  user.save()
-
-quit with ``C-d``.
-
+    ./manage.py changepassword username
 
 
 Re-initialize quantities to zero
