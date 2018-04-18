@@ -10,14 +10,24 @@ may need to work manually on websites. Here some tips and pointers.
    virtualenv activated (``workon abelujo`` or ``source
    bin/activate``) unless stated otherwise.
 
-Add users
----------
+Add and delete users
+--------------------
 
 There is no graphical way to add users yet, but a Django management command::
 
         ./manage.py createsuperuser
 
 this will ask for a user name and an email adress.
+
+
+Delete a superuser::
+
+        ./manage.py deletesuperuser <username>
+
+
+And list all::
+
+  ./manage.py listsuperusers
 
 
 Change a user password
