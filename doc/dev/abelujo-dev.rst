@@ -14,45 +14,14 @@ Run the development server
 `make run` and open your browser on `localhost:8000`.
 
 
-Use Apache's mod_wsgi for the development server
-------------------------------------------------
+Run in production
+-----------------
 
-(we use Gunicorn now).
+See ``make gunicorn``.
 
-Django's `manage.py runserver` development command is very handy but
-doesn't represent a production server, in particular because it is
-single-threaded. This isn't ideal. New problems may arise at the very
-moment we deploy the application on a real server. To avoid that, we
-must use the same server during development that the production one. A
-popular choice is Apache's `mod_wsgi` and it is very easily usable on
-development thanks to `mod_wsgi-express`.
+To restart the application, use ``make gunicorn-restart``.
 
-See the full presentation by the author, it is really a good read: http://blog.dscpl.com.au/2015/05/using-modwsgi-express-as-development.html
-
-In short, given `apache` and `apache-dev` are installed on our system,
-we only one (or two) new python packages, `mod_wsgi`, which will
-extend Django's `manage.py`.
-
-The command to run a development server with Apache's `mod_wsgi`,
-nearly like in production is now::
-
-    python manage.py runmodwsgi --reload-on-changes
-
-We then have new rules on our `Makefile` for shortcuts::
-
-    make run-wsgi
-    # you need manage.py collectstatic
-
-This runs the server at the foreground. Multithreaded.
-
-and::
-
-    make run-wsgi-debug
-
-This disables the auto-reloading of sources and the multithreading,
-thus allowing to stop on a python debugger (`pdb`).
-
-We then advise to use `mod_wsgi` the most possible.
+See also ``fab start/stop/restart`` commands.
 
 
 Debian specificity: name collision between node and nodejs
@@ -123,7 +92,11 @@ command.
 Write JavaScript in Livescript
 ------------------------------
 
-We used LiveScript but we're now switching to Vue.js with plain Javascript.::
+.. note::
+
+   We used LiveScript but we're now switching to Vue.js with plain Javascript. https://vuejs.org
+
+Our current Angularjs controllers are written in Livescript::
 
     * http://livescript.net
 
