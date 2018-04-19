@@ -242,9 +242,8 @@ def card_show(request, pk):
 
         # Sells since the last entry
         if last_entry:
-            sells = Sell.search(card.id, date_min=last_entry.created)
-            if sells and card:
-                total_sold = len(sells)
+            res = Sell.search(card.id, date_min=last_entry.created)
+            total_sold = res['total']
 
     return render(request, template, {
         "object": card,
