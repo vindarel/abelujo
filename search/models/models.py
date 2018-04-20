@@ -44,6 +44,9 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import ExpressionWrapper
+from django.db.models import F
+from django.db.models import FloatField
 from django.db.models import Q
 from django.utils import timezone
 from django.utils import translation
@@ -1585,6 +1588,21 @@ class Place (models.Model):
         except Exception as e:
             log.error(e)
             return None
+
+    def cost(self):
+        """
+        Total cost of this place: nb of cards * their price.
+        """
+        try:
+            res = self.placecopies_set.filter(card__price__isnull=False).\
+                  annotate(cost=ExpressionWrapper(F('nb') * F('card__price'),
+                                                  output_field=FloatField()))
+            cost = sum([it.cost for it in res])
+            log.info(u"--- cost of place {}: {}".format(self.name, cost))
+            return cost
+        except Exception as e:
+            log.error("Error getting cost of place {}: {}".format(self.name, e))
+            return 0
 
     def add_copies(self, cards):
         """Adds the given list of cards objects. A simple and uncomplete
@@ -3810,9 +3828,8 @@ class Stats(object):
         # Cost
         res['deposits_cost'] = {'label': _(u"Total cost of the books in deposits"),
                                 'value': deposits_cost}
-        # XXX: long query ! See comments for Card.quantity
         try:
-            total_cost = get_total_cost()
+            total_cost = sum([it.cost() for it in places])
             res['total_cost'] = {'label': _(u"Total cost of the stock"),
                                  # Round the float... or just {:.2f}.format.
                                  'value': roundfloat(total_cost)}
