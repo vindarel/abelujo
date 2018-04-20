@@ -958,9 +958,7 @@ class TestSells(TestCase):
 
         # undo from Card:
         status, msgs = self.autobio.sell_undo()
-        self.assertEqual(self.autobio.quantity_compute(), 1)
-        print "TODO: card.quantity"
-        # self.assertEqual(self.autobio.quantity, 1) #  # TODO:
+        self.assertEqual(self.autobio.quantity, 1)
         status, msgs = self.autobio.sell_undo()
         # self.assertTrue(msgs)
 

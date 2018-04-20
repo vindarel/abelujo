@@ -1001,7 +1001,7 @@ class Card(TimeStampedModel):
 
         place_obj.nb = place_obj.nb + quantity
         place_obj.save()
-        self.quantity = self.quantity + quantity
+        msgs.add_info(u"We added back {} exemplary(ies) in {}.".format(quantity, place_obj.place.name))
         self.save()
 
         return True, msgs.msgs
@@ -1539,6 +1539,37 @@ class Place (models.Model):
             return sum([it.nb for it in self.placecopies_set.all()])
         except Exception as e:
             log.error("Error getting the total quantities in place {}: {}".format(self.name, e))
+
+    def quantity_cards(self):
+        return self.quantities_total()
+
+    def quantity_titles_no_stock(self):
+        """
+        Quantity of titles with no more exemplary in this place (quantity lower or equal to 0).
+        """
+        try:
+            return self.placecopies_set.filter(nb__lte=0).count()
+        except Exception as e:
+            log.error("Error getting the quantity of titles with no stock in place {}: {}".format(self.name, e))
+
+    def quantity_titles_one_copy(self):
+        """
+        Quantity of titles that have only one exemplary left in this place.
+        """
+        try:
+            return self.placecopies_set.filter(nb=1).count()
+        except Exception as e:
+            log.error("Error getting the quantity of titles with one exemplary in place {}: {}".format(self.name, e))
+
+    def quantity_titles(self):
+        """
+        Total quantity of titles in this place (not exemplaries).
+        """
+        try:
+            return self.placecopies_set.count()
+        except Exception as e:
+            log.error("Error getting the total of titles in place {}: {}".format(self.name, e))
+
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?
@@ -3733,6 +3764,8 @@ class Stats(object):
         return: a dict by default, a json if to_json is set to True.
 
         """
+        places = Place.objects.all()
+        default_place = Preferences.get_default_place()
         # XXX: Everything below needs unit tests.
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
@@ -3751,12 +3784,13 @@ class Stats(object):
                             'value': "<soon>"}
 
         # Cleanlyness: nb of cards with stock <= 0
+
         res['nb_cards_no_stock'] = {'label': _(u"Number of titles with no copy"),
                                     # 'value': Card.objects.filter(quantity__lte=0).count()}
-                                    'value': -1}  # TODO:
+                                    'value': sum([it.quantity_titles_no_stock() for it in places])}
         res['nb_cards_one_copy'] = {'label': _(u"Number of titles with one copy"),
                                     # 'value': Card.objects.filter(quantity=1).count()}
-                                    'value': -1}  # TODO:
+                                    'value': sum([it.quantity_titles_one_copy() for it in places])}
 
         # Stock of deposits
         in_deposits = 0
