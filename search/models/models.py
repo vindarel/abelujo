@@ -918,7 +918,7 @@ class Card(TimeStampedModel):
         return result, msgs.msgs
 
     @staticmethod
-    def sell(id=None, quantity=1, place_id=None):
+    def sell(id=None, quantity=1, place_id=None, silence=False):
         """Sell a card. Decreases its quantity in the given place.
 
         This is a static method, use it like this:
@@ -937,7 +937,8 @@ class Card(TimeStampedModel):
                     # place_obj = card.placecopies_set.get(id=place_id)
                     place_obj = Place.objects.get(id=place_id)
                 except ObjectDoesNotExist as e:
-                    log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
+                    if not silence:
+                        log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
                     # xxx: test here
                     place_obj = Preferences.get_default_place()
                 except Exception as e:
@@ -967,7 +968,6 @@ class Card(TimeStampedModel):
 
             place_copy.nb -= quantity
             place_copy.save()
-            card.quantity = card.quantity - quantity
             card.save()
 
         except ObjectDoesNotExist as e:
@@ -2602,7 +2602,7 @@ class Deposit(TimeStampedModel):
 
         return msgs.status, msgs.msgs
 
-    def sell_card(self, card=None, card_id=None, nb=1, sell=None):
+    def sell_card(self, card=None, card_id=None, nb=1, sell=None, silence=False):
         """Sell a card from this deposit.
 
         Decrement its quantity from the deposit state.
@@ -2618,7 +2618,8 @@ class Deposit(TimeStampedModel):
             try:
                 card = Card.objects.get(id=card_id)
             except Exception as e:
-                log.error("Exception while getting card of id {}: {}".format(card_id, e))
+                if not silence:
+                    log.error("Exception while getting card of id {}: {}".format(card_id, e))
                 msgs.add_error(_(u"The card of id {} does not exist is this deposit.".format(card_id)))
                 return msgs.status, msgs.msgs
 
@@ -2997,7 +2998,7 @@ class Sell(models.Model):
         return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None, deposit_id=None):
+    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None, deposit_id=None, silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
@@ -3024,7 +3025,8 @@ class Sell(models.Model):
                 ids_prices_nb.append({'id': it.id, 'price': it.price, "quantity": TEST_DEFAULT_QUANTITY})
 
         if not ids_prices_nb:
-            log.warning(u"Sell: no cards are passed on. That shouldn't happen.")
+            if not silence:
+                log.warning(u"Sell: no cards are passed on. That shouldn't happen.")
             status = ALERT_WARNING
             return sell, status, alerts
 
@@ -3100,7 +3102,8 @@ class Sell(models.Model):
             price_sold = ids_prices_nb[i].get("price_sold", card.price)
             if not price_sold:
                 msg = u"We can not sell the card '{}' because the price_sold wasn't set and the card's price is None.".format(card.title)
-                log.error(msg)
+                if not silence:
+                    log.error(msg)
                 alerts.append({"message": msg,
                                "level": ALERT_WARNING,})
                 status = ALERT_WARNING
@@ -3191,7 +3194,6 @@ class Sell(models.Model):
                 status = False
 
             msgs.add_success(_(u"Sell {} canceled with success.").format(self.id))
-            log.debug(u"Sell {} canceled".format(self.id))
 
         return status, msgs.msgs
 

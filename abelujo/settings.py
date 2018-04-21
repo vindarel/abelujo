@@ -15,8 +15,12 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
+import warnings
+
 import raven
+import ruamel.yaml
 
 # Django settings for abelujo project.
 
@@ -335,8 +339,6 @@ if os.path.exists(raven_sentry_file):
             'dsn': dsn,
         }
 
-import warnings
-import ruamel.yaml
 warnings.simplefilter('ignore', ruamel.yaml.error.UnsafeLoaderWarning)
 
 # Brunch: live reload of static assets.

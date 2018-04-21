@@ -875,7 +875,7 @@ class TestSells(TestCase):
 
     def test_sell_none(self):
         to_sell = []
-        sell, status, msgs = Sell.sell_cards(to_sell)
+        sell, status, msgs = Sell.sell_cards(to_sell, silence=True)
         self.assertEqual(ALERT_WARNING, status)
 
     def test_sell_no_price(self):
@@ -891,7 +891,7 @@ class TestSells(TestCase):
                     "quantity": 2,
                     "price_sold": p2}]
 
-        sell, status, msgs = Sell.sell_cards(to_sell)
+        sell, status, msgs = Sell.sell_cards(to_sell, silence=True)
         self.assertEqual(ALERT_WARNING, status)
         int_table = sell.soldcards_set.all()
         self.assertTrue(len(int_table), 1)
@@ -901,7 +901,7 @@ class TestSells(TestCase):
         self.assertEqual(self.place.quantity_of(self.autobio), 0)
 
         # bad place_id
-        status, msgs = Card.sell(id=self.autobio.id, place_id=9)
+        status, msgs = Card.sell(id=self.autobio.id, place_id=9, silence=True)
 
     def test_sell_deposit(self):
         self.depo.add_copy(self.autobio)
@@ -911,7 +911,7 @@ class TestSells(TestCase):
         self.assertEqual(0, self.depo.quantity_of(self.autobio))
 
         # deposit.sell
-        status, msgs = self.depo.sell_card(card_id=self.autobio.id)
+        status, msgs = self.depo.sell_card(card_id=self.autobio.id, sell=sell)
         self.assertEqual(status, ALERT_SUCCESS, msgs)
         self.assertEqual(-1, self.depo.quantity_of(self.autobio))
         balance = self.depo.checkout_balance()
@@ -919,7 +919,7 @@ class TestSells(TestCase):
         self.assertEqual(1, state_copies.nb_sells)
 
         # bad card id
-        status, msgs = self.depo.sell_card(card_id=999)
+        status, msgs = self.depo.sell_card(card_id=999, silence=True)
         self.assertEqual(status, ALERT_ERROR)
 
     def test_alert_deposit(self):
