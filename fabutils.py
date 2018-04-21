@@ -59,8 +59,19 @@ def whose_port(number, cfg):
         print("Warning ! Many clients have the same port number")
     return clt
 
+def _print_status(status):
+    if not status:
+        return "?"
+    if "abandoned" in status:
+        return termcolor.colored(status, "red")
+    if "staling" in status:
+        return termcolor.colored(status, "yellow")
+    if "prod" in status:
+        return termcolor.colored(status, "blue")
+    return status
+
 def print_client(client):
-    print(termcolor.colored("- {:10} ".format(client.name), "blue") + "\t {}".format(client.port))
+    print(termcolor.colored("- {:15} ".format(client.name), "blue") + "\t {}".format(client.port) + "\t{}".format(_print_status(client.status)))
 
 def wd(client, cfg):
     """Get the working directory.
