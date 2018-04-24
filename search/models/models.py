@@ -841,8 +841,9 @@ class Card(TimeStampedModel):
         if isbns:
             for isbn in isbns:
                 try:
-                    card = Card.objects.get(isbn=isbn)
-                    cards.append(card)
+                    card = Card.objects.filter(isbn=isbn).first()
+                    if card:
+                        cards.append(card)
                 except Exception as e:
                     log.error("Error searching for isbn {}: {}".format(isbn, e))
                     msgs.add_error(_("Error searching for isbn ".format(isbn)))
