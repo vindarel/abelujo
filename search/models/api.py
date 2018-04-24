@@ -146,7 +146,7 @@ def datasource_search(request, **response_kwargs):
 
     query_isbn = is_isbn(query)
     if query_isbn:
-        res = Card.objects.get(isbn=query)
+        res = Card.objects.filter(isbn=query).first()
         if res:
             res = [res.to_dict()]
 
