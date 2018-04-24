@@ -472,7 +472,7 @@ class Card(TimeStampedModel):
         return: a float
         """
         tax = Preferences.get_vat_book()
-        if tax:
+        if tax and self.price is not None:
             return roundfloat(self.price - self.price * tax / 100)
 
         return self.price
