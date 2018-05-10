@@ -3102,7 +3102,7 @@ class Sell(models.Model):
         for i, card in enumerate(cards_obj):
             price_sold = ids_prices_nb[i].get("price_sold", card.price)
             if not price_sold:
-                msg = u"We can not sell the card '{}' because the price_sold wasn't set and the card's price is None.".format(card.title)
+                msg = u"We can not sell the card '{}' because it has no sell price and no original price. Please specify the price in the form.".format(card.title)
                 if not silence:
                     log.error(msg)
                 alerts.append({"message": msg,
@@ -3112,6 +3112,10 @@ class Sell(models.Model):
             quantity = ids_prices_nb[i].get("quantity", 1)
 
             try:
+                if not card.price:
+                    # This can happen with a broken parser.
+                    log.warning("The card {} has no price and this shouldn't happen. Setting it to 0 to be able to sell it.".format(card.id))
+                    card.price = 0
                 sold = sell.soldcards_set.create(card=card,
                                                  price_sold=price_sold,
                                                  price_init=card.price,
