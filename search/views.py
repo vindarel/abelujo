@@ -1030,6 +1030,8 @@ def history_sells_exports(request, **kwargs):
                       distributor_id=distributor_id,
                       month=month,
                       year=year)
+    total = res.get('total')
+    res = res['data']
 
     if outformat in ['csv']:
         pseudo_buffer = Echo()
@@ -1068,7 +1070,7 @@ def history_sells_exports(request, **kwargs):
         rows += sorted([u"{:10.10} {} {:5} {:30} {}".format(
             it['created'],
             it['sell_id'],
-            it['price_sold'],
+            it.get('price_sold', 0),
             truncate(it['card']['title']), # truncate long titles
             it['card']['distributor']['name'] if it['card']['distributor'] else "",
         )
