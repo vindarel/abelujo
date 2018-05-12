@@ -546,7 +546,8 @@ def sell(request, **response_kwargs):
         deposit_id = params.get("deposit_id")
 
         # Sell from a deposit, then normal sell.
-        if deposit_id:
+        if deposit_id and deposit_id not in [0, "0"]:
+            # 0 is the default client side but doesn't exist.
             try:
                 deposit_obj = Deposit.objects.get(id=deposit_id)
             except ObjectDoesNotExist:

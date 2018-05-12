@@ -3040,7 +3040,8 @@ class Sell(models.Model):
                 date = pytz.utc.localize(date, pytz.UTC)
 
         deposit_obj = None
-        if deposit_id:
+        if deposit_id and deposit_id not in [0, "0"]:
+            # id 0 is the default client side but doesn't exist.
             try:
                 deposit_obj = Deposit.objects.get(id=deposit_id)
             except ObjectDoesNotExist:
