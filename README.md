@@ -32,7 +32,9 @@ tell me now if you're interested).
 
 **Abelujo** means Beehive in Esperanto.
 
-Feedback welcomed at ehvince at mailz dot org.
+Feedback welcomed at vindarel at mailz dot org.
+
+<a href="https://liberapay.com/vindarel/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
 
 ![looking for a registered card](doc/abelujo-search-isbn.png)
 
@@ -252,3 +254,5 @@ Documentation
 -------------
 
 We have developer documentation: http://dev.abelujo.cc/
+
+<a href="https://liberapay.com/vindarel/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
