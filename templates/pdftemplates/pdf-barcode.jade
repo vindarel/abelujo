@@ -42,6 +42,8 @@ head
         tr
           if barcode
             th
+          if covers
+            th
           th {% trans "Title" %}
           th {% trans "Price" %}
           th {{ quantity_header }}
@@ -52,7 +54,8 @@ head
             if barcode
               td: img(alt="" src="data:image/png;base64,{{ card_qty.0.eanbase64 }}")
             if covers
-              td: img(src="{{ card_qty.0.img }}")
+              // quickfix: cover is the remote url, not the local file.
+              td: img(src="{{ card_qty.0.cover }}")
             td {{ forloop.counter }} - {{ card_qty.0.title }}
             td(style='{text-align: center;}')
               if card_qty.0.price
