@@ -54,7 +54,9 @@ head
             if covers
               td: img(src="{{ card_qty.0.img }}")
             td {{ forloop.counter }} - {{ card_qty.0.title }}
-            td(style='{text-align: center;}') {{ card_qty.0.price }} €
+            td(style='{text-align: center;}')
+              if card_qty.0.price
+                {{ card_qty.0.price }} €
             td(style='{text-align: center;}') {{ card_qty.1 }}
         endfor
 

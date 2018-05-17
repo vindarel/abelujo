@@ -959,7 +959,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
             cards_qties = rows
 
-        total = sum(map(lambda it: it[1] * it[0].price, cards_qties))
+        total = sum(map(lambda it: it[1] * it[0].price if it[0].price else 0, cards_qties))
         total_qty = sum([it[1] for it in cards_qties])
 
         # barcode
