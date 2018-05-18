@@ -709,6 +709,7 @@ def deposits_view(request, pk):
 
         deposit = Deposit.objects.get(id=pk)
         checkout, msgs = deposit.checkout_create()
+        # bad abi. Used in tests.
         if not checkout:
             # Could do in a "get or create" method.
             checkout = deposit.last_checkout()

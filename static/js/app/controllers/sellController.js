@@ -82,13 +82,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
     $http.get("/api/places")
         .then(function(response) {
-            $scope.places = [{"name": "", "id": undefined}];
+            $scope.places = [{"name": "", "id": 0}];
             $scope.places = $scope.places.concat(response.data);
         });
 
     $http.get("/api/deposits")
         .then(function(response) {
-            $scope.deposits = [{"name": "", "id": undefined}];
+            $scope.deposits = [{"name": "", "id": 0}];
             $scope.deposits = $scope.deposits.concat(response.data.data);
         });
 
@@ -96,11 +96,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Livescript version: see basketsController.ls
       $scope.getCards = function(val){
 
-          var deposit_id = undefined;
+          var deposit_id = 0;
           if ($scope.deposit) {
               deposit_id = $scope.deposit.id;
           }
-          var place_id = undefined;
+          var place_id = 0;
           if ($scope.place) {
               place_id = $scope.place.id;
           }

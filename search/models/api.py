@@ -543,7 +543,8 @@ def sell(request, **response_kwargs):
         to_sell = list_from_coma_separated_ints(params.get("to_sell"))
         to_sell = getSellDict(to_sell)
         date = params.get("date")
-        deposit_id = params.get("deposit_id")
+        deposit_id = int(params.get("deposit_id", 0))
+        place_id = int(params.get("place_id", 0))
 
         # Sell from a deposit, then normal sell.
         if deposit_id and deposit_id not in [0, "0"]:
@@ -559,7 +560,8 @@ def sell(request, **response_kwargs):
         # Sell from a place.
         try:
             sell, status, alerts = Sell.sell_cards(to_sell, date=date,
-                                                   place_id=params.get('place_id'))
+                                                   place_id=place_id,
+                                                   deposit_id=deposit_id)
 
         except Exception as e:
             log.error(u"api/sell error: {}".format(e))

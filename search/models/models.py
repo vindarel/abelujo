@@ -933,7 +933,7 @@ class Card(TimeStampedModel):
 
             # Get the place from where we sell it.
             place_obj = None
-            if place_id and place_id != 0:
+            if place_id and place_id not in [0, "0"]:
                 try:
                     # place_obj = card.placecopies_set.get(id=place_id)
                     place_obj = Place.objects.get(id=place_id)
@@ -2241,7 +2241,8 @@ class DepositState(models.Model):
         """
         sold_cards = []
         for card in self.deposit.copies.all():
-            sells_dict = Sell.search(card_id=card.id, date_min=self.created)
+            sells_dict = Sell.search(card_id=card.id, date_min=self.created,
+                                     deposit_id=self.deposit.id)
             sold_cards.append({"card": card, "sells": sells_dict['data']})
 
         self.update_soldcards(sold_cards)
@@ -2726,7 +2727,8 @@ class Deposit(TimeStampedModel):
         checkout = DepositState(deposit=self, created=now)
         checkout.save()
         for card in self.copies.all():
-            sells_dict = Sell.search(card_id=card.id, date_min=now) # few chances we sell cards between now() and now
+            sells_dict = Sell.search(card_id=card.id, date_min=now,
+                                     deposit_id=self.id) # few chances we sell cards between now() and now
             sold_cards.append({"card": card, "sells": sells_dict['data']})
 
         quantities = []
@@ -2844,7 +2846,7 @@ class Sell(models.Model):
     in a deposit and another not, we'll have to choose which copy to
     sell. This can be done later on.
 
-    See "alerts": http://ruche.eu.org/wiki/Specifications_fonctionnelles#Alerte
+    See "alerts": http://abelujo.cc/specs/#alerte
     """
     created = models.DateTimeField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True)
@@ -2852,6 +2854,10 @@ class Sell(models.Model):
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
                                blank=True, null=True)
+    #: We can choose to sell from a specific place.
+    place = models.ForeignKey("Place", blank=True, null=True)
+    #: We can also choose to sell from a specific deposit.
+    deposit = models.ForeignKey("Deposit", blank=True, null=True)
     #: If True, this sell was already canceled. It can not be undone twice.
     canceled = models.BooleanField(default=False, blank=True)
 
@@ -2882,6 +2888,7 @@ class Sell(models.Model):
     @staticmethod
     def search(card_id=None, date_min=None, count=False, date_max=None,
                distributor_id=None,
+               deposit_id=None,
                year=None,
                month=None,
                page=None,
@@ -2932,12 +2939,20 @@ class Sell(models.Model):
                 soldcards = sells.filter(card__distributor_id=distributor_id)
                 sells = soldcards
 
+            if deposit_id:
+                # By default, a Sell doesn't reference a place or a deposit.
+                # Here, exclude the sells that are linked to another deposit than this one,
+                # but most of all exclude the ones linked to a place.
+                sells = sells.filter(sell__place__isnull=True)
+                sells = sells.exclude(Q(sell__deposit__isnull=False),
+                                      ~Q(sell__deposit_id=deposit_id))
+
         except Exception as e:
             log.error(u"search for sells of card id {}: {}".format(card_id, e))
-            return sells
-
         if count:
             return sells.count()
+            return sells
+
 
         # Sorting.
         # Built in DRF ?
@@ -3039,6 +3054,7 @@ class Sell(models.Model):
                 date = datetime.datetime.strptime(date, DATE_FORMAT)
                 date = pytz.utc.localize(date, pytz.UTC)
 
+        # Get the deposit we sell from (optional).
         deposit_obj = None
         if deposit_id and deposit_id not in [0, "0"]:
             # id 0 is the default client side but doesn't exist.
@@ -3049,15 +3065,26 @@ class Sell(models.Model):
             except Exception as e:
                 log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
 
+        # Get the place we sell from (optional).
+        place_obj = None
+        if place_id and place_id not in [0, "0"]:
+            try:
+                place_obj = Place.objects.get(id=place_id)
+            except ObjectDoesNotExist:
+                log.error(u"Registering a Sell, couldn't get place of id {}.".format(place_id, e))
+
         # Create the Sell object.
         try:
-            sell = Sell(created=date, payment=payment)
+            sell = Sell(created=date, payment=payment,
+                        place=place_obj,
+                        deposit=deposit_obj)
             sell.save()
         except Exception as e:
             status = ALERT_ERROR
             alerts.append({"message": "Ooops, we couldn't sell anything :S",
                            "level": ALERT_ERROR})
             log.error(u"Error on creating Sell object: {}".format(e))
+            return None, status, "Error registering the sell"
 
         # Decrement cards quantities from their place or deposit.
         for it in ids_prices_nb:
@@ -3077,11 +3104,11 @@ class Sell(models.Model):
                 # msgs.append
 
             try:
-                # Either sell from a deposit.
+                # Either sell from a deposit,
                 if deposit_obj:
                     status, msgs = deposit_obj.sell_card(card_id=id, sell=sell)
 
-                # Either sell from a place or the default (selling) place.
+                # either sell from a place or the default (selling) place.
                 else:
                     Card.sell(id=id, quantity=quantity, place_id=place_id)
 

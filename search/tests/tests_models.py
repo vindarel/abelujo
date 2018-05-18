@@ -922,6 +922,84 @@ class TestSells(TestCase):
         status, msgs = self.depo.sell_card(card_id=999, silence=True)
         self.assertEqual(status, ALERT_ERROR)
 
+    def test_sell_deposit_isolated(self):
+        """
+        sell from a deposit, don't count it in the other one.
+        """
+        # See also TestSellSearch.
+        # Another deposit.
+        self.depo2 = Deposit(name="deposit test 2", distributor=self.dist)
+        self.depo2.save()
+        # Add the same card than in depo 1.
+        self.depo.add_copies([self.autobio])
+        self.depo2.add_copies([self.autobio])
+        # Sell.
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1}]
+        # Sell for depo 1.
+        Sell.sell_cards(to_sell, deposit_id=self.depo.id)
+
+        # Check balances (as in deposit_view).
+        # yep, the abi should be simplified.
+        checkout, msgs = self.depo.checkout_create()
+        if not checkout:
+            # Could do in a "get or create" method.
+            checkout = self.depo.last_checkout()
+
+        if checkout and not checkout.closed:
+            checkout.update()
+        balance = checkout.balance()
+
+        # Balance for depo2, not impacted.
+        checkout2, msgs = self.depo2.checkout_create()
+        if not checkout2:
+            # Could do in a "get or create" method.
+            checkout2 = self.depo2.last_checkout()
+
+        if checkout2 and not checkout2.closed:
+            checkout2.update()
+        balance2 = checkout2.balance()
+
+        self.assertEqual(balance['cards'][0][1].nb_sells, 1)
+        self.assertEqual(balance2['cards'][0][1].nb_sells, 0)
+
+        self.assertEqual(balance['cards'][0][1].nb_current, 0)
+        self.assertEqual(balance2['cards'][0][1].nb_current, 1)
+
+        self.assertEqual(balance['cards'][0][1].nb_initial, 1)
+        self.assertEqual(balance2['cards'][0][1].nb_initial, 1)
+
+    def test_sell_from_place(self):
+        """
+        Sell from a place, don't count it in the deposit,
+        """
+        self.depo.add_copies([self.autobio])
+        # Sell.
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1}]
+        # Sell for the place.
+        Sell.sell_cards(to_sell, place_id=self.place.id)
+
+        # Check balances (as in deposit_view).
+        # yep, the abi should be simplified.
+        checkout, msgs = self.depo.checkout_create()
+        if not checkout:
+            # Could do in a "get or create" method.
+            checkout = self.depo.last_checkout()
+
+        if checkout and not checkout.closed:
+            checkout.update()
+        balance = checkout.balance()
+
+        self.assertEqual(balance['cards'][0][1].nb_sells, 0)
+        self.assertEqual(balance['cards'][0][1].nb_current, 1)
+
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
         self.place.add_copy(self.autobio) # 1 in deposit, 1 not: ambiguous
@@ -1054,6 +1132,21 @@ class TestSellSearch(TestCase):
         Sell.sell_card(self.secondcard, date=timezone.now() - timezone.timedelta(days=30))
         sells = Sell.search(date_min=timezone.now() - timezone.timedelta(days=7))
         self.assertEqual(len(sells['data']), 1)
+
+    def test_search_sells_deposit_id(self):
+        # Create two deposits.
+        self.deposit = DepositFactory()
+        self.deposit2 = DepositFactory()
+        self.deposit.add_copies([self.autobio])
+        # Two sells, one for deposit 1 only.
+        Sell.sell_card(self.autobio)
+        Sell.sell_card(self.autobio, deposit_id=self.deposit.id)
+        sells = Sell.search(deposit_id=self.deposit.id)
+        self.assertEqual(sells['total'], 2)
+
+        # deposit 2 sees only one sell.
+        sells = Sell.search(deposit_id=self.deposit2.id)
+        self.assertEqual(sells['total'], 1)
 
 class TestHistory(TestCase):
 
