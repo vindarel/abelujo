@@ -1040,6 +1040,31 @@ class TestSells(TestCase):
         status, msgs = self.autobio.sell_undo()
         # self.assertTrue(msgs)
 
+    def test_undo_from_place(self):
+        """Undo a sell, put it back on the original place.
+        """
+        # Create a second place.
+        self.secondplace = Place(name="second place", is_stand=False, can_sell=True)
+        self.secondplace.save()
+        self.secondplace.add_copy(self.autobio)
+
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": 7.7,
+                    },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": 9.9,
+                    }]
+        # Sell, set a place.
+        sell, status, msgs = Sell.sell_cards(to_sell, place=self.secondplace)
+
+        # undo the sell, put it back on the original place.
+        self.assertEqual(self.secondplace.quantity_of(self.autobio), 0)
+        sell.undo()
+        # TODO: add place to Sell.to_list
+        self.assertEqual(self.secondplace.quantity_of(self.autobio), 1)
+
     def test_undo_sell(self):
         """
         """

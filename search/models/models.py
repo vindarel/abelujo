@@ -658,7 +658,9 @@ class Card(TimeStampedModel):
 
     def to_list(self, in_deposits=False):
         """
-        Cache results for a few minutes (specially for csv export of all the stock).
+        Return a *dict* of this card's fields.
+
+        CAUTION: Cache results for a few minutes (specially for csv export of all the stock).
         """
         timeout = 60 * 20  # seconds
         if djcache.get(self.id):
@@ -919,7 +921,7 @@ class Card(TimeStampedModel):
         return result, msgs.msgs
 
     @staticmethod
-    def sell(id=None, quantity=1, place_id=None, silence=False):
+    def sell(id=None, quantity=1, place_id=None, place=None, silence=False):
         """Sell a card. Decreases its quantity in the given place.
 
         This is a static method, use it like this:
@@ -932,19 +934,20 @@ class Card(TimeStampedModel):
             card = Card.objects.get(id=id)
 
             # Get the place from where we sell it.
-            place_obj = None
-            if place_id and place_id not in [0, "0"]:
-                try:
-                    # place_obj = card.placecopies_set.get(id=place_id)
-                    place_obj = Place.objects.get(id=place_id)
-                except ObjectDoesNotExist as e:
-                    if not silence:
-                        log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
-                    # xxx: test here
-                    place_obj = Preferences.get_default_place()
-                except Exception as e:
-                    log.error(u'In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
-                    return False, _(u"An error occured :( We prefer to stop this sell.")
+            place_obj = place
+            if place or place_id:
+                if not place and place_id not in [0, "0"]:
+                    try:
+                        # place_obj = card.placecopies_set.get(id=place_id)
+                        place_obj = Place.objects.get(id=place_id)
+                    except ObjectDoesNotExist as e:
+                        if not silence:
+                            log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
+                        # xxx: test here
+                        place_obj = Preferences.get_default_place()
+                    except Exception as e:
+                        log.error(u'In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
+                        return False, _(u"An error occured :( We prefer to stop this sell.")
 
                 # Get the intermediate table PlaceCopy, keeping the quantities.
                 place_copy = None
@@ -983,28 +986,25 @@ class Card(TimeStampedModel):
 
         return (True, "")
 
-    def sell_undo(self, quantity=1, place_id=None):
-        """Do the contrary of sell().
-
-        todo: manage the places we sell from correctly.
+    def sell_undo(self, quantity=1, place_id=None, place=None):
+        """
+        Do the contrary of sell(). Put the card back on the place or deposit it was sold from.
         """
         msgs = Messages()
-        if place_id:
-            place_obj = self.placecopies_set.get(id=place_id)
+        place_obj = place
+        if not place_obj and place_id:
+            place_obj = self.placecopies_set.filter(card__id=self.id).first()
         else:
-            # same warning as sell()
             if self.placecopies_set.count():
-                place_obj = self.placecopies_set.first()
+                place_obj = self.placecopies_set.filter(card__id=self.id, place__id=place.id).first()
             else:
                 return False, {"message": _(u"We can not undo the sell of card {}: \
                 it is not associated to any place. This shouldn't happen.").format(self.title),
                                "status": ALERT_ERROR}
-                # let's take the default place
-                # place_obj = Place.objects.first()
-                # msgs.append(u"No place was specified for '{}'. Let's take {}".format(self.title, place_obj.name))
 
         place_obj.nb = place_obj.nb + quantity
         place_obj.save()
+        # TODO: add history.
         msgs.add_info(u"We added back {} exemplary(ies) in {}.".format(quantity, place_obj.place.name))
         self.save()
 
@@ -1581,14 +1581,16 @@ class Place (models.Model):
         - card: a card object.
         """
         try:
-            place_copies = self.placecopies_set.filter(card__id=card.id).first()
+            place_copies = self.placecopies_set.filter(card__id=card.id)
+            if len(place_copies) > 1:
+                log.error("more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
             if place_copies:
-                return place_copies.nb
+                return place_copies[0].nb
             else:
                 return 0
         except Exception as e:
-            log.error(e)
-            return None
+            log.error(u"Error getting quantity_of for card {} on place {}: {}".format(card, self, e))
+            raise e
 
     def cost(self):
         """
@@ -2997,6 +2999,8 @@ class Sell(models.Model):
             "id": self.id,
             "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
             "cards": cards_sold,
+            "place_id": self.place.id if self.place else None,
+            "deposit_id": self.deposit.id if self.deposit else None,
             "total_copies_sold": total_copies_sold,
             # "payment": self.payment,
             "total_price_init": self.total_price_init,
@@ -3066,8 +3070,8 @@ class Sell(models.Model):
                 log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
 
         # Get the place we sell from (optional).
-        place_obj = None
-        if place_id and place_id not in [0, "0"]:
+        place_obj = place
+        if not place_obj and place_id and place_id not in [0, "0"]:
             try:
                 place_obj = Place.objects.get(id=place_id)
             except ObjectDoesNotExist:
@@ -3110,7 +3114,7 @@ class Sell(models.Model):
 
                 # either sell from a place or the default (selling) place.
                 else:
-                    Card.sell(id=id, quantity=quantity, place_id=place_id)
+                    Card.sell(id=id, quantity=quantity, place=place_obj)
 
             except ObjectDoesNotExist:
                 msg = u"Error: the card of id {} doesn't exist.".format(id)
@@ -3191,8 +3195,6 @@ class Sell(models.Model):
         - add the necessary quantity to the right place
         - create a new entry, for the history.
         - we do not undo alerts here
-
-        todo: manage the places we sell from.
         """
         if self.canceled:
             return True, {"message": u"This sell was already canceled.",
@@ -3206,7 +3208,7 @@ class Sell(models.Model):
             cards.append(card_obj)
             qty = soldcard.quantity
             try:
-                status, _msgs = card_obj.sell_undo(quantity=qty, place_id=None)
+                status, _msgs = card_obj.sell_undo(quantity=qty, place=self.place)
                 msgs.append(_msgs)
             except Exception as e:
                 msgs.add_error(_(u"Error while undoing sell {}.".format(self.id)))
