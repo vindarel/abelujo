@@ -15,6 +15,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 pip==9
+setuptools==39.2
 
 django==1.8
 django-bootstrap3==6.2.2
