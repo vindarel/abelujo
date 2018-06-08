@@ -14,13 +14,11 @@ clone:
 debian-nosudo:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs apt-get install -y
 	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs apt-get install -y
-	pip install --upgrade pip
 	pip install virtualenvwrapper
 
 debian:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs sudo apt-get install -y
-	@sudo pip install --upgrade pip
 	@sudo pip install virtualenvwrapper
 
 # Rebase main repo and submodules
