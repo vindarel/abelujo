@@ -651,7 +651,7 @@ class TestDeposits(TransactionTestCase):
         """
         self.card.distributor = self.distributor
         due_date = datetime.date.today().isoformat() # getting it as str from JS
-        dest_place = PlaceFactory.create()
+        dest_place = PlaceFactory()
         status, msgs = Deposit.from_dict({'name': 'test',
                                   'copies': [self.card,],
                                   'distributor': self.distributor,
@@ -666,7 +666,7 @@ class TestDeposits(TransactionTestCase):
 
     def test_no_due_date(self):
         self.card.distributor = self.distributor
-        dest_place = PlaceFactory.create()
+        dest_place = PlaceFactory()
         status, msgs = Deposit.from_dict({'name': 'test',
                                   'due_date': None,
                                   'copies': [self.card,],
@@ -1220,7 +1220,7 @@ class TestAlerts(TestCase):
         self.deposit.add_copies([self.card])
         # Put the Card in a default place, in 2 copies: one is the deposit,
         # one is ours.
-        self.place = PlaceFactory.create()
+        self.place = PlaceFactory()
         self.place.add_copy(self.card, nb=2)
         # A sell creates an alert
         Sell.sell_card(self.card)
