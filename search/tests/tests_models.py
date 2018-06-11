@@ -1107,6 +1107,26 @@ class TestSells(TestCase):
         self.assertEqual(SoldCards.objects.first().card_id,
                          self.autobio.id)
 
+    def test_undo_from_deposit(self):
+        p1 = 7.7
+        p2 = 9.9
+        to_sell = [{"id": self.autobio.id,
+                    "quantity": 1,
+                    "price_sold": p1
+                },
+                   {"id": self.secondcard.id,
+                    "quantity": 2,
+                    "price_sold": p2}]
+        # Add two cards to the deposit.
+        status, msgs = self.depo.add_copies([self.autobio, self.secondcard])
+        self.assertTrue(status != 'danger')
+        # Sell cards.
+        sell, status, msgs = Sell.sell_cards(to_sell, deposit=self.depo)
+        self.assertEqual(self.depo.quantity_of(self.secondcard), 0)
+        # Undo the sell. It knows it was from a deposit.
+        sell.undo()
+        self.assertEqual(self.depo.quantity_of(self.secondcard), 1)
+
 class TestSellSearch(TestCase):
 
     # fixtures = ['test_sell_search']

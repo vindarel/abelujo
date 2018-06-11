@@ -986,13 +986,15 @@ class Card(TimeStampedModel):
 
         return (True, "")
 
-    def sell_undo(self, quantity=1, place_id=None, place=None):
+    def sell_undo(self, quantity=1, place_id=None, place=None, deposit=None):
         """
         Do the contrary of sell(). Put the card back on the place or deposit it was sold from.
         """
         msgs = Messages()
         place_obj = place
+        deposit_obj = deposit
         if not place_obj and place_id:
+            # TODO: toujours vendre depuis le lieu par défaut, filtrer par lieu par défaut, pas le first.
             place_obj = self.placecopies_set.filter(card__id=self.id).first()
         else:
             if self.placecopies_set.count():
@@ -2134,6 +2136,7 @@ class DepositState(models.Model):
             return msgs.status, msgs.msgs
 
         if not copies:
+            log.warning(u"The card {} was not found on this deposit.".format(card.title))
             msgs.add_warning(_(u"The card {} was not found on this deposit.".format(card.title)))
             return msgs.status, msgs.msgs
 
@@ -2148,6 +2151,20 @@ class DepositState(models.Model):
         state_copy.save()
 
         return msgs.status, msgs.msgs
+
+
+    def sell_undo(self, card, quantity=1):
+        """
+        Undo the sell of the given card for this deposit.
+        """
+        deposit_state = self.depositstatecopies_set.filter(card__id=card.id)
+        if not deposit_state:
+            return -1
+        else:
+            deposit_state = deposit_state.last()
+            deposit_state.nb_current += quantity
+            deposit_state.save()
+            return deposit_state.nb_current
 
 
     def update_soldcards(self, cards_sells):
@@ -2647,6 +2664,22 @@ class Deposit(TimeStampedModel):
         else:
             return None, []
 
+    def sell_undo(self, card=None, quantity=1):
+        """
+        Undo the sell, put the exemplary back.
+        """
+        msgs = Messages()
+        try:
+            state = self.checkout_current()
+            status, _msgs = state.sell_undo(card=card, quantity=quantity)
+            msgs.append(_msgs)
+
+        except Exception as e:
+            log.error(u"Error undoing the sell of card {} for deposit {}: {}".format(card, self.id, e))
+            msgs.add_error(_(u"Error undoing the sell of card '{}' for deposit {}".format(card.title, self.name)))
+            return msgs.status, msgs.msgs
+
+
     def quantity_of(self, card):
         """How many copies of this card do we have ?
 
@@ -3018,7 +3051,7 @@ class Sell(models.Model):
         return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None, deposit_id=None, silence=False):
+    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None, deposit_id=None, deposit=None, silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
@@ -3059,8 +3092,8 @@ class Sell(models.Model):
                 date = pytz.utc.localize(date, pytz.UTC)
 
         # Get the deposit we sell from (optional).
-        deposit_obj = None
-        if deposit_id and deposit_id not in [0, "0"]:
+        deposit_obj = deposit
+        if not deposit_obj and deposit_id and deposit_id not in [0, "0"]:
             # id 0 is the default client side but doesn't exist.
             try:
                 deposit_obj = Deposit.objects.get(id=deposit_id)
@@ -3208,7 +3241,10 @@ class Sell(models.Model):
             cards.append(card_obj)
             qty = soldcard.quantity
             try:
-                status, _msgs = card_obj.sell_undo(quantity=qty, place=self.place)
+                if self.deposit:
+                    status, _msgs = self.deposit.sell_undo(card=card_obj, quantity=qty)
+                else:
+                    status, _msgs = card_obj.sell_undo(quantity=qty, place=self.place)
                 msgs.append(_msgs)
             except Exception as e:
                 msgs.add_error(_(u"Error while undoing sell {}.".format(self.id)))
