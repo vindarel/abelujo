@@ -662,7 +662,9 @@ class Card(TimeStampedModel):
 
         CAUTION: Cache results for a few minutes (specially for csv export of all the stock).
         """
-        timeout = 60 * 20  # seconds
+        # xxx: it allowed to render big pdfs, but it delays the print
+        # of a book quantity in My Stock.
+        timeout = 1 * 10  # seconds
         if djcache.get(self.id):
             return djcache.get(self.id)
 
