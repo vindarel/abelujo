@@ -3460,7 +3460,12 @@ class InventoryBase(TimeStampedModel):
 
         Return: a float, rounded to two decimals.
         """
-        ret = sum([it.card.price * it.quantity for it in
+        def card_price(card):
+            if card and card.price is not None:
+                return card.price
+            return 0
+
+        ret = sum([card_price(it.card) * it.quantity for it in
                    self.inventorycopies_set.select_related('card').all()])
         ret = roundfloat(ret)
         return ret
