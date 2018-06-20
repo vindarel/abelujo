@@ -3852,7 +3852,8 @@ class Stats(object):
         """Simple figures about our stock:
         - how many products
         - how many titles
-        - how many books (copies)
+        - how many titles (copies)
+        - how many books (cards)
         - value of the stock
         - value of the stock, excl. vat
         - idem for stock in deposits
@@ -3872,6 +3873,8 @@ class Stats(object):
         res['nb_titles'] = {'label': _(u"Number of book titles"),
                             'value': Card.objects.filter(in_stock=True).
                             filter(card_type=type_book).count()}
+        res['nb_cards'] = {'label': _(u"Number of books"),
+                           'value': Card.quantities_total()}
         res['nb_unknown'] = {'label': _(u"Number of products of unknown type"),
                              'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought

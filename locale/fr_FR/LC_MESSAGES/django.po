@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-10 17:35+0000\n"
+"POT-Creation-Date: 2018-06-20 13:54+0000\n"
 "PO-Revision-Date: 2018-05-10 19:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -329,7 +329,10 @@ msgstr "Nombre de produits"
 msgid "Number of book titles"
 msgstr "Nombre de titres"
 
-#: search/models/models.py:3808
+#: search/models/models.py:3901 templates/search/collection.jade:123
+#: templates/search/dashboard.jade:41
+msgid "Number of books"
+msgstr "Nombre de livres"
 msgid "Number of products of unknown type"
 msgstr "Nombre de produits de type inconnu"
 

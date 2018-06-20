@@ -120,6 +120,7 @@ div(ng-cloak, ng-controller="collectionController")
           i.glyphicon.glyphicon-question-sign
 
       span(style="margin-top: 18px; margin-left: 7px") {% trans "Number of titles" %}: {{'stats.nb_titles.value'|ng}}
+      span(style="margin-top: 18px; margin-left: 7px") {% trans "Number of books" %}: {{'stats.nb_cards.value'|ng}}
 
 
  table.row-border.hover(ng-show="cards.length != 0", datatable="ng")
