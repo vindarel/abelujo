@@ -29,9 +29,9 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.price = 0
     $scope.pub_input = ""
     $scope.pubs_selected = []
-    $scope.distributor = null
+    $scope.distributor = {}
     $scope.distributor_list = []
-    $scope.distributors_selected = []
+    $scope.distributor_selected = undefined
     $scope.has_isbn = false
     $scope.isbn = ""
     $scope.year_published = undefined
@@ -60,7 +60,6 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             $scope.title = $scope.card.title
             $scope.price = $scope.card.price
             $scope.authors_selected = $scope.card.authors
-            $scope.distributor_list = [$scope.card.distributor]
             $scope.distributor = $scope.card.distributor
             $scope.isbn = $scope.card.isbn
             $scope.details_url = $scope.card.details_url
@@ -131,9 +130,8 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
         if type and type.fields.name is not undefined
             params.type = type.fields.name
 
-        distributor = $scope.distributor
-        if distributor and distributor.selected is not undefined
-            params.distributor = distributor.id
+        if $scope.distributor_selected != undefined
+            params.distributor = $scope.distributor_selected.id
 
         # This is needed for Django to process the params to its
         # request.POST dictionnary:

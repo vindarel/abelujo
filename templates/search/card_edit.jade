@@ -71,7 +71,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
 
   .row
     .col-lg-6
-        h5 {% trans "Authors" %}:
+        h4 {% trans "Authors" %}:
         span
               input(
                   type="text",
@@ -89,7 +89,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
             i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index, 'authors_selected')")
 
 
-        h5 {% trans "Publishers" %}
+        h4 {% trans "Publishers" %}
         span
           input(
               type="text",
@@ -105,23 +105,16 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
           span {{ 'pub.fields.name ' | ng }}
             i.glyphicon.glyphicon-remove(ng-click="remove_from_selection($index, 'pubs_selected')")
 
-        div
+        h4 {% trans "Supplier" %}: {{ 'distributor.repr' | ng }}
+
+        div.col-lg-8
+          span {% trans "Change supplier" %}:
+                select.form-control(
+                  ng-model="distributor_selected",
+                  ng-options="dist.repr for dist in distributor_list")
+
           span
-            h5 {% trans "Supplier" %}:
-              span {{ 'distributor.repr ' | ng }}
-
-        span.col-lg-8
-          ui-select(ng-model="distributor.selected")
-            ui-select-match
-              span(ng-bind="$select.selected.repr")
-            ui-select-choices(
-              repeat="item in (distributor_list | filter:$select.search) track by item.id",
-              refresh="refreshDistributors($select.search, $select)",
-              refresh-delay="100")
-              span(ng-bind="item.name")
-
-        span
-            a(target="_blank", href="/admin/search/distributor/add",title='{% trans "Add a supplier" %}')
+            a(target="_blank", href="/admin/search/distributor/add",title='{% trans "Create a supplier" %}')
               i.glyphicon.glyphicon-plus-sign()
 
 

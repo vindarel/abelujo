@@ -678,8 +678,10 @@ class Card(TimeStampedModel):
 
         if self.distributor:
             dist_repr = self.distributor.to_list()['name']
+            dist = self.distributor.to_list()
         else:
             dist_repr = ""
+            dist = {}
 
         try:
             get_absolute_url = self.get_absolute_url()
@@ -698,6 +700,7 @@ class Card(TimeStampedModel):
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
             "details_url": self.details_url,
             "distributor_repr": dist_repr,
+            "distributor": dist,
             "fmt": self.fmt,
             "get_absolute_url": get_absolute_url,
             "img": self.img,
