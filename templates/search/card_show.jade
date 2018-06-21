@@ -77,11 +77,11 @@ div#abelujo
               td
                 span: a(target="_blank", href="https://framabee.org/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
                     span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")
-        if object.comment
-          div {% trans "Comment" %}: 
-          em.my-border {{ object.comment }}
-        else
-          div
+
+        h4 {% trans "Comment" %} 
+        div
+          a(href="{% url 'admin:search_card_change' object.pk %}", target="_blank")  {% trans "edit" %}
+        em.my-border {{ object.comment }}
 
     .col-lg-8
       h4 {{ object.display_authors }}
@@ -179,7 +179,6 @@ div#abelujo
                       | x{{ cmd.qty }} -
                       | <a href="{{ cmd.command.get_absolute_url }}">{{ cmd.command.title }}</a> -
                       | {{ cmd.command.created }}
-
 
 
 {% endblock content %}
