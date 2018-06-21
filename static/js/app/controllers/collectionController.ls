@@ -78,6 +78,9 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $http.get "/api/distributors"
     .then (response) !->
         $scope.distributors = response.data
+        $scope.distributors.push do
+            repr: ""
+            id: 0
 
     $scope.stats = {}
     $http.get "/api/stats/"

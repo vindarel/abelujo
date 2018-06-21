@@ -829,7 +829,7 @@ class Card(TimeStampedModel):
         if distributor and cards:
             cards = cards.filter(distributor__name__exact=distributor)
 
-        if distributor_id and cards:
+        if distributor_id and distributor_id not in [0, "0"] and cards:
             cards = cards.filter(distributor__id=distributor_id)
 
         if cards and card_type_id:
