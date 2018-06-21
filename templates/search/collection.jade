@@ -131,6 +131,7 @@ div(ng-cloak, ng-controller="collectionController")
       th {% trans "Price" %}
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
+      th {% trans "Supplier" %}
       th {% trans "Shelf" %}
       th {% trans "Quantity" %}
       th {% trans "In deposits" %}
@@ -162,6 +163,7 @@ div(ng-cloak, ng-controller="collectionController")
           div(ng-repeat="author in card.authors")
             div {{ 'author.fields.name' |ng}}
         td {{ 'card.pubs_repr' | ng }}
+        td {{ 'card.distributor_repr' | ng }}
         td {{ 'card.shelf' | ng }}
         td.text-right {{ 'card.quantity' | ng }}
         td.text-right {{ 'card.qty_deposits' | ng }}
