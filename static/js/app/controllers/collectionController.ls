@@ -36,6 +36,15 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.baskets = []
     $scope.show_images = true
 
+    # Read show_images from local storage.
+    show_images = $window.localStorage.getItem "show_images"
+    if show_images != null
+        if show_images == "true"
+            show_images = true
+        else
+            show_images = false
+        $scope.show_images = show_images
+
     $scope.selectAll = true
     $scope.selected = {}
 
@@ -127,6 +136,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
+        $window.localStorage.show_images = $scope.show_images
 
     # This is needed for Django to process the params to its
     # request.POST dictionnary:
