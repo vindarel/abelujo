@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-06-20 13:54+0000\n"
-"PO-Revision-Date: 2018-05-10 19:39+0200\n"
+"PO-Revision-Date: 2018-06-21 13:06+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -1003,7 +1003,7 @@ msgstr "Modifier la notice"
 
 #: templates/search/card_show.jade:44 templates/search/deposits_view.jade:104
 msgid "Edit"
-msgstr "Édition"
+msgstr "Modifier"
 
 #: templates/search/card_show.jade:45
 #, fuzzy
