@@ -120,11 +120,17 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
 
         params = do
             authors: map (.pk), $scope.authors_selected # list of ids
-            publishers: map (.pk), $scope.pubs_selected
+            publishers: map (.fields.id), $scope.pubs_selected
 
-        for it in ["title", "year_published", "has_isbn", "price", "isbn", "shelf_id", "details_url"]
+        if card_id
+            params.card_id = card_id
+
+        for it in ["title", "year_published", "has_isbn", "price", "isbn", "details_url"]
             if $scope[it]
                 params[it] = $scope[it]
+
+        if shelf_id
+            params.shelf_id = shelf_id
 
         type = $scope.type
         if type and type.fields.name is not undefined

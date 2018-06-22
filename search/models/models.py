@@ -660,20 +660,19 @@ class Card(TimeStampedModel):
         """
         Return a *dict* of this card's fields.
 
-        CAUTION: Cache results for a few minutes (specially for csv export of all the stock).
         """
-        # xxx: it allowed to render big pdfs, but it delays the print
-        # of a book quantity in My Stock.
+        # Have cached results for a few minutes (for long csv export of all the stock).
+        # but it delays the accuracy of a book quantity in My Stock too.
         timeout = 1 * 10  # seconds
         if djcache.get(self.id):
             return djcache.get(self.id)
 
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
-        auth = [{"fields": {'name': it.name}} for it in authors]
+        auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
         authors_repr = self.authors_repr
         publishers = self.publishers.all()
-        pubs = [{'fields': {'name': it.name}} for it in publishers]
+        pubs = [{'fields': {'name': it.name, "id": it.id}} for it in publishers]
         pubs_repr = self.pubs_repr
 
         if self.distributor:
@@ -1190,14 +1189,28 @@ class Card(TimeStampedModel):
                 log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
 
         # Check if the card already exists (it may not have an isbn).
-        exists_list, _msgs = Card.exists(card)
-        msgs.append(_msgs)
-        created = False
+        if card.get('id'):
+            try:
+                exists_list = Card.objects.get(id=card.get('id'))
+                created = False
+            except ObjectDoesNotExist:
+                log.error("Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
+                msgs.add_error("Could not find card of id {}".format(card.get('id')))
+                return None, msgs.msgs
+
+        else:
+            exists_list, _msgs = Card.exists(card)
+            msgs.append(_msgs)
+            created = False
+
         if exists_list:
             card_obj = exists_list
             # Update fields, except isbn (as with "else" below)
-            card_obj.distributor = card_distributor
-            card_obj.save()
+            if card_distributor:
+                card_obj.distributor = card_distributor
+
+            if card_publishers:
+                card_obj.publishers.add(*card_publishers)
 
             card_obj.isbn = isbn
             card_obj.save()
