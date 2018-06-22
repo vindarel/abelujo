@@ -27,6 +27,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.authors_selected = []
     $scope.author_input = ""
     $scope.price = 0
+    $scope.publishers = []
     $scope.pub_input = ""
     $scope.pubs_selected = []
     $scope.distributor = {}
@@ -81,6 +82,11 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             response.data.map (item) ->
                 item
 
+    # Get publishers.
+    $http.get "/api/publishers"
+    .then (response) ->
+        $scope.publishers = response.data
+
     # Get card types
     $http.get "/api/cardtype"
     .then (response) ->
@@ -120,7 +126,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
 
         params = do
             authors: map (.pk), $scope.authors_selected # list of ids
-            publishers: map (.fields.id), $scope.pubs_selected
+            publishers: [$scope.pubs_selected.pk] # not a list anymore...
 
         if card_id
             params.card_id = card_id

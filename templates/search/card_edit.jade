@@ -91,13 +91,10 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
 
         h4 {% trans "Publishers" %}
         span
-          input(
-              type="text",
-              ng-model="{% verbatim %} pub_input {% endverbatim %}"
-              uib-typeahead="{% verbatim %} pub.fields.name for pub in getItemsApi('/api/publishers', $viewValue, 'pubs_selected') {% endverbatim %}"
-              typeahead-min-length="3"
-              typeahead-on-select="add_selected_item($item, 'pub_input', 'pubs_selected')"
-          )
+          select.form-control(
+            ng-model="pubs_selected",
+            ng-options="it.fields.name for it in publishers")
+
           a(target="_blank", href="/admin/search/publisher/add")
             i.glyphicon.glyphicon-plus-sign
 
