@@ -40,12 +40,18 @@ from django.views.generic import ListView
 from weasyprint import CSS
 from weasyprint import HTML
 
-from search.datasources.bookshops.all.discogs import discogsScraper as discogs
+#
 # The datasources imports must have the name as their self.SOURCE_NAME
+# Also add the search engine in the client side controller.
+#
+from search.datasources.bookshops.all.discogs import discogsScraper as discogs
+from search.datasources.bookshops.all.momox import momox
 from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner
 from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro
 from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre
 from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis
+
+
 import models
 from search.models import Barcode64
 from search.models import Basket

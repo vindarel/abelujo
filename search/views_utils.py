@@ -19,6 +19,7 @@ from django.utils.translation import ugettext as _
 
 import unicodecsv
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs
+from search.datasources.bookshops.all.momox import momox
 from search.datasources.bookshops.deDE.buchlentner import \
     buchlentnerScraper as buchlentner
 from search.datasources.bookshops.esES.casadellibro import \
@@ -45,7 +46,7 @@ def get_datasource_from_lang(lang):
         return "buchlentner"
     elif lang.startswith("es"):
         return "casadellibro"
-    elif lang == "discogs":
+    elif lang in ["discogs", "momox"]:
         return lang
     else:
         return DEFAULT_DATASOURCE
