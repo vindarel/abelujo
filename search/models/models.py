@@ -2875,7 +2875,17 @@ class SoldCards(TimeStampedModel):
             return False, msgs.msgs
 
         try:
-            status, _msgs = soldcard.card.sell_undo(quantity=soldcard.quantity)
+            # Called by the api, to undo the sell of only one book,
+            # instead of calling Sell.undo to undo all of it.
+            if soldcard.sell.canceled:
+                return True, [{"message": u"This sell was already canceled.",
+                              "level": ALERT_WARNING}]
+
+            status, _msgs = soldcard.card.sell_undo(quantity=soldcard.quantity,
+                                                    place=soldcard.sell.place,
+                                                    deposit=soldcard.sell.deposit)
+            soldcard.sell.canceled = True
+            soldcard.sell.save()
             msgs.append(_msgs)
         except Exception as e:
             msg = u'Error while undoing the soldcard {}: {}'.format(pk, e)
@@ -3249,8 +3259,8 @@ class Sell(models.Model):
         - we do not undo alerts here
         """
         if self.canceled:
-            return True, {"message": u"This sell was already canceled.",
-                          "level": ALERT_WARNING}
+            return True, [{"message": u"This sell was already canceled.",
+                          "level": ALERT_WARNING}]
 
         status = True
         msgs = Messages()
