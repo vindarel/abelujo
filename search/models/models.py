@@ -811,19 +811,19 @@ class Card(TimeStampedModel):
         if bought and cards:
             cards = cards.filter(in_stock=True)
 
-        if cards and shelf_id:
+        if cards and shelf_id and shelf_id not in ["0", u"0"]:
             try:
                 cards = cards.filter(shelf=shelf_id)
             except Exception as e:
                 log.error(e)
 
-        if cards and place_id:
+        if cards and place_id and place_id not in ["0", u"0"]:
             try:
                 cards = cards.filter(placecopies__place__id=place_id)
             except Exception as e:
                 log.error(e)
 
-        if cards and deposit_id:
+        if cards and deposit_id and deposit_id not in ["0", u"0"]:
             try:
                 cards = cards.filter(depositcopies__deposit__id=deposit_id)
             except Exception as e:
