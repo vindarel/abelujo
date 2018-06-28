@@ -1159,7 +1159,7 @@ class Card(TimeStampedModel):
                 try:
                     card_distributor = Distributor.objects.get(name=card.get("distributor"))
                 except Exception as e:
-                    log.warning("couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
+                    log.warning(u"couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
 
         # Get the shelf
         card_shelf = None
@@ -1167,7 +1167,7 @@ class Card(TimeStampedModel):
             try:
                 card_shelf, created = Shelf.objects.get_or_create(name=card.get('shelf'))
             except Exception as e:
-                log.warning("couldn't get or create the shelf {}.".format(card.get('shelf')))
+                log.warning(u"couldn't get or create the shelf {}.".format(card.get('shelf')))
 
         elif card.get('shelf_id') and not is_invalid(card.get('shelf_id')):
             try:
@@ -1195,7 +1195,7 @@ class Card(TimeStampedModel):
                 exists_list = Card.objects.get(id=card.get('id'))
                 created = False
             except ObjectDoesNotExist:
-                log.error("Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
+                log.error(u"Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
                 msgs.add_error("Could not find card of id {}".format(card.get('id')))
                 return None, msgs.msgs
 
@@ -1269,7 +1269,7 @@ class Card(TimeStampedModel):
                     card_obj.shelf = cat_obj
                     card_obj.save()
                 except Exception as e:
-                    log.error("error adding shelf {}: {}".format(shelf_id, e))
+                    log.error(u"error adding shelf {}: {}".format(shelf_id, e))
 
             # add the type of the card
             typ = "unknown"
@@ -1325,7 +1325,7 @@ class Card(TimeStampedModel):
             card_obj.in_stock = in_stock
             card_obj.save()
         except Exception as e:
-            log.error('Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
+            log.error(u'Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
 
         card = card_obj
         if to_list:
