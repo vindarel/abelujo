@@ -298,9 +298,9 @@ def card_create(request, **response_kwargs):
                 return JsonResponse(msgs)
 
         except Exception as e:
-            log.error("Error adding a card: {}".format(e))
+            log.error(u"Error adding a card: {}".format(e))
             alerts.append({"level": ALERT_ERROR,
-                           "message":_("Woops, we can not create this card. This is a bug !")})
+                           "message":_("Woops, we can not create this card. This is a bug.")})
 
 
         return JsonResponse(msgs)

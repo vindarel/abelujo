@@ -2768,7 +2768,6 @@ class Deposit(TimeStampedModel):
         msgs = Messages()
         cur_depostate = DepositState.existing(self)
         if cur_depostate and not cur_depostate.closed:
-            log.debug("a depositState already exists and is not closed.")
             return None, [_("Hey oh, a deposit state for this deposit already exists. \
             Please close it before opening a new one.")]
 
