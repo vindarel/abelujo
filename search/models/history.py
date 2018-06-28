@@ -19,6 +19,7 @@ import logging
 
 from django.db import models
 from django.db.models import Q
+from django.core.urlresolvers import reverse
 
 from common import ALERT_ERROR
 from common import ALERT_SUCCESS
@@ -117,6 +118,9 @@ class Entry(TimeStampedModel):
         """Actually, return the url of the related Entry.
         """
         return reverse("history_entry", args=(self.id,))
+
+    def to_dict(self):
+        return self.to_list()
 
     def to_list(self):
         """
