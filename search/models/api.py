@@ -220,7 +220,7 @@ def cards(request, **response_kwargs):
                     card, _= Card.from_dict(data[0], to_list=True)
                     data = [card]
                 except Exception as e:
-                    log.warning("Error while adding card from isbn search in db: {}".format(e))
+                    log.warning(u"Error while adding card from isbn search in db: {}".format(e))
 
     return JsonResponse(data, safe=False)
 
@@ -759,7 +759,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                         ids.append(exists.id)
 
                 except Exception as e:
-                    log.error("Error while creating card from baskets: {}".format(e))
+                    log.error(u"Error while creating card from baskets: {}".format(e))
 
             # Add them to the basket.
             try:
@@ -779,7 +779,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 basket_qty.nb = qty
                 basket_qty.save()
             except Exception as e:
-                log.error("Error while setting the card qty in list {}: {}".format(basket.id, e))
+                log.error(u"Error while setting the card qty in list {}: {}".format(basket.id, e))
                 msgs.append({'level': "error",
                              'message': _("We couldn't set the quantity of the card.")})
 
@@ -874,7 +874,7 @@ def baskets_update(request, pk, **response_kwargs):
         try:
             basket = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error("Basket update: {}".format(e))
+            log.error(u"Basket update: {}".format(e))
             return JsonResponse(to_ret)
 
         # fields are in request.body
@@ -936,7 +936,7 @@ def baskets_add_card(request, pk, **response_kwargs):
             try:
                 b_obj.add_copy(card_obj)
             except Exception as e:
-                log.error("Error adding card {} to basket {}: {}".format(card.id, b_obj.id, e))
+                log.error(u"Error adding card {} to basket {}: {}".format(card.id, b_obj.id, e))
                 return JsonResponse({'status': ALERT_ERROR,
                                      'message': u"Error, could not add card '{}'".format(card_obj.title)})
 
@@ -960,14 +960,14 @@ def baskets_delete(request, pk, **kw):
         try:
             b_obj = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error("Basket delete: {}".format(e))
+            log.error(u"Basket delete: {}".format(e))
             return JsonResponse({'status': ALERT_ERROR,
                                  'message': "basket {} does not exist".format(pk)})
 
         try:
             b_obj.delete()
         except Exception as e:
-            log.error("Basket {} could not be deleted: {}".format(b_obj.id, e))
+            log.error(u"Basket {} could not be deleted: {}".format(b_obj.id, e))
             msg = {'status': ALERT_ERROR,
                     'message': _("The basket could not be deleted")}
         to_ret = {
@@ -1045,7 +1045,7 @@ def places(request, **response_kwargs):
         try:
             obj = Place.objects.all()
         except Exception as e:
-            log.error("api error while getting places: {}".format(e))
+            log.error(u"api error while getting places: {}".format(e))
 
     data = [it.to_dict() for it in obj]
     return JsonResponse(data, safe=False)
@@ -1129,7 +1129,7 @@ def inventories(request, **kwargs):
                 to_ret['status'] = ALERT_SUCCESS
 
             except Exception as e:
-                log.error("Error getting list of inventories: {}".format(e))
+                log.error(u"Error getting list of inventories: {}".format(e))
                 to_ret['data'] = "Internal error"
                 to_ret['status'] = ALERT_ERROR
 
@@ -1153,7 +1153,7 @@ def inventories_update(request, **kwargs):
             try:
                 inv = Inventory.objects.get(id=pk)
             except Exception as e:
-                log.error("Trying to update inventory {}: e".format(pk))
+                log.error(u"Trying to update inventory {}: e".format(pk))
                 msgs.append(_("Internal error. We couldn't save the inventory"))
                 return # XXX return 400 error
 
@@ -1181,7 +1181,7 @@ def inventories_update(request, **kwargs):
                             card_obj, _nop = Card.from_dict(card_dict)
                             card_dict['id'] = card_obj.id
                         except Exception as e:
-                            log.error("Error creating the card {} to add to inventory {}: {}".
+                            log.error(u"Error creating the card {} to add to inventory {}: {}".
                                       format(card_dict['title'], inv.id, e))
 
                 pairs = [(card['id'], 1) for __, card in cards.iteritems()]

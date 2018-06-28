@@ -108,7 +108,7 @@ class Author(TimeStampedModel):
         try:
             data = Author.objects.filter(name__icontains=query)
         except Exception as e:
-            log.error("Author.search error: {}".format(e))
+            log.error(u"Author.search error: {}".format(e))
             data = [
                 {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for authors"}}
@@ -214,7 +214,7 @@ class Publisher (models.Model):
             else:
                 data = Publisher.objects.all()
         except Exception as e:
-            log.error("Publisher.search error: {}".format(e))
+            log.error(u"Publisher.search error: {}".format(e))
             data = [
                 {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for publishers"}}
@@ -317,13 +317,13 @@ class CardType(models.Model):
         if not query:
             query=""
         if query == "":
-            log.info("CardType: we return everything")
+            log.info(u"CardType: we return everything")
             return CardType.objects.all()
 
         try:
             data = CardType.objects.filter(name__icontains=query)
         except Exception as e:
-            log.error("CardType.search error: {}".format(e))
+            log.error(u"CardType.search error: {}".format(e))
             data = [
                 {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for authors"}}
@@ -510,7 +510,7 @@ class Card(TimeStampedModel):
                     os.path.basename(self.img),
                     File(open(tmp_path)))
             except Exception as e:
-                log.error("Error retrieving the cover from url: {}".format(e))
+                log.error(u"Error retrieving the cover from url: {}".format(e))
 
     def __unicode__(self):
         """To pretty print a list of cards, see models.utils.ppcard.
@@ -567,7 +567,7 @@ class Card(TimeStampedModel):
         try:
             return sum([it.quantities_total() for it in Place.objects.all()])
         except Exception as e:
-            log.error("Error while getting the total quantities of all cards: {}".format(e))
+            log.error(u"Error while getting the total quantities of all cards: {}".format(e))
 
     def quantity_to_zero(self):
         """Set the quantity of this card to zero. This is needed sometimes for
@@ -601,7 +601,7 @@ class Card(TimeStampedModel):
         try:
             return self.publishers.filter(id=pub)
         except Exception as e:
-            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, pub, e))
+            log.error(u"Error while checking if card {} has publisher {}: {}".format(self.id, pub, e))
             return None
 
     def has_distributor(self, dist):
@@ -614,7 +614,7 @@ class Card(TimeStampedModel):
         try:
             return self.distributor.id == dist
         except Exception as e:
-            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, dist, e), extra={'stack': True})
+            log.error(u"Error while checking if card {} has publisher {}: {}".format(self.id, dist, e), extra={'stack': True})
             return None
 
     def has_no_distributor(self):
@@ -842,7 +842,7 @@ class Card(TimeStampedModel):
             try:
                 cards = cards.filter(publishers=publisher_id)
             except Exception as e:
-                log.error("we won't search for a publisher that doesn't exist: {}".format(e))
+                log.error(u"we won't search for a publisher that doesn't exist: {}".format(e))
 
         # Search for the requested ean(s).
         if isbns:
@@ -852,7 +852,7 @@ class Card(TimeStampedModel):
                     if card:
                         cards.append(card)
                 except Exception as e:
-                    log.error("Error searching for isbn {}: {}".format(isbn, e))
+                    log.error(u"Error searching for isbn {}: {}".format(isbn, e))
                     msgs.add_error(_("Error searching for isbn ".format(isbn)))
 
         # Sort
@@ -1423,7 +1423,7 @@ class PlaceCopies (models.Model):
             self.card.save()
 
         except Exception as e:
-            log.error("Error while setting the card {}'s quantity: {}".format(self.card.id, e))
+            log.error(u"Error while setting the card {}'s quantity: {}".format(self.card.id, e))
 
 class Place (models.Model):
     """A place can be a selling point, a warehouse or a stand.
@@ -1563,7 +1563,7 @@ class Place (models.Model):
         try:
             return sum([it.nb for it in self.placecopies_set.all()])
         except Exception as e:
-            log.error("Error getting the total quantities in place {}: {}".format(self.name, e))
+            log.error(u"Error getting the total quantities in place {}: {}".format(self.name, e))
 
     def quantity_cards(self):
         return self.quantities_total()
@@ -1575,7 +1575,7 @@ class Place (models.Model):
         try:
             return self.placecopies_set.filter(nb__lte=0).count()
         except Exception as e:
-            log.error("Error getting the quantity of titles with no stock in place {}: {}".format(self.name, e))
+            log.error(u"Error getting the quantity of titles with no stock in place {}: {}".format(self.name, e))
 
     def quantity_titles_one_copy(self):
         """
@@ -1584,7 +1584,7 @@ class Place (models.Model):
         try:
             return self.placecopies_set.filter(nb=1).count()
         except Exception as e:
-            log.error("Error getting the quantity of titles with one exemplary in place {}: {}".format(self.name, e))
+            log.error(u"Error getting the quantity of titles with one exemplary in place {}: {}".format(self.name, e))
 
     def quantity_titles(self):
         """
@@ -1593,7 +1593,7 @@ class Place (models.Model):
         try:
             return self.placecopies_set.count()
         except Exception as e:
-            log.error("Error getting the total of titles in place {}: {}".format(self.name, e))
+            log.error(u"Error getting the total of titles in place {}: {}".format(self.name, e))
 
 
     def quantity_of(self, card):
@@ -1604,7 +1604,7 @@ class Place (models.Model):
         try:
             place_copies = self.placecopies_set.filter(card__id=card.id)
             if len(place_copies) > 1:
-                log.error("more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
+                log.error(u"more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
             if place_copies:
                 return place_copies[0].nb
             else:
@@ -1625,7 +1625,7 @@ class Place (models.Model):
             log.info(u"--- cost of place {}: {}".format(self.name, cost))
             return cost
         except Exception as e:
-            log.error("Error getting cost of place {}: {}".format(self.name, e))
+            log.error(u"Error getting cost of place {}: {}".format(self.name, e))
             return 0
 
     def add_copies(self, cards):
@@ -1829,7 +1829,7 @@ class Basket(models.Model):
             msg = {'level': ALERT_SUCCESS,
                    'message': _("New basket created")}
         except Exception as e:
-            log.error("Pb when trying to create a new basket: {}".format(e))
+            log.error(u"Pb when trying to create a new basket: {}".format(e))
             msgs.add_error(_("We could not create a new basket. This is an internal error."))
             return None, False, msgs.msgs
 
@@ -1952,7 +1952,7 @@ class Basket(models.Model):
             try:
                 distributor = Distributor.objects.get(id=distributor)
             except ObjectDoesNotExist as e:
-                log.error("Basket to deposit: the given distributor of id {} doesn't exist: {}".format(distributor, e))
+                log.error(u"Basket to deposit: the given distributor of id {} doesn't exist: {}".format(distributor, e))
                 return None
 
         if not distributor:
@@ -1977,7 +1977,7 @@ class Basket(models.Model):
             _status, _msgs = dep.add_copies(copies, quantities=qties)
             msgs.append(_msgs)
         except Exception as e:
-            log.error("Basket to deposit: error adding copies: {}".format(e))
+            log.error(u"Basket to deposit: error adding copies: {}".format(e))
             msgs.add_error(_("Error adding copies"))
 
         return dep, msgs.msgs
@@ -2659,7 +2659,7 @@ class Deposit(TimeStampedModel):
                 card = Card.objects.get(id=card_id)
             except Exception as e:
                 if not silence:
-                    log.error("Exception while getting card of id {}: {}".format(card_id, e))
+                    log.error(u"Exception while getting card of id {}: {}".format(card_id, e))
                 msgs.add_error(_(u"The card of id {} does not exist is this deposit.".format(card_id)))
                 return msgs.status, msgs.msgs
 
@@ -2726,7 +2726,7 @@ class Deposit(TimeStampedModel):
         try:
             alerts_found = Alert.objects.filter(deposits__name=self.name).count()
         except ObjectDoesNotExist as e:
-            log.error("Error looking for alerts of deposit {}: {}".format(self.name, e))
+            log.error(u"Error looking for alerts of deposit {}: {}".format(self.name, e))
         return alerts_found
 
     def checkout_current(self):
@@ -2749,7 +2749,7 @@ class Deposit(TimeStampedModel):
         try:
             last_checkout_obj = self.depositstate_set.order_by("created").last()
         except ObjectDoesNotExist as e:
-            log.error("Error looking for DepositState of {}: {}".format(self.name, e))
+            log.error(u"Error looking for DepositState of {}: {}".format(self.name, e))
             return None
 
         return last_checkout_obj
@@ -3547,7 +3547,7 @@ class InventoryBase(TimeStampedModel):
             basket_dict = self.basket.to_dict()
             inv_name = self.basket.name
         else:
-            log.error("Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
+            log.error(u"Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
 
         state = {
             "copies": copies,
@@ -3672,7 +3672,7 @@ class InventoryBase(TimeStampedModel):
             obj_name = self.command.title
             stock_cards_set = self.command.commandcopies_set.all()
         else:
-            log.error("An inventory without place nor shelf nor basket nor publisher nor command... that shouldn't happen.")
+            log.error(u"An inventory without place nor shelf nor basket nor publisher nor command... that shouldn't happen.")
 
         # Cards of the inventory:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
@@ -3763,7 +3763,7 @@ class InventoryBase(TimeStampedModel):
                 card_qty.card.save()
 
         except Exception as e:
-            log.error("Error while applying the inventory {} to {}: {}"
+            log.error(u"Error while applying the inventory {} to {}: {}"
                       .format(self.id, place_or_deposit, e))
             return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
@@ -3830,7 +3830,7 @@ class Inventory(InventoryBase):
         elif self.basket:
             cards_qty = self.basket.basketcopies_set.count()
         else:
-            log.error("We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
+            log.error(u"We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
 
         return cards_qty
 
@@ -3949,7 +3949,7 @@ class Stats(object):
                                           'value': total_cost_excl_tax}
 
         except Exception as e:
-            log.error("Error with total_cost: {}".format(e))
+            log.error(u"Error with total_cost: {}".format(e))
 
         # Next appointments
         # xxx: transform to strings and associate with the deposit.
@@ -4045,7 +4045,7 @@ class Stats(object):
             shelf = Shelf.objects.get(id=shelf_id)
             shelf_name = shelf.name
         except Exception as e:
-            log.error("No shelf with id {}: {}".format(shelf_id, e))
+            log.error(u"No shelf with id {}: {}".format(shelf_id, e))
             return None
 
         hcards = Card.objects.filter(shelf__name=shelf_name)
@@ -4085,7 +4085,7 @@ class CommandCopies(TimeStampedModel):
         try:
             return self.card.price * self.quantity
         except Exception as e:
-            log.error("Error getting price for value: {}".format(e))
+            log.error(u"Error getting price for value: {}".format(e))
             return 0
 
     @property
@@ -4093,7 +4093,7 @@ class CommandCopies(TimeStampedModel):
         try:
             return self.card.price_discounted * self.quantity
         except Exception as e:
-            log.error("Error getting discounted value: {}".format(e))
+            log.error(u"Error getting discounted value: {}".format(e))
             return 0
 
     # def __unicode__(self):
