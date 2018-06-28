@@ -253,7 +253,7 @@ class Shelf(models.Model):
 
     """
     #: Name of the shelf
-    name = models.CharField(max_length=CHAR_LENGTH)
+    name = models.CharField(unique=True, max_length=CHAR_LENGTH)
 
     def get_absolute_url(self):
         return "" # TODO: url parameters in stock search to reference a shelf.

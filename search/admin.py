@@ -78,12 +78,20 @@ class PublisherAdmin(admin.ModelAdmin):
     list_editable = ("name",)
     search_fields = ["name"]
 
+class ShelfAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Shelf
+
+    list_display = ("name",)
+    list_editable = ("name",)
+    search_fields = ["name"]
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
-admin.site.register(Shelf)
+admin.site.register(Shelf, ShelfAdmin)
 admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
 admin.site.register(Inventory, InventoryAdmin)
@@ -102,4 +110,4 @@ admin_site.register(Place)
 admin_site.register(PlaceCopies)
 admin_site.register(Publisher, PublisherAdmin)
 admin_site.register(Sell)
-admin_site.register(Shelf)
+admin_site.register(Shelf, ShelfAdmin)
