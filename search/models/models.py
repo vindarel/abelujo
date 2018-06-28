@@ -856,7 +856,7 @@ class Card(TimeStampedModel):
                     msgs.add_error(_("Error searching for isbn ".format(isbn)))
 
         # Sort
-        if order_by:
+        if cards and order_by:
             cards = cards.order_by(order_by)
 
         # Pagination
