@@ -305,6 +305,8 @@ def list_from_coma_separated_ints(s):
             return int(nb)
         except ValueError:
             nb = nb.replace(",", ".")
+            if nb in ["null", u"null", "undefined"]:
+                return None
             return float(nb) if nb else None
 
     # Data validation: should check that we only have ints and comas...
