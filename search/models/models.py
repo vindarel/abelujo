@@ -1167,7 +1167,7 @@ class Card(TimeStampedModel):
             try:
                 card_shelf, created = Shelf.objects.get_or_create(name=card.get('shelf'))
             except Exception as e:
-                log.warning(u"couldn't get or create the shelf {}.".format(card.get('shelf')))
+                log.warning(u"couldn't get or create the shelf {}: {}.".format(card.get('shelf'), e))
 
         elif card.get('shelf_id') and not is_invalid(card.get('shelf_id')):
             try:
