@@ -70,7 +70,7 @@ div#abelujo
                 | {% trans "format" %}
               td {{ object.fmt }}
             tr
-              td {% trans "Source" %}: 
+              td {% trans "source" %}: 
               td
                 a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
             tr
@@ -90,7 +90,7 @@ div#abelujo
       table.table
         tbody
           tr
-            td {% trans "Publisher(s)" %}
+            td {% trans "Publishers" %}
             td
                 for pub in object.get_publishers
                     div: a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
@@ -111,7 +111,7 @@ div#abelujo
               td {{ object.threshold }}
 
           tr(class="{% if object.quantity > 0 %} active {% elif object.quantity < 0 %} danger {% endif %}")
-            td {% trans "in stock" %}
+            td {% trans "In stock" %}
             td {{ object.quantity }}
 
           tr
