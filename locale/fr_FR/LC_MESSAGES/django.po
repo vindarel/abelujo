@@ -870,7 +870,7 @@ msgstr "avec remise"
 
 #: templates/search/card_add.jade:78
 msgid "Add to baskets"
-msgstr "Ajouter aux listes:"
+msgstr "Ajouter aux listes"
 
 #: templates/search/card_add.jade:86 templates/search/card_buy.jade:39
 #: templates/search/card_edit.jade:119 templates/search/card_move.jade:35
@@ -936,8 +936,6 @@ msgid "Supplier"
 msgstr "Fournisseur"
 
 #: templates/search/card_edit.jade:108
-#, fuzzy
-#| msgid "supplier"
 msgid "Change supplier"
 msgstr "Changer de fournisseur"
 

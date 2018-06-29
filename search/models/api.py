@@ -328,6 +328,7 @@ def card_add(request, **response_kwargs):
         deposits_ids_qties = params.get('deposits_ids_qties')
         baskets_ids_qties = params.get('baskets_ids_qties')
         places_ids_qties = params.get('places_ids_qties')
+        threshold = to_int(params.get('threshold'))
 
         # list of tuples (id, qty to add)
         # those params are ints separated by comas.
@@ -335,6 +336,7 @@ def card_add(request, **response_kwargs):
         b_tups = list_to_pairs(list_from_coma_separated_ints(baskets_ids_qties))
         p_tups = list_to_pairs(list_from_coma_separated_ints(places_ids_qties))
 
+        to_save = False
         for id, qty in d_tups:
             if qty:
                 obj = Deposit.objects.get(id=id)
@@ -353,6 +355,14 @@ def card_add(request, **response_kwargs):
         if shelf_id:
             cat = Shelf.objects.get(id=shelf_id)
             card_obj.shelf = cat
+            to_save = True
+
+        if threshold is not None:
+            if threshold != card_obj.threshold:
+                card_obj.threshold = threshold
+                to_save = True
+
+        if to_save:
             card_obj.save()
 
         return JsonResponse(status, safe=False)

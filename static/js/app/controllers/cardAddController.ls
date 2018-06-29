@@ -26,6 +26,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.ready = false
     $scope.shelf = {}
     $scope.distributor = {}
+    $scope.threshold = 0
 
     $scope.total_places = 0
     $scope.total_places_discount = 0
@@ -57,6 +58,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         params: {}
     .then (response) !->
         $scope.card = response.data.data
+        $scope.threshold = $scope.card.threshold
         $scope.ready = true
 
     getDistributors = ->
@@ -111,6 +113,9 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         $scope.update_total_deposits()
         $scope.update_total_places()
 
+    #
+    # Validate
+    #
     $scope.validate = ->
         #  Make Django to process the params to its request.POST dictionnary:
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -143,6 +148,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
             places_ids_qties: places_ids_qties
             deposits_ids_qties: deposits_ids_qties
             baskets_ids_qties: baskets_ids_qties
+            threshold: $scope.threshold
 
         if $scope.shelf.pk
             params.shelf_id = $scope.shelf.pk
