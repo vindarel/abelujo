@@ -26,6 +26,7 @@ rebase:
 	git stash save "for make rebase"
 	git pull --rebase
 	git submodule update --remote
+	python manage.py migrate
 
 # Install in current directory
 pip: pip-submodule
