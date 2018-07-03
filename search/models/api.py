@@ -258,6 +258,7 @@ def card_create(request, **response_kwargs):
 
         isbn = params.get('isbn')
         shelf = params.get('shelf_id')
+        threshold = to_int(params.get('threshold'))
         # Mixed style from client (to fix).
         if params:
             card_dict = {
@@ -279,6 +280,8 @@ def card_create(request, **response_kwargs):
                 card_dict['distributor'] = params.get('distributor')
             if params.get('publishers'):
                 card_dict['publishers_ids'] = list_from_coma_separated_ints(params.get('publishers'))
+            if threshold is not None:
+                card_dict['threshold'] = threshold
 
         # we got the card dict
         else:

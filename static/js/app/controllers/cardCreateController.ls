@@ -38,6 +38,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.year_published = undefined
     $scope.details_url = undefined
     $scope.title = null
+    $scope.threshold = 1
 
     $scope.type = ""
     $scope.card = {}
@@ -67,6 +68,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             $scope.pubs_selected = $scope.card.publishers
             $scope.shelf = $scope.shelfs
             |> find ( -> it.fields.name == $scope.card.shelf)
+            $scope.threshold = $scope.card.threshold
 
             $scope.alerts = response.data.alerts
             $scope.ready = true # don't load the form if not ready
@@ -127,6 +129,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
         params = do
             authors: map (.pk), $scope.authors_selected # list of ids
             publishers: [$scope.pubs_selected.pk] # not a list anymore...
+            threshold: $scope.threshold
 
         if card_id
             params.card_id = card_id

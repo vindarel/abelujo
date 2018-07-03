@@ -91,6 +91,8 @@ DEPOSIT_TYPES_CHOICES = [
     )),
 ]
 
+THRESHOLD_DEFAULT = 1
+
 
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200)
@@ -376,6 +378,7 @@ class Barcode64(TimeStampedModel):
             except Exception as e:
                 log.error(u'could not save barcode of ean {}: {}'.format(ean, e))
 
+
 class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
@@ -396,7 +399,7 @@ class Card(TimeStampedModel):
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
     #: The minimal quantity we want to always have in stock:
-    threshold = models.IntegerField(blank=True, null=True, default=1)
+    threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT)
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True)
     year_published = models.DateField(blank=True, null=True)
@@ -1109,6 +1112,7 @@ class Card(TimeStampedModel):
             in_stock:   bool
             sortkey:    string of authors in the order they appear on
                         the cover
+            threshold: int
             origkey:    (optional) original key, like an ISBN, or if
                         converting from another system
 
@@ -1213,6 +1217,9 @@ class Card(TimeStampedModel):
             if card_publishers:
                 card_obj.publishers = card_publishers
 
+            if card.get('threshold') is not None:
+                card_obj.threshold = card.get('threshold')
+
             card_obj.isbn = isbn
             card_obj.save()
 
@@ -1232,6 +1239,7 @@ class Card(TimeStampedModel):
                 date_publication = date_publication,
                 data_source = card.get('data_source'),
                 summary = card.get('summary'),
+                threshold = card.get('threshold', THRESHOLD_DEFAULT),
             )
 
             #TODO: we can also update every field for the existing card.
