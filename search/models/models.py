@@ -976,7 +976,8 @@ class Card(TimeStampedModel):
                     # fix also the undo().
                     place_copy = card.placecopies_set.first()
                 else:
-                    return False, "We can not sell card {}: it is not associated with any place.".format(card.title)
+                    log.info(u"We can not sell card '{}', it is not associated with any place.".format(card.title))
+                    return False, u"We can not sell card {}: it is not associated with any place.".format(card.title)
 
             place_copy.nb -= quantity
             place_copy.save()
