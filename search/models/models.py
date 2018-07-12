@@ -938,6 +938,7 @@ class Card(TimeStampedModel):
         :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")
         """
+        msgs = Messages()
         try:
             card = Card.objects.get(id=id)
 
@@ -955,7 +956,7 @@ class Card(TimeStampedModel):
                         place_obj = Preferences.get_default_place()
                     except Exception as e:
                         log.error(u'In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
-                        return False, _(u"An error occured :( We prefer to stop this sell.")
+                        return False, _(u"An error occured: it seems this place doesn't exist. We prefer to stop this sell.")
 
                 # Get the intermediate table PlaceCopy, keeping the quantities.
                 place_copy = None
@@ -976,8 +977,13 @@ class Card(TimeStampedModel):
                     # fix also the undo().
                     place_copy = card.placecopies_set.first()
                 else:
-                    log.info(u"We can not sell card '{}', it is not associated with any place.".format(card.title))
-                    return False, u"We can not sell card {}: it is not associated with any place.".format(card.title)
+                    place_obj = Preferences.get_default_place()
+                    place_copy, created = place_obj.placecopies_set.get_or_create(card=card)
+                    if created:
+                        place_copy.nb = 0
+                        place_copy.save()
+                    msgs.status = ALERT_WARNING
+                    msgs.add_warning(_(u"The card '{}' ({}) wasn't associated to any place. We had to sell it from the default place {}. This can happen if you manipulated it from lists or inventories but didn't properly add it to your stock.".format(card.title, card.id, place_obj.name)))
 
             place_copy.nb -= quantity
             place_copy.save()
@@ -993,7 +999,7 @@ class Card(TimeStampedModel):
         if card.quantity <= 0:
             Basket.add_to_auto_command(card)
 
-        return (True, "")
+        return msgs.status, msgs.msgs
 
     def sell_undo(self, quantity=1, place_id=None, place=None, deposit=None):
         """
@@ -3180,11 +3186,11 @@ class Sell(models.Model):
             try:
                 # Either sell from a deposit,
                 if deposit_obj:
-                    status, msgs = deposit_obj.sell_card(card_id=id, sell=sell)
+                    status, alerts = deposit_obj.sell_card(card_id=id, sell=sell)
 
                 # either sell from a place or the default (selling) place.
                 else:
-                    Card.sell(id=id, quantity=quantity, place=place_obj)
+                    status, alerts = Card.sell(id=id, quantity=quantity, place=place_obj)
 
             except ObjectDoesNotExist:
                 msg = u"Error: the card of id {} doesn't exist.".format(id)
