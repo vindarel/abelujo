@@ -115,7 +115,6 @@ update: stash
 	make pip
 	make pip-submodule
 	make npm  # actually now yarn. Wishing to fix long and undpredictable builds.
-	python manage.py migrate
 	gulp
 	make collectstatic
 	make translation-compile 	# gunicorn needs a restart
