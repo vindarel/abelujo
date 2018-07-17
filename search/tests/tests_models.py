@@ -276,15 +276,15 @@ class TestCards(TestCase):
 
     def test_search(self):
         # Should search with way more cards.
-        res, msgs = Card.search(["gold"], card_type_id=1)
+        res, meta = Card.search(["gold"], card_type_id=1)
         self.assertEqual(1, len(res))
 
     def test_search_notype(self):
-        res, msgs = Card.search(["gold"], card_type_id=999)
+        res, meta = Card.search(["gold"], card_type_id=999)
         self.assertFalse(res)
 
     def test_search_alltypes(self):
-        res, msgs = Card.search(["gold"], card_type_id=0)
+        res, meta = Card.search(["gold"], card_type_id=0)
         self.assertTrue(res)
 
     def test_search_only_type(self):
@@ -292,18 +292,18 @@ class TestCards(TestCase):
         self.assertTrue(Card.search("", card_type_id=1))
 
     def test_search_key_words(self):
-        res, msgs = Card.search(["liv", "gold"])
+        res, meta = Card.search(["liv", "gold"])
         self.assertEqual(1, len(res))
 
     def test_search_card_isbn(self):
-        res, msgs = Card.search([ISBN])
+        res, meta = Card.search([ISBN])
         self.assertEqual(len(res), 1)
 
     def test_search_shelf(self):
-        res, msgs = Card.search(["gold"], shelf_id=1)
+        res, meta = Card.search(["gold"], shelf_id=1)
         self.assertEqual(len(res), 1)
         # Shelf doesn't exist:
-        res, msgs = Card.search(["gold"], shelf_id=2)
+        res, meta = Card.search(["gold"], shelf_id=2)
         self.assertEqual(len(res), 0)
 
     def test_sell(self):

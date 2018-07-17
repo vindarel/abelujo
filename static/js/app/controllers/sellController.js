@@ -115,7 +115,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   "card_type_id": $scope.card_type.id
               }})
               .then(function(response){ // "then", not "success"
-                  return response.data.map(function(item){
+                  return response.data.cards.map(function(item){
                       // give a string representation for each object (result)
                       // xxx: take the repr from django
                       // return item.title + ", " + item.authors + ", éd. " + item.publishers;

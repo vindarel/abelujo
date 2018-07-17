@@ -36,6 +36,11 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.baskets = []
     $scope.show_images = true
 
+    # pagination
+    $scope.page = 1
+    $scope.page_size = 20
+    $scope.page_max = 1
+
     # Read show_images from local storage.
     show_images = $window.localStorage.getItem "show_images"
     if show_images != null
@@ -95,7 +100,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $http.get "/api/cards", do
         params: params
     .then (response) !->
-        $scope.cards = response.data
+        $scope.cards = response.data.cards
+        $scope.meta = response.data.meta
         for elt in $scope.cards
             $scope.selected[elt.id] = false
             elt.date_publication = Date.parse(elt.date_publication)
@@ -116,11 +122,33 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params.shelf_id = $scope.shelf.pk
         if $scope.distributor
             params.distributor_id = $scope.distributor.id
+        params.page = $scope.page
+        params.page_size = $scope.page_size
 
         $http.get "/api/cards", do
             params: params
         .then (response) !->
-            $scope.cards = response.data
+            $scope.cards = response.data.cards
+            $scope.meta = response.data.meta
+
+    $scope.nextPage = !->
+        $scope.page += 1
+        if $scope.page > $scope.meta.num_pages
+            $scope.page = $scope.meta.num_pages
+        $scope.validate!
+
+    $scope.lastPage = !->
+        $scope.page = $scope.meta.num_pages
+        $scope.validate!
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+        $scope.validate!
+
+    $scope.firstPage =!->
+        $scope.page = 1
+        $scope.validate!
 
     # Add a checkbox column to select rows.
     $scope.toggleAll = !->

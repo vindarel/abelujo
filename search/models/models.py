@@ -772,8 +772,11 @@ class Card(TimeStampedModel):
                deposit_id=None,
                bought=False,
                in_deposits=False,
-               order_by=None):
-        """Search a card (by title, authors' names, ean/isbn).
+               order_by=None,
+               page=None,
+               page_size=10):
+        """
+        Search a card (by title, authors' names, ean/isbn).
 
         SIZE_LIMIT = 100
 
@@ -783,10 +786,17 @@ class Card(TimeStampedModel):
 
         - to_list: if True, we return a list of dicts, not Card objects.
 
-        returns: a 2-tuple: a list of objects or a list of dicts if to_list is
-        specified, and a list of messages.
+
+        Pagination:
+        Don't do pagination by default.
+        page: page number to get.
+        page_size: max elements per page.
+
+        Returns: a 2-tuple:
+        - a list of objects or a list of dicts if to_list is
+        specified,
+        - a dict: list of messages, pagination meta info.
         """
-        SIZE_LIMIT = 10 #TODO: pagination
         isbns = []
         cards = []
         msgs = Messages()
@@ -862,20 +872,31 @@ class Card(TimeStampedModel):
         if cards and order_by:
             cards = cards.order_by(order_by)
 
+        nb_results = cards.count()
         # Pagination
-        paginator = Paginator(cards, SIZE_LIMIT)
-        page = 1
-        try:
-            cards = paginator.page(page)
-        except EmptyPage:
-            cards = paginator.page(paginator.num_page)
-        finally:
-            cards = cards.object_list
+        paginator = Paginator(cards, page_size)
+        if page is not None:
+            try:
+                cards = paginator.page(page)
+            except EmptyPage:
+                cards = paginator.page(paginator.num_pages)
+            finally:
+                cards = cards.object_list
+        else:
+            cards = paginator.object_list
 
         if to_list:
             cards = Card.obj_to_list(cards, in_deposits=in_deposits)
 
-        return cards, msgs.msgs
+        meta = {
+            'msgs': msgs.msgs,
+            'num_pages': paginator.num_pages,
+            'page': page,
+            'page_size': page_size,
+            'nb_results': nb_results,
+        }
+
+        return cards, meta
 
     @staticmethod
     def is_in_stock(cards):

@@ -161,7 +161,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
                 card_type_id: null
                 lang: $scope.language
         .then (response) ->
-            response.data.map (item) ->
+            response.data.cards.map (item) ->
                 repr = "#{item.title}, #{item.authors_repr}, éd #{item.pubs_repr}"
                 item.quantity = 1
                 $scope.cards_fetched.push do

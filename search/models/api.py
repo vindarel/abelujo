@@ -186,12 +186,17 @@ def cards(request, **response_kwargs):
     order_by = request.GET.get("order_by")
     bought = request.GET.get("in_stock")
 
+    # pagination
+    page = request.GET.get("page", 1)
+    page = to_int(page)
+    page_size = request.GET.get("page_size", PAGE_SIZE)
+    page_size = to_int(page_size)
+
     # Set the language (for url prefix, error messages, etc)
     if language:
         translation.activate(language)
 
-    msgs = Messages()
-    data, msgs = Card.search(query, to_list=True,
+    data, meta = Card.search(query, to_list=True,
                              distributor=distributor,
                              distributor_id=distributor_id,
                              publisher_id=publisher_id,
@@ -200,8 +205,12 @@ def cards(request, **response_kwargs):
                              deposit_id=deposit_id,
                              shelf_id=shelf_id,
                              order_by=order_by,
-                             in_deposits=True)
-    # XXX: :return the msgs
+                             in_deposits=True,
+                             page=page,
+                             page_size=page_size)
+    # XXX: :return the msgs.
+    msgs = Messages()
+    msgs = meta.get('msgs')
 
     lang = request.GET.get("lang")
     # Search our stock on a keyword search, but search also the web on an isbn search,
@@ -222,7 +231,11 @@ def cards(request, **response_kwargs):
                 except Exception as e:
                     log.warning(u"Error while adding card from isbn search in db: {}".format(e))
 
-    return JsonResponse(data, safe=False)
+    to_ret = {
+        'cards': data,
+        'meta': meta,
+    }
+    return JsonResponse(to_ret)
 
 def card(request, **kwargs):
     """Get a card by id.

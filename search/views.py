@@ -536,10 +536,9 @@ def collection_export(request, **kwargs):
         # Export all the stock or a custom search ?
         # would rather validate request.GET and **
         # or call api's cards search and get the json.
-        msgs = []
         if select == "selection":
             query_list = query.split(" ")
-            res, msgs = Card.search(query_list, to_list=True,
+            res, meta = Card.search(query_list, to_list=True,
                                     distributor=distributor,
                                     distributor_id=distributor_id,
                                     publisher_id=publisher_id,
