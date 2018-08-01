@@ -861,6 +861,7 @@ class Card(TimeStampedModel):
         if isbns:
             for isbn in isbns:
                 try:
+                    # xxx: to do with querysets.
                     card = Card.objects.filter(isbn=isbn).first()
                     if card:
                         cards.append(card)
@@ -872,7 +873,12 @@ class Card(TimeStampedModel):
         if cards and order_by:
             cards = cards.order_by(order_by)
 
-        nb_results = cards.count()
+        if type(cards) == list:
+            # xxx: fix isbn filter above to return a queryset, not a list.
+            nb_results = len(cards)
+        else:
+            nb_results = cards.count()
+
         # Pagination
         paginator = Paginator(cards, page_size)
         if page is not None:
