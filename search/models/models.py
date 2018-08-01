@@ -871,7 +871,10 @@ class Card(TimeStampedModel):
 
         # Sort
         if cards and order_by:
-            cards = cards.order_by(order_by)
+            if not type(cards) == list:
+                cards = cards.order_by(order_by)
+            else:
+                log.warning(u"we won't 'order_by' because we got a list (of length {}), not a queryset. Search terms were: {}.".format(len(cards), words))
 
         if type(cards) == list:
             # xxx: fix isbn filter above to return a queryset, not a list.
