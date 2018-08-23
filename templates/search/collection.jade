@@ -108,7 +108,6 @@ div(ng-cloak, ng-controller="collectionController")
          li: a(href="/stock/export?query={{ 'query' | ng }}&format=txt&select=selection&publisher_id={{ 'publisher.pk' | ng}}&place_id={{ 'place.id' | ng}}&card_type={{ 'card_type' | ng}}&shelf_id={{ 'shelf.pk' | ng}}&distributor_id={{ 'distributor.id' | ng}}", ng-show="selected", title='{% trans "Export the selection to txt" %}'){% trans 'Selection to txt' %}
          li: a(href="/stock/export?format=csv&select=all", title='{% trans "Export the stock to csv" %}'){% trans 'Stock to csv (Excel, LibreOffice) (this may take a while)' %}
 
-
       .btn-group
         button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
           i.glyphicon.glyphicon-th-list
@@ -122,18 +121,23 @@ div(ng-cloak, ng-controller="collectionController")
       span(style="margin-top: 18px; margin-left: 7px") {% trans "Number of titles" %}: {{'stats.nb_titles.value'|ng}}
       span(style="margin-top: 18px; margin-left: 7px") {% trans "Number of books" %}: {{'stats.nb_cards.value'|ng}}
 
-      span.text-right(aria-label="page navigation")
-         ul.pagination(ng-show="cards.length")
-           li.page-item
-             a.page-link(ng-click="firstPage()")  &laquo;
-           li.page-item
-             a.page-link(ng-click="previousPage()") <
-           li.page-item
-             a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }}
-           li.page-item
-             a.page-link(ng-click="nextPage()") >
-           li.page-item
-             a.page-link(ng-click="lastPage()") &raquo;
+  .col-md-7
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="cards.length")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }}
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="cards.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
 
 
  div(ng-show="cards.length == 0") {% trans "No results" %}
@@ -184,6 +188,25 @@ div(ng-cloak, ng-controller="collectionController")
         td.text-right {{ 'card.qty_deposits' | ng }}
         td
           div(ng-show="card.places") {{ 'card.places' | ng}}
+
+ .col-md-7
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="cards.length")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }}
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="cards.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
 
 
  script(type="text/ng-template", id="collectionModal.html")

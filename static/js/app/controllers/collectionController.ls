@@ -38,10 +38,11 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
     # pagination
     $scope.page = 1
-    $scope.page_size = 20
+    $scope.page_size = 25
+    $scope.page_sizes = [25, 50, 100, 200]
     $scope.page_max = 1
 
-    # Read show_images from local storage.
+    # Read variables from local storage.
     show_images = $window.localStorage.getItem "show_images"
     if show_images != null
         if show_images == "true"
@@ -49,6 +50,10 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         else
             show_images = false
         $scope.show_images = show_images
+
+    page_size = $window.localStorage.getItem "page_size"
+    if page_size != null
+        $scope.page_size = parseInt(page_size)
 
     $scope.selectAll = true
     $scope.selected = {}
@@ -90,6 +95,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.stats = {}
     $http.get "/api/stats/"
     .then (response) !->
+        #TODO: should not be all stats.
         $scope.stats = response.data
         $log.info $scope.stats
 
@@ -97,6 +103,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     params = do
         order_by: "-created" # valid django
         language: $scope.language
+        page_size: $scope.page_size
+        page: $scope.page
     $http.get "/api/cards", do
         params: params
     .then (response) !->
@@ -124,6 +132,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params.distributor_id = $scope.distributor.id
         params.page = $scope.page
         params.page_size = $scope.page_size
+
+        $window.localStorage.page_size = $scope.page_size
 
         $http.get "/api/cards", do
             params: params
