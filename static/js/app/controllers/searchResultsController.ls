@@ -155,6 +155,9 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
+    ##################################
+    ## Create and add in new page   ##
+    ##################################
     $scope.create_and_add = (card) !->
         params = do
             card: card

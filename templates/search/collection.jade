@@ -27,6 +27,13 @@
 
 div(ng-cloak, ng-controller="collectionController")
 
+ {% if messages %}
+ ul.messages
+  {% for msg in messages %}
+  uib-alert(type="{{ msg.tags }}") {{ msg }}
+  {% endfor %}
+ {% endif %}
+
  div
     uib-alert(
       ng-repeat="alert in alerts"
@@ -98,7 +105,8 @@ div(ng-cloak, ng-controller="collectionController")
          span.caret
 
        ul.dropdown-menu
-         li: a(href="#", ng-click="open()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to baskets…' %}
+         li: a(href="#", ng-click="add_to_lists()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to baskets…' %}
+         li: a(href="#", ng-click="set_supplier()", ng-show="selected", title='{% trans "Set the supplier for the selection" %}'){% trans 'Set supplier…' %}
 
      .btn-group
        button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}…

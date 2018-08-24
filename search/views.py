@@ -118,6 +118,11 @@ def get_places_choices():
                                                              if not p.id == default_place.id]
     return ret
 
+def get_suppliers_choices():
+    res = Distributor.objects.order_by("-name").all()
+    res = [(it.id, it.__repr__()) for it in res]
+    return res
+
 class DepositForm(forms.ModelForm):
     """Create a new deposit.
     """
@@ -365,6 +370,18 @@ class MoveInternalForm(forms.Form):
         self.fields['destination'] = forms.ChoiceField(choices=get_places_choices())
 
 
+class SetSupplierForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['supplier'] = forms.ChoiceField(choices=get_suppliers_choices())
+
+
+class NewSupplierForm(forms.Form):
+    name = forms.CharField()
+    discount = forms.IntegerField(label=_("discount"))
+
+
 @login_required
 def card_buy(request, pk=None):
     form = BuyForm()
@@ -511,7 +528,83 @@ def card_move(request, pk=None):
         "pk": pk,
         "q": request.GET.get('q'),
         "type": params.get('type'),
-        })
+    })
+
+
+@login_required
+def cards_set_supplier(request, **kwargs):
+    template = 'search/set_supplier.jade'
+    form = SetSupplierForm()
+    newsupplier_form = NewSupplierForm()
+    cards_ids = request.session['set_supplier_cards_ids']
+    cards_ids = cards_ids.split(',')
+    response_dict = {
+        'form': form,
+        'newsupplier_form': newsupplier_form,
+        'nb_cards': len(cards_ids),
+    }
+
+    if request.method == 'GET':
+        return render(request, template, response_dict)
+
+    elif request.method == 'POST':
+        dist_id = None
+        dist_obj = None
+        req = request.POST.copy()
+
+        # The user chose an existing distributor.
+        if 'supplier' in req.keys():
+            form = SetSupplierForm(req)
+            if form.is_valid():
+                dist_id = form.cleaned_data['supplier']
+                dist_obj = Distributor.objects.get(id=dist_id)
+
+        # Create distributor.
+        elif 'discount' in req.keys():
+            form = NewSupplierForm(req)
+            if form.is_valid():
+                data = form.cleaned_data
+
+                # Check existing name.
+                existing = Distributor.objects.filter(name=data['name'])
+                if existing:
+                    messages.add_message(request, messages.ERROR, _("A supplier with the same name already exists."))
+                    response_dict['messages'] = messages.get_messages(request)
+                    return render(request, template, response_dict)
+
+                try:
+                    dist_obj = Distributor(name=data['name'], discount=data['discount'])
+                    dist_obj.save()
+                except Exception as e:
+                    log.error(u"Could not create new distributor: {}".format(e))
+                    messages.add_message(request, messages.ERROR, _("An internal error occured, we have been notified."))
+                    response_dict['messages'] = messages.get_messages(request)
+                    return render(request, template, response_dict)
+
+            else:
+                messages.add_message(request, messages.ERROR, _("The form is invalid."))
+                return render(request, template, response_dict)
+
+        else:
+            log.error(u"Error in the form setting the supplier for many cards")
+            return render(request, template, response_dict)
+
+        # Set supplier for all cards.
+        for id in cards_ids:
+            try:
+                card = Card.objects.get(id=id)
+                card.distributor = dist_obj
+                card.save()
+            except Exception as e:
+                log.error(u"Error batch-setting the distributor: {}".format(e))
+                messages.add_message(request, messages.ERROR, _("Internal error :("))
+                response_dict['messages'] = messages.get_messages(request)
+                return render(request, template, response_dict)
+
+        messages.add_message(request, messages.SUCCESS, _("The supplier was correctly set for those {} cards.".format(len(cards_ids))))
+
+        return HttpResponseRedirect(reverse('card_collection'))
+
 
 @login_required
 def collection_export(request, **kwargs):

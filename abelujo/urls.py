@@ -56,9 +56,13 @@ apipatterns = patterns("",
         name="api_card_reviews"),
     url(r'^api/card/(?P<pk>\d+)', 'search.models.api.card', name="api_card"),
     url(r'^api/cardtype$', 'search.models.api.cardtype', name="api_cardtype"),
+    # Bulk manipulation.
+    url(r'^api/cards/set_supplier$', 'search.models.api.cards_set_supplier', name="api_cards_set_supplier"),
 
+    # Shelves
     url(r'^api/shelfs', 'search.models.api.shelfs', name="api_shelfs"),
 
+    # Authors
     url(r'^api/authors$', 'search.models.api.authors', name="api_authors"),
 
     # Baskets

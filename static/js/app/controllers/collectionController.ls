@@ -189,12 +189,18 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     config = do
         headers: { 'Content-Type': 'application/x-www-form-urlencoded charset=UTF-8'}
 
-    $scope.open = (size) !->
+    ###################################
+    ## Modale add selection to lists ##
+    ###################################
+    get_selected = ->
         to_add = Obj.filter (== true), $scope.selected
         |> Obj.keys
 
+    $scope.add_to_lists = (size) !->
+        to_add = get_selected!
+
         if not to_add.length
-            alert "Please select some cards first"
+            alert "Please select some cards."
             return
 
         modalInstance = $uibModal.open do
@@ -214,8 +220,33 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         , !->
               $log.info "modal dismissed"
 
+    ##################################
+    ## Bulk action on selection.    ##
+    ##################################
+    $scope.set_supplier = (card) !->
+        cards_ids = get_selected!
 
+        if not cards_ids.length
+            alert "Please select some cards."
+            return
+
+        params = do
+            cards_ids: join ",", cards_ids
+        $http.post "/api/cards/set_supplier", params
+        .then (response) !->
+            $log.info "--- done"
+            card_id = response.data.card_id
+            $log.info $window.location.pathname
+            $log.info response.data.url
+            $window.location.pathname = $scope.language + response.data.url
+
+        , (response) ->
+            $log.info "--- error ", response.status, response.statusText
+
+
+    ##############################
     # Keyboard shortcuts (hotkeys)
+    ##############################
     hotkeys.bindTo($scope)
     .add do
         combo: "d"

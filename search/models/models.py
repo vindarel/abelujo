@@ -93,6 +93,8 @@ DEPOSIT_TYPES_CHOICES = [
 
 THRESHOLD_DEFAULT = 1
 
+MSG_INTERNAL_ERROR = _(u"An internal error occured, we have been notified.")
+
 
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200)
@@ -159,6 +161,9 @@ class Distributor(TimeStampedModel):
             "repr": self.__repr__(),
             "get_absolute_url": self.get_absolute_url(),
         }
+
+    def to_dict(self):
+        return self.to_list()
 
     @staticmethod
     def get_all(**kwargs):
@@ -997,7 +1002,7 @@ class Card(TimeStampedModel):
                         place_copy.save()
                 except Exception as e:
                     log.error(u"Card.sell error filtering the place {} by id {}: {}".format(place_id, id, e))
-                    return (None, _(u"Une erreur est survenue :S (nous avons été alerté)."))  # xxx to be propagated
+                    return (None, MSG_INTERNAL_ERROR)  # xxx to be propagated
 
 
             else:
