@@ -121,6 +121,14 @@ update: stash
 	# echo "it's good to do an apt-get update once in a while"  # prevents unreachable sources, sometimes.
 	@echo "For development, don't forget make pip-dev"
 
+update-code: stash
+	make set-prod
+	make rebase
+	gulp
+	make collectstatic
+	make translation-compile
+	make gunicorn-restart
+
 update-dev: update pip-dev pip-submodule-dev
 
 # Create migrations and commit them.
