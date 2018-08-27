@@ -40,8 +40,8 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.page = 1
     $scope.page_size = 15
     $scope.page_max = 1
-    $scope.sortby = ""
-    $scope.sortorder = 0  # 0: default, 1 other
+    $scope.sortorder = 0  # ascending/descending. 0: default, 1 other.
+    $scope.sortby = ""    # sort key (created, title etc)
     # $scope.cache_per_month_per_page = {}  # key: month -> dict with key: page
 
     Distributors = $resource('/api/distributors/:id')

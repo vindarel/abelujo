@@ -3072,11 +3072,11 @@ class Sell(models.Model):
         # Sorting.
         # Built in DRF ?
         sortsign = "-"
-        if sortorder in [0, "0"]:
+        if sortorder in [0, "0", u"0"]:
             sortsign = "-"
         else:
             sortsign = ""
-        if sortby is None:
+        if sortby in [None, ""]:
             sells = sells.order_by(sortsign + "created")
         elif sortby == "sell__id":
             sells = sells.order_by("-sell__id")  # TODO:
@@ -3086,9 +3086,11 @@ class Sell(models.Model):
             sells = sells.order_by(sortsign + "price_sold")
         elif "title" in sortby:
             sells = sells.order_by(sortsign + "card__title")
+        else:
+            log.warning(u"Warning sorting Sell.search: uncaught case with sortby {} and sortorder {}".format(sortby, sortorder))
 
         # Pagination.
-        total = len(sells)
+        total = sells.count()
         if page is not None and page_size is not None:
             try:
                 sells = sells[page_size * (page - 1):page_size * page]
