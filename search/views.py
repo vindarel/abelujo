@@ -536,7 +536,9 @@ def cards_set_supplier(request, **kwargs):
     template = 'search/set_supplier.jade'
     form = SetSupplierForm()
     newsupplier_form = NewSupplierForm()
-    cards_ids = request.session['set_supplier_cards_ids']
+    cards_ids = request.session.get('set_supplier_cards_ids')
+    if not cards_ids:
+        return HttpResponseRedirect(reverse('card_collection'))
     cards_ids = cards_ids.split(',')
     response_dict = {
         'form': form,
