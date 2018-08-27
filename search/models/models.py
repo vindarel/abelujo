@@ -2430,6 +2430,8 @@ class Deposit(TimeStampedModel):
     #: auto-command when the minimal nb of copies is reached ?
     # (for now: add to the "to command" basket).
     auto_command = models.BooleanField(default=True, verbose_name="Automatiquement marquer les fiches à commander")
+    #: Comment.
+    comment = models.TextField(null=True, blank=True)
 
 
     class Meta:
