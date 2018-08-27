@@ -97,6 +97,21 @@
           td.text-right {{ total.margin | floatformat:2 | intcomma}} {% trans "€" %}
 
 .row
+ .col-md-12
+  table.table.table-condensed
+    tbody
+      td
+        {% trans "Comment" %}
+      td
+        if not deposit.comment
+          em {% trans "No comment." %}
+        else
+          div {{ deposit.comment }}
+      td
+        a(href="{% url 'admin:search_deposit_change' deposit.pk %}", target="_blank")  {% trans "edit" %}
+
+
+.row
   .col-sm-8
     .btn-group
       a.btn.btn-default(href='{% url "deposit_checkout" deposit.id %}', title='{% trans "Save this deposit state" as deposit_state %}') {% trans "Deposit state" %}
