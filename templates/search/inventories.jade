@@ -75,6 +75,21 @@ div(ng-controller="inventoriesController")
     )
       {{ 'alert.message' | ng }}
 
+  .row
+    .btn-group
+      span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="inventories.length", ng-cloak)
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
   table.table.table-striped.table-hover
 
     thead
@@ -130,5 +145,19 @@ div(ng-controller="inventoriesController")
 
               li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=simplelisting&format=csv") {% trans "isbn and quantities (Dilicom)" %} - csv
 
+  .row
+    .btn-group
+      span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="inventories.length", ng-cloak)
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
 
 {% endblock content %}

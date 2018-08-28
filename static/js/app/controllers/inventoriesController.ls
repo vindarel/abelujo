@@ -23,13 +23,27 @@ angular.module "abelujo" .controller 'inventoriesController', ['$http', '$scope'
     $scope.inventories = []
     $scope.alerts = []
 
-    $http.get "/api/inventories/"
-    .then (response) !->
+    $scope.page = 1
+    # $scope.page_size = 25  # fixed
+    $scope.nb_results = 0
+    $scope.page_max = 1
+    $scope.meta = do
+        num_pages: null
+        nb_results: null
 
-        if response.data.status == "error"
-            $log.error "Error while getting inventories server side"
-        $scope.inventories = response.data.data
-        # $scope.alerts = response.data.alerts
+    $scope.get_inventories = !->
+      params = do
+          page: $scope.page
+      $http.get "/api/inventories/", do
+          params: params
+      .then (response) !->
+          if response.data.status == "error"
+              $log.error "Error while getting inventories server side"
+          $scope.inventories = response.data.data
+          $scope.meta = response.data.meta
+          # $scope.alerts = response.data.alerts
+
+    $scope.get_inventories!
 
     $scope.last_sort = "name"
     $scope.sort_by = (key) !->
@@ -59,4 +73,22 @@ angular.module "abelujo" .controller 'inventoriesController', ['$http', '$scope'
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
+    $scope.nextPage = !->
+        $scope.page += 1
+        if $scope.page > $scope.meta.num_pages
+            $scope.page = $scope.meta.num_pages
+        $scope.get_inventories!
+
+    $scope.lastPage = !->
+        $scope.page = $scope.meta.num_pages
+        $scope.get_inventories!
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+        $scope.get_inventories!
+
+    $scope.firstPage =!->
+        $scope.page = 1
+        $scope.get_inventories!
 ]

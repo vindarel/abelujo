@@ -7,6 +7,8 @@ import logging
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import EmptyPage
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -1167,9 +1169,34 @@ def inventories(request, **kwargs):
                 # and return error msg
 
         else:
+            # Pagination
+            page = request.GET.get('page', 1)
+            page = to_int(page)
+            page_size = request.GET.get('page_size', PAGE_SIZE)
+            page_size = to_int(page_size)
+            nb_results = None
             try:
-                # TODO: option to get opened ones. For search controller.
+                # xxx: option to get opened ones. For search controller.
                 invs = Inventory.objects.all()
+                nb_results = invs.count()
+
+                paginator = Paginator(invs, page_size)
+                if invs is not None:
+                    try:
+                        invs = paginator.page(page)
+                    except EmptyPage:
+                        invs = paginator.page(paginator.num_pages)
+                    finally:
+                        invs = invs.object_list
+                else:
+                    invs = paginator.object_list
+
+                to_ret['meta'] = {
+                    'page': page,
+                    'page_size': page_size,
+                    'num_pages': paginator.num_pages,
+                    'nb_results': nb_results,
+                }
                 invs = [it.to_dict(details=True) for it in invs]
                 to_ret['data'] = invs
                 to_ret['status'] = ALERT_SUCCESS
