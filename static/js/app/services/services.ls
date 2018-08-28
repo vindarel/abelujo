@@ -139,7 +139,7 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
                   return do
                     repr: repr
                     id: it.id
-                , response.data
+                , response.data.cards
                 return cards_fetched
 
 ]
