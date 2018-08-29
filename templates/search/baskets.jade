@@ -133,6 +133,24 @@ div(ng-cloak, ng-controller="basketsController")
    div.middle(ng-hide="copies.length", style="height: 80%; width: 30%")
      img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
 
+   .col-md-7
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="copies.length")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="copies.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
    table.table.table-condensed.table-striped(ng-cloak, ng-show="copies.length")
      thead
        th.mouse-pointer(ng-show="show_images")
@@ -181,6 +199,25 @@ div(ng-cloak, ng-controller="basketsController")
             ng-model="it.basket_qty"
             ng-change="save_quantity($index)")
          td: i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="padding-left: 1em;", title='{% trans "Remove from basket" %}', ng-show="true || show_buttons[$index]")
+
+   .col-md-7
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="copies.length")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="copies.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
 
  script(type="text/ng-template", id="basketModal.html")
     div.modal-header

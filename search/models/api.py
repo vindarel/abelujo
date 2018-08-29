@@ -738,8 +738,13 @@ def basket(request, pk, action="", card_id="", **kwargs):
     data = []
     msgs = []
     status = True
+    page = 1
+    page_size = PAGE_SIZE
+    num_pages = 0
+    nb_results = 0
     to_ret = {"status": True,
               "data": data,
+              "meta": {},
               "msgs": msgs}
 
     try:
@@ -753,16 +758,26 @@ def basket(request, pk, action="", card_id="", **kwargs):
 
     if request.method == "GET":
         # xxx: use to_ret[data]
-        page = request.GET.get('page')
-        copies = basket.basketcopies_set.all()
-        to_ret['data_length'] = len(copies)
-        to_ret['page_count'] = get_page_count(copies) # better with DRF
+        page = request.GET.get('page', page)
+        page_size = request.GET.get('page_size', page_size)
+        page_size = to_int(page_size)
+        copies = basket.basketcopies_set.order_by("card__title").all()
+        nb_results = copies.count()
+        to_ret['data_length'] = nb_results
+        num_pages = get_page_count(copies) # better with Django's paginator
+        to_ret['page_count'] = num_pages
         if page:
             page = int(page)
-            copies = copies[page_start_index(page) : page * PAGE_SIZE]
+            copies = copies[page_start_index(page) : page * page_size]
         ret = [it.to_dict() for it in copies]
         to_ret['data'] = ret
         to_ret['basket_name'] = basket.name
+        to_ret['meta'] = {
+            'page': page,
+            'page_size': page_size,
+            'nb_results': nb_results,
+            'num_pages': num_pages,
+        }
         return JsonResponse(to_ret, safe=False)
 
     elif request.method == 'POST':
@@ -859,19 +874,42 @@ def basket(request, pk, action="", card_id="", **kwargs):
 def baskets(request, **kwargs):
     """Get the list of basket names. If a pk is given as argument, return
     the list of its copies.
-
     """
     if request.method == "GET":
         params = request.GET.copy()
         msgs = []
+        nb_results = None
+        meta = {}
         status = httplib.OK
         if kwargs.get('pk'):
             pk = kwargs.pop('pk')
+            page = request.GET.get('page', 1)
+            page = to_int(page)
+            page_size = request.GET.get('page_size', PAGE_SIZE)
             try:
                 data = Basket.objects.get(id=int(pk))
+                nb_results = data.count()
                 data = data.copies.all()
             except Exception as e:
                 log.error(e)
+
+            paginator = Paginator(data, page_size)
+            if data is not None:
+                try:
+                    data = paginator.page(page)
+                except EmptyPage:
+                    data = paginator.page(paginator.num_pages)
+                finally:
+                    data = data.object_list
+            else:
+                data = paginator.object_list
+
+            meta = {
+                'page': page,
+                'page_size': page_size,
+                'num_pages': paginator.num_pages,
+                'nb_results': nb_results,
+            }
 
         else:
             try:
@@ -887,7 +925,8 @@ def baskets(request, **kwargs):
         # we can't mix serializers and a custom to_ret
         to_ret = {"status": status,
                   "alerts": msgs,
-                  "data": data,}
+                  "data": data,
+                  "meta": meta,}
         return JsonResponse(to_ret)
 
 def baskets_create(request, **response_kwargs):

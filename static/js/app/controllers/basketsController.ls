@@ -35,6 +35,18 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.showing_notes = false
     $scope.last_sort = "title"
 
+    # pagination
+    $scope.page = 1
+    $scope.page_size = 25
+    $scope.page_sizes = [25, 50, 100, 200]
+    $scope.page_max = 1
+    $scope.meta = do
+        num_pages: null
+        nb_results: null
+    page_size = $window.localStorage.getItem "baskets_page_size"
+    if page_size != null
+        $scope.page_size = parseInt(page_size)
+
     $http.get "/api/baskets"
     .then (response) ->
         """Get the baskets, do not show the "to command" one, of id=1.
@@ -47,6 +59,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         if not index
             index = 0
 
+        $scope.cur_basket_index = index
+        $log.info "index: ", index
         $scope.showBasket index
 
     $scope.save_basket = !->
@@ -58,6 +72,19 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         .then (response) ->
             resp = response.data
 
+    $scope.getCopies = (index) !->
+        if $scope.cur_basket
+            params = do
+                page_size: $scope.page_size
+                page: $scope.page
+            $http.get "/api/baskets/#{$scope.cur_basket.id}/copies", do
+                params: params
+            .then (response) !->
+                $scope.baskets[index].copies = response.data.data
+                $scope.meta = response.data.meta
+                $scope.copies = response.data.data
+                |> sort-by (.title)
+
     $scope.showBasket = (index) !->
         "Show the copies of the given basket."
         $scope.cur_basket = $scope.baskets[index]
@@ -66,12 +93,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $window.document.title = "Abelujo - " + gettext("Baskets") + ", " + $scope.cur_basket.name
 
             if not $scope.cur_basket.copies
-                $http.get "/api/baskets/#{$scope.cur_basket.id}/copies"
-                .then (response) !->
-                    $scope.baskets[index].copies = response.data.data
-                    $scope.copies = response.data.data
-                    |> sort-by (.title)
-
+                $scope.getCopies index
             else
                 $scope.copies = $scope.cur_basket.copies
 
@@ -203,6 +225,33 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.as_deposit = !->
         # Transform this list to a deposit.
         ...
+
+    #########################################
+    ## Pagination
+    #########################################
+    $scope.$watch "page_size", !->
+        $window.localStorage.baskets_page_size = $scope.page_size
+        $scope.getCopies $scope.cur_basket_index
+
+    $scope.nextPage = !->
+        if $scope.page < $scope.meta.num_pages
+            $scope.page += 1
+            $log.info "-- cur_basket_index: ", $scope.cur_basket_index
+            $scope.getCopies $scope.cur_basket_index
+
+    $scope.lastPage = !->
+        $scope.page = $scope.meta.num_pages
+        $scope.getCopies $scope.cur_basket_index
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+            $scope.getCopies $scope.cur_basket_index
+
+    $scope.firstPage =!->
+        $scope.page = 1
+        $scope.getCopies $scope.cur_basket_index
+
 
     #############################
     # Open new basket modal
