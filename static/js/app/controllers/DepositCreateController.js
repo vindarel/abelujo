@@ -157,7 +157,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     };
 
     $scope.add_selected_card = function(card_repr){
-        $scope.cards_selected.push(card_repr);
+        $scope.cards_selected.unshift(card_repr);
         $scope.cards_fetched = [];
         $scope.copy_selected = undefined;
     };
