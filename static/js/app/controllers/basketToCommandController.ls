@@ -33,6 +33,17 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.distributors = []
     $scope.grouped_dist = {}
     $scope.bodies = {} # dist_id, email body
+    $scope.cards_no_dist = []
+    $scope.nb_cards_no_dist = 0
+
+    $scope.page = 1
+    # $scope.page_size = 25  # fixed
+    $scope.nb_results = 0
+    $scope.page_max = 1
+    $scope.page_size = 25  # also used in template.
+    $scope.meta = do
+        num_pages: null
+        nb_results: null
 
     $scope.language = utils.url_language($window.location.pathname)
     $scope.show_images = false
@@ -41,8 +52,10 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     .then (response) !->
         $scope.cards = response.data.data
         $scope.sorted_cards = group-by (.distributor.name), $scope.cards
+        $scope.meta = response.data.meta
+        $scope.cards_no_dist = response.data.copies_no_dist
 
-    $http.get "/api/publishers", #TODO: fetch suppliers= publishers + distributors
+    $http.get "/api/publishers",
     .then (response) !->
         $scope.distributors = response.data
         $scope.grouped_dist = group-by (.name), $scope.distributors
@@ -53,29 +66,39 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         card = $scope.sorted_cards[dist_id][index]
         utils.save_quantity card, AUTO_COMMAND_ID
 
+    get_cards_from_distname = (dist_name) ->
+        if dist_name == "undefined"
+            cards = $scope.cards_no_dist
+        else
+            cards = $scope.sorted_cards[dist_name]
+        return cards
+
     $scope.get_total_copies = (dist_name) ->
-        copies = $scope.sorted_cards[dist_name]
+        copies = get_cards_from_distname dist_name
         utils.total_copies copies
 
     $scope.get_total_price = (dist_name) ->
-        copies = $scope.sorted_cards[dist_name]
+        copies = get_cards_from_distname dist_name
         total = utils.total_price(copies)
         return total
 
     $scope.get_total_price_discounted = (dist_name) ->
-        utils.total_price_discounted $scope.sorted_cards[dist_name]
+        cards = get_cards_from_distname dist_name
+        utils.total_price_discounted cards
 
     $scope.get_total_price_excl_vat = (dist_name) ->
-        utils.total_price_excl_vat $scope.sorted_cards[dist_name]
+        cards = get_cards_from_distname dist_name
+        utils.total_price_excl_vat cards
 
     $scope.get_total_price_discounted_excl_vat = (dist_name) ->
-        utils.total_price_discounted_excl_vat $scope.sorted_cards[dist_name]
+        cards = get_cards_from_distname dist_name
+        utils.total_price_discounted_excl_vat cards
 
     $scope.super_total_copies = ->
-        utils.total_copies $scope.cards
+        utils.total_copies($scope.cards) + $scope.meta.nb_copies_no_dist
 
     $scope.super_total_price = ->
-        utils.total_price $scope.cards
+        utils.total_price $scope.cards.concat $scope.cards_no_dist
 
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
@@ -155,6 +178,37 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
+
+    #########################################
+    ## Pagination
+    #########################################
+    getNoDist = !->
+        params = do
+            page: $scope.page
+            page_size: $scope.page_size
+            dist_id: -1
+        $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies", do
+            params: params
+        .then (response) !->
+            $scope.cards_no_dist = response.data.copies_no_dist
+
+    $scope.nextPage = !->
+        if $scope.page < $scope.meta.num_pages
+            $scope.page += 1
+            getNoDist!
+
+    $scope.lastPage = !->
+        $scope.page = $scope.meta.num_pages
+        getNoDist!
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+            getNoDist!
+
+    $scope.firstPage =!->
+        $scope.page = 1
+        getNoDist!
 
     ##############################
     # Keyboard shortcuts (hotkeys)

@@ -71,6 +71,9 @@ log = get_logger()
 # dict better).
 
 
+#: id of the basket of automatic commands.
+AUTO_COMMAND_ID = 1
+
 PAGE_SIZE = 25
 
 
@@ -722,8 +725,85 @@ def auto_command_total(request, **response_kwargs):
     return JsonResponse(total, safe=False)
 
 
+def auto_command_basket(request, action="", **response_kwargs):
+    """
+    Get the copies of the auto command basket.
+
+    Don't return all copies that don't have a distributor, use pagination. They are the limiting factor so far.
+
+    When dist_id is -1, return the cards in this basket that don't have a distributor (with pagination).
+    """
+    msgs = []
+    to_ret = {}
+    page = 1
+    page_size = PAGE_SIZE
+    num_pages = 0
+    meta = {}
+
+    try:
+        basket = Basket.objects.get(id=AUTO_COMMAND_ID)
+    except Exception as e:
+        log.error(u"Error while getting autocommand basket {}: {}".format(pk, e))
+        msgs.append(e.message)
+        to_ret['status'] = False
+        return JsonResponse(to_ret) # also return error message.
+
+    if request.method == 'GET':
+        if to_int(request.GET.get('dist_id')) == -1:
+            # Cards with no distributor.
+            copies_no_dist = basket.basketcopies_set.filter(card__distributor__isnull=True)
+
+            page = to_int(request.GET.get('page', 1))
+            page_size = to_int(request.GET.get('page_size', page_size))
+            copies_no_dist = copies_no_dist[page_start_index(page) : page * page_size]
+            copies_no_dist = [it.to_dict() for it in copies_no_dist]
+            to_ret = {
+                'copies_no_dist': copies_no_dist,
+            }
+            return JsonResponse(to_ret)
+
+        page = request.GET.get('page', page)
+        page_size = request.GET.get('page_size', page_size)
+        page_size = to_int(page_size)
+
+        # The most probably largest set of copies is the one with no distributor.
+        # We do pagination with this one only for now.
+        copies = basket.basketcopies_set.filter(card__distributor__isnull=False).all()
+        nb_results = copies.count()
+
+        copies_no_dist = basket.basketcopies_set.filter(card__distributor__isnull=True)
+        nb_copies_no_dist = copies_no_dist.count()
+        nb_results = nb_results + nb_copies_no_dist
+
+        num_pages = get_page_count(copies_no_dist) # better with Django's paginator
+        to_ret['page_count'] = num_pages
+        to_ret['data_length'] = nb_results
+        if page:
+            page = int(page)
+            copies_no_dist = copies_no_dist[page_start_index(page) : page * page_size]
+
+        ret = [it.to_dict() for it in copies]
+        to_ret['data'] = ret
+        no_dist = [it.to_dict() for it in copies_no_dist]
+        to_ret['copies_no_dist'] = no_dist
+        to_ret['basket_name'] = basket.name
+        to_ret['meta'] = {
+            'page': page,
+            'page_size': page_size,
+            'nb_results': nb_results,
+            'num_pages': num_pages,
+            'nb_copies_no_dist': nb_copies_no_dist,
+        }
+
+        return JsonResponse(to_ret)
+
 def basket(request, pk, action="", card_id="", **kwargs):
-    """Get the list of cards or act on the given basket. On POST:
+    """
+    Get the list of cards or act on the given basket.
+
+    For the basket of auto_commands, return data in a special format.
+
+    On POST:
     - add: add many cards,
     - remove: remove card(s),
     - update: one card
@@ -747,6 +827,9 @@ def basket(request, pk, action="", card_id="", **kwargs):
               "meta": {},
               "msgs": msgs}
 
+    if to_int(pk) == AUTO_COMMAND_ID:
+        return auto_command_basket(request, action=action, **kwargs)
+
     try:
         basket = Basket.objects.get(id=pk)
 
@@ -754,10 +837,9 @@ def basket(request, pk, action="", card_id="", **kwargs):
         log.error(u"Error while getting basket {}: {}".format(pk, e))
         msgs.append(e.message)
         to_ret['status'] = False
-        return JsonResponse(to_ret) # also return error message.
+        return JsonResponse(to_ret) # xxx: also return error message.
 
     if request.method == "GET":
-        # xxx: use to_ret[data]
         page = request.GET.get('page', page)
         page_size = request.GET.get('page_size', page_size)
         page_size = to_int(page_size)
