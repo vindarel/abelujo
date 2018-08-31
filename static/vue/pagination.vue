@@ -2,13 +2,17 @@
   <nav aria-label="pagination" style="float: right;">
     <ul class="pagination">
       <li>
-        <a href="#" aria-label="Previous" @click="previous_page">
-          <span aria-hidden="true">&laquo;</span> </a>
+        <a href="#" aria-label="First page" @click="first_page">
+          <span aria-hidden="true"> &laquo; </span> </a>
+        <a href="#" aria-label="Previous page" @click="previous_page">
+          <span aria-hidden="true"> < </span> </a>
       </li>
       <li> <a href="#"> {{ text() }} </a></li>
       <li>
         <a href="#" aria-label="Next" @click="next_page">
-          <span aria-hidden="true">&raquo;</span> </a>
+          <span aria-hidden="true"> > </span> </a>
+        <a href="#" aria-label="Last" @click="last_page">
+          <span aria-hidden="true"> &raquo; </span> </a>
       </li>
     </ul>
   </nav>
@@ -28,12 +32,20 @@
     },
 
     methods: {
+      first_page: function () {
+        this.$emit("first_page");
+      },
+
       previous_page: function () {
         this.$emit("previous_page");
       },
 
       next_page: function () {
         this.$emit("next_page");
+      },
+
+      last_page: function () {
+        this.$emit("last_page");
       },
 
       text: function () {

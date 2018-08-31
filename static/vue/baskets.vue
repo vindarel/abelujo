@@ -91,8 +91,10 @@
             :current_page="page"
             :page_count="page_count"
             :data_length="data_length"
+            @first_page="first_page"
             @previous_page="previous_page"
-            @next_page="next_page">
+            @next_page="next_page"
+            @last_page="last_page" >
         </pagination-bullets>
       </div>
 
@@ -134,8 +136,10 @@
           :current_page="page"
           :page_count="page_count"
           :data_length="data_length"
+          @first_page="first_page"
           @previous_page="previous_page"
-          @next_page="next_page">
+          @next_page="next_page"
+          @last_page="last_page" >
       </pagination-bullets>
 
     </div>
@@ -246,6 +250,11 @@
         }
       },
 
+      first_page: function () {
+        this.page = 1;
+        this.get_cards();
+      },
+
       next_page: function () {
         if (this.page < this.page_count) {
           this.page += 1;
@@ -260,6 +269,11 @@
             this.get_cards();
           }
         }
+      },
+
+      last_page: function () {
+        this.page = this.page_count;
+        this.get_cards();
       },
 
       basket_qty_updated: function (card) {
