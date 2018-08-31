@@ -64,6 +64,7 @@ var vendorCSSFiles = [
     'node_modules/datatables/media/css/jquery.dataTables.min.css',
     'node_modules/angular-loading-bar/build/loading-bar.min.css',
     'node_modules/angular-hotkeys/build/hotkeys.min.css',
+    'node_modules/element-ui/lib/theme-chalk/index.css',
 ];
 
 // Include files to test with karma

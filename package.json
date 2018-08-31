@@ -29,6 +29,7 @@
         "brunch": "^2.10.12",
         "c3": "latest",
         "datatables": "1.10",
+        "element-ui": "^2.0",
         "gulp": "latest",
         "gulp-bg": "latest",
         "gulp-clean-css": "latest",

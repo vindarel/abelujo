@@ -72,14 +72,14 @@
         <button class="btn btn-default" @click="toggle_images" >
           <i class="glyphicon glyphicon-th-list"/>
         </button>
-        <button class="btn btn-default">
+        <button class="btn btn-default" @click="not_implemented()">
           <i class="glyphicon glyphicon-pencil"/>
         </button>
         <a href="http://abelujo.cc/docs/lists/" target="_blank"
             class="btn btn-default">
           <i class="glyphicon glyphicon-info-sign"/>
         </a>
-        <button class="btn btn-default">
+        <button class="btn btn-default" @click="not_implemented()">
           <i class="glyphicon glyphicon-question-sign"/>
         </button>
       </div>
@@ -149,212 +149,265 @@
 </template>
 
 <script>
-  var _ = require('lodash');
+var _ = require('lodash');
 
-  import SearchPanel from "./searchPanel.vue"
-  import CardItem from "./cardItem";
-  import PaginationBullets from "./pagination";
+import Vue from "vue";
+import {Notification} from 'element-ui';
+Vue.component(Notification.name, Notification);
 
-  export default {
-    name: 'Baskets',
-    props: {
-      id: undefined,  // current basket id.
-      baskets_url: {
-        String,
-        required: true,
-      },
+/* import Element from 'element-ui'*/
+/* Vue.use(Element) // allows this.$notify*/
+
+import SearchPanel from "./searchPanel.vue"
+import CardItem from "./cardItem";
+import PaginationBullets from "./pagination";
+
+export default {
+  name: 'Baskets',
+  props: {
+    id: undefined,  // current basket id.
+    baskets_url: {
+      String,
+      required: true,
     },
-    components: {
-      SearchPanel,
-      CardItem,
-      PaginationBullets,
+  },
+  components: {
+    SearchPanel,
+    CardItem,
+    PaginationBullets,
+  },
+
+  data: function () {
+    return {
+      baskets: [],
+      /* api_cards: "/api/cards",*/
+      api_cards: "/api/datasource/search",
+      cards: [], // list of dicts
+      show_images: false,
+      page: 1,
+      page_count: undefined,
+      data_length: 0,
+      basket_name: "",
+    }
+  },
+
+  methods: {
+    onAddCard: function (card) {
+      this.save_card_to_basket(card);
     },
 
-    data: function () {
-      return {
-        baskets: [],
-        /* api_cards: "/api/cards",*/
-        api_cards: "/api/datasource/search",
-        cards: [], // list of dicts
-        show_images: false,
-        page: 1,
-        page_count: undefined,
-        data_length: 0,
-        basket_name: "",
+    save_card_to_basket: function (card) {
+      const url = "/api/v2/baskets/{}/add".replace("{}", this.id);
+      $.ajax({
+        url: url,
+        type: 'POST',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(card),
+        success: res => {
+          card.id = res.data.card.id;
+          if (res.data.created) {
+            this.cards.splice(0, 0, card);
+            card.basket_qty = 1
+          } else {
+            let index = _.findIndex(this.cards, ['id', res.data.card.id]);
+            if (index != -1) {
+              this.cards[index].basket_qty = res.data.basket_qty;
+            } else {
+              this.cards.unshift(card);
+            }
+          }
+          console.log("added card succesfully. id: ", res.data.card.id, "created ? ", res.data.created);
+          const options = { style: "color: green" };
+          const h = this.$createElement;
+          const msg = "Card added";
+          Notification.success({
+            title: msg,
+            message: h("i", options, ""),
+          });
+        },
+
+        error: res => {
+          // untested though.
+          const options = { style: "color: green" };
+          const h = this.$createElement;
+          const msg = "Server error";
+          Notification.error({
+            title: msg,
+            message: h("i", options, ""),
+          });
+
+        }
+      });
+    },
+
+    toggle_images: function () {
+      this.show_images = ! this.show_images;
+      if (typeof (Storage) !== "undefined") {
+        localStorage.setItem("show_images", JSON.stringify(this.show_images));
       }
     },
 
-    methods: {
-      onAddCard: function (card) {
-        this.save_card_to_basket(card);
-      },
-
-      save_card_to_basket: function (card) {
-        const url = "/api/v2/baskets/{}/add".replace("{}", this.id);
-        $.ajax({
-          url: url,
-          type: 'POST',
-          contentType: "application/json; charset=utf-8",
-          data: JSON.stringify(card),
-          success: res => {
-            card.id = res.data.card.id;
-            if (res.data.created) {
-              this.cards.splice(0, 0, card);
-            } else {
-              let index = _.findIndex(this.cards, ['id', res.data.card.id]);
-              this.cards[index].basket_qty = res.data.basket_qty;
-            }
-            // xxx: notification
-            console.log("added card succesfully. id: ", res.data.card.id, "created ? ", res.data.created);
-          }
-        });
-      },
-
-      toggle_images: function () {
-        this.show_images = ! this.show_images;
-        if (typeof (Storage) !== "undefined") {
-          localStorage.setItem("show_images", JSON.stringify(this.show_images));
+    get_cards: function () {
+      const url = "/api/baskets/" + this.id;
+      $.ajax({
+        url: url,
+        data: {
+          page: this.page,
+        }, success: res => {
+          // We get the list of copies, no other basket info.
+          this.cards = res.data;
+          this.page_count = res.page_count;
+          this.data_length = res.data_length;
+          this.basket_name = res.basket_name;
         }
-      },
+      });
+    },
 
-      get_cards: function () {
-        const url = "/api/baskets/" + this.id;
+    remove_card: function (card, index) {
+      console.log("got ", card);
+      let sure = confirm("Are you sure to remove the card from the selection ?");
+      if (sure) {
+        let card_id = card.id;
         $.ajax({
-          url: url,
-          data: {
-            page: this.page,
-          },
+          url: "/api/baskets/{ID}/remove/{card_id}/".replace("{ID}", this.id).replace("{card_id}", card_id),
+          type: 'POST',
           success: res => {
-            // We get the list of copies, no other basket info.
-            this.cards = res.data;
-            this.page_count = res.page_count;
-            this.data_length = res.data_length;
-            this.basket_name = res.basket_name;
+            console.log("card deleted: ", card.id, card.title);
+            this.cards.splice(index, 1);
+
+            const options = { style: "color: green" };
+            const h = this.$createElement;
+            const msg = "Card removed";
+            Notification.success({
+              title: msg,
+              message: h("i", options, ""),
+            });
           }
         });
-      },
+      }
+    },
 
-      remove_card: function (card, index) {
-        console.log("got ", card);
-        let sure = confirm("Are you sure to remove the card from the selection ?");
-        if (sure) {
-          let card_id = card.id;
-          $.ajax({
-            url: "/api/baskets/{ID}/remove/{card_id}/".replace("{ID}", this.id).replace("{card_id}", card_id),
-            type: 'POST',
-            success: res => {
-              console.log("card deleted: ", card.id, card.title);
-              this.cards.splice(index, 1);
-            }
+    basket_qty_updated: function (card) {
+      "API call. Update the card's quantity."
+      const url = "/api/baskets/{}/update".replace("{}", this.id);
+      $.ajax({
+        url: url,
+        type: 'POST',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+          card_id: card.id,
+          quantity: card.basket_qty,
+        }),
+        success: res => {
+          console.log("updated card quantity to ", card.basket_qty, "( ", card.title, " )");
+        }
+      });
+    },
+
+    export_url: function (tail) {
+      // default argument to "" ?
+      if (typeof tail == 'undefined') {
+        tail = "";
+      }
+      return "/baskets/" + this.id + "/export" + tail;
+    },
+
+    mark_command: function () {
+      if (! this.cards.length) {
+        const msg = "This basket has no copies to command.";
+        const options = { style: "color: green" };
+        const h = this.$createElement;
+        Notification.warning({
+          title: msg,
+          message: h("i", options, ""),
+        });
+      }
+
+      const url = "/api/baskets/1/add/";  // default to_command basket.
+      $.ajax({
+        url: url,
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify({
+          'cards': this.cards,
+        }),
+        success: res => {
+          const msg = "Cards added in the command list.";
+          const options = { style: "color: green" };
+          const h = this.$createElement;
+          Notification.success({
+            title: msg,
+            message: h("i", options, ""),
           });
         }
-      },
+      });
+    },
 
-      first_page: function () {
+    receive_command: function () {
+      // Get or create an inventory, redirect to that inventory page.
+      const url = "/api/baskets/{id}/inventories/".replace('{id}', this.id);
+      let res = window.location.pathname.match("/([a-z][a-z])/");
+      let lang;
+      if (res) {
+        lang = res[1];
+      }
+      console.log("lang: ", lang, res);
+      $.ajax({
+        url: url,
+        success: res => {
+          console.log("success ", res);
+          if (res.status && lang) {
+            window.location.href = "/{lang}/inventories/{id}/".replace('{lang}', lang).replace('{id}', res.data.inv_id);
+          }
+        }
+      })
+    },
+
+    not_implemented: function () {
+      /// TODO: x3
+      alert("We have to finish this !");
+    },
+
+    ////////////////////////
+    // Pagination
+    ////////////////////////
+
+    first_page: function () {
+      if (this.page != 1) {
         this.page = 1;
         this.get_cards();
-      },
+      }
+    },
 
-      next_page: function () {
-        if (this.page < this.page_count) {
-          this.page += 1;
+    next_page: function () {
+      if (this.page < this.page_count) {
+        this.page += 1;
+        this.get_cards();
+      }
+    },
+
+    previous_page: function () {
+      if (this.page > 1) {
+        this.page -= 1;
+        if (this.page > 0) {
           this.get_cards();
         }
-      },
-
-      previous_page: function () {
-        if (this.page > 1) {
-          this.page -= 1;
-          if (this.page > 0) {
-            this.get_cards();
-          }
-        }
-      },
-
-      last_page: function () {
-        this.page = this.page_count;
-        this.get_cards();
-      },
-
-      basket_qty_updated: function (card) {
-        "API call. Update the card's quantity."
-        const url = "/api/baskets/{}/update".replace("{}", this.id);
-        $.ajax({
-          url: url,
-          type: 'POST',
-          contentType: "application/json; charset=utf-8",
-          data: JSON.stringify({
-            card_id: card.id,
-            quantity: card.basket_qty,
-          }),
-          success: res => {
-            console.log("updated card quantity to ", card.basket_qty, "( ", card.title, " )");
-            // xxx: notification and message from server.
-          }
-        });
-      },
-
-      export_url: function (tail) {
-        // default argument to "" ?
-        if (typeof tail == 'undefined') {
-          tail = "";
-        }
-        return "/baskets/" + this.id + "/export" + tail;
-      },
-
-      mark_command: function () {
-        if (! this.cards.length) {
-          // xxx notification
-          alert("This basket has no copies to command.");
-        }
-
-        const url = "/api/baskets/1/add/";  // default to_command basket.
-        $.ajax({
-          url: url,
-          type: 'POST',
-          contentType: 'application/json; charset=utf-8',
-          data: JSON.stringify({
-            'cards': this.cards,
-          }),
-          success: res => {
-            console.log("success ", res); // xxx notification
-          }
-        });
-      },
-
-      receive_command: function () {
-        // Get or create an inventory, redirect to that inventory page.
-        const url = "/api/baskets/{id}/inventories/".replace('{id}', this.id);
-        let res = window.location.pathname.match("/([a-z][a-z])/");
-        let lang;
-        if (res) {
-          lang = res[1];
-        }
-        console.log("lang: ", lang, res);
-        $.ajax({
-          url: url,
-          success: res => {
-            console.log("success ", res);
-            if (res.status && lang) {
-              window.location.href = "/{lang}/inventories/{id}/".replace('{lang}', lang).replace('{id}', res.data.inv_id);
-            }
-          }
-        })
-      },
-
-      not_implemented: function () {
-        alert("We have to finish this !");
-      },
-
+      }
     },
 
-    mounted: function () {
-      // Read from localStorage.
-      if (typeof (Storage) !== 'undefined') {
-        this.show_images = JSON.parse(localStorage.getItem('show_images'));
-      }
-
+    last_page: function () {
+      this.page = this.page_count;
       this.get_cards();
     },
-  }
+  },
+
+  mounted: function () {
+    // Read from localStorage.
+    if (typeof (Storage) !== 'undefined') {
+      this.show_images = JSON.parse(localStorage.getItem('show_images'));
+    }
+
+    this.get_cards();
+  },
+}
 </script>

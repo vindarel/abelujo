@@ -13,6 +13,8 @@
       </p>
     </form>
 
+    <div> {{ message }} </div>
+
     <table>
       <tbody>
         <tr v-for="(it, index) in cards" :key="it.id">
@@ -38,6 +40,8 @@
 
   export default {
     name: 'SearchPanel',
+    message: "",
+
     props: {
       url: String, // search api url.
     },
@@ -75,6 +79,11 @@
             console.log("--- cards", res);
             // todo: error handling, show alerts, etc.
             this.cards = res.data;
+            if (res.data.length == 0) {
+              this.message = "no results";
+            } else {
+              this.message = "";
+            }
           }
         });
       },

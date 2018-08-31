@@ -25,6 +25,9 @@ Vue.use(VueResource);
 Vue.use(VueProgressBar, options);
 Vue.use(VueResourceProgressBarInterceptor); // unsure it's working
 
+import {Notification} from 'element-ui';  // ok !
+Vue.component(Notification.name, Notification);
+
 import Baskets from "./baskets.vue"
 
 if (document.getElementById("abelujo")) {
