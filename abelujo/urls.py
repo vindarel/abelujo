@@ -117,6 +117,7 @@ apipatterns = patterns("",
     url(r'^api/inventories/(?P<pk>\d+)/remove/', 'search.models.api.inventories_remove', name="api_inventories_remove"),
     url(r'^api/inventories/(?P<pk>\d+)/diff/', 'search.models.api.inventory_diff', name="api_inventories_diff"),
     url(r'^api/inventories/(?P<pk>\d+)/apply/?', 'search.models.api.inventory_apply', name="api_inventories_apply"),
+    url(r'^api/inventories/(?P<pk>\d+)/copies/?', 'search.models.api.inventories_copies', name="api_inventories_copies"),
     url(r'^api/inventories/(?P<pk>\d+)/?$', 'search.models.api.inventories', name="api_inventories"),
     url(r'^api/inventories/?', 'search.models.api.inventories', name="api_inventories"),
 

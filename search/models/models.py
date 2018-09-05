@@ -3575,15 +3575,36 @@ class InventoryBase(TimeStampedModel):
 
         return ret
 
-    def state(self):
-        """Get the current state:
+    def state(self, page=1, page_size=PAGE_SIZE):
+        """
+        Get the current state:
         - list of copies already inventoried and their quantities,
         - list of copies not found te be searched for (and their quantities)
-
+        - total value of the inventory
         """
-        copies = [it.to_dict() for it in self.copies_set.all()]
-        nb_cards = len(copies)
+        all_copies = self.copies_set.order_by("card__title").all()
+        nb_cards = all_copies.count()
         nb_copies = self.nb_copies()
+
+        total_value = self.value()
+
+        paginator = Paginator(all_copies, page_size)
+        if page is not None:
+            try:
+                copies = paginator.page(page)
+            except EmptyPage:
+                copies = paginator.page(paginator.num_pages)
+            finally:
+                copies = copies.object_list
+        else:
+            copies = paginator.object_list
+
+        copies = [it.to_dict() for it in copies]
+
+        meta = {
+            'nb_results': nb_cards,
+            'num_pages': paginator.num_pages,
+        }
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
         orig_cards_qty = self._orig_cards_qty()
@@ -3609,10 +3630,12 @@ class InventoryBase(TimeStampedModel):
             "nb_cards": nb_cards,
             "nb_copies": nb_copies,
             "total_missing": missing,
+            "total_value": total_value,
             "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,
             "publisher": pub_dict,
+            "meta": meta,
         }
 
         return state

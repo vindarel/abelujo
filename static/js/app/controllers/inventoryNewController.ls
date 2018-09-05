@@ -40,6 +40,11 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.all = []
     # Boolean to show or hide all the cards (hide by default)
     $scope.showAll = false  # toggled by the checkbox itself.
+    showAll = $window.localStorage.getItem "inventories_showAll"
+    if showAll != undefined
+        if showAll == "true"
+            $scope.showAll = true  # and activate the cards below (setCardsToShow)
+
     $scope.cards_to_show = []
     # Total value
     $scope.total_value = 0
@@ -51,6 +56,19 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     # A list of already selected cards' ids
     $scope.selected_ids = []
     existing_card = undefined
+
+    # pagination
+    $scope.page = 1
+    $scope.page_sizes = [25, 50, 100, 200]
+    $scope.page_max = 1
+    $scope.meta = do
+        num_pages: null
+        nb_results: null
+    page_size = $window.localStorage.getItem "inventories_page_size"
+    if page_size != null
+        $scope.page_size = parseInt(page_size)
+    else
+        $scope.page_size = 25
 
     # ##############################################################################
     # This controller serves for all inventories, in all url:
@@ -104,12 +122,17 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
     $scope.toggleCardsToShow = !->
         $scope.showAll = ! $scope.showAll
+        $window.localStorage.inventories_showAll = $scope.showAll
         $scope.setCardsToShow!
 
     if $scope.inv_or_cmd_id
 
         $log.info "using api_inventory_id: ", get_api api_inventory_id
-        $http.get get_api api_inventory_id
+        params = do
+            page_size: $scope.page_size
+            page: $scope.page
+        $http.get get_api(api_inventory_id), do
+            params: params
         .then (response) ->
             $log.info "Response of api_inventory_id"
             response.data.data
@@ -117,6 +140,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.cards_fetched = $scope.state.copies
             $scope.nb_cards = response.data.data.nb_cards
             $scope.nb_copies = response.data.data.nb_copies
+            $scope.meta = response.data.data.meta
             # To show every single card:
             map ->
                 # it: has card and quantity properties only.
@@ -136,18 +160,30 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
             $scope.cur_inv = $scope.state.inv_name
 
-            $scope.total_value = $scope.update_total_value!
+            $scope.total_value = response.data.data.total_value
 
             return
 
-    $scope.update_total_value = ->
-        """Total cost of the cards in this inventory.
-        """
-        total = $scope.all
-        |> map ( -> it.price * it.quantity)
-        |> sum
-        total = round (total * 10)
-        total / 10
+    $scope.getCopies = !->
+        params = do
+            page_size: $scope.page_size
+            page: $scope.page
+        url = get_api api_inventory_id
+        url += "copies"
+        $http.get url, do
+            params: params
+        .then (response) !->
+            $log.info "-- cards: ", response.data
+            $scope.cards_fetched = response.data
+            # cards_fetched: list of {cards:.., quantity:..}
+            # Show the cards.
+            $scope.all = []
+            map ->
+                # it: has card and quantity properties only.
+                $scope.all.push it.card
+                $scope.all[* - 1].quantity = it.quantity
+            , response.data
+            $scope.setCardsToShow!
 
     $scope.updateProgress = (current, missing) !->
         if (current + missing != 0)
@@ -245,10 +281,11 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             # event, we don't know if we add or sub, so remove and add
             # again this card from the list.
             $log.info $scope.all
+            thecard = $scope.all
             $scope.all = $scope.all
             |> reject (.id == card.id)
             $scope.all.push card
-            $scope.total_value = $scope.update_total_value!
+            $scope.total_value = response.data.total_value
 
             $scope.nb_cards = response.data.nb_cards
             $scope.nb_copies = response.data.nb_copies
@@ -284,6 +321,35 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         .then (response) !->
             $log.info "using url_inventory_id_terminate: ", get_api url_inventory_id_terminate
             $window.location.href = get_api url_inventory_id_terminate
+
+    # Now that we have cards, show them...
+    if $scope.showAll
+        $scope.setCardsToShow!
+
+    #########################################
+    ## Pagination
+    #########################################
+    $scope.$watch "page_size", !->
+        $window.localStorage.inventories_page_size = $scope.page_size
+        $scope.getCopies!
+
+    $scope.nextPage = !->
+        if $scope.page < $scope.meta.num_pages
+            $scope.page += 1
+            $scope.getCopies!
+
+    $scope.lastPage = !->
+        $scope.page = $scope.meta.num_pages
+        $scope.getCopies!
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+            $scope.getCopies!
+
+    $scope.firstPage =!->
+        $scope.page = 1
+        $scope.getCopies!
 
     ######################
     # keyboard shortcuts

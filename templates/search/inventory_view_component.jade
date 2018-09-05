@@ -102,7 +102,25 @@ div(ng-controller=controller)
 
 
   div(ng-show="cards_to_show.length > 0")
-   table.table.table-condensed(datatable="ng")
+   .col-md-7
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="true")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="true || todo", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
+   table.table.table-condensed()
     thead
         tr
           th {% trans "Title" %}

@@ -43,8 +43,8 @@ from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.utils import Messages
 from search.models.utils import get_logger
-from search.models.utils import page_start_index
 from search.models.utils import get_page_count
+from search.models.utils import page_start_index
 from search.tasks import command_inventory_apply_task
 from search.tasks import inventory_apply_task
 from search.views_utils import get_datasource_from_lang
@@ -1279,23 +1279,24 @@ def inventories(request, **kwargs):
         return JsonResponse(to_ret)
 
     elif request.method == "GET":
+        # Pagination
+        page = request.GET.get('page', 1)
+        page = to_int(page)
+        page_size = request.GET.get('page_size', PAGE_SIZE)
+        page_size = to_int(page_size)
+        nb_results = None
+
         if kwargs.get("pk"):
             pk = kwargs.pop("pk")
             try:
                 inv = Inventory.objects.get(id=pk)
-                state = inv.state()
+                state = inv.state(page=page, page_size=page_size)
                 to_ret['data'] = state
             except Exception as e:
-                log.error(e)
+                log.error(u"Error getting inventory state of {}: {}".format(pk, e))
                 # and return error msg
 
         else:
-            # Pagination
-            page = request.GET.get('page', 1)
-            page = to_int(page)
-            page_size = request.GET.get('page_size', PAGE_SIZE)
-            page_size = to_int(page_size)
-            nb_results = None
             try:
                 # xxx: option to get opened ones. For search controller.
                 invs = Inventory.objects.all()
@@ -1328,6 +1329,45 @@ def inventories(request, **kwargs):
                 to_ret['status'] = ALERT_ERROR
 
     return JsonResponse(to_ret)
+
+def inventories_copies(request, **kwargs):
+    """
+    Get copies, with pagination.
+    """
+    if kwargs.get('pk'):
+        pk = kwargs.pop('pk')
+        try:
+            inv = Inventory.objects.get(id=pk)
+        except Exception as e:
+            log.error(u"Error getting inventory {}: {}".format(pk, e))
+
+        if request.method == 'GET':
+            # Pagination
+            page = request.GET.get('page', 1)
+            page = to_int(page)
+            page_size = request.GET.get('page_size', PAGE_SIZE)
+            page_size = to_int(page_size)
+
+            try:
+                copies = inv.copies_set.order_by("card__title").all()
+                paginator = Paginator(copies, page_size)
+                if page is not None:
+                    try:
+                        copies = paginator.page(page)
+                    except EmptyPage:
+                        copies = paginator.page(paginator.num_pages)
+                    finally:
+                        copies = copies.object_list
+                else:
+                    copies = paginator.object_list
+
+                copies = [it.to_dict() for it in copies]
+
+                return JsonResponse(copies, safe=False)
+
+            except Exception as e:
+                log.error(u"Error getting copies of inventory {}: {}".format(pk, e))
+                return JsonResponse({})
 
 def inventories_update(request, **kwargs):
     """Update copies and their quantities.
@@ -1388,6 +1428,7 @@ def inventories_update(request, **kwargs):
             nb_copies = inv.nb_copies()
             to_ret['nb_copies'] = nb_copies
             to_ret['missing'] = inv._orig_cards_qty() - nb_copies
+            to_ret['total_value'] = inv.value()
             if status == "success": # XXX import satuses from models
                 to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
 
