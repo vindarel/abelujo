@@ -743,7 +743,7 @@ def auto_command_basket(request, action="", **response_kwargs):
     try:
         basket = Basket.objects.get(id=AUTO_COMMAND_ID)
     except Exception as e:
-        log.error(u"Error while getting autocommand basket {}: {}".format(pk, e))
+        log.error(u"Error while getting autocommand basket: {}".format(e))
         msgs.append(e.message)
         to_ret['status'] = False
         return JsonResponse(to_ret) # also return error message.
@@ -827,9 +827,6 @@ def basket(request, pk, action="", card_id="", **kwargs):
               "meta": {},
               "msgs": msgs}
 
-    if to_int(pk) == AUTO_COMMAND_ID:
-        return auto_command_basket(request, action=action, **kwargs)
-
     try:
         basket = Basket.objects.get(id=pk)
 
@@ -840,6 +837,9 @@ def basket(request, pk, action="", card_id="", **kwargs):
         return JsonResponse(to_ret) # xxx: also return error message.
 
     if request.method == "GET":
+        if to_int(pk) == AUTO_COMMAND_ID:
+            return auto_command_basket(request, action=action, **kwargs)
+
         page = request.GET.get('page', page)
         page_size = request.GET.get('page_size', page_size)
         page_size = to_int(page_size)
