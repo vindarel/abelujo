@@ -118,6 +118,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 th(ng-show="show_images")
                 th {% trans "Title" %}
                 th {% trans "Author" %}
+                th {% trans "Publisher" %}
                 th.text-right {% trans "Price" %}
                 th.text-right {% trans "With discount" %} {{ 'grouped_dist[dist_name][0].discount' | ng}}
                 th.text-right {% trans "Quantity left" %}
@@ -130,6 +131,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                   td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
+                  td.col-md-1 {{ 'card.pubs_repr' | ng }}
                   td.col-md-1.text-right {{ 'card.price | number:2' |ng }} €
                   td.col-md-1.text-right {{ 'card.price_discounted | number:2' |ng }} €
                   td.col-md-1.text-right {{ 'card.quantity' |ng }}
@@ -141,7 +143,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                 tr
                   td(ng-show="show_images")
-                  td.col-md-7.text-right {% trans "Total" %}
+                  td.col-md-7 {% trans "Total" %}
+                  td
                   td
                   td.col-md-1.text-right {{ 'get_total_price(dist_name)' |ng}}  €
                   td.col-md-1.text-right {{ 'get_total_price_discounted(dist_name)' |ng}}  €
@@ -156,11 +159,13 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     | {% trans "excl. tax" %}
 
                   td
+                  td
                   td.text-right  {{ 'get_total_price_excl_vat(dist_name)' |ng}}  €
                   td.text-right  {{ 'get_total_price_discounted_excl_vat(dist_name)' |ng}}  €
                   td
                   td
 
+    ///////////////////////////////////////////////////////////////
     // Same for undefined distributor. jade -> horrible copy-paste.
     span
             .row
@@ -196,6 +201,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 th(ng-show="show_images")
                 th {% trans "Title" %}
                 th {% trans "Author" %}
+                th {% trans "Publisher" %}
                 th.text-right {% trans "Price" %}
                 th.text-right {% trans "With discount" %} {{ 'grouped_dist[dist_name][0].discount' | ng}}
                 th.text-right {% trans "Quantity left" %}
@@ -208,6 +214,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                   td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
+                  td.col-md-1 {{ 'card.pubs_repr' | ng }}
                   td.col-md-1.text-right {{ 'card.price | number:2' |ng }} €
                   td.col-md-1.text-right {{ 'card.price_discounted | number:2' |ng }} €
                   td.col-md-1.text-right {{ 'card.quantity' |ng }}
@@ -219,7 +226,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                 tr
                   td(ng-show="show_images")
-                  td.col-md-7.text-right {% trans "Total" %}
+                  td.col-md-7 {% trans "Total" %}
+                  td
                   td
                   td.col-md-1.text-right {{ 'get_total_price("undefined")' |ng}}  €
                   td.col-md-1.text-right {{ 'get_total_price_discounted("undefined")' |ng}}  €
@@ -233,6 +241,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     | {# Translators: excl. tax: price excluding tax (french: HT). #}
                     | {% trans "excl. tax" %}
 
+                  td
                   td
                   td.text-right  {{ 'get_total_price_excl_vat("undefined")' |ng}}  €
                   td.text-right  {{ 'get_total_price_discounted_excl_vat("undefined")' |ng}}  €
