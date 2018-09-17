@@ -939,7 +939,9 @@ def basket_export(request, pk):
     report = request.GET.get('report')
     format = request.GET.get('format')
     distributor_id = request.GET.get('distributor_id')
-    if distributor_id == 'undefined':
+    # Export of all cards: distributor_id is None.
+    # Export of cards with no distributor_id:
+    if distributor_id == 'undefined' or distributor_id in ["", u""]:
         distributor_id = -1
     elif distributor_id:
         distributor_id = int(distributor_id)

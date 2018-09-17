@@ -67,7 +67,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
     .row
      .col-md-1
       .btn-group
-       button#export.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+       button#export.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
            span.caret
        ul.dropdown-menu
            li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
