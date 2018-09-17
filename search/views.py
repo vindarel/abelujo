@@ -1039,7 +1039,9 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     elif format in ['txt']:
         # 63 = MAX_CELL + 3 because of trailing "..."
-        rows = [ u"{:63} {}".format( truncate(it.card.title), it.quantity) for it in copies_set]
+        rows = [ u"{:63} {:20} {}".format( truncate(it.card.title),
+                                           it.card.pubs_repr,
+                                           it.quantity) for it in copies_set]
         rows = sorted(rows)
         content = "\n".join(rows)
         response = HttpResponse(content, content_type="text/raw")
