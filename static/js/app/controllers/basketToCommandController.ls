@@ -55,7 +55,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         $scope.meta = response.data.meta
         $scope.cards_no_dist = response.data.copies_no_dist
 
-    $http.get "/api/publishers",
+    $http.get "/api/distributors",
     .then (response) !->
         $scope.distributors = response.data
         $scope.grouped_dist = group-by (.name), $scope.distributors
