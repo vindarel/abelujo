@@ -67,7 +67,9 @@ div(ng-cloak, ng-controller="basketsController")
                i.glyphicon.glyphicon-plus
 
            li.divider(role="separator")
+           li: a(href="/databasesearch/basket/{{ 'cur_basket.id'|ng }}/", target="_blank") {% trans "Set the supplier" %}
 
+           li.divider(role="separator")
            li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
            li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
            li: a(href="#", ng-click="open_to_deposit('md')", title='{% trans "You can transform this list of books to a deposit. You will be asked the supplier and the discount." %}') {% trans "Transform as deposit" %}…
@@ -123,6 +125,9 @@ div(ng-cloak, ng-controller="basketsController")
             span.input-group-btn
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-search
+
+   ul#supplier(ng-show="cur_basket.dist_repr")
+     li {% trans "supplier" %}:  {{ 'cur_basket.dist_repr' | ng }}
 
    div(ng-show="showing_notes")
      div

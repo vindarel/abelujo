@@ -1832,6 +1832,9 @@ class Basket(models.Model):
     # Access the intermediate table with basketcopies_set.all(), basketcopies_set.get(card=card)
     #: Comment:
     comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True)
+    #: We can also choose a supplier for this basket.
+    #: This will help when applying the basket to the stock, receiving a parcel, etc.
+    distributor = models.ForeignKey(Distributor, blank=True, null=True)
 
     class Meta:
         ordering = ("name",)
@@ -1847,6 +1850,8 @@ class Basket(models.Model):
                 "id": self.id,
                 "length": self.copies.count(),
                 "comment": self.comment,
+                "distributor": self.distributor.name if self.distributor else "",
+                "dist_repr": self.distributor.__repr__() if self.distributor else "",
         }
 
     @staticmethod
