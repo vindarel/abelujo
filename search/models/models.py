@@ -1154,6 +1154,7 @@ class Card(TimeStampedModel):
             in_stock:   bool
             sortkey:    string of authors in the order they appear on
                         the cover
+            shelf_id:   id (int) of the shelf.
             threshold: int
             origkey:    (optional) original key, like an ISBN, or if
                         converting from another system

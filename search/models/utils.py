@@ -351,7 +351,7 @@ def _is_truthy(txt):
 def is_invalid(txt):
     """When JS client sends "undefined" strings instead of nothing.
     """
-    return txt not in ['undefined', 0, "0"]
+    return txt in ['undefined', u'undefined', 0, "0", u"0"]
 
 
 def page_start_index(page, size=PAGE_SIZE):
