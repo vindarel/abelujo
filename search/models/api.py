@@ -768,7 +768,8 @@ def auto_command_basket(request, action="", **response_kwargs):
 
         # The most probably largest set of copies is the one with no distributor.
         # We do pagination with this one only for now.
-        copies = basket.basketcopies_set.filter(card__distributor__isnull=False).all()
+        copies = basket.basketcopies_set.filter(card__distributor__isnull=False)\
+                                        .order_by("card__title").all()
         nb_results = copies.count()
 
         copies_no_dist = basket.basketcopies_set.filter(card__distributor__isnull=True)
@@ -865,26 +866,55 @@ def basket(request, pk, action="", card_id="", **kwargs):
     elif request.method == 'POST':
         # json request
         req = {}
+        body = request.body  # for test
         if request.POST.get('card_ids'):
             req = request.POST.copy()
-        elif request.body:
+        elif body:
             # 'remove' doesn't use this.
-            req = json.loads(request.body)
+            req = json.loads(body)
 
-        # Add cards from ids (from the Collection view)
-        if action and action == "add" and req.get('card_ids'):
+        # Add cards from ids (from the Collection view or from a Basket).
+        if action and action == "add":
             msgs = []
-            ids = req.get('card_ids')
-            id_list = list_from_coma_separated_ints(ids)
+            if req.get('card_ids'):
+                # Add the given ids (from the Collection).
+                ids = req.get('card_ids')
+                id_list = list_from_coma_separated_ints(ids)
+                try:
+                    msg = basket.add_copies(id_list)
+                except ObjectDoesNotExist as e:
+                    log.error(u"Error while adding copies {} to basket {}: {}".format(id_list, pk, e))
 
-            try:
-                msg = basket.add_copies(id_list)
-                msgs.append(msg)
-            except Exception as e:
-                log.error(u'Error while adding copies {} to basket {}: {}'.format(id_list, pk, e))
+            elif req.get('basket_id'):
+                # No card ids: use all the basket copies (from another basket).
+
+                # Basket of origin. It may associate a distributor.
+                basket_id = req.get('basket_id')
+                try:
+                    basket_orig = Basket.objects.get(id=basket_id)
+                except ObjectDoesNotExist as e:
+                    log.error(u"Error on command: {}.".format(e))
+                    msg = u"Error: the list of id {} does not exist.".format(basket_id)
+
+                if basket_orig.distributor is not None:
+                    try:
+                        # Set the cards' distributor, if defined in the basket.
+                        basket_orig.distributor.set_distributor(basket=basket_orig)
+                    except Exception as e:
+                        log.error(u"Error trying to set the distributor of the cards, for basket {}: {}".
+                                format(basket.id, e))
+                        return  ##xxx error message
+
+                try:
+                    msg = basket.add_cards(basket_orig.copies.all())
+                    msgs.append(msg)
+                except Exception as e:
+                    log.error(u'Error while adding cards of basket {} to basket {}: {}'.
+                            format(basket_id, pk, e))
+
 
         # Add cards from card dicts, not in db yet (from the Searchresults view or a Vue Basket).
-        elif action and action == "add" and req.get('cards'):
+        if action and action == "add" and req.get('cards'):
             # req: dict where keys are an index (useless, js dependency) and values, the card dicts.
             # From a Vue Basket: we get usual dicts.
             cards = req.get('cards')

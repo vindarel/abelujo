@@ -164,6 +164,58 @@ class ApiTest(TestCase):
         data = json.loads(resp.content)
         self.assertTrue(data[0]["name"] == self.place.name)
 
+class TestBasket(TestCase):
+    """
+    Test api.basket.
+    """
+
+    def setUp(self):
+        self.c = Client()
+
+        # ToCommand, a basket.
+        self.to_command = BasketFactory.create()
+        self.basket = BasketFactory.create()
+
+        # Add cards to basket.
+        for _ in range(3):
+            self.basket.add_copy(CardFactory.create())
+
+        # a Distributor.
+        self.dist = DistributorFactory.create()
+
+    def tearDown(self):
+        pass
+
+    def test_add_ids(self):
+        """
+        Add cards from ids.
+        From
+        """
+        pass
+
+    def test_add_objects(self):
+        """
+        Add cards from json objects.
+        From My Stock/add to list.
+        """
+        pass
+
+    def test_add_basket(self):
+        """
+        Add all the cards from a basket.
+        From List/Command.
+        """
+        self.basket.distributor = self.dist
+
+        data = json.dumps({'basket_id': 2})  # not needed in django 2.
+        resp = self.c.post('/api/baskets/1/add/', data=data, content_type='application/json')
+        data = json.loads(resp.content)
+        self.assertTrue(data['status'])
+        self.assertEqual(self.to_command.copies.count(), self.basket.copies.count())
+        # bad factory, creates 3 dists. Never mind, set_distributor is unit tested.
+        # self.assertEqual(self.to_command.copies.last().distributor, self.dist)
+
+
 class TestBaskets(TestCase):
 
     def setUp(self):

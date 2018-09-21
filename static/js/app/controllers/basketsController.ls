@@ -171,14 +171,14 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             alert gettext "This basket has no copies to command !"
             return
 
-        sure = confirm gettext("Do you want to mark all the cards of this list to command ?")
+        text = gettext("Do you want to mark all the cards of this list to command ?")
+        if $scope.cur_basket.distributor
+            text += gettext " They will be associated with the supplier #{$scope.cur_basket.distributor}."
+        sure = confirm text
         if sure
-            to_add = $scope.copies
-            |> map (.id)
-
-            coma_sep = join ",", to_add # TODO custom quantities
+            # We command all the basket.
             params = do
-                card_ids: coma_sep
+                basket_id: $scope.cur_basket.id
             $http.post "/api/baskets/#{COMMAND_BASKET_ID}/add/", params
             .then (response) !->
                 # $scope.alerts = response.data.msgs

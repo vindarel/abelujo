@@ -123,6 +123,7 @@ class BasketFactory(DjangoModelFactory):
         model = Basket
 
     name = factory.Sequence(lambda n: "basket test id %s" % (n + 1))
+    distributor = None
 
 class CardFactory(DjangoModelFactory):
     class Meta:
@@ -369,6 +370,30 @@ class TestCards(TestCase):
     def test_placecopies(self):
         pass
 
+
+class TestDistributor(TestCase):
+
+    def setUp(self):
+        self.dist = DistributorFactory()
+        self.to_command = BasketFactory()
+
+    def tearDown(self):
+        pass
+
+    def test_set_distributor(self):
+        basket = BasketFactory()
+        # Put cards in basket.
+        for _ in range(3):
+            basket.add_copy(CardFactory())
+
+        basket.distributor = DistributorFactory()
+        basket.save()
+        # Set the distributor of these cards.
+        self.dist.set_distributor(basket=basket)
+
+        self.assertEqual(basket.copies.last().distributor, self.dist)
+
+
 class TestPublisher(TestCase):
     """Testing the addition of a publisher to a card.
     """
@@ -534,6 +559,7 @@ class TestBaskets(TestCase):
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
         self.assertFalse(msgs)
+
 
 class TestDeposits(TransactionTestCase):
     # Run those in a TransactionTestCase, or we get pb with an atomic block, only during testing.

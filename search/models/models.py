@@ -184,6 +184,20 @@ class Distributor(TimeStampedModel):
 
         return data
 
+    def set_distributor(self, basket=None):
+        """
+        Set this distributor for the cards of the given basket.
+
+        - basket: obj
+
+        Used with baskets.
+        """
+        if basket:
+            for card in basket.copies.all():
+                if card.distributor != self:
+                    card.distributor = self
+                    card.save()
+
 
 class Publisher (models.Model):
     """The publisher of the card.
@@ -1928,15 +1942,27 @@ class Basket(models.Model):
 
         return: an alert dictionnary (level, message)
         """
-        for id in card_ids:
+        cards = Card.objects.filter(id__in=card_ids).all()
+        return self.add_cards(cards)
+
+    def add_cards(self, cards):
+        """
+        Add these cards to the basket.
+        To add from a list of ids, use `add_copies`.
+
+        - cards: objects
+
+        return: an alert dictionnary (level, message)
+        """
+        for it in cards:
             try:
-                card = Card.objects.get(id=id)
-                self.add_copy(card)
+                self.add_copy(it)
             except Exception as e:
                 log.error(u"Error while getting card of id {}: {}".format(id, e))
                 return {'level': ALERT_ERROR, 'message': "Internal error"}
 
         return {'level': ALERT_SUCCESS, 'message':_(u"The cards were successfully added to the basket '{}'".format(self.name))}
+
 
     def remove_copy(self, card_id):
         """Remove the given card (id) from the basket.
