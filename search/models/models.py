@@ -880,10 +880,7 @@ class Card(TimeStampedModel):
         if isbns:
             for isbn in isbns:
                 try:
-                    # xxx: to do with querysets.
-                    card = Card.objects.filter(isbn=isbn).first()
-                    if card:
-                        cards.append(card)
+                    cards = Card.objects.filter(isbn=isbn)
                 except Exception as e:
                     log.error(u"Error searching for isbn {}: {}".format(isbn, e))
                     msgs.add_error(_("Error searching for isbn ".format(isbn)))
@@ -891,12 +888,11 @@ class Card(TimeStampedModel):
         # Sort
         if cards and order_by:
             if not type(cards) == list:
+                # this precaution shouldn't be necessary now (fixed).
                 cards = cards.order_by(order_by)
-            else:
-                log.warning(u"we won't 'order_by' because we got a list (of length {}), not a queryset. Search terms were: {}.".format(len(cards), words))
 
         if type(cards) == list:
-            # xxx: fix isbn filter above to return a queryset, not a list.
+            # shouldn't be necessary now (fixed).
             nb_results = len(cards)
         else:
             nb_results = cards.count()
