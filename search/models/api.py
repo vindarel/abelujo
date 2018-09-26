@@ -832,7 +832,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         basket = Basket.objects.get(id=pk)
 
     except Exception as e:
-        log.error(u"Error while getting basket {}: {}".format(pk, e))
+        log.info(u"Couldn't get basket of id {}: {}".format(pk, e))
         msgs.append(e.message)
         to_ret['status'] = False
         return JsonResponse(to_ret) # xxx: also return error message.
