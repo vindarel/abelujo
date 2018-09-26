@@ -808,15 +808,25 @@ def deposits_view(request, pk):
         copies = deposit.copies.all()
 
         deposit = Deposit.objects.get(id=pk)
-        checkout, msgs = deposit.checkout_create()
-        # bad abi. Used in tests.
-        if not checkout:
-            # Could do in a "get or create" method.
-            checkout = deposit.last_checkout()
 
-        if checkout and not checkout.closed:
+        # try.
+        # balance = deposit.balance()
+
+        # try.
+        checkout = deposit.last_checkout()
+        if not checkout.closed:
             checkout.update()
         balance = checkout.balance()
+
+        # checkout, msgs = deposit.checkout_create()
+        # bad abi. Used in tests.
+        # if not checkout:
+            # Could do in a "get or create" method.
+            # checkout = deposit.last_checkout()
+
+        # if checkout and not checkout.closed:
+            # checkout.update()
+        # balance = checkout.balance()
 
     except Deposit.DoesNotExist as e:
         messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))

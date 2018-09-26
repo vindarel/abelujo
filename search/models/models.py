@@ -2721,6 +2721,9 @@ class Deposit(TimeStampedModel):
                 log.error(u"Error adding a Deposit from dict: {}".format(e))
                 msgs.add_error(_("Error adding a deposit"))
 
+        # Create the initial deposit state (aka checkout).
+        dep.checkout_create()  # xxx: simplify, no need to search for sold cards now.
+
         return msgs.status, msgs.msgs
 
     def sell_card(self, card=None, card_id=None, nb=1, sell=None, silence=False):
