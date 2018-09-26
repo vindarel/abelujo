@@ -722,6 +722,7 @@ class Card(TimeStampedModel):
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
             "details_url": self.details_url,
             "distributor_repr": dist_repr,
+            "dist_repr": dist_repr,
             "distributor": dist,
             "fmt": self.fmt,
             "get_absolute_url": get_absolute_url,

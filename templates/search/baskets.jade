@@ -163,6 +163,8 @@ div(ng-cloak, ng-controller="basketsController")
          span.caret
        th.mouse-pointer(ng-click="sort_by('pubs_repr')") {% trans "Publisher" %}
          span.caret
+       th.mouse-pointer(ng-click="sort_by('distributor')") {% trans "Supplier" %}
+         span.caret
        th.mouse-pointer(ng-click="sort_by('quantity')") {% trans "In stock" %}
          span.caret
        th.mouse-pointer.text-right(ng-click="sort_by('price')") {% trans "Price" %}
@@ -177,6 +179,7 @@ div(ng-cloak, ng-controller="basketsController")
             .col-md-6
 
          td {% trans "Total" %}
+         td
          td
          td
          td {{ 'get_total_price()'|ng}} €
@@ -196,6 +199,7 @@ div(ng-cloak, ng-controller="basketsController")
             a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
             div(ng-show="show_images") {{'it.authors_repr'|ng}}
          td {{ 'it.pubs_repr' | ng }}
+         td {{ 'it.dist_repr' | ng }}
 
          td.text-right {{ 'it.quantity' | ng}}
          td.text-right {{ 'it.price | number:2' | ng }} €
