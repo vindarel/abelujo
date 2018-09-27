@@ -1058,8 +1058,10 @@ class Card(TimeStampedModel):
             # TODO: toujours vendre depuis le lieu par défaut, filtrer par lieu par défaut, pas le first.
             place_obj = self.placecopies_set.filter(card__id=self.id).first()
         else:
-            if self.placecopies_set.count():
+            if self.placecopies_set.count() and place_obj is not None:
                 place_obj = self.placecopies_set.filter(card__id=self.id, place__id=place.id).first()
+            elif self.placecopies_set.count():
+                place_obj = self.placecopies_set.filter(card__id=self.id).first()
             else:
                 return False, {"message": _(u"We can not undo the sell of card {}: \
                 it is not associated to any place. This shouldn't happen.").format(self.title),
