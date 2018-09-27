@@ -35,6 +35,7 @@ install:
     - python manage.py check
 
 test:
+  script:
     # # unit tests fail on CI :/
     - virtualenv .
     - source bin/activate
