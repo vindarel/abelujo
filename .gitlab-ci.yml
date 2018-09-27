@@ -33,6 +33,12 @@ install:
     - echo "running install-nosudo"
     - make install-nosudo
     - python manage.py check
+
+test:
     # # unit tests fail on CI :/
-    # - make pip-dev
-    # - make unit
+    - virtualenv .
+    - source bin/activate
+    - pip install -U pip
+    - make pip-nosudo
+    - make pip-dev
+    - make
