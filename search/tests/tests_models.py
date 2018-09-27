@@ -247,6 +247,11 @@ class TestCards(TestCase):
 
     def test_is_in_stock(self):
         card_dict = self.autobio.to_list()
+        # xxx: strange: card_dict['isbn'] is u"" but to_list()
+        # returns the right thing :S
+        # Without this, this test passes in TestCards, but not in the
+        # full test suite.
+        card_dict['isbn'] = self.autobio.isbn
         card_dict['id'] = None
         other = {
             "title": "doesn't exist",

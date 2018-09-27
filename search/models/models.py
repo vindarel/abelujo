@@ -698,6 +698,12 @@ class Card(TimeStampedModel):
                             "id": it.id }} for it in publishers]
         pubs_repr = self.pubs_repr
 
+        isbn = u""
+        if self.isbn is not None:
+            isbn = self.isbn
+        elif self.ean is not None:
+            isbn = self.ean
+
         if self.distributor:
             dist_repr = self.distributor.to_list()['name']
             dist = self.distributor.to_list()
@@ -728,7 +734,7 @@ class Card(TimeStampedModel):
             "get_absolute_url": get_absolute_url,
             "img": self.img,
             "cover": self.cover, # either the url, either the saved file on file system.
-            "isbn": self.isbn if self.isbn else u"",
+            "isbn": isbn,
             "model": self.__class__.__name__, # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
