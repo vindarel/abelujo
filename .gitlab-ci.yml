@@ -36,7 +36,8 @@ install:
 
 test:
   script:
-    # # unit tests fail on CI :/
+    # # unit tests fail on CI ?
+    - make debian-nosudo
     - virtualenv .
     - source bin/activate
     - pip install -U pip
