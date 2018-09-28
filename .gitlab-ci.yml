@@ -36,7 +36,6 @@ install:
 
 test:
   script:
-    # # unit tests fail on CI ?
     - make debian-nosudo
     - virtualenv .
     - source bin/activate
@@ -44,4 +43,5 @@ test:
     - make pip-nosudo
     - make pip-dev
     - make db
+    - redis-server &  # for redis cache
     - make
