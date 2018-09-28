@@ -43,4 +43,5 @@ test:
     - pip install -U pip
     - make pip-nosudo
     - make pip-dev
+    - make db
     - make
