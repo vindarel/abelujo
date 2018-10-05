@@ -1733,7 +1733,7 @@ class Preferences(models.Model):
 
         Return: tuple list of messages, status code.
         """
-        status = ALERT_SUCCESS
+        # status = ALERT_SUCCESS
         msgs = Messages()
         prefs = Preferences.objects.first()
         if not prefs:
@@ -1869,7 +1869,7 @@ class Basket(models.Model):
         """
         try:
             return Basket.objects.get(name="auto_command").copies.count()
-        except:
+        except Exception:
             return 0
 
     @staticmethod

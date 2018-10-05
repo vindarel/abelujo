@@ -411,7 +411,7 @@ def port_info(nb=0):
     if nb:
         try:
             nb = int(nb)
-        except:
+        except Exception:
             print("{} is a number ?".format(nb))
             return
 

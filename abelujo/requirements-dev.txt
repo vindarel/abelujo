@@ -13,7 +13,7 @@ tox==1.9                # test in a fresh venv, against multiple python versions
 
 ### utils
 sphinx==1.2.3           # documentation system.
-flake8                  # linter
+flake8==3.5             # linter
 autopep8
 pylint
 mccabe                  # cyclomatic complexity

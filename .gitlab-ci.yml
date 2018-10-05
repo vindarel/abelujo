@@ -30,7 +30,7 @@ test:
     - make pip-dev
     - make db
     - redis-server &  # for redis cache
-    - make
+    - make unit
 
 install:
   stage: release

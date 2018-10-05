@@ -1282,6 +1282,7 @@ class TestSellSearch(TestCase):
         sells = Sell.search(deposit_id=self.deposit2.id)
         self.assertEqual(sells['total'], 1)
 
+
 class TestHistory(TestCase):
 
     def setUp(self):
