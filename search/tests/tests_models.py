@@ -172,6 +172,12 @@ class TestCards(TestCase):
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
 
+    def test_shelf_repr(self):
+        self.assertNotEqual("", self.autobio.shelf_repr)
+        self.autobio.shelf = None
+        self.autobio.save()
+        self.assertEqual("", self.autobio.shelf_repr)
+
     def test_add(self):
         found = Card.objects.get(title__icontains="living")
         self.assertTrue(found.authors.all()[0] == self.goldman)
