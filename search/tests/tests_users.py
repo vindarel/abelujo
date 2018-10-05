@@ -22,11 +22,9 @@ Test the user models.
 
 import datetime
 
-from django.contrib import messages
 from django.test import TestCase
 
 from search.models import Bill
-# from search.models import BillCopies
 
 from tests_models import CardFactory
 from tests_models import DistributorFactory

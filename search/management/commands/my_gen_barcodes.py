@@ -22,7 +22,6 @@ Custom management command.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 from tqdm import tqdm
 
 from search.models import Barcode64
@@ -43,7 +42,6 @@ class Command(BaseCommand):
             if ean:
                 if not Barcode64.objects.filter(ean=ean):
                     Barcode64.create_save(ean)
-
 
         # self.stdout.write(self.style.SUCCESS( "All done !")) # django 1.9
         self.stdout.write("All done !")

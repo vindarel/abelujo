@@ -19,7 +19,6 @@
 Huey asynchronous tasks.
 """
 
-import logging
 from huey.contrib.djhuey import db_task
 
 from models import Inventory, InventoryCommand

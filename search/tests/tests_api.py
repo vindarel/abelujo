@@ -21,7 +21,6 @@ import httplib
 import json
 import unittest
 
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -32,14 +31,13 @@ from search import models
 from search.models.api import getSellDict
 from search.models.api import list_from_coma_separated_ints
 from search.models.api import list_to_pairs
-from search.models.common import (ALERT_SUCCESS,
+from search.models.common import (ALERT_SUCCESS,  # noqa: F401
                                   ALERT_ERROR,
                                   ALERT_INFO,
                                   ALERT_WARNING)
 from tests_models import SellsFactory
 from tests_models import PlaceFactory
 from tests_models import PreferencesFactory
-from tests_views import DBFixture
 
 
 class DistributorFactory(DjangoModelFactory):
@@ -67,13 +65,13 @@ class ApiTest(TestCase):
     def setUp(self):
         self.card = CardFactory.create()
         self.sell = SellsFactory.create()
-        models.Sell.sell_cards([{"id":"1", "price_sold":1, "quantity": 1}])
+        models.Sell.sell_cards([{"id": "1", "price_sold": 1, "quantity": 1}])
         self.card_unicode = CardFactory.create(title="title unicode éèà")
         self.params = {
             "cards_id": "1,2",
             "distributor": self.card.distributor.name,
             "name": "depo test from client",
-            "deposit_type": models.DEPOSIT_TYPES_CHOICES[0][1][0][0], # lib, whatever
+            "deposit_type": models.DEPOSIT_TYPES_CHOICES[0][1][0][0],  # lib, whatever
             "initial_nb_copies": 1,
             "minimal_nb_copies": 1,
             "auto_command": "true",
@@ -150,14 +148,13 @@ class ApiTest(TestCase):
 
     def test_api_utils(self):
         self.assertEqual(list_from_coma_separated_ints(""), [])
-        self.assertEqual(list_from_coma_separated_ints("1,2.2,3"), [1,2.2,3])
+        self.assertEqual(list_from_coma_separated_ints("1,2.2,3"), [1, 2.2, 3])
         #xxx: data validation againts invalid input.
         # self.assertEqual(list_from_coma_separated_ints("1,2+3a"), None)
 
         self.assertEqual(getSellDict(['37', '5', '9.8', '10.1', '1', '1']),
                                      [{"id": '37', "price_sold": '9.8', "quantity": '1'},
                                       {"id": '5', "price_sold": '10.1', "quantity": '1'}])
-
 
     def test_places(self):
         resp = self.c.get(reverse("api_places"))
@@ -249,7 +246,7 @@ class TestBaskets(TestCase):
         self.assertEqual(data['msgs'][0]['level'], ALERT_SUCCESS)
 
     def test_basket_delete(self):
-        resp = self.c.post(reverse("api_basket_delete", args=('1')),
+        self.c.post(reverse("api_basket_delete", args=('1')),
                            content_type='application/json')
         baskets = models.Basket.objects.all()
         self.assertFalse(baskets)
@@ -292,7 +289,8 @@ class TestPreferences(TestCase):
 class TestUtils(TestCase):
 
     def test_list_to_pairs(self):
-        self.assertEqual(list_to_pairs([1,0,2,0]), [(1,0), (2,0)])
+        self.assertEqual(list_to_pairs([1, 0, 2, 0]), [(1, 0), (2, 0)])
+
 
 if __name__ == '__main__':
     exit(unittest.main())

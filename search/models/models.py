@@ -273,7 +273,7 @@ class Shelf(models.Model):
     name = models.CharField(unique=True, max_length=CHAR_LENGTH)
 
     def get_absolute_url(self):
-        return "" # TODO: url parameters in stock search to reference a shelf.
+        return ""  # TODO: url parameters in stock search to reference a shelf.
 
     def __unicode__(self):
         #idea: show the nb of cards with that category.
@@ -286,7 +286,7 @@ class Shelf(models.Model):
             'id': self.id,
             'name': self.name,
             # 'cards': Card.objects.filter(shelf=self.id),
-            }
+        }
         return to_ret
 
     def cards(self, to_dict=False):
@@ -332,7 +332,7 @@ class CardType(models.Model):
     @staticmethod
     def search(query):
         if not query:
-            query=""
+            query = ""
         if query == "":
             log.info(u"CardType: we return everything")
             return CardType.objects.all()
@@ -375,7 +375,7 @@ class Barcode64(TimeStampedModel):
         with tempfile.TemporaryFile() as fp:
             try:
                 ean = EAN(ean)
-                fullname = ean.save(fp.name) # to svg by default
+                fullname = ean.save(fp.name)  # to svg by default
                 # We'll include the barcode as a base64-encoded string.
                 eanbase64 = open(fullname, "rb").read().encode("base64").replace("\n", "")
                 return eanbase64
@@ -425,7 +425,7 @@ class Card(TimeStampedModel):
     #: Shelf (for now, only one shelf).
     shelf = models.ForeignKey("Shelf", blank=True, null=True)
     # location = models.ForeignKey(Location, blank=True, null=True)
-        #    default=u'?', on_delete=models.SET_DEFAULT)
+    #    default=u'?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True)
     #: when and how this card was sold: sells (see the Sell table).
@@ -673,7 +673,6 @@ class Card(TimeStampedModel):
 
         return ""
 
-
     def to_list(self, in_deposits=False):
         """
         Return a *dict* of this card's fields.
@@ -691,7 +690,7 @@ class Card(TimeStampedModel):
         authors_repr = self.authors_repr
         publishers = self.publishers.all()
         pubs = [{'fields': {'name': it.name,
-                            "id": it.id }} for it in publishers]
+                            "id": it.id}} for it in publishers]
         pubs_repr = self.pubs_repr
 
         isbn = u""
@@ -719,7 +718,7 @@ class Card(TimeStampedModel):
             "authors": auth,
             "authors_repr": authors_repr,
             "collection": self.collection.name.capitalize() if self.collection else None,
-            "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
+            "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
             "data_source": self.data_source,
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
             "details_url": self.details_url,
@@ -729,9 +728,9 @@ class Card(TimeStampedModel):
             "fmt": self.fmt,
             "get_absolute_url": get_absolute_url,
             "img": self.img,
-            "cover": self.cover, # either the url, either the saved file on file system.
+            "cover": self.cover,  # either the url, either the saved file on file system.
             "isbn": isbn,
-            "model": self.__class__.__name__, # useful to sort history.
+            "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
             "price_sold": self.price_sold,
@@ -768,7 +767,6 @@ class Card(TimeStampedModel):
 
         return [card.to_list(in_deposits=in_deposits) for card in cards]
 
-
     @staticmethod
     def first_cards(nb, to_list=False):
         """get the first n cards from our collection (very basic, to test)
@@ -778,14 +776,12 @@ class Card(TimeStampedModel):
             ret = Card.obj_to_list(ret)
         return ret
 
-
     @staticmethod
     def cards_in_stock():
         """Return all cards in stock (will not return ones that are only in
         deposits or in lists).
         """
         return Card.objects.filter(in_stock=True).order_by('id').all()
-
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, distributor_id=None,
@@ -837,7 +833,7 @@ class Card(TimeStampedModel):
 
             if len(words) > 1:
                 for elt in words[1:]:
-                    cards = cards.filter(Q(title__icontains=elt)|
+                    cards = cards.filter(Q(title__icontains=elt) |
                                          Q(authors__name__icontains=elt))
 
         elif not isbns:
@@ -956,7 +952,6 @@ class Card(TimeStampedModel):
 
         return cards
 
-
     @staticmethod
     def get_from_id_list(cards_id):
         """cards_id: list of card ids
@@ -1017,7 +1012,6 @@ class Card(TimeStampedModel):
                     log.error(u"Card.sell error filtering the place {} by id {}: {}".format(place_id, id, e))
                     return (None, MSG_INTERNAL_ERROR)  # xxx to be propagated
 
-
             else:
                 # Take the first place this card is present in.
                 if card.placecopies_set.count():
@@ -1055,7 +1049,7 @@ class Card(TimeStampedModel):
         """
         msgs = Messages()
         place_obj = place
-        deposit_obj = deposit
+        # deposit_obj = deposit
         if not place_obj and place_id:
             # TODO: toujours vendre depuis le lieu par défaut, filtrer par lieu par défaut, pas le first.
             place_obj = self.placecopies_set.filter(card__id=self.id).first()
@@ -1181,7 +1175,7 @@ class Card(TimeStampedModel):
 
         msgs = Messages()
         msg_success = _("The card was created successfully.")
-        msg_exists = _("This card already exists.")
+        # msg_exists = _("This card already exists.")
 
         # Unknown years is okay
         year = card.get('year', None)
@@ -1196,7 +1190,7 @@ class Card(TimeStampedModel):
         card_authors = []
         if card.get('authors'):
             auts = card.get('authors')
-            if type(auts) != type([]):
+            if not isinstance(auts, list):
                 auts = [auts]
             if type(auts[0]) in [type("string"), type(u"unicode-str")]:
                 for aut in auts:
@@ -1212,7 +1206,7 @@ class Card(TimeStampedModel):
             isbn = isbn_cleanup(isbn)
 
         # Get the distributor:
-        card_distributor=None
+        card_distributor = None
         if card.get("distributor"):
             try:
                 card_distributor = Distributor.objects.get(id=card.get("distributor"))
@@ -1247,7 +1241,7 @@ class Card(TimeStampedModel):
         date_publication = None
         if card.get('date_publication') and not is_invalid(card.get('date_publication')):
             try:
-                date_publication = dateparser.parse(card.get('date_publication')) # also languages=['fr']
+                date_publication = dateparser.parse(card.get('date_publication'))  # also languages=['fr']
             except Exception as e:
                 log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
 
@@ -1287,8 +1281,8 @@ class Card(TimeStampedModel):
             card_obj, created = Card.objects.get_or_create(
                 title=card.get('title'),
                 year_published=year,
-                price = card.get('price',  0),
-                price_sold = card.get('price_sold',  0),
+                price = card.get('price', 0),
+                price_sold = card.get('price_sold', 0),
                 isbn = isbn,
                 fmt = card.get('fmt'),
                 has_isbn = card.get('has_isbn'),
@@ -1385,7 +1379,7 @@ class Card(TimeStampedModel):
 
         # We add a card in the stock when we buy it (add it in a place).
         in_stock = False
-        if card.has_key('in_stock') and card['in_stock']:
+        if 'in_stock' in card and card['in_stock']:
             in_stock = card.get('in_stock')
         try:
             card_obj.in_stock = in_stock
@@ -1427,7 +1421,7 @@ class Card(TimeStampedModel):
     def ambiguous_sell(self):
         in_deposits = self.quantity_deposits()
         # or equal, because this check happens after a sell: the quantity has been decremented.
-        return  self.is_in_deposits() and  in_deposits > 0 and (self.quantity >= in_deposits)
+        return self.is_in_deposits() and in_deposits > 0 and (self.quantity >= in_deposits)
 
     @staticmethod
     def never_sold(page=None, pagecount=20):
@@ -1526,7 +1520,7 @@ class Place (models.Model):
     def get_absolute_url(self):
         prefs = Preferences.prefs()
         return "/{}/databasesearch/place/{}/".format(prefs.language if prefs.language else "en",
-                                                     self.id) # TODO: url paramaters for stock search
+                                                     self.id)  # TODO: url paramaters for stock search
 
     @staticmethod
     def card_to_default_place(card_obj, nb=1):
@@ -1577,7 +1571,7 @@ class Place (models.Model):
             "can_sell": self.can_sell,
             "inventory_ongoing": self.inventory_ongoing,
             "comment": self.comment,
-            }
+        }
 
     def add_copy(self, card, nb=1, add=True):
         """Adds the given number of copies (1 by default) of the given
@@ -1592,7 +1586,7 @@ class Place (models.Model):
         - nothing
 
         """
-        if not type(nb) == type(1):
+        if not isinstance(nb, int):
             # log.warning("nb '{}' is not an int: the quantity was malformed".format(nb))
             nb = 1
 
@@ -1609,7 +1603,7 @@ class Place (models.Model):
             card.in_stock = True
             card.save()
 
-        except Exception,e:
+        except Exception, e:
             log.error(u"Error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
             return 0
@@ -1660,7 +1654,6 @@ class Place (models.Model):
             return self.placecopies_set.count()
         except Exception as e:
             log.error(u"Error getting the total of titles in place {}: {}".format(self.name, e))
-
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?
@@ -1718,7 +1711,7 @@ class Preferences(models.Model):
     language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
 
     def __unicode__(self):
-        return u"default place: {}, vat: {}".format(self.default_place.name,self.vat_book)
+        return u"default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
 
     @staticmethod
     def prefs():
@@ -1732,7 +1725,6 @@ class Preferences(models.Model):
             prefs.save()
 
         return prefs
-
 
     @staticmethod
     def setprefs(**kwargs):
@@ -1756,7 +1748,7 @@ class Preferences(models.Model):
                         prefs.save()
                     except Exception as e:
                         log.error(u"Error while setting preferences: {}".format(e))
-                        status = ALERT_ERROR
+                        # status = ALERT_ERROR
 
                 elif key == 'vat_book':
                     try:
@@ -1788,7 +1780,7 @@ class Preferences(models.Model):
         """
         try:
             vat = Preferences.objects.first().vat_book
-        except Exception as e:
+        except Exception:
             vat = None
 
         return vat
@@ -1897,8 +1889,8 @@ class Basket(models.Model):
         try:
             b_obj = Basket.objects.create(name=name)
             b_obj.save()
-            msg = {'level': ALERT_SUCCESS,
-                   'message': _("New basket created")}
+            # msg = {'level': ALERT_SUCCESS,
+            # 'message': _("New basket created")}
         except Exception as e:
             log.error(u"Pb when trying to create a new basket: {}".format(e))
             msgs.add_error(_("We could not create a new basket. This is an internal error."))
@@ -1918,7 +1910,7 @@ class Basket(models.Model):
             basket_copy.nb += nb
             basket_copy.save()
         except Exception as e:
-            log.error(u"Error while adding a card to basket %s: %s" % (self.name,e))
+            log.error(u"Error while adding a card to basket %s: %s" % (self.name, e))
 
     def set_copy(self, card=None, nb=1, card_id=None):
         """Set the given card's quantity.
@@ -1962,8 +1954,7 @@ class Basket(models.Model):
                 log.error(u"Error while getting card of id {}: {}".format(id, e))
                 return {'level': ALERT_ERROR, 'message': "Internal error"}
 
-        return {'level': ALERT_SUCCESS, 'message':_(u"The cards were successfully added to the basket '{}'".format(self.name))}
-
+        return {'level': ALERT_SUCCESS, 'message': _(u"The cards were successfully added to the basket '{}'".format(self.name))}
 
     def remove_copy(self, card_id):
         """Remove the given card (id) from the basket.
@@ -2209,7 +2200,7 @@ class DepositState(models.Model):
                 else:
                     qty = nb
 
-                if type(copy) == type('str'):
+                if isinstance(copy, str):
                     copy = Card.objects.get(id=copy)
 
                 depositstate_copy, created = self.depositstatecopies_set.get_or_create(card=copy)
@@ -2233,7 +2224,7 @@ class DepositState(models.Model):
         msgs = Messages()
         try:
             copies = self.depositstatecopies_set.filter(card__id=card.id)
-        except Exception as e:
+        except Exception:
             msgs.add_warning(_(u"The card {} was not found on this deposit.".format(card.title)))
             return msgs.status, msgs.msgs
 
@@ -2254,7 +2245,6 @@ class DepositState(models.Model):
 
         return msgs.status, msgs.msgs
 
-
     def sell_undo(self, card, quantity=1):
         """
         Undo the sell of the given card for this deposit.
@@ -2267,7 +2257,6 @@ class DepositState(models.Model):
             deposit_state.nb_current += quantity
             deposit_state.save()
             return deposit_state.nb_current
-
 
     def update_soldcards(self, cards_sells):
         """Add cards to this deposit state.
@@ -2289,11 +2278,11 @@ class DepositState(models.Model):
                 if created:
                     depostate_copy.save()
                 # Keep sells that are not already registered
-                ids = [it.id for it in depostate_copy.sells.all()] # values_list('id', flat=True)
+                ids = [it.id for it in depostate_copy.sells.all()]  # values_list('id', flat=True)
                 to_add = filter(lambda it: it.sell.id not in ids, sells)
                 depostate_copy.add_sells(to_add)
                 depostate_copy.nb_current -= len(to_add)
-                depostate_copy.nb_to_return = -1 #TODO: see DepositCopies due_date
+                depostate_copy.nb_to_return = -1  # TODO: see DepositCopies due_date
                 depostate_copy.save()
 
         except Exception as e:
@@ -2344,7 +2333,7 @@ class DepositState(models.Model):
             depostate = self.depositstatecopies_set.first()
             sells = depostate.sells.all()
             total_price_init = sum([it.total_price_init for it in sells])
-            balance["total"]["total_price_init"] = total_price_init
+            balance["total"]["total_price_init"] = self.total_price()  # todo: find original meaning !
             total_price_sold = sum([it.total_price_sold for it in sells])
             discount = self.deposit.distributor.discount if self.deposit.distributor else 0
             total_to_pay = total_price_init * discount / 100 if discount else total_price_sold
@@ -2466,7 +2455,6 @@ class Deposit(TimeStampedModel):
     #: Comment.
     comment = models.TextField(null=True, blank=True)
 
-
     class Meta:
         ordering = ("name",)
 
@@ -2585,7 +2573,7 @@ class Deposit(TimeStampedModel):
         msgs = Messages()
         try:
             for (i, copy) in enumerate(copies):
-                if type(copy) == type('str'):
+                if isinstance(copy, str):
                     copy = Card.objects.get(id=copy)
 
                 if not copy.distributor and self.distributor:
@@ -2672,7 +2660,7 @@ class Deposit(TimeStampedModel):
             for copy in copies_to_add:
                 copy_depos = copy.deposit_set.all()
                 if copy_depos:
-                    message=_(dedent(u"""Hey ! We won't create this deposit
+                    message = _(dedent(u"""Hey ! We won't create this deposit
                     because the card '{}' is already in the
                     deposit '{}'""".format(
                         copy.title, copy_depos[0].name)))
@@ -2786,7 +2774,6 @@ class Deposit(TimeStampedModel):
             msgs.add_error(_(u"Error undoing the sell of card '{}' for deposit {}".format(card.title, self.name)))
             return msgs.status, msgs.msgs
 
-
     def quantity_of(self, card):
         """How many copies of this card do we have ?
 
@@ -2852,16 +2839,15 @@ class Deposit(TimeStampedModel):
 
         return: tuple (DepositState object or None, list of messages (str))
         """
-
         msgs = Messages()
         cur_depostate = DepositState.existing(self)
         if cur_depostate and not cur_depostate.closed:
-            return None, [_("Hey oh, a deposit state for this deposit already exists. \
+            return self.last_checkout(), [_("Hey oh, a deposit state for this deposit already exists. \
             Please close it before opening a new one.")]
 
         last_checkout = self.last_checkout()
 
-        sold_cards = [] # list of dict card, list of sell objects
+        sold_cards = []  # list of dict card, list of sell objects
         # Register the cards associated with the deposit at that time
         # and their corresponding sells.
         now = timezone.now()
@@ -3001,7 +2987,7 @@ class Sell(models.Model):
     """
     created = models.DateTimeField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True)
-    payment = models.CharField(choices=PAYMENT_CHOICES, #XXX: table
+    payment = models.CharField(choices=PAYMENT_CHOICES,  # XXX: table
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
                                blank=True, null=True)
@@ -3019,6 +3005,7 @@ class Sell(models.Model):
         return u"Sell {} of {} copies at {}.".format(self.id,
                                                      self.soldcards_set.count(),
                                                      self.created)
+
     @property
     def total_price_sold(self):
         total = 0
@@ -3045,7 +3032,7 @@ class Sell(models.Model):
                page=None,
                page_size=None,
                sortby=None,
-               sortorder=0, # "-"
+               sortorder=0,  # "-"
                to_list=False):
         """Search for the given card id in sells more recent than "date_min".
 
@@ -3104,7 +3091,6 @@ class Sell(models.Model):
             return sells.count()
             return sells
 
-
         # Sorting.
         # Built in DRF ?
         sortsign = "-"
@@ -3148,7 +3134,7 @@ class Sell(models.Model):
         total_copies_sold = sum([it['quantity'] for it in cards_sold])
         ret = {
             "id": self.id,
-            "created": self.created.strftime(DATE_FORMAT), #YYYY-mm-dd
+            "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
             "cards": cards_sold,
             "place_id": self.place.id if self.place else None,
             "deposit_id": self.deposit.id if self.deposit else None,
@@ -3158,7 +3144,7 @@ class Sell(models.Model):
             "total_price_sold": self.total_price_sold,
             "details_url": "/admin/search/{}/{}".format(self.__class__.__name__.lower(), self.id),
             "model": self.__class__.__name__,
-            }
+        }
 
         return ret
 
@@ -3184,7 +3170,7 @@ class Sell(models.Model):
         return: a 3-tuple (the Sell object, the global status, a list of messages).
 
         """
-        alerts = [] # error messages
+        alerts = []  # error messages
         status = ALERT_SUCCESS
         cards_obj = []
         sell = None
@@ -3205,7 +3191,7 @@ class Sell(models.Model):
             date = timezone.now()
         else:
             # create a timezone aware date
-            if type(date) == type('str'):
+            if isinstance(date, str):
                 date = datetime.datetime.strptime(date, DATE_FORMAT)
                 date = pytz.utc.localize(date, pytz.UTC)
 
@@ -3253,7 +3239,8 @@ class Sell(models.Model):
 
             # Create an alert ?
             if card.ambiguous_sell():
-                alert = Alert(card=card); alert.save()
+                alert = Alert(card=card)
+                alert.save()
                 alert.add_deposits_of_card(card)
                 #TODO: ajouter les messages pour la UI
                 # msgs.append
@@ -3289,7 +3276,7 @@ class Sell(models.Model):
                 if not silence:
                     log.error(msg)
                 alerts.append({"message": msg,
-                               "level": ALERT_WARNING,})
+                               "level": ALERT_WARNING, })
                 status = ALERT_WARNING
                 continue
             quantity = ids_prices_nb[i].get("quantity", 1)
@@ -3436,7 +3423,7 @@ class Alert(models.Model):
 
     def get_absolute_url(self):
         # return reverse("sell_view", args=(self.id,))
-        return "not_implemented" #TODO: view a sell
+        return "not_implemented"  # TODO: view a sell
 
     def obj_to_list(self):
         resolution = self.date_resolution
@@ -3484,7 +3471,7 @@ class InventoryCopiesBase(models.Model):
         return {
             "card": self.card.to_dict(),
             "quantity": self.quantity,
-            }
+        }
 
 
 class InventoryCopies(InventoryCopiesBase):
@@ -3546,7 +3533,6 @@ class InventoryBase(TimeStampedModel):
         """
         raise NotImplementedError
 
-
     def nb_copies(self):
         """How many exemplaries in total.
         """
@@ -3598,7 +3584,7 @@ class InventoryBase(TimeStampedModel):
             "id": self.id,
             "name": self.name,
             "get_absolute_url": self.get_absolute_url(),
-            }
+        }
 
         if details:
             ret["applied"] = self.applied
@@ -3683,7 +3669,7 @@ class InventoryBase(TimeStampedModel):
         ask to *set* the quantity, not add them).
 
         """
-        if type(nb) == type("str"):
+        if isinstance(nb, str):
             nb = int(nb)
         try:
             inv_copies, created = self.copies_set.get_or_create(card=copy)
@@ -3697,7 +3683,6 @@ class InventoryBase(TimeStampedModel):
             return None
 
         return inv_copies.quantity
-
 
     def remove_card(self, card_id):
         """
@@ -3797,7 +3782,7 @@ class InventoryBase(TimeStampedModel):
         total_copies_in_stock = sum([it['quantity'] for _, it in d_stock.iteritems()])
 
         # cards in stock but not in the inventory:
-        in_stock = list(set(d_stock) - set(d_inv)) # list of ids
+        in_stock = list(set(d_stock) - set(d_inv))  # list of ids
         in_stock = {it: d_stock[it] for it in in_stock}
 
         # cards in the inventory but not in stoc:
@@ -3806,10 +3791,10 @@ class InventoryBase(TimeStampedModel):
 
         # Difference of quantities:
         # diff = quantity original - quantity found in inventory
-        d_diff = {} # its quantity is: "how many the inventory has more or less compared with the stock"
+        d_diff = {}  # its quantity is: "how many the inventory has more or less compared with the stock"
         for id, val in d_inv.iteritems():
             d_diff[id] = {}
-            d_diff[id]['in_orig'] = True # i.e. in place/basket of origin, we get the diff from
+            d_diff[id]['in_orig'] = True  # i.e. in place/basket of origin, we get the diff from
             d_diff[id]['in_inv'] = True
             d_diff[id]['inv'] = val['quantity']
             d_diff[id]['card'] = val['card']
@@ -3841,7 +3826,6 @@ class InventoryBase(TimeStampedModel):
 
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
-
     @staticmethod
     def apply_inventory(pk):
         raise NotImplementedError
@@ -3861,7 +3845,9 @@ class InventoryBase(TimeStampedModel):
         elif hasattr(self, "place") and self.place:
             place_or_deposit = self.place
         else:
-            place_or_deposit = Place.objects.get(id=1) # default place. That could be improved.
+            # xxx use get_default_place ?
+            # TODO: when inventoring a shelf, also choose a place !
+            place_or_deposit = Place.objects.get(id=1)  # default place. That could be improved.
 
         # Shall we set the quantities of these cards in the stock or sum them to the existing ?
         add_qty = False
@@ -3961,16 +3947,16 @@ def shelf_age_sort_key(it):
     Return: a dict of lists with card objects. The keys (0,…4) represent days intervals.
 
     """
-    it = ( timezone.now() - ( it.last_sell() or it.created ) ).days
-    if it <= 91: # 3 months
+    it = (timezone.now() - (it.last_sell() or it.created)).days
+    if it <= 91:  # 3 months
         return 0
-    elif it <= 182: # 6 months
+    elif it <= 182:  # 6 months
         return 1
     elif it <= 365:
         return 2
-    elif it <= 547: # 18 months
+    elif it <= 547:  # 18 months
         return 3
-    elif it <= 730: # 24 months
+    elif it <= 730:  # 24 months
         return 4
     else:
         return 5
@@ -3979,7 +3965,7 @@ def get_total_cost():
     """Calculate the total cost of My Stock.
     """
     try:
-        price_qties =  [(it.price, it.quantity) for it in Card.objects.all()]
+        price_qties = [(it.price, it.quantity) for it in Card.objects.all()]
         price_qties = filter(lambda it: it[0] is not None, price_qties)
         total_cost = sum([it[0] * it[1] for it in price_qties])
         return total_cost
@@ -4003,7 +3989,7 @@ class Stats(object):
 
         """
         places = Place.objects.all()
-        default_place = Preferences.get_default_place()
+        # default_place = Preferences.get_default_place()
         # XXX: Everything below needs unit tests.
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
@@ -4105,7 +4091,7 @@ class Stats(object):
         sells_obj = Sell.search(date_min=month_beg, date_max=month_end, page_size=None)
 
         # Add the quantity sold of each card.
-        best_sells = {} # title -> qty
+        best_sells = {}  # title -> qty
         # and count the total revenue
         nb_sold_cards = sells_obj['total']
         revenue = 0
@@ -4122,7 +4108,6 @@ class Stats(object):
         for (title, qty) in best_sells.iteritems():
             res.append({'title': title, 'quantity': qty})
 
-
         # Sort by decreasing qty
         res = sorted(res, key=lambda it: it['quantity'], reverse=True)
 
@@ -4137,7 +4122,7 @@ class Stats(object):
             "nb_sold_cards": nb_sold_cards,
             "mean": roundfloat(sell_mean),
             # nb of sells
-            }
+        }
 
         return to_ret
 
@@ -4166,7 +4151,7 @@ class Stats(object):
 
         # Have a dict with all keys (easier for plotting charts)
         for key in range(6):
-            if not stats.has_key(key):
+            if key not in stats:
                 stats[key] = []
 
         # to dict
@@ -4422,19 +4407,19 @@ class Command(TimeStampedModel):
         """
         try:
             return sum([it.quantity for it in self.commandcopies_set.all()])
-        except Exception as e:
+        except Exception:
             return None
 
     def total_value_inctaxes(self):
         try:
             return sum([it.value_inctaxes for it in self.commandcopies_set.all()])
-        except Exception as e:
+        except Exception:
             return None
 
     def total_value(self):
         try:
             return sum([it.value for it in self.commandcopies_set.all()])
-        except Exception as e:
+        except Exception:
             return None
 
     def to_dict(self):
@@ -4495,7 +4480,7 @@ class Command(TimeStampedModel):
 
         elif publisher_id:
             try:
-                pub_obj = Publisher.objects.get(id=publisher_id) # XXX refacto: catch error and return msgs
+                pub_obj = Publisher.objects.get(id=publisher_id)  # XXX refacto: catch error and return msgs
             except ObjectDoesNotExist:
                 msgs.add_error(u"The publisher of id {} does not seem to exist".format(publisher_id))
 

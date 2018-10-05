@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from search.views import get_reverse_url
-
-from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 

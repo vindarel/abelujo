@@ -79,7 +79,7 @@ PAGE_SIZE = 25
 def get_user_info(request, **response_kwargs):
     """
     """
-    data = {'data': {'username': request.user.username,}}
+    data = {'data': {'username': request.user.username, }}
     return JsonResponse(data)
 
 def preferences(request, **response_kwargs):
@@ -94,7 +94,7 @@ def preferences(request, **response_kwargs):
         except Exception as e:
             log.error('Error while getting the Preferences: {}'.format(e))
             return JsonResponse({"status": ALERT_ERROR,
-                                 'data':ret})
+                                 'data': ret})
 
         ret['data'] = PreferencesSerializer(pref).data
         ret['status'] = ALERT_SUCCESS
@@ -161,7 +161,7 @@ def datasource_search(request, **response_kwargs):
 
     data = {"data": res,
             "alerts": traces,
-            "status": 200,}
+            "status": 200, }
     return JsonResponse(data)
 
 def cards(request, **response_kwargs):
@@ -188,7 +188,7 @@ def cards(request, **response_kwargs):
     deposit_id = request.GET.get("deposit_id")
     shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
-    bought = request.GET.get("in_stock")
+    # bought = request.GET.get("in_stock")
 
     # pagination
     page = request.GET.get("page", 1)
@@ -213,8 +213,8 @@ def cards(request, **response_kwargs):
                              page=page,
                              page_size=page_size)
     # XXX: :return the msgs.
-    msgs = Messages()
-    msgs = meta.get('msgs')
+    # msgs = Messages()
+    # msgs = meta.get('msgs')
 
     lang = request.GET.get("lang")
     # Search our stock on a keyword search, but search also the web on an isbn search,
@@ -230,7 +230,7 @@ def cards(request, **response_kwargs):
             if data:
                 try:
                     # We need to wait for it to get its id.
-                    card, _= Card.from_dict(data[0], to_list=True)
+                    card, _ = Card.from_dict(data[0], to_list=True)
                     data = [card]
                 except Exception as e:
                     log.warning(u"Error while adding card from isbn search in db: {}".format(e))
@@ -320,8 +320,7 @@ def card_create(request, **response_kwargs):
         except Exception as e:
             log.error(u"Error adding a card: {}".format(e))
             alerts.append({"level": ALERT_ERROR,
-                           "message":_("Woops, we can not create this card. This is a bug.")})
-
+                           "message": _("Woops, we can not create this card. This is a bug.")})
 
         return JsonResponse(msgs)
 
@@ -337,13 +336,13 @@ def card_add(request, **response_kwargs):
     if request.method == "POST":
         params = request.POST.copy()
         status = httplib.OK
-        alerts = []
-        data = []
+        # alerts = []
+        # data = []
 
         pk = response_kwargs.pop("pk")
         card_obj = Card.objects.get(id=pk)
 
-        distributor_id = params.get('distributor_id')
+        # distributor_id = params.get('distributor_id')
         shelf_id = params.get("shelf_id")
         deposits_ids_qties = params.get('deposits_ids_qties')
         baskets_ids_qties = params.get('baskets_ids_qties')
@@ -473,8 +472,8 @@ def getSellDict(lst):
     (Note: this shitty stuff comes from angular and django pb of encoding parameters. See services.js)
     """
     to_sell = []
-    for i in xrange(len(lst)/3):
-        sub = lst[i::len(lst)/3]
+    for i in xrange(len(lst) / 3):
+        sub = lst[i::len(lst) / 3]
         to_sell.append({"id": sub[0],
                         "price_sold": sub[1],
                         "quantity": sub[2]})
@@ -492,7 +491,7 @@ def deposits(request, **response_kwargs):
         params = request.POST.copy()
         # TODO: validation. Use django-angular.
         if params.get("distributor") == "null":
-            pass #return validation error
+            pass  # return validation error
 
         try:
             cards_id = list_from_coma_separated_ints(params.get("cards_id"))
@@ -510,20 +509,20 @@ def deposits(request, **response_kwargs):
                     return HttpResponse(json.dumps({
                         "data": {},
                         "messages": [{'level': ALERT_WARNING,
-                                      'message': _(u'Please provide a supplier'),}]
-                        }))
+                                      'message': _(u'Please provide a supplier'), }]
+                    }))
                 distributor_obj = distributor_obj[0]
 
             deposit_dict = {
-                "name"              : params.get("name"),
-                "distributor"       : distributor_obj,
-                "copies"            : cards_obj,
-                "quantities"        : cards_qty,
-                "deposit_type"      : params.get("deposit_type"),
-                "minimal_nb_copies" : params.get("minimal_nb_copies"),
-                "auto_command"      : params.get("auto_command"),
-                "due_date"          : params.get("due_date"),
-                "dest_place"        : params.get("dest_place"),
+                "name": params.get("name"),
+                "distributor": distributor_obj,
+                "copies": cards_obj,
+                "quantities": cards_qty,
+                "deposit_type": params.get("deposit_type"),
+                "minimal_nb_copies": params.get("minimal_nb_copies"),
+                "auto_command": params.get("auto_command"),
+                "due_date": params.get("due_date"),
+                "dest_place": params.get("dest_place"),
             }
 
             # that's a form validation...
@@ -580,7 +579,7 @@ def sell(request, **response_kwargs):
        - level: is either "success", "danger" or "",
        - message: is a str of the actual message to display.
     """
-    alerts = [] # list of dicts with "level" and "message".
+    alerts = []  # list of dicts with "level" and "message".
     success_msg = [{"level": "success",
                     "message": _("Sell successfull.")}]
 
@@ -594,7 +593,7 @@ def sell(request, **response_kwargs):
 
         #TODO: data validation
         if params.get("to_sell") == "null":
-            pass #TODO: return and display an error.
+            pass  # TODO: return and display an error.
         to_sell = list_from_coma_separated_ints(params.get("to_sell"))
         to_sell = getSellDict(to_sell)
         date = params.get("date")
@@ -605,12 +604,11 @@ def sell(request, **response_kwargs):
         if deposit_id and deposit_id not in [0, "0"]:
             # 0 is the default client side but doesn't exist.
             try:
-                deposit_obj = Deposit.objects.get(id=deposit_id)
+                deposit_obj = Deposit.objects.get(id=deposit_id)  # noqa: F841
             except ObjectDoesNotExist:
                 log.error(u"Couldn't get deposit of id {}.".format(deposit_id))
             except Exception as e:
                 log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
-
 
         # Sell from a place.
         try:
@@ -638,7 +636,7 @@ def sell(request, **response_kwargs):
             'data': sells['data'],
             'status': status,
             'alerts': [],
-            }
+        }
         return JsonResponse(ret)
 
 def sell_undo(request, pk, **response_kwargs):
@@ -663,6 +661,7 @@ def sell_undo(request, pk, **response_kwargs):
                   "alerts": msgs}
         return JsonResponse(to_ret)
 
+
 TO_RET = {"status": ALERT_SUCCESS,
           "alerts": [],
           "data": []}
@@ -677,7 +676,7 @@ def history_sells(request, **response_kwargs):
     status = ALERT_SUCCESS
     if request.method == "GET":
         params = request.GET.copy()
-        distributor_id = params.get('distributor_id')
+        # distributor_id = params.get('distributor_id')
         page = params.get('page', 1)
         if page is not None:
             page = int(page)
@@ -706,7 +705,7 @@ def history_sells(request, **response_kwargs):
 
 def history_entries(request, **response_kwargs):
     if request.method == "GET":
-        params = request.GET.copy()
+        # params = request.GET.copy()
         entries, status, alerts = history.Entry.history()
         to_ret = TO_RET
         to_ret['data'] = entries
@@ -716,10 +715,10 @@ def history_entries(request, **response_kwargs):
 def auto_command_total(request, **response_kwargs):
     total = -1
     if request.method == "GET":
-        params = request.GET.copy()
+        # params = request.GET.copy()
         try:
             total = Basket.auto_command_nb()
-        except Exception as e:
+        except Exception:
             pass
     return JsonResponse(total, safe=False)
 
@@ -737,7 +736,7 @@ def auto_command_basket(request, action="", **response_kwargs):
     page = 1
     page_size = PAGE_SIZE
     num_pages = 0
-    meta = {}
+    # meta = {}
 
     try:
         basket = Basket.objects.get(id=AUTO_COMMAND_ID)
@@ -745,7 +744,7 @@ def auto_command_basket(request, action="", **response_kwargs):
         log.error(u"Error while getting autocommand basket: {}".format(e))
         msgs.append(e.message)
         to_ret['status'] = False
-        return JsonResponse(to_ret) # also return error message.
+        return JsonResponse(to_ret)  # also return error message.
 
     if request.method == 'GET':
         if to_int(request.GET.get('dist_id')) == -1:
@@ -754,7 +753,7 @@ def auto_command_basket(request, action="", **response_kwargs):
 
             page = to_int(request.GET.get('page', 1))
             page_size = to_int(request.GET.get('page_size', page_size))
-            copies_no_dist = copies_no_dist[page_start_index(page) : page * page_size]
+            copies_no_dist = copies_no_dist[page_start_index(page): page * page_size]
             copies_no_dist = [it.to_dict() for it in copies_no_dist]
             to_ret = {
                 'copies_no_dist': copies_no_dist,
@@ -775,12 +774,12 @@ def auto_command_basket(request, action="", **response_kwargs):
         nb_copies_no_dist = copies_no_dist.count()
         nb_results = nb_results + nb_copies_no_dist
 
-        num_pages = get_page_count(copies_no_dist) # better with Django's paginator
+        num_pages = get_page_count(copies_no_dist)  # better with Django's paginator
         to_ret['page_count'] = num_pages
         to_ret['data_length'] = nb_results
         if page:
             page = int(page)
-            copies_no_dist = copies_no_dist[page_start_index(page) : page * page_size]
+            copies_no_dist = copies_no_dist[page_start_index(page): page * page_size]
 
         ret = [it.to_dict() for it in copies]
         to_ret['data'] = ret
@@ -834,7 +833,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         log.info(u"Couldn't get basket of id {}: {}".format(pk, e))
         msgs.append(e.message)
         to_ret['status'] = False
-        return JsonResponse(to_ret) # xxx: also return error message.
+        return JsonResponse(to_ret)  # xxx: also return error message.
 
     if request.method == "GET":
         if to_int(pk) == AUTO_COMMAND_ID:
@@ -846,11 +845,11 @@ def basket(request, pk, action="", card_id="", **kwargs):
         copies = basket.basketcopies_set.order_by("card__title").all()
         nb_results = copies.count()
         to_ret['data_length'] = nb_results
-        num_pages = get_page_count(copies) # better with Django's paginator
+        num_pages = get_page_count(copies)  # better with Django's paginator
         to_ret['page_count'] = num_pages
         if page:
             page = int(page)
-            copies = copies[page_start_index(page) : page * page_size]
+            copies = copies[page_start_index(page): page * page_size]
         ret = [it.to_dict() for it in copies]
         to_ret['data'] = ret
         to_ret['basket_name'] = basket.name
@@ -902,7 +901,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                     except Exception as e:
                         log.error(u"Error trying to set the distributor of the cards, for basket {}: {}".
                                 format(basket.id, e))
-                        return  ##xxx error message
+                        return  # xxx error message
 
                 try:
                     msg = basket.add_cards(basket_orig.copies.all())
@@ -910,7 +909,6 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 except Exception as e:
                     log.error(u'Error while adding cards of basket {} to basket {}: {}'.
                             format(basket_id, pk, e))
-
 
         # Add cards from card dicts, not in db yet (from the Searchresults view or a Vue Basket).
         if action and action == "add" and req.get('cards'):
@@ -976,7 +974,6 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 msgs.append({'level': 'error',
                              'message': _("We couldn't set this list as a deposit. Sorry !")})
 
-
     to_ret['status'] = status
     to_ret['data'] = data
     to_ret['msgs'] = msgs
@@ -987,7 +984,7 @@ def baskets(request, **kwargs):
     the list of its copies.
     """
     if request.method == "GET":
-        params = request.GET.copy()
+        # params = request.GET.copy()
         msgs = []
         nb_results = None
         meta = {}
@@ -1037,7 +1034,7 @@ def baskets(request, **kwargs):
         to_ret = {"status": status,
                   "alerts": msgs,
                   "data": data,
-                  "meta": meta,}
+                  "meta": meta, }
         return JsonResponse(to_ret)
 
 def baskets_create(request, **response_kwargs):
@@ -1067,7 +1064,7 @@ def baskets_update(request, pk, **response_kwargs):
     # see also baskets and its actions above.
     to_ret = {"data": [],
               "alerts": [],
-              "status": ALERT_SUCCESS,}
+              "status": ALERT_SUCCESS, }
     if request.method == "POST":
         try:
             basket = Basket.objects.get(id=pk)
@@ -1078,7 +1075,7 @@ def baskets_update(request, pk, **response_kwargs):
         # fields are in request.body
         params = json.loads(request.body)
         comment = params.get('comment')
-        if comment is not None: # accept ""
+        if comment is not None:  # accept ""
             basket.comment = comment
             basket.save()
 
@@ -1104,7 +1101,7 @@ def baskets_add_card(request, pk, **response_kwargs):
     """
     to_ret = {"data": [],
               "alerts": [],
-              "status": ALERT_SUCCESS,}
+              "status": ALERT_SUCCESS, }
     created = False
     if request.method == 'POST':
         try:
@@ -1171,7 +1168,7 @@ def baskets_delete(request, pk, **kw):
         to_ret = {
             "status": ALERT_SUCCESS,
             "alerts": [msg],
-            }
+        }
         return JsonResponse(to_ret)
 
 
@@ -1213,11 +1210,11 @@ def alerts(request, **response_kwargs):
     alerts = []
     status = 0
     if request.method == "GET":
-        params = request.GET.copy()
+        # params = request.GET.copy()
         try:
             alerts, status, msgs = Alert.get_alerts(to_list=True)
 
-        except Exception as e:
+        except Exception:
             pass
 
     to_ret = {"status": status,
@@ -1228,10 +1225,10 @@ def alerts(request, **response_kwargs):
 def alerts_open(request, **response_kwargs):
     total = 0
     if request.method == "GET":
-        params = request.GET.copy()
+        # params = request.GET.copy()
         try:
             total = Alert.objects.count()
-        except Exception as e:
+        except Exception:
             pass
 
     return JsonResponse(total, safe=False)
@@ -1239,7 +1236,7 @@ def alerts_open(request, **response_kwargs):
 def places(request, **response_kwargs):
     obj = []
     if request.method == "GET":
-        params = request.GET.copy()
+        # params = request.GET.copy()
         try:
             obj = Place.objects.all()
         except Exception as e:
@@ -1272,7 +1269,7 @@ def inventories(request, **kwargs):
             data = {
                 "status": ALERT_ERROR,
                 "datab": []
-                }
+            }
             return JsonResponse(data, **kwargs)
 
         try:
@@ -1418,7 +1415,7 @@ def inventories_update(request, **kwargs):
             except Exception as e:
                 log.error(u"Trying to update inventory {}: e".format(pk))
                 msgs.append(_("Internal error. We couldn't save the inventory"))
-                return # XXX return 400 error
+                return  # XXX return 400 error
 
             params = request.body
             params = json.loads(params)
@@ -1430,7 +1427,7 @@ def inventories_update(request, **kwargs):
             pairs = []
             if ids:
                 together = ids.split(';')
-                pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
+                pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
 
             cards = params.get('cards')
             if cards:
@@ -1458,7 +1455,7 @@ def inventories_update(request, **kwargs):
             to_ret['nb_copies'] = nb_copies
             to_ret['missing'] = inv._orig_cards_qty() - nb_copies
             to_ret['total_value'] = inv.value()
-            if status == "success": # XXX import satuses from models
+            if status == "success":  # XXX import satuses from models
                 to_ret['msgs'] = msgs.append(_("Inventory saved. Keep working !"))
 
     return JsonResponse(to_ret)
@@ -1480,7 +1477,7 @@ def inventories_remove(request, **kwargs):
             except Exception as e:
                 log.error(e)
                 msgs.append(_("Internal error. We couldn't update the inventory"))
-                return # XXX return 400 error
+                return  # XXX return 400 error
 
             params = request.body
             params = json.loads(params)
@@ -1508,7 +1505,7 @@ def inventory_apply(request, pk, **kwargs):
         to_ret = {
             "status": ALERT_ERROR,
             "datab": []
-            }
+        }
         return JsonResponse(to_ret)
 
     inv = Inventory.objects.get(id=pk)
@@ -1528,9 +1525,9 @@ def inventory_apply(request, pk, **kwargs):
         "alerts": [
             {"level": ALERT_INFO,
              "message": _("The inventory is being applied. This may take a few minutes.")}
-            ],
+        ],
         "data": None
-        }
+    }
     return JsonResponse(to_ret)
 
 def stats(request, **kwargs):
@@ -1553,7 +1550,7 @@ def to_int(string):
         return None
     try:
         return int(string)
-    except Exception as e:
+    except Exception:
         log.error(u"Unable to parse {} to an int".format(string))
         return None
 
@@ -1606,7 +1603,7 @@ def stats_stock_age(request, **kwargs):
     return JsonResponse(stats, safe=False)
 
 ###############################################################################
-### Commands
+# Commands
 ###############################################################################
 
 def commands_ongoing(request, **kwargs):
@@ -1617,7 +1614,7 @@ def commands_ongoing(request, **kwargs):
         to_ret = {
             'status': ALERT_SUCCESS,
             'data': nb,
-            }
+        }
         return JsonResponse(to_ret)
 
 def commands_create(request, **kwargs):
@@ -1640,7 +1637,7 @@ def commands_create(request, **kwargs):
             to_ret = {
                 'status': msgs.status,
                 'alerts': msgs.to_alerts(),
-                }
+            }
             return JsonResponse(to_ret)
 
     return JsonResponse({'status': 'not implemented error'})
@@ -1758,7 +1755,7 @@ def command_receive_apply(request, pk, **kwargs):
         to_ret = {
             "status": ALERT_ERROR,
             "datab": []
-            }
+        }
         return JsonResponse(to_ret)
 
     cmd = _get_command_or_return(pk)
@@ -1779,8 +1776,8 @@ def command_receive_apply(request, pk, **kwargs):
         "alerts": [
             {"level": ALERT_INFO,
              "message": _("The inventory is being applied. This may take a few minutes.")}
-            ],
+        ],
         "data": None
-        }
+    }
 
     return JsonResponse(to_ret)

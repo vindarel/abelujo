@@ -16,15 +16,13 @@
 from django.conf.urls import include
 from django.conf.urls import patterns
 from django.conf.urls import url
-from django.conf.urls.i18n import i18n_patterns
-from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from django.views.generic.base import RedirectView
+# from django.views.generic.base import RedirectView
 from search import views
 from search.admin import admin_site
 
-js_info_dict = { 'packages': ('search', '',), }
+js_info_dict = {'packages': ('search', '',), }
 
 # i18n_patterns is taken care of in the root url conf.
 urlpatterns = patterns('',
@@ -88,7 +86,7 @@ urlpatterns = patterns('',
     url(r'^deposits/(\d+)/?$', 'search.views.deposits_view',
         name="deposits_view"),
     # url(r'^deposits/(?P<pk>\d+)/delete', 'search.views.deposit_delete',
-        # name="deposit_delete"),
+    # name="deposit_delete"),
     url(r'^deposits/(?P<pk>\d+)/add', 'search.views.deposit_add_copies',
         name="deposit_add_copies"),
 

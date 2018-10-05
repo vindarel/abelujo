@@ -12,11 +12,9 @@ import requests
 import termcolor
 from fabric.api import cd
 from fabric.api import env
-from fabric.api import execute
 from fabric.api import prefix
 from fabric.api import put
 from fabric.api import run
-from fabric.api import sudo
 from fabric.contrib.files import exists
 
 import fabutils
@@ -130,7 +128,8 @@ def help():
 def odsimport(odsfile=None):
     """Import cards from a LibreOffice calc. See its doc.
     """
-    cmd = 'make odsimport odsfile={}'.format(odsfile)
+    # cmd = 'make odsimport odsfile={}'.format(odsfile)
+    raise NotImplementedError
 
 def openclient(client=None):
     """Open the client page with a web browser.
@@ -199,7 +198,7 @@ def _request_call(url):
     status = 0
     try:
         status = requests.get(url, timeout=TIMEOUT).status_code
-    except Exception as e:
+    except Exception:
         # print("Exception: {}".format(e))
         status = 404
 
@@ -216,7 +215,7 @@ def check_online(client=None):
     else:
         sorted_clients = [fabutils.select_client_cfg(client, CFG)]
 
-    urls = ["http://{}:{}/fr/".format(CFG.url, client.port) for client in sorted_clients]
+    urls = ["http://{}:{}/fr/".format(CFG.url, c.port) for c in sorted_clients]
 
     import multiprocessing
     pool = multiprocessing.Pool(8)
@@ -281,7 +280,7 @@ def update(client):
     with cd(wd):
         save_variables(client.name)
         with prefix(VENV_ACTIVATE.format(client.venv)):
-            res = run("make update")
+            run("make update")
 
     # check_online(client.name) # wait a bit before to check
 
@@ -358,7 +357,7 @@ def bundles_deploy(name):
     Now, simply copy them into our client's static/bower_components or node_modules.
     """
     client = fabutils.select_client_cfg(name)
-    wd = fabutils.wd(client, CFG)
+    fabutils.wd(client, CFG)
 
     if not exists(BOWER_COMPONENTS_REMOTE_DIR):
         print("Error: we can't find the bower components directory in remote /tmp.")
@@ -566,7 +565,7 @@ def script(script, name=None):
     if not name:
         print("Please give a client name.")
         return
-    client = fabutils.select_client_cfg(name)
+    # client = fabutils.select_client_cfg(name)
     com = "python manage.py runscript {}".format(script)
     cmd(com, name)
 
@@ -577,7 +576,7 @@ def bower_package_version(package, names=None):
     - package: bower package name
     - names: list of client names (or only beginning of name, as usual).
     """
-    usage = "Usage: fab bower_package_version:package,client"
+    # usage = "Usage: fab bower_package_version:package,client"
 
     #: With --json, we could parse it and get rid off the sub-deps
     BOWER_PACKAGE_VERSION = './node_modules/bower/bin/bower list --offline'

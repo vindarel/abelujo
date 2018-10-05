@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
 from django.db import models
 from common import CHAR_LENGTH
 from common import TimeStampedModel
@@ -33,25 +31,25 @@ class Address(models.Model):
     class Meta:
         ordering = ("name",)
 
-    name           = models.CharField(max_length=CHAR_LENGTH)
-    surname        = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    enterprise     = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH)
+    surname = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    enterprise = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     responsability = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    cellphone      = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    tel_private    = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    tel_office     = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    website        = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    email          = models.EmailField(blank=True, null=True)
-    email_pro      = models.EmailField(blank=True, null=True)
+    cellphone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    tel_private = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    tel_office = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    email = models.EmailField(blank=True, null=True)
+    email_pro = models.EmailField(blank=True, null=True)
 
-    address1       = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    address2       = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    zip_code       = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    city           = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    state          = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    country        = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    address1 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    address2 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    zip_code = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    city = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    state = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    country = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
-    comment        = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
 
 class BillCopies(models.Model):
     card = models.ForeignKey("search.Card")
@@ -75,7 +73,7 @@ class Bill(TimeStampedModel):
     # created and modified fields
     ref = models.CharField(max_length=CHAR_LENGTH)
     name = models.CharField(max_length=CHAR_LENGTH)
-    distributor = models.ForeignKey("search.distributor",null=True)
+    distributor = models.ForeignKey("search.distributor", null=True)
     #: we must pay the bill at some time (even if the received card is
     #: not sold, this isn't a deposit!)
     due_date = models.DateField()

@@ -143,14 +143,3 @@ def yes_answer(answer):
     """
     """
     return answer in ["Y", "y", "yes", "O", "o"]
-
-def main():
-    cfg_file = "clients.yaml"
-    cfg = get_yaml_cfg(cfg_file)
-    cfg = addict.Dict(cfg)
-    client = select_client_cfg(sys.argv[1], cfg)
-    ssh_to(client, config=cfg)
-
-
-if __name__ == "__main__":
-    exit(main())

@@ -31,7 +31,7 @@ from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 
-MAX_CELL=60
+MAX_CELL = 60
 
 PAGE_SIZE = 25
 
@@ -156,7 +156,7 @@ def truncate(it):
 
     returns: a string
     """
-    if it and (type(it) == type("") or type(it) == type(u""))\
+    if it and (isinstance(it, str) or isinstance(it, unicode))\
        and len(it) >= MAX_CELL:
         return it[:MAX_CELL] + "..."
     return it
@@ -187,7 +187,7 @@ def _ppcard_listofdicts(cards):
     return tab
 
 def total_quantity(cards):
-    if type(cards[0]) == type({}):
+    if isinstance(cards[0], dict):
         cards = [addict.Dict(it) for it in cards]
     return sum(it.quantity for it in cards)
 
@@ -206,7 +206,7 @@ def ppcard(cards):
     Apprendre à désobeir ; petite histoire de l'école qui résiste                      Biberfeld, Laurence  libertalia     aucun  9782918059363  produit indisponible
     Bourgeois et bras nus ; guerre sociale durant le Révolution française (1793-1795)  Daniel Guérin        libertalia     aucun  9782918059295  produit indisponible
     """
-    if type(cards[0]) == type({}):
+    if isinstance(cards[0], dict):
         # List of str.
         tab = _ppcard_listofdicts(cards)
     else:
@@ -223,7 +223,6 @@ def ppcard(cards):
                 elt.quantity,
             ]
             for elt in cards]
-
 
     headers = [
         "Title",
@@ -252,7 +251,7 @@ def is_isbn(it):
     ISBN_ALLOWED_LENGTHS = [13]
     res = False
     pattern = re.compile("[0-9]+")
-    if (type(it) == type(u'u') or type(it) == type('str'))and \
+    if (isinstance(it, unicode) or isinstance(it, str)) and \
        len(it) in ISBN_ALLOWED_LENGTHS and \
        pattern.match(it):
         res = it
@@ -291,7 +290,7 @@ def list_to_pairs(ll):
     res = []
     for i in range(len(ll) - 1):
         if i % 2 == 0:
-            res.append( (ll[i],ll[i+1]) )
+            res.append((ll[i], ll[i + 1]))
     return res
 
 def list_from_coma_separated_ints(s):
@@ -319,7 +318,7 @@ def ids_qties_to_pairs(string):
     pairs = []
     if string:
         together = string.split(';')
-        pairs = [filter(lambda x: x!="", it.split(',')) for it in together]
+        pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
         return pairs
     return None
 

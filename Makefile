@@ -45,6 +45,8 @@ pip-dev:
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
 
 pip-submodule:
+	pip install -U pip
+	pip install -U setuptools
 	cd search/datasources && python setup.py install
 
 pip-submodule-dev:
@@ -300,7 +302,7 @@ translation-compile:
 qa: flake8
 
 flake8:
-	flake8 --config=setup.cfg abelujo *.py
+	flake8 --config=setup.cfg abelujo search *.py
 
 pylint:
 	pylint abelujo search

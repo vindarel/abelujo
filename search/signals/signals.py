@@ -24,9 +24,6 @@ representation (to speed up the pdf generation).
 Signals are initiated inside apps.py.
 
 """
-
-import logging
-
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 

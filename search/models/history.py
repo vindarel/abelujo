@@ -15,15 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
 
 from django.db import models
-from django.db.models import Q
 from django.core.urlresolvers import reverse
 
-from common import ALERT_ERROR
+# from common import ALERT_ERROR
 from common import ALERT_SUCCESS
-from common import ALERT_WARNING
+# from common import ALERT_WARNING
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel

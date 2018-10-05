@@ -14,6 +14,8 @@ framework.
 
 """
 import os
+from django.core.wsgi import get_wsgi_application
+from raven.contrib.django.raven_compat.middleware.wsgi import Sentry
 from whitenoise.django import DjangoWhiteNoise
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
@@ -25,10 +27,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "abelujo.settings")
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
-from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from raven.contrib.django.raven_compat.middleware.wsgi import Sentry
 application = Sentry(get_wsgi_application())  # before whitenoise.
 
 application = DjangoWhiteNoise(application)

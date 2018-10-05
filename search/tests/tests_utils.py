@@ -21,7 +21,6 @@ from django.test import TestCase
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
-from search.models.common import ALERT_WARNING
 
 from search.models.utils import Messages
 

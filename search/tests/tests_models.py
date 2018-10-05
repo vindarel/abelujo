@@ -38,16 +38,11 @@ from search.models import ALERT_WARNING
 from search.models import Alert
 from search.models import Author
 from search.models import Basket
-from search.models import BasketCopies
-from search.models import BasketType
 from search.models import Card
 from search.models import CardType
 from search.models import Collection
 from search.models import Command
-from search.models import CommandCopies
 from search.models import Deposit
-from search.models import DepositCopies
-from search.models import DepositState
 from search.models import Distributor
 from search.models import Inventory
 from search.models import InventoryCommand
@@ -109,6 +104,7 @@ class InventoryFactory(DjangoModelFactory):
     class Meta:
         model = Inventory
 
+
 ISBN = "9782757837009"
 
 
@@ -130,7 +126,7 @@ class CardFactory(DjangoModelFactory):
         model = Card
 
     title = factory.Sequence(lambda n: u'card title é and ñ %d' % n)
-    isbn = factory.Sequence(lambda n: "%d" %n)
+    isbn = factory.Sequence(lambda n: "%d" % n)
     card_type = None
     # distributor = factory.SubFactory(DistributorFactory)
     distributor = None
@@ -186,10 +182,10 @@ class TestCards(TestCase):
     def test_from_dict(self):
         TITLE = "Foo bar"
         ZINN = "zinn"
-        to_add, msgs = Card.from_dict({"title":TITLE,
-                                       "authors":[self.GOLDMAN, ZINN],
+        to_add, msgs = Card.from_dict({"title": TITLE,
+                                       "authors": [self.GOLDMAN, ZINN],
                                        "isbn": "foobar",
-                                       "location":"here"})
+                                       "location": "here"})
         self.assertTrue(to_add)
         self.assertEqual(to_add.title, TITLE)
         self.assertEqual(len(Author.objects.all()), 2)
@@ -205,7 +201,7 @@ class TestCards(TestCase):
         exists = Card.exists({'isbn': self.fixture_isbn})
         self.assertTrue(exists)
         doesnt_exist, msgs = Card.exists({"isbn": "whatever",
-                                               "title":"a different title"})
+                                               "title": "a different title"})
         self.assertFalse(doesnt_exist)
         # The same title is not enough.
         same_title, msgs = Card.exists({"title": self.fixture_title})
@@ -245,7 +241,7 @@ class TestCards(TestCase):
                                            "authors": [AuthorFactory()]})
         self.assertFalse(other_authors)
         # only the same title. Not enough to find a similar card.
-        no_pubs_no_authors, msgs = Card.exists({"title": self.fixture_title,})
+        no_pubs_no_authors, msgs = Card.exists({"title": self.fixture_title, })
         self.assertFalse(no_pubs_no_authors)
         self.assertTrue(msgs)
 
@@ -273,7 +269,7 @@ class TestCards(TestCase):
         other = {
             "title": "doesn't exist",
             "isbn": None,
-            }
+        }
         cards = Card.is_in_stock([card_dict, other])
         self.assertTrue(cards)
         self.assertEqual(cards[0]['in_stock'], self.autobio.quantity)
@@ -282,7 +278,7 @@ class TestCards(TestCase):
 
     def test_from_dict_no_authors(self):
         TITLE = "I am a CD without authors"
-        to_add, msgs = Card.from_dict({"title":TITLE})
+        to_add, msgs = Card.from_dict({"title": TITLE})
         self.assertTrue(to_add)
 
     def test_update(self):
@@ -332,9 +328,9 @@ class TestCards(TestCase):
     def test_first_cards(self):
         res = Card.first_cards(10)
         self.assertEqual(len(res), 1)
-        self.assertEqual(type(res[0]), type(self.autobio))
+        self.assertEqual(isinstance(res[0], Card))
         res = Card.first_cards(10, to_list=True)
-        self.assertEqual(type(res[0]), type({}))
+        self.assertEqual(isinstance(res[0], dict))
 
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)
@@ -367,7 +363,7 @@ class TestCards(TestCase):
         self.assertEqual(res[0].title, self.fixture_title)
 
     def test_get_from_id_list_non_existent(self):
-        cards_id = [1,2]
+        cards_id = [1, 2]
         res, msgs = Card.get_from_id_list(cards_id)
         self.assertTrue(res)
         self.assertTrue(msgs)
@@ -496,7 +492,8 @@ class TestPlaceCopies(TestCase):
 
     def setUp(self):
         # Create a relation Card - PlaceCopies - Place
-        self.place = Place(name="here", is_stand=False, can_sell=True); self.place.save()
+        self.place = Place(name="here", is_stand=False, can_sell=True)
+        self.place.save()
         self.card = Card(title="test card")
         self.card.save()
         self.nb_copies = 9
@@ -522,13 +519,17 @@ class TestBaskets(TestCase):
 
     def setUp(self):
         # Create a Card, a Basket and the "auto_command" Basket.
-        self.basket = Basket(name="test basket"); self.basket.save()
-        self.basket_commands, created = Basket.objects.get_or_create(name="auto_command"); self.basket_commands.save()
-        self.card = Card(title="test card") ; self.card.save()
+        self.basket = Basket(name="test basket")
+        self.basket.save()
+        self.basket_commands, created = Basket.objects.get_or_create(name="auto_command")
+        self.basket_commands.save()
+        self.card = Card(title="test card")
+        self.card.save()
         self.nb_copies = 9
 
         # a Distributor
-        self.distributor = DistributorFactory(); self.distributor.save()
+        self.distributor = DistributorFactory()
+        self.distributor.save()
 
     def tearDown(self):
         pass
@@ -573,7 +574,8 @@ class TestBaskets(TestCase):
         # Another dist:
         dist2 = DistributorFactory()
         # add a card
-        self.card.distributor = dist2; self.card.save()
+        self.card.distributor = dist2
+        self.card.save()
         self.basket.add_copy(self.card)
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
@@ -583,7 +585,8 @@ class TestBaskets(TestCase):
         """
         """
         # add a card
-        self.card.distributor = self.distributor; self.card.save()
+        self.card.distributor = self.distributor
+        self.card.save()
         self.basket.add_copy(self.card)
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
@@ -621,13 +624,13 @@ class TestDeposits(TransactionTestCase):
 
     def test_nominal(self):
         self.card.distributor = self.distributor
-        status, msgs = self.deposit.add_copies([self.card,], quantities=[3])
+        status, msgs = self.deposit.add_copies([self.card, ], quantities=[3])
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
         self.assertEqual(3, self.card.quantity_deposits())
         self.deposit.add_copies([self.card])
         balance = self.deposit.checkout_balance()
         # Bad length of 'quantities', will add 1 by default.
-        self.deposit.add_copies([self.card], quantities=[10,11,12])
+        self.deposit.add_copies([self.card], quantities=[10, 11, 12])
         balance = self.deposit.checkout_balance()
         self.assertEqual(5, balance['cards'][0][1].nb_current)
 
@@ -646,11 +649,11 @@ class TestDeposits(TransactionTestCase):
         """
         self.card.distributor = self.distributor
         # Our deposit has a copy
-        status, msgs = self.deposit.add_copies([self.card,])
+        status, msgs = self.deposit.add_copies([self.card, ])
         # and yet we try to create a new deposit with it: no.
         status, msgs = Deposit.from_dict({'name': 'new',
                                           'copies': [self.card],
-                                          'deposit_type': 'lib', # see deposit types in models
+                                          'deposit_type': 'lib',  # see deposit types in models
                                           'distributor': self.distributor})
         self.assertEqual(status, ALERT_ERROR)
 
@@ -679,7 +682,7 @@ class TestDeposits(TransactionTestCase):
         """card with no dist will inherit it.
         """
         self.card.distributor = None
-        status, msgs = self.deposit.add_copies([self.card,])
+        status, msgs = self.deposit.add_copies([self.card, ])
         self.assertEqual(len(msgs), 0)
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
 
@@ -687,28 +690,27 @@ class TestDeposits(TransactionTestCase):
         self.other_dist = DistributorFactory()
         self.card.distributor = self.other_dist
         self.card.save()
-        status, msgs = self.deposit.add_copies([self.card,])
+        status, msgs = self.deposit.add_copies([self.card, ])
         self.assertEqual(len(msgs), 1)
         self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
 
     def test_from_dict_nominal(self):
         self.card.distributor = self.distributor
         status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card,],
+                                  'copies': [self.card, ],
                                   'distributor': self.distributor,
                                   })
         self.assertEqual(len(msgs), 1, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], "success")
 
-
     def test_type_pub(self):
         """Of type "publisher", we set a due_date and a dest_place.
         """
         self.card.distributor = self.distributor
-        due_date = datetime.date.today().isoformat() # getting it as str from JS
+        due_date = datetime.date.today().isoformat()  # getting it as str from JS
         dest_place = PlaceFactory()
         status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card,],
+                                  'copies': [self.card, ],
                                   'distributor': self.distributor,
                                   'due_date': due_date,
                                   'dest_place': dest_place.id,
@@ -724,18 +726,17 @@ class TestDeposits(TransactionTestCase):
         dest_place = PlaceFactory()
         status, msgs = Deposit.from_dict({'name': 'test',
                                   'due_date': None,
-                                  'copies': [self.card,],
+                                  'copies': [self.card, ],
                                   'distributor': self.distributor,
                                   'dest_place': dest_place.id,
                                   'deposit_type': "publisher",
                                   })
         self.assertEqual(msgs[0]['level'], "success")
 
-
     def test_from_dict_bad_deposit(self):
         self.card.distributor = None
         status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card,],
+                                  'copies': [self.card, ],
                                   'distributor': self.distributor,
                                   })
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
@@ -762,7 +763,7 @@ class TestDeposits(TransactionTestCase):
         self.assertTrue(co.closed)
         self.deposit.checkout_close()
         co = self.deposit.last_checkout()
-        self.assertTrue(co.closed) # fails only with date time field.
+        self.assertTrue(co.closed)  # fails only with date time field.
 
     def test_sell_update(self):
         """Test we update correctly the nb of sells and nb current after when
@@ -782,14 +783,14 @@ class TestDeposits(TransactionTestCase):
         # Update the deposit state
         co = self.deposit.last_checkout()
         co.update()
-        bal = self.deposit.checkout_balance() # xxx fails
+        bal = self.deposit.checkout_balance()  # xxx fails
         self.assertEqual(1, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
         self.assertEqual(2, bal["cards"][0][1].nb_current)
 
         # re-do: nothing must change.
         co.update()
-        bal = self.deposit.checkout_balance() # xxx fails
+        bal = self.deposit.checkout_balance()  # xxx fails
         self.assertEqual(1, bal["cards"][0][1].nb_sells)
         self.assertEqual(3, bal["cards"][0][1].nb_initial)
         self.assertEqual(2, bal["cards"][0][1].nb_current)
@@ -833,7 +834,7 @@ class TestDeposits(TransactionTestCase):
         self.assertFalse(msgs)
         self.assertTrue(ret)
 
-        balance = self.deposit.checkout_balance() # creates a new checkout
+        balance = self.deposit.checkout_balance()  # creates a new checkout
         # We started a new deposit state: the old "current" is the new "initial".
         self.assertEqual(balance["cards"][0][1].nb_current, 2)
         self.assertEqual(balance["cards"][0][1].nb_initial, 2)
@@ -923,7 +924,7 @@ class TestSells(TestCase):
         self.assertEqual(int_table[1].card.quantity, -1)
         # Check quantities through Card.quantity
         self.assertEqual(self.autobio.quantity_compute(), 0)
-        ### Sell again:
+        # Sell again:
         sell, status, msgs = Sell.sell_cards(to_sell)
         self.assertEqual(self.autobio.quantity_compute(), -1)
         self.assertEqual(self.place.quantity_of(self.autobio), -1)
@@ -934,7 +935,7 @@ class TestSells(TestCase):
         self.assertEqual(ALERT_WARNING, status)
 
     def test_sell_no_price(self):
-        p1 = 7.7
+        # p1 = 7.7
         p2 = 9.9
         self.autobio.price = None
         self.autobio.save()
@@ -990,7 +991,7 @@ class TestSells(TestCase):
         self.depo2.add_copies([self.autobio])
         # Sell.
         p1 = 7.7
-        p2 = 9.9
+        # p2 = 9.9
         to_sell = [{"id": self.autobio.id,
                     "quantity": 1,
                     "price_sold": p1}]
@@ -1034,7 +1035,7 @@ class TestSells(TestCase):
         self.depo.add_copies([self.autobio])
         # Sell.
         p1 = 7.7
-        p2 = 9.9
+        # p2 = 9.9
         to_sell = [{"id": self.autobio.id,
                     "quantity": 1,
                     "price_sold": p1}]
@@ -1057,12 +1058,12 @@ class TestSells(TestCase):
 
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
-        self.place.add_copy(self.autobio) # 1 in deposit, 1 not: ambiguous
+        self.place.add_copy(self.autobio)  # 1 in deposit, 1 not: ambiguous
         # add a copy to the deposit:
         self.autobio.distributor = self.dist
         self.autobio.save()
         self.depo.add_copies([self.autobio])
-        p1 = 7.7
+        # p1 = 7.7
         p2 = 9.9
         to_sell = [{"id": self.autobio.id,
                     "quantity": 1,
@@ -1158,7 +1159,7 @@ class TestSells(TestCase):
         # undo
         status, msgs = SoldCards.undo(2)
         self.assertEqual(True, status)
-        self.assertEqual(SoldCards.objects.count(), 2) # the soldcard object is still history.
+        self.assertEqual(SoldCards.objects.count(), 2)  # the soldcard object is still history.
         self.assertEqual(SoldCards.objects.first().card_id,
                          self.autobio.id)
 
@@ -1253,14 +1254,14 @@ class TestHistory(TestCase):
     def setUp(self):
         self.card = CardFactory.create()
         self.sell = SellsFactory.create()
-        Sell.sell_cards([{"id":"1", "price_sold":1, "quantity": 1}])
+        Sell.sell_cards([{"id": "1", "price_sold": 1, "quantity": 1}])
 
     def tearDown(self):
         pass
 
     def test_history(self):
         hist, status, alerts = getHistory()
-        self.assertEqual(2, len(hist)) # a Sell is created without any cards sold.
+        self.assertEqual(2, len(hist))  # a Sell is created without any cards sold.
         self.assertEqual(ALERT_SUCCESS, status)
 
 class TestAlerts(TestCase):
@@ -1337,8 +1338,8 @@ class TestInventory(TestCase):
         self.card2 = CardFactory()
         self.card3 = CardFactory()
         self.place.add_copy(self.card2)
-        res = self.inv.add_copy(self.card2, nb=2)
-        res = self.inv.add_copy(self.card3, nb=1)
+        self.inv.add_copy(self.card2, nb=2)
+        self.inv.add_copy(self.card3, nb=1)
         # the inventory...
         d_diff, objname, _, _ = self.inv.diff()
         # - ... has not the card 1
@@ -1368,7 +1369,7 @@ class TestInventory(TestCase):
         self.card2 = CardFactory()
         self.card3 = CardFactory()
         self.place.add_copy(self.card2)
-        ADD2= 2
+        ADD2 = 2
         ADD3 = 1
         res = self.inv.add_copy(self.card2, nb=ADD2)
         res = self.inv.add_copy(self.card3, nb=ADD3)
@@ -1376,7 +1377,7 @@ class TestInventory(TestCase):
         res, msgs = self.inv.apply()
         self.assertTrue(res)
         qty_after = self.place.quantities_total()
-        self.assertEqual(qty_after, 1 + ADD2 + ADD3) # 1 is from setUp()
+        self.assertEqual(qty_after, 1 + ADD2 + ADD3)  # 1 is from setUp()
         self.assertTrue(self.inv.applied)
         self.assertTrue(self.inv.closed)
 
@@ -1387,7 +1388,7 @@ class TestInventory(TestCase):
     def test_apply_place(self):
         self.card2 = CardFactory()
         self.card3 = CardFactory()
-        ADD2= 2
+        ADD2 = 2
         ADD3 = 1
         # This inv is of anoter place
         self.place2 = PlaceFactory()
@@ -1398,7 +1399,7 @@ class TestInventory(TestCase):
 
         self.inv.apply()
 
-        self.assertEqual(self.place2.quantities_total(), ADD2+ ADD3) # no +1 here, it was in self.place
+        self.assertEqual(self.place2.quantities_total(), ADD2 + ADD3)  # no +1 here, it was in self.place
         self.assertEqual(self.place2.quantity_of(self.card3), ADD3)
 
     def test_apply_basket(self):
@@ -1477,7 +1478,7 @@ class TestCommands(TestCase):
         self.assertTrue(Command.nb_ongoing())
 
     def test_inventory_command(self):
-        inv = self.com.get_inventory()
+        self.com.get_inventory()
 
     def test_inventory_command_state(self):
         inv = self.com.get_inventory()
@@ -1491,7 +1492,7 @@ class TestCommands(TestCase):
 
     def test_inventory_command_remove(self):
         inv = self.com.get_inventory()
-        qty = inv.add_copy(self.card, nb=2)
+        qty = inv.add_copy(self.card, nb=2)  # noqa: F841
         status = inv.remove_card(self.card.id)
         self.assertTrue(status)
         self.assertEqual(0, inv.nb_copies())
@@ -1514,14 +1515,9 @@ class TestCommands(TestCase):
         ask_again_state = ask_again_inv.state()
         self.assertEqual(ask_again_state['nb_copies'], 1)
 
-    def test_inventory_command_remove(self):
-        inv = self.com.get_inventory()
-        qty = inv.add_copy(self.card, nb=2)
-        res_tuple = inv.diff()
-
     def test_inventory_command_diff(self):
         inv = self.com.get_inventory()
-        res = inv.diff()
+        inv.diff()
 
 class TestCommandsReceive(TestCase):
 

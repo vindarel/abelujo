@@ -30,7 +30,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Preferences
-        depth = 1 # include the place name and co
+        depth = 1  # include the place name and co
 
 class CommandSerializer(serializers.ModelSerializer):
 

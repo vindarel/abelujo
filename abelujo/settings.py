@@ -19,7 +19,6 @@
 import os
 import warnings
 
-import raven
 import ruamel.yaml
 
 # Django settings for abelujo project.
@@ -257,7 +256,7 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logging.log'),
         },
         'sentry': {
-            'level': 'WARNING', # To capture more than ERROR, change to WARNING, INFO, etc.
+            'level': 'WARNING',  # To capture more than ERROR, change to WARNING, INFO, etc.
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
             'tags': {'custom-tag': venv},
         },
@@ -296,7 +295,7 @@ LOGIN_URL = "/login/"
 BOOTSTRAP3 = {
     'include_jquery': False,
     'jquery_url': '/static/bower_components/jquery/jquery.min.js',
-     'base_url': '/static/',
+    'base_url': '/static/',
     'css_url': '/static/bower_components/bootstrap/dist/css/bootstrap.min.css',
     'theme_url': '/static/bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
     'javascript_url': '/static/bower_components/bootstrap/dist/js/bootstrap.min.js',
@@ -354,3 +353,5 @@ if DEBUG:
     PASSWORD_HASHERS = (
         'django.contrib.auth.hashers.MD5PasswordHasher',
     )
+
+    # logging.disable(logging.CRITICAL)

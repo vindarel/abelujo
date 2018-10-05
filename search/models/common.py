@@ -41,7 +41,7 @@ PAYMENT_CHOICES = [
     (3, _("gift")),
     (5, _("transfer")),
     (4, _("other")),
-    ]
+]
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)

@@ -30,17 +30,15 @@ from search.models import Place
 from search.models import Preferences
 from search.models import Publisher
 from search.models import Sell
-from search import urls as search_urls
 from search.views import get_reverse_url
 
 from tests_models import CardFactory
-from tests_models import InventoryFactory
 from tests_models import PlaceFactory
 from django.contrib import auth
 
 fixture_search_datasource = {
     "test search":
-    [{"title":'fixture',
+    [{"title": 'fixture',
       "isbn": "111",
       "details_url": "http://fake_url.com",
       "data_source": "chapitre"
@@ -53,17 +51,17 @@ fixture_search_datasource = {
 
 session_mock_data = {
     "search_result": {
-     "emma gold":
-     [{"title":'fixture',
+        "emma gold":
+        [{"title": 'fixture',
        "isbn": "111",
        "details_url": "http://fake_url.com",
        "data_source": "chapitre"
    }],
-     "éé":
-     [{"title": "éé",
+        "éé":
+        [{"title": "éé",
        "isbn": "222",
    }]
- }}
+    }}
 
 fixture_no_isbn = {"test search":
                   [{"title": "fixture no isbn",
@@ -79,6 +77,7 @@ class DBFixture():
     The card gets an author, a type, a publisher;
     The required entries are the unknown card type, the Preferences with a default place.
     """
+
     def __init__(self):
         # create an author
         self.GOLDMAN = "Emma Goldman"
@@ -110,7 +109,6 @@ class DBFixture():
         self.basket = Basket(name="basket_test")
         self.basket.save()
 
-
         # a Distributor and a Deposit with no cards
         self.distributor_name = "distributor test"
         self.distributor = Distributor(name=self.distributor_name).save()
@@ -134,7 +132,7 @@ class TestLogin(TestCase):
     def test_logout(self):
         self.user = auth.models.User.objects.create_user(username="admin", password="admin")
         self.c.login(username="admin", password="admin")
-        out = self.c.get(reverse("logout"))
+        self.c.get(reverse("logout"))
         resp = self.c.get(reverse("card_search"))
         self.assertEqual(resp.status_code, 302)
         self.assertTrue("login/?next" in resp.url)
@@ -172,7 +170,7 @@ class TestViews(TestCase):
     def test_sell_isbn_doesnt_exist(self):
         resp = self.post_to_view(isbn="9876")
         self.assertTrue(resp)
-        pass # test views with RequestFactory
+        pass  # test views with RequestFactory
 
     def test_sell_isbn(self):
         resp = self.post_to_view(isbn="123")
@@ -196,7 +194,6 @@ class TestSells(TestCase):
                     "price_sold": p1},
                   ]
         sell, status, msgs = Sell.sell_cards(to_sell)
-
 
     def test_sell_details_no_sell(self):
         resp = self.c.get(reverse("sell_details", args=(1,)))
@@ -230,12 +227,12 @@ class TestSearchView(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_search_with_isbn(self, search_mock):
-        resp = self.get_for_view({"isbn":"123"})
+        resp = self.get_for_view({"isbn": "123"})
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)
 
     def test_search_with_keywords(self, search_mock):
-        data = {"q":"emma gold"}
+        data = {"q": "emma gold"}
         resp = self.get_for_view(data)
         self.assertTrue(resp)
         self.assertEqual(resp.status_code, 200)

@@ -23,7 +23,6 @@ Set all cards' quantities to zero.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 from tqdm import tqdm
 
 from search.models import PlaceCopies

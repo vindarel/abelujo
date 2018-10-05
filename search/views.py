@@ -16,7 +16,6 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import logging
 import urllib
 
 import unicodecsv
@@ -37,19 +36,18 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView
 from django.views.generic import ListView
-from weasyprint import CSS
 from weasyprint import HTML
 
 #
 # The datasources imports must have the name as their self.SOURCE_NAME
 # Also add the search engine in the client side controller.
 #
-from search.datasources.bookshops.all.discogs import discogsScraper as discogs
-from search.datasources.bookshops.all.momox import momox
-from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner
-from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro
-from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre
-from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis
+from search.datasources.bookshops.all.discogs import discogsScraper as discogs  # noqa: F401
+from search.datasources.bookshops.all.momox import momox  # noqa: F401
+from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner  # noqa: F401
+from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro  # noqa: F401
+from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre  # noqa: F401
+from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis  # noqa: F401
 
 
 import models
@@ -113,9 +111,9 @@ def get_places_choices():
     preferences = Preferences.objects.first()
     ret = []
     if preferences:
-        default_place= preferences.default_place
-        ret = [ (default_place.id, default_place.name) ] + [ (p.id, p.name) for p in not_stands \
-                                                             if not p.id == default_place.id]
+        default_place = preferences.default_place
+        ret = [(default_place.id, default_place.name)] + [(p.id, p.name) for p in not_stands
+                                                          if not p.id == default_place.id]
     return ret
 
 def get_suppliers_choices():
@@ -129,6 +127,7 @@ class DepositForm(forms.ModelForm):
     copies = forms.ModelMultipleChoiceField(Card.objects.all(),
                                             cache_choices=True,
                                             required=False)
+
     class Meta:
         model = Deposit
         fields = "__all__"
@@ -144,8 +143,8 @@ class DepositAddCopiesForm(forms.Form):
         cards = dep.copies.all()
         for card in cards:
             self.fields[str(card.id)] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
-                       'step':1, 'value': 0,
+                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
+                       'step': 1, 'value': 0,
                        'style': 'width: 70px'}),
                                                            label=card.title)
 
@@ -163,7 +162,7 @@ class AddToDepositForm(forms.Form):
 
 def get_bills_choices():
     bills = Bill.objects.all()
-    ret = [(0, "---")] + [ (it.id, it.long_name) for it in bills]
+    ret = [(0, "---")] + [(it.id, it.long_name) for it in bills]
     return ret
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
@@ -264,7 +263,7 @@ def card_show(request, pk):
         "total_sold": total_sold,
         "pending_commands": pending_commands,
         "page_title": u"Abelujo - " + card.title[:50],
-        })
+    })
 
 def card_history(request, pk):
     """Show the card's sells, entries and commands history."""
@@ -287,7 +286,7 @@ def card_history(request, pk):
         "pending_commands": pending_commands,
         "commands": commands,
         "page_title": u"Abelujo - {} - {}".format(_("History"), card.title),
-        })
+    })
 
 
 class CardMoveForm(forms.Form):
@@ -304,8 +303,8 @@ class CardMoveForm(forms.Form):
         query = models.__dict__[model].objects.all()
         for obj in query:
             self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
-                       'step':1, 'value': 1,
+                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
+                       'step': 1, 'value': 1,
                        'style': 'width: 70px'}))
 
 
@@ -317,8 +316,8 @@ class CardMove2BasketForm(forms.Form):
         query = models.__dict__[model].objects.all()
         for obj in query:
             self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min':0, 'max':MAX_COPIES_ADDITIONS,
-                       'step':1, 'value': 0,
+                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
+                       'step': 1, 'value': 0,
                        'style': 'width: 70px'}))
 
 
@@ -336,7 +335,7 @@ PAYMENT_MEANS = [
     (3, "cheque"),
     (4, "gift"),
     (5, "lost"),
-    ]
+]
 
 
 class BuyForm(forms.Form):
@@ -398,7 +397,7 @@ def card_buy(request, pk=None):
             "form": form,
             "card": card,
             "buying_price": buying_price,
-            })
+        })
 
     if request.method == 'POST':
         # buying the card
@@ -428,7 +427,6 @@ def card_buy(request, pk=None):
                 entry, created = Entry.new([card], payment=payment)
             except Exception as e:
                 log.error("couldn't add Entry in history: {}".format(e))
-
 
             return HttpResponseRedirect(reverse("card_search"))
 
@@ -469,7 +467,6 @@ def card_places_add(request, pk=None):
                             log.error("Adding Card {} to Place {}: if this happens, that's because of lacking form validation ! {}".format(pk, id, e))
 
         return HttpResponseRedirect(back_to)
-
 
 
 @login_required
@@ -626,7 +623,7 @@ def collection_export(request, **kwargs):
         place_id = request.GET.get("place_id")
         shelf_id = request.GET.get("shelf_id")
         order_by = request.GET.get("order_by")
-        bought = request.GET.get("in_stock")
+        # bought = request.GET.get("in_stock")
 
         # Export all the stock or a custom search ?
         # would rather validate request.GET and **
@@ -712,7 +709,7 @@ def sell_details(request, pk):
         "soldcards": soldcards,
         "total_sell": total_sell,
         "total_price_init": total_price_init,
-        })
+    })
 
 class DepositsListView(ListView):
     model = Deposit
@@ -727,7 +724,8 @@ class DepositsListView(ListView):
         context["depo_pubtype"] = pubtype
         fixtype = Deposit.objects.filter(deposit_type="fix").all()
         context["depo_fix"] = fixtype
-        context["total_price_fix"] = sum([it.total_init_price for it in fixtype])
+        # context["total_price_fix"] = sum([it.total_init_price for it in fixtype])
+        context["total_price_fix"] = -1
         context["page_title"] = "Abelujo - " + _("Deposits")
         return context
 
@@ -741,11 +739,11 @@ class DepositsListView(ListView):
 def deposits_new(request):
     return render(request, "search/deposits_create.jade", {
         "DepositForm": DepositForm(),
-        })
+    })
 
 @login_required
 def deposits_create(request):
-    results = 200
+    # results = 200
     if request.method == "POST":
         req = request.POST.copy()
         form = DepositForm(req)
@@ -764,7 +762,7 @@ def deposits_create(request):
         else:
             return render(request, "search/deposits_create.jade", {
                 "DepositForm": form,
-                })
+            })
 
     return redirect("/deposits/")  # should make status follow
 
@@ -787,12 +785,12 @@ def deposits_add_card(request):
                 messages.add_message(request, messages.ERROR,
                                      _(u"We could not add the card to the deposit: the given isbn is null."))
             else:
-                deposit_id = form.cleaned_data["deposit"]
+                deposit_id = form.cleaned_data["deposit"]  # noqa: F841
                 # TODO: do the logic !
                 messages.add_message(request, messages.SUCCESS,
                                      _(u'The card were successfully added to the deposit.'))
 
-    retlist = request.session.get("collection_search")
+    retlist = request.session.get("collection_search")  # noqa: F841
     redirect_to = req.get('redirect_to')
     return redirect(redirect_to, status=resp_status)
 
@@ -821,11 +819,12 @@ def deposits_view(request, pk):
         # checkout, msgs = deposit.checkout_create()
         # bad abi. Used in tests.
         # if not checkout:
-            # Could do in a "get or create" method.
-            # checkout = deposit.last_checkout()
+        #     # Could do in a "get or create" method.
+        #     checkout = deposit.last_checkout()
 
         # if checkout and not checkout.closed:
-            # checkout.update()
+        #    checkout.update()
+        #
         # balance = checkout.balance()
 
     except Deposit.DoesNotExist as e:
@@ -847,7 +846,7 @@ def deposits_view(request, pk):
 def deposits_checkout(request, pk):
     """
     """
-    template = "search/deposits_view.jade"
+    # template = "search/deposits_view.jade"
     deposit = Deposit.objects.get(pk=pk)
     msgs = []
     try:
@@ -890,7 +889,7 @@ def deposit_add_copies(request, pk):
     return render(request, template, {
         "form": form,
         "pk": pk,
-        })
+    })
 
 @login_required
 def basket_auto_command(request):
@@ -993,7 +992,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         # The cards of the inventory alongside their quantities.
         if inv:
             header = (_("Title"), _("Quantity sold"))
-            diff = inv.diff()[0] # that should be cached XXX. A json row in the db ?
+            diff = inv.diff()[0]  # that should be cached XXX. A json row in the db ?
             rows = []
             for k in diff.itervalues():
                 if k.get('diff', 0) < 0:
@@ -1051,9 +1050,9 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     elif format in ['txt']:
         # 63 = MAX_CELL + 3 because of trailing "..."
-        rows = [ u"{:63} {:20} {}".format( truncate(it.card.title),
-                                           it.card.pubs_repr,
-                                           it.quantity) for it in copies_set]
+        rows = [u"{:63} {:20} {}".format(truncate(it.card.title),
+                                         it.card.pubs_repr,
+                                         it.quantity) for it in copies_set]
         rows = sorted(rows)
         content = "\n".join(rows)
         response = HttpResponse(content, content_type="text/raw")
@@ -1145,7 +1144,7 @@ def history_sells_exports(request, **kwargs):
                       distributor_id=distributor_id,
                       month=month,
                       year=year)
-    total = res.get('total')
+    # total = res.get('total')
     res = res['data']
 
     if outformat in ['csv']:
@@ -1186,7 +1185,7 @@ def history_sells_exports(request, **kwargs):
             it['created'],
             it['sell_id'],
             it.get('price_sold', 0),
-            truncate(it['card']['title']), # truncate long titles
+            truncate(it['card']['title']),  # truncate long titles
             it['card']['distributor']['name'] if it['card']['distributor'] else "",
         )
                         for it in res])
@@ -1232,7 +1231,7 @@ def inventory(request, pk):
     if request.method == "GET":
         if pk:
             try:
-                inv = Inventory.objects.get(id=pk)
+                inv = Inventory.objects.get(id=pk)  # noqa: F841
             except Exception as e:
                 log.error(e)
             # state = inv.state()
@@ -1265,7 +1264,7 @@ def dashboard(request):
     stock = stats.stock()
     return render(request, template, {
         "stats_stock": stock,
-        })
+    })
 
 
 class CommandDetailView(DetailView):
@@ -1281,7 +1280,6 @@ def command_receive(request, pk):
     """
     template = "search/command_receive.jade"
     cmd = None
-    inventory = None
 
     try:
         cmd = Command.objects.get(id=pk)

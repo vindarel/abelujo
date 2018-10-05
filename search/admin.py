@@ -86,6 +86,7 @@ class ShelfAdmin(admin.ModelAdmin):
     list_editable = ("name",)
     search_fields = ["name"]
 
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
