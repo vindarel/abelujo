@@ -346,7 +346,9 @@ BRUNCH_DIR = BASE_DIR
 BRUNCH_SERVER = True  # livereload, do not refresh the browser to see changes.
 
 
+#
 # Speed up tests
+#
 # 19.38s VS 18.48s += 20% :)
 if DEBUG:
     PASSWORD_HASHERS = (

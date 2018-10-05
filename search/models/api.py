@@ -26,7 +26,6 @@ from models import Command
 from models import Deposit
 from models import Distributor
 from models import Inventory
-from models import InventoryCommand
 from models import Place
 from models import Preferences
 from models import Publisher

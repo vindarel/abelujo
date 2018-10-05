@@ -24,8 +24,6 @@ and see it here: http://dev.abelujo.cc/graph-db.png
 """
 import datetime
 import json
-import logging
-import operator
 import os
 import tempfile
 import urllib
@@ -36,7 +34,6 @@ import barcode
 import dateparser
 import pendulum
 import pytz
-from django.contrib import messages
 from django.core.cache import cache as djcache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
@@ -50,7 +47,6 @@ from django.db.models import FloatField
 from django.db.models import Q
 from django.utils import timezone
 from django.utils import translation
-from django.utils.http import quote
 from django.utils.translation import ugettext as _
 from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
