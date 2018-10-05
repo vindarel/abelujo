@@ -5,7 +5,7 @@
 # The target names are not a file produced by the commands of that target. Always out of date.
 .PHONY: clean unit test data cov odsimport doc install_script npm gulp tox migrations shell
 
-all: unit
+all: qa unit
 
 clone:
 	git clone --recursive https://gitlab.com/vindarel/abelujo.git
@@ -226,7 +226,6 @@ taskqueue:
 
 # run only unit tests.
 unit:
-	# TODO: use django-nose or move datasources.
 	# With this pattern we don't run the tests from "datasources".
 	./manage.py test search.tests --pattern="tests_*.py"
 
@@ -297,6 +296,8 @@ translation-files:
 
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart
+
+qa: flake8
 
 flake8:
 	flake8 --config=setup.cfg abelujo *.py
