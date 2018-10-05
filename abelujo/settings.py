@@ -344,3 +344,11 @@ warnings.simplefilter('ignore', ruamel.yaml.error.UnsafeLoaderWarning)
 # Brunch: live reload of static assets.
 BRUNCH_DIR = BASE_DIR
 BRUNCH_SERVER = True  # livereload, do not refresh the browser to see changes.
+
+
+# Speed up tests
+# 19.38s VS 18.48s += 20% :)
+if DEBUG:
+    PASSWORD_HASHERS = (
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    )
