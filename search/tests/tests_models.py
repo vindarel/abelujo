@@ -53,6 +53,7 @@ from search.models import Publisher
 from search.models import Sell
 from search.models import Shelf
 from search.models import SoldCards
+from search.models import history
 from search.models import getHistory
 
 
@@ -486,6 +487,38 @@ class TestCollection(TestCase):
 
     def test_parent_collection(self):
         pass
+
+
+class TestPlace(TestCase):
+
+    def setUp(self):
+        self.place = PlaceFactory.create()
+        self.card = CardFactory.create()
+
+    def tearDown(self):
+        pass
+
+    def test_nominal(self):
+        self.assertTrue("place" in self.place.__unicode__())
+        self.assertEqual('/en/databasesearch/place/1/', self.place.get_absolute_url())
+
+    def test_add_copy(self):
+        self.assertEqual(0, history.Entry.objects.count())
+        # normal
+        self.assertFalse(self.card.in_stock)
+        self.place.add_copy(self.card)
+        self.assertTrue(self.card.in_stock)
+        self.assertEqual(1, self.place.placecopies_set.count())
+        self.assertEqual(1, self.place.placecopies_set.first().nb)
+        self.assertEqual(1, history.Entry.objects.count())
+        # give the quantity.
+        self.place.add_copy(self.card, nb=2)
+        self.assertEqual(3, self.place.placecopies_set.first().nb)
+        self.assertEqual(2, history.Entry.objects.count())
+        # do not add, set the quantity.
+        self.place.add_copy(self.card, nb=2, add=False)
+        self.assertEqual(2, self.place.placecopies_set.first().nb)
+        self.assertEqual(3, history.Entry.objects.count())
 
 
 class TestPlaceCopies(TestCase):
