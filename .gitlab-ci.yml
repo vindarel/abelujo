@@ -19,8 +19,7 @@ cache:
 before_script:
   - apt-get update -qy  # for docker
 
-test:
-  stage: test
+.py: &py
   script:
     - make debian-nosudo
     - virtualenv .
@@ -30,24 +29,27 @@ test:
     - make pip-dev
     - make db
     - redis-server &  # for redis cache
-    - make unit
+
+py-qa:
+  <<: *py
+  stage: test
+  script: make qa
+
+test:
+  <<: *py
+  stage: test
+  script: make unit
 
 install:
+  <<: *py
   stage: release
   # Build everything only when a new tag is pushed. A waste to do everytime.
   only:
     - tags
   script:
-    - make debian-nosudo
     - make install-yarn
     - node --version
     - yarn --version
-    # mkvirtualenv fails with no output :/
-    - virtualenv .
-    - source bin/activate
-    - echo "working on abelujo venv"
-    - echo "upgranding pip"
-    - pip install -U pip
     - echo "running install-nosudo"
     - make install-nosudo
     - python manage.py check
