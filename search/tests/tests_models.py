@@ -251,6 +251,17 @@ class TestCards(TestCase):
 
         # TODO: and collection
 
+    def test_cards_in_stock(self):
+        res = Card.cards_in_stock()
+        self.assertEqual(1, len(res))
+        # cards only in baskets should not appear.
+        basket = BasketFactory.create()
+        card = CardFactory.create()
+        basket.add_copy(card)
+        res = Card.cards_in_stock()
+        self.assertEqual(2, Card.objects.count())
+        self.assertEqual(1, len(res))
+
     def test_is_in_stock(self):
         card_dict = self.autobio.to_list()
         # xxx: strange: card_dict['isbn'] is u"" but to_list()
