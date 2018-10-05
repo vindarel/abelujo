@@ -7,6 +7,10 @@ image: beevelop/nodejs-python
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+stages:
+  - test
+  - release
+
 cache:
   paths:
   - node_modules/
@@ -15,7 +19,21 @@ cache:
 before_script:
   - apt-get update -qy  # for docker
 
+test:
+  stage: test
+  script:
+    - make debian-nosudo
+    - virtualenv .
+    - source bin/activate
+    - pip install -U pip
+    - make pip-nosudo
+    - make pip-dev
+    - make db
+    - redis-server &  # for redis cache
+    - make
+
 install:
+  stage: release
   # Build everything only when a new tag is pushed. A waste to do everytime.
   only:
     - tags
@@ -33,15 +51,3 @@ install:
     - echo "running install-nosudo"
     - make install-nosudo
     - python manage.py check
-
-test:
-  script:
-    - make debian-nosudo
-    - virtualenv .
-    - source bin/activate
-    - pip install -U pip
-    - make pip-nosudo
-    - make pip-dev
-    - make db
-    - redis-server &  # for redis cache
-    - make
