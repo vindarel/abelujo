@@ -318,6 +318,13 @@ class TestCards(TestCase):
         res, meta = Card.search(["gold"], shelf_id=2)
         self.assertEqual(len(res), 0)
 
+    def test_first_cards(self):
+        res = Card.first_cards(10)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(type(res[0]), type(self.autobio))
+        res = Card.first_cards(10, to_list=True)
+        self.assertEqual(type(res[0]), type({}))
+
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)
         self.assertEqual(Card.objects.get(id=self.autobio.id).quantity, -1)
