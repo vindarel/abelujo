@@ -299,10 +299,14 @@ translation-files:
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart
 
-qa: flake8
-
 flake8:
 	flake8 --config=setup.cfg abelujo search *.py
+
+mccabe:
+	python -m mccabe --min 10 search/models/models.py
+	python -m mccabe --min 10 search/models/api.py
+
+qa: flake8
 
 pylint:
 	pylint abelujo search

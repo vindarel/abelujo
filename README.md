@@ -173,6 +173,13 @@ To livereload Django and Vue assets using Brunch and Django's runserver:
 
     make watch
 
+### Quality assurance ###
+
+Check you code with:
+
+- `make unit`
+- `make flake8`, `make mccabe`
+
 
 ## Configure services
 
