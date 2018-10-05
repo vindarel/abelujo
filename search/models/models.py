@@ -2116,24 +2116,6 @@ class DepositStateCopies(models.Model):
         """
         return self.nb_current + self.nb_sells
 
-    @property
-    def nb_to_command(self):
-        """nb of this card to command: the quantity missing to reach the number wanted.
-        """
-        return self.nb_wanted - self.nb_current
-
-    @property
-    def nb_wanted(self):
-        try:
-            ret = self.deposit_state.deposit.depositcopies_set.filter(card__id=2)
-        except Exception as e:
-            log.error(e)
-            return -1
-
-        if len(ret) > 1:
-            log.warning("a deposit has not a unique result for the intermediate table of a card")
-        return ret[0].threshold
-
 
 class DepositState(models.Model):
     """Deposit states. We do a deposit state to know what cards have been
@@ -2619,14 +2601,6 @@ class Deposit(TimeStampedModel):
         - add (bool): if False, do not add the quantities but set them.
         """
         self.add_copies([card_obj], nb=nb, add=add)
-
-    @staticmethod
-    def get_from_kw(**kwargs):
-        """Return a list of deposits.
-
-        No arguments: return all.
-        """
-        return Deposit.objects.order_by("name")
 
     @staticmethod
     def from_dict(depo_dict):
