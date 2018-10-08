@@ -18,6 +18,8 @@ cache:
 
 
 .py: &py
+  only:
+    - master
   # note: we can't have a before_script here and one above.
   before_script:
     - apt-get update -qy
