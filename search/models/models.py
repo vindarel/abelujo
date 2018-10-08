@@ -2836,7 +2836,7 @@ class Deposit(TimeStampedModel):
         checkout.save()
         for card in self.copies.all():
             sells_dict = Sell.search(card_id=card.id, date_min=now,
-                                     deposit_id=self.id) # few chances we sell cards between now() and now
+                                     deposit_id=self.id)  # few chances we sell cards between now() and now
             sold_cards.append({"card": card, "sells": sells_dict['data']})
 
         quantities = []
