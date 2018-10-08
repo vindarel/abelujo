@@ -16,16 +16,17 @@ cache:
   - node_modules/
   - .yarn
 
-before_script:
-  - apt-get update -qy  # for docker
 
 .py: &py
-  script:
+  # note: we can't have a before_script here and one above.
+  before_script:
+    - apt-get update -qy
     - make debian-nosudo
-    - virtualenv .
-    - source bin/activate
-    - pip install -U pip
-    - make pip-nosudo
+    # - virtualenv .
+    # - source bin/activate
+    # - pip install -U pip
+    # - make pip-nosudo
+    - make pip
     - make pip-dev
     - make db
     - redis-server &  # for redis cache
