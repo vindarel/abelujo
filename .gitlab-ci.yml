@@ -25,8 +25,8 @@ cache:
     # - virtualenv .
     # - source bin/activate
     # - pip install -U pip
-    # - make pip-nosudo
-    - make pip
+    - make pip-nosudo
+    # - make pip
     - make pip-dev
     - make db
     - redis-server &  # for redis cache
