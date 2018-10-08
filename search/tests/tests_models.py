@@ -329,9 +329,9 @@ class TestCards(TestCase):
     def test_first_cards(self):
         res = Card.first_cards(10)
         self.assertEqual(len(res), 1)
-        self.assertEqual(isinstance(res[0], Card))
+        self.assertTrue(isinstance(res[0], Card))
         res = Card.first_cards(10, to_list=True)
-        self.assertEqual(isinstance(res[0], dict))
+        self.assertTrue(isinstance(res[0], dict))
 
     def test_sell(self):
         Card.sell(id=self.autobio.id, quantity=2)

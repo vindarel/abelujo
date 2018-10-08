@@ -2294,6 +2294,13 @@ class DepositState(models.Model):
             log.warning("The card {} has more than one entry in the intermediate table.".format(card_id))
         return states[0]
 
+    def total_price(self):
+        try:
+            return sum([it.price for it in self.copies.all()])
+        except Exception as e:
+            log.error(u"Error getting the total_price for the deposit {}: {}".format(self.id, e))
+            return -1
+
     def balance(self):
         """Get the balance of all cards of the deposit.
 
