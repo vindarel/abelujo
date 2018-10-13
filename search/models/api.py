@@ -1116,6 +1116,7 @@ def baskets_add_card(request, pk, **response_kwargs):
             return
 
         body = json.loads(request.body)
+
         if 'params' in body:
             # get a card id, certainly a dist id.
             card_id = body['params']['card_id']
@@ -1125,6 +1126,11 @@ def baskets_add_card(request, pk, **response_kwargs):
             dist_name = ""
             if dist_id and dist_id not in [-1, "-1", u"-1"]:
                 dist_obj = Distributor.objects.get(id=dist_id)
+
+            language = body['params'].get('language')
+            if language:
+                translation.activate(language)  # not working ??
+
             if dist_obj:
                 if not card_obj.distributor:
                     card_obj.distributor = dist_obj

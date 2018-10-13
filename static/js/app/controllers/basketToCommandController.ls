@@ -190,6 +190,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         # Add this card to the command.
         # If it doesn't have a distributor, assign it.
         params = do
+            language: $scope.language
             card_id: card_obj.id
         dist_id = null
         if $scope.addcard_distributor

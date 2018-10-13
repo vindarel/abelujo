@@ -218,7 +218,6 @@ class TestBasket(TestCase):
         self.assertEqual(just_added.distributor.id, 1)
         self.assertTrue('message' in resp.content and 'danger' in resp.content)
 
-
     def test_add_basket(self):
         """
         Add all the cards from a basket.
