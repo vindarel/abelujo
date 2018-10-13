@@ -74,7 +74,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
            li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-     .col-md-2
+     .col-md-4
       .btn-group
          a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
             i.glyphicon.glyphicon-question-sign
@@ -85,6 +85,29 @@ div(ng-cloak, ng-controller="basketToCommandController")
          button.btn.btn-default(ng-click="start_tour()")
            i.glyphicon.glyphicon-info-sign
 
+     .col-md-7
+       form#addcard
+        .col-md-4
+          select.form-control(name="distributor", ng-model="addcard_distributor", ng-options="it.name for it in distributors_plus_blank track by it.id")
+        .col-md-8
+          p.input-group
+            input.nullable.form-control#default-input(
+              type='text'
+              typeahead-loading="loadingCards"
+              ng-model='copy_selected'
+              uib-typeahead='copy.repr for copy in getCards($viewValue)'
+              typeahead-min-length="3"
+              typeahead-on-select="add_selected_card($item)"
+              title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
+              id="default-input"
+              placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
+            )
+
+            span.input-group-btn
+              button.btn.btn-default(type='button')
+                i.glyphicon.glyphicon-search
+
+    .row
      .col-md-5
         h4 {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
 

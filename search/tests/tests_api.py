@@ -190,12 +190,34 @@ class TestBasket(TestCase):
         """
         pass
 
-    def test_add_objects(self):
+    def test_add_cards(self):
         """
-        Add cards from json objects.
-        From My Stock/add to list.
+        We add a card to the autocommand with an id, with a distributor
+        (auto_command page quicksearch & add).
         """
-        pass
+        def do_post(dist_id=self.to_command.id):
+            data = json.dumps({'params':
+                               {'card_id': 1,
+                                'dist_id': dist_id}})
+            return self.c.post(reverse('api_basket_add_card', args=(1,)),
+                               data=data,
+                               content_type='application/json')
+
+        resp = do_post()
+        self.assertEqual(resp.status_code, httplib.OK)
+        self.assertTrue(self.to_command.copies.count())
+        just_added = self.to_command.copies.first()
+        self.assertTrue(just_added.distributor)
+
+        # We try again: it should pass.
+        resp = do_post()
+        self.assertEqual(resp.status_code, httplib.OK)
+
+        # We try to add with a wrong distributor.
+        resp = do_post(dist_id=2)
+        self.assertEqual(just_added.distributor.id, 1)
+        self.assertTrue('message' in resp.content and 'danger' in resp.content)
+
 
     def test_add_basket(self):
         """

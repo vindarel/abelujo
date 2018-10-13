@@ -36,6 +36,9 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.cards_no_dist = []
     $scope.nb_cards_no_dist = 0
 
+    $scope.addcard_distributor = null  # from search box, command a new card.
+    $scope.distributors_plus_blank = []  # for search box
+
     $scope.page = 1
     # $scope.page_size = 25  # fixed
     $scope.nb_results = 0
@@ -58,6 +61,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $http.get "/api/distributors",
     .then (response) !->
         $scope.distributors = response.data
+        $scope.distributors_plus_blank = [{'name': "", 'id': -1}].concat $scope.distributors
         $scope.grouped_dist = group-by (.name), $scope.distributors
 
     $scope.save_quantity = (dist_name, index) !->
@@ -178,6 +182,25 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
+
+    $scope.add_selected_card = (card_obj) !->
+        $log.info "selected: ", card_obj
+        $log.info "dist selected: ", $scope.addcard_distributor
+
+        # Add this card to the command.
+        # If it doesn't have a distributor, assign it.
+        params = do
+            card_id: card_obj.id
+        dist_id = null
+        if $scope.addcard_distributor
+            dist_id = $scope.addcard_distributor.id
+            if dist_id != -1 and dist_id != "-1"
+                params.dist_id = dist_id
+        $http.post "/api/v2/baskets/#{AUTO_COMMAND_ID}/add/", do
+            params: params
+        .then (response) ->
+            $log.info "resp: ", response
+            $scope.alerts = response.data.alerts
 
     #########################################
     ## Pagination

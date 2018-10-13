@@ -724,12 +724,17 @@ def auto_command_total(request, **response_kwargs):
 
 
 def auto_command_basket(request, action="", **response_kwargs):
-    """
-    Get the copies of the auto command basket.
+    """Get the copies of the auto command basket.
 
-    Don't return all copies that don't have a distributor, use pagination. They are the limiting factor so far.
+    Don't return all copies that don't have a distributor, use
+    pagination. They are the limiting factor so far.
 
-    When dist_id is -1, return the cards in this basket that don't have a distributor (with pagination).
+    When dist_id is -1, return the cards in this basket that don't
+    have a distributor (with pagination).
+
+    Actions:
+    - add
+
     """
     msgs = []
     to_ret = {}
@@ -1092,13 +1097,14 @@ def baskets_add_card(request, pk, **response_kwargs):
     *newer Vue api*
 
     Card can be already in stock (with an id) or not. In that case it
-    will created from the given json.
+    will be created from the given json.
 
     Works for a Card without id (from a keywords search from new Vue UI).
 
     Return:
     - data: <new id>
     """
+    msgs = Messages()
     to_ret = {"data": [],
               "alerts": [],
               "status": ALERT_SUCCESS, }
@@ -1109,9 +1115,45 @@ def baskets_add_card(request, pk, **response_kwargs):
         except ObjectDoesNotExist:
             return
 
-        card = json.loads(request.body)
-        if card:
-            card_id = card.get('id')
+        body = json.loads(request.body)
+        if 'params' in body:
+            # get a card id, certainly a dist id.
+            card_id = body['params']['card_id']
+            dist_id = body['params'].get('dist_id')
+            card_obj = Card.objects.get(id=card_id)
+            dist_obj = None
+            dist_name = ""
+            if dist_id and dist_id not in [-1, "-1", u"-1"]:
+                dist_obj = Distributor.objects.get(id=dist_id)
+            if dist_obj:
+                if not card_obj.distributor:
+                    card_obj.distributor = dist_obj
+                    card_obj.save()
+                    dist_name = dist_obj.name
+                elif card_obj.distributor != dist_obj:
+                    # return messages and abort.
+                    msgs.add_error(_(u"This card has already a supplier ({}), we can't mark it to command for {}.".format(
+                        card_obj.distributor.name, dist_obj.name)))
+                    to_ret['alerts'] = msgs.to_alerts()
+                    to_ret['status'] = msgs.status
+                    return JsonResponse(to_ret)
+
+            if card_obj.distributor:
+                dist_name = card_obj.distributor.name
+
+            b_obj.add_copy(card_obj)
+            if dist_name:
+                msgs.add_success(_(u"The card '{}' was successfully added to the supplier '{}'.".format(
+                    card_obj.title, dist_name)))
+            else:
+                msgs.add_success(_(u"The card '{}' was successfully marked to command, with no default supplier.").
+                                 format(card_obj.title))
+            to_ret['alerts'] = msgs.to_alerts()
+            return JsonResponse(to_ret)
+
+        elif body:
+            # Add a card from json.
+            card_id = body.get('id')
             if card_id:
                 try:
                     card_obj = Card.objects.get(id=card_id)
@@ -1123,7 +1165,7 @@ def baskets_add_card(request, pk, **response_kwargs):
 
             else:
                 try:
-                    card_obj, created = Card.from_dict(card)
+                    card_obj, created = Card.from_dict(body)
                 except Exception as e:
                     log.error(u"Error creating card: {}".format(e))
 
