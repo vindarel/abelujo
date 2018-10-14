@@ -200,8 +200,17 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         $http.post "/api/v2/baskets/#{AUTO_COMMAND_ID}/add/", do
             params: params
         .then (response) ->
-            $log.info "resp: ", response
+            # Add card to supplier's list.
+            $log.info "-- card_obj ", card_obj
+            $log.info "-- card  ", $scope.cards[0]
+            $log.info "-- card no dist  ", $scope.cards_no_dist[0]
             $scope.alerts = response.data.alerts
+
+            updated_card = response.data.card  # with new distributor
+            updated_card.quantity = 1
+            $log.info "updated_card: ", updated_card
+            $scope.cards.unshift updated_card
+            $scope.sorted_cards = group-by (.distributor.name), $scope.cards
 
     #########################################
     ## Pagination

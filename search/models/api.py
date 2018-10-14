@@ -1137,7 +1137,6 @@ def baskets_add_card(request, pk, **response_kwargs):
                     card_obj.save()
                     dist_name = dist_obj.name
                 elif card_obj.distributor != dist_obj:
-                    # return messages and abort.
                     msgs.add_error(_(u"This card has already a supplier ({}), we can't mark it to command for {}.".format(
                         card_obj.distributor.name, dist_obj.name)))
                     to_ret['alerts'] = msgs.to_alerts()
@@ -1155,6 +1154,7 @@ def baskets_add_card(request, pk, **response_kwargs):
                 msgs.add_success(_(u"The card '{}' was successfully marked to command, with no default supplier.").
                                  format(card_obj.title))
             to_ret['alerts'] = msgs.to_alerts()
+            to_ret['card'] = card_obj.to_dict()  # to update the client.
             return JsonResponse(to_ret)
 
         elif body:
