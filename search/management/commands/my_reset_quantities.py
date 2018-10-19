@@ -30,7 +30,7 @@ from search.models import PlaceCopies
 
 class Command(BaseCommand):
 
-    help = "Set all the cards' quantities to zero"
+    help = "Set all the cards' quantities to zero (deprecated)."
 
     def add_arguments(self, parser):
         pass
@@ -39,7 +39,9 @@ class Command(BaseCommand):
         self.stdout.write("-------------------")
         self.stdout.write("Resetting all quantities to zero !")
         for place_copies in tqdm(PlaceCopies.objects.all()):
-            place_copies.quantity_set(0)
+            # deprecated since Card.quantity is a property.
+            raise NotImplementedError
+            # place_copies.quantity_set(0)
 
         # self.stdout.write(self.style.SUCCESS( "All done !")) # django 1.9
         self.stdout.write("All done !")

@@ -287,13 +287,6 @@ class TestCards(TestCase):
         #from_dict but the card alreay exists.
         pass
 
-    # def test_quantity_new(self):
-    # TODO: put in test_move
-    #     obj, msgs = Card.from_dict({"title": "New quantity test",
-    #                           "isbn": "111",
-    #                           "quantity": 2})
-    #     self.assertEqual(2, obj.quantity)
-
     def test_search(self):
         # Should search with way more cards.
         res, meta = Card.search(["gold"], card_type_id=1)
@@ -369,29 +362,6 @@ class TestCards(TestCase):
         self.assertTrue(res)
         self.assertTrue(msgs)
         self.assertEqual(msgs[0]["message"], "The card of id 2 doesn't exist.")
-
-    def test_quantity_to_zero(self):
-        self.card2 = Card(title=self.fixture_title,
-                          isbn=self.fixture_isbn,
-                          shelf=ShelfFactory())
-        self.card2.save()
-        author = AuthorFactory()
-        self.card2.authors.add(author)
-        self.card2.save()
-        self.place.add_copy(self.card2, nb=3)
-
-        Card.quantities_to_zero()
-        self.assertEqual(self.autobio.quantity_compute(), 0)
-        self.assertEqual(Card.quantities_total(), 0)
-
-    def test_command_reset_quantities(self):
-        """Test our custom management command.
-        """
-        out = StringIO()
-        call_command("my_reset_quantities", stdout=out)
-        self.assertIn("All done !", out.getvalue())
-
-        self.assertEqual(Card.quantities_total(), 0)
 
     def test_placecopies(self):
         pass
