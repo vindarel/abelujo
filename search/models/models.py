@@ -3042,9 +3042,15 @@ class Sell(models.Model):
         - count: if True, only return the count() of the result, not the result list.
         - year, month: ints (month in 1..12)
         - distributor_id: int.
+
+        Pagination:
         - page: int
 
-        return: a list of soldcards objects.
+        Sorting results:
+        - sortby: a field name (str) such as "sell__id", "created", "price" and "title".
+        - sortorder: 0 (default) or 1 (descending).
+
+        return: a dict with keys `total` (int) and `data` (a list of sortcard objects).
         """
         sells = []
         if page is not None:
@@ -3089,7 +3095,6 @@ class Sell(models.Model):
             log.error(u"search for sells of card id {}: {}".format(card_id, e))
         if count:
             return sells.count()
-            return sells
 
         # Sorting.
         # Built in DRF ?

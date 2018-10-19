@@ -1246,6 +1246,8 @@ class TestSellSearch(TestCase):
         self.autobio = CardFactory()
         # a second card:
         self.secondcard = CardFactory()
+        self.secondcard.price = 20
+        self.secondcard.save()
         # mandatory: unknown card type
         typ = CardType(name="unknown")
         typ.save()
@@ -1281,6 +1283,27 @@ class TestSellSearch(TestCase):
         Sell.sell_card(self.secondcard)
         sells = Sell.search(card_id=self.autobio.id)
         self.assertEqual(len(sells['data']), 1)
+
+        # Test order and sortby.
+        now = timezone.now()
+        res = Sell.search(date_max=now)
+        res_sorted = Sell.search(date_max=now, sortorder=0)
+        self.assertEqual(res['data'][0].card.id, res_sorted['data'][0].card.id)
+
+        res_inversed = Sell.search(date_max=now, sortorder=1)
+        self.assertEqual(res['data'][0].card.id, res_inversed['data'][1].card.id)
+
+        res_price = Sell.search(date_max=now, sortby="price")
+        self.assertTrue(res_price['data'][0].price_sold > res_price['data'][1].price_sold)
+        res_price = Sell.search(date_max=now, sortby="price", sortorder=1)
+        self.assertTrue(res_price['data'][0].price_sold < res_price['data'][1].price_sold)
+        # for coverage...
+        Sell.search(date_max=now, sortby="created", page_size="10")
+        Sell.search(date_max=now, sortby="title", page_size=10, page=1)
+        Sell.search(date_max=now, sortby="sell__id")
+        Sell.search(date_max=now, count=True)
+        log.setLevel(50)  # critical
+        Sell.search(date_max=now, sortby="warning")
 
     def test_search_sells_dates(self):
         Sell.sell_card(self.autobio)
