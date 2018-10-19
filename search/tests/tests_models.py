@@ -656,16 +656,36 @@ class TestDeposits(TransactionTestCase):
         self.preferences.save()
 
     def test_nominal(self):
+        """
+        Add copies in deposit, check its balance.
+        """
         self.card.distributor = self.distributor
         status, msgs = self.deposit.add_copies([self.card, ], quantities=[3])
+        # quantity_deposits
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
         self.assertEqual(3, self.card.quantity_deposits())
+        # init_qty and total_init_price
+        self.assertEqual(3, self.deposit.init_qty)
+        self.assertEqual(29.97, self.deposit.total_init_price)
+
+        # checkout_balance
         self.deposit.add_copies([self.card])
         balance = self.deposit.checkout_balance()
+
         # Bad length of 'quantities', will add 1 by default.
         self.deposit.add_copies([self.card], quantities=[10, 11, 12])
         balance = self.deposit.checkout_balance()
         self.assertEqual(5, balance['cards'][0][1].nb_current)
+        # init_qty should not change yet.
+        self.assertEqual(3, self.deposit.init_qty)
+        # total cost
+        self.assertEqual(49.95, self.deposit.depositstate_set.last().total_cost())
+        self.assertEqual(49.95, self.deposit.total_current_cost)
+
+        # other methods
+        self.assertTrue(self.deposit.get_absolute_url().
+                        startswith(u"/en/deposits/"))  # too long ?
+        self.assertTrue(self.deposit.__unicode__())
 
     def test_quantity_deposits(self):
         self.card.distributor = self.distributor
@@ -797,6 +817,7 @@ class TestDeposits(TransactionTestCase):
         self.deposit.checkout_close()
         co = self.deposit.last_checkout()
         self.assertTrue(co.closed)  # fails only with date time field.
+        self.assertEqual(self.deposit.last_checkout_date, co.created)
 
     def test_sell_update(self):
         """Test we update correctly the nb of sells and nb current after when

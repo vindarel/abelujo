@@ -2295,11 +2295,20 @@ class DepositState(models.Model):
         return states[0]
 
     def total_price(self):
-        try:
-            return sum([it.price for it in self.copies.all()])
-        except Exception as e:
-            log.error(u"Error getting the total_price for the deposit {}: {}".format(self.id, e))
-            return -1
+        return self.total_cost()
+
+    def total_cost(self):
+        """
+        Return the current total cost of this deposit state (not the
+        initial, the current, considering nb_current).
+        """
+        depocopies = self.depositstatecopies_set.all()
+        total_current = 0
+        for it in depocopies:
+            if it.card.price is not None:
+                # It happened that cards have no price (missed data in scrapers).
+                total_current += it.card.price * it.nb_current
+        return total_current
 
     def balance(self):
         """Get the balance of all cards of the deposit.
@@ -2465,11 +2474,21 @@ class Deposit(TimeStampedModel):
         """
         res = "undefined"
         try:
-            res = sum([it.card.price for it in self.depositcopies_set.all()])
+            res = sum([it.card.price * it.nb for it in self.depositcopies_set.all()])
         except Exception as e:
             log.error(e)
 
         return res
+
+    @property
+    def total_current_price(self):
+        return self.total_current_cost
+
+    @property
+    def total_current_cost(self):
+        co = self.last_checkout()
+        if co:
+            return co.total_cost()
 
     @property
     def init_qty(self):
