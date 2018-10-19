@@ -2179,12 +2179,12 @@ class DepositState(models.Model):
         try:
             copies = self.depositstatecopies_set.filter(card__id=card.id)
         except Exception:
-            msgs.add_warning(_(u"The card {} was not found on this deposit.".format(card.title)))
+            msgs.add_warning(_(u"Error getting card {}  on this deposit state.".format(card.title)))
             return msgs.status, msgs.msgs
 
         if not copies:
             log.warning(u"The card {} was not found on this deposit.".format(card.title))
-            msgs.add_warning(_(u"The card {} was not found on this deposit.".format(card.title)))
+            msgs.add_warning(_(u"The card {} was not found on this deposit state.".format(card.title)))
             return msgs.status, msgs.msgs
 
         state_copy = copies[0]

@@ -25,6 +25,7 @@ Note: to compare two objects, don't use assertEqual but the == operator.
 import datetime
 
 import factory
+import logging
 from django.core.management import call_command
 from django.test import TestCase
 from django.test import TransactionTestCase
@@ -55,7 +56,9 @@ from search.models import Shelf
 from search.models import SoldCards
 from search.models import history
 from search.models import getHistory
+from search.models.utils import get_logger
 
+log = get_logger()
 
 class AuthorFactory(DjangoModelFactory):
     class Meta:
@@ -168,6 +171,9 @@ class TestCards(TestCase):
         self.place.add_copy(self.autobio, nb=1)
         # mandatory: preferences table
         self.preferences = Preferences(default_place=self.place).save()
+
+    def tearDown(self):
+        log.setLevel(logging.DEBUG)
 
     def test_shelf_repr(self):
         self.assertNotEqual("", self.autobio.shelf_repr)
@@ -357,6 +363,7 @@ class TestCards(TestCase):
         self.assertEqual(res[0].title, self.fixture_title)
 
     def test_get_from_id_list_non_existent(self):
+        log.setLevel(logging.WARNING)
         cards_id = [1, 2]
         res, msgs = Card.get_from_id_list(cards_id)
         self.assertTrue(res)
@@ -534,8 +541,12 @@ class TestBaskets(TestCase):
         self.distributor = DistributorFactory()
         self.distributor.save()
 
+        # Preferences
+        self.place = PlaceFactory.create()
+        self.preferences = Preferences(default_place=self.place).save()
+
     def tearDown(self):
-        pass
+        log.setLevel(logging.DEBUG)
 
     def test_basket_add_copy(self):
         # add a card.
@@ -574,6 +585,7 @@ class TestBaskets(TestCase):
     def test_to_deposit_different_dist(self):
         """The card has a different distributor: reject.
         """
+        log.setLevel(logging.CRITICAL)
         # Another dist:
         dist2 = DistributorFactory()
         # add a card
@@ -582,7 +594,7 @@ class TestBaskets(TestCase):
         self.basket.add_copy(self.card)
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
-        self.assertTrue(msgs)
+        self.assertTrue('Error' in msgs[0]['message'])
 
     def test_to_deposit_nominal(self):
         """
@@ -624,6 +636,9 @@ class TestDeposits(TransactionTestCase):
         # Preferences
         self.preferences = Preferences.objects.create(default_place=self.place)
         self.preferences.save()
+
+    def tearDown(self):
+        log.setLevel(logging.DEBUG)
 
     def test_nominal(self):
         """
@@ -710,6 +725,7 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
 
     def test_different_distributor(self):
+        log.setLevel(logging.CRITICAL)
         self.other_dist = DistributorFactory()
         self.card.distributor = self.other_dist
         self.card.save()
@@ -1197,12 +1213,16 @@ class TestSells(TestCase):
                    {"id": self.secondcard.id,
                     "quantity": 2,
                     "price_sold": p2}]
-        # Add two cards to the deposit.
+        # Add the two cards to the deposit.
         status, msgs = self.depo.add_copies([self.autobio, self.secondcard])
+        self.assertEqual(self.depo.quantity_of(self.autobio), 1)
+        self.assertEqual(self.depo.quantity_of(self.secondcard), 1)
         self.assertTrue(status != 'danger')
         # Sell cards.
         sell, status, msgs = Sell.sell_cards(to_sell, deposit=self.depo)
+        # self.assertTrue(status == 'success') # TODO: failing
         self.assertEqual(self.depo.quantity_of(self.secondcard), 0)
+        self.assertEqual(self.depo.quantity_of(self.autobio), 0)
         # Undo the sell. It knows it was from a deposit.
         sell.undo()
         self.assertEqual(self.depo.quantity_of(self.secondcard), 1)
@@ -1231,7 +1251,7 @@ class TestSellSearch(TestCase):
         self.preferences = Preferences.objects.create(default_place=self.place).save()
 
     def tearDown(self):
-        pass
+        log.setLevel(logging.INFO)
 
     def test_search_sells_distributor(self):
         # sell cards, only one of wanted distributor.
@@ -1272,7 +1292,7 @@ class TestSellSearch(TestCase):
         Sell.search(date_max=now, sortby="title", page_size=10, page=1)
         Sell.search(date_max=now, sortby="sell__id")
         Sell.search(date_max=now, count=True)
-        log.setLevel(50)  # critical
+        log.setLevel(logging.CRITICAL)
         Sell.search(date_max=now, sortby="warning")
 
     def test_search_sells_dates(self):
