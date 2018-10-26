@@ -57,6 +57,7 @@ from search.models import SoldCards
 from search.models import history
 from search.models import getHistory
 from search.models.utils import get_logger
+from search.models.utils import distributors_match
 
 log = get_logger()
 
@@ -639,6 +640,12 @@ class TestDeposits(TransactionTestCase):
 
     def tearDown(self):
         log.setLevel(logging.DEBUG)
+
+    def test_distributors_match(self):
+        self.assertFalse(distributors_match([self.card, self.card2]))
+        self.card.distributor = self.distributor
+        self.card.save()
+        self.assertTrue(distributors_match([self.card, self.card2]))
 
     def test_nominal(self):
         """

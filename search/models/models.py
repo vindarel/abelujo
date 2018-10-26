@@ -69,6 +69,7 @@ from search.models.utils import is_invalid
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
 from search.models.utils import roundfloat
+from search.models.utils import distributors_match
 
 PAGE_SIZE = 20
 #: Date format used to jsonify dates, used by angular-ui (datepicker)

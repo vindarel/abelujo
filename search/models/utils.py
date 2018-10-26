@@ -363,3 +363,14 @@ def get_page_count(entries, size=PAGE_SIZE):
     if (PAGE_SIZE * page_count) > len(entries):
         page_count += 1
     return page_count or 1
+
+
+def distributors_match(cards):
+    """
+    If the distributors of these cards are the same, return True.
+    """
+    if len(cards) <= 1:
+        return True
+    dists = [it.distributor for it in cards]
+    no_duplicates = set(dists)
+    return len(no_duplicates) == 1
