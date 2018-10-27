@@ -641,11 +641,44 @@ class TestDeposits(TransactionTestCase):
     def tearDown(self):
         log.setLevel(logging.DEBUG)
 
+    def test_create(self):
+        dist = Deposit.objects.create(name="new dist", distributor=self.distributor)
+        self.assertTrue(dist.depositstate_set.count())
+        self.assertFalse(dist.depositstate.closed)
+
     def test_distributors_match(self):
         self.assertFalse(distributors_match([self.card, self.card2]))
         self.card.distributor = self.distributor
         self.card.save()
         self.assertTrue(distributors_match([self.card, self.card2]))
+
+    def test_ensure_open_depostate(self):
+        depo = Deposit.objects.create(name="depo foo")
+        self.assertEqual(1, depo.depositstate_set.count())
+        checkout = depo.ensure_open_depostate()
+        self.assertEqual(1, depo.depositstate_set.count())
+        checkout.close()
+        checkout.save()
+        self.assertTrue(checkout.closed)
+        checkout = depo.ensure_open_depostate()
+        self.assertFalse(depo.depositstate_set.last().closed)
+        self.assertEqual(2, depo.depositstate_set.count())
+        depo.ensure_open_depostate()
+        self.assertEqual(2, depo.depositstate_set.count())
+
+    def test_add_copies(self):
+        # add copies with the same distributor.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copy(self.card, nb=3)
+        self.assertTrue(status)
+        self.assertEqual(msgs, [])
+        self.assertEqual(3, self.deposit.quantity_of(self.card))
+
+        # add copies with a different dist each.
+        self.card.distributor = None
+        self.card.save()
+        status, msgs = self.deposit.add_copies([self.card, self.card2])
+        self.assertFalse(status)
 
     def test_nominal(self):
         """

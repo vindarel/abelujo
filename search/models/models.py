@@ -2136,6 +2136,18 @@ class DepositState(models.Model):
 
         return ex
 
+    def nb_current(self, card):
+        """
+        Return the current number of the given card in this deposit state.
+        """
+        depcopies = self.depositstatecopies_set.filter(card=card).all()
+        if not depcopies:
+            return 0
+        else:
+            if len(depcopies) != 1:
+                log.warning(u"len(depcopies) != 1, this shouldn't happen.")
+            return depcopies.last().nb_current
+
     def add_copies(self, copies, nb=1, quantities=[]):
         """Add the given list of copies objects to this deposit state.
 
@@ -2433,25 +2445,51 @@ class Deposit(TimeStampedModel):
         return u"Deposit '{}' with distributor: {} (type: {})".format(
             self.name, self.distributor, self.deposit_type)
 
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to create the initial deposit state.
+        """
+        super(Deposit, self).save(*args, **kwargs)
+        self.ensure_open_depostate()
+        return self
+
+    def ensure_open_depostate(self):
+        """
+        Ensure that we have an ongoing open DepositState.
+        Return an open deposit state.
+        """
+        if not self.depositstate_set.count():
+            depostate = DepositState.objects.create(deposit=self)
+            return depostate
+        last = self.depositstate_set.last()
+        if last and last.closed:
+            depostate = DepositState.objects.create(deposit=self)
+            return depostate
+        return last
+
+    @property
+    def depositstate(self):
+        """
+        Return the last DepositState object.
+        """
+        return self.depositstate_set.last()
+
+    @property
+    def ongoing_depostate(self):
+        """
+        Return an ongoing, open DepositState object.
+        """
+        return self.ensure_open_depostate()
+
     @property
     def last_checkout_date(self):
-        obj = self.last_checkout()
-        if obj:
-            return obj.created
-
-        return None
+        pass
 
     @property
     def total_init_price(self):
         """Get the total value of the initial stock.
         """
-        res = "undefined"
-        try:
-            res = sum([it.card.price * it.nb for it in self.depositcopies_set.all()])
-        except Exception as e:
-            log.error(e)
-
-        return res
+        pass
 
     @property
     def total_current_price(self):
