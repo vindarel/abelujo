@@ -2343,12 +2343,10 @@ class DepositState(models.Model):
         """
         return: a tuple status / list of messages (str).
         """
-        if not self.ambiguous:
-            self.closed = timezone.now()
-            self.save()
-            return True, []
-        else:
-            return False, [_("The deposit state can not be closed. There are conflicting sells.")]
+        # with alerts: check there are no ambiguous sells. To finish.
+        self.closed = timezone.now()
+        self.save()
+        return True, []
 
 
 class Deposit(TimeStampedModel):
