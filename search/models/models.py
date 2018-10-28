@@ -2553,58 +2553,28 @@ class Deposit(TimeStampedModel):
 
         """
         msgs = Messages()
-        try:
-            for (i, copy) in enumerate(copies):
-                if isinstance(copy, str):
-                    copy = Card.objects.get(id=copy)
+        if not distributors_match(copies):
+            msgs.add_warning(_(u"The cards should be all of the same supplier."))
+            return False, msgs.msgs
 
-                if not copy.distributor and self.distributor:
-                    # No distributor ? Ok, you receive this one.
-                    copy.distributor = self.distributor
-                    copy.save
+        checkout = self.ongoing_depostate
+        status, msgs = checkout.add_copies(copies, nb=nb, quantities=quantities)
 
-                if not self.distributor or \
-                   (copy.distributor and (copy.distributor.name == self.distributor.name)):
-                    if len(quantities) == len(copies):
-                        qty = quantities[i]
-                    else:
-                        qty = nb
-                    deposit_copy, created = self.depositcopies_set.get_or_create(card=copy)
-                    if created:
-                        deposit_copy.nb = qty
-                        deposit_copy.save()
-                        # Create the first checkout, by default.
-                        # A deposit needs one to store the up to date cards info.
-                        checkout, _msgs = self.checkout_create()
-                    else:
-                        # Update the ongoing checkout
-                        checkout = self.checkout_current()
-                        checkout.add_copies(copies, quantities=quantities)
-
-                else:
-                    msg = u"Error: the distributor of card \"{}\" do not match the one of the deposit: {} and {}.".\
-                          format(copy.title, copy.distributor.name, self.distributor.name)
-                    log.error(msg + u"We should have filtered the copies before.")
-                    msgs.add_warning(msg)
-
-            return msgs.status, msgs.msgs  # xxx: should return msgs, it has status inside.
-
-        except Exception as e:
-            log.error(u"Error while adding a card to the deposit: {}".format(e))
-            msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
-            return msgs.status, msgs.msgs
+        return status, msgs
 
     def add_copy(self, card_obj, nb=1, add=True):
-        """Add a card object to this deposit.
+        """
+        Add a card object to this deposit.
 
         - nb (int): quantity to add
         - add (bool): if False, do not add the quantities but set them.
         """
-        self.add_copies([card_obj], nb=nb, add=add)
+        return self.add_copies([card_obj], nb=nb, add=add)
 
     @staticmethod
     def from_dict(depo_dict):
-        """Creates a deposit from the given dictionnary.
+        """
+        Create a deposit from the given dictionnary.
 
         Thanks to the form validation, we are sure the deposit's name is unique.
 
