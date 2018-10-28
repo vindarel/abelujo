@@ -701,7 +701,6 @@ class Card(TimeStampedModel):
 
         res = {
             "id": self.id,
-            "ambiguous_sell": self.ambiguous_sell(),
             "authors": auth,
             "authors_repr": authors_repr,
             "collection": self.collection.name.capitalize() if self.collection else None,
@@ -1404,11 +1403,6 @@ class Card(TimeStampedModel):
         - Return: int
         """
         return sum(self.depositstatecopies_set.all().values_list('nb_current', flat=True))
-
-    def ambiguous_sell(self):
-        in_deposits = self.quantity_deposits()
-        # or equal, because this check happens after a sell: the quantity has been decremented.
-        return self.is_in_deposits() and in_deposits > 0 and (self.quantity >= in_deposits)
 
     @staticmethod
     def never_sold(page=None, pagecount=20):
@@ -2113,13 +2107,6 @@ class DepositState(models.Model):
             self.id, self.deposit, self.copies.count(), self.closed)
         return ret
 
-    @property
-    def ambiguous(self):
-        for card in self.copies.all():
-            if card.ambiguous_sell():
-                return True
-        return False
-
     @staticmethod
     def existing(deposit):
         """Get the existing deposit state of the given deposit.
@@ -2188,17 +2175,17 @@ class DepositState(models.Model):
         """
         msgs = Messages()
         try:
-            copies = self.depositstatecopies_set.filter(card__id=card.id)
+            dscopies = self.depositstatecopies_set.filter(card__id=card.id)
         except Exception:
             msgs.add_warning(_(u"Error getting card {}  on this deposit state.".format(card.title)))
             return msgs.status, msgs.msgs
 
-        if not copies:
+        if not dscopies:
             log.warning(u"The card {} was not found on this deposit.".format(card.title))
             msgs.add_warning(_(u"The card {} was not found on this deposit state.".format(card.title)))
             return msgs.status, msgs.msgs
 
-        state_copy = copies[0]
+        state_copy = dscopies[0]
         state_copy.nb_current -= nb
         # Remember the sell:
         if sell:
@@ -2706,16 +2693,15 @@ class Deposit(TimeStampedModel):
         return msgs.status, msgs.msgs
 
     def sell_card(self, card=None, card_id=None, nb=1, sell=None, silence=False):
-        """Sell a card from this deposit.
+        """Sell a card from this deposit state: decrement its quantity,
+        register the sell object.
 
-        Decrement its quantity from the deposit state.
-
-        Return: a tuple status and list of messages.
+        Return a tuple: a status (bool) and a list of messages (str).
         """
         msgs = Messages()
         if not (card or card_id):
             msgs.add_warning(_(u"Please provide a card or a card id."))
-            return msgs
+            return False, msgs
 
         if card_id:
             try:
@@ -2727,21 +2713,9 @@ class Deposit(TimeStampedModel):
                 return msgs.status, msgs.msgs
 
         if card:
-            try:
-                state = self.checkout_current()
-                status, _msgs = state.sell_card(card=card, sell=sell)
-                msgs.append(_msgs)
-
-            except ObjectDoesNotExist:
-                msgs.add_error(_(u"The requested card does not exist in the deposit."))
-                return msgs.status, msgs.msgs
-            except Exception as e:
-                log.error(u"Error selling card {} for deposit {}: {}".format(card_id, self.id, e))
-                msgs.add_error(_(u"Error selling the card {}".format(card.title)))
-                return msgs.status, msgs.msgs
-
-            msgs.add_success(_(u"The card '{}' was sold from deposit '{}'.".format(card.title, self.name)))
-            return msgs.status, msgs.msgs
+            co = self.ongoing_depostate
+            co.sell_card(card=card, sell=sell, nb=nb)
+            return True, msgs.msgs
 
         else:
             return None, []
@@ -2826,48 +2800,21 @@ class Deposit(TimeStampedModel):
 
         return: tuple (DepositState object or None, list of messages (str))
         """
-        msgs = Messages()
-        cur_depostate = DepositState.existing(self)
-        if cur_depostate and not cur_depostate.closed:
-            return self.last_checkout(), [_("Hey oh, a deposit state for this deposit already exists. \
-            Please close it before opening a new one.")]
-
-        last_checkout = self.last_checkout()
-
-        sold_cards = []  # list of dict card, list of sell objects
-        # Register the cards associated with the deposit at that time
-        # and their corresponding sells.
-        now = timezone.now()
-        checkout = DepositState(deposit=self, created=now)
-        checkout.save()
-        for card in self.copies.all():
-            sells_dict = Sell.search(card_id=card.id, date_min=now,
-                                     deposit_id=self.id)  # few chances we sell cards between now() and now
-            sold_cards.append({"card": card, "sells": sells_dict['data']})
-
-        quantities = []
-        if last_checkout:
-            # Get the previous quantities of the cards.
-            balance = last_checkout.balance()
-            for card_tuple in balance['cards']:
-                # card_obj = card_tuple[0]
-                depostate_copy = card_tuple[1]
-                nb_current = depostate_copy.nb_current
-                quantities.append(nb_current)
-        else:
-            # Initialize the checkout with the initial values.
-            dep_copies = self.depositcopies_set.all()
-            for it in dep_copies:
-                quantities.append(it.nb)
-
-        status, _msgs = checkout.add_copies(self.copies.all(), quantities=quantities)
-        msgs.append(_msgs)
-        if sold_cards:
-            checkout.update_soldcards(sold_cards)
-        else:
-            msgs.add_info(_("No cards were sold since the last deposit state."))
-
-        return checkout, msgs.msgs
+        # If there is an open depostate, return it. -> there should be always one.
+        # Create a checkout = close the current one, register what should be,
+        # open a new one and report the current quantities.
+        # We should find sells that are related to this deposit.
+        # Or, we should always say that we sell from a deposit: simpler.
+        co = self.ongoing_depostate
+        co.close()
+        new = DepositState.objects.create(deposit=self)
+        # Report the current cards and quantities from the old to the new one.
+        for it in co.depositstatecopies_set.all():
+            ds, created = new.depositstatecopies_set.get_or_create(card=it.card)
+            ds.nb_current = it.nb_current
+            ds.nb_initial = it.nb_current
+            ds.save()
+        return new, []
 
     def checkout_balance(self):
         """Get the balance of the ongoing checkout.
@@ -3147,7 +3094,10 @@ class Sell(models.Model):
         return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[], place_id=None, place=None, deposit_id=None, deposit=None, silence=False):
+    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[],
+                   place_id=None, place=None,
+                   deposit_id=None, deposit=None,
+                   silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
@@ -3228,14 +3178,6 @@ class Sell(models.Model):
                 log.error(u"Error: id {} shouldn't be None.".format(id))
             card = Card.objects.get(id=id)
             cards_obj.append(card)
-
-            # Create an alert ?
-            if card.ambiguous_sell():
-                alert = Alert(card=card)
-                alert.save()
-                alert.add_deposits_of_card(card)
-                #TODO: ajouter les messages pour la UI
-                # msgs.append
 
             try:
                 # Either sell from a deposit,

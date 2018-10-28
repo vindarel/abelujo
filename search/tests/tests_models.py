@@ -673,6 +673,8 @@ class TestDeposits(TransactionTestCase):
         self.assertTrue(status)
         self.assertEqual(msgs, [])
         self.assertEqual(3, self.deposit.quantity_of(self.card))
+        status, msgs = self.deposit.add_copy(self.card)
+        self.assertEqual(4, self.deposit.quantity_of(self.card))
 
         # add copies with a different dist each.
         self.card.distributor = None
@@ -680,6 +682,42 @@ class TestDeposits(TransactionTestCase):
         status, msgs = self.deposit.add_copies([self.card, self.card2])
         self.assertFalse(status)
 
+    def test_checkout_create(self):
+        # add copies.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card, self.card2], nb=2)
+        old_co = self.deposit.ongoing_depostate
+        # Create a checkout/deposit state = remember the current state at a point in time.
+        co, msgs = self.deposit.checkout_create()
+        # The current quantities of the old should be reported to the initial and current ones.
+        old_dscopies = old_co.depositstatecopies_set.all()
+        co_dscopies = co.depositstatecopies_set.all()
+        for i, it in enumerate(old_dscopies):
+            self.assertEqual(it.nb_current, co_dscopies[i].nb_current)
+            self.assertEqual(it.nb_current, co_dscopies[i].nb_initial)
+
+    def test_sell_card(self):
+        # add copies.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card, self.card2], nb=2)
+        # sell from the deposit.
+        # Since we don't give a sell object, don't output warnings.
+        log.setLevel(logging.CRITICAL)
+        self.deposit.sell_card(self.card)
+        co = self.deposit.ongoing_depostate
+        self.assertEqual(1, self.deposit.quantity_of(self.card))
+        self.assertEqual(2, self.deposit.quantity_of(self.card2))
+        # sell again.
+        self.deposit.sell_card(self.card, nb=2)
+        self.assertEqual(-1, self.deposit.quantity_of(self.card))
+
+        # Sell from the Sell class.
+        log.setLevel(logging.DEBUG)
+        sellobj, status, msgs = Sell.sell_card(self.card, deposit=self.deposit)
+        self.assertTrue(sellobj)
+        self.assertEqual(-2, self.deposit.quantity_of(self.card))
+        dscopy = co.depositstatecopies_set.first()
+        self.assertEqual(1, dscopy.nb_sells)
     def test_nominal(self):
         """
         Add copies in deposit, check its balance.
