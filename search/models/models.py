@@ -2052,6 +2052,10 @@ class DepositStateCopies(models.Model):
     deposit_state = models.ForeignKey("DepositState")
     #: Remember sells about this card.
     sells = models.ManyToManyField("Sell")
+    #: the quantity of the card at this deposit state creation.
+    #: Should be equal to the nb_current of the previous one,
+    #: and to nb_current + nb_sells.
+    nb_initial = models.IntegerField(default=0)
     #: the current quantity of the card (at the date of the deposit state).
     nb_current = models.IntegerField(default=0)
     #: number of wanted copies.
@@ -2082,12 +2086,6 @@ class DepositStateCopies(models.Model):
                 self.sells.add(sell)
             except Exception as e:
                 log.error(u"adding sells to {}: {}".format(self.id, e))
-
-    @property
-    def nb_initial(self):
-        """the initial number of that card in stock: current + nb of sells
-        """
-        return self.nb_current + self.nb_sells
 
 
 class DepositState(models.Model):
@@ -2352,24 +2350,6 @@ class DepositState(models.Model):
         else:
             return False, [_("The deposit state can not be closed. There are conflicting sells.")]
 
-class DepositCopies(TimeStampedModel):
-    """For every card in a deposit, its quantity and threshold.
-    """
-    class Meta:
-        # ordering = ("name",)
-        pass
-
-    card = models.ForeignKey(Card)
-    deposit = models.ForeignKey("Deposit")
-    #: Number of copies now present in the stock.
-    nb = models.IntegerField(default=0)
-    #: Minimum of copies we want to have.
-    threshold = models.IntegerField(blank=True, null=True, default=1)
-
-    def __unicode__(self):
-        return u"card {}, deposit {}, nb {}".format(self.card.id,
-                                                    self.deposit.id,
-                                                    self.nb)
 
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (of many cards) from
@@ -2415,8 +2395,6 @@ class Deposit(TimeStampedModel):
     name = models.CharField(unique=True, max_length=CHAR_LENGTH)
     #: the distributor (or person) we have the copies from.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
-    #: the cards to include in this deposit, with their nb of copies.
-    copies = models.ManyToManyField(Card, through="DepositCopies", blank=True)
 
     #: type of the deposit. Some people also sent their books to a
     #: library and act like a distributor.
