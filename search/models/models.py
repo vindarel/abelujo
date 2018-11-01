@@ -2121,7 +2121,15 @@ class DepositState(models.Model):
 
         return ex
 
-    def nb_current(self, card):
+    @property
+    def nb_current(self):
+        """
+        Sum all the current quantities of all cards for this deposit state.
+        """
+        return self.depositstatecopies_set.aggregate(
+            models.Sum('nb_current'))['nb_current__sum']
+
+    def quantity_of(self, card):
         """
         Return the current number of the given card in this deposit state.
         """
@@ -2201,6 +2209,8 @@ class DepositState(models.Model):
         """
         Undo the sell of the given card for this deposit.
         Return: the current quantity in this deposit state.
+
+        We didn't remove the sell object.
         """
         deposit_state = self.depositstatecopies_set.filter(card__id=card.id)
         deposit_state = deposit_state.last()
@@ -2446,13 +2456,21 @@ class Deposit(TimeStampedModel):
 
     @property
     def last_checkout_date(self):
-        pass
+        closed = self.depositstate_set.filter(closed__isnull=False)
+        if not closed.count():
+            return None
+        last_closed = closed.last()
+        return last_closed.closed
 
     @property
     def total_init_price(self):
         """Get the total value of the initial stock.
         """
-        pass
+        # total price of the first checkout.
+        if not self.depositstate_set.count():
+            return -1
+        first_checkout = self.depositstate_set.first()
+        return first_checkout.total_cost()
 
     @property
     def total_current_price(self):
@@ -2460,21 +2478,19 @@ class Deposit(TimeStampedModel):
 
     @property
     def total_current_cost(self):
-        co = self.last_checkout()
-        if co:
-            return co.total_cost()
+        depostate = self.ongoing_depostate
+        return depostate.total_cost()
 
     @property
     def init_qty(self):
-        #XXX: qty of copies
-        #XXX: use decorator to encapsulate exception.
-        res = "undefined"
-        try:
-            res = sum([it.nb for it in self.depositcopies_set.all()])
-        except Exception as e:
-            log.error(e)
-
-        return res
+        """
+        Initial quantity of cards, at the creation of the deposit.
+        Return: int.
+        """
+        if not self.depositstate_set.count():
+            return 0
+        creation_depostate = self.depositstate_set.first()
+        return creation_depostate.nb_current
 
     def get_absolute_url(self):
         prefs = Preferences.prefs()
@@ -2540,11 +2556,10 @@ class Deposit(TimeStampedModel):
         return next
 
     def add_copies(self, copies, nb=1, quantities=[], **kwargs):
-        """Add the given list of copies objects to this deposit. If their
+        """
+        Add the given list of copies objects to this deposit. If their
         distributors don't match, exit. If the given copies don't
         have a distributor yet, set it.
-
-        Always create a deposit_state.
 
         - copies: list of Card objects or ids.
         - quantities: list of their respective quantities (int). len(quantities) must equal len(copies).
@@ -2715,7 +2730,7 @@ class Deposit(TimeStampedModel):
         Return: int
         """
         checkout = self.ongoing_depostate
-        return checkout.nb_current(card)
+        return checkout.quantity_of(card)
 
     def nb_alerts(self):
         """Is the distributor of this deposit concerned by open alerts ? If

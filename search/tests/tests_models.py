@@ -732,6 +732,36 @@ class TestDeposits(TransactionTestCase):
         status, msgs = self.deposit.sell_undo(self.card)
         self.assertEqual(status, 'success')
         self.assertEqual(2, self.deposit.quantity_of(self.card))
+
+    def test_various_numbers(self):
+        price = self.card.price
+        # add 1 card.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copy(self.card)
+
+        self.assertFalse(self.deposit.last_checkout_date)
+        self.assertEqual(price, self.deposit.total_init_price)
+        self.assertEqual(price, self.deposit.total_current_cost)
+        self.assertEqual(1, self.deposit.init_qty)
+
+        # Add another card.
+        status, msgs = self.deposit.add_copy(self.card2)
+
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(2 * price, self.deposit.total_current_cost)
+        self.assertEqual(2 * 1, self.deposit.init_qty)
+
+        # Create a checkout.
+        self.deposit.checkout_create()
+        self.assertTrue(self.deposit.last_checkout_date)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(2 * price, self.deposit.total_current_cost)
+        self.assertEqual(2 * 1, self.deposit.init_qty)
+        # and add a 3rd card.
+        status, msgs = self.deposit.add_copy(self.card2)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(3 * price, self.deposit.total_current_cost)
+        self.assertEqual(2 * 1, self.deposit.init_qty)
     def test_nominal(self):
         """
         Add copies in deposit, check its balance.
