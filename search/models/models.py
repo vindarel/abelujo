@@ -2748,11 +2748,8 @@ class Deposit(TimeStampedModel):
         """
         return: a DepositState object.
         """
-        checkout = self.last_checkout()
-        if not checkout:
-            checkout, msgs = self.checkout_create()
-
-        return checkout
+        # xxx: now ongoing_depostate
+        return self.ongoing_depostate
 
     def last_checkout(self):
         """Return the last checkout at which we did the last checkout of this
