@@ -2200,15 +2200,13 @@ class DepositState(models.Model):
     def sell_undo(self, card, quantity=1):
         """
         Undo the sell of the given card for this deposit.
+        Return: the current quantity in this deposit state.
         """
         deposit_state = self.depositstatecopies_set.filter(card__id=card.id)
-        if not deposit_state:
-            return -1
-        else:
-            deposit_state = deposit_state.last()
-            deposit_state.nb_current += quantity
-            deposit_state.save()
-            return deposit_state.nb_current
+        deposit_state = deposit_state.last()
+        deposit_state.nb_current += quantity
+        deposit_state.save()
+        return deposit_state.nb_current
 
     def update_soldcards(self, cards_sells):
         """Add cards to this deposit state.
@@ -2380,6 +2378,8 @@ class Deposit(TimeStampedModel):
     name = models.CharField(unique=True, max_length=CHAR_LENGTH)
     #: the distributor (or person) we have the copies from.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
+
+    #: To include cards, use add_copy/ies.
 
     #: type of the deposit. Some people also sent their books to a
     #: library and act like a distributor.
@@ -2696,14 +2696,15 @@ class Deposit(TimeStampedModel):
         """
         msgs = Messages()
         try:
-            state = self.checkout_current()
-            status, _msgs = state.sell_undo(card=card, quantity=quantity)
-            msgs.append(_msgs)
+            state = self.ongoing_depostate
+            state.sell_undo(card=card, quantity=quantity)
 
         except Exception as e:
             log.error(u"Error undoing the sell of card {} for deposit {}: {}".format(card, self.id, e))
             msgs.add_error(_(u"Error undoing the sell of card '{}' for deposit {}".format(card.title, self.name)))
             return msgs.status, msgs.msgs
+
+        return msgs.status, msgs.msgs
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?

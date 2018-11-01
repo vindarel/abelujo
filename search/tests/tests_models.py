@@ -718,6 +718,20 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(-2, self.deposit.quantity_of(self.card))
         dscopy = co.depositstatecopies_set.first()
         self.assertEqual(1, dscopy.nb_sells)
+
+    def test_sell_undo(self):
+        # add copies.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card, self.card2], nb=2)
+        # sell
+        sellobj, status, msgs = Sell.sell_card(self.card, deposit=self.deposit)
+        self.assertTrue(sellobj)
+        self.assertEqual(1, self.deposit.quantity_of(self.card))
+
+        # undo the sell.
+        status, msgs = self.deposit.sell_undo(self.card)
+        self.assertEqual(status, 'success')
+        self.assertEqual(2, self.deposit.quantity_of(self.card))
     def test_nominal(self):
         """
         Add copies in deposit, check its balance.
