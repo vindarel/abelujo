@@ -2707,22 +2707,15 @@ class Deposit(TimeStampedModel):
         return msgs.status, msgs.msgs
 
     def quantity_of(self, card):
-        """How many copies of this card do we have ?
+        """
+        How many copies of this card do we have in the current deposit state ?
 
         - card: a card object.
 
         Return: int
         """
-        try:
-            balance = self.checkout_balance()
-            if balance and len(balance['cards']):
-                state_copies = balance['cards'][0][1]
-                qty = state_copies.nb_current
-                return qty
-            return 0
-        except Exception as e:
-            log.error(e)
-            return None
+        checkout = self.ongoing_depostate
+        return checkout.nb_current(card)
 
     def nb_alerts(self):
         """Is the distributor of this deposit concerned by open alerts ? If
