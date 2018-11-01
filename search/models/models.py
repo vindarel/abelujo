@@ -2791,16 +2791,6 @@ class Deposit(TimeStampedModel):
 
         return state.balance()
 
-    def checkout_close(self):
-        """Close this state of the deposit (before to pay the
-        distributor).
-
-        The following checkouts will start from this date.
-        """
-        state = self.last_checkout()
-        closed, msg = state.close()
-        state.save()
-        return (closed, msg)
 
 
 class SoldCards(TimeStampedModel):

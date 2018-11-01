@@ -883,20 +883,6 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
         self.assertEqual(msgs[0]['level'], ALERT_WARNING)
 
-    def test_close_deposit(self):
-        # Add cards
-        self.deposit.add_copies([self.card2], quantities=[3])
-        co = self.deposit.checkout_current()
-        self.assertFalse(co.closed)
-        # Manipulate the objects
-        co.closed = timezone.now()
-        co.save()
-        self.assertTrue(co.closed)
-        self.deposit.checkout_close()
-        co = self.deposit.last_checkout()
-        self.assertTrue(co.closed)  # fails only with date time field.
-        self.assertEqual(self.deposit.last_checkout_date, co.created)
-
     def test_sell_update(self):
         """Test we update correctly the nb of sells and nb current after when
         we have a sell and we close the deposit state.
