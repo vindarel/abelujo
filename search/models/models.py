@@ -1395,7 +1395,14 @@ class Card(TimeStampedModel):
             self.save()
 
     def is_in_deposits(self):
-        return self.deposit_set.count() > 0
+        """
+        Is this card in deposits ?
+        Return: a boolean.
+        """
+        # We only look at its presence in a deposit /state/.
+        # We don't have a mapping Card <-> Deposit any more, only -> DepositState.
+        # We don't know here in how many deposits it is.
+        return self.depositstate_set.count() > 0
 
     def quantity_deposits(self):
         """Quantity of this card in deposits (actually, in deposits' states).

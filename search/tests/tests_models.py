@@ -762,6 +762,13 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(2 * price, self.deposit.total_init_price)
         self.assertEqual(3 * price, self.deposit.total_current_cost)
         self.assertEqual(2 * 1, self.deposit.init_qty)
+
+    def test_is_in_deposits(self):
+        self.assertFalse(self.card.is_in_deposits())
+        # Add a card.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copy(self.card)
+        self.assertTrue(self.card.is_in_deposits())
     def test_nominal(self):
         """
         Add copies in deposit, check its balance.
