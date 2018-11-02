@@ -2597,6 +2597,7 @@ class Deposit(TimeStampedModel):
     def from_dict(depo_dict):
         """
         Create a deposit from the given dictionnary.
+        Add cards, and create an initial checkout.
 
         Thanks to the form validation, we are sure the deposit's name is unique.
 
@@ -2605,7 +2606,7 @@ class Deposit(TimeStampedModel):
         - copies: a list of Card objects
         - quantities: a list of their respective quantities (int)
 
-        returns: a Messages object, with status and msgs.
+        returns: a tuple with: the new Deposit object, a Messages object.
         """
         msgs = Messages()
 
@@ -2633,7 +2634,7 @@ class Deposit(TimeStampedModel):
         # Check name exists.
         if Deposit.objects.filter(name=depo_dict['name']):
             msgs.add_error(_("A deposit of that name already exists."))
-            return msgs
+            return None, msgs
 
         # Create the deposit.
         try:
@@ -2641,7 +2642,7 @@ class Deposit(TimeStampedModel):
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
             msgs.add_error(_("internal error, sorry !"))
-            return msgs
+            return None, msgs
 
         # Add copies.
         try:
@@ -2653,7 +2654,10 @@ class Deposit(TimeStampedModel):
             # Delete previously created deposit (we want an atomic operation).
             dep.delete()
             msgs.add_error(_("internal error, sorry !"))
-            return msgs
+            return dep, msgs
+
+        # Create our initial deposit state.
+        dep.checkout_create()
 
         # Link to the destination place, if any.
         if dep and dest_place_id:
@@ -2664,10 +2668,7 @@ class Deposit(TimeStampedModel):
                 log.error(u"Error adding a Deposit from dict: {}".format(e))
                 msgs.add_error(_("Error adding a deposit"))
 
-        # Create the initial deposit state (aka checkout).
-        dep.checkout_create()  # xxx: simplify, no need to search for sold cards now.
-
-        return msgs.status, msgs.msgs
+        return dep, msgs
 
     def sell_card(self, card=None, card_id=None, nb=1, sell=None, silence=False):
         """Sell a card from this deposit state: decrement its quantity,

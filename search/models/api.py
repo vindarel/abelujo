@@ -524,7 +524,7 @@ def deposits(request, **response_kwargs):
                 "dest_place": params.get("dest_place"),
             }
 
-            msgs = Deposit.from_dict(deposit_dict)
+            depo, msgs = Deposit.from_dict(deposit_dict)
 
         except Exception as e:
             log.error(u"api/deposit error: {}".format(e))

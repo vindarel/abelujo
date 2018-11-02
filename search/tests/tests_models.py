@@ -658,9 +658,15 @@ class TestDeposits(TransactionTestCase):
             "due_date": "undefined",
             "dest_place": "",
         }
-        msgs = Deposit.from_dict(depo_dict)
+        depo, msgs = Deposit.from_dict(depo_dict)
         self.assertEqual(msgs.status, 'success')
         self.assertTrue('successfully created' in msgs.msgs[0]['message'])
+
+        # We must have one depositstate closed: our initial one.
+        self.assertEqual(2, depo.depositstate_set.count())
+        self.assertTrue(depo.depositstate_set.first().closed)
+        # as usual:
+        self.assertFalse(depo.depositstate_set.last().closed)
 
         depo_dict = {
             'name': "depo test",  # same name
@@ -673,7 +679,7 @@ class TestDeposits(TransactionTestCase):
             "due_date": "undefined",
             "dest_place": "",
         }
-        msgs = Deposit.from_dict(depo_dict)
+        depo, msgs = Deposit.from_dict(depo_dict)
         self.assertEqual(msgs.status, 'danger')
         self.assertTrue("that name already exists" in msgs.msgs[0]['message'])
 
@@ -688,10 +694,9 @@ class TestDeposits(TransactionTestCase):
             "due_date": "undefined",
             "dest_place": "",
         }
-        msgs = Deposit.from_dict(depo_dict)
+        depo, msgs = Deposit.from_dict(depo_dict)
         self.assertEqual(msgs.status, 'warning')
         self.assertTrue("should be all of the same supplier" in msgs.msgs[0]['message'])
-
 
     def test_distributors_match(self):
         self.assertFalse(distributors_match([self.card, self.card2]))
