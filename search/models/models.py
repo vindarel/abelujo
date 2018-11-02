@@ -2129,12 +2129,28 @@ class DepositState(models.Model):
         return ex
 
     @property
+    def nb_initial(self):
+        """
+        Quantity at the beginning of this checkout (not at the creation of the deposit).
+        """
+        return self.depositstatecopies_set.aggregate(
+            models.Sum('nb_initial'))['nb_initial__sum']
+
+    @property
     def nb_current(self):
         """
         Sum all the current quantities of all cards for this deposit state.
         """
         return self.depositstatecopies_set.aggregate(
             models.Sum('nb_current'))['nb_current__sum']
+
+    @property
+    def nb_sells(self):
+        """
+        Sum of the sells of all the cards of this deposit state.
+        """
+        # don't aggregate, here nb_sells isn't a field but a property.
+        return sum([it.nb_sells for it in self.depositstatecopies_set.all()])
 
     def quantity_of(self, card):
         """
@@ -2295,37 +2311,28 @@ class DepositState(models.Model):
                 total_current += it.card.price * it.nb_current
         return total_current
 
-    def balance(self):
-        """Get the balance of all cards of the deposit.
+    @property
+    def total_sells(self):
+        sells = self.depositstatecopies_set.first().sells.all()
+        return sum([it.total_price_init for it in sells])
 
-        return: a dict.
-        "cards": a dict: the card id, value: a DepositStateCopies object.
-        "total": a dict with: total_price_init, total_price_sold, discount, total_to_pay, margin.
+    @property
+    def total_to_pay(self):
+        total_sells = self.total_sells
+        discount = self.deposit.distributor.discount
+        return total_sells * self.distributor.discount / 100 if discount else total_sells
+
+    @property
+    def margin(self):
+        return self.total_sells - self.total_to_pay
+
+    def cards_balance(self):
         """
-        balance = {"cards": [],
-                   "total": {
-                       "total_price_init": 0,
-                       "total_price_sold": 0,
-                       "discount": 0,
-                       "total_to_pay": 0,
-                       "margin": 0,
-                   }}
+        Get the balance of all cards of the deposit.
+        """
+        cards_balance = []
 
         for card in self.copies.all():
-            balance["cards"].append((card, self.card_balance(card.id)))
-            depostate = self.depositstatecopies_set.first()
-            sells = depostate.sells.all()
-            total_price_init = sum([it.total_price_init for it in sells])
-            balance["total"]["total_price_init"] = self.total_price()  # todo: find original meaning !
-            total_price_sold = sum([it.total_price_sold for it in sells])
-            discount = self.deposit.distributor.discount if self.deposit.distributor else 0
-            total_to_pay = total_price_init * discount / 100 if discount else total_price_sold
-            balance["total"]["total_to_pay"] = total_to_pay
-            balance["total"]["discount"] = discount
-            balance["total"]["total_price_sold"] = total_price_sold
-            balance["total"]["margin"] = total_price_sold - total_to_pay
-
-        return balance
 
     def update(self):
         """Update the cards associated and their corresponding sells.
@@ -2340,6 +2347,11 @@ class DepositState(models.Model):
 
         self.update_soldcards(sold_cards)
         return self
+            cards_balance.append((card, self.card_balance(card.id)))
+            # nb_initial = self.nb_initial
+            # cards_balance['nb_initial'] = nb_initial
+
+        return cards_balance
 
     def close(self):
         """
@@ -2498,6 +2510,58 @@ class Deposit(TimeStampedModel):
             return 0
         creation_depostate = self.depositstate_set.first()
         return creation_depostate.nb_current
+
+    @property
+    def checkout_nb_initial(self):
+        """
+        The quantity of cards at the beginning of the ongoing deposit state.
+        Not the quantity at the deposit creation.
+        """
+        if not self.depositstate_set.count():
+            return 0
+        return self.ongoing_depostate.nb_initial
+
+    @property
+    def checkout_nb_current(self):
+        """
+        Quantity of cards in the ongoing checkout.
+        """
+        if not self.depositstate_set.count():
+            return 0
+        return self.ongoing_depostate.nb_current
+
+    @property
+    def checkout_nb_sells(self):
+        """
+        Number of sells for the ongoing checkout.
+        """
+        if not self.depositstate_set.count():
+            return 0
+        return self.ongoing_depostate.nb_sells
+
+    @property
+    def checkout_total_sells(self):
+        """
+        Total of the sells of the ongoing checkout for this deposit.
+        """
+        if not self.depositstate_set.count():
+            return 0
+        return self.ongoing_depostate.total_sells
+
+    @property
+    def checkout_total_to_pay(self):
+        if not self.depositstate_set.count():
+            return 0
+        return self.ongoing_depostate.total_to_pay
+
+    @property
+    def checkout_margin(self):
+        """
+        Margin on the sells of the current checkout.
+        """
+        if not self.depositstate_set.count():
+            return 0
+        return self.ongoing_depostate.margin
 
     def get_absolute_url(self):
         prefs = Preferences.prefs()
@@ -2763,7 +2827,7 @@ class Deposit(TimeStampedModel):
         """Do a deposit checkout:
         - register it
         - record all the cards of the deposit that have been sold since the last checkout,
-        - if there are alerts (ambiguous sold cards): don't close it
+        [- if there are alerts (ambiguous sold cards): don't close it]
 
         Close it manually.
 
@@ -2786,16 +2850,13 @@ class Deposit(TimeStampedModel):
         return new, []
 
     def checkout_balance(self):
-        """Get the balance of the ongoing checkout.
-
-        return: depositstate.balance(), i.e. a dict.
         """
-        state = self.last_checkout()
-        if not state or state.closed:
-            state, _ = self.checkout_create()
+        Get the balance of the cards of the ongoing checkout.
 
-        return state.balance()
-
+        return: depositstate.cards_balance(), i.e. a list.
+        """
+        depostate = self.ongoing_depostate
+        return depostate.cards_balance()
 
 
 class SoldCards(TimeStampedModel):

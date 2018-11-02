@@ -44,9 +44,7 @@
        tr
         td {% trans "discount" %}
         td
-          span {{ distributor.discount }} 
-          if distributor.discount
-            span %
+          span {{ deposit.distributor.discount }} %
 
        tr
         td {% trans "Deposit type" %}
@@ -60,6 +58,10 @@
    table.table.table-condensed
      tbody
        tr
+          td {% trans "Created" %}
+          td {{ deposit.created }}
+
+       tr
           td {% trans "Due date" %}
           if deposit.due_date
             td {{ deposit.due_date }}
@@ -69,32 +71,33 @@
        tr
         td {% trans "Last deposit state" %}
         td {{ deposit.last_checkout_date }}
-       tr
-        td {% trans "Alerts" %}
-        td {{ nb_alerts }}
 
   .col-md-4
     table.table.table-condensed
       tbody
         tr
-          td {% trans "total init" %}
-          td.text-right {{ total.total_price_init | floatformat:2 | intcomma}} {% trans "€" %}
+          td(title='{% trans "Number of cards at the beginning of this new checkout." %}') {% trans "Initial quantity" %}
+          td.text-right {{ deposit.checkout_nb_initial }}
+
+        tr
+          td(title='{% trans "Current number of cards in the deposit." %}') {% trans "Current quantity" %}
+          td.text-right {{ deposit.checkout_nb_current }}
+
+        tr
+          td {% trans "Number of sells" %}
+          td.text-right {{ deposit.checkout_nb_sells }}
 
         tr
           td {% trans "total sold" %}
-          td.text-right {{ total.total_price_sold | floatformat:2 | intcomma}} {% trans "€" %}
-
-        tr
-          td {% trans "discount" %}
-          td.text-right {{ total.discount }} %
+          td.text-right {{ deposit.checkout_total_sells | floatformat:2 | intcomma}} {% trans "€" %}
 
         tr
           td: h4  {% trans "to pay" %}
-          td: h4.text-right {{ total.total_to_pay | floatformat:2 | intcomma}} {% trans "€" %}
+          td: h4.text-right {{ deposit.checkout_total_to_pay | floatformat:2 | intcomma}} {% trans "€" %}
 
         tr
           td {% trans "margin" %}
-          td.text-right {{ total.margin | floatformat:2 | intcomma}} {% trans "€" %}
+          td.text-right {{ deposit.checkout_margin | floatformat:2 | intcomma}} {% trans "€" %}
 
 .row
  .col-md-12
@@ -137,12 +140,12 @@ table.table.table-striped.table-hover
         th.text-right {% trans "qty init" %}
         th.text-right {% trans "nb sold" %}
         th.text-right {% trans "current qty" %}
-    for key, bal in cards_balance
+    for card, bal in cards_balance
       tr
-        td: a(href="{{key.get_absolute_url}}")  {{ key.title }}
-        td.text-right  {{ key.price | floatformat:2 | intcomma  }} {% trans "€" %}
-        td.text-right  {{ key.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
-        td.text-right  {{ key.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
+        td: a(href="{{card.get_absolute_url}}")  {{ card.title }}
+        td.text-right  {{ card.price | floatformat:2 | intcomma  }} {% trans "€" %}
+        td.text-right  {{ card.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
+        td.text-right  {{ card.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
         td.text-right  {{ bal.nb_initial }}
         td.text-right  {{ bal.nb_sells }}
         td.text-right  {{ bal.nb_current }}

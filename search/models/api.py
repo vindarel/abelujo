@@ -545,7 +545,7 @@ def deposits(request, **response_kwargs):
         depos = Deposit.objects.all()
         depos_list = [it.to_list() for it in depos]
         res = {"data": depos_list,
-               "msgs": msgs,
+               "msgs": msgs.to_alerts(),
                "status": httplib.OK,
         }
         return JsonResponse(res)
