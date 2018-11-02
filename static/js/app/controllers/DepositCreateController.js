@@ -25,7 +25,6 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
     $scope.cards_fetched = [];
     $scope.due_date = undefined;
 
-    //TODO: use django-angular to limit code duplication.
     $scope.deposit_types = [
         {
             name: gettext("fix deposit"),

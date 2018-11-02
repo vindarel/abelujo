@@ -2605,58 +2605,43 @@ class Deposit(TimeStampedModel):
         - copies: a list of Card objects
         - quantities: a list of their respective quantities (int)
 
-        returns: a 2-tuple status, list of messages. The messages are dictionnaries:
-            - level: STATUS_{SUCCESS, ERROR, WARNING}
-            - message: string
-
+        returns: a Messages object, with status and msgs.
         """
         msgs = Messages()
-        dep = None
-        copies = depo_dict.pop('copies')  # add the copies after deposit creation.
-        copies_to_add = copies
 
-        # Remove the copies that don't belong to that deposit.
-        if depo_dict['distributor']:
-            copies_to_add, _msgs = Deposit.filter_copies(copies, depo_dict["distributor"].name)
-            msgs.append(_msgs)
+        copies_to_add = depo_dict.pop('copies')
+        qties = []
+        if 'quantities' in depo_dict:
+            qties = depo_dict.pop('quantities', [])
 
-        # Check the cards are not already in a deposit. Allowed for a deposit of type publisher.
-        pub_type = depo_dict.get('deposit_type')
-        if not pub_type == 'publisher':
-            for copy in copies_to_add:
-                copy_depos = copy.deposit_set.all()
-                if copy_depos:
-                    message = _(dedent(u"""Hey ! We won't create this deposit
-                    because the card '{}' is already in the
-                    deposit '{}'""".format(
-                        copy.title, copy_depos[0].name)))
-                    if len(copy_depos) > 1:
-                        message += " (and {} others)".format(len(copy_depos) - 1)
-                    message += "."
-                    msgs.add_info(message)
+        if 'dest_place' in depo_dict:
+            dest_place_id = depo_dict.pop('dest_place')
 
-                    return ALERT_ERROR, msgs.msgs
+        if depo_dict.get("auto_command") == "true":
+            depo_dict["auto_command"] = True
+
+        if depo_dict.get('due_date') == 'undefined':
+            depo_dict['due_date'] = None
+
+
+        # TODO: If any that copies don't belong to that distributor: fail.
+        # *before* we create the deposit.
+
+        # TODO: Check the cards are not already in a deposit. Allowed for a deposit of type publisher.
 
         # Normal case.
         # Check name exists.
         if Deposit.objects.filter(name=depo_dict['name']):
-            msgs.add_info(_("A deposit of that name already exists."))
-            return ALERT_INFO, msgs.msgs
-
-        dest_place_id = None
-        if depo_dict.get("dest_place"):
-            dest_place_id = depo_dict.pop('dest_place')
-        if depo_dict.get("auto_command") == "true":
-            depo_dict["auto_command"] = True  # TODO: form validation beforehand.
+            msgs.add_error(_("A deposit of that name already exists."))
+            return msgs
 
         # Create the deposit.
         try:
-            qties = depo_dict.pop('quantities', [])
             dep = Deposit.objects.create(**depo_dict)
         except Exception as e:
             log.error(u"Adding a Deposit from_dict error ! {}".format(e))
             msgs.add_error(_("internal error, sorry !"))
-            return ALERT_ERROR, msgs.msgs
+            return msgs
 
         # Add copies.
         try:
@@ -2668,7 +2653,7 @@ class Deposit(TimeStampedModel):
             # Delete previously created deposit (we want an atomic operation).
             dep.delete()
             msgs.add_error(_("internal error, sorry !"))
-            return ALERT_ERROR, msgs.to_dict()
+            return msgs
 
         # Link to the destination place, if any.
         if dep and dest_place_id:

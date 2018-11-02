@@ -485,11 +485,10 @@ def deposits(request, **response_kwargs):
     returns: a json response: status: 200, messages: a list of messages where each message is a dict
     {level: int, messages: str}
     """
-    msgs = {"status": httplib.OK, "messages": []}
+    msgs = Messages()
 
     if request.method == "POST":
         params = request.POST.copy()
-        # TODO: validation. Use django-angular.
         if params.get("distributor") == "null":
             pass  # return validation error
 
@@ -525,11 +524,7 @@ def deposits(request, **response_kwargs):
                 "dest_place": params.get("dest_place"),
             }
 
-            # that's a form validation...
-            if deposit_dict['due_date'] == 'undefined':
-                del deposit_dict['due_date']
-
-            status, depo_msgs = Deposit.from_dict(deposit_dict)
+            msgs = Deposit.from_dict(deposit_dict)
 
         except Exception as e:
             log.error(u"api/deposit error: {}".format(e))
@@ -538,10 +533,12 @@ def deposits(request, **response_kwargs):
                                      "message": "internal error, sorry !"})
 
             return HttpResponse(json.dumps(msgs), **response_kwargs)
-        msgs = {"status": status,
-                "messages": depo_msgs}
 
-        return JsonResponse(msgs)
+        to_ret = {
+            'status': msgs.status,
+            'alerts': msgs.to_alerts(),
+        }
+        return JsonResponse(to_ret)
 
     # GET
     else:

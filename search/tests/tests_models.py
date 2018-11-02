@@ -646,6 +646,53 @@ class TestDeposits(TransactionTestCase):
         self.assertTrue(dist.depositstate_set.count())
         self.assertFalse(dist.depositstate.closed)
 
+    def test_from_dict(self):
+        depo_dict = {
+            'name': "depo test",
+            "distributor": self.distributor,
+            "copies": [self.card2],  # same distributor as the deposit.
+            "quantities": ['1','1'],
+            "deposit_type": "fix",
+            "minimal_nb_copies": "1",
+            "auto_command": "",
+            "due_date": "undefined",
+            "dest_place": "",
+        }
+        msgs = Deposit.from_dict(depo_dict)
+        self.assertEqual(msgs.status, 'success')
+        self.assertTrue('successfully created' in msgs.msgs[0]['message'])
+
+        depo_dict = {
+            'name': "depo test",  # same name
+            "distributor": self.distributor,
+            "copies": [self.card2],
+            "quantities": ['1','1'],
+            "deposit_type": "fix",
+            "minimal_nb_copies": "1",
+            "auto_command": "",
+            "due_date": "undefined",
+            "dest_place": "",
+        }
+        msgs = Deposit.from_dict(depo_dict)
+        self.assertEqual(msgs.status, 'danger')
+        self.assertTrue("that name already exists" in msgs.msgs[0]['message'])
+
+        depo_dict = {
+            'name': "depo test 2",
+            "distributor": self.distributor,
+            "copies": [self.card, self.card2],  # another card without a distributor.
+            "quantities": ['1','1'],
+            "deposit_type": "fix",
+            "minimal_nb_copies": "1",
+            "auto_command": "",
+            "due_date": "undefined",
+            "dest_place": "",
+        }
+        msgs = Deposit.from_dict(depo_dict)
+        self.assertEqual(msgs.status, 'warning')
+        self.assertTrue("should be all of the same supplier" in msgs.msgs[0]['message'])
+
+
     def test_distributors_match(self):
         self.assertFalse(distributors_match([self.card, self.card2]))
         self.card.distributor = self.distributor
