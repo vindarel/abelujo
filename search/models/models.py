@@ -2678,21 +2678,6 @@ class Deposit(TimeStampedModel):
         """
         raise NotImplementedError
 
-    def last_checkout(self):
-        """Return the last checkout at which we did the last checkout of this
-        deposit.
-
-        return: a depositstate object.
-
-        """
-        try:
-            last_checkout_obj = self.depositstate_set.order_by("created").last()
-        except ObjectDoesNotExist as e:
-            log.error(u"Error looking for DepositState of {}: {}".format(self.name, e))
-            return None
-
-        return last_checkout_obj
-
     def checkout_create(self):
         """Do a deposit checkout:
         - register it
