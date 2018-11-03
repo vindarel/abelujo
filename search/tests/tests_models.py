@@ -584,7 +584,7 @@ class TestBaskets(TestCase):
         self.assertFalse(msgs)
 
     def test_to_deposit_different_dist(self):
-        """The card has a different distributor: reject.
+        """The card has a different distributor: reject. !deprecated!
         """
         log.setLevel(logging.CRITICAL)
         # Another dist:
@@ -595,7 +595,8 @@ class TestBaskets(TestCase):
         self.basket.add_copy(self.card)
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
-        self.assertTrue('Error' in msgs[0]['message'])
+        # deprecation warning: deposits rewrite: we don't reject this anymore.
+        # self.assertTrue('Error' in msgs[0]['message'])
 
     def test_to_deposit_nominal(self):
         """
