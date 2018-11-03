@@ -2001,7 +2001,7 @@ class Basket(models.Model):
                 distributor = Distributor.objects.get(id=distributor)
             except ObjectDoesNotExist as e:
                 log.error(u"Basket to deposit: the given distributor of id {} doesn't exist: {}".format(distributor, e))
-                return None
+                return None, []
 
         if not distributor:
             msg = _(u"Basket to deposit: no distributor. Abort.")

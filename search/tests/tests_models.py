@@ -1750,14 +1750,9 @@ class TestCommandsReceive(TestCase):
         self.assertEqual(self.preferences.default_place.quantity_of(self.card), 1)
 
     def test_inventory_command_apply_to_deposit(self):
-        dc = self.deposit.depositcopies_set.all()
-        self.assertEqual(len(dc), 0)
+        """
+        Make the inventory of a command, apply it to a deposit.
+        """
         self.assertEqual(self.deposit.quantity_of(self.card), 0)
         self.inv.apply(deposit_obj=self.deposit)
-        dc = self.deposit.depositcopies_set.all()
-        self.assertEqual(len(dc), 1)
-        dc = dc[0]
-        self.assertEqual(dc.nb, 1)
-        self.assertEqual(dc.card_id, self.card.id)
-        # The method quantity_of is more complex (and problematic) for deposits.
-        # self.assertEqual(self.deposit.quantity_of(self.card), 1)  # xxx failing
+        self.assertEqual(self.deposit.quantity_of(self.card), 1)
