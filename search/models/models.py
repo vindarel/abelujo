@@ -2678,13 +2678,6 @@ class Deposit(TimeStampedModel):
         """
         raise NotImplementedError
 
-    def checkout_current(self):
-        """
-        return: a DepositState object.
-        """
-        # xxx: now ongoing_depostate
-        return self.ongoing_depostate
-
     def last_checkout(self):
         """Return the last checkout at which we did the last checkout of this
         deposit.
