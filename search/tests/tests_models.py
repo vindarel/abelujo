@@ -1422,9 +1422,9 @@ class TestSells(TestCase):
         self.assertTrue(status != 'danger')
         # Sell cards.
         sell, status, msgs = Sell.sell_cards(to_sell, deposit=self.depo)
-        # self.assertTrue(status == 'success') # TODO: failing
-        self.assertEqual(self.depo.quantity_of(self.secondcard), 0)
+        self.assertTrue(status == 'success')
         self.assertEqual(self.depo.quantity_of(self.autobio), 0)
+        self.assertEqual(self.depo.quantity_of(self.secondcard), -1)
         # Undo the sell. It knows it was from a deposit.
         sell.undo()
         self.assertEqual(self.depo.quantity_of(self.secondcard), 1)

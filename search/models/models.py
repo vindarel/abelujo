@@ -2743,7 +2743,7 @@ class Deposit(TimeStampedModel):
         msgs = Messages()
         if not (card or card_id):
             msgs.add_warning(_(u"Please provide a card or a card id."))
-            return False, msgs
+            return msgs.status, msgs.msgs
 
         if card_id:
             try:
@@ -2757,7 +2757,7 @@ class Deposit(TimeStampedModel):
         if card:
             co = self.ongoing_depostate
             co.sell_card(card=card, sell=sell, nb=nb)
-            return True, msgs.msgs
+            return msgs.status, msgs.msgs
 
         else:
             return None, []
@@ -3202,7 +3202,9 @@ class Sell(models.Model):
             try:
                 # Either sell from a deposit,
                 if deposit_obj:
-                    status, alerts = deposit_obj.sell_card(card_id=id, sell=sell)
+                    status, alerts = deposit_obj.sell_card(card_id=id,
+                                                           sell=sell,
+                                                           nb=quantity)
 
                 # either sell from a place or the default (selling) place.
                 else:
@@ -3284,7 +3286,7 @@ class Sell(models.Model):
 
     def undo(self):
         """Undo:
-        - add the necessary quantity to the right place
+        - add the necessary quantity to the right place or deposit.
         - create a new entry, for the history.
         - we do not undo alerts here
         """
