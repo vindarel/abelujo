@@ -2508,26 +2508,6 @@ class Deposit(TimeStampedModel):
         return ret
 
     @staticmethod
-    def filter_copies(copies, distributor):
-        """Filter out the copies that don't have this distributor.
-
-        Return the list of copies, filtered.
-        """
-        MSG_CARD_DIFFERENT_DIST = dedent(u"""Attention: la notice \"%s\" n'a pas
-            été ajoutée au dépôt car elle n'a pas
-            le même distributeur (\"%s\" au lieu de \"%s\).""")
-        filtered = []
-        msgs = Messages()
-        for copy in copies:
-            if copy.distributor and (copy.distributor.name == distributor):
-                filtered.append(copy)
-            else:
-                cur_dist = copy.distributor.name if copy.distributor else _(u"none")
-                msgs.add_warning(MSG_CARD_DIFFERENT_DIST % (copy.title, cur_dist, distributor))
-
-        return filtered, msgs.msgs
-
-    @staticmethod
     def next_due_dates(to_list=False, count=None):
         """What are the deposits we have to pay soon ?
 
