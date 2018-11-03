@@ -550,19 +550,6 @@ def deposits(request, **response_kwargs):
         }
         return JsonResponse(res)
 
-def deposits_due_dates(request, **response_kwargs):
-    """Get which deposits are to be paid in a (near) future.
-    """
-    depos = {}
-    if request.method == 'GET':
-
-        try:
-            depos = Deposit.next_due_dates(to_list=True)
-        except Exception as e:
-            log.error(e)
-
-        return JsonResponse(depos, safe=False)
-
 def sell(request, **response_kwargs):
     """
     - GET: get one or query many.

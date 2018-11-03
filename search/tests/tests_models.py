@@ -1099,12 +1099,6 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(1, balance["cards"][0][1].nb_current)
         self.assertEqual(0, balance["cards"][0][1].nb_sells)
 
-    def test_next_due_dates(self):
-        """Get which deposits we have to pay soon.
-        """
-        next = Deposit.next_due_dates(to_list=True)
-        self.assertEqual(next[0]['id'], self.deposit.id)
-        self.assertEqual(next[0]['due_date'], self.deposit.due_date.isoformat())
 
 class TestSells(TestCase):
 
