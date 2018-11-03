@@ -1742,11 +1742,9 @@ class Preferences(models.Model):
     def get_default_place():
         """Return the default place object.
         """
-        try:
+        if Preferences.objects.count():
             return Preferences.objects.first().default_place
-        except Exception as e:
-            log.error(u"Error getting the preferences' default place: {}".format(e))
-            return None
+        return None
 
     @staticmethod
     def get_vat_book():
