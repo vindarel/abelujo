@@ -2075,17 +2075,6 @@ class DepositStateCopies(models.Model):
         """
         return self.sells.count()
 
-    def add_sells(self, soldcards):
-        """Register sells.
-        """
-        # We could do that earlier.
-        for soldcard in soldcards:
-            sell = soldcard.sell
-            try:
-                self.sells.add(sell)
-            except Exception as e:
-                log.error(u"adding sells to {}: {}".format(self.id, e))
-
 
 class DepositState(models.Model):
     """Deposit states. We do a deposit state to know what cards have been
@@ -2111,20 +2100,6 @@ class DepositState(models.Model):
         ret = u"{}, deposit '{}' with {} copies. Closed ? {}".format(
             self.id, self.deposit, self.copies.count(), self.closed)
         return ret
-
-    @staticmethod
-    def existing(deposit):
-        """Get the existing deposit state of the given deposit.
-
-        Return: a DepositState object, None if there isn't or if it isn't closed.
-        """
-        try:
-            ex = DepositState.objects.filter(deposit=deposit).order_by("created").last()
-        except Exception as e:
-            log.debug(e)
-            return None
-
-        return ex
 
     @property
     def nb_initial(self):
