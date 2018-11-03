@@ -795,13 +795,21 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(price, self.deposit.total_init_price)
         self.assertEqual(price, self.deposit.total_current_cost)
         self.assertEqual(1, self.deposit.init_qty)
+        self.assertEqual(1, self.deposit.checkout_nb_current)
+        # below: we didn't create a first checkout, we can't have those numbers.
+        self.assertEqual(0, self.deposit.checkout_nb_initial)
+        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_total_sells)
+        self.assertEqual(0, self.deposit.checkout_total_to_pay)
+        self.assertEqual(0, self.deposit.checkout_margin)
 
-        # Add another card.
+        # Add a 2nd card.
         status, msgs = self.deposit.add_copy(self.card2)
 
         self.assertEqual(2 * price, self.deposit.total_init_price)
         self.assertEqual(2 * price, self.deposit.total_current_cost)
         self.assertEqual(2 * 1, self.deposit.init_qty)
+        self.assertEqual(2, self.deposit.checkout_nb_current)
 
         # Create a checkout.
         self.deposit.checkout_create()
@@ -809,11 +817,38 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(2 * price, self.deposit.total_init_price)
         self.assertEqual(2 * price, self.deposit.total_current_cost)
         self.assertEqual(2 * 1, self.deposit.init_qty)
+        self.assertEqual(2, self.deposit.checkout_nb_current)
+        self.assertEqual(2, self.deposit.checkout_nb_initial)
+        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_total_sells)
+        self.assertEqual(0, self.deposit.checkout_total_to_pay)
+        self.assertEqual(0, self.deposit.checkout_margin)
         # and add a 3rd card.
         status, msgs = self.deposit.add_copy(self.card2)
         self.assertEqual(2 * price, self.deposit.total_init_price)
         self.assertEqual(3 * price, self.deposit.total_current_cost)
         self.assertEqual(2 * 1, self.deposit.init_qty)
+        self.assertEqual(3, self.deposit.checkout_nb_current)
+        self.assertEqual(2, self.deposit.checkout_nb_initial)
+        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_total_sells)
+        self.assertEqual(0, self.deposit.checkout_total_to_pay)
+        self.assertEqual(0, self.deposit.checkout_margin)
+
+        # Sell a card.
+        sellobj, status, msgs = Sell.sell_card(self.card, deposit=self.deposit)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(2 * price, self.deposit.total_current_cost)
+        self.assertEqual(2, self.deposit.init_qty)
+        self.assertEqual(2, self.deposit.checkout_nb_current)
+        self.assertEqual(2, self.deposit.checkout_nb_initial)
+        self.assertEqual(1, self.deposit.checkout_nb_sells)
+        self.assertEqual(price, self.deposit.checkout_total_sells)
+        discount = self.deposit.distributor.discount
+        to_pay = price * discount / 100
+        self.assertEqual(to_pay, self.deposit.checkout_total_to_pay)
+        self.assertEqual(price - to_pay, self.deposit.checkout_margin)
+
 
     def test_is_in_deposits(self):
         self.assertFalse(self.card.is_in_deposits())

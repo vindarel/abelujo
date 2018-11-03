@@ -2320,7 +2320,7 @@ class DepositState(models.Model):
     def total_to_pay(self):
         total_sells = self.total_sells
         discount = self.deposit.distributor.discount
-        return total_sells * self.distributor.discount / 100 if discount else total_sells
+        return total_sells * discount / 100 if discount else total_sells
 
     @property
     def margin(self):
