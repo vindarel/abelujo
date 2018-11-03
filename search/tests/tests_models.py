@@ -1212,9 +1212,6 @@ class TestSells(TestCase):
         status, msgs = self.depo.sell_card(card_id=self.autobio.id, sell=sell)
         self.assertEqual(status, ALERT_SUCCESS, msgs)
         self.assertEqual(-1, self.depo.quantity_of(self.autobio))
-        balance = self.depo.checkout_balance()
-        state_copies = balance['cards'][0][1]
-        self.assertEqual(1, state_copies.nb_sells)
 
         # bad card id
         status, msgs = self.depo.sell_card(card_id=999, silence=True)
@@ -1231,6 +1228,10 @@ class TestSells(TestCase):
         # Add the same card than in depo 1.
         self.depo.add_copies([self.autobio])
         self.depo2.add_copies([self.autobio])
+        # Create a checkout (register their initial state).
+        checkout, msgs = self.depo.checkout_create()
+        co2, msgs = self.depo2.checkout_create()
+
         # Sell.
         p1 = 7.7
         # p2 = 9.9
@@ -1240,35 +1241,8 @@ class TestSells(TestCase):
         # Sell for depo 1.
         Sell.sell_cards(to_sell, deposit_id=self.depo.id)
 
-        # Check balances (as in deposit_view).
-        # yep, the abi should be simplified.
-        checkout, msgs = self.depo.checkout_create()
-        if not checkout:
-            # Could do in a "get or create" method.
-            checkout = self.depo.last_checkout()
-
-        if checkout and not checkout.closed:
-            checkout.update()
-        balance = checkout.balance()
-
-        # Balance for depo2, not impacted.
-        checkout2, msgs = self.depo2.checkout_create()
-        if not checkout2:
-            # Could do in a "get or create" method.
-            checkout2 = self.depo2.last_checkout()
-
-        if checkout2 and not checkout2.closed:
-            checkout2.update()
-        balance2 = checkout2.balance()
-
-        self.assertEqual(balance['cards'][0][1].nb_sells, 1)
-        self.assertEqual(balance2['cards'][0][1].nb_sells, 0)
-
-        self.assertEqual(balance['cards'][0][1].nb_current, 0)
-        self.assertEqual(balance2['cards'][0][1].nb_current, 1)
-
-        self.assertEqual(balance['cards'][0][1].nb_initial, 1)
-        self.assertEqual(balance2['cards'][0][1].nb_initial, 1)
+        self.assertEqual(1, checkout.nb_sells)
+        self.assertEqual(0, co2.nb_sells)
 
     def test_sell_from_place(self):
         """
@@ -1284,19 +1258,8 @@ class TestSells(TestCase):
         # Sell for the place.
         Sell.sell_cards(to_sell, place_id=self.place.id)
 
-        # Check balances (as in deposit_view).
-        # yep, the abi should be simplified.
-        checkout, msgs = self.depo.checkout_create()
-        if not checkout:
-            # Could do in a "get or create" method.
-            checkout = self.depo.last_checkout()
-
-        if checkout and not checkout.closed:
-            checkout.update()
-        balance = checkout.balance()
-
-        self.assertEqual(balance['cards'][0][1].nb_sells, 0)
-        self.assertEqual(balance['cards'][0][1].nb_current, 1)
+        # The deposit/ongoing deposit state doesn't see any sell.
+        self.assertEqual(0, self.depo.checkout_nb_sells)
 
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""

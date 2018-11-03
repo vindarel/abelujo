@@ -2333,6 +2333,9 @@ class DepositState(models.Model):
         cards_balance = []
 
         for card in self.copies.all():
+            cards_balance.append((card, self.card_balance(card.id)))
+
+        return cards_balance
 
     def update(self):
         """Update the cards associated and their corresponding sells.
