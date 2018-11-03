@@ -48,7 +48,6 @@ if  depo_pubtype
         th {% trans "Deposit name" %}
         th {% trans "Supplier" %}
         th {% trans "Last checkout" %}
-        th {% trans "Alerts" %}
         th {% trans "Initial qty" %}
         th {% trans "Total price" %}
 
@@ -59,7 +58,6 @@ if  depo_pubtype
             a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
         td {{ dep.distributor.name }}
         td {{ dep.last_checkout_date }}
-        td {{ dep.nb_alerts }}
         td.text-right {{ dep.initial_nb_copies }}
         td.text-right {{ dep.total_init_price| floatformat:2 | intcomma  }} {% trans "€" %}
 
@@ -75,7 +73,6 @@ if depo_fix
         th {% trans "Supplier" %}
         th {% trans "Last deposit state" %}
 
-        th {% trans "Alerts" %}
         th {% trans "Initial qty" %}
         th {% trans "Total price" %}
 
@@ -89,7 +86,6 @@ if depo_fix
         td {{ dep.distributor.name }}
         td {{ dep.last_checkout_date }}
 
-        td {{ dep.nb_alerts }}
         td.text-right {{ dep.init_qty }}
         td.text-right {{ dep.total_init_price | floatformat:2 | intcomma }} {% trans "€" %}
 
