@@ -2241,40 +2241,6 @@ class DepositState(models.Model):
         deposit_state.save()
         return deposit_state.nb_current
 
-    def update_soldcards(self, cards_sells):
-        """Add cards to this deposit state.
-        Updates the sells if the card is already registered.
-
-        - card_sells: list of dicts to associate a card to a list of sells:
-            "card": card object, "sells": list of Sell objects of this card.
-        """
-        if self.closed:
-            log.debug("This deposit state is closed.")
-            return False, [_("This deposit state is closed ! We won't update it, sorry.")]
-
-        msgs = Messages()
-        try:
-            for it in cards_sells:
-                card = it.get('card')
-                sells = it.get('sells')
-                depostate_copy, created = self.depositstatecopies_set.get_or_create(card=card)
-                if created:
-                    depostate_copy.save()
-                # Keep sells that are not already registered
-                ids = [it.id for it in depostate_copy.sells.all()]  # values_list('id', flat=True)
-                to_add = filter(lambda it: it.sell.id not in ids, sells)
-                depostate_copy.add_sells(to_add)
-                depostate_copy.nb_current -= len(to_add)
-                depostate_copy.nb_to_return = -1  # TODO: see DepositCopies due_date
-                depostate_copy.save()
-
-        except Exception as e:
-            log.error(u"adding cards to the DepositState: {}".format(e))
-            msgs.add_error(_("Wooops, an error occured while adding a card to the deposit. That shouldn't happen !"))
-            return msgs.status, msgs.msgs
-
-        return True, msgs.msgs
-
     def card_balance(self, card_id):
         """Get the balance of the given card. For each card sold, get:
         - its current quantity,
@@ -2334,25 +2300,6 @@ class DepositState(models.Model):
 
         for card in self.copies.all():
             cards_balance.append((card, self.card_balance(card.id)))
-
-        return cards_balance
-
-    def update(self):
-        """Update the cards associated and their corresponding sells.
-
-        return: self, the updated DepositState object
-        """
-        sold_cards = []
-        for card in self.deposit.copies.all():
-            sells_dict = Sell.search(card_id=card.id, date_min=self.created,
-                                     deposit_id=self.deposit.id)
-            sold_cards.append({"card": card, "sells": sells_dict['data']})
-
-        self.update_soldcards(sold_cards)
-        return self
-            cards_balance.append((card, self.card_balance(card.id)))
-            # nb_initial = self.nb_initial
-            # cards_balance['nb_initial'] = nb_initial
 
         return cards_balance
 
@@ -2798,11 +2745,7 @@ class Deposit(TimeStampedModel):
 
         Return: integer, the number of alerts.
         """
-        try:
-            alerts_found = Alert.objects.filter(deposits__name=self.name).count()
-        except ObjectDoesNotExist as e:
-            log.error(u"Error looking for alerts of deposit {}: {}".format(self.name, e))
-        return alerts_found
+        raise NotImplementedError
 
     def checkout_current(self):
         """

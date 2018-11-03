@@ -1263,22 +1263,7 @@ class TestSells(TestCase):
 
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
-        self.place.add_copy(self.autobio)  # 1 in deposit, 1 not: ambiguous
-        # add a copy to the deposit:
-        self.autobio.distributor = self.dist
-        self.autobio.save()
-        self.depo.add_copies([self.autobio])
-        # p1 = 7.7
-        p2 = 9.9
-        to_sell = [{"id": self.autobio.id,
-                    "quantity": 1,
-                    # "price_sold": p1
-                },
-                   {"id": self.secondcard.id,
-                    "quantity": 2,
-                    "price_sold": p2}]
-        sell, status, msgs = Sell.sell_cards(to_sell)
-        self.assertEqual(Alert.objects.count(), 1)
+        pass  # xxx
 
     def test_undo_card(self):
         """Undo a sell, test only the Card method.
@@ -1497,41 +1482,6 @@ class TestHistory(TestCase):
         self.assertEqual(2, len(hist))  # a Sell is created without any cards sold.
         self.assertEqual(ALERT_SUCCESS, status)
 
-class TestAlerts(TestCase):
-
-    def setUp(self):
-        # a card in a deposit, with the same distributor each.
-        self.dist = DistributorFactory.create()
-        self.card = CardFactory.create()
-        self.card.distributor = self.dist
-        self.deposit = DepositFactory.create()
-        self.deposit.distributor = self.dist
-        self.deposit.add_copies([self.card])
-        # Put the Card in a default place, in 2 copies: one is the deposit,
-        # one is ours.
-        self.place = PlaceFactory()
-        self.place.add_copy(self.card, nb=2)
-        # A sell creates an alert
-        Sell.sell_card(self.card)
-        self.alerts, status, msgs = Alert.get_alerts()
-
-    def test_get_alerts_nominal(self):
-        self.assertTrue(self.alerts)
-        self.assertTrue(self.alerts[0].card.ambiguous_sell())
-
-    def test_add_deposits_of_card(self):
-        self.alerts[0].add_deposits_of_card(self.card)
-        self.assertEqual(1, len(self.card.deposit_set.all()))
-
-    def test_alerts_auto_resolved(self):
-        """An alert can be resolved if we sell the remaining copies of the card.
-        """
-        # If we sell the 2nd copy, they're all sold, so the alert is resolved.
-        Sell.sell_card(self.card)
-        alerts, status, msgs = Alert.get_alerts()
-        alert = alerts[0]
-        self.assertEqual(alert.card.quantity, 0)
-        self.assertFalse(alert.card.ambiguous_sell())
 
 class TestInventory(TestCase):
 
