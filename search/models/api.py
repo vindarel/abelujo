@@ -1570,8 +1570,7 @@ def stats(request, **kwargs):
     if language:
         translation.activate(language)
 
-    stats = Stats()
-    stock = stats.stock()
+    stock = Stats.stock()
     return JsonResponse(stock)
 
 def to_int(string):
@@ -1601,19 +1600,18 @@ def stats_sells_month(request, **kwargs):
     month = None
     year = None
 
-    stats = Stats()
     if request.GET.get('month'):
         month = request.GET.get('month')
         month = to_int(month)
         year = to_int(request.GET.get('year'))
 
-    res = stats.sells_month(limit=LIMIT, year=year, month=month)
+    res = Stats.sells_month(limit=LIMIT, year=year, month=month)
     return JsonResponse(res)
 
 def stats_entries_month(request, **kwargs):
     """
     """
-    res = Stats().entries_month()
+    res = Stats.entries_month()
     return JsonResponse(res, safe=False)
 
 def stats_static(request, page=0, **kwargs):
@@ -1631,7 +1629,7 @@ def stats_static(request, page=0, **kwargs):
 
 def stats_stock_age(request, **kwargs):
     shelf = request.GET.get('shelf_id')
-    stats = Stats().stock_age(shelf)
+    stats = Stats.stock_age(shelf)
     return JsonResponse(stats, safe=False)
 
 ###############################################################################

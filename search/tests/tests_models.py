@@ -56,6 +56,7 @@ from search.models import Shelf
 from search.models import SoldCards
 from search.models import history
 from search.models import getHistory
+from search.models import Stats
 from search.models.utils import get_logger
 from search.models.utils import distributors_match
 
@@ -850,6 +851,9 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(to_pay, self.deposit.checkout_total_to_pay)
         self.assertEqual(price - to_pay, self.deposit.checkout_margin)
 
+        # balance
+        balance = self.deposit.checkout_balance()
+        self.assertTrue(balance)
 
     def test_is_in_deposits(self):
         self.assertFalse(self.card.is_in_deposits())
@@ -1166,6 +1170,14 @@ class TestSells(TestCase):
         self.assertEqual(self.autobio.quantity_compute(), -1)
         self.assertEqual(self.place.quantity_of(self.autobio), -1)
 
+        # Stats.
+        stats = Stats.sells_month()
+        self.assertEqual(2 * 3, stats['nb_cards_sold'])
+        self.assertEqual(2 * 2, stats['nb_sells'])
+        self.assertEqual(2 * 2, stats['best_sells'][0]['quantity'])
+        self.assertEqual(2 * 1, stats['best_sells'][1]['quantity'])
+        self.assertEqual(2 * p1 + 4 * p2, stats['revenue'])
+
     def test_sell_none(self):
         to_sell = []
         sell, status, msgs = Sell.sell_cards(to_sell, silence=True)
@@ -1455,11 +1467,11 @@ class TestSellSearch(TestCase):
         Sell.sell_card(self.autobio)
         Sell.sell_card(self.autobio, deposit_id=self.deposit.id)
         sells = Sell.search(deposit_id=self.deposit.id)
-        self.assertEqual(sells['total'], 2)
+        self.assertEqual(sells['nb_sells'], 2)
 
         # deposit 2 sees only one sell.
         sells = Sell.search(deposit_id=self.deposit2.id)
-        self.assertEqual(sells['total'], 1)
+        self.assertEqual(sells['nb_sells'], 1)
 
 
 class TestHistory(TestCase):
@@ -1750,3 +1762,16 @@ class TestCommandsReceive(TestCase):
         self.assertEqual(self.deposit.quantity_of(self.card), 0)
         self.inv.apply(deposit_obj=self.deposit)
         self.assertEqual(self.deposit.quantity_of(self.card), 1)
+
+
+class TestStats(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory.create()
+        self.card2 = CardFactory.create()
+        CardType.objects.create(name="book")
+        CardType.objects.create(name="unknown")
+
+    def test_stats(self):
+        # "Stats".
+        stats = Stats.stock()

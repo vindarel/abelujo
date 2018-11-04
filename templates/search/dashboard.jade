@@ -100,7 +100,8 @@ div(ng-controller="dashboardController", ng-cloak="stats")
                 i.glyphicon.glyphicon-calendar
 
         .col-md-3
-          div {% trans "total cards sold" %}: {{'sells_month.nb_sold_cards'|ng}}
+          div {% trans "total cards sold" %}: {{'sells_month.nb_cards_sold'|ng}}
+          div {% trans "nb of sells" %}: {{'sells_month.nb_sells'|ng}}
 
 
         .col-md-5

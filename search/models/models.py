@@ -2519,6 +2519,7 @@ class Deposit(TimeStampedModel):
         return: status (bool), list of messages (Message.msgs)
 
         """
+        # TODO: check new cards aren't in another deposit already ?
         msgs = Messages()
         if not distributors_match(copies):
             msgs.add_warning(_(u"The cards should be all of the same supplier."))
@@ -2679,7 +2680,8 @@ class Deposit(TimeStampedModel):
         raise NotImplementedError
 
     def checkout_create(self):
-        """Do a deposit checkout:
+        """
+        Do a deposit checkout:
         - register it
         - record all the cards of the deposit that have been sold since the last checkout,
         [- if there are alerts (ambiguous sold cards): don't close it]
@@ -2688,7 +2690,7 @@ class Deposit(TimeStampedModel):
 
         return: tuple (DepositState object or None, list of messages (str))
         """
-        # If there is an open depostate, return it. -> there should be always one.
+        # There should be always an ongoing, open deposit state.
         # Create a checkout = close the current one, register what should be,
         # open a new one and report the current quantities.
         # We should find sells that are related to this deposit.
@@ -2906,7 +2908,6 @@ class Sell(models.Model):
             return sells.count()
 
         # Sorting.
-        # Built in DRF ?
         sortsign = "-"
         if sortorder in [0, "0", u"0"]:
             sortsign = "-"
@@ -2926,7 +2927,8 @@ class Sell(models.Model):
             log.warning(u"Warning sorting Sell.search: uncaught case with sortby {} and sortorder {}".format(sortby, sortorder))
 
         # Pagination.
-        total = sells.count()
+        nb_sells = sells.count()
+        nb_cards_sold = sum([it.quantity for it in sells])
         if page is not None and page_size is not None:
             try:
                 sells = sells[page_size * (page - 1):page_size * page]
@@ -2938,7 +2940,8 @@ class Sell(models.Model):
             sells = [it.to_list() for it in sells]
 
         return {"data": sells,
-                "total": total,
+                "nb_sells": nb_sells,
+                "nb_cards_sold": nb_cards_sold,
                 }
 
     def to_list(self):
@@ -3786,7 +3789,8 @@ def get_total_cost():
 
 class Stats(object):
 
-    def stock(self, to_json=False):
+    @staticmethod
+    def stock(to_json=False):
         """Simple figures about our stock:
         - how many products
         - how many titles
@@ -3834,8 +3838,11 @@ class Stats(object):
         deposits_cost = 0.0
         for dep in Deposit.objects.all():
             balance = dep.checkout_balance()
-            for card_tuple in balance['cards']:
-                deposits_cost += card_tuple[0].price
+            for card_tuple in balance:
+                if card_tuple[0].price is not None:
+                    deposits_cost += card_tuple[0].price
+                else:
+                    deposits_cost += 0
                 nb_current = card_tuple[1].nb_current
                 if nb_current > 0:
                     in_deposits += nb_current
@@ -3873,7 +3880,8 @@ class Stats(object):
 
         return res
 
-    def sells_month(self, limit=10, year=None, month=None):
+    @staticmethod
+    def sells_month(limit=10, year=None, month=None):
         """Best sells of the current month, total revenue, total nb of cards
         sold, average sell.
         - year, month (int, month must be in [1..12]). If not, current year, and current month.
@@ -3881,12 +3889,11 @@ class Stats(object):
         Return: a dict {
             "best_sells": list of cards, max length "limit",
             "revenue": total revenue (float)
-            "nb_sold_cards": int
+            "nb_sells" (int): the number of sell transactions
+            "nb_cards_sold" (int): the number of copies sold
             "mean": mean of sells (float),
             }
         """
-        nb_sold_cards = 0
-
         # Get the sells since the beginning of the given month
         start_time = timezone.now()
         if year is None:
@@ -3904,13 +3911,14 @@ class Stats(object):
         # Add the quantity sold of each card.
         best_sells = {}  # title -> qty
         # and count the total revenue
-        nb_sold_cards = sells_obj['total']
+        nb_sells = sells_obj['nb_sells']
+        nb_cards_sold = sells_obj['nb_cards_sold']
         revenue = 0
         for soldcard in sells_obj['data']:
             title = soldcard.card.title
             qty = soldcard.quantity
             revenue += qty * soldcard.price_sold
-            if not best_sells.get("title"):
+            if not best_sells.get(title):
                 best_sells[title] = 0
             best_sells[title] += qty
 
@@ -3924,20 +3932,22 @@ class Stats(object):
 
         # Average sell
         sell_mean = None
-        if nb_sold_cards:
-            sell_mean = revenue / nb_sold_cards
+        if nb_sells:
+            sell_mean = revenue / nb_sells
 
         to_ret = {
             "best_sells": res[:limit],
             "revenue": roundfloat(revenue) if revenue else 0,
-            "nb_sold_cards": nb_sold_cards,
+            "nb_sells": nb_sells,
+            "nb_cards_sold": nb_cards_sold,
             "mean": roundfloat(sell_mean),
             # nb of sells
         }
 
         return to_ret
 
-    def entries_month(self):
+    @staticmethod
+    def entries_month():
         """
         """
         now = timezone.now()

@@ -1234,8 +1234,7 @@ def inventory_terminate(request, pk):
 @login_required
 def dashboard(request):
     template = "search/dashboard.jade"
-    stats = Stats()
-    stock = stats.stock()
+    stock = Stats.stock()
     return render(request, template, {
         "stats_stock": stock,
     })
