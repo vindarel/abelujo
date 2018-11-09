@@ -803,29 +803,7 @@ def deposits_view(request, pk):
     template = "search/deposits_view.jade"
     try:
         deposit = Deposit.objects.get(pk=pk)
-        copies = deposit.copies.all()
-
-        deposit = Deposit.objects.get(id=pk)
-
-        # try.
-        # balance = deposit.balance()
-
-        # try.
-        checkout = deposit.last_checkout()
-        if not checkout.closed:
-            checkout.update()
-        balance = checkout.balance()
-
-        # checkout, msgs = deposit.checkout_create()
-        # bad abi. Used in tests.
-        # if not checkout:
-        #     # Could do in a "get or create" method.
-        #     checkout = deposit.last_checkout()
-
-        # if checkout and not checkout.closed:
-        #    checkout.update()
-        #
-        # balance = checkout.balance()
+        cards_balance = deposit.checkout_balance()
 
     except Deposit.DoesNotExist as e:
         messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
@@ -833,13 +811,9 @@ def deposits_view(request, pk):
         return HttpResponseRedirect(reverse("deposits"))
 
     return render(request, template, {
+        "page_title": "Abelujo - " + deposit.name,
         "deposit": deposit,
-        "copies": copies,
-        "cards_balance": balance["cards"],
-        "total": balance["total"],
-        "created": checkout.created,
-        "distributor": checkout.deposit.distributor,
-        "page_title": "Abelujo - " + deposit.name
+        "cards_balance": cards_balance,
     })
 
 @login_required
@@ -1260,8 +1234,7 @@ def inventory_terminate(request, pk):
 @login_required
 def dashboard(request):
     template = "search/dashboard.jade"
-    stats = Stats()
-    stock = stats.stock()
+    stock = Stats.stock()
     return render(request, template, {
         "stats_stock": stock,
     })

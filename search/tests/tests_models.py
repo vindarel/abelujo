@@ -56,7 +56,9 @@ from search.models import Shelf
 from search.models import SoldCards
 from search.models import history
 from search.models import getHistory
+from search.models import Stats
 from search.models.utils import get_logger
+from search.models.utils import distributors_match
 
 log = get_logger()
 
@@ -583,7 +585,7 @@ class TestBaskets(TestCase):
         self.assertFalse(msgs)
 
     def test_to_deposit_different_dist(self):
-        """The card has a different distributor: reject.
+        """The card has a different distributor: reject. !deprecated!
         """
         log.setLevel(logging.CRITICAL)
         # Another dist:
@@ -594,7 +596,8 @@ class TestBaskets(TestCase):
         self.basket.add_copy(self.card)
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
-        self.assertTrue('Error' in msgs[0]['message'])
+        # deprecation warning: deposits rewrite: we don't reject this anymore.
+        # self.assertTrue('Error' in msgs[0]['message'])
 
     def test_to_deposit_nominal(self):
         """
@@ -640,268 +643,225 @@ class TestDeposits(TransactionTestCase):
     def tearDown(self):
         log.setLevel(logging.DEBUG)
 
-    def test_nominal(self):
-        """
-        Add copies in deposit, check its balance.
-        """
+    def test_create(self):
+        dist = Deposit.objects.create(name="new dist", distributor=self.distributor)
+        self.assertTrue(dist.depositstate_set.count())
+        self.assertFalse(dist.depositstate.closed)
+
+    def test_from_dict(self):
+        depo_dict = {
+            'name': "depo test",
+            "distributor": self.distributor,
+            "copies": [self.card2],  # same distributor as the deposit.
+            "quantities": ['1','1'],
+            "deposit_type": "fix",
+            "minimal_nb_copies": "1",
+            "auto_command": "",
+            "due_date": "undefined",
+            "dest_place": "",
+        }
+        depo, msgs = Deposit.from_dict(depo_dict)
+        self.assertEqual(msgs.status, 'success')
+        self.assertTrue('successfully created' in msgs.msgs[0]['message'])
+
+        # We must have one depositstate closed: our initial one.
+        self.assertEqual(2, depo.depositstate_set.count())
+        self.assertTrue(depo.depositstate_set.first().closed)
+        # as usual:
+        self.assertFalse(depo.depositstate_set.last().closed)
+
+        depo_dict = {
+            'name': "depo test",  # same name
+            "distributor": self.distributor,
+            "copies": [self.card2],
+            "quantities": ['1','1'],
+            "deposit_type": "fix",
+            "minimal_nb_copies": "1",
+            "auto_command": "",
+            "due_date": "undefined",
+            "dest_place": "",
+        }
+        depo, msgs = Deposit.from_dict(depo_dict)
+        self.assertEqual(msgs.status, 'danger')
+        self.assertTrue("that name already exists" in msgs.msgs[0]['message'])
+
+        depo_dict = {
+            'name': "depo test 2",
+            "distributor": self.distributor,
+            "copies": [self.card, self.card2],  # another card without a distributor.
+            "quantities": ['1','1'],
+            "deposit_type": "fix",
+            "minimal_nb_copies": "1",
+            "auto_command": "",
+            "due_date": "undefined",
+            "dest_place": "",
+        }
+        depo, msgs = Deposit.from_dict(depo_dict)
+        self.assertEqual(msgs.status, 'warning')
+        self.assertTrue("should be all of the same supplier" in msgs.msgs[0]['message'])
+
+    def test_distributors_match(self):
+        self.assertFalse(distributors_match([self.card, self.card2]))
         self.card.distributor = self.distributor
-        status, msgs = self.deposit.add_copies([self.card, ], quantities=[3])
-        # quantity_deposits
-        self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
-        self.assertEqual(3, self.card.quantity_deposits())
-        # init_qty and total_init_price
-        self.assertEqual(3, self.deposit.init_qty)
-        self.assertEqual(29.97, self.deposit.total_init_price)
-
-        # checkout_balance
-        self.deposit.add_copies([self.card])
-        balance = self.deposit.checkout_balance()
-
-        # Bad length of 'quantities', will add 1 by default.
-        self.deposit.add_copies([self.card], quantities=[10, 11, 12])
-        balance = self.deposit.checkout_balance()
-        self.assertEqual(5, balance['cards'][0][1].nb_current)
-        # init_qty should not change yet.
-        self.assertEqual(3, self.deposit.init_qty)
-        # total cost
-        self.assertEqual(49.95, self.deposit.depositstate_set.last().total_cost())
-        self.assertEqual(49.95, self.deposit.total_current_cost)
-
-        # other methods
-        self.assertTrue(self.deposit.get_absolute_url().
-                        startswith(u"/en/deposits/"))  # too long ?
-        self.assertTrue(self.deposit.__unicode__())
-
-    def test_quantity_deposits(self):
-        self.card.distributor = self.distributor
-        status, msgs = self.deposit.add_copies([self.card], quantities=[3])
-        self.assertEqual(self.card.depositstatecopies_set.first().nb_current, 3)
-        self.assertEqual(status, ALERT_SUCCESS, msgs)
-        self.assertEqual(self.card.quantity_deposits(), 3)
-        status, msgs = self.deposit.add_copies([self.card])
-        self.assertEqual(self.card.depositstatecopies_set.first().nb_current, 4)
-        self.assertEqual(self.card.quantity_deposits(), 4)
-
-    def test_one_lib_depo_per_card(self):
-        """For a bookshop, only one deposit per card.
-        """
-        self.card.distributor = self.distributor
-        # Our deposit has a copy
-        status, msgs = self.deposit.add_copies([self.card, ])
-        # and yet we try to create a new deposit with it: no.
-        status, msgs = Deposit.from_dict({'name': 'new',
-                                          'copies': [self.card],
-                                          'deposit_type': 'lib',  # see deposit types in models
-                                          'distributor': self.distributor})
-        self.assertEqual(status, ALERT_ERROR)
-
-    def test_many_pub_depo_per_card(self):
-        """For a publisher, many external deposits per card.
-        """
-        self.card.distributor = self.distributor
-        statsu, msgs = self.deposit.add_copies([self.card])
-        # We create a new deposit with the card that's already in one.
-        name = 'new publisher depo'
-        status, msgs = Deposit.from_dict({
-            'name': name,
-            'copies': [self.card],
-            'deposit_type': 'publisher',
-            # in that case, the publisher is its own distributor
-            'distributor': None,
-        })
-        self.assertEqual(status, ALERT_SUCCESS)
-        pubs = Deposit.objects.all()
-        self.assertEqual(len(pubs), 2)
-        self.assertEqual(pubs[1].name, name)
-        self.assertEqual(pubs[1].deposit_type, 'publisher')
-        self.assertEqual(pubs[1].copies.first(), self.card)
-
-    def test_no_distributor(self):
-        """card with no dist will inherit it.
-        """
-        self.card.distributor = None
-        status, msgs = self.deposit.add_copies([self.card, ])
-        self.assertEqual(len(msgs), 0)
-        self.assertEqual(1, len(self.deposit.depositcopies_set.all()))
-
-    def test_different_distributor(self):
-        log.setLevel(logging.CRITICAL)
-        self.other_dist = DistributorFactory()
-        self.card.distributor = self.other_dist
         self.card.save()
-        status, msgs = self.deposit.add_copies([self.card, ])
-        self.assertEqual(len(msgs), 1)
-        self.assertEqual(0, len(self.deposit.depositcopies_set.all()))
+        self.assertTrue(distributors_match([self.card, self.card2]))
 
-    def test_from_dict_nominal(self):
+    def test_ensure_open_depostate(self):
+        depo = Deposit.objects.create(name="depo foo")
+        self.assertEqual(1, depo.depositstate_set.count())
+        checkout = depo.ensure_open_depostate()
+        self.assertEqual(1, depo.depositstate_set.count())
+        checkout.close()
+        checkout.save()
+        self.assertTrue(checkout.closed)
+        checkout = depo.ensure_open_depostate()
+        self.assertFalse(depo.depositstate_set.last().closed)
+        self.assertEqual(2, depo.depositstate_set.count())
+        depo.ensure_open_depostate()
+        self.assertEqual(2, depo.depositstate_set.count())
+
+    def test_add_copies(self):
+        # add copies with the same distributor.
         self.card.distributor = self.distributor
-        status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card, ],
-                                  'distributor': self.distributor,
-                                  })
-        self.assertEqual(len(msgs), 1, "add deposit from dict: %s" % msgs)
-        self.assertEqual(msgs[0]['level'], "success")
+        status, msgs = self.deposit.add_copy(self.card, nb=3)
+        self.assertTrue(status)
+        self.assertEqual(msgs, [])
+        self.assertEqual(3, self.deposit.quantity_of(self.card))
+        status, msgs = self.deposit.add_copy(self.card)
+        self.assertEqual(4, self.deposit.quantity_of(self.card))
 
-    def test_type_pub(self):
-        """Of type "publisher", we set a due_date and a dest_place.
-        """
-        self.card.distributor = self.distributor
-        due_date = datetime.date.today().isoformat()  # getting it as str from JS
-        dest_place = PlaceFactory()
-        status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card, ],
-                                  'distributor': self.distributor,
-                                  'due_date': due_date,
-                                  'dest_place': dest_place.id,
-                                  'deposit_type': "publisher",
-                                  })
-        self.assertEqual(msgs[0]['level'], "success")
-        dep = Deposit.objects.order_by("created").last()
-        self.assertEqual(dep.dest_place.name, dest_place.name)
-        self.assertEqual(dep.deposit_type, "publisher")
-
-    def test_no_due_date(self):
-        self.card.distributor = self.distributor
-        dest_place = PlaceFactory()
-        status, msgs = Deposit.from_dict({'name': 'test',
-                                  'due_date': None,
-                                  'copies': [self.card, ],
-                                  'distributor': self.distributor,
-                                  'dest_place': dest_place.id,
-                                  'deposit_type': "publisher",
-                                  })
-        self.assertEqual(msgs[0]['level'], "success")
-
-    def test_from_dict_bad_deposit(self):
+        # add copies with a different dist each.
         self.card.distributor = None
-        status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card, ],
-                                  'distributor': self.distributor,
-                                  })
-        self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
-        self.assertEqual(msgs[0]['level'], ALERT_WARNING)
+        self.card.save()
+        status, msgs = self.deposit.add_copies([self.card, self.card2])
+        self.assertFalse(status)
 
-    def test_from_dict_bad_deposit_one_good(self):
-        self.card.distributor = None
-        self.card2.distributor = self.distributor
-        status, msgs = Deposit.from_dict({'name': 'test',
-                                  'copies': [self.card, self.card2],
-                                  'distributor': self.distributor,
-                                  })
-        self.assertEqual(len(msgs), 2, "add deposit from dict: %s" % msgs)
-        self.assertEqual(msgs[0]['level'], ALERT_WARNING)
+    def test_checkout_create(self):
+        # add copies.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card, self.card2], nb=2)
+        old_co = self.deposit.ongoing_depostate
+        # Create a checkout/deposit state = remember the current state at a point in time.
+        co, msgs = self.deposit.checkout_create()
+        # The current quantities of the old should be reported to the initial and current ones.
+        old_dscopies = old_co.depositstatecopies_set.all()
+        co_dscopies = co.depositstatecopies_set.all()
+        for i, it in enumerate(old_dscopies):
+            self.assertEqual(it.nb_current, co_dscopies[i].nb_current)
+            self.assertEqual(it.nb_current, co_dscopies[i].nb_initial)
 
-    def test_close_deposit(self):
-        # Add cards
-        self.deposit.add_copies([self.card2], quantities=[3])
-        co = self.deposit.checkout_current()
-        self.assertFalse(co.closed)
-        # Manipulate the objects
-        co.closed = timezone.now()
-        co.save()
-        self.assertTrue(co.closed)
-        self.deposit.checkout_close()
-        co = self.deposit.last_checkout()
-        self.assertTrue(co.closed)  # fails only with date time field.
-        self.assertEqual(self.deposit.last_checkout_date, co.created)
+    def test_sell_card(self):
+        # add copies.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card, self.card2], nb=2)
+        # sell from the deposit.
+        # Since we don't give a sell object, don't output warnings.
+        log.setLevel(logging.CRITICAL)
+        self.deposit.sell_card(self.card)
+        co = self.deposit.ongoing_depostate
+        self.assertEqual(1, self.deposit.quantity_of(self.card))
+        self.assertEqual(2, self.deposit.quantity_of(self.card2))
+        # sell again.
+        self.deposit.sell_card(self.card, nb=2)
+        self.assertEqual(-1, self.deposit.quantity_of(self.card))
 
-    def test_sell_update(self):
-        """Test we update correctly the nb of sells and nb current after when
-        we have a sell and we close the deposit state.
+        # Sell from the Sell class.
+        log.setLevel(logging.DEBUG)
+        sellobj, status, msgs = Sell.sell_card(self.card, deposit=self.deposit)
+        self.assertTrue(sellobj)
+        self.assertEqual(-2, self.deposit.quantity_of(self.card))
+        dscopy = co.depositstatecopies_set.first()
+        self.assertEqual(1, dscopy.nb_sells)
 
-        """
-        # Add cards to it.
-        self.deposit.add_copies([self.card2], quantities=[3])
-        bal = self.deposit.checkout_balance()
-        self.assertEqual(0, bal["cards"][0][1].nb_sells)
-        self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        self.assertEqual(3, bal["cards"][0][1].nb_current)
+    def test_sell_undo(self):
+        # add copies.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copies([self.card, self.card2], nb=2)
+        # sell
+        sellobj, status, msgs = Sell.sell_card(self.card, deposit=self.deposit)
+        self.assertTrue(sellobj)
+        self.assertEqual(1, self.deposit.quantity_of(self.card))
 
-        # Sell a copy.
-        self.sell.sell_cards(None, cards=[self.card2])
+        # undo the sell.
+        status, msgs = self.deposit.sell_undo(self.card)
+        self.assertEqual(status, 'success')
+        self.assertEqual(2, self.deposit.quantity_of(self.card))
 
-        # Update the deposit state
-        co = self.deposit.last_checkout()
-        co.update()
-        bal = self.deposit.checkout_balance()  # xxx fails
-        self.assertEqual(1, bal["cards"][0][1].nb_sells)
-        self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        self.assertEqual(2, bal["cards"][0][1].nb_current)
+    def test_various_numbers(self):
+        price = self.card.price
+        # add 1 card.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copy(self.card)
 
-        # re-do: nothing must change.
-        co.update()
-        bal = self.deposit.checkout_balance()  # xxx fails
-        self.assertEqual(1, bal["cards"][0][1].nb_sells)
-        self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        self.assertEqual(2, bal["cards"][0][1].nb_current)
+        self.assertFalse(self.deposit.last_checkout_date)
+        self.assertEqual(price, self.deposit.total_init_price)
+        self.assertEqual(price, self.deposit.total_current_cost)
+        self.assertEqual(1, self.deposit.init_qty)
+        self.assertEqual(1, self.deposit.checkout_nb_current)
+        # below: we didn't create a first checkout, we can't have those numbers.
+        self.assertEqual(0, self.deposit.checkout_nb_initial)
+        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_total_sells)
+        self.assertEqual(0, self.deposit.checkout_total_to_pay)
+        self.assertEqual(0, self.deposit.checkout_margin)
 
-        # Close it and check again. We must not see a sell.
-        self.deposit.checkout_close()
-        co = self.deposit.last_checkout()
-        co.update()
-        bal = self.deposit.checkout_balance()
-        self.assertEqual(0, bal["cards"][0][1].nb_sells)
-        self.assertEqual(2, bal["cards"][0][1].nb_initial)
-        self.assertEqual(2, bal["cards"][0][1].nb_current)
+        # Add a 2nd card.
+        status, msgs = self.deposit.add_copy(self.card2)
 
-    def test_depostate_first(self):
-        # Add cards to the deposit.
-        self.deposit.add_copies([self.card2], quantities=[3])
-        ret, msgs = self.deposit.checkout_create()
-        # We didn't sell anything yet but still should see the balance.
-        bal = self.deposit.checkout_balance()
-        self.assertEqual(0, bal["cards"][0][1].nb_sells)
-        self.assertEqual(3, bal["cards"][0][1].nb_initial)
-        self.assertEqual(3, bal["cards"][0][1].nb_current)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(2 * price, self.deposit.total_current_cost)
+        self.assertEqual(2 * 1, self.deposit.init_qty)
+        self.assertEqual(2, self.deposit.checkout_nb_current)
 
-        # Sell a copy.
-        self.sell.sell_cards(None, cards=[self.card2])
+        # Create a checkout.
+        self.deposit.checkout_create()
+        self.assertTrue(self.deposit.last_checkout_date)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(2 * price, self.deposit.total_current_cost)
+        self.assertEqual(2 * 1, self.deposit.init_qty)
+        self.assertEqual(2, self.deposit.checkout_nb_current)
+        self.assertEqual(2, self.deposit.checkout_nb_initial)
+        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_total_sells)
+        self.assertEqual(0, self.deposit.checkout_total_to_pay)
+        self.assertEqual(0, self.deposit.checkout_margin)
+        # and add a 3rd card.
+        status, msgs = self.deposit.add_copy(self.card2)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(3 * price, self.deposit.total_current_cost)
+        self.assertEqual(2 * 1, self.deposit.init_qty)
+        self.assertEqual(3, self.deposit.checkout_nb_current)
+        self.assertEqual(2, self.deposit.checkout_nb_initial)
+        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_total_sells)
+        self.assertEqual(0, self.deposit.checkout_total_to_pay)
+        self.assertEqual(0, self.deposit.checkout_margin)
 
-        # Check figures: how many copies we sold, how many we have
-        co = self.deposit.last_checkout()
-        co = co.update()
-        balance = co.balance()
-        self.assertEqual(balance["cards"][0][1].nb_current, 2)
-        self.assertEqual(balance["cards"][0][1].nb_initial, 3)
-        self.assertEqual(balance["cards"][0][1].nb_sells, 1)
+        # Sell a card.
+        sellobj, status, msgs = Sell.sell_card(self.card, deposit=self.deposit)
+        self.assertEqual(2 * price, self.deposit.total_init_price)
+        self.assertEqual(2 * price, self.deposit.total_current_cost)
+        self.assertEqual(2, self.deposit.init_qty)
+        self.assertEqual(2, self.deposit.checkout_nb_current)
+        self.assertEqual(2, self.deposit.checkout_nb_initial)
+        self.assertEqual(1, self.deposit.checkout_nb_sells)
+        self.assertEqual(price, self.deposit.checkout_total_sells)
+        discount = self.deposit.distributor.discount
+        to_pay = price * discount / 100
+        self.assertEqual(to_pay, self.deposit.checkout_total_to_pay)
+        self.assertEqual(price - to_pay, self.deposit.checkout_margin)
 
-        # Close and check again.
-        closed, msgs = self.deposit.checkout_close()
-        co = self.deposit.last_checkout()
-        self.assertTrue(co.closed)
-        co, _ = self.deposit.checkout_create()
-        ret, msgs = co.update_soldcards([{'card': self.card2, 'sells': []}])
-        self.assertFalse(msgs)
-        self.assertTrue(ret)
-
-        balance = self.deposit.checkout_balance()  # creates a new checkout
-        # We started a new deposit state: the old "current" is the new "initial".
-        self.assertEqual(balance["cards"][0][1].nb_current, 2)
-        self.assertEqual(balance["cards"][0][1].nb_initial, 2)
-        self.assertEqual(balance["cards"][0][1].nb_sells, 0)
-        # test again, that we're not in a loop
+        # balance
         balance = self.deposit.checkout_balance()
-        self.assertEqual(balance["cards"][0][1].nb_current, 2)
-        self.assertEqual(balance["cards"][0][1].nb_initial, 2)
-        self.assertEqual(balance["cards"][0][1].nb_sells, 0)
+        self.assertTrue(balance)
 
-    def test_depostate_dates(self):
-        """Don't count sells anterior from the creation of the deposit.
-        """
-        Sell.sell_cards(None, cards=[self.card2])
-        depo = DepositFactory(distributor=self.distributor)
-        depo.add_copies([self.card2])
-        co = depo.checkout_current()
-        balance = co.balance()
-        self.assertEqual(1, balance["cards"][0][1].nb_current)
-        self.assertEqual(0, balance["cards"][0][1].nb_sells)
+    def test_is_in_deposits(self):
+        self.assertFalse(self.card.is_in_deposits())
+        # Add a card.
+        self.card.distributor = self.distributor
+        status, msgs = self.deposit.add_copy(self.card)
+        self.assertTrue(self.card.is_in_deposits())
 
-    def test_next_due_dates(self):
-        """Get which deposits we have to pay soon.
-        """
-        next = Deposit.next_due_dates(to_list=True)
-        self.assertEqual(next[0]['id'], self.deposit.id)
-        self.assertEqual(next[0]['due_date'], self.deposit.due_date.isoformat())
 
 class TestSells(TestCase):
 
@@ -969,6 +929,14 @@ class TestSells(TestCase):
         self.assertEqual(self.autobio.quantity_compute(), -1)
         self.assertEqual(self.place.quantity_of(self.autobio), -1)
 
+        # Stats.
+        stats = Stats.sells_month()
+        self.assertEqual(2 * 3, stats['nb_cards_sold'])
+        self.assertEqual(2 * 2, stats['nb_sells'])
+        self.assertEqual(2 * 2, stats['best_sells'][0]['quantity'])
+        self.assertEqual(2 * 1, stats['best_sells'][1]['quantity'])
+        self.assertEqual(2 * p1 + 4 * p2, stats['revenue'])
+
     def test_sell_none(self):
         to_sell = []
         sell, status, msgs = Sell.sell_cards(to_sell, silence=True)
@@ -1010,9 +978,6 @@ class TestSells(TestCase):
         status, msgs = self.depo.sell_card(card_id=self.autobio.id, sell=sell)
         self.assertEqual(status, ALERT_SUCCESS, msgs)
         self.assertEqual(-1, self.depo.quantity_of(self.autobio))
-        balance = self.depo.checkout_balance()
-        state_copies = balance['cards'][0][1]
-        self.assertEqual(1, state_copies.nb_sells)
 
         # bad card id
         status, msgs = self.depo.sell_card(card_id=999, silence=True)
@@ -1029,6 +994,10 @@ class TestSells(TestCase):
         # Add the same card than in depo 1.
         self.depo.add_copies([self.autobio])
         self.depo2.add_copies([self.autobio])
+        # Create a checkout (register their initial state).
+        checkout, msgs = self.depo.checkout_create()
+        co2, msgs = self.depo2.checkout_create()
+
         # Sell.
         p1 = 7.7
         # p2 = 9.9
@@ -1038,35 +1007,8 @@ class TestSells(TestCase):
         # Sell for depo 1.
         Sell.sell_cards(to_sell, deposit_id=self.depo.id)
 
-        # Check balances (as in deposit_view).
-        # yep, the abi should be simplified.
-        checkout, msgs = self.depo.checkout_create()
-        if not checkout:
-            # Could do in a "get or create" method.
-            checkout = self.depo.last_checkout()
-
-        if checkout and not checkout.closed:
-            checkout.update()
-        balance = checkout.balance()
-
-        # Balance for depo2, not impacted.
-        checkout2, msgs = self.depo2.checkout_create()
-        if not checkout2:
-            # Could do in a "get or create" method.
-            checkout2 = self.depo2.last_checkout()
-
-        if checkout2 and not checkout2.closed:
-            checkout2.update()
-        balance2 = checkout2.balance()
-
-        self.assertEqual(balance['cards'][0][1].nb_sells, 1)
-        self.assertEqual(balance2['cards'][0][1].nb_sells, 0)
-
-        self.assertEqual(balance['cards'][0][1].nb_current, 0)
-        self.assertEqual(balance2['cards'][0][1].nb_current, 1)
-
-        self.assertEqual(balance['cards'][0][1].nb_initial, 1)
-        self.assertEqual(balance2['cards'][0][1].nb_initial, 1)
+        self.assertEqual(1, checkout.nb_sells)
+        self.assertEqual(0, co2.nb_sells)
 
     def test_sell_from_place(self):
         """
@@ -1082,38 +1024,12 @@ class TestSells(TestCase):
         # Sell for the place.
         Sell.sell_cards(to_sell, place_id=self.place.id)
 
-        # Check balances (as in deposit_view).
-        # yep, the abi should be simplified.
-        checkout, msgs = self.depo.checkout_create()
-        if not checkout:
-            # Could do in a "get or create" method.
-            checkout = self.depo.last_checkout()
-
-        if checkout and not checkout.closed:
-            checkout.update()
-        balance = checkout.balance()
-
-        self.assertEqual(balance['cards'][0][1].nb_sells, 0)
-        self.assertEqual(balance['cards'][0][1].nb_current, 1)
+        # The deposit/ongoing deposit state doesn't see any sell.
+        self.assertEqual(0, self.depo.checkout_nb_sells)
 
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
-        self.place.add_copy(self.autobio)  # 1 in deposit, 1 not: ambiguous
-        # add a copy to the deposit:
-        self.autobio.distributor = self.dist
-        self.autobio.save()
-        self.depo.add_copies([self.autobio])
-        # p1 = 7.7
-        p2 = 9.9
-        to_sell = [{"id": self.autobio.id,
-                    "quantity": 1,
-                    # "price_sold": p1
-                },
-                   {"id": self.secondcard.id,
-                    "quantity": 2,
-                    "price_sold": p2}]
-        sell, status, msgs = Sell.sell_cards(to_sell)
-        self.assertEqual(Alert.objects.count(), 1)
+        pass  # xxx
 
     def test_undo_card(self):
         """Undo a sell, test only the Card method.
@@ -1220,9 +1136,9 @@ class TestSells(TestCase):
         self.assertTrue(status != 'danger')
         # Sell cards.
         sell, status, msgs = Sell.sell_cards(to_sell, deposit=self.depo)
-        # self.assertTrue(status == 'success') # TODO: failing
-        self.assertEqual(self.depo.quantity_of(self.secondcard), 0)
+        self.assertTrue(status == 'success')
         self.assertEqual(self.depo.quantity_of(self.autobio), 0)
+        self.assertEqual(self.depo.quantity_of(self.secondcard), -1)
         # Undo the sell. It knows it was from a deposit.
         sell.undo()
         self.assertEqual(self.depo.quantity_of(self.secondcard), 1)
@@ -1310,11 +1226,11 @@ class TestSellSearch(TestCase):
         Sell.sell_card(self.autobio)
         Sell.sell_card(self.autobio, deposit_id=self.deposit.id)
         sells = Sell.search(deposit_id=self.deposit.id)
-        self.assertEqual(sells['total'], 2)
+        self.assertEqual(sells['nb_sells'], 2)
 
         # deposit 2 sees only one sell.
         sells = Sell.search(deposit_id=self.deposit2.id)
-        self.assertEqual(sells['total'], 1)
+        self.assertEqual(sells['nb_sells'], 1)
 
 
 class TestHistory(TestCase):
@@ -1332,41 +1248,6 @@ class TestHistory(TestCase):
         self.assertEqual(2, len(hist))  # a Sell is created without any cards sold.
         self.assertEqual(ALERT_SUCCESS, status)
 
-class TestAlerts(TestCase):
-
-    def setUp(self):
-        # a card in a deposit, with the same distributor each.
-        self.dist = DistributorFactory.create()
-        self.card = CardFactory.create()
-        self.card.distributor = self.dist
-        self.deposit = DepositFactory.create()
-        self.deposit.distributor = self.dist
-        self.deposit.add_copies([self.card])
-        # Put the Card in a default place, in 2 copies: one is the deposit,
-        # one is ours.
-        self.place = PlaceFactory()
-        self.place.add_copy(self.card, nb=2)
-        # A sell creates an alert
-        Sell.sell_card(self.card)
-        self.alerts, status, msgs = Alert.get_alerts()
-
-    def test_get_alerts_nominal(self):
-        self.assertTrue(self.alerts)
-        self.assertTrue(self.alerts[0].card.ambiguous_sell())
-
-    def test_add_deposits_of_card(self):
-        self.alerts[0].add_deposits_of_card(self.card)
-        self.assertEqual(1, len(self.card.deposit_set.all()))
-
-    def test_alerts_auto_resolved(self):
-        """An alert can be resolved if we sell the remaining copies of the card.
-        """
-        # If we sell the 2nd copy, they're all sold, so the alert is resolved.
-        Sell.sell_card(self.card)
-        alerts, status, msgs = Alert.get_alerts()
-        alert = alerts[0]
-        self.assertEqual(alert.card.quantity, 0)
-        self.assertFalse(alert.card.ambiguous_sell())
 
 class TestInventory(TestCase):
 
@@ -1634,14 +1515,22 @@ class TestCommandsReceive(TestCase):
         self.assertEqual(self.preferences.default_place.quantity_of(self.card), 1)
 
     def test_inventory_command_apply_to_deposit(self):
-        dc = self.deposit.depositcopies_set.all()
-        self.assertEqual(len(dc), 0)
+        """
+        Make the inventory of a command, apply it to a deposit.
+        """
         self.assertEqual(self.deposit.quantity_of(self.card), 0)
         self.inv.apply(deposit_obj=self.deposit)
-        dc = self.deposit.depositcopies_set.all()
-        self.assertEqual(len(dc), 1)
-        dc = dc[0]
-        self.assertEqual(dc.nb, 1)
-        self.assertEqual(dc.card_id, self.card.id)
-        # The method quantity_of is more complex (and problematic) for deposits.
-        # self.assertEqual(self.deposit.quantity_of(self.card), 1)  # xxx failing
+        self.assertEqual(self.deposit.quantity_of(self.card), 1)
+
+
+class TestStats(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory.create()
+        self.card2 = CardFactory.create()
+        CardType.objects.create(name="book")
+        CardType.objects.create(name="unknown")
+
+    def test_stats(self):
+        # "Stats".
+        stats = Stats.stock()

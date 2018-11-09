@@ -64,7 +64,8 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             $scope.sells = []
             $scope.sells_month = 0
             $scope.total_sells_month_excl_tax = 0
-            $scope.nb_sold_cards = response.data.data.total
+            $scope.nb_sells = response.data.data.nb_sells
+            $scope.nb_cards_sold = response.data.data.nb_cards_sold
             $scope.get_page_max response.data.data.total
             # $scope.best_sells = utils.best_sells response.data.data
             # $scope.sells_mean = utils.sells_mean response.data.data
@@ -95,7 +96,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
                 return 0
             return 1
 
-        $scope.page_max = Math.floor($scope.nb_sold_cards / this.page_size) + add_one_page($scope.nb_sold_cards, $scope.page_size)
+        $scope.page_max = Math.floor($scope.nb_sells / this.page_size) + add_one_page($scope.nb_sells, $scope.page_size)
 
     $scope.nextPage = !->
         if $scope.page < $scope.page_max
@@ -190,7 +191,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             year: $scope.user_date.getFullYear!
             , (resp) !->
                 $scope.sells = []
-                $scope.nb_sold_cards = resp.data.data.length
+                $scope.nb_sells = resp.data.data.length
                 $scope.sells_month = 0
                 $scope.total_sells_month_excl_tax = 0  # total revenue of cards sold, minus the tax
 

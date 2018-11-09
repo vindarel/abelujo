@@ -115,7 +115,7 @@ class ApiTest(TestCase):
         self.params["cards_id"] = ""
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
-        self.assertEqual(resp_data["messages"][0]["level"], ALERT_SUCCESS)
+        self.assertEqual(resp_data["alerts"][0]["level"], ALERT_SUCCESS)
 
     def test_sell_cards(self):
         self.params["to_sell"] = u"1,9.5,2"

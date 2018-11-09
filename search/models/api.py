@@ -485,11 +485,10 @@ def deposits(request, **response_kwargs):
     returns: a json response: status: 200, messages: a list of messages where each message is a dict
     {level: int, messages: str}
     """
-    msgs = {"status": httplib.OK, "messages": []}
+    msgs = Messages()
 
     if request.method == "POST":
         params = request.POST.copy()
-        # TODO: validation. Use django-angular.
         if params.get("distributor") == "null":
             pass  # return validation error
 
@@ -525,11 +524,7 @@ def deposits(request, **response_kwargs):
                 "dest_place": params.get("dest_place"),
             }
 
-            # that's a form validation...
-            if deposit_dict['due_date'] == 'undefined':
-                del deposit_dict['due_date']
-
-            status, depo_msgs = Deposit.from_dict(deposit_dict)
+            depo, msgs = Deposit.from_dict(deposit_dict)
 
         except Exception as e:
             log.error(u"api/deposit error: {}".format(e))
@@ -538,33 +533,22 @@ def deposits(request, **response_kwargs):
                                      "message": "internal error, sorry !"})
 
             return HttpResponse(json.dumps(msgs), **response_kwargs)
-        msgs = {"status": status,
-                "messages": depo_msgs}
 
-        return JsonResponse(msgs)
+        to_ret = {
+            'status': msgs.status,
+            'alerts': msgs.to_alerts(),
+        }
+        return JsonResponse(to_ret)
 
     # GET
     else:
         depos = Deposit.objects.all()
         depos_list = [it.to_list() for it in depos]
         res = {"data": depos_list,
-               "msgs": msgs,
+               "msgs": msgs.to_alerts(),
                "status": httplib.OK,
         }
         return JsonResponse(res)
-
-def deposits_due_dates(request, **response_kwargs):
-    """Get which deposits are to be paid in a (near) future.
-    """
-    depos = {}
-    if request.method == 'GET':
-
-        try:
-            depos = Deposit.next_due_dates(to_list=True)
-        except Exception as e:
-            log.error(e)
-
-        return JsonResponse(depos, safe=False)
 
 def sell(request, **response_kwargs):
     """
@@ -1586,8 +1570,7 @@ def stats(request, **kwargs):
     if language:
         translation.activate(language)
 
-    stats = Stats()
-    stock = stats.stock()
+    stock = Stats.stock()
     return JsonResponse(stock)
 
 def to_int(string):
@@ -1617,19 +1600,18 @@ def stats_sells_month(request, **kwargs):
     month = None
     year = None
 
-    stats = Stats()
     if request.GET.get('month'):
         month = request.GET.get('month')
         month = to_int(month)
         year = to_int(request.GET.get('year'))
 
-    res = stats.sells_month(limit=LIMIT, year=year, month=month)
+    res = Stats.sells_month(limit=LIMIT, year=year, month=month)
     return JsonResponse(res)
 
 def stats_entries_month(request, **kwargs):
     """
     """
-    res = Stats().entries_month()
+    res = Stats.entries_month()
     return JsonResponse(res, safe=False)
 
 def stats_static(request, page=0, **kwargs):
@@ -1647,7 +1629,7 @@ def stats_static(request, page=0, **kwargs):
 
 def stats_stock_age(request, **kwargs):
     shelf = request.GET.get('shelf_id')
-    stats = Stats().stock_age(shelf)
+    stats = Stats.stock_age(shelf)
     return JsonResponse(stats, safe=False)
 
 ###############################################################################
