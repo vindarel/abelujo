@@ -2071,9 +2071,29 @@ class DepositStateCopies(models.Model):
 
     @property
     def nb_sells(self):
-        """the quantity of sold cards since the last deposit state.
+        # TODO: to test or to delete.
+        """The number of sells since the last deposit state (*not* the number
+        of copies sold).
         """
         return self.sells.count()
+
+    @property
+    def nb_cards_sold(self):
+        """The number of cards sold since the last deposit state.
+        """
+        # xxx: see django-denorm field.
+        # TODO: to test
+        return self.nb_initial - self.nb_current
+
+    def _nb_cards_sold(self):
+        """Re-compute the number of copies sold, with a DB query.
+        It should be equal to nb_cards_sold.
+        """
+        # === invariant, les 2 marchent !
+        total = 0
+        for sell in self.sells.all():
+            total += sum([it.quantity for it in sell.soldcards_set.filter(card__id=self.card_id).all()])
+        return total
 
 
 class DepositState(models.Model):
@@ -2120,10 +2140,18 @@ class DepositState(models.Model):
     @property
     def nb_sells(self):
         """
-        Sum of the sells of all the cards of this deposit state.
+        Sum of the Sell transactions for all the cards of this deposit state.
+        (*not* the number of cards sold.)
         """
         # don't aggregate, here nb_sells isn't a field but a property.
         return sum([it.nb_sells for it in self.depositstatecopies_set.all()])
+
+    @property
+    def nb_cards_sold(self):
+        """
+        Number of copies sold, counting all the cards of this deposit state.
+        """
+        return sum([it.nb_cards_sold for it in self.depositstatecopies_set.all()])
 
     def quantity_of(self, card):
         """
@@ -2454,13 +2482,13 @@ class Deposit(TimeStampedModel):
         return self.ongoing_depostate.nb_current
 
     @property
-    def checkout_nb_sells(self):
+    def checkout_nb_cards_sold(self):
         """
         Number of sells for the ongoing checkout.
         """
         if not self.depositstate_set.count():
             return 0
-        return self.ongoing_depostate.nb_sells
+        return self.ongoing_depostate.nb_cards_sold  # TODO:
 
     @property
     def checkout_total_sells(self):

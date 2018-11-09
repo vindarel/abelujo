@@ -84,19 +84,19 @@
           td.text-right {{ deposit.checkout_nb_current }}
 
         tr
-          td {% trans "Number of sells" %}
-          td.text-right {{ deposit.checkout_nb_sells }}
+          td {% trans "Copies sold" %}
+          td.text-right {{ deposit.checkout_nb_cards_sold }}
 
         tr
-          td {% trans "total sold" %}
+          td {% trans "Total sold" %}
           td.text-right {{ deposit.checkout_total_sells | floatformat:2 | intcomma}} {% trans "€" %}
 
         tr
-          td: h4  {% trans "to pay" %}
+          td: h4  {% trans "To pay" %}
           td: h4.text-right {{ deposit.checkout_total_to_pay | floatformat:2 | intcomma}} {% trans "€" %}
 
         tr
-          td {% trans "margin" %}
+          td {% trans "Margin" %}
           td.text-right {{ deposit.checkout_margin | floatformat:2 | intcomma}} {% trans "€" %}
 
 .row
@@ -147,7 +147,7 @@ table.table.table-striped.table-hover
         td.text-right  {{ card.price_excl_vat | floatformat:2 | intcomma }} {% trans "€" %}
         td.text-right  {{ card.price_discounted | floatformat:2 | intcomma }} {% trans "€" %}
         td.text-right  {{ bal.nb_initial }}
-        td.text-right  {{ bal.nb_sells }}
+        td.text-right  {{ bal.nb_cards_sold }}
         td.text-right  {{ bal.nb_current }}
 
 
