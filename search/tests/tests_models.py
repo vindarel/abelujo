@@ -800,7 +800,7 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(1, self.deposit.checkout_nb_current)
         # below: we didn't create a first checkout, we can't have those numbers.
         self.assertEqual(0, self.deposit.checkout_nb_initial)
-        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_nb_cards_sold)
         self.assertEqual(0, self.deposit.checkout_total_sells)
         self.assertEqual(0, self.deposit.checkout_total_to_pay)
         self.assertEqual(0, self.deposit.checkout_margin)
@@ -821,7 +821,7 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(2 * 1, self.deposit.init_qty)
         self.assertEqual(2, self.deposit.checkout_nb_current)
         self.assertEqual(2, self.deposit.checkout_nb_initial)
-        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_nb_cards_sold)
         self.assertEqual(0, self.deposit.checkout_total_sells)
         self.assertEqual(0, self.deposit.checkout_total_to_pay)
         self.assertEqual(0, self.deposit.checkout_margin)
@@ -832,7 +832,7 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(2 * 1, self.deposit.init_qty)
         self.assertEqual(3, self.deposit.checkout_nb_current)
         self.assertEqual(2, self.deposit.checkout_nb_initial)
-        self.assertEqual(0, self.deposit.checkout_nb_sells)
+        self.assertEqual(0, self.deposit.checkout_nb_cards_sold)
         self.assertEqual(0, self.deposit.checkout_total_sells)
         self.assertEqual(0, self.deposit.checkout_total_to_pay)
         self.assertEqual(0, self.deposit.checkout_margin)
@@ -844,7 +844,7 @@ class TestDeposits(TransactionTestCase):
         self.assertEqual(2, self.deposit.init_qty)
         self.assertEqual(2, self.deposit.checkout_nb_current)
         self.assertEqual(2, self.deposit.checkout_nb_initial)
-        self.assertEqual(1, self.deposit.checkout_nb_sells)
+        self.assertEqual(1, self.deposit.checkout_nb_cards_sold)
         self.assertEqual(price, self.deposit.checkout_total_sells)
         discount = self.deposit.distributor.discount
         to_pay = price * discount / 100
@@ -1025,7 +1025,7 @@ class TestSells(TestCase):
         Sell.sell_cards(to_sell, place_id=self.place.id)
 
         # The deposit/ongoing deposit state doesn't see any sell.
-        self.assertEqual(0, self.depo.checkout_nb_sells)
+        self.assertEqual(0, self.depo.checkout_nb_cards_sold)
 
     def test_alert_deposit(self):
         """Create an ambigous sell, check an Alert is created."""
