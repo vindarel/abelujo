@@ -2071,7 +2071,6 @@ class DepositStateCopies(models.Model):
 
     @property
     def nb_sells(self):
-        # TODO: to test or to delete.
         """The number of sells since the last deposit state (*not* the number
         of copies sold).
         """
@@ -2079,17 +2078,9 @@ class DepositStateCopies(models.Model):
 
     @property
     def nb_cards_sold(self):
-        """The number of cards sold since the last deposit state.
-        """
-        # xxx: see django-denorm field.
-        # TODO: to test
-        return self.nb_initial - self.nb_current
-
-    def _nb_cards_sold(self):
         """Re-compute the number of copies sold, with a DB query.
         It should be equal to nb_cards_sold.
         """
-        # === invariant, les 2 marchent !
         total = 0
         for sell in self.sells.all():
             total += sum([it.quantity for it in sell.soldcards_set.filter(card__id=self.card_id).all()])
