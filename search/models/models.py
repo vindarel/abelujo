@@ -3999,7 +3999,8 @@ class Stats(object):
 
         return stats
 
-    def stock_age(self, shelf):
+    @staticmethod
+    def stock_age(shelf):
         return self._shelf_age(shelf)
 
 class CommandCopies(TimeStampedModel):
