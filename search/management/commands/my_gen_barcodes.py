@@ -31,9 +31,6 @@ class Command(BaseCommand):
 
     help = "Generate a base64 barcode for all ean (that don't have one)."
 
-    def add_arguments(self, parser):
-        pass
-
     def handle(self, *args, **options):
         self.stdout.write("-------------------")
         self.stdout.write(u"Generating and saving barcodes in db…")

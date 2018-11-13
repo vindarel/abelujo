@@ -32,9 +32,6 @@ class Command(BaseCommand):
 
     help = "Set all the cards' quantities to zero (deprecated)."
 
-    def add_arguments(self, parser):
-        pass
-
     def handle(self, *args, **options):
         self.stdout.write("-------------------")
         self.stdout.write("Resetting all quantities to zero !")
