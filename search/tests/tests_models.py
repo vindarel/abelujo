@@ -1532,5 +1532,9 @@ class TestStats(TestCase):
         CardType.objects.create(name="unknown")
 
     def test_stats(self):
+        """Dummy "it compiles" tests."""
         # "Stats".
         stats = Stats.stock()
+        age = Stats.stock_age(1)
+        entries = Stats.entries_month()
+        sells = Stats.sells_month()

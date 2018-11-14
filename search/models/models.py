@@ -3977,7 +3977,8 @@ class Stats(object):
         return {"cards": res,
                 "total": nb}
 
-    def _shelf_age(self, shelf_id):
+    @staticmethod
+    def _shelf_age(shelf_id):
         shelf_name = None
         try:
             shelf = Shelf.objects.get(id=shelf_id)
@@ -4000,8 +4001,8 @@ class Stats(object):
         return stats
 
     @staticmethod
-    def stock_age(shelf):
-        return self._shelf_age(shelf)
+    def stock_age(shelf_id):
+        return Stats._shelf_age(shelf_id)
 
 class CommandCopies(TimeStampedModel):
     """Intermediate table between a Command and its Cards. Records the
