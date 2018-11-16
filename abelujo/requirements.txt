@@ -48,7 +48,7 @@ unicodecsv<0.15         # at last unicode support to read and write csv files. L
 cairocffi==0.6          # for weasyprint. Later version fails.
 WeasyPrint==0.34
 pybarcode
-pillow                  # needs libfreetype6-dev installed
+pillow==4.0             # needs libfreetype6-dev installed
 dateparser==0.5         # parser for human readable dates
 
 # deployment
