@@ -1411,6 +1411,20 @@ class Card(TimeStampedModel):
         """
         return sum(self.depositstatecopies_set.all().values_list('nb_current', flat=True))
 
+    @property
+    def deposits(self):
+        """
+        Return the list of Deposits that contain or have contained this card.
+
+        - return: a list of tuples of deposit name and id.
+        """
+        values_list = self.depositstatecopies_set.\
+            values_list('deposit_state__deposit__name',
+                        'deposit_state__deposit__id',
+            ).\
+            distinct()
+        return values_list
+
     @staticmethod
     def never_sold(page=None, pagecount=20):
         notsold = Card.objects.filter(in_stock=True).exclude(id__in = SoldCards.objects.all().values_list('id', flat=True))

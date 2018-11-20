@@ -126,9 +126,8 @@ div#abelujo
           tr
             td {% trans "Deposits" %}
             td
-                div réparation en cours…
-                // for dep in object.deposits
-                  div: a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
+                for dep_tup in object.deposits
+                  div: a(href="/deposits/{{ dep_tup.1 }}") {{ dep_tup.0 }}
 
           tr(class="{% if object.quantity_deposits > 0 %} active {% elif object.quantity_deposits < 0 %} danger {% endif %}")
             td {% trans "In deposits" %}

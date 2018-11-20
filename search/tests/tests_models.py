@@ -730,11 +730,21 @@ class TestDeposits(TransactionTestCase):
         status, msgs = self.deposit.add_copy(self.card)
         self.assertEqual(4, self.deposit.quantity_of(self.card))
 
-        # add copies with a different dist each.
+        # Can not add copies with a different dist each.
         self.card.distributor = None
         self.card.save()
         status, msgs = self.deposit.add_copies([self.card, self.card2])
         self.assertFalse(status)
+
+        # we can find the deposits from the card
+        # (although there is not a direct relationship (anymore)).
+        dep_tups = self.card.deposits
+        self.assertTrue(dep_tups)
+        self.assertEqual(1, len(dep_tups))
+        self.assertTrue('deposit test ' in dep_tups[0][0])
+
+        dep_tups = self.card2.deposits
+        self.assertEqual(0, len(dep_tups))
 
     def test_checkout_create(self):
         # add copies.
