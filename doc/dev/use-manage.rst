@@ -1,4 +1,4 @@
-Abelujo administration, custom management commands
+Administration, custom management commands
 ==================================================
 
 In addition to using the fabfile commands, an Abelujo administrator

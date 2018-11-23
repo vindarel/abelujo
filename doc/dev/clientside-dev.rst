@@ -1,6 +1,42 @@
 Client-side development
 =======================
 
+Write custom CSS
+----------------
+
+To customize the look of Abelujo, you can set your CSS rules in each
+app ``<name of the app>/static/<name of the app>/style.css`` file,
+i.e. in ``search/static/search/style.css``. This file will be loaded
+automatically by Django, and collected when we run `collectstatic`
+command.
+
+
+Write JavaScript in Livescript
+------------------------------
+
+.. note::
+
+   We used LiveScript but we're now switching to Vue.js with plain Javascript. https://vuejs.org
+
+Our current Angularjs controllers are written in Livescript::
+
+    * http://livescript.net
+
+The LiveScript executable and repl is `lsc`.
+
+Now to compile LiveScript files run `make gulp`.
+
+
+You can recompile everything on every change with::
+
+    gulp watch
+
+.. note::
+
+   If you have the same file with both a js and a ls extension, the
+   javascript will take precedence (it is appended first in
+   ``abelujo.js`` so it is read first by angularjs).
+
 Html and CSS to improve the user interfacet
 ------------------------------------------
 
