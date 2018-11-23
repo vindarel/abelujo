@@ -8,20 +8,32 @@ See the up to date instructions `on Gitlab <https://gitlab.com/vindarel/abelujo>
 
 See the Makefile for all the targets.
 
-Run the development server
---------------------------
+Run the development server (local)
+----------------------------------
 
 `make run` and open your browser on `localhost:8000`.
 
+The default username is ``admin`` and the password ``admin`` (see
+management commands to create and delete superusers).
 
-Run in production
------------------
+This command is only to be run on a local machine. If you run it on a
+server, you won't be able to access Abelujo from the internet.
 
-See ``make gunicorn``.
+
+Run in production (server)
+--------------------------
+
+Put your ip address in the file `IP.txt` (root of the project) and the
+port in `PORT.txt`::
+
+    echo "my.ip" > IP.txt
+    echo "8888" > PORT.txt
+
+and run the server with ``make gunicorn``.
 
 To restart the application, use ``make gunicorn-restart``.
 
-See also ``fab start/stop/restart`` commands.
+See also the ``fab start/stop/restart`` commands.
 
 
 Debian specificity: name collision between node and nodejs
@@ -33,6 +45,9 @@ This is installed with `make debian`::
 
 Use the Postgresql database
 ---------------------------
+
+Abelujo uses by default an SQLite database, you don't *have* to
+configure a Postgresql one.
 
 We need to create a database with the following steps::
 
