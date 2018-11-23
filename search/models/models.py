@@ -1158,6 +1158,9 @@ class Card(TimeStampedModel):
         return: a tuple Card objec created or existing, message (str).
 
         """
+        if not isinstance(card, dict):
+            raise TypeError("Card.from_dict expects a dict, and got a {}.".\
+                            format(type(card)))
 
         msgs = Messages()
         msg_success = _("The card was created successfully.")
