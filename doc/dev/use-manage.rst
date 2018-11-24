@@ -53,3 +53,25 @@ custom commands start with `my_` for better exploration).::
 If you wish to be more precise (set to n copies instead of zero, reset
 for only a place), this needs more work. See the method
 `Card.quantities_to_zero` and the same on `Place`.
+
+Import a csv file of ISBNs and quantities
+-----------------------------------------
+
+First export your Excel or LibreOffice calc sheet into csv, preferably
+with ``;`` as separator, then use the ``import_isbns`` command::
+
+  ./manage.py import_isbns -i myfile.csv
+
+Options:
+
+- ``-l`` to choose the language of the bibliographic search (a french
+  source by default)
+
+The script will search each ISBN on the datasource, create a Card
+object, and add the given quantity into the default Place. Consequently, before running the script, you must choose the appropriate default place.
+
+The script will fail early if any error were to occure.
+
+**warning**: presently the script is not indempotent, meaning if you run it twice, it will add twice the quantities.
+
+If you need more features, get in touch.
