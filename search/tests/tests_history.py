@@ -18,8 +18,12 @@
 
 from django.test import TestCase
 from search.models import Entry
+from search.models import OutMovement
 
+from tests_models import BasketFactory
 from tests_models import CardFactory
+from tests_models import DistributorFactory
+from tests_models import PlaceFactory
 
 class TestEntry(TestCase):
 
@@ -29,3 +33,63 @@ class TestEntry(TestCase):
     def test_entry(self):
         en, created = Entry.new([self.card])
         self.assertTrue(created)
+
+
+class TestOutMovement(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory()
+        self.card2 = CardFactory()
+        self.card3 = CardFactory()
+        self.basket = BasketFactory()
+        self.distributor = DistributorFactory()
+        # A place, with all the cards.
+        self.place = PlaceFactory()
+        self.place.add_copies([self.card, self.card2, self.card3])
+        # Add 2 cards to the basket
+        self.basket.add_cards([self.card, self.card2])
+        self.basket.distributor = self.distributor
+
+    def tearDown(self):
+        pass
+
+    def test_return_basket(self):
+        # preliminary check of the stock.
+        self.assertEqual(1, self.card.quantity)
+
+        # Create the return.
+        obj, msgs = self.basket.create_return()
+        # (yes, inconsistency to return the Message object)
+        self.assertEqual('success', msgs.status)
+        self.assertTrue(obj)
+        self.assertEqual(2, obj.copies.count())
+        self.assertTrue(self.card3 not in obj.copies.all())
+        self.assertEqual(1, len(OutMovement.returns()))
+        # The cards were decremented from the stock.
+        self.assertEqual(0, self.card.quantity)
+        self.assertEqual(0, self.place.quantity_of(self.card))
+        self.assertEqual(0, self.card2.quantity)
+        self.assertEqual(1, self.card3.quantity)
+        self.assertEqual(1, self.place.quantity_cards())
+
+        # Ignore quantity < 0
+        card = CardFactory()
+        self.place.add_copy(card, nb=-1)
+        nb = self.place.remove(card, quantity=card.quantity)
+        self.assertEqual(-1, nb)
+
+    # def test_returns(self):
+    def DONTRUN_test_returns(self):
+        # try with 100 cards to time transaction.atomic: no difference it seems.
+        self.cards = []
+        for i in xrange(100):
+            self.cards.append(CardFactory())
+
+        from django.db import transaction
+        with transaction.atomic():
+            self.place.add_copies(self.cards)
+
+        with transaction.atomic():
+            self.basket.add_cards(self.cards)
+
+        obj, msgs = self.basket.create_return()

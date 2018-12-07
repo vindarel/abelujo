@@ -581,6 +581,26 @@ class Card(TimeStampedModel):
         except Exception as e:
             log.error(u"Error while getting the total quantities of all cards: {}".format(e))
 
+    def get_return_place(self):
+        """
+        Return the place suitable to apply a return to the supplier.
+        Either the default place, or the first we can sell from.
+        If nothing applies, return the default place.
+
+        Return: Place object.
+        """
+        places_qs = self.places
+        default_place = Preferences.get_default_place()
+        if default_place in places_qs.all():
+            return default_place
+
+        places_qs = places_qs.exclude(can_sell=False, is_stand=True)
+        if places_qs.count():
+            return places_qs.first()
+
+        return default_place
+
+
     def get_distributor(self):
         """Get the list of distributors without an error in case it is
         null. To use in card_show template.
@@ -1551,6 +1571,21 @@ class Place (models.Model):
             log.error(e)
             return False
 
+    def remove(self, card, quantity=1):
+        """
+        Remove this card from this place, with this quantity.
+        Used for example for movements out of the stock that are not sells.
+
+        Ignore negative quantities.
+        """
+        # to remove many cards in a single transaction, use
+        # with atomic.transaction
+        if quantity >= 0:
+            pc = self.placecopies_set.get(card__id=card.id)
+            pc.nb -= quantity
+            pc.save()
+            return pc.nb
+
     def to_dict(self):
         # Could (should?) do with django serializers but its output is a bit too much.
         return {
@@ -1683,6 +1718,7 @@ class Place (models.Model):
         wrapper to "add_copy" for consistency. Use the latter instead.
 
         """
+        # with transaction.atomic() ?
         for it in cards:
             self.add_copy(it)
 
@@ -1815,8 +1851,8 @@ class BasketCopies(models.Model):
 
 class Basket(models.Model):
     """A basket is a set of copies that are put in it for later use. Its
-    copies can be present in the stock or not. To mix with a basket's
-    copies doesn't mean mixing with physical copies of the stock.
+    copies can be present in the stock or not. Manipulating a basket's
+    copies has no consequences on physical copies of the stock.
     """
     # This class is really similar to PlaceCopies. Do something about it.
     #: Name of the basket
@@ -2044,6 +2080,28 @@ class Basket(models.Model):
             msgs.add_error(_("Error adding copies"))
 
         return dep, msgs.msgs
+
+    def create_return(self):
+        """
+        Return all the cards of this basket to their supplier (publisher, distributor).
+        The cards are removed from the stock. The movement is recorded in an OutMovement.
+        The basket must have a publisher or a distributor.
+
+        Return: a tuple xxx, xxx.
+        """
+        # The logic goes in OutMovement.
+        msgs = Messages()
+        if not self.distributor:
+            return None, msgs.add_info(_("This basket has no distributor to "
+                                          "return the cards to."))
+
+        # TODO: we should close the basket.
+        # or delete, since it is saved in the OutMovement.
+        out = history.OutMovement.return_from_basket(self)
+        msgs.add_success(_("Return to {} succesfully created.".format(self.distributor)))
+        # xxx: here, we return the msgs object, though earlier we return the
+        # msgs.msgs list of messages. Inconsistent, but better…
+        return out, msgs
 
 
 class BasketType (models.Model):
@@ -3536,7 +3594,6 @@ class InventoryBase(TimeStampedModel):
 
     def remove_card(self, card_id):
         """
-
         - return: status (bool)
         """
         try:

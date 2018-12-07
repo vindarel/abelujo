@@ -28,7 +28,7 @@
 {% load ngfilter %}
 {% load humanize %}
 
-em.bg-danger {% trans "This page is under construction. What shall we put in here ?" %}
+em.bg-danger {% trans "This page is under construction." %}
 
 .row
   .col-lg-10
@@ -40,7 +40,7 @@ em.bg-danger {% trans "This page is under construction. What shall we put in her
 h3 {{ card.title }}
 
 .row
-  .col-lg-4
+  .col-lg-3
     h4 {% trans "Last sells" %}
 
     if not sells
@@ -49,10 +49,15 @@ h3 {{ card.title }}
     for sell in sells
       div {{ sell.created }}
 
-  .col-lg-4
+  .col-lg-3
+    h4 {% trans "Last output movements" %}
+    for out in outs
+      div {{ out.movement.created}}: x{{ out.quantity }} - {% if out.movement.basket %} {{ out.movement.basket }} {% endif %} {{ out.movement.distributor }}
+
+  .col-lg-3
     h4 {% trans "Last entries" %}
 
-  .col-lg-4
+  .col-lg-3
    .row
     h4 {% trans "Pending commands" %}
     if not pending_commands

@@ -16,12 +16,13 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.db import models
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.db import transaction
 
+# from common import ALERT_WARNING
 # from common import ALERT_ERROR
 from common import ALERT_SUCCESS
-# from common import ALERT_WARNING
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel
@@ -58,6 +59,140 @@ class InternalMovement(TimeStampedModel):
                "model": self.__class__.__name__,
         }
         return ret
+
+
+class OutMovementCopies(models.Model):
+    """
+    When the movement is about many cards (a basket), remember the
+    cards' quantities at that time.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    card = models.ForeignKey("search.Card", db_index=True)
+    movement = models.ForeignKey("OutMovement")
+    quantity = models.IntegerField(default=1, blank=True, null=True)
+
+
+class OutMovementTypes:
+    sell = 1
+    returned_supplier = 2
+    loss = 3
+    gift = 4
+
+
+class OutMovement(models.Model):
+    """
+    A movement out of the stock: a return, a loss, a gift. We already have Sell objects.
+    """
+    OUTMOVEMENT_TYPES_CHOICES = (
+        (1, "sell"),
+        (2, "return"),
+        (3, "loss"),
+        (4, "gift"),
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    #: Type of this output. No default.
+    #: In case of a basket, we also save the list of cards.
+    typ = models.IntegerField(choices=OUTMOVEMENT_TYPES_CHOICES)
+    comment = models.CharField(max_length=CHAR_MAX_LENGTH, blank=True, null=True)
+
+    #: This movement can be for one card only:
+    card = models.ForeignKey("search.Card", blank=True, null=True)
+    #: in which case, it can be for more than one copies:
+    nb = models.IntegerField(blank=True, null=True)
+    #: Most of the time we should record the place of origin:
+    origin = models.ForeignKey("search.Place", blank=True, null=True)
+    #: This movement can also be for a whole basket:
+    basket = models.ForeignKey("search.Basket", null=True, blank=True)
+    #: in which case, we record the quantities of each card:
+    copies = models.ManyToManyField("search.Card", blank=True,
+                                    through="OutMovementCopies",
+                                    related_name="copies")
+    #: What's the destination ?
+    #: In case of a sell: see other Sell class.
+    #: In case of a return, the supplier, who is either a publisher either a distributor:
+    publisher = models.ForeignKey("search.Publisher", blank=True, null=True)
+    distributor = models.ForeignKey("search.Distributor", blank=True, null=True)
+    #: In case of a loss, nothing.
+    #: In case of a gift, the recipient (his address):
+    recipient = models.ForeignKey("search.Address", blank=True, null=True)
+
+    def __unicode__(self):
+        return "OutMovement: {}".format(self.typ)
+
+    def get_absolute_url(self):
+        return reverse("history_outmovement", args=(self.id,))
+
+    @property
+    def supplier(self):
+        return self.publisher or self.distributor
+
+    @staticmethod
+    def _create_return(publisher=None, distributor=None,
+                      card=None,
+                      basket=None):
+        if not publisher and not distributor \
+           and not basket and not basket.distributor:
+            return Exception("Please give a publisher, "
+                             "a distributor or "
+                             "a basket with one of these as argument..")
+
+        out = OutMovement(typ=OutMovementTypes.returned_supplier)
+        if publisher:
+            out.publisher = publisher
+        elif distributor:
+            out.distributor = distributor
+        elif basket and basket.distributor:
+            out.distributor = basket.distributor
+
+        out.save()
+
+        if basket:
+            out.basket = basket
+            # Add all cards with quantities.
+            for copy_qty in out.basket.basketcopies_set.all():
+                out.outmovementcopies_set.get_or_create(card=copy_qty.card,
+                                                        quantity=copy_qty.quantity)
+
+        else:
+            raise NotImplementedError()
+
+        return out
+
+    @staticmethod
+    def return_from_basket(basket):
+        """
+        Remove the cards of this basket from the stock and record a movement object.
+
+        Close the basket.
+
+        If the card is in the default place, remove it from there.
+
+        Otherwise, what's the best strategy ?
+        We remove it from the oldest place.
+        """
+        out = OutMovement._create_return(basket=basket)
+        # Decrement all cards from… a place.
+        # Should the basket be applied to a place ?
+        copies_qties = out.basket.basketcopies_set.all()
+
+        # Grouping per place doesn't seem to help for faster requests.
+        # the_place = lambda copy_qty: copy_qty.card.get_return_place()
+        # places_cards = toolz.groupby(the_place, copies_qties)
+
+        # with transaction.atomic(): doesn't seem to help (tried with 100 cards).
+        for card_qty in copies_qties:
+            place = card_qty.card.get_return_place()
+            place.remove(card_qty.card)
+
+        # close the basket ?
+
+        return out
+
+    @staticmethod
+    def returns(*args, **kwargs):
+        return OutMovement.objects.filter(typ=OutMovementTypes.returned_supplier).all()
+
 
 class EntryCopies(TimeStampedModel):
     card = models.ForeignKey("search.Card", db_index=True)

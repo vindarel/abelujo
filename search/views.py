@@ -267,6 +267,7 @@ def card_show(request, pk):
 
 def card_history(request, pk):
     """Show the card's sells, entries and commands history."""
+    MAX = 50
     card = None
     template = "search/card_history.jade"
 
@@ -276,6 +277,12 @@ def card_history(request, pk):
         # Sells
         sells = Sell.search(card.id)
 
+        # OutMovements
+        # TODO: get all out movements
+        # outmovement_set: direct link
+        # outmovementcopies_set: linked from baskets
+        outs = card.outmovementcopies_set.order_by("-created").all()[:MAX]
+
         # Commands
         pending_commands = card.commands_pending()
         commands = card.commands_received()
@@ -283,6 +290,7 @@ def card_history(request, pk):
     return render(request, template, {
         "card": card,
         "sells": sells,
+        "outs": outs,
         "pending_commands": pending_commands,
         "commands": commands,
         "page_title": u"Abelujo - {} - {}".format(_("History"), card.title),

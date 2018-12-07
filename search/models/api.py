@@ -1177,6 +1177,30 @@ def baskets_add_card(request, pk, **response_kwargs):
             # no data
             pass
 
+def baskets_return(request, pk, **kw):
+    if request.method == "POST":
+        msg = {'status': ALERT_SUCCESS,
+               'message': _("")}
+        to_ret = {
+            'status': ALERT_SUCCESS,
+            'alerts': []
+        }
+        try:
+            basket = Basket.objects.get(id=pk)
+        except Exception as e:
+            log.error(u"return basket {}: {}".format(pk, e))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'].append("Error: the basket {} doesn't exist.".format(pk))
+            return JsonResponse(to_ret)
+
+        try:
+            out, msgs = basket.create_return()
+        except Exception as e:
+            log.error(u"return basket {}: {}".format(pk, e))
+        finally:
+            to_ret['alerts'] = msgs.msgs
+            to_ret['status'] = msgs.status
+            return JsonResponse(to_ret)
 
 def baskets_delete(request, pk, **kw):
     """Delete the given basket.
