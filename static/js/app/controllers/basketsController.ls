@@ -222,10 +222,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             # $window.location.href = "/#{$scope.language}/baskets/#{$scope.cur_basket.id}/receive/"
             $window.location.href = "/#{$scope.language}/inventories/#{inv_id}/"
 
-    $scope.as_deposit = !->
-        # Transform this list to a deposit.
-        ...
-
     $scope.return_to_supplier = !->
         sure = confirm gettext "Do you want to return this basket to #{$scope.cur_basket.distributor} ? This will remove the given quantities from your stock."
         if sure
