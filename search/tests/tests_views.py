@@ -33,6 +33,7 @@ from search.models import Sell
 from search.views import get_reverse_url
 
 from tests_models import CardFactory
+from tests_models import DepositFactory
 from tests_models import PlaceFactory
 from django.contrib import auth
 
@@ -298,6 +299,11 @@ class TestDeposit(TestCase, DBFixture):
 
     def test_new_nominal(self):
         resp = self.c.get(reverse("deposits_new"))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_add_copies_form(self):
+        deposit = DepositFactory()
+        resp = self.c.get(reverse('deposit_add_copies', args=(1,)))
         self.assertEqual(resp.status_code, 200)
 
 

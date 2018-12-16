@@ -2490,6 +2490,12 @@ class Deposit(TimeStampedModel):
         """
         return self.ensure_open_depostate()
 
+    def copies(self):
+        """
+        List of cards currently in this deposit.
+        """
+        return self.ongoing_depostate.copies.all()
+
     @property
     def last_checkout_date(self):
         closed = self.depositstate_set.filter(closed__isnull=False)

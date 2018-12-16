@@ -140,7 +140,7 @@ class DepositAddCopiesForm(forms.Form):
 
         # Build fields depending on the deposit existing cards.
         dep = Deposit.objects.get(id=pk)
-        cards = dep.copies.all()
+        cards = dep.copies()
         for card in cards:
             self.fields[str(card.id)] = forms.IntegerField(widget=MyNumberInput(
                 attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
