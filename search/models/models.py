@@ -28,7 +28,6 @@ import os
 import tempfile
 import urllib
 from datetime import date
-from textwrap import dedent
 
 import barcode
 import dateparser
@@ -54,7 +53,6 @@ from toolz.itertoolz import groupby
 
 from search.models import history
 from search.models.common import ALERT_ERROR
-from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.common import CHAR_LENGTH
@@ -599,7 +597,6 @@ class Card(TimeStampedModel):
             return places_qs.first()
 
         return default_place
-
 
     def get_distributor(self):
         """Get the list of distributors without an error in case it is
@@ -1179,7 +1176,7 @@ class Card(TimeStampedModel):
 
         """
         if not isinstance(card, dict):
-            raise TypeError("Card.from_dict expects a dict, and got a {}.".\
+            raise TypeError("Card.from_dict expects a dict, and got a {}.".
                             format(type(card)))
 
         msgs = Messages()
@@ -1584,7 +1581,6 @@ class Place (models.Model):
             pc = self.placecopies_set.get(card__id=card.id)
             pc.nb -= quantity
             pc.save()
-            return pc.nb
 
     def to_dict(self):
         # Could (should?) do with django serializers but its output is a bit too much.
@@ -2669,7 +2665,6 @@ class Deposit(TimeStampedModel):
 
         if depo_dict.get('due_date') == 'undefined':
             depo_dict['due_date'] = None
-
 
         # TODO: If any that copies don't belong to that distributor: fail.
         # *before* we create the deposit.

@@ -303,7 +303,7 @@ class TestDeposit(TestCase, DBFixture):
 
     def test_add_copies_form(self):
         deposit = DepositFactory()
-        resp = self.c.get(reverse('deposit_add_copies', args=(1,)))
+        resp = self.c.get(reverse('deposit_add_copies', args=(deposit.id,)))
         self.assertEqual(resp.status_code, 200)
 
 

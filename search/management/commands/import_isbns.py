@@ -21,8 +21,6 @@ Import a csv files with two columns: an isbn and a quantity.
 """
 from __future__ import print_function
 
-import os
-
 from django.core.management.base import BaseCommand
 
 from search.models import Card
@@ -100,7 +98,7 @@ class Command(BaseCommand):
             print(" ok ({} results)".format(len(res)))
 
             if len(res) > 1:
-                print("INFO: got more than 1 result for {}, we pick the first one.".\
+                print("INFO: got more than 1 result for {}, we pick the first one.".
                       format(isbn))
 
             res = res[0]

@@ -807,7 +807,6 @@ def deposits_add_card(request):
 def deposits_view(request, pk):
     """Display the given deposit."""
     deposit = None
-    copies = []
     template = "search/deposits_view.jade"
     try:
         deposit = Deposit.objects.get(pk=pk)

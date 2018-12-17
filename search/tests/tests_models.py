@@ -26,17 +26,14 @@ import datetime
 
 import factory
 import logging
-from django.core.management import call_command
 from django.test import TestCase
 from django.test import TransactionTestCase
 from django.utils import timezone
-from django.utils.six import StringIO
 from factory.django import DjangoModelFactory
 
 from search.models import ALERT_ERROR
 from search.models import ALERT_SUCCESS
 from search.models import ALERT_WARNING
-from search.models import Alert
 from search.models import Author
 from search.models import Basket
 from search.models import Card
@@ -653,7 +650,7 @@ class TestDeposits(TransactionTestCase):
             'name': "depo test",
             "distributor": self.distributor,
             "copies": [self.card2],  # same distributor as the deposit.
-            "quantities": ['1','1'],
+            "quantities": ['1', '1'],
             "deposit_type": "fix",
             "minimal_nb_copies": "1",
             "auto_command": "",
@@ -674,7 +671,7 @@ class TestDeposits(TransactionTestCase):
             'name': "depo test",  # same name
             "distributor": self.distributor,
             "copies": [self.card2],
-            "quantities": ['1','1'],
+            "quantities": ['1', '1'],
             "deposit_type": "fix",
             "minimal_nb_copies": "1",
             "auto_command": "",
@@ -689,7 +686,7 @@ class TestDeposits(TransactionTestCase):
             'name': "depo test 2",
             "distributor": self.distributor,
             "copies": [self.card, self.card2],  # another card without a distributor.
-            "quantities": ['1','1'],
+            "quantities": ['1', '1'],
             "deposit_type": "fix",
             "minimal_nb_copies": "1",
             "auto_command": "",
@@ -1544,7 +1541,7 @@ class TestStats(TestCase):
     def test_stats(self):
         """Dummy "it compiles" tests."""
         # "Stats".
-        stats = Stats.stock()
-        age = Stats.stock_age(1)
-        entries = Stats.entries_month()
-        sells = Stats.sells_month()
+        Stats.stock()
+        Stats.stock_age(1)
+        Stats.entries_month()
+        Stats.sells_month()

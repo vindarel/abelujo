@@ -18,7 +18,6 @@
 
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db import transaction
 
 # from common import ALERT_WARNING
 # from common import ALERT_ERROR
@@ -117,11 +116,12 @@ class OutMovement(models.Model):
     #: In case of a gift, the recipient (his address):
     recipient = models.ForeignKey("search.Address", blank=True, null=True)
 
-    def __unicode__(self):
-        return "OutMovement: {}".format(self.typ)
+    # def __unicode__(self):
+    # return "id {}, type {}".format(self.pk,
+    # OutMovement.OUTMOVEMENT_TYPES_CHOICES[self.typ - 1])
 
-    def get_absolute_url(self):
-        return reverse("history_outmovement", args=(self.id,))
+    # def get_absolute_url(self):
+    # return reverse("history_outmovement", args=(self.id,))
 
     @property
     def supplier(self):
@@ -180,6 +180,7 @@ class OutMovement(models.Model):
         # the_place = lambda copy_qty: copy_qty.card.get_return_place()
         # places_cards = toolz.groupby(the_place, copies_qties)
 
+        # from django.db import transaction
         # with transaction.atomic(): doesn't seem to help (tried with 100 cards).
         for card_qty in copies_qties:
             place = card_qty.card.get_return_place()

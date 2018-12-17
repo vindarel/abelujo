@@ -1179,8 +1179,6 @@ def baskets_add_card(request, pk, **response_kwargs):
 
 def baskets_return(request, pk, **kw):
     if request.method == "POST":
-        msg = {'status': ALERT_SUCCESS,
-               'message': _("")}
         to_ret = {
             'status': ALERT_SUCCESS,
             'alerts': []
