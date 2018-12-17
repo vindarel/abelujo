@@ -2342,7 +2342,9 @@ class DepositState(models.Model):
 
     @property
     def total_sells(self):
-        sells = self.depositstatecopies_set.first().sells.all()
+        sells = self.depositstatecopies_set.first()
+        if sells:
+            sells = sells.sells.all()
         return sum([it.total_price_init for it in sells])
 
     @property
