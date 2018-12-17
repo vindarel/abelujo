@@ -75,21 +75,5 @@ class TestOutMovement(TestCase):
         # Ignore quantity < 0
         card = CardFactory()
         self.place.add_copy(card, nb=-1)
-        nb = self.place.remove(card, quantity=card.quantity)
-        self.assertEqual(-1, nb)
-
-    # def test_returns(self):
-    def DONTRUN_test_returns(self):
-        # try with 100 cards to time transaction.atomic: no difference it seems.
-        self.cards = []
-        for i in xrange(100):
-            self.cards.append(CardFactory())
-
-        from django.db import transaction
-        with transaction.atomic():
-            self.place.add_copies(self.cards)
-
-        with transaction.atomic():
-            self.basket.add_cards(self.cards)
-
-        obj, msgs = self.basket.create_return()
+        self.place.remove(card, quantity=card.quantity)
+        self.assertEqual(-1, card.quantity)
