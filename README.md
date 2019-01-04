@@ -47,7 +47,7 @@ Instructions for Debian 8.
 
 Either do the quick way:
 
-    curl -sS https://gitlab.com/vindarel/abelujo/raw/master/install.sh | bash -
+    apt install curl -y && curl -sS https://gitlab.com/vindarel/abelujo/raw/master/install.sh | bash -
 
 this will clone the repo in the current directory and install all its dependencies.
 
