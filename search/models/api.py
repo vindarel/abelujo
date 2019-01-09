@@ -672,10 +672,15 @@ def history_sells(request, **response_kwargs):
         month = params.get('month')
         if not month and not is_invalid(month):
             month = timezone.now().month
+        year = params.get('year')
+        if not year and not is_invalid(year):
+            year = timezone.now().year
 
         try:
             # hist, status, alerts = getHistory()
-            hist = Sell.search(month=month, page=page, page_size=page_size,
+            hist = Sell.search(month=month,
+                               year=year,
+                               page=page, page_size=page_size,
                                sortby=sortby, sortorder=sortorder,
                                to_list=True)
         except Exception as e:

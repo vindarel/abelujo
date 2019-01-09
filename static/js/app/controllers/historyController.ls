@@ -54,6 +54,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.get_history = !->
         params = do
             month: $scope.user_date.getMonth! + 1
+            year: $scope.user_date.getFullYear!
             page: $scope.page
             page_size: $scope.page_size
             sortby: $scope.sortby
