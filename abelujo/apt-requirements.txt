@@ -1,6 +1,9 @@
 # Careful: write comments only at beg of line
 # (see Makefile's update)
 
+# apache: for gunicorn.
+apache2
+apache2-dev
 git-core
 python-pip
 virtualenvwrapper
