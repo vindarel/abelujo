@@ -140,24 +140,9 @@ collectstatic:
 	python manage.py collectstatic --noinput
 
 # Run the tests of the UI in a browser.
-NODEBIN=./node_modules/.bin/
-PROTRACTOR_CMD=$(NODEBIN)protractor
-PROTRACTOR_CONF=search/tests/integration-tests/conf.js
-# Start the webdriver before the protractor tests.
-webdriver-start:
-	$(NODEBIN)webdriver-manager start
-
 livescript: search/tests/integration-tests/*.ls
 	# compile livescript files
 	cd search/tests/integration-tests/ && lsc -c *.ls
-
-protractor: livescript
-	@echo "you need: make run and make webdriver-start"
-	$(PROTRACTOR_CMD) $(PROTRACTOR_CONF)
-
-protractor-debug:
-	$(PROTRACTOR_CMD)  --elementExplorer $(PROTRACTOR_CONF)
-	@echo "Chrome version must be >= 39.0"
 
 end2end:
 	# it was buggy on Firefox (waiting for async/await ?).
