@@ -31,15 +31,9 @@ rebase:
 # Install in current directory
 pip: pip-submodule
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
-	make pip-system
 
-pip-nosudo: pip-submodule pip-system-nosudo
+pip-nosudo: pip-submodule
 	pip install -r abelujo/requirements.txt
-
-pip-system:
-	sudo pip install -r abelujo/requirements-system.txt # venvs have access to them with --system-site-packages
-pip-system-nosudo:
-	pip install -r abelujo/requirements-system.txt
 
 pip-dev:
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
