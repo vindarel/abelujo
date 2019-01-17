@@ -33,6 +33,14 @@ To restart the application, use ``make gunicorn-restart``.
 
 See also the ``fab start/stop/restart`` commands.
 
+
+Some tasks need to run asynchronously (applying an inventory,…). Start redis and the Huey task runner::
+
+    redis-server
+
+    make taskqueue
+
+
 Deployment and website management
 ---------------------------------
 

@@ -95,7 +95,6 @@ type `workon \<TAB\> abelujo`.
 To install the dependencies, create and populate the database, run:
 
     make install
-    # and if bower asks for the version of Angular, choose version #1.3.20.
 
 We are done ! Now to try Abelujo, run the development server like this:
 
@@ -198,9 +197,13 @@ Test with `python manage.py raven test` and see the new message in your dashboar
 
 ### Start Redis
 
-We need Redis for long operations (dowloading the whole stock as csv, huey task runner,…).
+We need Redis for long operations (dowloading the whole stock as csv, applying an inventory to the stock,…).
 
     redis-server &
+
+and start our asynchronous task runner:
+
+    make task-queue &
 
 see [#83](https://gitlab.com/vindarel/abelujo/issues/83).
 
