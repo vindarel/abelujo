@@ -299,12 +299,21 @@ def updatelight(name=None):
 
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
+    Only for users marked in production in clients.yaml.
     """
     if not name:
         clients = sorted(CFG.clients)
 
     else:
         clients = [fabutils.select_client_cfg(name)]
+
+    # Only for prod:
+    clients = filter(lambda it: it.status == "prod", clients)
+    print(termcolor.colored(
+        "Backup for {} users in prod: {}.".format(
+            len(clients),
+            map(lambda it: it.name, clients)),
+        "yellow"))
 
     for client in clients:
         with cd(fabutils.wd(client, CFG)):
