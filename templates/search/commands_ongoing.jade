@@ -53,6 +53,8 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
     li.active(role="presentation")
       a(href="ongoing") {% trans "Commands ongoing" %}  
         span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
+    li(role="presentation")
+      a(href="/databasesearch/command/", target="_blank") {% trans "Historique" %}
 
   .row
     .col-md-12

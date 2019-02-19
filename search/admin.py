@@ -20,6 +20,7 @@ from search.models import Basket
 from search.models import BasketCopies
 from search.models import Bill
 from search.models import Card
+from search.models import Command
 from search.models import Shelf
 from search.models import Distributor
 from search.models import Deposit
@@ -44,6 +45,15 @@ class CardAdmin(admin.ModelAdmin):
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
     filter_horizontal = ("authors", "publishers",)
+
+
+class CommandAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Command
+
+    search_fields = ["supplier_name"]
+    list_display = ("__unicode__", "supplier_name", "date_received", "date_paid")
+
 
 class DistributorAdmin(admin.ModelAdmin):
     class Meta:
@@ -92,6 +102,7 @@ admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
+admin.site.register(Command, CommandAdmin)
 admin.site.register(Shelf, ShelfAdmin)
 admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
@@ -105,6 +116,7 @@ admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author)
 admin_site.register(Basket)
 admin_site.register(Card, CardAdmin)
+admin_site.register(Command, CommandAdmin)
 admin_site.register(Distributor)
 admin_site.register(Deposit, DepositAdmin)
 admin_site.register(Place)
