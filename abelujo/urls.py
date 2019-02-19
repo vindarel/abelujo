@@ -22,18 +22,11 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 
 
-from search.drfviews import CommandViewSet
-
-from rest_framework.routers import DefaultRouter
-
 js_info_dict = {
     'packages': ('search', '',),
 }
 
 urlpatterns = i18n_patterns("", url("^", include("search.urls")))
-
-router = DefaultRouter()
-router.register(r'commands', CommandViewSet)
 
 apipatterns = patterns("",
     # pylint: disable=bad-continuation
@@ -82,16 +75,18 @@ apipatterns = patterns("",
     # Simple info
     url(r'^api/baskets/(?P<pk>\d+)/?$', 'search.models.api.basket', name="api_basket"),
 
+    url(r'^api/distributors/(?P<pk>\d+)/?$', 'search.models.api.get_distributor', name="api_get_distributor"),
     url(r'^api/distributors', 'search.models.api.distributors', name="api_distributors"),
     url(r'^api/publishers/?$', 'search.models.api.publishers', name="api_publishers"),
     url(r'^api/deposits/?$', 'search.models.api.deposits', name="api_deposits"),
 
     # Commands
-    url(r'^api/commands/nb_ongoing', 'search.models.api.commands_ongoing', name="api_commands_ongoing"),
+    url(r'^api/commands/ongoing/?$', 'search.models.api.commands_ongoing', name="api_commands_ongoing"),
+    url(r'^api/commands/ongoing', 'search.models.api.commands_ongoing', name="api_commands_ongoing"),
+    url(r'^api/commands/nb_ongoing/?$', 'search.models.api.nb_commands_ongoing', name="api_commands_nb_ongoing"),
     url(r'^api/commands/create', 'search.models.api.commands_create', name="api_commands_create"),
     url(r'^api/commands/(?P<pk>\d+)/update/?$', 'search.models.api.commands_update', name="api_commands_update"),
-    # from DRF's router:
-    url(r'^api/', include(router.urls)),
+    url(r'^api/commands/supplier/(?P<pk>\d+)/copies/?$', 'search.models.api.commands_supplier', name="api_commands_supplier"),
     # A command inventory (receive a parcel)
     url(r'^api/commands/(?P<pk>\d+)/receive/?$', 'search.models.api.command_receive', name="api_command_receive"),
     url(r'^api/commands/(?P<pk>\d+)/receive/remove/?$', 'search.models.api.command_receive_remove', name="api_command_receive_remove"),

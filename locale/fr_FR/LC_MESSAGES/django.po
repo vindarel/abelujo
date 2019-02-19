@@ -2036,24 +2036,6 @@ msgstr "isbn et quantité"
 msgid "Help"
 msgstr "Aide"
 
-#: templates/search/to_command.jade:117
-msgid ""
-"The cards to command are grouped by supplier. Check the quantity you want to "
-"command and send them an email."
-msgstr ""
-"Les notices sont groupées par fournisseur. Vous pouvez vérifier la quantité "
-"que vous voulez commander pour chacune, puis envoyer un mail aux diffuseurs."
-
-#: templates/search/to_command.jade:118
-msgid ""
-"You can also export all this list to csv, wich will contain, for each card, "
-"the isbn and the quantity to command. This format is well suited to feed in "
-"the website of some resailers, like Dilicom."
-msgstr ""
-"Vous pouvez également exporter la liste entière au format csv. Le fichier "
-"contiendra une colonne isbn et une colonne quantité, ce qui le rend "
-"compatible avec l'interface client de Dilicom."
-
 #: templates/search/to_command.jade:125
 msgid "New command"
 msgstr "Nouvelle commande"

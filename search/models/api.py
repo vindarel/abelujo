@@ -453,6 +453,21 @@ def distributors(request, **response_kwargs):
             data = [it.to_list() for it in data]
         return JsonResponse(data, safe=False)
 
+def get_distributor(request, pk):
+    if request.method == "GET":
+        to_ret = {
+            'data': {},
+            'status': ALERT_SUCCESS,
+        }
+        try:
+            dist = Distributor.objects.get(id=pk)
+        except ObjectDoesNotExist as e:
+            log.warning(e)
+            return JsonResponse({})
+
+        to_ret['data'] = dist.to_dict()
+        return JsonResponse(to_ret)
+
 def publishers(request, **response_kwargs):
     if request.method == "GET":
         query = request.GET.get("query")
@@ -775,7 +790,9 @@ def auto_command_basket(request, action="", **response_kwargs):
             page = int(page)
             copies_no_dist = copies_no_dist[page_start_index(page): page * page_size]
 
-        ret = [it.to_dict() for it in copies]
+        print "-------------", len(copies)
+        # ret = [it.to_dict() for it in copies]
+        ret = [it.to_dict() for it in copies[:3]]
         to_ret['data'] = ret
         no_dist = [it.to_dict() for it in copies_no_dist]
         to_ret['copies_no_dist'] = no_dist
@@ -1083,7 +1100,7 @@ def baskets_update(request, pk, **response_kwargs):
 def baskets_add_card(request, pk, **response_kwargs):
     """Add a Card to Basket pk.
 
-    *newer Vue api*
+    *newer Vue api* api/v2/baskets
 
     Card can be already in stock (with an id) or not. In that case it
     will be created from the given json.
@@ -1113,12 +1130,13 @@ def baskets_add_card(request, pk, **response_kwargs):
             card_obj = Card.objects.get(id=card_id)
             dist_obj = None
             dist_name = ""
-            if dist_id and dist_id not in [-1, "-1", u"-1"]:
+            COMMAND_IDS = [-1, "-1", u"-1", 0, "0", u"0"]
+            if dist_id and dist_id not in COMMAND_IDS:
                 dist_obj = Distributor.objects.get(id=dist_id)
 
             language = body['params'].get('language')
             if language:
-                translation.activate(language)  # not working ??
+                translation.activate(language)  # XXX: not working. Works in a break.
 
             if dist_obj:
                 if not card_obj.distributor:
@@ -1663,7 +1681,42 @@ def stats_stock_age(request, **kwargs):
 # Commands
 ###############################################################################
 
-def commands_ongoing(request, **kwargs):
+def commands_supplier(request, pk):
+    """
+    Return the list of cards to command from the given distributor.
+
+    (actually return basket_copy objects, with the basket_qty)
+    """
+    dist_id = int(pk)
+    basket_copies = Basket.auto_command_copies(dist_id=dist_id)
+    copies_from_dist = []
+    if dist_id == 0:
+        copies_from_dist = [it for it in basket_copies if not it.card.distributor]
+    else:
+        for it in basket_copies:
+            if it.card.distributor and it.card.distributor.id == dist_id:
+                copies_from_dist.append(it)
+
+    # TODO:
+    totals = {}
+    totals['total_cards'] = len(copies_from_dist)
+    totals['total_copies'] = sum([it.quantity for it in copies_from_dist])
+    totals['total_price'] = sum([it.card.price if it.card.price else 0
+                                 for it in copies_from_dist])
+    # total_price_discounted
+    # total_price_excl_vat
+    # total_price_discounted_excl_vat
+    # import ipdb; ipdb.set_trace()
+    copies_from_dist = [it.to_dict() for it in copies_from_dist]
+    # import ipdb; ipdb.set_trace()
+    to_ret = {
+        'status': ALERT_SUCCESS,
+        'data': copies_from_dist,
+        'totals': totals,
+    }
+    return JsonResponse(to_ret)
+
+def nb_commands_ongoing(request, **kwargs):
     """
     """
     if request.method == 'GET':
@@ -1674,6 +1727,11 @@ def commands_ongoing(request, **kwargs):
         }
         return JsonResponse(to_ret)
 
+def commands_ongoing(request, **kwargs):
+    if request.method == 'GET':
+        res = Command.ongoing(to_dict=True)
+        return JsonResponse(res, safe=False)
+
 def commands_create(request, **kwargs):
     """Create a new command with given list of ids and their quantities.
     """
@@ -1681,13 +1739,11 @@ def commands_create(request, **kwargs):
     if request.method == "POST":
         params = json.loads(request.body)
         ids_qties = params.get('ids_qties')
-        publisher_id = params.get('publisher_id')
         distributor_id = params.get('distributor_id')
         if ids_qties:
             ids_qties = ids_qties[0]
             ids_qties = ids_qties_to_pairs(ids_qties)
             cmd, msgs = Command.new_command(ids_qties=ids_qties,
-                                            publisher_id=publisher_id,
                                             distributor_id=distributor_id)
             msgs.merge(msgs)
 

@@ -872,11 +872,46 @@ def deposit_add_copies(request, pk):
         "pk": pk,
     })
 
+#: id of the basket of automatic commands.
+AUTO_COMMAND_ID = 1
+
 @login_required
 def basket_auto_command(request):
-    template = "search/to_command.jade"
+    template = "search/to_command_index.jade"
+    # template = "search/to_command.jade"
+    # return render(request, template)
+
+    try:
+        basket = Basket.objects.get(id=AUTO_COMMAND_ID)
+    except Exception as e:
+        pass
+
+    copies = basket.copies.all()
+    total_copies = len(copies)
+    import toolz
+    copies_by_dist = toolz.groupby(lambda it: it.distributor_id, copies)
+    dists = []
+    for (dist_id, copies) in copies_by_dist.items():
+        if dist_id is not None:
+            dists.append((Distributor.objects.get(id=dist_id), len(copies)))
+            # dist = Distributor.objects.get(id=dist_id)
+            # dists.append((dist.name, len(copies)))
+
+            # dists.append((dist_id, len(copies)))
+        else:
+            no_dist = ((_("NO SUPPLIER"), len(copies)))
+
     if request.method == "GET":
-        return render(request, template)
+        return render(request, template, {
+            'dists': dists,
+            'no_dist': no_dist,
+            'total_copies': total_copies,
+        })
+
+@login_required
+def command_supplier(request, pk):
+    template = "search/to_command.jade"
+    return render(request, template)
 
 @login_required
 def baskets(request):

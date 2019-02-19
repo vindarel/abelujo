@@ -27,9 +27,10 @@ angular.module "abelujo" .controller 'CommandsOngoingController', ['$http', '$sc
     $scope.command_popup_status = {}
     $scope.dates_labels = []
 
-    $http.get("/api/commands/")
+    $http.get("/api/commands/ongoing/")
     .then (response) ->
         $scope.commands = response.data
+        $log.info "-- commands: ", response.data
 
         $scope.dates_labels =
             # 'date_sent'
@@ -38,14 +39,15 @@ angular.module "abelujo" .controller 'CommandsOngoingController', ['$http', '$sc
             'date_paid'
             'date_payment_sent'
         for cmd in $scope.commands
-            for label in $scope.dates_labels
-                $scope.command_popup_status[cmd.id] = {}
-                $scope.command_popup_status[cmd.id][label] = {}
-                $scope.command_popup_status[cmd.id][label].opened = false
+            if cmd
+                for label in $scope.dates_labels
+                    $scope.command_popup_status[cmd.id] = {}
+                    $scope.command_popup_status[cmd.id][label] = {}
+                    $scope.command_popup_status[cmd.id][label].opened = false
 
-                $scope.command_date[cmd.id] = {}
-                $scope.command_date[cmd.id][label] = ""
-                $scope.command_date[cmd.id][label] = cmd[label]
+                    $scope.command_date[cmd.id] = {}
+                    $scope.command_date[cmd.id][label] = ""
+                    $scope.command_date[cmd.id][label] = cmd[label]
 
         return
 

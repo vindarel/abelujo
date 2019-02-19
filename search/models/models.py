@@ -1894,6 +1894,29 @@ class Basket(models.Model):
             return 0
 
     @staticmethod
+    def auto_command_copies(dist_id=None):
+        """
+        Return a list of basket copies (also with their quantity in the
+        basket) from the autocommand list.
+        """
+        if dist_id is not None:
+            dist_id = int(dist_id)
+        try:
+            basket = Basket.objects.get(name="auto_command")
+            if dist_id:
+                copies_qties = basket.basketcopies_set\
+                                     .filter(card__distributor_id=dist_id)\
+                                     .order_by("card__title")
+            else:
+                copies_qties = basket.basketcopies_set.all()
+
+        except Exception as e:
+            log.error(e)
+            return []
+
+        return copies_qties
+
+    @staticmethod
     def new(name=None):
         """Create a new basket.
 
@@ -4198,6 +4221,36 @@ class Command(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("commands_view", args=(self.id,))
 
+    def __unicode__(self):
+        return "command {} for {}".format(self.id, self.supplier_name)
+
+    def to_list(self):
+        date_received = ""
+        date_bill_received = ""
+        date_payment_sent = ""
+        date_paid = ""
+        if self.date_received:
+            date_received = self.date_received.strftime(DATE_FORMAT)
+        if self.date_bill_received:
+            date_bill_received = self.date_bill_received.strftime(DATE_FORMAT)
+        if self.date_payment_sent:
+            date_payment_sent = self.date_payment_sent.strftime(DATE_FORMAT)
+        if self.date_paid:
+            date_paid = self.date_paid.strftime(DATE_FORMAT)
+
+        return {
+            'id': self.id,
+            'name': self.name,
+            'created': self.created.strftime(DATE_FORMAT),
+            'distributor_name': self.distributor.name,
+            'distributor_id': self.distributor.id,
+            'nb_copies': self.copies.count(),
+            'date_received': date_received,
+            'date_bill_received': date_bill_received,
+            'date_paid': date_paid,
+            'date_payment_sent': date_payment_sent,
+        }
+
     @property
     def supplier(self):
         """
@@ -4214,7 +4267,7 @@ class Command(TimeStampedModel):
 
     @property
     def supplier_name(self):
-        """Return the publisher distributor name (str).
+        """Return the publisher or distributor name (str).
         """
         if self.publisher:
             return self.publisher.name
@@ -4296,9 +4349,6 @@ class Command(TimeStampedModel):
         """
         return self.date_paid or ""
 
-    def __unicode__(self):
-        return "command {} for {}".format(self.id, self.supplier_name)
-
     @property
     def title(self):
         """
@@ -4307,12 +4357,15 @@ class Command(TimeStampedModel):
         return _(u"command #{} - {}").format(self.id, self.supplier_name)
 
     @staticmethod
-    def ongoing():
+    def ongoing(to_dict=None):
         """Return a queryset of ongoing commands (to be more defined).
         Return: a queryset, so to apply .all() or .count().
         """
         res = Command.objects.filter(date_paid__isnull=True)\
                              .exclude(Q(publisher__isnull=True) & Q(distributor__isnull=True))
+        if res and to_dict:
+            # return [it.to_dict() for it in res]  # f* to_dict returns null O_o
+            return [it.to_list() for it in res]
         return res
 
     @staticmethod
@@ -4380,30 +4433,26 @@ class Command(TimeStampedModel):
         return cmdcopy.quantity, msgs
 
     @staticmethod
-    def new_command(ids_qties=None, publisher_id=None, distributor_id=None):
+    def new_command(ids_qties=None, distributor_id=None):
         """Create a command, remove the cards from the ToCommand list.
+
+        A command is linked to a distributor.
+        If you are used to work with publishers, then create a distributor with the same name.
 
         Return: the new Command object, with a Messages dict.
         """
         msgs = Messages()
 
-        # We must have a publisher or distributor.
+        # We must have a distributor.
         dist_obj = None
-        pub_obj = None
-        if not (distributor_id or publisher_id):
-            msgs.add_error("Provide a publisher_id for the new command.")
+        if distributor_id is None:
+            msgs.add_error("Provide a distributor_id for the new command.")
             return None, msgs
 
         elif distributor_id:
             dist_obj = Distributor.objects.get(id=distributor_id)
 
-        elif publisher_id:
-            try:
-                pub_obj = Publisher.objects.get(id=publisher_id)  # XXX refacto: catch error and return msgs
-            except ObjectDoesNotExist:
-                msgs.add_error(u"The publisher of id {} does not seem to exist".format(publisher_id))
-
-        if not (dist_obj or pub_obj):
+        if not dist_obj:
             return None, msgs.status
 
         cmd = Command()
@@ -4419,7 +4468,6 @@ class Command(TimeStampedModel):
             msgs.merge(messages)
 
         # Register the supplier
-        cmd.publisher = pub_obj
         cmd.distributor = dist_obj
         cmd.save()
 

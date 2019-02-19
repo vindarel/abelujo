@@ -28,16 +28,11 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     AUTO_COMMAND_ID = 1
     $scope.alerts = []
+    $scope.distributor = {} # the distributor of this page.
+    $scope.distributor_id = -1
     $scope.cards = []
     $scope.sorted_cards = {}
-    $scope.distributors = []
-    $scope.grouped_dist = {}
     $scope.bodies = {} # dist_id, email body
-    $scope.cards_no_dist = []
-    $scope.nb_cards_no_dist = 0
-
-    $scope.addcard_distributor = null  # from search box, command a new card.
-    $scope.distributors_plus_blank = []  # for search box
 
     $scope.page = 1
     # $scope.page_size = 25  # fixed
@@ -51,58 +46,38 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.language = utils.url_language($window.location.pathname)
     $scope.show_images = false
 
-    $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies",
+    $scope.distributor_id = utils.url_id $window.location.pathname
+    $log.info $scope.distributor_id
+
+    if $scope.distributor_id != "0"
+        $http.get "/api/distributors/#{$scope.distributor_id}"
+        .then (response) !->
+            $scope.distributor = response.data.data
+            $log.info "-- dist: ", response.data.data
+    else
+        $scope.distributor = do
+            name: "No supplier"
+            id: 0
+            repr: "No supplier"
+            get_absolute_url: ""
+
+
+    # Get the cards to command of this supplier.
+    # supplier = distributor. If you want to use a publisher, set it as a distributor.
+    $http.get "/api/commands/supplier/#{$scope.distributor_id}/copies"
     .then (response) !->
         $scope.cards = response.data.data
-        $scope.sorted_cards = group-by (.distributor.name), $scope.cards
-        $scope.meta = response.data.meta
-        $scope.cards_no_dist = response.data.copies_no_dist
+        $scope.totals = response.data.totals
+        $log.info "cards: ", $scope.cards
 
-    $http.get "/api/distributors",
-    .then (response) !->
-        $scope.distributors = response.data
-        $scope.distributors_plus_blank = [{'name': "", 'id': -1}].concat $scope.distributors
-        $scope.grouped_dist = group-by (.name), $scope.distributors
 
-    $scope.save_quantity = (dist_name, index) !->
+    $scope.save_quantity = (index) !->
         # model card.basket_qty is saved.
-        dist_id = grouped_dist[dist_name][0].id
-        card = $scope.sorted_cards[dist_id][index]
+        $log.info "--- save_quantity "
+        card = $scope.cards[index]
+        $log.info "saving ", card
+        # we still save on the autocommand basket which mixes different distributors.
         utils.save_quantity card, AUTO_COMMAND_ID
-
-    get_cards_from_distname = (dist_name) ->
-        if dist_name == "undefined"
-            cards = $scope.cards_no_dist
-        else
-            cards = $scope.sorted_cards[dist_name]
-        return cards
-
-    $scope.get_total_copies = (dist_name) ->
-        copies = get_cards_from_distname dist_name
-        utils.total_copies copies
-
-    $scope.get_total_price = (dist_name) ->
-        copies = get_cards_from_distname dist_name
-        total = utils.total_price(copies)
-        return total
-
-    $scope.get_total_price_discounted = (dist_name) ->
-        cards = get_cards_from_distname dist_name
-        utils.total_price_discounted cards
-
-    $scope.get_total_price_excl_vat = (dist_name) ->
-        cards = get_cards_from_distname dist_name
-        utils.total_price_excl_vat cards
-
-    $scope.get_total_price_discounted_excl_vat = (dist_name) ->
-        cards = get_cards_from_distname dist_name
-        utils.total_price_discounted_excl_vat cards
-
-    $scope.super_total_copies = ->
-        utils.total_copies($scope.cards) + $scope.meta.nb_copies_no_dist
-
-    $scope.super_total_price = ->
-        utils.total_price $scope.cards.concat $scope.cards_no_dist
 
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
@@ -136,43 +111,41 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $scope.remove_from_selection = (dist_name, index_to_rm) !->
         "Remove the card from the list. Server call."
-        sure = confirm(gettext("Are you sure to remove the card '{}' from the command basket ?").replace("{}", $scope.sorted_cards[dist_name][index_to_rm].title))
+        sure = confirm(gettext("Are you sure to remove the card '{}' from the command basket ?").replace("{}", $scope.cards[index_to_rm].title))
         if sure
-            card_id = $scope.sorted_cards[dist_name][index_to_rm].id
+            card_id = $scope.cards[index_to_rm].id
             $http.post "/api/baskets/#{AUTO_COMMAND_ID}/remove/#{card_id}/",
             .then (response) !->
-                $scope.sorted_cards[dist_name].splice(index_to_rm, 1)
+                $scope.cards.splice(index_to_rm, 1)
 
             .catch (resp) !->
                 $log.info "Error when trying to remove the card " + card_id
 
-    $scope.validate_command = (dist_name) !->
+    $scope.validate_command = !->
         """Validate the command. We'll wait for it. Remove the list from the ToCommand basket.
         """
-        if confirm gettext "Do you want to order this command for #{dist_name} ?\n
+        if confirm gettext "Do you want to order this command for #{$scope.distributor.name} ?\n
             The cards will be removed from this list."
-            $log.info "validate " + dist_name
-            cards = $scope.sorted_cards[dist_name]
+            $log.info "validate " + $scope.distributor.name
+            cards = $scope.cards
             ids_qties = []
             map ->
                 ids_qties.push "#{it.id}, #{it.basket_qty};"
             , cards
             $log.info "card ids_qties: " + ids_qties
 
-            cards = $scope.sorted_cards[dist_name]
-
-            #TODO: distributors and publishers = suppliers
             params = do
                 ids_qties: ids_qties
-                distributor_id: cards[0].distributor.id
-                # distributor_id: undefined # XXX don't mix pub and dist
+                distributor_id: $scope.distributor_id
+                foo: 1
 
-            $http.post "/api/commands/create/", params
+            $http.post "/api/commands/create/", params # right ?
             .then (response) !->
                 $log.info response.data
                 if response.data.status == 'success'
                     $log.info "success !"
-                    $scope.sorted_cards[dist_name] = []
+                    #TODO: redirect
+                    $scope.cards = []
 
                 else
                     $scope.alerts = response.data.alerts
@@ -185,32 +158,27 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
 
     $scope.add_selected_card = (card_obj) !->
         $log.info "selected: ", card_obj
-        $log.info "dist selected: ", $scope.addcard_distributor
 
         # Add this card to the command.
         # If it doesn't have a distributor, assign it.
         params = do
             language: $scope.language
             card_id: card_obj.id
-        dist_id = null
-        if $scope.addcard_distributor
-            dist_id = $scope.addcard_distributor.id
-            if dist_id != -1 and dist_id != "-1"
-                params.dist_id = dist_id
+            dist_id: $scope.distributor_id
         $http.post "/api/v2/baskets/#{AUTO_COMMAND_ID}/add/", do
             params: params
         .then (response) ->
             # Add card to supplier's list.
             $log.info "-- card_obj ", card_obj
-            $log.info "-- card  ", $scope.cards[0]
-            $log.info "-- card no dist  ", $scope.cards_no_dist[0]
             $scope.alerts = response.data.alerts
 
-            updated_card = response.data.card  # with new distributor
-            updated_card.quantity = 1
-            $log.info "updated_card: ", updated_card
-            $scope.cards.unshift updated_card
-            $scope.sorted_cards = group-by (.distributor.name), $scope.cards
+            if response.data.card
+                updated_card = response.data.card  # with new distributor
+                # updated_card.quantity = 1
+                updated_card.basket_qty = 1
+                $log.info "updated_card: ", updated_card
+                $scope.cards.unshift updated_card
+
 
     #########################################
     ## Pagination

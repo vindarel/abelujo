@@ -43,26 +43,40 @@ div(ng-cloak, ng-controller="basketToCommandController")
       a(href="/commands/ongoing") {% trans "Commands ongoing" %}  
         span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
 
-  .col-md-2
-    ul.list-group
-     div#suppliers(ng-repeat="(dist_name, cards) in sorted_cards")
-        li.list-group-item.mouse-pointer(
-          ng-class="{active: it[0].id == false}"
-          ng-click="dist_href(dist_name)"
-          popover-trigger="mouseenter"
-          popover-placement="left") {{ " dist_name " | ng }}
-            span.badge {{ " cards.length " | ng }}
-     li.list-group-item.mouse-pointer(
-          ng-show="meta.nb_copies_no_dist",
-          ng-class="",
-          ng-click="dist_href('undefined')",
-          popover-trigger="mouseenter",
-          popover-placement="left") {% trans "no distributor" %}
-            span.badge {{ 'meta.nb_copies_no_dist' | ng }}
+  .col-md-12
+    h1
+      a(href="{{ 'distributor.get_absolute_url' | ng }}") {{ 'distributor.repr' | ng }}
+    .row
+      .col-md-6
+          table.table.table-condensed
+            tbody
+                tr
+                  td {% trans "Number of titles" %}
+                  td.text-right {{ 'totals.total_cards' | ng }}
+                tr
+                  td {% trans "Copies to command" %}
+                  td.text-right {{ 'totals.total_copies' | ng }}
+                tr
+                  td {% trans "total" %}
+                  td.text-right {{ 'totals.total_price | number:2' |ng}}  €
 
+      .col-md-6
+        table.table.table-condensed
+          tbody
+                tr
+                  td
+                    | {% trans "Total" %}
+                    | {# Translators: excl. tax: price excluding tax (french: HT). #}
+                    | {% trans "excl. tax" %}
 
+                  td.text-right todo  €
+                tr
+                  td {% trans "excl. vat" %}
+                  td.text-right todo  {{ 'get_total_price_excl_vat()' |ng}}  €
+                tr
+                  td {% trans "total discounted excl. vat" %}
+                  td.text-right  todo {{ 'get_total_price_discounted_excl_vat()' |ng}}  €
 
-  .col-md-10
 
     .row
      .col-md-1
@@ -87,9 +101,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
      .col-md-7
        form#addcard
-        .col-md-4
-          select.form-control(name="distributor", ng-model="addcard_distributor", ng-options="it.name for it in distributors_plus_blank track by it.id")
-        .col-md-8
+        .col-md-12
           p.input-group
             input.nullable.form-control#default-input(
               type='text'
@@ -107,34 +119,25 @@ div(ng-cloak, ng-controller="basketToCommandController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-search
 
-    .row
-     .col-md-5
-        h4 {% trans "Total" %}: {{'super_total_copies()'|ng}} {% trans "copies" %}, {{'super_total_price()'|ng}} €
-
-    div.panel.panel-info(style="margin-top: 5px;")
-        div.panel-heading {% trans "Help" %}
-        div.panel-body
-          div {% trans "The cards to command are grouped by supplier. Check the quantity you want to command and send them an email." %}
-          div {% trans "You can also export all this list to csv, wich will contain, for each card, the isbn and the quantity to command. This format is well suited to feed in the website of some resailers, like Dilicom." %}
-
-    div#distributors(ng-repeat="(dist_name, cards) in sorted_cards")
+    div
           span
             .row
-             a.my-black-link(href="{{ 'grouped_dist[dist_name][0].get_absolute_url' | ng}}")
-              h4.col-md-6.myanchor(id="{{ 'dist_name' | ng}}") {{ 'dist_name'|ng}}  
-               a(href="mailto:{{'grouped_dist[dist_name][0].email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
-                i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'grouped_dist[dist_name][0].email' | ng}} {% trans ' with your desktop mail client' %}")
+             a.my-black-link(href="")
+              h4.col-md-6.myanchor(id="")
+               a(href="mailto:{{'supplier.email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
+                i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'distributor.email' | ng}} {% trans ' with your desktop mail client' %}")
 
                div.btn-group
                 button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
                    span.caret
                  ul.dropdown-menu
-                   li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+                   li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-                   li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+                   li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-               button#ok.btn.btn-success(ng-click="validate_command(dist_name)",
+               button#ok.btn.btn-success(ng-click="validate_command()",
                  title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
+
 
           table.table.table-condensed.table-striped
               thead
@@ -143,7 +146,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 th {% trans "Author" %}
                 th {% trans "Publisher" %}
                 th.text-right {% trans "Price" %}
-                th.text-right {% trans "With discount" %} {{ 'grouped_dist[dist_name][0].discount' | ng}}
+                th.text-right {% trans "With discount" %} {{ 'distributor.discount' | ng}}
                 th.text-right {% trans "Quantity left" %}
                 th.text-right {% trans "To command" %}
               tbody
@@ -152,7 +155,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     .col-md-6(ng-show="show_images")
                       img.myImg(ng-show="card.cover", src="{{ 'card.cover' | ng }}")
 
-                  td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
+                  td.col-md-6 {{ '$index + 1' | ng }} -
+                    span: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
                   td.col-md-1 {{ 'card.pubs_repr' | ng }}
                   td.col-md-1.text-right {{ 'card.price | number:2' |ng }} €
@@ -161,50 +165,12 @@ div(ng-cloak, ng-controller="basketToCommandController")
                   td.col-md-1
                     input.my-number-input(type="number", min=0, max=99,
                       ng-model="card.basket_qty"
-                      ng-change="save_quantity(dist_name, $index)")
+                      ng-change="save_quantity($index)")
                     i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_name, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
 
-                tr
-                  td(ng-show="show_images")
-                  td.col-md-7 {% trans "Total" %}
-                  td
-                  td
-                  td.col-md-1.text-right {{ 'get_total_price(dist_name)' |ng}}  €
-                  td.col-md-1.text-right {{ 'get_total_price_discounted(dist_name)' |ng}}  €
-                  td
-                  td.col-md-1 {{'get_total_copies(dist_name)'|ng}}
 
-                tr
-                  td(ng-show="show_images")
-                  td
-                    | {% trans "Total" %}
-                    | {# Translators: excl. tax: price excluding tax (french: HT). #}
-                    | {% trans "excl. tax" %}
 
-                  td
-                  td
-                  td.text-right  {{ 'get_total_price_excl_vat(dist_name)' |ng}}  €
-                  td.text-right  {{ 'get_total_price_discounted_excl_vat(dist_name)' |ng}}  €
-                  td
-                  td
-
-    ///////////////////////////////////////////////////////////////
-    // Same for undefined distributor. jade -> horrible copy-paste.
-    span
-            .row
-             h4.col-md-6.myanchor(id="undefined") {% trans "Undefined distributor" %}
-             div.btn-group
-                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-                   span.caret
-                 ul.dropdown-menu
-                   li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
-
-                   li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'grouped_dist[dist_name][0].id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
-
-               button#ok.btn.btn-success(ng-click="validate_command(dist_name)",
-                 title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
-
-    .row
+    //.row
            .btn-group
               span.text-right(aria-label="page navigation")
                    ul.pagination(ng-show="true", ng-cloak)
@@ -219,59 +185,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
                      li.page-item
                        a.page-link(ng-click="lastPage()") &raquo;
 
-    table.table.table-condensed.table-striped
-              thead
-                th(ng-show="show_images")
-                th {% trans "Title" %}
-                th {% trans "Author" %}
-                th {% trans "Publisher" %}
-                th.text-right {% trans "Price" %}
-                th.text-right {% trans "With discount" %} {{ 'grouped_dist[dist_name][0].discount' | ng}}
-                th.text-right {% trans "Quantity left" %}
-                th.text-right {% trans "To command" %}
-              tbody
-                tr(ng-repeat="card in cards_no_dist")
-                  td(ng-show="show_images")
-                    .col-md-6(ng-show="show_images")
-                      img.myImg(ng-show="card.cover", src="{{ 'card.cover' | ng }}")
 
-                  td.col-md-6: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
-                  td.col-md-1 {{ 'card.authors_repr' | ng }}
-                  td.col-md-1 {{ 'card.pubs_repr' | ng }}
-                  td.col-md-1.text-right {{ 'card.price | number:2' |ng }} €
-                  td.col-md-1.text-right {{ 'card.price_discounted | number:2' |ng }} €
-                  td.col-md-1.text-right {{ 'card.quantity' |ng }}
-                  td.col-md-1
-                    input.my-number-input(type="number", min=0, max=99,
-                      ng-model="card.basket_qty"
-                      ng-change="save_quantity(dist_name, $index)")
-                    i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_name, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
-
-                tr
-                  td(ng-show="show_images")
-                  td.col-md-7 {% trans "Total" %}
-                  td
-                  td
-                  td.col-md-1.text-right {{ 'get_total_price("undefined")' |ng}}  €
-                  td.col-md-1.text-right {{ 'get_total_price_discounted("undefined")' |ng}}  €
-                  td
-                  td.col-md-1 {{'get_total_copies("undefined")'|ng}}
-
-                tr
-                  td(ng-show="show_images")
-                  td
-                    | {% trans "Total" %}
-                    | {# Translators: excl. tax: price excluding tax (french: HT). #}
-                    | {% trans "excl. tax" %}
-
-                  td
-                  td
-                  td.text-right  {{ 'get_total_price_excl_vat("undefined")' |ng}}  €
-                  td.text-right  {{ 'get_total_price_discounted_excl_vat("undefined")' |ng}}  €
-                  td
-                  td
-
-    .row
+    // .row
            .btn-group
               span.text-right(aria-label="page navigation")
                    ul.pagination(ng-show="true", ng-cloak)
@@ -294,8 +209,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
       div {% trans "The cards are grouped by supplier. Please check the list and confirm." %}
 
     div.modal-body
-      div(ng-repeat="(dist_name, cards) in sorted_cards")
-        h4 pub: {{ 'dist_name'|ng}}
+      div(ng-repeat="card in cards")
+        h4 {% trans "Supplier" %}: {{ 'distributor.name' | ng }}
         div(ng-repeat="card in cards")
           div {{'card.title'|ng}}
 

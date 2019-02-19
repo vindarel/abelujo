@@ -13,6 +13,14 @@ Return a list to its supplier.
   - it creates an "Out Movement", for history
   - we can see the movement in a card's history
 
+### Fixes and enhancements
+
+- the Commands view was too slow and the pages were changed.
+  * we now have an index listing all the suppliers that have some cards to command, and each has its own Command page.
+  * the bottleneck function (computing the total quantity of a given
+    card in all places) was dramatically improved (from minutes to 5
+    seconds).
+
 ## 2018-11
 
 ### New Features
