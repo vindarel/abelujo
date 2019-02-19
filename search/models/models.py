@@ -566,7 +566,15 @@ class Card(TimeStampedModel):
 
         return: int
         """
-        quantity = sum([pl.quantity_of(self) for pl in Place.objects.all()])
+        # Is this quicker...
+        # places containing this card:
+        places_ids = PlaceCopies.objects.filter(card=self).values_list('place').distinct()
+        places_obj = [Place.objects.get(id=pk) for (pk,) in places_ids]
+        quantity = sum([it.quantity_of(self) for it in places_obj])
+
+        # ...than this ? => YES, dramatically.
+        # DONE: this ~is~ was a bottleneck (slowing down to_dict and every view).
+        # quantity = sum([pl.quantity_of(self) for pl in Place.objects.all()])
         return quantity
 
     @staticmethod

@@ -2,6 +2,16 @@ Changelog starting from v0.5 (2018/09/18)
 
 # v0.x
 
+## 2019-02
+
+### Fixes and enhancements
+
+- the Commands view was too slow and the pages were changed.
+  * we now have an index listing all the suppliers that have some cards to command, and each has its own Command page.
+  * the bottleneck function at the problem origin (computing the total
+    quantity of a given card in all places), also impacting other
+    pages, was dramatically improved (from minutes to 5 seconds).
+
 ## 2018-12
 
 ### New Features
@@ -13,13 +23,6 @@ Return a list to its supplier.
   - it creates an "Out Movement", for history
   - we can see the movement in a card's history
 
-### Fixes and enhancements
-
-- the Commands view was too slow and the pages were changed.
-  * we now have an index listing all the suppliers that have some cards to command, and each has its own Command page.
-  * the bottleneck function (computing the total quantity of a given
-    card in all places) was dramatically improved (from minutes to 5
-    seconds).
 
 ## 2018-11
 
