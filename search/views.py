@@ -881,10 +881,7 @@ def basket_auto_command(request):
     # template = "search/to_command.jade"
     # return render(request, template)
 
-    try:
-        basket = Basket.objects.get(id=AUTO_COMMAND_ID)
-    except Exception as e:
-        pass
+    basket = Basket.objects.get(id=AUTO_COMMAND_ID)
 
     copies = basket.copies.all()
     total_copies = len(copies)
