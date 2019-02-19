@@ -878,23 +878,17 @@ AUTO_COMMAND_ID = 1
 @login_required
 def basket_auto_command(request):
     template = "search/to_command_index.jade"
-    # template = "search/to_command.jade"
-    # return render(request, template)
 
     basket = Basket.objects.get(id=AUTO_COMMAND_ID)
-
     copies = basket.copies.all()
     total_copies = len(copies)
     import toolz
     copies_by_dist = toolz.groupby(lambda it: it.distributor_id, copies)
     dists = []
+    no_dist = []
     for (dist_id, copies) in copies_by_dist.items():
         if dist_id is not None:
             dists.append((Distributor.objects.get(id=dist_id), len(copies)))
-            # dist = Distributor.objects.get(id=dist_id)
-            # dists.append((dist.name, len(copies)))
-
-            # dists.append((dist_id, len(copies)))
         else:
             no_dist = ((_("NO SUPPLIER"), len(copies)))
 
