@@ -433,19 +433,19 @@ def port_info(nb=0):
         for it in sorted(CFG.clients, key=lambda it: it.port):
             fabutils.print_client(it)
 
-def create():
+def create(name=None):
     """Create a new client and call the install task.
 
     - name: name of the client (and of the venv).
     """
-    name = raw_input("Client name ? ")
+    if not name:
+        name = raw_input("Client name ? ")
     exists = fabutils.select_client_cfg(name, quiet=True)
     if exists:
         print("Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port']))
         exit(1)
 
-    venv = raw_input("Venv name ? [{}] ".format(name))
-    venv = venv or name
+    venv = name
     # Get the first available port
     ports = [it.port for it in CFG.clients]
     ports = sorted(ports)
