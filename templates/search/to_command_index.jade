@@ -25,22 +25,30 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-a(href="/commands/ongoing") {% trans "Commands ongoing" %}
+ul.nav.nav-tabs.nav-justified
+    li.active(role="presentation")
+      a(href="#") {% trans "To command" %}
+        span.badge.ng-cloak(title="")   {{ total_copies }}
+    li#ongoing(role="presentation")
+      a(href="/commands/ongoing") {% trans "Commands ongoing" %}  
+        span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
+    li(role="presentation")
+      a(href="/databasesearch/command/", target="_blank") {% trans "Historique" %}
 
-div {% trans "Total copies to command" %}: {{ total_copies }}
 
-// bientot fini ! Liste cliquable et hop.
-// puis page particuliere avec ajout facile...
+div {% trans "Cards with no supplier" %}:
+table.table.table-condensed.table-striped
+  tbody
+    tr
+      td
+        a(href="commands/supplier/0") {{ no_dist.0 }}
+      td {{ no_dist.1 }}
 
 table.table.table-condensed.table-striped
   thead
     th {% trans "Name" %}
     th {% trans "Quantity" %}
   tbody
-    tr
-      td
-        a(href="commands/supplier/0") {{ no_dist.0 }}
-      td {{ no_dist.1 }}
     for it in dists
       tr
         td
