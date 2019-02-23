@@ -685,7 +685,7 @@ class Card(TimeStampedModel):
 
         return ""
 
-    def to_list(self, in_deposits=False):
+    def to_list(self, in_deposits=False, with_quantity=True):
         """
         Return a *dict* of this card's fields.
 
@@ -751,7 +751,6 @@ class Card(TimeStampedModel):
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
-            "quantity": self.quantity,
             "shelf": self.shelf.name if self.shelf else "",
             "title": self.title,
             "threshold": self.threshold,
@@ -760,11 +759,14 @@ class Card(TimeStampedModel):
         if in_deposits:
             res['qty_deposits'] = self.quantity_deposits()
 
+        if with_quantity:
+            res['quantity'] = self.quantity
+
         djcache.set(self.id, res, timeout)
         return res
 
     @staticmethod
-    def obj_to_list(cards, in_deposits=False):
+    def obj_to_list(cards, in_deposits=False, with_quantity=True):
         """Transform a list of Card objects to a python list.
 
         Used to save a search result in the session, which needs a
@@ -776,7 +778,8 @@ class Card(TimeStampedModel):
         Return: list of dicts.
         """
 
-        return [card.to_list(in_deposits=in_deposits) for card in cards]
+        return [card.to_list(in_deposits=in_deposits, with_quantity=with_quantity)
+                for card in cards]
 
     @staticmethod
     def first_cards(nb, to_list=False):
@@ -802,6 +805,7 @@ class Card(TimeStampedModel):
                bought=False,
                in_deposits=False,
                order_by=None,
+               with_quantity=True,
                page=None,
                page_size=10):
         """
@@ -812,6 +816,8 @@ class Card(TimeStampedModel):
         - words: (list of strings) a list of key words or eans/isbns
 
         - card_type_id: id referencing to CardType
+
+        - with_quantity: if False, avoid this calculation (costly).
 
         - to_list: if True, we return a list of dicts, not Card objects.
 
@@ -920,7 +926,8 @@ class Card(TimeStampedModel):
             cards = paginator.object_list
 
         if to_list:
-            cards = Card.obj_to_list(cards, in_deposits=in_deposits)
+            cards = Card.obj_to_list(cards, in_deposits=in_deposits,
+                                     with_quantity=with_quantity)
 
         meta = {
             'msgs': msgs.msgs,

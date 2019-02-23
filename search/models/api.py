@@ -54,6 +54,7 @@ from .utils import is_invalid
 from .utils import is_isbn
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
+from .utils import _is_truthy
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = get_logger()
@@ -190,6 +191,11 @@ def cards(request, **response_kwargs):
     order_by = request.GET.get("order_by")
     # bought = request.GET.get("in_stock")
 
+    # The quantity of a card is costly. It was a bottleneck. Avoid
+    # this calculation if possible.
+    with_quantity = request.GET.get("with_quantity", True)
+    with_quantity = _is_truthy(with_quantity)
+
     # pagination
     page = request.GET.get("page", 1)
     page = to_int(page)
@@ -210,6 +216,7 @@ def cards(request, **response_kwargs):
                              shelf_id=shelf_id,
                              order_by=order_by,
                              in_deposits=True,
+                             with_quantity=with_quantity,
                              page=page,
                              page_size=page_size)
     # XXX: :return the msgs.

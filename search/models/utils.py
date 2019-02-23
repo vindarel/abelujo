@@ -347,6 +347,8 @@ def _is_truthy(txt):
     - txt: string
     """
     # should be automatic !
+    if txt is True:
+        return True
     if txt in ['true', 't', u'true', 'yes']:
         return True
     return False

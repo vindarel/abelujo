@@ -27,10 +27,11 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
     .then (response) !->
         $scope.username = response.data.data.username
 
-    $scope.getCards = (term) ->
+    $scope.getCards = (query) ->
         args = do
-            term: term
+            query: query
             language: $scope.language
+            with_quantity: false
 
         promise = utils.getCards args
         promise.then (res) ->
