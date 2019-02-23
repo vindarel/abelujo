@@ -41,7 +41,7 @@ table.table.table-condensed.table-striped
   tbody
     tr
       td
-        a(href="commands/supplier/0") {{ no_dist.0 }}
+        a(href="/commands/supplier/0") {{ no_dist.0 }}
       td {{ no_dist.1 }}
 
 table.table.table-condensed.table-striped
@@ -52,7 +52,7 @@ table.table.table-condensed.table-striped
     for it in dists
       tr
         td
-          a(href="commands/supplier/{{ it.0.id }}") {{ it.0.name }}
+          a(href="/commands/supplier/{{ it.0.id }}") {{ it.0.name }}
         td {{ it.1 }}
 
 
