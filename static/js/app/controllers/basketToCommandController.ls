@@ -32,7 +32,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.distributor_id = -1
     $scope.cards = []
     $scope.sorted_cards = {}
-    $scope.bodies = {} # dist_id, email body
+    $scope.body = ""  # email body.
 
     $scope.page = 1
     # $scope.page_size = 25  # fixed
@@ -82,31 +82,28 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
 
-    $scope.get_body = (dist_name) ->
+    $scope.get_body = ->
         "Get the list of cards and their quantities for the email body.
         "
-        cards = $scope.sorted_cards[dist_name]
-        |> filter (.threshold > 0)
         body = ""
-        for card in cards
+        for card in $scope.cards
             body += "#{card.threshold} x #{card.title} ( #{card.price} €)" + NEWLINE
 
         total_price = 0
-        total_price = cards
+        total_price = $scope.cards
         |> filter (.threshold > 0)
         |> map ( -> it.price * it.threshold)
         |> sum
 
         discount = 0
-        pub = find (.id == parseInt($scope.sorted_cards[dist_name][0].distributor.id, 10)), $scope.distributors
-        discount = pub.discount
+        discount = $scope.distributor.discount
         total_discount = total_price - total_price * discount / 100
 
         body = body.replace "&", ESPERLUETTE # beware other encoding pbs
         body += NEWLINE + gettext("total price: ") + total_price + " €"
         body += NEWLINE + gettext("total with {}% discount: ").replace("{}", discount) + total_discount + " €"
         body += NEWLINE + gettext("Thank you.")
-        $scope.bodies[dist_name] = body
+        $scope.body = body
         body
 
     $scope.remove_from_selection = (dist_name, index_to_rm) !->

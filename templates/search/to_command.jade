@@ -124,7 +124,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
             .row
              a.my-black-link(href="")
               h4.col-md-6.myanchor(id="")
-               a(href="mailto:{{'supplier.email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'bodies[dist_name]' | ng }}", ng-click="get_body(dist_name)")
+               a(href="mailto:{{'distributor.email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'body' | ng }}", ng-click="get_body()")
                 i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'distributor.email' | ng}} {% trans ' with your desktop mail client' %}")
 
                div.btn-group
