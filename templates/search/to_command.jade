@@ -36,13 +36,6 @@ div(ng-cloak, ng-controller="basketToCommandController")
     )
       {{ 'alert.message' | ng }}
 
-  ul.nav.nav-tabs.nav-justified
-    li.active(role="presentation")
-      a(href="#") {% trans "To command" %}
-    li#ongoing(role="presentation")
-      a(href="/commands/ongoing") {% trans "Commands ongoing" %}  
-        span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
-
   .col-md-12
     h1
       a(href="{{ 'distributor.get_absolute_url' | ng }}") {{ 'distributor.repr' | ng }}
@@ -78,28 +71,36 @@ div(ng-cloak, ng-controller="basketToCommandController")
                   td.text-right  todo {{ 'get_total_price_discounted_excl_vat()' |ng}}  €
 
 
-    .row
-     .col-md-1
-      .btn-group
-       button#export.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-           span.caret
-       ul.dropdown-menu
-           li: a(href="/baskets/1/export?format=txt&report=simplelisting", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
+    div
+     .col-md-6
+            .row
+             a.my-black-link(href="")
+              h4.col-md-6.myanchor(id="")
+               a(href="mailto:{{'distributor.email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'body' | ng }}", ng-click="get_body()")
+                i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'distributor.name' | ng}} {% trans ' with your desktop mail client' %}")
 
-           li: a(href="/baskets/1/export?format=csv&report=simplelisting", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
+               div.btn-group
+                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
+                   span.caret
+                 ul.dropdown-menu
+                   li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
 
-     .col-md-4
-      .btn-group
-         a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
-            i.glyphicon.glyphicon-question-sign
+                   li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
-         button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
-           i.glyphicon.glyphicon-th-list
+               button#ok.btn.btn-success(ng-click="validate_command()",
+                 title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
 
-         button.btn.btn-default(ng-click="start_tour()")
-           i.glyphicon.glyphicon-info-sign
+               .btn-group
+                 a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
+                    i.glyphicon.glyphicon-question-sign
 
-     .col-md-7
+                 button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
+                   i.glyphicon.glyphicon-th-list
+
+                 button.btn.btn-default(ng-click="start_tour()")
+                   i.glyphicon.glyphicon-info-sign
+
+     .col-md-6
        form#addcard
         .col-md-12
           p.input-group
@@ -119,26 +120,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-search
 
-    div
-          span
-            .row
-             a.my-black-link(href="")
-              h4.col-md-6.myanchor(id="")
-               a(href="mailto:{{'distributor.email'|ng}}?subject={% trans 'New command' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'body' | ng }}", ng-click="get_body()")
-                i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'distributor.email' | ng}} {% trans ' with your desktop mail client' %}")
 
-               div.btn-group
-                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
-                   span.caret
-                 ul.dropdown-menu
-                   li: a(href="/baskets/1/export?format=txt&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in txt format." %}') {% trans "Listing" %} - txt
-
-                   li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
-
-               button#ok.btn.btn-success(ng-click="validate_command()",
-                 title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
-
-
+    .row
           table.table.table-condensed.table-striped
               thead
                 th(ng-show="show_images")
