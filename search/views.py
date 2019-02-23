@@ -16,6 +16,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import toolz
 import urllib
 
 import unicodecsv
@@ -880,9 +881,9 @@ def basket_auto_command(request):
     template = "search/to_command_index.jade"
 
     basket = Basket.objects.get(id=AUTO_COMMAND_ID)
+    # We get all cards, and group them by distributor.
     copies = basket.copies.all()
     total_copies = len(copies)
-    import toolz
     copies_by_dist = toolz.groupby(lambda it: it.distributor_id, copies)
     dists = []
     no_dist = []
@@ -892,6 +893,8 @@ def basket_auto_command(request):
         else:
             no_dist = ((_("NO SUPPLIER"), len(copies)))
 
+    # bof
+    dists = sorted(dists, cmp=lambda it, that: it[0].name.lower() < that[0].name.lower())
     if request.method == "GET":
         return render(request, template, {
             'dists': dists,

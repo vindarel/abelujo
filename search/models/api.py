@@ -1688,8 +1688,10 @@ def commands_supplier(request, pk):
     (actually return basket_copy objects, with the basket_qty)
     """
     dist_id = int(pk)
+    # Get all cards from the commands list...
     basket_copies = Basket.auto_command_copies(dist_id=dist_id)
     copies_from_dist = []
+    # ... and filter the ones with the distributor required.
     if dist_id == 0:
         copies_from_dist = [it for it in basket_copies if not it.card.distributor]
     else:
@@ -1741,8 +1743,11 @@ def commands_create(request, **kwargs):
         ids_qties = params.get('ids_qties')
         distributor_id = params.get('distributor_id')
         if ids_qties:
-            ids_qties = ids_qties[0]
-            ids_qties = ids_qties_to_pairs(ids_qties)
+            # The format changed, we don't recall doing anything...
+            # see old utils.ids_qties_to_pairs
+            assert isinstance(ids_qties, list)
+            ids_qties = [it.split(',') for it in ids_qties]
+            # Create the command and remove the cards from the command list.
             cmd, msgs = Command.new_command(ids_qties=ids_qties,
                                             distributor_id=distributor_id)
             msgs.merge(msgs)

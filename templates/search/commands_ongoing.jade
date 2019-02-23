@@ -29,16 +29,6 @@
 div(ng-cloak, ng-controller="CommandsOngoingController")
 
   div
-        uib-alert.ng-cloak(
-          ng-repeat="alert in alerts"
-          type="{{ 'alert.level' | ng }}"
-          close="closeAlert($item)"
-          ng-click="utils.closeAlert($item)"
-        )
-          {{ 'alert.message' | ng }}
-
-
-  div
     uib-alert(
       ng-repeat="alert in alerts"
       type="{{ 'alert.level' | ng }}"
@@ -77,7 +67,7 @@ div(ng-cloak, ng-controller="CommandsOngoingController")
           th.text-right {% trans "Total incl. taxes" %}
 
         tbody
-          tr(ng-repeat="cmd in commands track by cmd.distributor_id", ng-mouseenter="show_icon[$index]=true", ng-mouseleave="show_icon[$index]=false")
+          tr(ng-repeat="cmd in commands", ng-mouseenter="show_icon[$index]=true", ng-mouseleave="show_icon[$index]=false")
             td {{ 'cmd.id' | ng }}
             td
               a(href="/commands/{{ 'cmd.id' | ng }}") {{ 'cmd.distributor_name | uppercase' | ng }}

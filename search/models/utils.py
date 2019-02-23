@@ -316,7 +316,12 @@ def list_from_coma_separated_ints(s):
 
 def ids_qties_to_pairs(string):
     pairs = []
-    if string:
+    # [feb 19] old behaviour: string is like
+    # u'3037, 1;', u'3976, 1;', u'3064, 1;', u'3497, 1;'
+    # For unknown reason, we now get a proper list straight in.
+    # So we removed the ; and we don't need this method anymore.
+    # But is that in all methods using it ? see command_receive_update
+    if isinstance(string, str) and string and ';' in string:
         together = string.split(';')
         pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
         return pairs

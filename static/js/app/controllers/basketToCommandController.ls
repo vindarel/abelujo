@@ -127,7 +127,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
             cards = $scope.cards
             ids_qties = []
             map ->
-                ids_qties.push "#{it.id}, #{it.basket_qty};"
+                ids_qties.push "#{it.id}, #{it.basket_qty}"
             , cards
             $log.info "card ids_qties: " + ids_qties
 
