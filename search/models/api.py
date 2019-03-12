@@ -3,6 +3,7 @@
 
 import httplib
 import json
+import locale
 import logging
 
 from django.core import serializers
@@ -55,6 +56,9 @@ from .utils import is_isbn
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
 from .utils import _is_truthy
+
+# Improve sorting.
+locale.setlocale(locale.LC_ALL, "")
 
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = get_logger()
@@ -861,12 +865,16 @@ def basket(request, pk, action="", card_id="", **kwargs):
         page_size = request.GET.get('page_size', page_size)
         page_size = to_int(page_size)
         copies = basket.basketcopies_set.order_by("card__title").all()
-        nb_results = copies.count()
+        # We must re-sort to get downcase and accents right.
+        copies = sorted(copies, cmp=locale.strcoll, key=lambda it: it.card.title)
+        # but... is É sorted correctly this time ?? It appears after L.
+        nb_results = len(copies)
         to_ret['data_length'] = nb_results
         num_pages = get_page_count(copies)  # better with Django's paginator
         to_ret['page_count'] = num_pages
         if page:
             page = int(page)
+            # see utils.get_page_count
             copies = copies[page_start_index(page): page * page_size]
         ret = [it.to_dict() for it in copies]
         to_ret['data'] = ret
