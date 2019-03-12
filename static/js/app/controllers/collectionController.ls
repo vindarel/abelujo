@@ -117,7 +117,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.validate = !->
         params = do
             query: $scope.query
-            order_by: "-created"
+            order_by: "-created"  # Should be by title for custom searches. Modified python-side.
             in_stock: true
 
         if $scope.publisher

@@ -906,9 +906,20 @@ class Card(TimeStampedModel):
 
         # Sort
         if cards and order_by:
+            # order_by is "-created" by default, for the first display.
+            # It should be alphabetical for a custom search.
+            # (it isn't set on the client)
+            if distributor_id or distributor or publisher_id or publisher or\
+               place or place_id or shelf_id or shelf:
+                order_by = "title"
+
             if not type(cards) == list:
                 # this precaution shouldn't be necessary now (fixed).
                 cards = cards.order_by(order_by)
+
+            # Must we re-sort by locale, to get downcased and
+            # accented letters sorted properly. See comment below and issue #122.
+            cards = sorted(cards, cmp=locale.strcoll, key=lambda it: it.title)
 
         if type(cards) == list:
             # shouldn't be necessary now (fixed).
