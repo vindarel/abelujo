@@ -1699,6 +1699,9 @@ def commands_supplier(request, pk):
     basket_copies = Basket.auto_command_copies(dist_id=dist_id)
     copies_from_dist = []
     # ... and filter the ones with the distributor required.
+    page = int(request.GET.get('page', 1))
+    page_size = int(request.GET.get('page_size', 100))
+
     if dist_id == 0:
         copies_from_dist = [it for it in basket_copies if not it.card.distributor]
     else:
@@ -1716,12 +1719,24 @@ def commands_supplier(request, pk):
     # total_price_excl_vat
     # total_price_discounted_excl_vat
     # import ipdb; ipdb.set_trace()
-    copies_from_dist = [it.to_dict() for it in copies_from_dist]
+
+    # Calling to_dict() is the costly part.
+    # page starts at 1.
+    if page == 0:
+        page = 1
+    beg = (page - 1) * page_size
+    end = page * page_size
+    nb_results = len(copies_from_dist)
+    num_pages = get_page_count(copies_from_dist, size=page_size)
+    # import ipdb; ipdb.set_trace()
+    copies_from_dist = [it.to_dict() for it in copies_from_dist[beg:end]]
     # import ipdb; ipdb.set_trace()
     to_ret = {
         'status': ALERT_SUCCESS,
         'data': copies_from_dist,
         'totals': totals,
+        'num_pages': num_pages,
+        'nb_results': nb_results,
     }
     return JsonResponse(to_ret)
 

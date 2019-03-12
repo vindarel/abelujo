@@ -121,6 +121,23 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 i.glyphicon.glyphicon-search
 
 
+
+    .row
+           .btn-group
+              span.text-right(aria-label="page navigation")
+                   ul.pagination(ng-show="true", ng-cloak)
+                     li.page-item
+                       a.page-link(ng-click="firstPage()")  &laquo;
+                     li.page-item
+                       a.page-link(ng-click="previousPage()") <
+                     li.page-item
+                       a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+                     li.page-item
+                       a.page-link(ng-click="nextPage()") >
+                     li.page-item
+                       a.page-link(ng-click="lastPage()") &raquo;
+
+
     .row
           table.table.table-condensed.table-striped
               thead
@@ -138,7 +155,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     .col-md-6(ng-show="show_images")
                       img.myImg(ng-show="card.cover", src="{{ 'card.cover' | ng }}")
 
-                  td.col-md-6 {{ '$index + 1' | ng }} -
+                  td.col-md-6
                     span: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
                   td.col-md-1 {{ 'card.pubs_repr' | ng }}
@@ -152,24 +169,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection(dist_name, $index)", style="padding-left: 1em;", title='{% trans "Remove from list" %}')
 
 
-
-    //.row
-           .btn-group
-              span.text-right(aria-label="page navigation")
-                   ul.pagination(ng-show="true", ng-cloak)
-                     li.page-item
-                       a.page-link(ng-click="firstPage()")  &laquo;
-                     li.page-item
-                       a.page-link(ng-click="previousPage()") <
-                     li.page-item
-                       a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_copies_no_dist' | ng }})
-                     li.page-item
-                       a.page-link(ng-click="nextPage()") >
-                     li.page-item
-                       a.page-link(ng-click="lastPage()") &raquo;
-
-
-    // .row
+    .row
            .btn-group
               span.text-right(aria-label="page navigation")
                    ul.pagination(ng-show="true", ng-cloak)

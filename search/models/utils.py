@@ -366,8 +366,9 @@ def page_start_index(page, size=PAGE_SIZE):
 
 
 def get_page_count(entries, size=PAGE_SIZE):
-    page_count = len(entries) / size
-    if (PAGE_SIZE * page_count) > len(entries):
+    length = len(entries)
+    page_count = length / size
+    if (size * page_count) < length:
         page_count += 1
     return page_count or 1
 

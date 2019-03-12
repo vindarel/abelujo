@@ -38,7 +38,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     # $scope.page_size = 25  # fixed
     $scope.nb_results = 0
     $scope.page_max = 1
-    $scope.page_size = 25  # also used in template.
+    $scope.page_size = 100  # also used in template.
     $scope.meta = do
         num_pages: null
         nb_results: null
@@ -49,6 +49,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.distributor_id = utils.url_id $window.location.pathname
     $log.info $scope.distributor_id
 
+    # Get the distributor.
     if $scope.distributor_id != "0"
         $http.get "/api/distributors/#{$scope.distributor_id}"
         .then (response) !->
@@ -61,14 +62,24 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
             repr: "No supplier"
             get_absolute_url: ""
 
-
     # Get the cards to command of this supplier.
     # supplier = distributor. If you want to use a publisher, set it as a distributor.
-    $http.get "/api/commands/supplier/#{$scope.distributor_id}/copies"
-    .then (response) !->
-        $scope.cards = response.data.data
-        $scope.totals = response.data.totals
-        $log.info "cards: ", $scope.cards
+    getCards = !->
+        params = do
+            page: $scope.page
+            page_size: $scope.page_size
+            dist_id: -1
+        $http.get "/api/commands/supplier/#{$scope.distributor_id}/copies", do
+            params: params
+        .then (response) !->
+            $scope.cards = response.data.data
+            $scope.totals = response.data.totals
+            $scope.meta.num_pages = response.data.num_pages
+            $scope.meta.nb_results = response.data.nb_results
+            $log.info "cards: ", $scope.cards
+            $log.info "-- meta: ", $scope.meta
+
+    getCards!
 
 
     $scope.save_quantity = (index) !->
@@ -180,33 +191,23 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     #########################################
     ## Pagination
     #########################################
-    getNoDist = !->
-        params = do
-            page: $scope.page
-            page_size: $scope.page_size
-            dist_id: -1
-        $http.get "/api/baskets/#{AUTO_COMMAND_ID}/copies", do
-            params: params
-        .then (response) !->
-            $scope.cards_no_dist = response.data.copies_no_dist
-
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages
             $scope.page += 1
-            getNoDist!
+            getCards!
 
     $scope.lastPage = !->
         $scope.page = $scope.meta.num_pages
-        getNoDist!
+        getCards!
 
     $scope.previousPage = !->
         if $scope.page > 1
             $scope.page -= 1
-            getNoDist!
+            getCards!
 
     $scope.firstPage =!->
         $scope.page = 1
-        getNoDist!
+        getCards!
 
     ##############################
     # Keyboard shortcuts (hotkeys)
