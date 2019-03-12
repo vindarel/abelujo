@@ -23,6 +23,7 @@ You can produce a graph of the db with django_extension's
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
 import datetime
+import locale
 import json
 import os
 import tempfile
@@ -90,6 +91,8 @@ THRESHOLD_DEFAULT = 1
 
 MSG_INTERNAL_ERROR = _(u"An internal error occured, we have been notified.")
 
+# Improve sorting.
+locale.setlocale(locale.LC_ALL, "")
 
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200)
@@ -1928,6 +1931,13 @@ class Basket(models.Model):
         except Exception as e:
             log.error(e)
             return []
+
+        # Here accented letters are not sorted correctly:
+        # e ... z ... é
+        # I'm afraid we have to resort in Python here, even though there is an ICU SQLite extension.
+        # So, sort with the locale. It also sorts correctly regarding the case:
+        # E..É..d..F
+        copies_qties = sorted(copies_qties, cmp=locale.strcoll, key=lambda it: it.card.title)
 
         return copies_qties
 
