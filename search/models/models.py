@@ -1422,6 +1422,10 @@ class Card(TimeStampedModel):
         except Exception as e:
             log.error(u'Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
 
+        if card.get('price') is not None:
+            card_obj.price = float(card.get('price'))
+            card_obj.save()
+
         card = card_obj
         if to_list:
             card = card_obj.to_dict()
