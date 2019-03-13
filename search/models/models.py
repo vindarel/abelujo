@@ -1209,7 +1209,7 @@ class Card(TimeStampedModel):
                             format(type(card)))
 
         msgs = Messages()
-        msg_success = _("The card was created successfully.")
+        msg_success = _("Card saved.") # both for creation and edit: simple message.
         # msg_exists = _("This card already exists.")
 
         # Unknown years is okay
