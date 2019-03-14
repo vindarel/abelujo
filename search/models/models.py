@@ -658,9 +658,6 @@ class Card(TimeStampedModel):
             return True
         return False
 
-    def to_dict(self):
-        return self.to_list()
-
     @property
     def pubs_repr(self):
         """Coma-separated str representation of this card's publishers.
@@ -688,6 +685,9 @@ class Card(TimeStampedModel):
             return self.shelf.name
 
         return ""
+
+    def to_dict(self):
+        return self.to_list()
 
     def to_list(self, in_deposits=False, with_quantity=True):
         """
@@ -736,12 +736,16 @@ class Card(TimeStampedModel):
             "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
             "data_source": self.data_source,
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
-            "details_url": self.details_url,
+
+            # Card link/url:
+            "details_url": self.details_url,  # external (on data source)
+            "get_absolute_url": get_absolute_url,  # internal
+            "url": get_absolute_url or details_url,
+
             "distributor_repr": dist_repr,
             "dist_repr": dist_repr,
             "distributor": dist,
             "fmt": self.fmt,
-            "get_absolute_url": get_absolute_url,
             "img": self.img,
             "cover": self.cover,  # either the url, either the saved file on file system.
             "isbn": isbn,
