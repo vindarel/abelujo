@@ -194,6 +194,7 @@ class Distributor(TimeStampedModel):
             for card in basket.copies.all():
                 if card.distributor != self:
                     card.distributor = self
+                    # warning: performance
                     card.save()
 
 
@@ -2463,7 +2464,7 @@ class Deposit(TimeStampedModel):
     supplier. So a deposit state stores the up to date information.
 
     There are two important classes to work with: Deposit and
-    DepositState. Each take count of variables for each Card in
+    DepositState. Each takes count of variables for each Card in
     intermediate classes ("...Copies").
 
     To create a Deposit:
@@ -3432,7 +3433,7 @@ class Alert(models.Model):
 
 class InventoryCopiesBase(models.Model):
     """The list of cards of an inventory, plus other information:
-    - the quantity of them
+    - the quantity of them in this inventory.
     """
     card = models.ForeignKey(Card)
     #: How many copies of it did we find in our stock ?
@@ -3658,6 +3659,16 @@ class InventoryBase(TimeStampedModel):
 
         return inv_copies.quantity
 
+    def update_copies(self, cards_qties):
+        """
+        Update the cards of this inventory.
+        Add missing ones and update the quantities
+
+        - cards_qties: list of BasketCopies, with a card and a quantity field.
+        """
+        for it in cards_qties:
+            self.add_copy(it.card, nb=it.quantity, add=False)
+
     def remove_card(self, card_id):
         """
         - return: status (bool)
@@ -3807,7 +3818,11 @@ class InventoryBase(TimeStampedModel):
         """Apply this inventory to the stock. Changes each card's quantity of
         the needed place and closes the inventory.
 
+        This user action needs the asynchronous task queue (see make
+        taskqueue). It can be slow with non-small card lists.
+
         Return: a tuple status (bool), alerts (list of dicts with a level and a message).
+
         """
         if self.applied or (self.closed is not None and self.closed):
             return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]
@@ -3823,11 +3838,20 @@ class InventoryBase(TimeStampedModel):
             place_or_deposit = Place.objects.get(id=1)  # default place. That could be improved.
 
         # Shall we set the quantities of these cards in the stock or sum them to the existing ?
+        # By default, we set them.
         add_qty = False
-        # A basket didn't touch the stock, so we want to add this basket to it.
+        # But a basket didn't touch the stock, so we want to add this basket to it.
         if hasattr(self, "basket") and self.basket:
             add_qty = True
 
+        # In addition, if we work from a basket and it has an associated distributor,
+        # we must set the cards' distributor to it.
+        # XXX: check that there is no card with another distributor ?
+        if hasattr(self, "basket") and self.basket and self.basket.distributor:
+            self.basket.distributor.set_distributor(basket=self.basket)
+
+
+        # Now we apply to the stock:
         try:
             for card_qty in self.copies_set.all():
                 place_or_deposit.add_copy(card_qty.card, nb=card_qty.quantity, add=add_qty)

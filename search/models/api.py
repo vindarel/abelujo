@@ -1265,7 +1265,9 @@ def baskets_delete(request, pk, **kw):
 
 
 def baskets_inventory_get_or_create(request, **response_kwargs):
-    """Get the current inventory id and its copies, or create one for the basket pk (in url).
+    """
+    Get and update the current inventory id and its copies, or create
+    one for the basket pk (in url).
     """
     data = {}
     msgs = []
@@ -1273,18 +1275,20 @@ def baskets_inventory_get_or_create(request, **response_kwargs):
     # Get or post ? In most cases it's only a get, and we want to create one if needed. GET prefered.
     if request.method == 'POST' or request.method == 'GET':
         pk = response_kwargs.pop('pk')
+        basket = None
         try:
+            basket = Basket.objects.get(id=pk)
             existing = Inventory.objects.filter(basket__id=pk)
             if existing:
                 inv = existing[0]
-                cards = inv.copies.all()
-                cards = [it.to_dict() for it in cards]
-                data['cards'] = cards
             else:
-                basket = Basket.objects.get(id=pk)
                 inv = Inventory(basket=basket)
                 inv.save()
 
+            # Update the cards and quantities of the inventory.
+            inv.update_copies(basket.basketcopies_set.all())
+
+            # The client does a redirection to this inventory.
             data['inv_id'] = inv.id
 
         except Exception as e:
