@@ -914,8 +914,8 @@ class Card(TimeStampedModel):
             # order_by is "-created" by default, for the first display.
             # It should be alphabetical for a custom search.
             # (it isn't set on the client)
-            if distributor_id or distributor or publisher_id or publisher or\
-               place or place_id or shelf_id or shelf:
+            if distributor_id or distributor or publisher_id or\
+               place_id or shelf_id:
                 order_by = "title"
 
             if not type(cards) == list:
@@ -1741,7 +1741,6 @@ class Place (models.Model):
                   annotate(cost=ExpressionWrapper(F('nb') * F('card__price'),
                                                   output_field=FloatField()))
             cost = sum([it.cost for it in res])
-            log.info(u"--- cost of place {}: {}".format(self.name, cost))
             return cost
         except Exception as e:
             log.error(u"Error getting cost of place {}: {}".format(self.name, e))
