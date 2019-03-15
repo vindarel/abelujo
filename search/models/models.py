@@ -922,9 +922,10 @@ class Card(TimeStampedModel):
                 # this precaution shouldn't be necessary now (fixed).
                 cards = cards.order_by(order_by)
 
-            # Must we re-sort by locale, to get downcased and
+            # We must re-sort by locale, to get downcased and
             # accented letters sorted properly. See comment below and issue #122.
-            cards = sorted(cards, cmp=locale.strcoll, key=lambda it: it.title)
+            if order_by != "-created":
+                cards = sorted(cards, cmp=locale.strcoll, key=lambda it: it.title)
 
         if type(cards) == list:
             # shouldn't be necessary now (fixed).
