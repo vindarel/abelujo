@@ -154,6 +154,9 @@ div#abelujo
           td {{ object.alert_set.count }}
 
         tr
+          td {% trans "Card creation" %}
+          td {{ object.created }}
+        tr
           td {% trans "Last entry" %}
           td {{ last_entry.created }}
             //- if not last_entry
