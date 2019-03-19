@@ -3704,7 +3704,11 @@ class InventoryBase(TimeStampedModel):
             id, qty = pair
             try:
                 card = Card.objects.get(id=id)
-                self.add_copy(card, nb=int(qty), add=add)
+                if qty in ["null", u"null"]:
+                    qty = 0
+                else:
+                    qty = int(qty)
+                self.add_copy(card, nb=qty, add=add)
             except Exception as e:
                 log.error(e)
                 msgs.add_error(_("Internal error, sorry !"))
