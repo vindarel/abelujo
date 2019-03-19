@@ -99,7 +99,7 @@ div#abelujo
             td {% trans "Supplier" %}
             td
               for dist in object.get_distributor
-                  div: a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.name }}
+                  div: a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.repr }}
           tr
               td {% trans "Shelf" %}: 
               td

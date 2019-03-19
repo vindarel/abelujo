@@ -149,6 +149,9 @@ class Distributor(TimeStampedModel):
         """
         return u"{} ({} %)".format(self.name, self.discount)
 
+    def repr(self):
+        return self.__repr__()
+
     def to_list(self):
         return {
             "id": self.id,
