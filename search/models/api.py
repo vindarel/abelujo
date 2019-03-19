@@ -1221,6 +1221,8 @@ def baskets_return(request, pk, **kw):
             'status': ALERT_SUCCESS,
             'alerts': []
         }
+        msgs = Messages()
+
         try:
             basket = Basket.objects.get(id=pk)
         except Exception as e:
