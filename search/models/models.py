@@ -3704,7 +3704,8 @@ class InventoryBase(TimeStampedModel):
             id, qty = pair
             try:
                 card = Card.objects.get(id=id)
-                if qty in ["null", u"null"]:
+                if qty in ["null", u"null", "undefined", u"undefined"]:
+                    log.warning("updating inventory: got qty of null or undefined. {}".format(pairs))
                     qty = 0
                 else:
                     qty = int(qty)
