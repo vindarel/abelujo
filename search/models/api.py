@@ -1545,6 +1545,7 @@ def inventories_update(request, **kwargs):
                 pairs = [(card['id'], 1) for __, card in cards.iteritems()]
 
             status, _msgs = inv.add_pairs(pairs)
+            msgs.append(_msgs)
 
             to_ret['status'] = status
             nb_cards = inv.nb_cards()

@@ -3717,7 +3717,7 @@ class InventoryBase(TimeStampedModel):
                 log.error(e)
                 msgs.add_error(_("Internal error, sorry !"))
                 status = "error"
-                return None
+                return None, msgs.msgs
 
             if hasattr(self, "shelf") and self.shelf:
                 card.shelf = self.shelf
