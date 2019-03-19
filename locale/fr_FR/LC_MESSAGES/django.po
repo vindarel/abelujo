@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-19 11:33+0000\n"
-"PO-Revision-Date: 2019-03-19 12:35+0100\n"
+"PO-Revision-Date: 2019-03-19 13:01+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -2093,10 +2093,8 @@ msgstr ""
 "confirmer."
 
 #: templates/search/to_command_index.jade:39
-#, fuzzy
-#| msgid "Create a supplier"
 msgid "Cards with no supplier"
-msgstr "Créer un fournisseur"
+msgstr "Notices sans fournisseur"
 
 #~ msgid "The card was created successfully."
 #~ msgstr "La notice a été créée avec succès."
