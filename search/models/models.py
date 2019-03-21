@@ -3541,17 +3541,20 @@ class InventoryBase(TimeStampedModel):
 
         return roundfloat(progress)
 
-    def value(self):
+    def value(self, discount=False):
         """Total value. Sum of public prices of all books in this inventory.
 
         Return: a float, rounded to two decimals.
         """
-        def card_price(card):
+        def card_price(card, discount=False):
             if card and card.price is not None:
-                return card.price
+                if discount:
+                    return card.price_discounted
+                else:
+                    return card.price
             return 0
 
-        ret = sum([card_price(it.card) * it.quantity for it in
+        ret = sum([card_price(it.card, discount=discount) * it.quantity for it in
                    self.inventorycopies_set.select_related('card').all()])
         ret = roundfloat(ret)
         return ret
@@ -3585,12 +3588,14 @@ class InventoryBase(TimeStampedModel):
         - list of copies already inventoried and their quantities,
         - list of copies not found te be searched for (and their quantities)
         - total value of the inventory
+        - total value with discount
         """
         all_copies = self.copies_set.order_by("card__title").all()
         nb_cards = all_copies.count()
         nb_copies = self.nb_copies()
 
         total_value = self.value()
+        total_value_with_discount = self.value(discount=True)
 
         paginator = Paginator(all_copies, page_size)
         if page is not None:
@@ -3635,6 +3640,7 @@ class InventoryBase(TimeStampedModel):
             "nb_copies": nb_copies,
             "total_missing": missing,
             "total_value": total_value,
+            "total_value_with_discount": total_value_with_discount,
             "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,

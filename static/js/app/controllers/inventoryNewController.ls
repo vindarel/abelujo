@@ -48,6 +48,8 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.cards_to_show = []
     # Total value
     $scope.total_value = 0
+    $scope.total_value_with_discount = 0
+
     # Nb of cards and copies
     $scope.nb_cards = 0
     $scope.nb_copies = 0
@@ -161,6 +163,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.cur_inv = $scope.state.inv_name
 
             $scope.total_value = response.data.data.total_value
+            $scope.total_value_with_discount = response.data.data.total_value_with_discount
 
             return
 

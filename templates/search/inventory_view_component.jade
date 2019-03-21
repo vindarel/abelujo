@@ -55,6 +55,9 @@ div(ng-controller=controller)
                 tr
                   td {% trans "Total value" %}
                   td {{ 'total_value' | ng }} €
+                tr
+                  td {% trans "with discount" %}
+                  td {{ 'total_value_with_discount' | ng }} €
 
     .row
        .row
@@ -126,6 +129,7 @@ div(ng-controller=controller)
           th {% trans "Title" %}
           th {% trans "Author" %}
           th {% trans "Price" %}
+          th {% trans "with discount" %}
           th {% trans "Quantity" %}
           th
 
@@ -142,6 +146,8 @@ div(ng-controller=controller)
           i.glyphicon.glyphicon-exclamation-s
 
          td.col-md-1 {{ 'card.price' | ng }}  €
+
+         td.col-md-1 {{ 'card.price_discounted' | ng }}  €
 
          td.col-md-2
             p.input-group
