@@ -121,9 +121,13 @@ class Author(TimeStampedModel):
 
 
 class Distributor(TimeStampedModel):
-    """The entity that distributes the copies (a publisher can be a
-    distributor).
+    """The entity that distributes the copies.
+
+    If you want a mark a publisher as a distributor… just create a
+    distributor with the same name.
     """
+    # comment above: we have once considered that publishers can be distributors.
+    # They should not. Its complicates everything.
 
     name = models.CharField(max_length=CHAR_LENGTH)
     #: The discount (in %). When we pay the distributor we keep the amount of
