@@ -45,7 +45,10 @@ head
           if covers
             th
           th {% trans "Title" %}
+          th {% trans "Authors" %}
+          th {% trans "ISBN" %}
           th {% trans "Price" %}
+          th {% trans "with discount" %}
           th {{ quantity_header }}
 
       tbody
@@ -56,10 +59,16 @@ head
             if covers
               // quickfix: cover is the remote url, not the local file.
               td: img(src="{{ card_qty.0.cover }}")
-            td {{ forloop.counter }} - {{ card_qty.0.title }}
+            td {{ forloop.counter }}- {{ card_qty.0.title }}
+            td {{ card_qty.0.authors_repr }}
+            td {{ card_qty.0.isbn }} -
             td(style='{text-align: center;}')
               if card_qty.0.price
                 {{ card_qty.0.price }} €
+            td(style='{text-align: center;}')
+              if card_qty.0.price_discounted
+                {{ card_qty.0.price_discounted }} €
+
             td(style='{text-align: center;}') {{ card_qty.1 }}
         endfor
 
@@ -71,7 +80,11 @@ head
             td
           td
             b {% trans "Total" %}
+          td
+          td
           td(style='{text-align: center;}')
             b {{ total }} €
+          td(style='{text-align: center;}')
+            b {{ total_with_discount }} €
           td(style='{text-align: center;}')
             b {{ total_qty }}

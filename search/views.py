@@ -979,7 +979,9 @@ def basket_export(request, pk):
 
 def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None,
                      covers=False,
-                     barcodes=False):
+                     barcodes=False,
+                     total=None,
+                     total_with_discount=None):
     """Build the response with the right data (a bill ? just a list ?).
 
     - copies_set: list of objects, like basketcopies_set: has attributes card and quantity.
@@ -1083,7 +1085,10 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
             cards_qties = rows
 
-        total = sum(map(lambda it: it[1] * it[0].price if it[0].price else 0, cards_qties))
+        if total is None:
+            total = sum(map(lambda it: it[1] * it[0].price if it[0].price else 0, cards_qties))
+        if total_with_discount is None:
+            total_with_discount = -1  # unemplemented. Inventories should compute it before.
         total_qty = sum([it[1] for it in cards_qties])
 
         # barcode
@@ -1109,6 +1114,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         sourceHtml = template.render({'cards_qties': cards_qties,
                                       'list_name': name,
                                       'total': total,
+                                      'total_with_discount': total_with_discount,
                                       'total_qty': total_qty,
                                       'barcode': barcodes,
                                       'covers': covers,
@@ -1207,6 +1213,7 @@ def history_sells_exports(request, **kwargs):
 
 @login_required
 def inventory_export(request, pk):
+    total = total_with_discount = 0
     try:
         inv = Inventory.objects.get(id=pk)
     except Exception as e:
@@ -1218,12 +1225,16 @@ def inventory_export(request, pk):
     format = request.GET.get('format')
     barcodes = _is_truthy(request.GET.get('barcodes'))
     covers = _is_truthy(request.GET.get('covers'))
+    total = inv.value()
+    total_with_discount = inv.value(discount=True)
 
     response = _export_response(copies_set, report=report, format=format,
                                 inv=inv,
                                 barcodes=barcodes,
                                 covers=covers,
-                                name=inv.name)
+                                name=inv.name,
+                                total=total,
+                                total_with_discount=total_with_discount,)
 
     return response
 
