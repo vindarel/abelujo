@@ -728,7 +728,7 @@ class Card(TimeStampedModel):
         elif self.ean is not None:
             isbn = self.ean
 
-        dist_repr = self.distributor_repr()
+        dist_repr = self.distributor_repr
         if self.distributor:
             dist_repr = self.distributor.to_list()['name']
             dist = self.distributor.to_list()
