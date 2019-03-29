@@ -693,6 +693,12 @@ class Card(TimeStampedModel):
 
         return ""
 
+    @property
+    def distributor_repr(self):
+        if self.distributor:
+            return self.distributor.to_list()['name']
+        return ""
+
     def to_dict(self):
         return self.to_list()
 
@@ -722,6 +728,7 @@ class Card(TimeStampedModel):
         elif self.ean is not None:
             isbn = self.ean
 
+        dist_repr = self.distributor_repr()
         if self.distributor:
             dist_repr = self.distributor.to_list()['name']
             dist = self.distributor.to_list()
