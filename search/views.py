@@ -1022,13 +1022,19 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     elif report == 'listing':
         # inv_cards = inv.inventorycopies_set.all()
-        header = (_("Title"), _("Authors"), _("Publishers"), _("Shelf"), _("Price"), _("Quantity"))
+        header = (_("Title"), _("Authors"), _("Publishers"), _("Supplier"),
+                  _("Shelf"),
+                  _("Price"),
+                  _("with discount"),
+                  _("Quantity"))
         rows = [
             (ic.card.title,
              ic.card.authors_repr,
              ic.card.pubs_repr,
+             ic.card.distributor_repr,
              ic.card.shelf.name if ic.card.shelf else "",
              ic.card.price,
+             ic.card.price_discounted,
              ic.quantity)
             for ic in copies_set]
         rows = sorted(rows)
