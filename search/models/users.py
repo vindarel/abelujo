@@ -46,6 +46,12 @@ class Contact(models.Model):
 
     comment = models.TextField(blank=True, null=True)
 
+
+class Client(models.Model):
+    name = models.CharField(max_length=CHAR_LENGTH)
+    firstname = models.CharField(max_length=CHAR_LENGTH)
+    contact = models.ForeignKey("Contact", null=True, blank=True)
+
 class BillCopies(models.Model):
     card = models.ForeignKey("search.Card")
     bill = models.ForeignKey("Bill")
