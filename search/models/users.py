@@ -24,23 +24,18 @@ from search.models.utils import get_logger
 log = get_logger()
 
 class Address(models.Model):
-    """Contact information.
+    """A contact information (client, supplier, etc).
 
     Distinguish the informations between a physical or a moral person ?
     """
     class Meta:
-        ordering = ("name",)
+        ordering = ("city",)
 
-    name = models.CharField(max_length=CHAR_LENGTH)
-    surname = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    enterprise = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     responsability = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     cellphone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    tel_private = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    tel_office = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    telephone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     email = models.EmailField(blank=True, null=True)
-    email_pro = models.EmailField(blank=True, null=True)
 
     address1 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     address2 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
