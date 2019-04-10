@@ -113,8 +113,8 @@ class OutMovement(models.Model):
     publisher = models.ForeignKey("search.Publisher", blank=True, null=True)
     distributor = models.ForeignKey("search.Distributor", blank=True, null=True)
     #: In case of a loss, nothing.
-    #: In case of a gift, the recipient (his address):
-    recipient = models.ForeignKey("search.Address", blank=True, null=True)
+    #: In case of a gift, the recipient:
+    recipient = models.ForeignKey("search.Contact", blank=True, null=True)
 
     # def __unicode__(self):
     # return "id {}, type {}".format(self.pk,

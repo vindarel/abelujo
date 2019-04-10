@@ -23,7 +23,7 @@ from search.models.utils import get_logger
 
 log = get_logger()
 
-class Address(models.Model):
+class Contact(models.Model):
     """A contact information (client, supplier, etc).
 
     Distinguish the informations between a physical or a moral person ?
