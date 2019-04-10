@@ -71,7 +71,7 @@ install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev 
 # Install npm packages
 npm-system:
 	@echo "Installing gulp and brunch globally... (needs root)"
-	@sudo npm install -g gulp brunch
+	@sudo npm install -g gulp@3 brunch
 
 npm-system-nosudo:
 	@echo "Installing gulp and brunch globally... (needs root)"

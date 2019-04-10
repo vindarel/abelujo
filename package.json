@@ -30,7 +30,7 @@
         "c3": "latest",
         "datatables": "1.10",
         "element-ui": "^2.0",
-        "gulp": "latest",
+        "gulp": "^3",
         "gulp-bg": "latest",
         "gulp-clean-css": "latest",
         "gulp-concat": "latest",
