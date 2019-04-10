@@ -56,7 +56,7 @@ dbback:
 
 install-nodejs:
 	@echo "Installing nodejs from a new deb source..."
-	curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	sudo make install-yarn
 
