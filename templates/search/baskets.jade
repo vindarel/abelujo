@@ -166,6 +166,7 @@ div(ng-cloak, ng-controller="basketsController")
          span.caret
        th.mouse-pointer(ng-click="sort_by('distributor')") {% trans "Supplier" %}
          span.caret
+       th {% trans "Created" %}
        th.mouse-pointer(ng-click="sort_by('quantity')") {% trans "In stock" %}
          span.caret
        th.mouse-pointer.text-right(ng-click="sort_by('price')") {% trans "Price" %}
@@ -180,6 +181,7 @@ div(ng-cloak, ng-controller="basketsController")
             .col-md-6
 
          td {% trans "Total" %}
+         td
          td
          td
          td
@@ -202,6 +204,7 @@ div(ng-cloak, ng-controller="basketsController")
          td {{ 'it.pubs_repr' | ng }}
          td {{ 'it.dist_repr' | ng }}
 
+         td {{ 'it.created' | ng }}
          td.text-right {{ 'it.quantity' | ng}}
          td.text-right {{ 'it.price | number:2' | ng }} €
          td
