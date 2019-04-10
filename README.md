@@ -41,7 +41,7 @@ Feedback welcome at vindarel at mailz dot org.
 Installation
 ============
 
-Instructions for Debian 8.
+Instructions for Debian 9.
 
 [![build status](https://gitlab.com/vindarel/abelujo/badges/master/build.svg)](https://gitlab.com/vindarel/abelujo/commits/master)
 

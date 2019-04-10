@@ -58,15 +58,6 @@ install-nodejs:
 	@echo "Installing nodejs from a new deb source..."
 	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
 	sudo apt-get install -y nodejs
-	sudo make install-yarn
-
-install-yarn:
-	@echo "Installing the yarn package manager..."
-	# curl -o- -L https://yarnpkg.com/install.sh | bash  # fails in gitlab CI, seems lacking in path "yarn installed but doesn't seem to be working".
-	# export PATH="$HOME/.yarn/bin:$PATH"
-	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-	echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-	apt-get update && apt-get install -y yarn
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
@@ -84,24 +75,24 @@ npm-system:
 
 npm-system-nosudo:
 	@echo "Installing gulp and brunch globally... (needs root)"
-	yarn global add gulp brunch
+	npm global install gulp brunch
 
 npm:
 	@echo "Installing Node packages..."
-	yarn install --production # don't install devDependencies
+	npm install --production # don't install devDependencies
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
 	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
 	@echo "sudo apt-get install nodejs-legacy"
 
 npm-dev:
-	yarn install # not in production, install also devDependencies
+	npm install # not in production, install also devDependencies
 
 set-prod:
 	touch PROD.txt
 
 stash:
-	git stash save "update (stashing yarn)"
+	git stash save "update (probably stashing npm lock)"
 
 update: stash
 	make set-prod
@@ -110,7 +101,7 @@ update: stash
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	make pip
 	make pip-submodule
-	make npm  # actually now yarn. Wishing to fix long and undpredictable builds.
+	make npm
 	gulp
 	make collectstatic
 	make translation-compile 	# gunicorn needs a restart
@@ -294,8 +285,8 @@ uninstall-js:
 	@echo "##### Removing local JS libraries..."
 	rm -rf node_modules/
 	@echo "  done."
-	@echo "##### Uninstalling nodejs and yarn..."
-	sudo apt-get remove nodejs yarn
+	@echo "##### Uninstalling nodejs..."
+	sudo apt-get remove nodejs
 
 uninstall-pip:
 	@echo "This depends on how you created the python virtual env."
