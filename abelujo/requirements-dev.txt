@@ -1,11 +1,10 @@
 ### packages only needed for local development, not used on production.
 
-### Django extensions
+ipdb
+ipython
 
 ### testing
 mock==1.0.1
-ipdb
-ptpython                # gives ptipython with command shell_plus, most awesome repl.
 coverage==3.7.1
 nose==1.3.1             # friendly test runner.
 factory_boy             # quick and easy test fixtures.
