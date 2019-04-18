@@ -452,6 +452,9 @@ def create(name=None):
     possible_ports = range(8000, 8000 + len(CFG.clients) + 1)
     free_port = list(set(possible_ports) - set(ports))[0]
     port = raw_input("Port ? [{}] ".format(free_port))
+    if int(port) in ports:
+        print("Error: this port is taken.")
+        exit(1)
     port = port or free_port
 
     # Write into the config file
