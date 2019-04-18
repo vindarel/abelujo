@@ -1351,3 +1351,19 @@ def command_receive_export(request, pk):
                                 name=inv_name)
 
     return response
+
+@login_required
+def command_card(request, pk):
+    """
+    Command the card of the given id, choose a client (optional).
+    """
+    template = "search/card_command.jade"
+
+    if request.method == 'GET':
+        card = None
+        try:
+            card = Card.objects.get(id=int(pk))
+        except ObjectDoesNotExist:
+            pass
+        if card:
+            return render(request, template)

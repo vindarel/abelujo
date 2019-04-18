@@ -175,8 +175,29 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         , (response) ->
             ... # error
 
+    #####################################
+    ## Create and command for client   ##
+    #####################################
+    $scope.create_and_command_client = (card) !->
+        $log.info "card: ", card
+        $log.info "isbn: ", card.isbn
+        params = do
+            card: card
+        $http.post "/api/cards/create", params
+        .then (response) !->
+            card_id = response.data.card_id
+            # Card created in DB. Now choose the client to command for.
+            if card_id
+                $window.location.href = "/#{$scope.language}/command/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.id}"
+            else
+                $scope.alerts.push do
+                    level: 'danger'
+                    message: gettext "Server error… sorry !"
+
+        , (response) ->
+            ... # error
     ########################################################
-    # Modal add to Command
+    # Add to Command
     ########################################################
     $scope.add_to_command = (size) !->
         to_add = Obj.filter (.selected == true), $scope.cards

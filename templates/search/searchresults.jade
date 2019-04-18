@@ -138,7 +138,10 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
             div {{ 'pub' | ng }}
         td: div {{ 'card.price | currency'|ng }}
         td
-          button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
+          div.row
+            button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
+          div.row
+            button.btn(ng-click="create_and_command_client(card)", title='{% trans "Command for a client" %}') {% trans "Command…" %}
 
  nav(style="float: right;", ng-show="cards.length != 0")
           ul.pagination

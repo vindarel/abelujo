@@ -102,6 +102,8 @@ urlpatterns = patterns('',
     url(r'^commands/?$', 'search.views.basket_auto_command',
         name="basket_auto_command"),
 
+    url(r'^command/(?P<pk>\d+)/?', login_required(views.command_card)),
+
     # Baskets:
     url(r'^baskets/(?P<pk>\d+)/export/$', 'search.views.basket_export', name="basket_export"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',

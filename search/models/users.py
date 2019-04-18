@@ -52,6 +52,25 @@ class Client(models.Model):
     firstname = models.CharField(max_length=CHAR_LENGTH)
     contact = models.ForeignKey("Contact", null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        """
+        name: uppercase
+        firstname: capitalize
+        """
+        self.name = self.name.upper()
+        self.firstname = self.firstname.capitalize()
+        super(self.__class__, self).save(*args, **kwargs)
+
+    def __repr__(self):
+        return "{} {}".format(self.name, self.firstname)
+
+    def to_dict(self):
+        return {'id': self.id,
+                'name': self.name.upper(),
+                'firstname': self.firstname.capitalize(),
+                '__repr__': self.__repr__(),
+                }
+
 class BillCopies(models.Model):
     card = models.ForeignKey("search.Card")
     bill = models.ForeignKey("Bill")

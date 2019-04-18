@@ -123,6 +123,10 @@ apipatterns = patterns("",
     url(r'^api/stats/stock_age/?', 'search.models.api.stats_stock_age', name='api_stats_stock_age'),
     url(r'^api/stats/', 'search.models.api.stats', name='api_stats'),
 
+    # Clients
+    url(r'^api/clients/?', 'search.models.api_users.clients', name='api_clients'),
+
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
