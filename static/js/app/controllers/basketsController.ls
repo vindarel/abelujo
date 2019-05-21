@@ -314,12 +314,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $scope.showing_notes = ! $scope.showing_notes
 
     .add do
-        combo: "D"
-        description: gettext "transform to a Deposit"
-        callback: !->
-            $scope.open_to_deposit!
-
-    .add do
         combo: "C"
         description: gettext "Create a new list"
         callback: !->
@@ -334,7 +328,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         steps:
           * element: "\#actions",
             title: gettext "Actions",
-            content: gettext "Be aware that you can make something out of your list. You can add the books to be ordered, or transform the list into a deposit or again compare it with a parcel you just received."
+            content: gettext "Be aware that you can make something out of your list. You can add the books to be ordered, or compare it with a parcel you just received."
           * element: "\#search",
             title: gettext "Search titles",
             content: gettext "Here you can search any book by isbn, like with a barcode scanner. Keywords will search into your stock."
@@ -351,28 +345,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         tour.setCurrentStep(0)  # the second time would start from the end.
         # Start the tour
         tour.start(true)
-
-    #############################
-    # Open ToDeposit Modal
-    # ###########################
-    $scope.open_to_deposit = (size) !->
-        modalInstance = $uibModal.open do
-            animation: $scope.animationsEnabled
-            templateUrl: 'basketToDepositModal.html'
-            controller: 'BasketToDepositModalControllerInstance'
-            ## backdrop: 'static'
-            size: size,
-            resolve: do
-                utils: ->
-                    utils
-                basket_id: ->
-                    $scope.cur_basket.id
-
-        modalInstance.result.then () !->
-            ""
-        , !->
-              $log.info "modal dismissed"
-
 
 ]
 
@@ -413,34 +385,3 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
 
-########################
-# Basket to deposit modal
-# ######################
-angular.module "abelujo" .controller "BasketToDepositModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils, basket_id) !->
-
-    $scope.distributor_list = []
-    $scope.distributor = {}
-    $scope.new_name = ""
-
-    utils.set_focus!
-
-    # Distributors
-    utils.distributors!
-    .then (response) ->
-        $scope.distributor_list = response.data
-
-    $scope.ok = !->
-        $log.info $scope.distributor.selected
-        $log.info "creating new basket: ", $scope.new_name
-
-        params = do
-            distributor_id: $scope.distributor.selected.id
-            name: $scope.new_name
-
-        $http.post "/api/baskets/#{basket_id}/to_deposit/", params
-        .then (response) !->
-            $log.info "post ok"
-            $uibModalInstance.close()
-
-    $scope.cancel = !->
-        $uibModalInstance.dismiss('cancel')

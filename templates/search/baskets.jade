@@ -72,7 +72,6 @@ div(ng-cloak, ng-controller="basketsController")
            li.divider(role="separator")
            li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
            li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
-           //li: a(href="#", ng-click="open_to_deposit('md')", title='{% trans "You can transform this list of books to a deposit. You will be asked the supplier and the discount." %}') {% trans "Transform as deposit" %}…
            li: a(href="#", ng-click="return_to_supplier()", title='{% trans "Return the cards to the distributor of this basket." %}') {% trans "Return to supplier" %}…
            li.divider(role="separator")
            li: a(href="#", ng-click="delete_basket()", title='{% trans "Delete this list. This can not be undone" %}') {% trans "Delete this list" %}
@@ -243,25 +242,4 @@ div(ng-cloak, ng-controller="basketsController")
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}
 
- script(type="text/ng-template", id="basketToDepositModal.html")
-    div.modal-header
-      h3.modal-title {% trans "Transform to a deposit" %}
-
-    div.modal-body
-      label {% trans "Name" %}
-      input#default-input(type="text", ng-model="new_name")
-      div
-        label {% trans "Distributor" %}
-        ui-select(ng-model="distributor.selected")
-          ui-select-match
-            span(ng-bind="$select.selected.repr")
-          ui-select-choices(
-            repeat="it in (distributor_list | filter:$select.search) track by it.id"
-            refresh="refreshDistributors($select.search, $select)"
-            refresh-delay="100")
-              span(ng-bind="it.name")
-
-        div: a(target="_blank", href="/admin/search/distributor/add"){% trans "Add a distributor" %}
-
-      button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
 {% endblock content %}
