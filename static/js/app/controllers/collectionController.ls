@@ -76,10 +76,16 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $http.get "/api/places"
     .then (response) !->
         $scope.places = response.data
+        $scope.places.unshift do
+            repr: ""
+            id: 0
 
     $http.get "/api/shelfs"
     .then (response) !->
         $scope.shelfs = response.data
+        $scope.shelfs.unshift do
+            repr: ""
+            id: 0
 
     $http.get "/api/publishers"
     .then (response) !->
@@ -88,7 +94,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $http.get "/api/distributors"
     .then (response) !->
         $scope.distributors = response.data
-        $scope.distributors.push do
+        $scope.distributors.unshift do
             repr: ""
             id: 0
 
