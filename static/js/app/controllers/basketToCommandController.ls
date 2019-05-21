@@ -17,6 +17,8 @@
 angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$scope', '$timeout', 'utils', '$window', '$log', 'hotkeys', ($http, $scope, $timeout, utils, $window, $log, hotkeys) !->
     # utils: in services.js
 
+    $log.info "controller: basketToCommandController"
+
     # set the xsrf token via cookies.
     # $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
@@ -98,7 +100,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         "
         body = ""
         for card in $scope.cards
-            body += "#{card.threshold} x #{card.title} ( #{card.price} €)" + NEWLINE
+            body += "#{card.threshold} x #{card.title} ( #{card.price} €), #{card.pubs_repr}, #{card.isbn}" + NEWLINE
 
         total_price = 0
         total_price = $scope.cards
