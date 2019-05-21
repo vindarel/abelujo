@@ -968,16 +968,19 @@ def basket_export(request, pk):
     barcodes = _is_truthy(request.GET.get('barcodes'))
     covers = _is_truthy(request.GET.get('covers'))
 
+    distributor = Distributor.objects.get(id=distributor_id)
+    list_name = "Command {}".format(distributor.name)
+
     if copies_set and report and format:
         response = _export_response(copies_set, report=report, format=format,
                                     distributor_id=distributor_id,
                                     barcodes=barcodes,
                                     covers=covers,
-                                    name=basket.name)
+                                    name=list_name)
 
     return response
 
-def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None,
+def _export_response(copies_set, report="", format="", inv=None, list_name="", distributor_id=None,
                      covers=False,
                      barcodes=False,
                      total=None,
@@ -1064,7 +1067,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         content = "".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(name)
+        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(list_name)
 
     elif format in ['txt']:
         # 63 = MAX_CELL + 3 because of trailing "..."
@@ -1078,7 +1081,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
     elif format in ['pdf']:
         date = datetime.date.today()
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
+        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(list_name)
 
         template = get_template('pdftemplates/pdf-barcode.jade')
         if report == "listing":
@@ -1118,7 +1121,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
                 card.eanbase64 = eanbase64
 
         sourceHtml = template.render({'cards_qties': cards_qties,
-                                      'list_name': name,
+                                      'list_name': list_name,
                                       'total': total,
                                       'total_with_discount': total_with_discount,
                                       'total_qty': total_qty,
@@ -1135,7 +1138,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         response = HttpResponse(outhtml, content_type='application/pdf')
         end = time.time()
         log.info("-------- generating barcodes for {} cards took {}".format(len(cards_qties), end - start))
-        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
+        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(list_name)
 
     return response
 

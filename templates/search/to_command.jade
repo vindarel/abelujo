@@ -87,6 +87,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                    li: a(href="/baskets/1/export?format=csv&report=simplelisting&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in a csv, suitable for LibreOffice and to give to other services, like Dilicom." %}') {% trans "isbn and quantity" %} - csv (Dilicom)
 
+                   li: a(href="/baskets/1/export?format=pdf&report=listing&barcodes=true&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in a pdf." %}') {% trans "pdf with barcodes" %}
+
                button#ok.btn.btn-success(ng-click="validate_command()",
                  title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
 
