@@ -223,6 +223,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $window.location.href = "/#{$scope.language}/inventories/#{inv_id}/"
 
     $scope.return_to_supplier = !->
+        if not $scope.cur_basket.distributor
+           alert "You didn't set a distributor for this basket. Please see the menu Action -> set the supplier."
+           return
         sure = confirm gettext "Do you want to return this basket to #{$scope.cur_basket.distributor} ? This will remove the given quantities from your stock."
         if sure
             $http.post "/api/baskets/#{$scope.cur_basket.id}/return"
