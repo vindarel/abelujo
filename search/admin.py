@@ -41,6 +41,13 @@ class CardAdmin(admin.ModelAdmin):
     class Meta:
         model = Card
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "shelf":
+            # It seems we can't sort with the locale, because we'd return a list
+            # and we must return a queryset. So lowercase names are not sorted properly.
+            kwargs["queryset"] = Shelf.objects.order_by('name')
+            return super(CardAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
     search_fields = ["title", "authors__name"]
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
@@ -77,6 +84,11 @@ class DepositAdmin(admin.ModelAdmin):
 class InventoryAdmin(admin.ModelAdmin):
     class Meta:
         model = Inventory
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "shelf":
+            kwargs["queryset"] = Shelf.objects.order_by('name')
+            return super(InventoryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     list_display = ("name", "created", "closed")
 
