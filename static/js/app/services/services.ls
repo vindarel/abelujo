@@ -121,7 +121,7 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
             "
             # repetition: that's a fail :(
             params = do
-                query: args.query
+                query: args.term
                 language: args.language
                 with_quantity: args.with_quantity
                 # card_type_id: book only ?
