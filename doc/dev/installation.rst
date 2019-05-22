@@ -12,7 +12,7 @@ Run the development server (local)
 `make run` and open your browser on `localhost:8000`.
 
 The default username is ``admin`` and the password ``admin`` (see
-management commands to create and delete superusers).
+management commands to create and delete superusers in the next section).
 
 This command is only to be run on a local machine. If you run it on a
 server, you won't be able to access Abelujo from the internet.

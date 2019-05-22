@@ -104,6 +104,8 @@ We are done ! Now to try Abelujo, run the development server like this:
 
 and open your browser to <http://127.0.0.1:8000> (admin/admin).
 
+You might need to create a superuser: see [the dev documentation](http://dev.abelujo.cc/use-manage.html).
+
 Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
 
 
