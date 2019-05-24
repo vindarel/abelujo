@@ -127,7 +127,9 @@ migrate:
 	python manage.py migrate --noinput
 
 collectstatic:
-	./node_modules/brunch/bin/brunch build  # --production. Create public/ dir.
+	# Brunch is only used for Vue.js, which isn't used in production yet.
+	# This line failed on deployes, comment out.
+	# ./node_modules/brunch/bin/brunch build  # --production. Create public/ dir.
 	python manage.py collectstatic --noinput
 
 # Run the tests of the UI in a browser.

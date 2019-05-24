@@ -336,7 +336,7 @@ def dbback(name=None):
             print(cmd)
             os.system(cmd)
 
-def bundles_upload(name=None):
+def bundles_upload():
     """Update, but don't run npm or bower, get the copies of their
     directories (node_modules and bower_components).
 
@@ -465,6 +465,7 @@ def create(name=None):
 
 def file_upload(name, *files):
     """
+    Upload the given file(s) to this client's directory root.
     """
     if not files:
         print("Usage: file_upload:name,path-to-file")
@@ -497,7 +498,7 @@ def install(name):
         run("mkdir {}".format(wd, wd))
 
     # Copy bower_components (experimental)
-    bundles_upload(client.name)
+    bundles_upload()
 
     with cd(wd):
         run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
