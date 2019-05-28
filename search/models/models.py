@@ -413,16 +413,19 @@ class Card(TimeStampedModel):
     title = models.CharField(max_length=CHAR_LENGTH)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True)
-    #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
-    isbn = models.CharField(max_length=99, null=True, blank=True)
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
     has_isbn = models.NullBooleanField(default=True, blank=True, null=True)
+    #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
+    isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author)
     price = models.FloatField(null=True, blank=True, default=0.0)
     #: price_sold is only used to generate an angular form, it is not
     #: stored here in the db.
     price_sold = models.FloatField(null=True, blank=True)
+    #: Did we buy this card once, or did we register it only to use in
+    #: lists (baskets), without buying it ?
+    in_stock = models.BooleanField(default=False)
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT)
     #: Publisher of the card:
@@ -455,9 +458,6 @@ class Card(TimeStampedModel):
     fmt = models.TextField(null=True, blank=True)
     #: a user's comment
     comment = models.TextField(blank=True)
-    #: Did we buy this card once, or did we register it only to use in
-    #: lists (baskets), without buying it ?
-    in_stock = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
