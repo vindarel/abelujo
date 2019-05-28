@@ -46,7 +46,8 @@ class CardAdmin(admin.ModelAdmin):
             # It seems we can't sort with the locale, because we'd return a list
             # and we must return a queryset. So lowercase names are not sorted properly.
             kwargs["queryset"] = Shelf.objects.order_by('name')
-            return super(CardAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        return super(CardAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     search_fields = ["title", "authors__name"]
     list_display = ("title", "distributor", "price",)
