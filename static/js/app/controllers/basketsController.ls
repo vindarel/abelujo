@@ -165,6 +165,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.
         """
+        if not confirm gettext "You didn't set a supplier for this list (menu -> set a supplier). Do you want to carry on ?"
+           return
+
         $log.info "cur_basket: ", $scope.cur_basket
         $log.info "copies: ", $scope.copies
         if not $scope.copies.length
@@ -387,4 +390,3 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
-
