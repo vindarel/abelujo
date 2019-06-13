@@ -980,7 +980,7 @@ def basket_export(request, pk):
 
     return response
 
-def _export_response(copies_set, report="", format="", inv=None, list_name="", distributor_id=None,
+def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None,
                      covers=False,
                      barcodes=False,
                      total=None,
@@ -1067,7 +1067,7 @@ def _export_response(copies_set, report="", format="", inv=None, list_name="", d
         content = "".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(list_name)
+        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(name)
 
     elif format in ['txt']:
         # 63 = MAX_CELL + 3 because of trailing "..."
@@ -1081,7 +1081,7 @@ def _export_response(copies_set, report="", format="", inv=None, list_name="", d
     elif format in ['pdf']:
         date = datetime.date.today()
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(list_name)
+        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
         template = get_template('pdftemplates/pdf-barcode.jade')
         if report == "listing":
@@ -1121,7 +1121,7 @@ def _export_response(copies_set, report="", format="", inv=None, list_name="", d
                 card.eanbase64 = eanbase64
 
         sourceHtml = template.render({'cards_qties': cards_qties,
-                                      'list_name': list_name,
+                                      'name': name,
                                       'total': total,
                                       'total_with_discount': total_with_discount,
                                       'total_qty': total_qty,
@@ -1138,7 +1138,7 @@ def _export_response(copies_set, report="", format="", inv=None, list_name="", d
         response = HttpResponse(outhtml, content_type='application/pdf')
         end = time.time()
         log.info("-------- generating barcodes for {} cards took {}".format(len(cards_qties), end - start))
-        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(list_name)
+        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
     return response
 
