@@ -114,9 +114,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
-    $scope.getCards = (term) ->
+    $scope.getCards = (query) ->
         args = do
-            term: term
+            query: query
             language: $scope.language
             lang: $scope.language
 
