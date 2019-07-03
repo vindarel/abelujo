@@ -160,17 +160,20 @@ def statusall():
     for client in CFG.clients:
         check_uptodate(client.name)
 
-def check_uptodate(client=None):
+def check_uptodate(name=None):
     """Check wether the distant repo is up to date with the local one. If
     not, how many commits behind ?
 
     """
     max_count = 10
 
-    if not client:
+    if not name:
         return statusall()
 
-    client = fabutils.select_client_cfg(client, CFG)
+    client = fabutils.select_client_cfg(name, CFG)
+    if not client:
+        print("No client found with '{}'".format(name))
+        return 1
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     # that's local so it conuts the unpushed commits. should be remote
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
