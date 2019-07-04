@@ -3879,6 +3879,19 @@ class InventoryBase(TimeStampedModel):
         if hasattr(self, "basket") and self.basket and self.basket.distributor:
             self.basket.distributor.set_distributor(basket=self.basket)
 
+        # The inventory has inventoried cards: self.copies_set.all()
+        # We must not forget cards that were not inventoried but must be set to 0.
+        all_copies = []  # list of Card objects.
+        if hasattr(self, "basket") and self.basket:
+            all_copies = self.basket.copies.all()
+            # TODO: to test
+            raise NotImplementedError
+        elif hasattr(self, "shelf") and self.shelf:
+            all_copies = self.shelf.cards()
+        else:
+            raise NotImplementedError
+        # We get the cards not inventoried, but present in the original place/shelf.
+        missing_copies = list(set(all_copies) - set(self.copies.all()))
 
         # Now we apply to the stock:
         try:
@@ -3889,6 +3902,16 @@ class InventoryBase(TimeStampedModel):
 
         except Exception as e:
             log.error(u"Error while applying the inventory {} to {}: {}"
+                      .format(self.id, place_or_deposit, e))
+            return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
+
+        # And we set the remaining cards to 0.
+        try:
+            for card in missing_copies:
+                place_or_deposit.add_copy(card, nb=0, add=False)
+                # xxx: shall we mark in_stock to False ? It depends on their quantity in other places.
+        except Exception as e:
+            log.error(u"Error while applying the 'missing' cards of the inventory {} to {}: {}"
                       .format(self.id, place_or_deposit, e))
             return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
@@ -3904,6 +3927,8 @@ class Inventory(InventoryBase):
     We can do inventories of baskets, publishers, places, shelves.
     """
     #: List of cards and their quantities already "inventored".
+    #: We must also consider (set to 0) the cards that are from the original shelf or place
+    #: but were not inventoried.
     copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
     #: We can do the inventory of a shelf.
     # XXX: use InventoryBase now that we have it.
