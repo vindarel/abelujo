@@ -215,15 +215,20 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
 
     $scope.receive_command = !->
-        # Get or create the inventory, redirect to that inventory page
-        $http.get "/api/baskets/#{$scope.cur_basket.id}/inventories/"
-        .then (response) !->
-            inv_id = response.data.data.inv_id
-            # What url scheme ? We want to include the inv id to re-use the inventory controller.
-            # baskets/<basket_id>/inventory/<inv id>/, or
-            #  /inventories/<inv id>
-            # $window.location.href = "/#{$scope.language}/baskets/#{$scope.cur_basket.id}/receive/"
-            $window.location.href = "/#{$scope.language}/inventories/#{inv_id}/"
+        if not $scope.cur_basket.distributor
+           alert "You didn't set a distributor for this basket. Please see the menu Action -> set the supplier."
+           return
+        sure = confirm gettext "Do you want to receive a parcel for the supplier '#{$scope.cur_basket.distributor}' ?"
+        if sure
+            # Get or create the inventory, redirect to that inventory page
+            $http.get "/api/baskets/#{$scope.cur_basket.id}/inventories/"
+            .then (response) !->
+                inv_id = response.data.data.inv_id
+                # What url scheme ? We want to include the inv id to re-use the inventory controller.
+                # baskets/<basket_id>/inventory/<inv id>/, or
+                #  /inventories/<inv id>
+                # $window.location.href = "/#{$scope.language}/baskets/#{$scope.cur_basket.id}/receive/"
+                $window.location.href = "/#{$scope.language}/inventories/#{inv_id}/"
 
     $scope.return_to_supplier = !->
         if not $scope.cur_basket.distributor
