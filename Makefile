@@ -79,6 +79,7 @@ npm-system-nosudo:
 
 npm:
 	@echo "Installing Node packages..."
+	mkdir public
 	npm install --production # don't install devDependencies
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
