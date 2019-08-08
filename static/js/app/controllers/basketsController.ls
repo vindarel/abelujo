@@ -218,7 +218,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         if not $scope.cur_basket.distributor
            alert "You didn't set a distributor for this basket. Please see the menu Action -> set the supplier."
            return
-        sure = confirm gettext "Do you want to receive a parcel for the supplier '#{$scope.cur_basket.distributor}' ?"
+        sure = confirm gettext "Do you want to receive a command for the supplier '#{$scope.cur_basket.distributor}' ?"
         if sure
             # Get or create the inventory, redirect to that inventory page
             $http.get "/api/baskets/#{$scope.cur_basket.id}/inventories/"
