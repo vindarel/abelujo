@@ -67,8 +67,15 @@ This command asks for confirmation.
 Import a csv file of ISBNs and quantities
 -----------------------------------------
 
-First export your Excel or LibreOffice calc sheet into csv, preferably
-with ``;`` as separator, then use the ``import_isbns`` command::
+The CSV file has two columns: the ISBN and the quantity.
+
+This command will search for the bibliographic information of this
+ISBN and add it to the database with the given quantity.
+
+You can export your Excel or LibreOffice calc sheet into csv, preferably
+with a ``;`` as separator.
+
+Use the ``import_isbns`` command::
 
   ./manage.py import_isbns -i myfile.csv
 
