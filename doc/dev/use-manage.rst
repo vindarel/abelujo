@@ -54,6 +54,16 @@ If you wish to be more precise (set to n copies instead of zero, reset
 for only a place), this needs more work. See the method
 `Card.quantities_to_zero` and the same on `Place`.
 
+Apply an inventory
+------------------
+
+To apply an inventory from the command line, use ``apply_inventories --ids [id id,id,…]``.
+
+Its argument is either one id or a coma-separated list of ids.
+
+This command asks for confirmation.
+
+
 Import a csv file of ISBNs and quantities
 -----------------------------------------
 
