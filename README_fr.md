@@ -1,35 +1,39 @@
 Abelujo - logiciel libre de gestion de librairie
 ================================================
 
-Projet actuellement en chantier. Il est néanmoins possible de:
+Projet actuellement ~~en chantier~~ utilisé au quotidien depuis début
+2016 par des particuliers, des assocations, des salons de thé,
+restaurants, théâtres, centres d'arts et des libraires professionnels.
+
+Abelujo permet de:
 
 -   rechercher des **livres** par mots-clefs ou par n°ISBN/EAN. La recherche
-    utilise les résultats de [librairie-de-paris](http://www.librairie-de-paris.fr/) ou [Decitre](https://www.decitre.fr),
+    utilise les résultats de [librairie-de-paris](http://www.librairie-de-paris.fr/),
+-   utiliser un **lecteur de codes barres** à travers toute l'application,
 -   rechercher des **CDs** (via [discogs.com](http://www.discogs.com)),
--   chercher des notices espagnoles ou allemandes,
--   ajouter des exemplaires au fonds,
--   chercher dans son fonds, voir quelques statistiques des meilleurs
--   effectuer des ventes, voir les conflits à la vente, voir l'historique (global, par notice),
--   créer des dépôts, **faire un état de dépôt**,
--   faire des **inventaires**,
--   manipuler des **listes** et les exporter en **csv** ou **pdf** (avec **code-barres** intégrés),
--  importer des données depuis un fichier **LibreOffice Calc** (.ods). (expérimental. Voir la [documentation utilisateur](doc/french/index.rst "doc utilisateur")
-).
-L'application est traduite en français, anglais et espagnol (castillan
-).
-Nous nous basons sur les spécifications fonctionnelles du projet Ruche,
-auxquelles nous avons participé:
-<http://ruche.eu.org/wiki/Specifications_fonctionnelles>. Nous avons
-écrit ce que nous avons compris de la gestion des dépôts, des commandes,
-etc. N'hésitez donc pas à les lire et à nous dire si ce que nous
-commençons correspondra à vos besoins.
+-   gérer son stock et voir des statistiques,
+-   effectuer des ventes, consulter l'historique des ventes et d'autres
+    mouvements de stock,
+-   faire des **inventaires** en quelques coups de douchette,
+-   créer des dépôts, **faire des états de dépôt**,
+-   manipuler des **listes** indépendamment du stock,
+-   préparer et recevoir des **colis**,
+-   exporter des listes en **csv** ou en **pdf** (avec **code-barres** intégrés),
+-  importer des données depuis un fichier CSV,
+-  …
+
+Il ne propose pas encore:
+
+- la gestion des clients
+-
+
+IL est traduit en français (et le support est en français également).
 
 **Abelujo** signifie Ruche en Espéranto.
 
 
 Installation et développement
 =============================
-
 
 Nous vous laissons le soin de [lire les instructions en anglais](README.md "").
 

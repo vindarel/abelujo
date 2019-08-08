@@ -3,16 +3,20 @@ Abelujo - free software to manage independent book (and records) shops.
 
 français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr.md "README en français")
 
-This project is at its debut stage. However it is already possible to:
+This project is ~~at its debut stage~~ used daily by individuals,
+associations, tea and wine shops, theaters, art centers and
+professional bookshops, since early 2016.
+
+Abelujo allows to:
 
 -   look up for **books**, either by keywords or by isbn/ean (which works with a **barcode scanner**). See the https://gitlab.com/vindarel/bookshops library. You can currently search for:
 
-    * french books (through [librairiedeparis](http://www.librairie-de-paris.fr/), [decitre.fr](http://www.decitre.fr/) or chapitre.com)  ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=french_scraper)
+    * french books (through [librairiedeparis](http://www.librairie-de-paris.fr/))  ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=french_scraper)
     * spanish books (through [casadellibro.com](http://www.casadellibro.com)) ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=spanish_scraper)
     * german books(through [buchlentner.de](http://www.buchlentner.de)) ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=german_scraper)
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
--   do an **inventories** of your stock,
+-   do **inventories** of your stock,
 -   manage lists of books, export them to **csv** and **pdf** (with **barcodes**),
 -   send an email to distributors to **order** books,
 -   manage deposits and distributors, see **the balance of your deposits**,
