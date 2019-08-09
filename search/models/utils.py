@@ -241,6 +241,26 @@ def ppcard(cards):
     tab += "\n\ntotal: {} titles, {} exemplaries.".format(tablength, total)
     return tab
 
+def split_query(string):
+    """Return a list of words.
+    Split by semicolon, comma or space (first separator found).
+    Usually, the user query will be a comma-separated list of ISBNs (from a
+    memory barcode scanner). It can contain other words too, so you might
+    want to filter by is_isbn afterwards.
+    """
+    if ";" in string:
+        separator = ";"
+    elif "," in string:
+        separator = ","
+    else:
+        separator = " "
+    res = string.split(separator)
+    return [it.strip() for it in res]
+
+def isbns_from_query(string):
+    words = split_query(string)
+    return filter(is_isbn, words)
+
 def is_isbn(it):
     """Return True is the given string is an ean or an isbn, i.e:
 

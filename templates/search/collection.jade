@@ -146,6 +146,8 @@ div(ng-cloak, ng-controller="collectionController")
 
       .btn-group
         select.form-control(ng-show="cards.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+      div(id="message", ng-show="meta.message", ng-class="meta.message_status") {{ 'meta.message' | ng }}
+
 
 
  div(ng-show="cards.length == 0") {% trans "No results" %}

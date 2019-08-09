@@ -5,7 +5,7 @@ français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr
 
 This project is ~~at its debut stage~~ used daily by individuals,
 associations, tea and wine shops, theaters, art centers and
-professional bookshops, since early 2016.
+professional bookshops.
 
 Abelujo allows to:
 

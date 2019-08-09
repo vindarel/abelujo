@@ -68,7 +68,7 @@ from search.views_utils import search_on_data_source
 
 from .utils import ids_qties_to_pairs
 from .utils import is_invalid
-from .utils import is_isbn
+from .utils import is_isbn, split_query, isbns_from_query
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
 from .utils import _is_truthy
@@ -153,7 +153,10 @@ def preferences(request, **response_kwargs):
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
 
-    If query is an isbn, search into our DB first.
+    If query is an ISBN, search into our DB first.
+
+    The query can be a list of ISBNs (separated by comas or spaces).
+    WARNING: we can reach the limit of the GET parameters (aronud 2048 chars).
 
     Parameters:
     - query (str)
@@ -169,20 +172,50 @@ def datasource_search(request, **response_kwargs):
         log.debug("No search query given.")
         return JsonResponse({'error': 'no search query given.'})
 
+    isbn_list = None  # when the user queries a list of ISBNs at once.
+    isbn_list_found = {}  # a dict ISBN-> card object. Needs two passes: DB and datasource.
+    isbn_list_search_complete = False  # True when we find all of them.
+
     query_isbn = is_isbn(query)
     if query_isbn:
         res = Card.objects.filter(isbn=query).first()
         if res:
             res = [res.to_dict()]
+    else:
+        # XXX: This works with comas in the user input list of ISBNs, not semi-colons.
+        # JS side seems to truncate the input up to the first semicolon.
+        isbn_list = isbns_from_query(query)
+        if isbn_list:
+            res = Card.objects.filter(isbn__in=isbn_list)
+            if res:
+                res = [it.to_dict() for it in res]
+            if len(res) == len(isbn_list):
+                isbn_list_search_complete = True
+                # TODO: add alerts for the user to know everything was retrieved.
 
-    if not query_isbn or not res:
+    if isbn_list and not isbn_list_search_complete:
+        # TODO: search remaining ISBNs on the datasource.
+        logging.error("Not implemented: searching many ISBNs at once on the datasource.")
+
+    if (not query_isbn and not isbn_list) or not res:
         datasource = request.GET.get('datasource', 'librairiedeparis')
         page = request.GET.get('page', 1)
         res, traces = search_on_data_source(datasource, query, PAGE=page)
 
     data = {"data": res,
             "alerts": traces,
+            "message": None,
+            "message_status": None,
             "status": 200, }
+
+    if isbn_list:
+        data['message'] = _("You asked for {} ISBNs. {} found.".format(len(isbn_list), len(res)))
+        if isbn_list_search_complete:
+            data['message_status'] = ALERT_SUCCESS
+        else:
+            data['message_status'] = ALERT_WARNING
+
+
     return JsonResponse(data)
 
 def cards(request, **response_kwargs):
@@ -199,7 +232,7 @@ def cards(request, **response_kwargs):
     """
     data = []
     query = request.GET.get("query", "")
-    query = query.split()
+    query = split_query(query)
     language = request.GET.get("language")
     distributor = request.GET.get("distributor")
     distributor_id = request.GET.get("distributor_id")

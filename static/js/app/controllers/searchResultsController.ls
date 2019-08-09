@@ -31,6 +31,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         return label in $scope.not_available_status
 
     $scope.cards = []
+    $scope.data = {}  # other objects: message, etc.
     $scope.alerts = []
     $scope.page = 1
     $scope.selectAll = true
@@ -116,6 +117,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
                 $scope.no_results = true
             else
                 $scope.no_results = false
+
+            $scope.data = response.data
 
             for card in $scope.cards
                 card.selected = false

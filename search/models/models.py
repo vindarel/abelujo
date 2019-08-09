@@ -855,6 +855,9 @@ class Card(TimeStampedModel):
         - a dict: list of messages, pagination meta info.
         """
         isbns = []
+        isbn_input_list = None
+        isbn_list_search_complete = None
+
         cards = []
         msgs = Messages()
 
@@ -862,6 +865,7 @@ class Card(TimeStampedModel):
         if words:
             # Separate search terms that are isbns.
             isbns = filter(is_isbn, words)
+            isbns_input_list = len(isbns)
             words = list(set(words) - set(isbns))
 
         if words:
@@ -916,12 +920,15 @@ class Card(TimeStampedModel):
 
         # Search for the requested ean(s).
         if isbns:
-            for isbn in isbns:
-                try:
-                    cards = Card.objects.filter(isbn=isbn)
-                except Exception as e:
-                    log.error(u"Error searching for isbn {}: {}".format(isbn, e))
-                    msgs.add_error(_("Error searching for isbn ".format(isbn)))
+            try:
+                cards = Card.objects.filter(isbn__in=isbns)
+                if len(cards) == len(isbns):
+                    isbn_list_search_complete = True
+                else:
+                    isbn_list_search_complete = False
+            except Exception as e:
+                log.error(u"Error searching for isbn {}: {}".format(isbn, e))
+                msgs.add_error(_("Error searching for isbn ".format(isbn)))
 
         # Sort
         if cards and order_by:
@@ -970,6 +977,14 @@ class Card(TimeStampedModel):
             'page_size': page_size,
             'nb_results': nb_results,
         }
+
+        if isbns:
+            meta['message'] = _("You asked for {} ISBNs. {} found.".format(len(isbns), len(cards)))
+            if isbn_list_search_complete:
+                meta['message_status'] = ALERT_SUCCESS
+            else:
+                meta['message_status'] = ALERT_WARNING
+
 
         return cards, meta
 

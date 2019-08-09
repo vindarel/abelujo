@@ -22,7 +22,7 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 
-from search.models.utils import Messages
+from search.models.utils import Messages, is_isbn, split_query, isbns_from_query
 
 class TestMessages(TestCase):
 
@@ -63,3 +63,19 @@ class TestMessages(TestCase):
         msgs.append(mm.msgs)
         self.assertEqual(len(msgs.msgs), 2)
         self.assertEqual(ALERT_INFO, msgs.status)
+
+
+class TestUtils(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_is_isbn(self):
+        self.assertEqual("9782918059363", is_isbn("9782918059363"))
+        self.assertFalse(is_isbn("9782918059363; 9782918059363; RST, 978"))
+        self.assertEqual(3, len(split_query("9782918059363; 9782918059363; RST, 978")))
+        self.assertEqual(3, len(split_query("9782918059363, 9782918059363, RST 978")))
+        self.assertEqual(3, len(split_query("9782918059363 9782918059363 978_RST")))
+
+        self.assertEqual(2, len(isbns_from_query("9782918059363 9782918059363 978_RST")))
+        self.assertEqual(2, len(isbns_from_query("9782918059363, 9782918059363, 978_RST")))

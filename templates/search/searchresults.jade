@@ -90,6 +90,8 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
   div.middle(ng-cloak, ng-hide="cards.length"): em {% trans "Search cards by key words or by isbn." %}
 
+ div(id="message", ng-show="data.message", ng-class="data.message_status") {{ 'data.message' | ng }} 
+
  table.table.table-striped(ng-cloak, ng-show="cards.length != 0")
     thead
       th: input(type="checkbox", ng-click="toggleAll()")

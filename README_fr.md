@@ -1,9 +1,9 @@
 Abelujo - logiciel libre de gestion de librairie
 ================================================
 
-Projet actuellement ~~en chantier~~ utilisé au quotidien depuis début
-2016 par des particuliers, des assocations, des salons de thé,
-restaurants, théâtres, centres d'arts et des libraires professionnels.
+Projet actuellement ~~en chantier~~ utilisé au quotidien par des
+particuliers, des assocations, des salons de thé, restaurants,
+théâtres, centres d'arts et des libraires professionnels.
 
 Abelujo permet de:
 
