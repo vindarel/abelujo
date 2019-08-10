@@ -1694,6 +1694,8 @@ class Place (models.Model):
                 place_copy.nb = nb
             place_copy.save()
 
+            # XXX: when a quantity reaches 0, we might want to remove it. See remove_card.
+
             # A card could be in the DB but only in a list
             # (basket). Now it's bought at least once.
             card.in_stock = True
