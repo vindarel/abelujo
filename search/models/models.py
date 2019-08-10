@@ -1663,6 +1663,12 @@ class Place (models.Model):
             "comment": self.comment,
         }
 
+    def cards(self):
+        """Return all cards in this place.
+        To get the card and its quantity, use the PlaceCopies table."""
+        cards_qties = self.placecopies_set.all()
+        return [it.card for it in cards_qties]
+
     def add_copy(self, card, nb=1, add=True):
         """Adds the given number of copies (1 by default) of the given
         car to this place.
@@ -1705,6 +1711,20 @@ class Place (models.Model):
             log.error(u"Error while adding an Entry to the history for card {}:{}".format(card.id, e))
 
         return place_copy.nb
+
+    def remove_card(self, card):
+        """Remove this card from this place.
+        If all went well, return True."""
+        try:
+            place_copy, created = self.placecopies_set.get_or_create(card=card)
+            place_copy.delete()
+
+        except Exception, e:
+            log.error(u"Error while removing %s to the place %s" % (card.title, self.name))
+            log.error(e)
+            return False
+
+        return True
 
     def quantities_total(self):
         """Total quantity of cards in this place.
@@ -2733,6 +2753,12 @@ class Deposit(TimeStampedModel):
         - add (bool): if False, do not add the quantities but set them.
         """
         return self.add_copies([card_obj], nb=nb, add=add)
+
+    def remove_card(self, card):
+        """Remove this card from this deposit.
+        If all went well, return True."""
+        # TODO:
+        raise NotImplementedError
 
     @staticmethod
     def from_dict(depo_dict):
@@ -3897,7 +3923,9 @@ class InventoryBase(TimeStampedModel):
         # The inventory has inventoried cards: self.copies_set.all()
         # We must not forget cards that were not inventoried but must be set to 0.
         all_copies = []  # list of Card objects.
-        if hasattr(self, "basket") and self.basket:
+        if hasattr(self, "place") and self.place:
+            all_copies = self.place.cards()
+        elif hasattr(self, "basket") and self.basket:
             all_copies = self.basket.copies.all()
             # TODO: to test
             raise NotImplementedError
@@ -3920,10 +3948,10 @@ class InventoryBase(TimeStampedModel):
                       .format(self.id, place_or_deposit, e))
             return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
-        # And we set the remaining cards to 0.
+        # And we remove the remaining cards.
         try:
             for card in missing_copies:
-                place_or_deposit.add_copy(card, nb=0, add=False)
+                place_or_deposit.remove_card(card)
                 # xxx: shall we mark in_stock to False ? It depends on their quantity in other places.
         except Exception as e:
             log.error(u"Error while applying the 'missing' cards of the inventory {} to {}: {}"

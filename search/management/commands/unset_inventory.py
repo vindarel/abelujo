@@ -32,39 +32,19 @@ from search.models import Inventory
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
-        parser.add_argument('--ids',
-                            dest="ids",
+        parser.add_argument('--id',
+                            dest="id",
                             action="store",
-                            help="Apply these inventories. Takes a single id or a coma-separated list of ids.")
+                            help="Mark this inventory as unapplied. This doesn't effectively un-apply it.")
 
     def handle(self, *args, **options):
-        ids= options.get('ids')
         try:
-            if ',' not in ids:
-                invs = [Inventory.objects.get(pk=ids)]
-            else:
-                ids= ids.split(',')
-                invs = Inventory.objects.filter(pk__in=ids)
+            inv = Inventory.objects.get(id=options.get('id'))
         except Exception as e:
             self.stderr.write("{}".format(e))
             exit(1)
 
-        self.stdout.write("Applying the following inventories:")
-        self.stdout.write("\n".join([it.__unicode__() for it in invs]))
-        confirmation = raw_input("Continue ? [Y/n]")
-        if confirmation == "n":
-            exit(0)
-
-        self.stdout.write("""
-        Applying a non-small inventory (> 200 cards) can take a couple of minutes.
-        """)
-
-        for inv in invs:
-            self.stdout.write("- applying {}...".format(inv.id))
-            if inv.applied:
-                self.stdout.write("\tinv {} is already applied.".format(inv.id))
-            else:
-                inv.apply()
-
-        self.stdout.write("-------------------")
+        inv.closed = None
+        inv.applied = False
+        inv.save()
         self.stdout.write("Done.")
