@@ -3929,11 +3929,10 @@ class InventoryBase(TimeStampedModel):
             all_copies = self.place.cards()
         elif hasattr(self, "basket") and self.basket:
             all_copies = self.basket.copies.all()
-            # TODO: to test
-            raise NotImplementedError
         elif hasattr(self, "shelf") and self.shelf:
             all_copies = self.shelf.cards()
         else:
+            log.error("Applying inventory {}, getting all cards: missing implementation.".format(self.id))
             raise NotImplementedError
         # We get the cards not inventoried, but present in the original place/shelf.
         missing_copies = list(set(all_copies) - set(self.copies.all()))
