@@ -3413,32 +3413,11 @@ class Sell(models.Model):
     def history(to_list=True):
         """
         """
-        alerts = []
-        sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
-        if to_list:
-            sells = [it.to_list() for it in sells]
-        return sells, ALERT_SUCCESS, alerts
+        raise DeprecationWarning("Unused method. Use Sell.search and Entry.search instead.")
 
-def getHistory(to_list=False, sells_only=False):
-    """return the last sells, card creations and movements.
 
-    With pagination.
-
-    returns: a tuple: (list of Sell or Card as dicts, status, alerts).
-    """
-    alerts = []
-    sells = Sell.objects.order_by("-created")[:PAGE_SIZE]
-    sells = [it.to_list() for it in sells]
-    entries = history.Entry.objects.order_by("-created")[:PAGE_SIZE]
-    entries = [it.to_list() for it in entries]
-    moves = history.InternalMovement.objects.order_by("-created")[:PAGE_SIZE]
-    moves = [it.to_dict() for it in moves]
-    if sells_only:
-        toret = entries
-    else:
-        toret = sells + entries + moves
-    toret.sort(key= lambda it: it['created'], reverse=True)
-    return toret, ALERT_SUCCESS, alerts
+def getHistory(**kwargs):
+    raise DeprecationWarning("Unused method.")
 
 
 class Alert(models.Model):

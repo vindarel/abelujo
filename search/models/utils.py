@@ -22,7 +22,6 @@ import re
 import string
 
 import addict
-# from models import getHistory # don't import model here-> circular
 from tabulate import tabulate
 
 from abelujo import settings

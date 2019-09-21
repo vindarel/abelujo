@@ -52,7 +52,6 @@ from search.models import Sell
 from search.models import Shelf
 from search.models import SoldCards
 from search.models import history
-from search.models import getHistory
 from search.models import Stats
 from search.models.utils import get_logger
 from search.models.utils import distributors_match
@@ -1249,11 +1248,6 @@ class TestHistory(TestCase):
 
     def tearDown(self):
         pass
-
-    def test_history(self):
-        hist, status, alerts = getHistory()
-        self.assertEqual(2, len(hist))  # a Sell is created without any cards sold.
-        self.assertEqual(ALERT_SUCCESS, status)
 
 
 class TestInventory(TestCase):

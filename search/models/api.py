@@ -752,7 +752,6 @@ def history_sells(request, **response_kwargs):
             year = timezone.now().year
 
         try:
-            # hist, status, alerts = getHistory()
             hist = Sell.search(month=month,
                                year=year,
                                page=page, page_size=page_size,
