@@ -1470,8 +1470,10 @@ def inventories(request, **kwargs):
 
         else:
             try:
-                # xxx: option to get opened ones. For search controller.
-                invs = Inventory.objects.all()
+                # In our inventories view, we are used to looking at the "applied?"checkbox,
+                # useful during an inventory session,
+                # so we differentiate between applied+closed and archived inventories.
+                invs = Inventory.open_inventories()
                 nb_results = invs.count()
 
                 paginator = Paginator(invs, page_size)

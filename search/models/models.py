@@ -3516,6 +3516,11 @@ class InventoryBase(TimeStampedModel):
     # By TimeStampedModel, we get "created" and "modified".
     #: Closed or still active ?
     closed = models.DateTimeField(blank=True, null=True)
+    #: An archived inventory was closed, applied or not.
+    # This status is necessary so that we can list all the inventories
+    # we are currently working on. We can see that some are applied (the check mark),
+    # others are not.
+    archived = models.BooleanField(default=False)
     #: Did we apply it ?
     applied = models.BooleanField(default=False)
 
@@ -3541,6 +3546,10 @@ class InventoryBase(TimeStampedModel):
 
     def get_absolute_url(self):
         raise NotImplementedError
+
+    @staticmethod
+    def open_inventories():
+        return Inventory.objects.exclude(archived=True).all()
 
     def _orig_cards_qty(self):
         """Return the number of copies to inventory (the ones in the original
@@ -3860,6 +3869,14 @@ class InventoryBase(TimeStampedModel):
             d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
 
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
+
+    def archive(self):
+        """
+        Archive and close this inventory.
+        """
+        self.closed = timezone.now()
+        self.archived = True
+        self.save()
 
     @staticmethod
     def apply_inventory(pk):

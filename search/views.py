@@ -1268,15 +1268,39 @@ def inventory(request, pk):
             return render(request, template)
 
 @login_required
+def inventory_archive(request, pk):
+    # if request.method == "POST":
+    if request.method == "GET":
+        if pk:
+            try:
+                inv = Inventory.objects.get(id=pk)
+                inv.archive()
+                messages.add_message(
+                    request, messages.SUCCESS, _("The inventory {} was closed and archived.").format(inv.id))
+            except Exception as e:
+                log.error(e)
+                messages.add_message(
+                    request, messages.ERROR,
+                    _("There was an error when trying to archive the inventory {}: {}.").format(pk, e))
+
+    return HttpResponseRedirect(reverse("inventories"))
+
+@login_required
 def inventory_delete(request, pk):
     #XXX should be a post
     if request.method == "GET":
         if pk:
             try:
                 inv = Inventory.objects.get(id=pk)
+                id = inv.id
                 inv.delete()
+                messages.add_message(
+                    request, messages.SUCCESS, _("The inventory {} was deleted.").format(id))
             except Exception as e:
                 log.error(e)
+                messages.add_message(
+                    request, messages.ERROR,
+                    _("There was an error when trying to delete the inventory {}: {}.").format(pk, e))
 
     return HttpResponseRedirect(reverse("inventories"))
 

@@ -25,6 +25,13 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
+{% if messages %}
+ul.messages
+  {% for msg in messages %}
+  uib-alert(type="success")  {{ msg }}
+  {% endfor %}
+{% endif %}
+
 h3 {% trans "Inventories started" %}
 
 div(ng-controller="InventoryModalController")
@@ -129,6 +136,7 @@ div(ng-controller="inventoriesController")
               li: a(href="/inventories/{{ 'inv.id'|ng  }}/terminate/") {% trans "Analyse" %}
               li: a(href="#", ng-click="validate( $index )", title='{% trans "Apply this inventory to your stock. This will modify your stock" %}') {% trans "Apply to your stock" %}
               li.divider(role="separator")
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/archive") {% trans "Archive" %}
               li: a.i.glyphicon.glyphicon-trash(href="/inventories/{{ 'inv.id'|ng  }}/delete") {% trans "Delete" %}
 
           .btn-group
