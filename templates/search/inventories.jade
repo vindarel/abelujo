@@ -129,7 +129,7 @@ div(ng-controller="inventoriesController")
               li: a(href="/inventories/{{ 'inv.id'|ng  }}/terminate/") {% trans "Analyse" %}
               li: a(href="#", ng-click="validate( $index )", title='{% trans "Apply this inventory to your stock. This will modify your stock" %}') {% trans "Apply to your stock" %}
               li.divider(role="separator")
-              li: a(href="/inventories/{{ 'inv.id'|ng  }}/delete") {% trans "Delete" %}
+              li: a.i.glyphicon.glyphicon-trash(href="/inventories/{{ 'inv.id'|ng  }}/delete") {% trans "Delete" %}
 
           .btn-group
             button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
