@@ -3924,7 +3924,9 @@ class InventoryBase(TimeStampedModel):
         if hasattr(self, "place") and self.place:
             all_copies = self.place.cards()
         elif hasattr(self, "basket") and self.basket:
-            all_copies = self.basket.copies.all()
+            # In the case of receiving a command, we don't want to
+            # reset the missing ones to 0.
+            pass
         elif hasattr(self, "shelf") and self.shelf:
             all_copies = self.shelf.cards()
         else:
