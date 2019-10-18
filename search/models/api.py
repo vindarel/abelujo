@@ -1818,7 +1818,7 @@ def nb_commands_ongoing(request, **kwargs):
 
 def commands_ongoing(request, **kwargs):
     if request.method == 'GET':
-        res = Command.ongoing(to_dict=True)
+        res = Command.ongoing(to_dict=True) or []
         return JsonResponse(res, safe=False)
 
 def commands_create(request, **kwargs):

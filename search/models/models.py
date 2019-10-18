@@ -4521,6 +4521,7 @@ class Command(TimeStampedModel):
         """Return a queryset of ongoing commands (to be more defined).
         Return: a queryset, so to apply .all() or .count().
         """
+        # XXX: fix return type.
         res = Command.objects.filter(date_paid__isnull=True)\
                              .exclude(Q(publisher__isnull=True) & Q(distributor__isnull=True))
         if res and to_dict:
