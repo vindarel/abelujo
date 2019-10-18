@@ -968,8 +968,10 @@ def basket_export(request, pk):
     barcodes = _is_truthy(request.GET.get('barcodes'))
     covers = _is_truthy(request.GET.get('covers'))
 
-    distributor = Distributor.objects.get(id=distributor_id)
-    list_name = "Command {}".format(distributor.name)
+    distributor = basket.distributor
+    list_name = _("Liste")
+    if distributor:
+        list_name = list_name + " {}".format(distributor.name)
 
     if copies_set and report and format:
         response = _export_response(copies_set, report=report, format=format,
