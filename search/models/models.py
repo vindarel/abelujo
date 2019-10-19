@@ -418,7 +418,7 @@ class Card(TimeStampedModel):
     #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
     isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
-    authors = models.ManyToManyField(Author)
+    authors = models.ManyToManyField(Author, blank=True)
     price = models.FloatField(null=True, blank=True, default=0.0)
     #: price_sold is only used to generate an angular form, it is not
     #: stored here in the db.
