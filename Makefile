@@ -30,6 +30,7 @@ rebase:
 
 # Install in current directory
 pip: pip-submodule
+	@pip install -U pip
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
 
 pip-nosudo: pip-submodule
