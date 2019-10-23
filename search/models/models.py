@@ -189,20 +189,19 @@ class Distributor(TimeStampedModel):
 
         return data
 
-    def set_distributor(self, basket=None):
-        """
-        Set this distributor for the cards of the given basket.
+    def set_distributor(self, cards):
+        """Set this distributor for the given cards.
 
-        - basket: obj
+        - cards: list of cards (obj)
 
-        Used with baskets.
+        Used for example when applying the inventory of a command,
+        from a basket which was given a supplier.
         """
-        if basket:
-            for card in basket.copies.all():
-                if card.distributor != self:
-                    card.distributor = self
-                    # warning: performance
-                    card.save()
+        for card in cards:
+            if card.distributor != self:
+                card.distributor = self
+                # warning: performance
+                card.save()
 
 
 class Publisher (models.Model):
@@ -3878,6 +3877,15 @@ class InventoryBase(TimeStampedModel):
         self.archived = True
         self.save()
 
+    def reopen(self):
+        """
+        Re-open this inventory.
+        """
+        self.closed = None
+        self.archived = False
+        self.applied = False
+        self.save()
+
     @staticmethod
     def apply_inventory(pk):
         raise NotImplementedError
@@ -3916,7 +3924,13 @@ class InventoryBase(TimeStampedModel):
         # we must set the cards' distributor to it.
         # XXX: check that there is no card with another distributor ?
         if hasattr(self, "basket") and self.basket and self.basket.distributor:
-            self.basket.distributor.set_distributor(basket=self.basket)
+            # When receiving a command, we must update the distributor
+            # of the cards of the command, and of the basket (which is
+            # maybe empty, or may contain other cards).
+            cards = self.copies.all()
+            if self.basket.copies:  # optim.
+                cards = list(set(self.copies.all()) | set(self.basket.copies.all()))
+            self.basket.distributor.set_distributor(cards)
 
         # The inventory has inventoried cards: self.copies_set.all()
         # We must not forget cards that were not inventoried but must be set to 0.
