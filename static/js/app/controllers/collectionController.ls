@@ -150,8 +150,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages
             $scope.page += 1
-            $log.info "-- cur_basket_index: ", $scope.cur_basket_index
-            $scope.getCopies $scope.cur_basket_index
+            $scope.validate!
 
     $scope.lastPage = !->
         $scope.page = $scope.meta.num_pages
