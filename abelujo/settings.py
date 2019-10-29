@@ -122,6 +122,9 @@ STATICFILES_FINDERS = (
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = os.path.join(STATIC_ROOT, "images")
 
+# Directory to store generated files (stock export).
+EXPORTS_ROOT = os.path.join(STATIC_ROOT, "exports")
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"

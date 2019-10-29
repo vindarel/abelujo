@@ -15,8 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from abelujo import settings
+
 import datetime
 import toolz
+import os
 import urllib
 
 import unicodecsv
@@ -83,6 +86,15 @@ log = get_logger()
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 
+EXTENSION_TO_CONTENT_TYPE = {
+    'csv': 'text/csv',
+    'txt': 'text/raw',
+    'pdf': 'application/pdf',
+}
+
+def filename_content_type(filename):
+    extension = filename.split('.')[-1]
+    return EXTENSION_TO_CONTENT_TYPE[extension]
 
 class MyNumberInput(TextInput):
     # render an IntegerField with a "number" html5 widget, not text.
@@ -621,6 +633,9 @@ def collection_export(request, **kwargs):
     - format: text, csv.
     - select: all, selection.
     """
+
+    now = datetime.date.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M')
+
     if request.method == 'GET':
         formatt = request.GET.get('format')
         select = request.GET.get('select')
@@ -666,6 +681,14 @@ def collection_export(request, **kwargs):
         else:
             content = "This format isn't supported."
 
+        # Save the file.
+        filename = "abelujo-stock-{}.{}".format(now, formatt)
+        filepath = os.path.join(settings.EXPORTS_ROOT, filename)
+        if not os.path.exists(settings.EXPORTS_ROOT):
+            os.makedirs(settings.EXPORTS_ROOT)
+        with open(filepath, "wb") as f:
+            f.write(content)
+
         # Build the response.
         response = HttpResponse(content, content_type=content_type)
         filename = u"Abelujo stock search"
@@ -679,6 +702,28 @@ def collection_export(request, **kwargs):
         content = "no search query"
 
     return HttpResponse(content, content_type=content_type)
+
+@login_required
+def collection_exports(request):
+    """
+    View the stock export files.
+    """
+    template = "search/collection_exports.html"
+    files = os.listdir(settings.EXPORTS_ROOT)
+    files = list(reversed(sorted(files)))
+    return render(request, template, {"files": files})
+
+@login_required
+def collection_view_file_export(request, filename):
+    if filename:
+        filepath = os.path.join(settings.EXPORTS_ROOT, filename)
+        content = None
+        with open(filepath, "r") as f:
+            content = f.read()
+        content_type = filename_content_type(filename)
+        response = HttpResponse(content, content_type=content_type)
+        response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+        return response
 
 @login_required
 def collection(request):

@@ -42,7 +42,11 @@ urlpatterns = patterns('',
 
     url(r'^stats/', 'search.views.dashboard', name="stats"),
 
+    # view exported files:
+    url(r'^stock/exports/download/(?P<filename>.+)', 'search.views.collection_view_file_export', name="collection_view_file_export"),
+    url(r'^stock/exports/?', 'search.views.collection_exports', name="collection_exports"),
     url(r'^stock/export', 'search.views.collection_export', name="collection_export"),
+
     url(r'^stock/card/(?P<pk>\d+)/?$', 'search.views.card_show',
         name="card_show"),
     # works to edit a card with /edit/\d+. JS will fetch the existing info.

@@ -115,6 +115,7 @@ div(ng-cloak, ng-controller="collectionController")
        ul.dropdown-menu
          li: a(href="/stock/export?query={{ 'query' | ng }}&format=txt&select=selection&publisher_id={{ 'publisher.pk' | ng}}&place_id={{ 'place.id' | ng}}&card_type={{ 'card_type' | ng}}&shelf_id={{ 'shelf.pk' | ng}}&distributor_id={{ 'distributor.id' | ng}}", ng-show="selected", title='{% trans "Export the selection to txt" %}'){% trans 'Selection to txt' %}
          li: a(href="/stock/export?format=csv&select=all", title='{% trans "Export the stock to csv" %}'){% trans 'Stock to csv (Excel, LibreOffice) (this may take a while)' %}
+         li: a(href="/stock/exports/") {% trans "List of exports" %}
 
       .btn-group
         button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
