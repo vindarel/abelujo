@@ -425,6 +425,8 @@ class Card(TimeStampedModel):
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False)
+    #: Quantity (caution: this field is denormalized, computed on each save).
+    quantity = models.IntegerField(null=True, blank=True)
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT)
     #: Publisher of the card:
@@ -515,12 +517,16 @@ class Card(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         """We override the save method in order to copy the price to
-        price_sold and save covers on disk. We want it to initialize the angular form.
+        price_sold, save covers on disk and denormalize the quantity.
+        We want it to initialize the angular form.
         """
         # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
         self.price_sold = self.price
 
         super(Card, self).save(*args, **kwargs)
+
+        # Update quantity.
+        self.quantity = self.quantity_compute()
 
         # Save cover.
         # After super, otherwise unique constraint error.
@@ -559,17 +565,6 @@ class Card(TimeStampedModel):
         It is called from the templates so can't take any arg.
         """
         return "; ".join([aut.name for aut in self.authors.all()])
-
-    @property
-    def quantity(self):
-        """
-        Return the total quantity of this card in stock, i.e. in all the Places.
-        """
-        return self.quantity_compute()
-
-    @quantity.setter
-    def quantity(self, val):
-        raise NotImplementedError
 
     def quantity_compute(self):
         """Return the quantity of this card in all places (not deposits).
@@ -827,6 +822,7 @@ class Card(TimeStampedModel):
                in_deposits=False,
                order_by=None,
                with_quantity=True,
+               quantity_choice=None,
                page=None,
                page_size=10):
         """
@@ -839,6 +835,8 @@ class Card(TimeStampedModel):
         - card_type_id: id referencing to CardType
 
         - with_quantity: if False, avoid this calculation (costly).
+
+        - quantity_choice: string, one of QUANTITY_CHOICES (negative quantity, between 0 and 3, etc).
 
         - to_list: if True, we return a list of dicts, not Card objects.
 
@@ -928,6 +926,22 @@ class Card(TimeStampedModel):
             except Exception as e:
                 log.error(u"Error searching for isbn {}: {}".format(isbn, e))
                 msgs.add_error(_("Error searching for isbn ".format(isbn)))
+
+        # Filter by quantity in stock.
+        if quantity_choice and quantity_choice != "":
+            # caution: values are duplicated on collectionController.ls
+            if quantity_choice == "<0":
+                cards = cards.filter(quantity__lt=0)
+            elif quantity_choice == "0":
+                cards = cards.filter(quantity=0)
+            elif quantity_choice == "[1,3]":
+                cards = cards.filter(quantity__gte=1).filter(quantity__lte=3)
+            elif quantity_choice == "[3,5]":
+                cards = cards.filter(quantity__gte=3).filter(quantity__lte=5)
+            elif quantity_choice == "[5,10]":
+                cards = cards.filter(quantity__gte=5).filter(quantity__lte=10)
+            elif quantity_choice == ">10":
+                cards = cards.filter(quantity__gte=10)
 
         # Sort
         if cards and order_by:
@@ -1672,6 +1686,9 @@ class Place (models.Model):
         """Adds the given number of copies (1 by default) of the given
         car to this place.
 
+        Be sure to update the card.quantity denormalized field. Saving
+        a Card object is enough as it re-computes it.
+
         If arg "add" is False, set the quantity instead of summing it.
 
         - card: a card object
@@ -1697,6 +1714,7 @@ class Place (models.Model):
 
             # A card could be in the DB but only in a list
             # (basket). Now it's bought at least once.
+            # Saving the card also updates the quantity field (computed from the places).
             card.in_stock = True
             card.save()
 

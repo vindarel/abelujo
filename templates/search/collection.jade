@@ -95,6 +95,13 @@ div(ng-cloak, ng-controller="collectionController")
           ng-model="shelf"
           ng-options="elt.fields.name for elt in shelfs")
 
+    div.form-group
+      label.col-sm-4 {% trans "Quantity" %}
+      div.col-md-8
+        select.form-control(
+          ng-model="quantity_choice"
+          ng-options="elt.name for elt in quantity_choices")
+
  .row
    .col-md-7(style="margin-top: 7px; margin-bottom: 7px")
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")

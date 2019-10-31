@@ -243,6 +243,7 @@ def cards(request, **response_kwargs):
     shelf_id = request.GET.get("shelf_id")
     order_by = request.GET.get("order_by")
     # bought = request.GET.get("in_stock")
+    quantity_choice = request.GET.get("quantity_choice")
 
     # The quantity of a card is costly. It was a bottleneck. Avoid
     # this calculation if possible.
@@ -270,6 +271,7 @@ def cards(request, **response_kwargs):
                              order_by=order_by,
                              in_deposits=True,
                              with_quantity=with_quantity,
+                             quantity_choice=quantity_choice,
                              page=page,
                              page_size=page_size)
     # XXX: :return the msgs.
@@ -1783,7 +1785,6 @@ def commands_supplier(request, pk):
     # total_price_discounted
     # total_price_excl_vat
     # total_price_discounted_excl_vat
-    # import ipdb; ipdb.set_trace()
 
     # Calling to_dict() is the costly part.
     # page starts at 1.
@@ -1793,9 +1794,7 @@ def commands_supplier(request, pk):
     end = page * page_size
     nb_results = len(copies_from_dist)
     num_pages = get_page_count(copies_from_dist, size=page_size)
-    # import ipdb; ipdb.set_trace()
     copies_from_dist = [it.to_dict() for it in copies_from_dist[beg:end]]
-    # import ipdb; ipdb.set_trace()
     to_ret = {
         'status': ALERT_SUCCESS,
         'data': copies_from_dist,

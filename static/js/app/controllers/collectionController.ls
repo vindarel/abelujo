@@ -36,6 +36,17 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.baskets = []
     $scope.show_images = true
 
+    $scope.quantity_choice = null
+    $scope.quantity_choices = [
+      {name: gettext(" "), id: ""}
+      {name: gettext("negative"), id: "<0"}
+      {name: "0", id: "0"}
+      {name: gettext("between 1 and 3"), id: "[1,3]"}
+      {name: gettext("between 3 and 5"), id: "[3,5]"}
+      {name: gettext("between 5 and 10"), id: "[5,10]"}
+      {name: gettext("> 10"), id: ">10"}
+    ]
+
     # pagination
     $scope.page = 1
     $scope.page_size = 25
@@ -136,6 +147,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params.shelf_id = $scope.shelf.pk
         if $scope.distributor
             params.distributor_id = $scope.distributor.id
+        if $scope.quantity_choice
+            params.quantity_choice = $scope.quantity_choice.id
         params.page = $scope.page
         params.page_size = $scope.page_size
 
