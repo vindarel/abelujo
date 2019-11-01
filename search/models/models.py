@@ -523,10 +523,10 @@ class Card(TimeStampedModel):
         # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
         self.price_sold = self.price
 
-        super(Card, self).save(*args, **kwargs)
-
         # Update quantity.
         self.quantity = self.quantity_compute()
+
+        super(Card, self).save(*args, **kwargs)
 
         # Save cover.
         # After super, otherwise unique constraint error.
@@ -1008,6 +1008,9 @@ class Card(TimeStampedModel):
         Return a list of dicts with new keys each:
         - "in_stock": 0/the quantity
         - "id"
+
+        Used when searching for cards on the datasource. If a result
+        already exists in our DB, add the quantity and id fields.
         """
         if not cards:
             return cards

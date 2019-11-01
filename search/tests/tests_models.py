@@ -390,7 +390,7 @@ class TestDistributor(TestCase):
         basket.distributor = DistributorFactory()
         basket.save()
         # Set the distributor of these cards.
-        self.dist.set_distributor(basket=basket)
+        self.dist.set_distributor(basket.copies.all())
 
         self.assertEqual(basket.copies.last().distributor, self.dist)
 
@@ -1255,9 +1255,12 @@ class TestInventory(TestCase):
     def setUp(self):
         self.place = PlaceFactory()
         self.card = CardFactory()
+        # The place has a card before the inventory. But after the
+        # inventory is applied, the place has what was in it.
         self.place.add_copy(self.card)
         self.inv = InventoryFactory()
         self.inv.place = self.place
+        self.inv.save()
 
     def test_inventory_state(self):
         self.inv.add_copy(self.card, nb=2)
@@ -1327,7 +1330,7 @@ class TestInventory(TestCase):
         res, msgs = self.inv.apply()
         self.assertTrue(res)
         qty_after = self.place.quantities_total()
-        self.assertEqual(qty_after, 1 + ADD2 + ADD3)  # 1 is from setUp()
+        self.assertEqual(qty_after, ADD2 + ADD3)
         self.assertTrue(self.inv.applied)
         self.assertTrue(self.inv.closed)
 
@@ -1490,6 +1493,8 @@ class TestCommandsReceive(TestCase):
         self.preferences.default_place = PlaceFactory()
         self.preferences.save()
         self.new_place = PlaceFactory()
+        self.inv.place = self.preferences.default_place
+        self.inv.save()
 
         # A distributor.
         self.distributor = DistributorFactory()
