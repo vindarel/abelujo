@@ -36,18 +36,27 @@ class Command(BaseCommand):
                             dest="ids",
                             action="store",
                             help="Apply these inventories. Takes a single id or a coma-separated list of ids.")
+        parser.add_argument('--all',
+                            dest="all",
+                            action="store_true",
+                            help="Apply all open inventories.")
 
     def handle(self, *args, **options):
         ids= options.get('ids')
-        try:
-            if ',' not in ids:
-                invs = [Inventory.objects.get(pk=ids)]
-            else:
-                ids= ids.split(',')
-                invs = Inventory.objects.filter(pk__in=ids)
-        except Exception as e:
-            self.stderr.write("{}".format(e))
-            exit(1)
+        apply_all = options.get('all')
+        if not apply_all:
+            try:
+                if ',' not in ids:
+                    invs = [Inventory.objects.get(pk=ids)]
+                else:
+                    ids= ids.split(',')
+                    invs = Inventory.objects.filter(pk__in=ids)
+            except Exception as e:
+                self.stderr.write("{}".format(e))
+                exit(1)
+
+        else:
+            invs = Inventory.open_inventories()
 
         self.stdout.write("Applying the following inventories:")
         self.stdout.write("\n".join([it.__unicode__() for it in invs]))
