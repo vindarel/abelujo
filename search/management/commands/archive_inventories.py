@@ -44,13 +44,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         exclude_ids= options.get('exclude')
-        if ',' in exclude_ids:
+        if exclude_ids and ',' in exclude_ids:
             exclude_ids = exclude_ids.split(',')
             exclude_ids = [int(it) for it in exclude_ids]
 
         all_ids = Inventory.objects.filter(closed=None).all().values_list('id', flat=True)
 
-        ids = sorted(list(set(all_ids) - set(exclude_ids)))
+        if exclude_ids:
+            ids = sorted(list(set(all_ids) - set(exclude_ids)))
+        else:
+            ids = sorted(all_ids)
 
         invs = Inventory.objects.filter(pk__in=ids)
 
