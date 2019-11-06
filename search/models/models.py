@@ -934,8 +934,18 @@ class Card(TimeStampedModel):
                 cards = cards.filter(quantity__lt=0)
             elif quantity_choice == "0":
                 cards = cards.filter(quantity=0)
+            elif quantity_choice == "<=0":
+                cards = cards.filter(quantity__lte=0)
+            elif quantity_choice == ">0":
+                cards = cards.filter(quantity__gt=0)
+            elif quantity_choice == ">1":
+                cards = cards.filter(quantity__gt=1)
+            elif quantity_choice == ">2":
+                cards = cards.filter(quantity__gt=2)
             elif quantity_choice == "[1,3]":
                 cards = cards.filter(quantity__gte=1).filter(quantity__lte=3)
+            elif quantity_choice == "[1,5]":
+                cards = cards.filter(quantity__gte=1).filter(quantity__lte=5)
             elif quantity_choice == "[3,5]":
                 cards = cards.filter(quantity__gte=3).filter(quantity__lte=5)
             elif quantity_choice == "[5,10]":
