@@ -648,6 +648,7 @@ def collection_export(request, **kwargs):
         place_id = request.GET.get("place_id")
         shelf_id = request.GET.get("shelf_id")
         order_by = request.GET.get("order_by")
+        quantity_choice = request.GET.get("quantity_choice")
         # bought = request.GET.get("in_stock")
 
         # Export all the stock or a custom search ?
@@ -662,6 +663,7 @@ def collection_export(request, **kwargs):
                                     card_type_id=card_type_id,
                                     place_id=place_id,
                                     shelf_id=shelf_id,
+                                    quantity_choice=quantity_choice,
                                     order_by=order_by,
                                     in_deposits=True)
 
