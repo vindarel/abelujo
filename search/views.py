@@ -17,6 +17,7 @@
 
 from abelujo import settings
 
+import io  # write to file in utf8
 import datetime
 import toolz
 import os
@@ -686,7 +687,7 @@ def collection_export(request, **kwargs):
         filepath = os.path.join(settings.EXPORTS_ROOT, filename)
         if not os.path.exists(settings.EXPORTS_ROOT):
             os.makedirs(settings.EXPORTS_ROOT)
-        with open(filepath, "wb") as f:
+        with io.open(filepath, "w", encoding="utf8") as f:
             f.write(content)
 
         # Build the response.
