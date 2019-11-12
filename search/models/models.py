@@ -3946,7 +3946,7 @@ class InventoryBase(TimeStampedModel):
         else:
             # xxx use get_default_place ?
             # TODO: when inventoring a shelf, also choose a place !
-            place_or_deposit = Place.objects.get(id=1)  # default place. That could be improved.
+            place_or_deposit = Preferences.get_default_place()
 
         # Shall we set the quantities of these cards in the stock or sum them to the existing ?
         # By default, we set them.
@@ -4682,7 +4682,7 @@ class Command(TimeStampedModel):
         cmd.save()
 
         # Remove from the ToCommand basket.
-        tocmd = Basket.objects.get(id=1)
+        tocmd = Basket.objects.get(id=1)  # TODO: don't hardcode the id.
         ids = [it[0] for it in ids_qties]
         tocmd.remove_copies(ids)
 
