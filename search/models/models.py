@@ -2501,7 +2501,9 @@ class DepositState(models.Model):
     @property
     def total_to_pay(self):
         total_sells = self.total_sells
-        discount = self.deposit.distributor.discount
+        discount = 0
+        if self.deposit.distributor and self.deposit.distributor.discount:
+            discount = self.deposit.distributor.discount
         return total_sells * discount / 100 if discount else total_sells
 
     @property
