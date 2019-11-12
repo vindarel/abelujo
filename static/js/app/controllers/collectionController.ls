@@ -39,8 +39,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.quantity_choice = null
     $scope.quantity_choices = [
       {name: gettext(" "), id: ""}
-      {name: "<= 0", id: "<=0"}
       {name: "< 0", id: "<0"}
+      {name: "<= 0", id: "<=0"}
       {name: "0", id: "0"}
       {name: "> 0", id: ">0"}
       {name: "> 1", id: ">1"}
