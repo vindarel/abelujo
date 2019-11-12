@@ -3978,6 +3978,8 @@ class InventoryBase(TimeStampedModel):
             pass
         elif hasattr(self, "shelf") and self.shelf:
             all_copies = self.shelf.cards()
+        elif hasattr(self, "publisher") and self.publisher:
+            all_copies = self.publisher.card_set.all()
         else:
             log.error("Applying inventory {}, getting all cards: missing implementation.".format(self.id))
             raise NotImplementedError
