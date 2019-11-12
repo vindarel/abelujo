@@ -671,6 +671,9 @@ def collection_export(request, **kwargs):
             # res = Card.objects.filter(in_stock=True).all()
             res = Card.cards_in_stock()
 
+        if not os.path.exists(settings.EXPORTS_ROOT):
+            os.makedirs(settings.EXPORTS_ROOT)
+
         # Which format ?
         if formatt == 'txt':
             content_type = "text/raw"
@@ -678,8 +681,10 @@ def collection_export(request, **kwargs):
 
         elif formatt == "csv":
             content_type = "text/csv"
-            cards = [it.to_list() for it in res]
-            content = cards2csv(cards)
+            # Be careful. With to_list=True above, this should not be needed.
+            if not isinstance(res[0], dict):
+                res = [it.to_list() for it in res]
+            content = cards2csv(res)
 
         else:
             content = "This format isn't supported."
@@ -687,10 +692,13 @@ def collection_export(request, **kwargs):
         # Save the file.
         filename = "abelujo-stock-{}.{}".format(now, formatt)
         filepath = os.path.join(settings.EXPORTS_ROOT, filename)
-        if not os.path.exists(settings.EXPORTS_ROOT):
-            os.makedirs(settings.EXPORTS_ROOT)
-        with io.open(filepath, "w", encoding="utf8") as f:
-            f.write(content)
+        if formatt == 'csv':
+            with open(filename, 'w') as f:
+                f.write(content)
+        else:
+            with io.open(filepath, 'w', encoding='utf8') as f:
+                f.write(content)
+
 
         # Build the response.
         response = HttpResponse(content, content_type=content_type)
