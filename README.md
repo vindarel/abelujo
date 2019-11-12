@@ -137,6 +137,23 @@ In the virtual env, run:
     # git submodule update --remote
     # install pip, migrate, gulp, collecstatic, compile transalation files
 
+Actions required for updates
+----------------------------
+
+Some updates need to be completed with a command run manually.
+
+- october 2019, 31st (commit 7a3ac86bfde821f546e6c66cd352a7038278fc3b):
+  after the update, you need to run a management command:
+
+  ./manage.py compute_quantities
+
+This creates and populates the denormalized field `Card.quantity`. We
+can compute the quantity (given its stock in different places) with
+`card.quantity_compute()`.
+
+The command is idempotent, it waits for confirmation and it prints a status.
+
+
 Development
 ===========
 
