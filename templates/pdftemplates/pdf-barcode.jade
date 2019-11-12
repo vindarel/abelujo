@@ -46,7 +46,8 @@ head
             th
           th {% trans "Title" %}
           th {% trans "Authors" %}
-          th {% trans "ISBN" %}
+          if covers
+            th {% trans "ISBN" %}
           th {% trans "Price" %}
           th {% trans "with discount" %}
           th {{ quantity_header }}
@@ -61,7 +62,8 @@ head
               td: img(src="{{ card_qty.0.cover }}")
             td {{ forloop.counter }}- {{ card_qty.0.title }}
             td {{ card_qty.0.authors_repr }}
-            td {{ card_qty.0.isbn }} -
+            if covers
+              td {{ card_qty.0.isbn }} -
             td(style='{text-align: center;}')
               if card_qty.0.price
                 {{ card_qty.0.price }} €
