@@ -17,6 +17,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.test import TestCase
+from search.models import Card
 from search.models import Entry
 from search.models import OutMovement
 
@@ -66,10 +67,16 @@ class TestOutMovement(TestCase):
         self.assertTrue(self.card3 not in obj.copies.all())
         self.assertEqual(1, len(OutMovement.returns()))
         # The cards were decremented from the stock.
-        self.assertEqual(0, self.card.quantity)
+        # Testing with self.card fails. self.card.quantity is not updated.
+        # Fetching the card again is ok.
+        card = Card.objects.first()
+        card2 = Card.objects.all()[1]
+        card3 = Card.objects.all()[2]
+        self.assertEqual(0, card.quantity_compute())
+        self.assertEqual(0, card.quantity)
         self.assertEqual(0, self.place.quantity_of(self.card))
-        self.assertEqual(0, self.card2.quantity)
-        self.assertEqual(1, self.card3.quantity)
+        self.assertEqual(0, card2.quantity)
+        self.assertEqual(1, card3.quantity)
         self.assertEqual(1, self.place.quantity_cards())
 
         # Ignore quantity < 0

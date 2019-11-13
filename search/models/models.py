@@ -1677,6 +1677,8 @@ class Place (models.Model):
             pc = self.placecopies_set.get(card__id=card.id)
             pc.nb -= quantity
             pc.save()
+            card.quantity = card.quantity_compute()  # update denormalized fields (like the quantity).
+            card.save()
 
     def to_dict(self):
         # Could (should?) do with django serializers but its output is a bit too much.
