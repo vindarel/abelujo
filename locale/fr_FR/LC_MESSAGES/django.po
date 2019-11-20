@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-20 10:09+0000\n"
-"PO-Revision-Date: 2019-11-20 11:15+0100\n"
+"POT-Creation-Date: 2019-11-20 10:28+0000\n"
+"PO-Revision-Date: 2019-11-20 11:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -913,20 +913,20 @@ msgstr "Ajouter un fournisseur"
 msgid "Minimal quantity before command"
 msgstr "Quantité minimale avant commande"
 
-#: templates/search/card_add.jade:55
+#: templates/search/card_add.jade:56
 msgid "Add to following deposits"
 msgstr "Ajouter au(x) dépôt(s)"
 
-#: templates/search/card_add.jade:65 templates/search/sell_details.jade:44
+#: templates/search/card_add.jade:67 templates/search/sell_details.jade:44
 #: templates/search/to_command.jade:53
 msgid "total"
 msgstr "total"
 
-#: templates/search/card_add.jade:68
+#: templates/search/card_add.jade:70
 msgid "Buy copies for each place"
 msgstr "Acheter des exemplaires pour chaque lieu"
 
-#: templates/search/card_add.jade:75 templates/search/card_add.jade.py:86
+#: templates/search/card_add.jade:78 templates/search/card_add.jade.py:89
 #: templates/search/card_buy.jade:39 templates/search/card_edit.jade:124
 #: templates/search/card_move.jade:35 templates/search/card_places_add.jade:32
 #: templates/search/deposits_create.jade:110
@@ -935,8 +935,8 @@ msgstr "Acheter des exemplaires pour chaque lieu"
 msgid "Validate"
 msgstr "Valider"
 
-#: templates/search/card_add.jade:78
-msgid "Add to baskets"
+#: templates/search/card_add.jade:81
+msgid "Add to lists"
 msgstr "Ajouter aux listes"
 
 #: templates/search/card_buy.jade:30 templates/search/searchresults.jade:144
@@ -2153,6 +2153,9 @@ msgstr ""
 #: templates/search/to_command_index.jade:39
 msgid "Cards with no supplier"
 msgstr "Notices sans fournisseur"
+
+#~ msgid "Add to baskets"
+#~ msgstr "Ajouter aux listes"
 
 #~ msgid "sell id"
 #~ msgstr "vente n°"
