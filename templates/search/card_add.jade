@@ -49,7 +49,8 @@ div.ng-cloak(ng-controller="cardAddController")
       tr
         td {% trans "Minimal quantity before command" %}
         td
-          input(type="number", min=0, ng-model="threshold")
+          form(ng-submit="validate()")
+            input(type="number", min=0, ng-model="threshold")
 
   .row(ng-show="filtered_deposits.length")
       h4 {% trans "Add to following deposits" %}:
@@ -57,9 +58,10 @@ div.ng-cloak(ng-controller="cardAddController")
         tr(ng-repeat="it in filtered_deposits")
          td.my-narrow {{ "it.name" | ng }} ({{ "it.distributor" | ng }})
          td
-           input(type="number", min=0
-            ng-model="deposits[$index].quantity"
-            ng-change="update_total_deposits()")
+           form(ng-submit="validate()")
+             input(type="number", min=0
+               ng-model="deposits[$index].quantity"
+               ng-change="update_total_deposits()")
         tr
           td
           td {% trans "total" %}: {{ "total_deposits" | ng }}
@@ -70,12 +72,13 @@ div.ng-cloak(ng-controller="cardAddController")
         tr(ng-repeat="it in places")
           td.my-narrow {{ "it.name" | ng }}
           td
+            form(ng-submit="validate()")
               input(type="number", min=0, ng-model="places[$index].quantity", ng-change="update_total_places()")
 
   input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate()")
 
   .row
-      h4 {% trans "Add to baskets" %}:
+      h4 {% trans "Add to lists" %}:
       table.table.table-condensed.table-striped.my-table-narrow
         tr(ng-repeat="it in baskets")
           td.my-narrow {{ "it.name" | ng }}
