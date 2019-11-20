@@ -140,7 +140,7 @@ div.ng-cloak(ng-controller="sellController")
           span(ng-repeat="auth in card.authors")
             span {{ 'auth.fields.name' | ng }}
           i.glyphicon.glyphicon-warning-sign(
-            ng-show="{% verbatim %} cards_selected[$index].ambiguous_sell {% endverbatim %}"
+            ng-show="{% verbatim %} card.ambiguous_sell {% endverbatim %}"
             title="{% trans 'There is a conflict with deposits.' %}")
           //- i.glyphicon.glyphicon-exclamation-s
 
@@ -150,7 +150,7 @@ div.ng-cloak(ng-controller="sellController")
                 input.form-control(
                   type="number", step="0.1", min=0
                   value="{{card.price_sold}}"
-                  ng-model="{% verbatim %} cards_selected[$index].price_sold {% endverbatim %}"
+                  ng-model="{% verbatim %} card.price_sold {% endverbatim %}"
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )
                 span.input-group-addon €
@@ -159,19 +159,22 @@ div.ng-cloak(ng-controller="sellController")
             select(
               ng-options="elt.name for elt in discounts.choices"
               title='{% trans "Choose a discount" %}'
-              ng-model="cards_selected[$index].quick_discount"
+              ng-model="card.quick_discount"
               ng-change='discount_apply($index)'
               )
 
-        .col-md-2
+        .col-md-1
             p.input-group
                 label.sr-only {% trans "Quantity" %}
                 span.input-group-addon X
                 input.form-control(
                   type="number", min=0, max=99
-                  ng-model="{% verbatim %} cards_selected[$index].quantity {% endverbatim %}"
+                  ng-model="{% verbatim %} card.quantity_sell {% endverbatim %}"
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )
+
+        .col-md-1
+          div stock: {{ 'card.quantity' | ng }} => {{ 'card.quantity - card.quantity_sell' | ng }}
 
         .col-md-1
             i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")

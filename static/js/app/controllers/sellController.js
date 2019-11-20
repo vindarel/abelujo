@@ -120,7 +120,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                       // xxx: take the repr from django
                       // return item.title + ", " + item.authors + ", éd. " + item.publishers;
                       var repr = item.title + ", " + item.authors_repr + ", éd. " + item.pubs_repr;
-                      item.quantity = 1;
+                      item.quantity_sell = 1;
                       $scope.cards_fetched.push({"repr": repr,
                                                  "id": item.id,
                                                  "item": item});
@@ -167,7 +167,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.updateTotalPrice = function() {
         $scope.total_price = _.reduce($scope.cards_selected,
                                       function(memo, it) {
-                                          return memo + (it.price_sold * it.quantity);},
+                                          return memo + (it.price_sold * it.quantity_sell);},
                                       0);
         $scope.total_price = $scope.total_price.toFixed(2); // round the float
     };
@@ -175,7 +175,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.getTotalCopies = function(){
         return _.reduce($scope.cards_selected,
                         function(memo, it){
-                            return memo + it.quantity;},
+                            return memo + it.quantity_sell;},
                         0);
     };
 
@@ -219,7 +219,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   return card.price_sold;
               });
               quantities = _.map($scope.cards_selected, function(card){
-                  return card.quantity;
+                  return card.quantity_sell;
               });
           } else {
               return;
