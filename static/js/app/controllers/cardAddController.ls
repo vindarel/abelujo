@@ -27,6 +27,8 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.shelf = {}
     $scope.distributor = {}
     $scope.threshold = 0
+    $scope.places = []
+    $scope.baskets = []
 
     $scope.total_places = 0
     $scope.total_places_discount = 0
@@ -90,7 +92,7 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     .then (response) !->
         $scope.places = response.data
         for place in $scope.places
-            place.quantity = 0
+            place.quantity = 1
 
     # Get baskets
     $http.get "/api/baskets/", do
