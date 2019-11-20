@@ -825,8 +825,7 @@ class Card(TimeStampedModel):
                quantity_choice=None,
                page=None,
                page_size=10):
-        """
-        Search a card (by title, authors' names, ean/isbn).
+        """Search a card (by title, authors' names, ean/isbn).
 
         SIZE_LIMIT = 100
 
@@ -834,7 +833,9 @@ class Card(TimeStampedModel):
 
         - card_type_id: id referencing to CardType
 
-        - with_quantity: if False, avoid this calculation (costly).
+        - with_quantity (deprecated): if False, avoid this
+          calculation. update: it *was* costly. The quantity field is now
+          denormalized.
 
         - quantity_choice: string, one of QUANTITY_CHOICES (negative quantity, between 0 and 3, etc).
 
@@ -1637,9 +1638,9 @@ class Place (models.Model):
         except Exception, e:
             log.error(u"--- error while setting the default place: %s" % (e,))
 
-    def move(self, dest, card, nb):
+    def move(self, dest, card, nb, create_movement=True):
         """Move the given card from this place to "dest" and create an history
-        movement.
+        movement (unless create_movement is set to False).
 
         - dest: Place object
         - nb: quantity (int)
@@ -1657,8 +1658,15 @@ class Place (models.Model):
                 dest_copies.save()
             dest_copies.nb += nb
             dest_copies.save()
-            mvt = history.InternalMovement(origin=self, dest=dest, card=card, nb=nb)
-            mvt.save()
+            # Delete the intermediate object when nb is 0, so a search
+            # filter by this place doesn't erronously return (see card.search: we
+            # filter by the place id present in placecopies).
+            if dest_copies.nb == 0:
+                dest_copies.delete()
+
+            if create_movement:
+                mvt = history.InternalMovement(origin=self, dest=dest, card=card, nb=nb)
+                mvt.save()
             return True
         except Exception as e:
             log.error(e)

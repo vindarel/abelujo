@@ -91,6 +91,7 @@ div.ng-cloak(ng-controller="sellController")
               )
         .col-md-9
           p.input-group
+           form(ng-submit="sellCards()")
             input.nullable.form-control(
               type='text'
               typeahead-loading="loadingCards"

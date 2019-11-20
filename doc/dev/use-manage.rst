@@ -95,3 +95,22 @@ The script will fail early if any error were to occure.
 **warning**: presently the script is not indempotent, meaning if you run it twice, it will add twice the quantities.
 
 If you need more features, get in touch.
+
+Other management commands
+-------------------------
+
+Transforming a shelf to a place::
+
+  ./manage.py shelf2place --shelf=<id> [--can_sell true/false]
+
+Use case: we did the inventory, and it turned out that "mezzanine"
+should be the stocking place, not a shelf (so we can know what's in
+the reserve).
+
+Transform the shelf into a place of the same name with ALL the cards
+from the default place. We don't create a movement object.
+
+Consequently the moved cards won't have an associated shelf
+anymore.  The shelf object will be deleted, and the
+inventories made against it too.  You might want to save or
+export your DB beforehand.
