@@ -31,23 +31,10 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     $scope.baskets = []
 
     $scope.total_places = 0
-    $scope.total_places_discount = 0
     $scope.total_deposits = 0
 
     # Current language ? for url redirection.
     $scope.language = utils.url_language($window.location.pathname)
-
-    $scope.update_total_places = !->
-        # total withOUT discount
-        $scope.total_places = ($scope.places |> map (.quantity) |> sum ) * $scope.card.price
-        $scope.total_places = $scope.total_places.toFixed 2
-
-        # total with discount
-        if $scope.distributor.selected
-            $scope.total_places_discount = ($scope.places |> map (.quantity) |> sum ) * ($scope.card.price - $scope.card.price * $scope.distributor.selected.discount / 100)
-            $scope.total_places_discount = $scope.total_places_discount.toFixed 2
-        else
-            console.log "must set the distributor first"
 
     $scope.update_total_deposits = !->
         $scope.total_deposits = $scope.deposits |> map (.quantity) |> sum
@@ -113,7 +100,6 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         for depo in $scope.deposits
             depo.quantity = 0
         $scope.update_total_deposits()
-        $scope.update_total_places()
 
     #
     # Validate

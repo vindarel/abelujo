@@ -71,12 +71,8 @@ div.ng-cloak(ng-controller="cardAddController")
           td.my-narrow {{ "it.name" | ng }}
           td
               input(type="number", min=0, ng-model="places[$index].quantity", ng-change="update_total_places()")
-        tr
-          td
-          td.text-left {% trans "total" %}: {{ "total_places" | ng }}
-        tr
-          td
-          td.text-left {% trans "with discount" %}: {{ "total_places_discount" | ng }}
+
+  input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate()")
 
   .row
       h4 {% trans "Add to baskets" %}:
