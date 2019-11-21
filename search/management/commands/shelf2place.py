@@ -43,11 +43,6 @@ class Command(BaseCommand):
                             required=True,
                             help="shelf id.")
 
-        # parser.add_argument('--place',
-        #                     dest="place",
-        #                     action="store",
-        #                     help="new place name.")
-
         parser.add_argument('--can_sell',
                             dest="can_sell",
                             action="store_true",
@@ -68,7 +63,12 @@ class Command(BaseCommand):
             exit(0)
 
         default_place = Preferences.get_default_place()
-        new_place = Place.objects.create(name=shelf.name, can_sell=options.get('can_sell'))
+        new_place, created = Place.objects.get_or_create(name=shelf.name,
+                                                         defaults={'can_sell': options.get('can_sell')})
+
+        if not created:
+            self.stdout.write("A place with the same name already exists.")
+            exit(1)
 
         for card in shelf.cards():
             default_place.move(new_place, card, card.quantity, create_movement=False)
