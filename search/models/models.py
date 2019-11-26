@@ -1071,11 +1071,16 @@ class Card(TimeStampedModel):
     def sell(id=None, quantity=1, place_id=None, place=None, silence=False):
         """Sell a card. Decreases its quantity in the given place.
 
+        If it is not present anymore in the selling place (aka in its
+        shelf), add it to the restocking list. If it is not present in
+        stock, add it to the command list (the autocommand basket).
+
         This is a static method, use it like this:
         >>> Card.sell(id=<id>)
 
         :param int id: the id of the card to sell.
         return: a tuple (return_code, "message")
+
         """
         msgs = Messages()
         try:
@@ -1133,9 +1138,15 @@ class Card(TimeStampedModel):
         except Exception as e:
             log.error(u"Error selling a card: {}.".format(e))
             # Didn't return an error message, returned OK !
+            return (None, _("Internal error, sorry."))
 
-        if card.quantity <= 0:
+        remaining_quantity = card.quantity
+        if remaining_quantity <= card.threshold:
             Basket.add_to_auto_command(card)
+
+        # Possibly add to the restocking list.
+        if card.quantity_selling_places() == 0 and remaining_quantity >= 1:
+            Restocking.add_card(card)
 
         return msgs.status, msgs.msgs
 
@@ -1527,6 +1538,19 @@ class Card(TimeStampedModel):
         - Return: int
         """
         return sum(self.depositstatecopies_set.all().values_list('nb_current', flat=True))
+
+    def quantity_selling_places(self):
+        """
+        Return the quantity in selling places (aka, the quantity remaining
+        in the shelves, not in the stock).
+        """
+        return sum(self.placecopies_set.filter(place__can_sell=True).values_list('nb', flat=True))
+
+    def quantity_reserve(self):
+        """
+        Return the quantity in no-selling places (aka, the stock)
+        """
+        return sum(self.placecopies_set.filter(place__can_sell=False).values_list('nb', flat=True))
 
     @property
     def deposits(self):
@@ -2272,6 +2296,112 @@ class BasketType (models.Model):
 
     def __unicode__(self):
         return u"{}".format(self.name)
+
+
+class RestockingCopies(models.Model):
+    """
+    Cards present in the restocking list with their quantities (intermediate table).
+    """
+    card = models.ForeignKey("Card", blank=True, null=True)
+    restocking = models.ForeignKey("Restocking")
+    quantity = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return u"Restocking: %s copies of %s" % (self.quantity, self.card.title)
+
+    def to_dict(self):
+        """
+        Card representation and its quantity in the list.
+
+        Return: a dict, with the added 'list_qty'.
+        """
+        card = []
+        try:
+            card = self.card.to_dict()
+            card['list_qty'] = self.quantity
+        except Exception as e:
+            log.error(e)
+
+        return card
+
+
+class Restocking(models.Model):
+    """A list of cards to move from the stock place to their shelves.
+
+    All cards here are candidates to be moved. We can move a selection of them.
+    They are taken out of this list with an InternalMovement.
+
+    The movement procedure can detect inaccuracies in the stock. The
+    stock indeed can change between the card's entry in the list and
+    the moment the user does the restocking (another user might have
+    done another movement).
+
+    Likewise, the user is able to correct stock errors (s)he sees in
+    the stock: if he sees that there actually remains one exemplary in
+    the shelf, he can remove the card from this list.
+
+    He must be able to set the shelf target easily.
+    """
+    # copies = models.OneToManyField(Card, through="RestockingCopies", blank=True)
+    # Has a many-to-one relationship with RestockingCopies.
+    pass
+
+    def get_absolute_url(self):
+        return "/restocking/"
+
+    def to_dict(self):
+        return {
+                "id": self.id,
+                "length": self.copies.count(),
+        }
+
+    @staticmethod
+    def add_card(card):
+        try:
+            # TODO: init the DB with one Restocking record.
+            restock = Restocking.objects.first()
+            copies, created = restock.restockingcopies_set.get_or_create(card=card)
+            copies.quantity += 1
+            copies.save()
+
+        except Exception, e:
+            log.error(u"Error while adding '%s' to the list of restocking" % (card.title))
+            log.error(e)
+            return 0
+
+        return copies.quantity
+
+    @staticmethod
+    def remove_card(card):
+        """
+        Remove this card from the restocking list.
+        If all went well, return True.
+        """
+        # TODO:
+        try:
+            restock = Restocking.objects.first()
+            place_copy, created = restock.restockingcopies_set.get_or_create(card=card)
+            place_copy.delete()
+
+        except Exception, e:
+            log.error(u"Error while removing %s to the restocking list" % (card.title))
+            log.error(e)
+            return False
+
+        return True
+
+    @staticmethod
+    def quantities_total():
+        """
+        Total quantity of cards in the restocking list.
+        Return: int (None on error)
+        """
+        try:
+            restock = Restocking.objects.first()
+            return sum([it.quantity for it in restock.restockingcopies_set.all()])
+        except Exception as e:
+            log.error(u"Error getting the total quantities in the restocking list: {}".format(e))
+
 
 class DepositStateCopies(models.Model):
     """For each card of the deposit state, remember:

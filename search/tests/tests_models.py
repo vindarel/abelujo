@@ -48,6 +48,8 @@ from search.models import Place
 from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
+from search.models import Restocking
+from search.models import RestockingCopies
 from search.models import Sell
 from search.models import Shelf
 from search.models import SoldCards
@@ -1148,6 +1150,27 @@ class TestSells(TestCase):
         # Undo the sell. It knows it was from a deposit.
         sell.undo()
         self.assertEqual(self.depo.quantity_of(self.secondcard), 1)
+
+    def test_sell_restocking(self):
+        # Create one required Restocking intermediate record.
+        restock = Restocking()
+        restock.save()
+
+        self.reserve = Place(name="reserve", can_sell=False)
+        self.reserve.save()
+        # We have 1 copy in the shelf, 1 copy in the reserve.
+        self.reserve.add_copy(self.autobio, nb=1)
+
+        # Sell 1:
+        Sell.sell_card(self.autobio)
+        # When the cards reaches 0 in stock, we should see it in the restocking list.
+        self.assertEqual(Restocking.quantities_total(), 1)
+        # If we sell it again, its quantity becomes 0, so
+        # we shouldn't see it in the restocking list again.
+        Sell.sell_card(self.autobio)
+        self.assertEqual(Restocking.quantities_total(), 1)
+        self.assertEqual(self.autobio.quantity_compute(), 0)
+
 
 class TestSellSearch(TestCase):
 

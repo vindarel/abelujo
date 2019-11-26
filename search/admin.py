@@ -28,6 +28,7 @@ from search.models import Inventory
 from search.models import Place
 from search.models import PlaceCopies
 from search.models import Publisher
+from search.models import RestockingCopies
 from search.models import Sell
 
 # Custom admin for the client admin:
@@ -123,6 +124,7 @@ admin.site.register(Inventory, InventoryAdmin)
 admin.site.register(Place)
 admin.site.register(PlaceCopies)
 admin.site.register(Publisher, PublisherAdmin)
+admin.site.register(RestockingCopies)
 admin.site.register(Sell)
 
 admin_site = MyAdmin(name='myadmin')
