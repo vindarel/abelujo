@@ -50,7 +50,7 @@ class CardAdmin(admin.ModelAdmin):
 
         return super(CardAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    search_fields = ["title", "authors__name"]
+    search_fields = ["title", "authors__name", "isbn"]
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
     filter_horizontal = ("authors", "publishers",)
