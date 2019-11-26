@@ -1119,6 +1119,7 @@ class Card(TimeStampedModel):
                     # XXX: get the default place
                     # fix also the undo().
                     place_copy = card.placecopies_set.filter(place__can_sell=True).first()
+                    place_obj = place_copy.place
                 else:
                     place_obj = Preferences.get_default_place()
                     place_copy, created = place_obj.placecopies_set.get_or_create(card=card)
@@ -1145,7 +1146,7 @@ class Card(TimeStampedModel):
             Basket.add_to_auto_command(card)
 
         # Possibly add to the restocking list.
-        if card.quantity_selling_places() == 0 and remaining_quantity >= 1:
+        if card.quantity_selling_places() <= 0 and card.quantity_reserve() >= 1:
             Restocking.add_card(card)
 
         return msgs.status, msgs.msgs
@@ -2383,11 +2384,13 @@ class Restocking(models.Model):
         """
         restock = Restocking.get_or_create()
         copies = restock.restockingcopies_set.all()
-        cards = [it.card for it in copies]
+        # cards = [it.card for it in copies]
         res = []
-        for card in cards:
-            if card.quantity_selling_places() <= 0:
-                res.append(card)
+        for copy in copies:
+            if copy.card.quantity_selling_places() <= 0:
+                res.append(copy.card)
+            else:
+                copy.delete()
 
         return res
 
@@ -2436,6 +2439,38 @@ class Restocking(models.Model):
             return restock.restockingcopies_set.count()
         except Exception as e:
             log.error(u"Error getting the total quantities in the restocking list: {}".format(e))
+
+    @staticmethod
+    def validate(cards=None):
+        """
+        Validate the current list: create a movement.
+        If a list of cards is given, move only these ones and leave the others.
+        """
+        restock = Restocking.get_or_create()
+        if not cards:
+            cards = restock.cards()
+
+        # To create the internal movement,
+        # we currently support one stock place and one selling place.
+        # It could be customized for each card.
+        origin = Place.objects.filter(can_sell=False).first()
+        dest = Place.objects.filter(can_sell=True).first()
+
+        for card in cards:
+            copy = restock.restockingcopies_set.filter(card=card).first()
+            # filter VS get: when we re-run the script (manual
+            # testing, it is possible that a card has already been
+            # removed from the list.
+            if copy:
+                copy.delete()
+
+                # So, don't create the movement twice.
+                # We currently can not edit the moved quantity.
+                # TODO: but it can differ on the page :S
+                mvt = history.InternalMovement(origin=origin, dest=dest, card=card, nb=1)
+                mvt.save()
+
+        return True
 
 
 class DepositStateCopies(models.Model):

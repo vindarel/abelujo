@@ -41,7 +41,6 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
     $http.get("/api/restocking/nb_ongoing")
     .then (response) ->
         $scope.restocking_total = response.data.data
-        $log "--- ", response.data.data
         return response.data.data
 
     # Goal: Grab what url we're on to highlight the active menu bar,

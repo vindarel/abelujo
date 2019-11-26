@@ -20,39 +20,78 @@
 
 {% load i18n %}
 {% load bootstrap3 %}
+{% load ngfilter %}
 {% bootstrap_css %}
 
 <h3> Restocking </h3>
-<h4> Cards that should be moved from the reserve to their shelves.</h4>
+<h4> {% trans "Cards that should be moved from the reserve to their shelves. Confirm each card then click on validate" %}.</h4>
 
-<div class="btn-group">
-  <a type="button" class="btn btn-success" href="http://abelujo.cc/docs/restocking/" target="_blank"> Validate
-  </a>
+<div ng-controller="restockingController">
+  <div>
 
-  <a type="button" class="btn btn-default" href="http://abelujo.cc/docs/restocking/" target="_blank">
-    <i class="glyphicon glyphicon-question-sign"></i>
-  </a>
+    <div>
+      <uib-alert
+          ng-repeat="alert in alerts"
+          type="{{ 'alert.level' | ng }}"
+          close="closeAlert($item)"
+          ng-click="closeAlert($item)">
+        {{ 'alert.message' | ng }}
+      </uib-alert>
+    </div>
+
+    <a ng-click="validate()" type="button" class="btn btn-success" title='{% trans "Move all the selected cards to their shelves." %}'> {% trans "Validate" %}
+    </a>
+
+    <a type="button" class="btn btn-default" href="http://abelujo.cc/docs/restocking/" target="_blank" title='{% trans "See the documentation" %}'>
+      <i class="glyphicon glyphicon-question-sign"></i>
+    </a>
+  </div>
+
+  <table class="table table-condensed table-striped">
+    <thead>
+      <th> Title </th>
+      <th> Publisher </th>
+      <th> In reserve </th>
+      <th> In shelf </th>
+      <th> To move </th>
+      <th> </th>
+    </thead>
+
+    <tbody>
+      {% for card in cards %}
+      <tr>
+        <div>
+          <td>
+            <div ng-class="{ 'my-green-bg': is_ready({{ card.id }}) == true, 'my-strike-through': card_ignored({{ card.id }}) == true }">
+              <a href="{{ card.get_absolute_url }}"> {{ card.title }} </a>
+            </div>
+          </td>
+        </div>
+        <td> {{ card.pubs_repr }} </td>
+        <td> {{ card.quantity_reserve }} </td>
+        <td> {{ card.quantity_selling_places }} </td>
+        <td>
+          <!-- <input class="my-number-input" type="number" min=0 max=99 value="{{ card.quantity_to_restock }}"/> -->
+          {{ card.quantity_to_restock }}
+        </td>
+        <td>
+          <p class="btn-group">
+            <button ng-click="mark_ready({{ card.id }})" class="btn btn-default" type='button' title='{% trans "You have this card between your hands." %}'>
+              <i class="glyphicon glyphicon-ok"></i>
+            </button>
+            <button ng-click="ignore_card({{ card.id }})" class="btn btn-default" type='button' title='{% trans "Ignore this card for this session." %}'>
+              <i class="glyphicon glyphicon-ban-circle"></i>
+            </button>
+
+            <!-- <button ng-click="not_implemented()" class="btn btn-default" type='button' title='{% trans "Remove this card from the list." %}'> -->
+            <!-- <i class="glyphicon glyphicon-remove"></i> -->
+            <!-- </button> -->
+          </p>
+
+        </td>
+      </tr>
+      {% endfor %}
+  </table>
 </div>
-
-<table class="table table-condensed table-striped">
-  <thead>
-    <th> Title </th>
-    <th> In stock </th>
-    <th> In shelf </th>
-    <th> To move </th>
-  </thead>
-
-  <tbody>
-    {% for card in cards %}
-    <tr>
-      <td> {{ card.title }} </td>
-      <td> {{ card.quantity_reserve }} </td>
-      <td> {{ card.quantity_selling_places }} </td>
-      <td>
-        <input class="my-number-input" type="number" min=0 max=99 value="{{ card.quantity_to_restock }}"/>
-      </td>
-    </tr>
-  {% endfor %}
-</table>
 
 {% endblock content %}

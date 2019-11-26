@@ -72,6 +72,10 @@
     background: #f8fb3d;
 }
 
+.my-strike-through {
+    text-decoration: line-through;
+}
+
 /* Make anchors appear below the fixed navbar  */
 .myanchor {
     padding-top: 75px;

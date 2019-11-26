@@ -724,6 +724,25 @@ def sell_undo(request, pk, **response_kwargs):
         return JsonResponse(to_ret)
 
 
+def restocking_validate(request):
+    """
+    Validate the restocking list, with ids given as POST parameters if any.
+    """
+    msgs = Messages()
+    status = True
+    to_ret = {'status': status, 'alerts': []}
+    if request.method == 'POST':
+        params = json.loads(request.body)
+        if params:
+            ids = params.get('ids')
+            if ids:
+                cards = Card.objects.filter(id__in=ids)
+                Restocking.validate(cards=cards)
+                msgs.add_success(_("Cards moved with success"))
+
+    to_ret['alerts'] = msgs.msgs
+    return JsonResponse(to_ret)
+
 TO_RET = {"status": ALERT_SUCCESS,
           "alerts": [],
           "data": []}
