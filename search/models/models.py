@@ -2349,6 +2349,14 @@ class Restocking(models.Model):
     def get_absolute_url(self):
         return "/restocking/"
 
+    @staticmethod
+    def get_or_create():
+        restock = Restocking.objects.first()
+        if not restock:
+            restock = Restocking()
+            restock.save()
+        return restock
+
     def to_dict(self):
         return {
                 "id": self.id,
@@ -2358,8 +2366,7 @@ class Restocking(models.Model):
     @staticmethod
     def add_card(card):
         try:
-            # TODO: init the DB with one Restocking record.
-            restock = Restocking.objects.first()
+            restock = Restocking.get_or_create()
             copies, created = restock.restockingcopies_set.get_or_create(card=card)
             copies.quantity += 1
             copies.save()
