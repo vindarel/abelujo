@@ -1,0 +1,58 @@
+<!-- Copyright 2014 - 2019 The Abelujo Developers -->
+<!-- See the COPYRIGHT file at the top-level directory of this distribution -->
+
+<!-- Abelujo is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation, either version 3 of the License, or -->
+<!-- (at your option) any later version. -->
+
+<!-- Abelujo is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with Abelujo.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+
+<h3> Restocking </h3>
+<h4> Cards that should be moved from the reserve to their shelves.</h4>
+
+<div class="btn-group">
+  <a type="button" class="btn btn-success" href="http://abelujo.cc/docs/restocking/" target="_blank"> Validate
+  </a>
+
+  <a type="button" class="btn btn-default" href="http://abelujo.cc/docs/restocking/" target="_blank">
+    <i class="glyphicon glyphicon-question-sign"></i>
+  </a>
+</div>
+
+<table class="table table-condensed table-striped">
+  <thead>
+    <th> Title </th>
+    <th> In stock </th>
+    <th> In shelf </th>
+    <th> To move </th>
+  </thead>
+
+  <tbody>
+    {% for card in cards %}
+    <tr>
+      <td> {{ card.title }} </td>
+      <td> {{ card.quantity_reserve }} </td>
+      <td> {{ card.quantity_selling_places }} </td>
+      <td>
+        <input class="my-number-input" type="number" min=0 max=99 value="{{ card.quantity_to_restock }}"/>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}

@@ -46,6 +46,7 @@ from models import Inventory
 from models import Place
 from models import Preferences
 from models import Publisher
+from models import Restocking
 from models import Sell
 from models import Shelf
 from models import SoldCards
@@ -1809,6 +1810,15 @@ def nb_commands_ongoing(request, **kwargs):
     """
     if request.method == 'GET':
         nb = Command.nb_ongoing()
+        to_ret = {
+            'status': ALERT_SUCCESS,
+            'data': nb,
+        }
+        return JsonResponse(to_ret)
+
+def nb_restocking_ongoing(request, **kwargs):
+    if request.method == 'GET':
+        nb = Restocking.nb_ongoing()
         to_ret = {
             'status': ALERT_SUCCESS,
             'data': nb,

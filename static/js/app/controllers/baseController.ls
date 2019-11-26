@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$window', ($http, $scope, $window) !->
+angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$window', '$log', ($http, $scope, $window, $log) !->
 
     {Obj, join, reject, sum, map, filter, lines} = require 'prelude-ls'
 
 
     $scope.alerts_open = null
     $scope.auto_command_total = null
+    $scope.restocking_total = null
 
     $http.get("/api/alerts/open")
         .then (response) ->
@@ -35,6 +36,12 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
     $http.get("/api/commands/nb_ongoing")
     .then (response) ->
         $scope.ongoing_commands_nb = response.data.data
+        return response.data.data
+
+    $http.get("/api/restocking/nb_ongoing")
+    .then (response) ->
+        $scope.restocking_total = response.data.data
+        $log "--- ", response.data.data
         return response.data.data
 
     # Goal: Grab what url we're on to highlight the active menu bar,

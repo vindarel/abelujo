@@ -104,6 +104,10 @@ html(ng-app="abelujo")
           li(ng-class="{active: url == 'sell' }")
             a(href='{% url "card_sell" %}') {% trans "Sell" %}
 
+          li(ng-class="{active: url == 'restocking' }")
+            a(href='{% url "card_restocking" %}' title='{% trans "Cards to move from the stock place to the shelves" %}') {% trans "Restocking" %}
+              span.badge.ng-cloak(title='{% trans "Number of cards to move from the stock to their shelves." %}') {{ "restocking_total" | ng }}
+
           li(ng-class="{active: url == 'inventories' }")
             a(href='{% url "inventories" %}') {% trans "Inventories" %}
 

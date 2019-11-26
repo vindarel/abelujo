@@ -74,6 +74,9 @@ urlpatterns = patterns('',
     url(r'^sell/(?P<pk>\d+)', 'search.views.sell_details',
         name="sell_details"),
 
+    url(r'^restocking/$', 'search.views.restocking',
+        name="card_restocking"),
+
     url(r'^collection/', 'search.views.collection',
         name="card_collection"),
 

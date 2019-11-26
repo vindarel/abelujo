@@ -19,6 +19,7 @@ from abelujo import settings
 
 import io  # write to file in utf8
 import datetime
+import time
 import toolz
 import os
 import urllib
@@ -68,6 +69,7 @@ from search.models import InventoryCommand
 from search.models import Place
 from search.models import Preferences
 from search.models import Publisher
+from search.models import Restocking
 from search.models import Sell
 from search.models import Stats
 from search.models import Entry
@@ -776,6 +778,14 @@ def sell_details(request, pk):
         "total_price_init": total_price_init,
     })
 
+def restocking(request):
+    template = "search/restocking.html"
+    cards = Restocking.cards()
+    return render(request, template, {
+                  'cards': cards,
+        })
+
+
 class DepositsListView(ListView):
     model = Deposit
     template_name = "search/deposits.jade"
@@ -1159,7 +1169,6 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         total_qty = sum([it[1] for it in cards_qties])
 
         # barcode
-        import time
         start = time.time()
         if barcodes:
             for card, __ in cards_qties:

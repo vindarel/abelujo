@@ -1552,6 +1552,16 @@ class Card(TimeStampedModel):
         """
         return sum(self.placecopies_set.filter(place__can_sell=False).values_list('nb', flat=True))
 
+    def quantity_to_restock(self):
+        """
+        Return the quantity that ideally we want to move from the stock place to the selling place.
+        """
+        res = 1 - self.quantity_selling_places()
+        # Shall we check that this number is not superior to the
+        # quantity available in the stock place?
+        # This should not happen since we re-filter the restocking list.
+        return res
+
     @property
     def deposits(self):
         """
@@ -2364,6 +2374,24 @@ class Restocking(models.Model):
         }
 
     @staticmethod
+    def cards():
+        """
+        Return the list of cards that we need to move from the stock place to the selling one.
+
+        We must re-filter the list, it is possible that cards where moved since
+        they were added to the restocking list.
+        """
+        restock = Restocking.get_or_create()
+        copies = restock.restockingcopies_set.all()
+        cards = [it.card for it in copies]
+        res = []
+        for card in cards:
+            if card.quantity_selling_places() <= 0:
+                res.append(card)
+
+        return res
+
+    @staticmethod
     def add_card(card):
         try:
             restock = Restocking.get_or_create()
@@ -2398,14 +2426,14 @@ class Restocking(models.Model):
         return True
 
     @staticmethod
-    def quantities_total():
+    def nb_ongoing():
         """
         Total quantity of cards in the restocking list.
         Return: int (None on error)
         """
         try:
-            restock = Restocking.objects.first()
-            return sum([it.quantity for it in restock.restockingcopies_set.all()])
+            restock = Restocking.get_or_create()
+            return restock.restockingcopies_set.count()
         except Exception as e:
             log.error(u"Error getting the total quantities in the restocking list: {}".format(e))
 
