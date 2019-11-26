@@ -1114,11 +1114,11 @@ class Card(TimeStampedModel):
                     return (None, MSG_INTERNAL_ERROR)  # xxx to be propagated
 
             else:
-                # Take the first place this card is present in.
+                # Take the first selling place this card is present in.
                 if card.placecopies_set.count():
                     # XXX: get the default place
                     # fix also the undo().
-                    place_copy = card.placecopies_set.first()
+                    place_copy = card.placecopies_set.filter(place__can_sell=True).first()
                 else:
                     place_obj = Preferences.get_default_place()
                     place_copy, created = place_obj.placecopies_set.get_or_create(card=card)
