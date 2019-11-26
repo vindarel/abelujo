@@ -1236,14 +1236,12 @@ def history_sells_exports(request, **kwargs):
         content = writer.writerow("")
 
         rows = [(it['created'],
-                 it['sell_id'],
                  it['price_sold'],
                  it['card']['title'],
                  it['card']['distributor']['name'] if it['card']['distributor'] else "",
                 )
                 for it in res]
         header = (_("date sold"),
-                  _("sell id"),
                   _("price sold"),
                   _("title"),
                   _("supplier"),
@@ -1257,7 +1255,6 @@ def history_sells_exports(request, **kwargs):
     elif outformat in ['txt']:
         rows = [u"{}-+-{}-+-{}-+-{}-+-{}".format(
             _("date sold"),
-            _("sell id"),
             _("price sold"),
             _("title"),
             _("supplier"),
@@ -1266,7 +1263,6 @@ def history_sells_exports(request, **kwargs):
         # https://pyformat.info/
         rows += sorted([u"{:10.10} {} {:5} {:30} {}".format(
             it['created'],
-            it['sell_id'],
             it.get('price_sold', 0),
             truncate(it['card']['title']),  # truncate long titles
             it['card']['distributor']['name'] if it['card']['distributor'] else "",
