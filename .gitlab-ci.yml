@@ -1,59 +1,59 @@
-# # https://docs.gitlab.com/ce/ci/yaml/README.html
+# https://docs.gitlab.com/ce/ci/yaml/README.html
 
-# # We try a ready image with nodejs and python, instead of the python:2.7
-# # Easier, but we don't test nodejs installation.
-# image: beevelop/nodejs-python
+# We try a ready image with nodejs and python, instead of the python:2.7
+# Easier, but we don't test nodejs installation.
+image: beevelop/nodejs-python
 
-# variables:
-#   GIT_SUBMODULE_STRATEGY: recursive
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 
-# stages:
-#   - test
-#   - release
+stages:
+  - test
+  - release
 
-# cache:
-#   paths:
-#   - node_modules/
-#   - .yarn
+cache:
+  paths:
+  - node_modules/
+  - .yarn
 
 
-# .py: &py
-#   only:
-#     - master
-#   # note: we can't have a before_script here and one above.
-#   before_script:
-#     - apt-get update -qy
-#     - make debian-nosudo
-#     # - virtualenv .
-#     # - source bin/activate
-#     - pip install -U pip
-#     - make pip-nosudo
-#     # - make pip
-#     - make pip-dev
-#     - make db
-#     - redis-server &  # for redis cache
+.py: &py
+  only:
+    - master
+  # note: we can't have a before_script here and one above.
+  before_script:
+    - apt-get update -qy
+    - make debian-nosudo
+    # - virtualenv .
+    # - source bin/activate
+    - pip install -U pip
+    - make pip-nosudo
+    # - make pip
+    - make pip-dev
+    - make db
+    - redis-server &  # for redis cache
 
-# py-qa:
-#   <<: *py
-#   stage: test
-#   allow_failure: true
-#   script: make qa
+py-qa:
+  <<: *py
+  stage: test
+  allow_failure: true
+  script: make qa
 
-# test:
-#   <<: *py
-#   stage: test
-#   script: make unit
+test:
+  <<: *py
+  stage: test
+  script: make unit
 
-# install:
-#   <<: *py
-#   stage: release
-#   # Build everything only when a new tag is pushed. A waste to do everytime.
-#   only:
-#     - tags
-#   script:
-#     - make install-yarn
-#     - node --version
-#     - yarn --version
-#     - echo "running install-nosudo"
-#     - make install-nosudo
-#     - python manage.py check
+install:
+  <<: *py
+  stage: release
+  # Build everything only when a new tag is pushed. A waste to do everytime.
+  only:
+    - tags
+  script:
+    - make install-yarn
+    - node --version
+    - yarn --version
+    - echo "running install-nosudo"
+    - make install-nosudo
+    - python manage.py check
