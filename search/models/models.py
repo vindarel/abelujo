@@ -1146,7 +1146,7 @@ class Card(TimeStampedModel):
             Basket.add_to_auto_command(card)
 
         # Possibly add to the restocking list.
-        if card.quantity_selling_places() <= 0 and card.quantity_reserve() >= 1:
+        if card.quantity_to_restock() > 0:
             Restocking.add_card(card)
 
         return msgs.status, msgs.msgs
@@ -1555,12 +1555,13 @@ class Card(TimeStampedModel):
 
     def quantity_to_restock(self):
         """
-        Return the quantity that ideally we want to move from the stock place to the selling place.
+        Return the quantity that we can move from the stock
+        place to the selling place.
         """
-        res = 1 - self.quantity_selling_places()
-        # Shall we check that this number is not superior to the
-        # quantity available in the stock place?
-        # This should not happen since we re-filter the restocking list.
+        if self.quantity <= 0:
+            return 0
+        ideal_quantity = 1 - self.quantity_selling_places()
+        res = min(max(0, ideal_quantity), self.quantity_reserve())
         return res
 
     @property
@@ -2398,16 +2399,18 @@ class Restocking(models.Model):
     def add_card(card):
         try:
             restock = Restocking.get_or_create()
-            copies, created = restock.restockingcopies_set.get_or_create(card=card)
-            copies.quantity += 1
-            copies.save()
+            copy, created = restock.restockingcopies_set.get_or_create(card=card)
+            qty_to_restock = copy.card.quantity_to_restock()
+            if qty_to_restock > 0:
+                copy.quantity += qty_to_restock
+                copy.save()
 
         except Exception, e:
             log.error(u"Error while adding '%s' to the list of restocking" % (card.title))
             log.error(e)
             return 0
 
-        return copies.quantity
+        return qty_to_restock
 
     @staticmethod
     def remove_card(card):
@@ -2431,7 +2434,7 @@ class Restocking(models.Model):
     @staticmethod
     def nb_ongoing():
         """
-        Total quantity of cards in the restocking list.
+        Total quantity of cards in the restocking list (not the number of copies to move).
         Return: int (None on error)
         """
         try:
@@ -2443,7 +2446,7 @@ class Restocking(models.Model):
     @staticmethod
     def validate(cards=None):
         """
-        Validate the current list: create a movement.
+        Validate the current list: move the cards and create a movement.
         If a list of cards is given, move only these ones and leave the others.
         """
         restock = Restocking.get_or_create()
@@ -2459,16 +2462,14 @@ class Restocking(models.Model):
         for card in cards:
             copy = restock.restockingcopies_set.filter(card=card).first()
             # filter VS get: when we re-run the script (manual
-            # testing, it is possible that a card has already been
-            # removed from the list.
+            # testing), it is possible that a card has already been
+            # removed from the list and its movement created.
             if copy:
                 copy.delete()
+                origin.move(dest, card, copy.quantity)
 
-                # So, don't create the movement twice.
                 # We currently can not edit the moved quantity.
                 # TODO: but it can differ on the page :S
-                mvt = history.InternalMovement(origin=origin, dest=dest, card=card, nb=1)
-                mvt.save()
 
         return True
 

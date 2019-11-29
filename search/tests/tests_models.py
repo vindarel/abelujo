@@ -1161,15 +1161,27 @@ class TestSells(TestCase):
         # We have 1 copy in the shelf, 1 copy in the reserve.
         self.reserve.add_copy(self.autobio, nb=1)
 
-        # Sell 1:
+        # Sell 1.
         Sell.sell_card(self.autobio)
-        # When the cards reaches 0 in stock, we should see it in the restocking list.
-        self.assertEqual(Restocking.quantities_total(), 1)
-        # If we sell it again, its quantity becomes 0, so
-        # we shouldn't see it in the restocking list again.
+        # When the cards reach 0 in the selling place and they are
+        # available in stock, we should see it in the restocking list.
+        self.assertEqual(Restocking.nb_ongoing(), 1)
+        self.assertEqual(restock.restockingcopies_set.first().quantity, 1)
+
+        # Sell 2. Sell it again.
+        # We don't have enough in stock to add 1 quantity in the restocking list.
         Sell.sell_card(self.autobio)
-        self.assertEqual(Restocking.quantities_total(), 1)
+        # We had 2 sells, the remaining quantity to -1.
+        # We'd like to move another one, but we don't have enough in stock.
+        self.assertEqual(restock.restockingcopies_set.first().quantity, 1)
         self.assertEqual(self.autobio.quantity_compute(), 0)
+
+        # Validate. Move the copies and create a movement.
+        self.assertEqual(-1, self.place.quantity_of(self.autobio))
+        self.assertEqual(1, self.reserve.quantity_of(self.autobio))
+        restock.validate()
+        self.assertEqual(0, self.place.quantity_of(self.autobio))
+        self.assertEqual(0, self.reserve.quantity_of(self.autobio))
 
 
 class TestSellSearch(TestCase):
