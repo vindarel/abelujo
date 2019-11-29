@@ -100,7 +100,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         "
         body = ""
         for card in $scope.cards
-            body += "#{card.threshold} x #{card.title} ( #{card.price} €), #{card.pubs_repr}, #{card.isbn}" + NEWLINE
+            body += "#{card.basket_qty} x #{card.title} ( #{card.price} €), #{card.pubs_repr}, #{card.isbn}" + NEWLINE
 
         total_price = 0
         total_price = $scope.cards
