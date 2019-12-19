@@ -426,7 +426,7 @@ class Card(TimeStampedModel):
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False)
     #: Quantity (caution: this field is denormalized, computed on each save).
-    quantity = models.IntegerField(null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True, editable=False)
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT)
     #: Publisher of the card:
