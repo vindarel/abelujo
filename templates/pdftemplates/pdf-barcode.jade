@@ -58,7 +58,8 @@ head
             if covers
               // quickfix: cover is the remote url, not the local file.
               td: img(src="{{ card_qty.0.cover }}")
-            td {{ forloop.counter }}- {{ card_qty.0.title }}
+            td {{ forloop.counter }}-
+              a(href='{{ card_qty.0.details_url }}') {{ card_qty.0.title }}
             td {{ card_qty.0.authors_repr }}
             td(style='{text-align: center;}')
               if card_qty.0.price
