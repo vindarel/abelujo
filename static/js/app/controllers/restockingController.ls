@@ -33,14 +33,22 @@ angular.module "abelujo" .controller 'restockingController', ['$http', '$scope',
     $scope.ignore_card = (id) ->
         $log.info id
         $scope.ignored_cards[id] = true
+        card = document.getElementById(id)
+        card.setAttribute('data-card-ok', 'no')
+        $log.info "card ok? ", card.getAttribute('data-card-ok')
 
     $scope.mark_ready = (id) ->
         if $scope.ignored_cards[id]
            $scope.ignored_cards[id] = false
         $scope.cards_ok[id] = true
+        card = document.getElementById(id)
+        card.setAttribute('data-card-ok', 'yes')
+        $log.info "card ok? ", card.getAttribute('data-card-ok')
+
         $log.info "cards ok: ", $scope.cards_ok
 
     $scope.is_ready = (id) ->
+        # Would be as easy with the web api, looking at data-card-ok.
         if $scope.ignored_cards[id] == true
            return false
         return $scope.cards_ok[id]
@@ -57,16 +65,15 @@ angular.module "abelujo" .controller 'restockingController', ['$http', '$scope',
 
     $scope.validate = !->
         $log.info "validating cards ok: ", $scope.cards_ok
-
         inputs = document.getElementsByClassName('my-number-input')
-        ## res = map (it) -> ([it.getAttribute('data-card-id'), it.value]), inputs
-        ids = map (.getAttribute('data-card-id')), inputs
-        qties = map (.value), inputs
-        $log.info ids, qties
-
-        ## ids = Obj.filter (== true), $scope.cards_ok
-        ## ids = Obj.keys ids
-        ## $log.info ids
+        ids = []
+        qties = []
+        # Select only cards ready.
+        for input in inputs
+            if input.getAttribute('data-card-ok') == 'yes'
+               ids.push(input.getAttribute('data-card-id'))
+               qties.push(input.value)
+        $log.info "sending: ", ids, qties
 
         config = do
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}

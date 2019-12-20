@@ -71,7 +71,7 @@
         <td> {{ card.quantity_reserve }} </td>
         <td> {{ card.quantity_selling_places }} </td>
         <td>
-          <input data-card-id="{{ card.id }}" class="my-number-input" type="number" min=0 max=99 value="{{ card.quantity_to_restock }}"/>
+          <input id="{{ card.id }}" data-card-id="{{ card.id }}" data-card-ok="no" class="my-number-input" type="number" min=0 max=99 value="{{ card.quantity_to_restock }}"/>
           <!-- {{ card.quantity_to_restock }} -->
         </td>
         <td>
