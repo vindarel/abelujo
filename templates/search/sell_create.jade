@@ -106,10 +106,6 @@ div.ng-cloak(ng-controller="sellController")
             )
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
-            span.input-group-btn
-              button.btn.btn-default(type='button')
-                i.glyphicon.glyphicon-search
-
       .row
         .col-md-3
           input.btn.btn-success(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
