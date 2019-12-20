@@ -735,9 +735,11 @@ def restocking_validate(request):
         params = json.loads(request.body)
         if params:
             ids = params.get('ids')
-            if ids:
+            qties = params.get('qties')
+            assert len(ids) == len(qties)
+            if ids and qties:
                 cards = Card.objects.filter(id__in=ids)
-                Restocking.validate(cards=cards)
+                Restocking.validate(cards=cards, quantities=qties)
                 msgs.add_success(_("Cards moved with success"))
 
     to_ret['alerts'] = msgs.msgs

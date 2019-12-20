@@ -2444,11 +2444,15 @@ class Restocking(models.Model):
             log.error(u"Error getting the total quantities in the restocking list: {}".format(e))
 
     @staticmethod
-    def validate(cards=None):
+    def validate(cards=None, quantities=None):
         """
         Validate the current list: move the cards and create a movement.
         If a list of cards is given, move only these ones and leave the others.
+        If a list of quantities is given, use them, otherwise use the default.
         """
+        if quantities:
+            assert len(cards) == len(quantities)
+
         restock = Restocking.get_or_create()
         if not cards:
             cards = restock.cards()
@@ -2459,14 +2463,19 @@ class Restocking(models.Model):
         origin = Place.objects.filter(can_sell=False).first()
         dest = Place.objects.filter(can_sell=True).first()
 
-        for card in cards:
+        for (i, card) in enumerate(cards):
             copy = restock.restockingcopies_set.filter(card=card).first()
             # filter VS get: when we re-run the script (manual
             # testing), it is possible that a card has already been
             # removed from the list and its movement created.
             if copy:
+                if quantities:
+                    qty = int(quantities[i])
+                else:
+                    qty = copy.quantity
+                import ipdb; ipdb.set_trace()
                 copy.delete()
-                origin.move(dest, card, copy.quantity)
+                origin.move(dest, card, qty)
 
                 # We currently can not edit the moved quantity.
                 # TODO: but it can differ on the page :S
