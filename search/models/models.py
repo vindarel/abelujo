@@ -1021,6 +1021,7 @@ class Card(TimeStampedModel):
         Return a list of dicts with new keys each:
         - "in_stock": 0/the quantity
         - "id"
+        - "url": the absolute url to the card in our DB.
 
         Used when searching for cards on the datasource. If a result
         already exists in our DB, add the quantity and id fields.
@@ -1045,6 +1046,9 @@ class Card(TimeStampedModel):
 
             card['in_stock'] = quantity
             card['id'] = found_id
+            url = reverse("card_show", args=(card['id'],))  # XXX: it switches to /en/ :(
+            card['get_absolute_url'] = url
+            card['url'] = url
 
         return cards
 

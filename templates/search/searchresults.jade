@@ -117,7 +117,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                 title='{% trans "This card is already in your stock" %}')
                   {{'card.in_stock'|ng}}
               span
-                a(href="{{ 'card.details_url' | ng }}", target="_blank") {{ 'card.title' | ng }}
+                a(href="{{ 'details_url_for(card)' | ng }}", target="_blank") {{ 'card.title' | ng }}
 
               div(ng-show="show_images && card.isbn")
                     b isbn: 

@@ -163,6 +163,7 @@ def datasource_search(request, **response_kwargs):
     - query (str)
     - datasource (str): librairiedeparis, ...
     - page [optional] defaults to 1. str or int.
+    - language: the user language on the page (fr, en), to keep urls consistent.
 
     - return: a JsonResponse with data, alerts, and status.
     """
@@ -172,6 +173,10 @@ def datasource_search(request, **response_kwargs):
     if not query:
         log.debug("No search query given.")
         return JsonResponse({'error': 'no search query given.'})
+
+    language = request.GET.get('language')
+    if language:
+        translation.activate(language)
 
     isbn_list = None  # when the user queries a list of ISBNs at once.
     isbn_list_found = {}  # a dict ISBN-> card object. Needs two passes: DB and datasource.

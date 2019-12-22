@@ -54,6 +54,12 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.results_page = [] # list of dicts with page and other search params.
     $scope.show_images = true
 
+    $scope.details_url_for = (card) ->
+        if card.in_stock
+           return card.get_absolute_url
+
+        return card.details_url
+
     $scope.next_results = !->
         if not $scope.query
             return
@@ -106,6 +112,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             # datasource: $scope.datasource.id
             datasource: search_obj.source
             page: search_obj.page
+            language: $scope.language
 
         $http.get "/api/datasource/search/", do
             params: params
