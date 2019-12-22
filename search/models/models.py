@@ -2473,12 +2473,8 @@ class Restocking(models.Model):
                     qty = int(quantities[i])
                 else:
                     qty = copy.quantity
-                import ipdb; ipdb.set_trace()
                 copy.delete()
                 origin.move(dest, card, qty)
-
-                # We currently can not edit the moved quantity.
-                # TODO: but it can differ on the page :S
 
         return True
 
