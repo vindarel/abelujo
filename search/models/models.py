@@ -3351,6 +3351,8 @@ class Sell(models.Model):
             else:
                 sells = SoldCards.objects.all()
 
+            sells = sells.exclude(sell__canceled=True)
+
             if month:
                 month = int(month)
                 year = int(year) if year else timezone.now().year
