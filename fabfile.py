@@ -165,7 +165,8 @@ def check_uptodate(name=None):
     not, how many commits behind ?
 
     """
-    max_count = 10
+    max_count = 100
+    acceptable_count = 10
 
     if not name:
         return statusall()
@@ -177,25 +178,27 @@ def check_uptodate(name=None):
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     # that's local so it conuts the unpushed commits. should be remote
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
+
     with cd(wd):
         res = run("git rev-parse HEAD")
         # print("commit of {} is {}".format(wd, res))
-
         if res == git_head:
             print(termcolor.colored("- {} is up to date".format(client.name), "green"))
         else:
+            last_commit_date = check_output(["git", "show", "-s", "--format=%ci", res])
+            acceptable_trailing_by = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(acceptable_count)]).split("\n")
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
-            if res in git_last_commits:
-                index = git_last_commits.index(res)
+            index = git_last_commits.index(res)
+            if res in acceptable_trailing_by:
                 print(termcolor.colored("- {}", 'blue').format(client.name) +
                     " is " +
                     termcolor.colored("{}", "yellow").format(index) +
-                    " commits behind")
+                      " commits behind. Head is at: {} ({})".format(last_commit_date, res))
             else:
                 print(termcolor.colored("- {}", "blue").format(client.name) +
-                    " is more than " +
-                    termcolor.colored("{}", "red").format(max_count) +
-                    " commits behind.")
+                    " is  " +
+                    termcolor.colored("{}", "red").format(index) +
+                      " commits behind. Head is at: {} ({})".format(last_commit_date, res))
 
 def _request_call(url):
     status = 0
