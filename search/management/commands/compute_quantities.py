@@ -34,6 +34,7 @@ from search.models import Card
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        self.stdout.write("Go...")
         cards = Card.objects.all()
         self.stdout.write("Computing the quantities of {} Card objects.".format(cards.count()))
         confirmation = raw_input("Continue ? [Y/n]")
