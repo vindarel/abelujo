@@ -165,7 +165,7 @@ def check_uptodate(name=None):
     not, how many commits behind ?
 
     """
-    max_count = 100
+    max_count = 1000
     acceptable_count = 10
 
     if not name:
