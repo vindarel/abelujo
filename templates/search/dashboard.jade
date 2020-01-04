@@ -32,14 +32,14 @@ div(ng-controller="dashboardController", ng-cloak="stats")
 
          tbody
           tr
-            td: h4 {% trans "Number of products" %}
-            td: h4{{'stats.nb_products.value'|ng}}
-          tr
             td: h4 {% trans "Number of titles" %}
             td: h4 {{'stats.nb_titles.value'|ng }}
           tr
             td: h4 {% trans "Number of books" %}
             td: h4 {{'stats.nb_cards.value'|ng }}
+          tr
+            td: h4 {% trans "Number of products" %}
+            td: h4{{'stats.nb_products.value'|ng}}
           tr
             td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %}
             td: h4 {{'stats.total_cost.value | currency'|ng }}

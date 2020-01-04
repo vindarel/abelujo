@@ -4361,14 +4361,16 @@ class Stats(object):
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
+        nb_cards = Card.quantities_total()
+        nb_not_books = Card.objects.filter(in_stock=True).exclude(card_type=type_book).count()
         # label: needed for graph creation in js.
-        res['nb_products'] = {'label': _(u"Number of products"),
-                              'value': Card.objects.filter(in_stock=True).count()}
         res['nb_titles'] = {'label': _(u"Number of book titles"),
                             'value': Card.objects.filter(in_stock=True).
                             filter(card_type=type_book).count()}
         res['nb_cards'] = {'label': _(u"Number of books"),
-                           'value': Card.quantities_total()}
+                           'value': nb_cards}
+        res['nb_products'] = {'label': _(u"Number of products"),
+                              'value': nb_cards + nb_not_books}
         res['nb_unknown'] = {'label': _(u"Number of products of unknown type"),
                              'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought
