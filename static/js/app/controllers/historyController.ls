@@ -121,6 +121,7 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     # Get stats.
     $scope.get_stats = !->
         stats_params = do
+            year: $scope.user_date.getFullYear!
             month: $scope.user_date.getMonth! + 1
         $http.get "/api/stats/sells/month", do
             params: stats_params
@@ -185,11 +186,11 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
             distributor_id: $scope.distributor.selected.id if $scope.distributor.selected
             # +1: mismatch with python dates
             month: $scope.user_date.getMonth! + 1
+            year: $scope.user_date.getFullYear!
             page: $scope.page
             page_size: $scope.page_size
             sortby: $scope.sortby
             sortorder: $scope.sortorder
-            year: $scope.user_date.getFullYear!
             , (resp) !->
                 $scope.sells = []
                 $scope.nb_sells = resp.data.data.length

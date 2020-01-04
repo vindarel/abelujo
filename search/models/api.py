@@ -1739,6 +1739,7 @@ def stats_sells_month(request, **kwargs):
     - mean
     Optional arguments:
     - month (str): ...
+    - year (str): ...
 
     Return: a dict
     """
