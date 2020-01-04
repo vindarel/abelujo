@@ -926,7 +926,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
               "msgs": msgs}
 
     try:
-        basket = Basket.objects.get(id=pk)
+        basket = Basket.objects.get(id=pk).exclude(archived=True)
 
     except Exception as e:
         log.info(u"Couldn't get basket of id {}: {}".format(pk, e))
@@ -1124,7 +1124,7 @@ def baskets(request, **kwargs):
 
         else:
             try:
-                data = Basket.objects.all()
+                data = Basket.objects.exclude(archived=True).all()
             except Exception as e:
                 log.error(e)
                 status = httplib.INTERNAL_SERVER_ERROR
