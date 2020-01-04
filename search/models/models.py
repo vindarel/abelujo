@@ -2035,6 +2035,7 @@ class Basket(models.Model):
     #: This will help when applying the basket to the stock, receiving a parcel, etc.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
     archived = models.BooleanField(default=False)
+    archived_date = models.DateField(blank=True, null=True)
 
     class Meta:
         ordering = ("name",)
@@ -2120,6 +2121,12 @@ class Basket(models.Model):
             return None, False, msgs.msgs
 
         return b_obj, status, msgs.msgs
+
+    def archive(self):
+        self.archived = True
+        self.archived_date = timezone.now()
+        self.save()
+        return True
 
     def add_copy(self, card, nb=1):
         """Adds the given card to the basket.

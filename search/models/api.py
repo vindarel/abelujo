@@ -1317,6 +1317,32 @@ def baskets_return(request, pk, **kw):
             to_ret['status'] = msgs.status
             return JsonResponse(to_ret)
 
+def baskets_archive(request, pk, **kw):
+    """
+    Archive the given basket.
+    """
+    if request.method == "POST":
+        msg = {'status': ALERT_SUCCESS,
+               "message": _("Basket archived succesfully.")}
+        try:
+            b_obj = Basket.objects.get(id=pk)
+        except Exception as e:
+            log.error(u"Basket archive: {}".format(e))
+            return JsonResponse({'status': ALERT_ERROR,
+                                 'message': "We could not archive the basket n° {}.".format(pk)})
+
+        try:
+            b_obj.archive()
+        except Exception as e:
+            log.error(u"Basket {} could not be archived: {}".format(b_obj.id, e))
+            msg = {'status': ALERT_ERROR,
+                    'message': _("The basket could not be archived")}
+        to_ret = {
+            "status": ALERT_SUCCESS,
+            "alerts": [msg],
+        }
+        return JsonResponse(to_ret)
+
 def baskets_delete(request, pk, **kw):
     """Delete the given basket.
     """
