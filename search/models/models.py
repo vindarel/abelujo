@@ -2034,6 +2034,7 @@ class Basket(models.Model):
     #: We can also choose a supplier for this basket.
     #: This will help when applying the basket to the stock, receiving a parcel, etc.
     distributor = models.ForeignKey(Distributor, blank=True, null=True)
+    archived = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("name",)
