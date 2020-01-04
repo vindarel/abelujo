@@ -1373,6 +1373,9 @@ def baskets_inventory_get_or_create(request, **response_kwargs):
     """
     Get and update the current inventory id and its copies, or create
     one for the basket pk (in url).
+
+    Archive the original basket. It is not needed anymore, all its content is transformed
+    to an inventory of the command.
     """
     data = {}
     msgs = []
@@ -1400,6 +1403,10 @@ def baskets_inventory_get_or_create(request, **response_kwargs):
             log.error(e)
             msgs.append({'level': 'error',
                          'message': _("Internal error, sorry !")})
+
+        finally:
+            # Archive the original basket.
+            basket.archive()
 
         to_ret = {"status": status,
                   "data": data,
