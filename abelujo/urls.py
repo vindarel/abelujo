@@ -103,6 +103,7 @@ apipatterns = patterns("",
     # Restocking
     url(r'^api/restocking/nb_ongoing/?$', 'search.models.api.nb_restocking_ongoing', name="api_restocking_nb_ongoing"),
     url(r'^api/restocking/validate/?$', 'search.models.api.restocking_validate', name="api_restocking_validate"),
+    url(r'^api/restocking/remove/(?P<pk>\d+)', 'search.models.api.restocking_remove', name="api_restocking_remove"),
 
     # Sells history
     url(r'^api/history/sells/?$', 'search.models.api.history_sells', name="api_history_sells"),

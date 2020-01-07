@@ -750,6 +750,23 @@ def restocking_validate(request):
     to_ret['alerts'] = msgs.msgs
     return JsonResponse(to_ret)
 
+def restocking_remove(request, pk):
+    """
+    Remove the given card (id, string) to the current restocking list.
+    """
+    msgs = Messages()
+    status = True
+    to_ret = {'status': status, 'alerts': []}
+    if request.method == 'POST':
+        try:
+            Restocking.remove_card(pk)
+        except Exception as e:
+            msgs.add_error(_("An error happened. We were notified about it."))
+        msgs.add_success(_("The card was removed with success."))
+        to_ret['alerts'] = msgs.msgs
+        return JsonResponse(to_ret)
+
+
 TO_RET = {"status": ALERT_SUCCESS,
           "alerts": [],
           "data": []}

@@ -2408,6 +2408,15 @@ class Restocking(models.Model):
         return res
 
     @staticmethod
+    def card_exists(pk):
+        """
+        Return True if this card (by id so far) exists in the Restocking list.
+        """
+        # XXX: not used so far, only used a bit for development.
+        res = RestockingCopies.objects.filter(card_id=pk).count()
+        return res > 0
+
+    @staticmethod
     def add_card(card):
         try:
             restock = Restocking.get_or_create()
@@ -2423,6 +2432,19 @@ class Restocking(models.Model):
             return 0
 
         return qty_to_restock
+
+    @staticmethod
+    def remove_card(pk):
+        assert isinstance(pk, (str, int))  # first type checking?!
+        try:
+            res = RestockingCopies.objects.filter(card_id=pk)
+            if res:
+                copy = res[0]
+                copy.delete()
+        except Exception as e:
+            log.error(u"Error while removing the card {} from the restocking list: {}".format(pk, e))
+
+        return True
 
     @staticmethod
     def remove_card(card):

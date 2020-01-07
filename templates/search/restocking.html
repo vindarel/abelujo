@@ -83,9 +83,9 @@
               <i class="glyphicon glyphicon-ban-circle"></i>
             </button>
 
-            <!-- <button ng-click="not_implemented()" class="btn btn-default" type='button' title='{% trans "Remove this card from the list." %}'> -->
-            <!-- <i class="glyphicon glyphicon-remove"></i> -->
-            <!-- </button> -->
+            <button ng-click="remove_card({{ card.id }})" class="btn btn-default" type='button' title='{% trans "Remove this card from the list. This action cannot be undone." %}'>
+            <i class="glyphicon glyphicon-remove"></i>
+            </button>
           </p>
 
         </td>

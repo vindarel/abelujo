@@ -47,6 +47,15 @@ angular.module "abelujo" .controller 'restockingController', ['$http', '$scope',
 
         $log.info "cards ok: ", $scope.cards_ok
 
+    $scope.remove_card = (id) ->
+        $log.info id
+        answer = confirm "Are you sure to remove this card from the restocking list, until next time? This action cannot be undone."
+        if answer
+            $http.post "/api/restocking/remove/#{id}"
+            .then (response) !->
+                $log.info response
+                $scope.alerts = response.data.alerts
+
     $scope.is_ready = (id) ->
         # Would be as easy with the web api, looking at data-card-ok.
         if $scope.ignored_cards[id] == true
