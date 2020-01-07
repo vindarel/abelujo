@@ -232,7 +232,7 @@ def check_online(client=None):
         if status != 200:
             print(termcolor.colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port']))
         else:
-            print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("ok", "green"))
+            print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("online", "green"))
 def _save_variables(name):
     """
     Another def for multiprocessing. Functions can only be pickled if they are at the toplevel.
@@ -291,17 +291,18 @@ def update(client):
     # check_online(client.name) # wait a bit before to check
 
 def updatelight(name=None):
-    """Everything except package managers (apt, npm, pip).
-    Don't restart, but it may be needed.
     """
-    rebase(name)
-    make("set-prod", name)
-    make("migrate", name)
-    make("gulp", name)
-    make("collectstatic", name)
-    make("translation-compile", name)
-    # restart(name)
-    check_online(name)
+    Everything except package managers (apt, npm, pip).
+    """
+    if not name:
+        print("Please give a client as argument.")
+        exit(1)
+    client = fabutils.select_client_cfg(name, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    with cd(wd):
+        make('update-code', client.name)
+
+    check_online(client.name)
 
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
