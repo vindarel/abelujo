@@ -2076,7 +2076,11 @@ class Basket(models.Model):
             dist_id = int(dist_id)
         try:
             basket = Basket.objects.get(name="auto_command")
-            if dist_id:
+            if dist_id in [0, '0', u'0']:
+                copies_qties = basket.basketcopies_set.\
+                               filter(card__distributor_id__isnull=True)\
+                               .order_by('card__title')
+            elif dist_id:
                 copies_qties = basket.basketcopies_set\
                                      .filter(card__distributor_id=dist_id)\
                                      .order_by("card__title")

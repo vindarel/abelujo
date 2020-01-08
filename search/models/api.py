@@ -1837,6 +1837,8 @@ def commands_supplier(request, pk):
     """
     Return the list of cards to command from the given distributor.
 
+    If pk == 0, get the list of cards to command that don't have a supplier.
+
     (actually return basket_copy objects, with the basket_qty)
     """
     dist_id = int(pk)
@@ -1848,7 +1850,7 @@ def commands_supplier(request, pk):
     page_size = int(request.GET.get('page_size', 100))
 
     if dist_id == 0:
-        copies_from_dist = [it for it in basket_copies if not it.card.distributor]
+        copies_from_dist = basket_copies
     else:
         for it in basket_copies:
             if it.card.distributor and it.card.distributor.id == dist_id:
