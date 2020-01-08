@@ -30,15 +30,14 @@ from search.models import PlaceCopies
 
 class Command(BaseCommand):
 
-    help = "Set all the cards' quantities to zero (deprecated)."
+    help = "Set all the cards' quantities to zero, in every places. This doesn't touch lists, commands or inventories."
 
     def handle(self, *args, **options):
         self.stdout.write("-------------------")
-        self.stdout.write("Resetting all quantities to zero !")
+        self.stdout.write("Resetting all quantities to zero:")
         for place_copies in tqdm(PlaceCopies.objects.all()):
-            # deprecated since Card.quantity is a property.
-            raise NotImplementedError
-            # place_copies.quantity_set(0)
+            place_copies.nb = 0
+            place_copies.save()
 
         # self.stdout.write(self.style.SUCCESS( "All done !")) # django 1.9
-        self.stdout.write("All done !")
+        self.stdout.write("All done.")
