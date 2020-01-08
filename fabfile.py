@@ -302,7 +302,7 @@ def updatelight(name=None):
     with cd(wd):
         make('update-code', client.name)
 
-    check_online(client.name)
+    print("Client updated: {}".format(client))
 
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
