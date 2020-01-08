@@ -643,10 +643,9 @@ class Card(TimeStampedModel):
         """
         - dist: int (id)
         """
-        if not self.distributor:
-            return False
-
         try:
+            if not self.distributor:
+                return False
             return self.distributor.id == dist
         except Exception as e:
             log.error(u"Error while checking if card {} has publisher {}: {}".format(self.id, dist, e), extra={'stack': True})
@@ -2125,6 +2124,22 @@ class Basket(models.Model):
             return None, False, msgs.msgs
 
         return b_obj, status, msgs.msgs
+
+    @staticmethod
+    def search(pk, distributor_id=None):
+        """
+        Return the list of cards of this basket, filter by the given criteria.
+        - pk: id of the basket to search in.
+
+        Parameters:
+        - distributor_id
+        """
+        copies = BasketCopies.objects.filter(basket_id=pk)
+        if distributor_id in [0, '0', u'0', -1, '-1', u'-1']:
+            copies = copies.filter(card__distributor__isnull=True)
+        elif distributor_id is not None:
+            copies = copies.filter(card__distributor_id=distributor_id)
+        return copies
 
     def archive(self):
         self.archived = True
