@@ -25,7 +25,7 @@ Set all cards' quantities to zero.
 from django.core.management.base import BaseCommand
 from tqdm import tqdm
 
-from search.models import PlaceCopies
+from search.models import Card, PlaceCopies
 
 
 class Command(BaseCommand):
@@ -39,5 +39,6 @@ class Command(BaseCommand):
         if confirmation == "n":
             exit(0)
         PlaceCopies.objects.all().update(nb=0)
+        Card.objects.all().update(quantity=0)
         # self.stdout.write(self.style.SUCCESS( "All done !")) # django 1.9
         self.stdout.write("All done.")
