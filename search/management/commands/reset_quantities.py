@@ -34,7 +34,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("-------------------")
-        self.stdout.write("Resetting all quantities to zero:")
+        self.stdout.write("You are going to RESET all quantities to ZERO:")
+        confirmation = raw_input("Continue ? [Y/n]")
+        if confirmation == "n":
+            exit(0)
         PlaceCopies.objects.all().update(nb=0)
         # self.stdout.write(self.style.SUCCESS( "All done !")) # django 1.9
         self.stdout.write("All done.")
