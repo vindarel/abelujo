@@ -943,7 +943,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
               "msgs": msgs}
 
     try:
-        basket = Basket.objects.get(id=pk).exclude(archived=True)
+        basket = Basket.objects.get(id=pk)
 
     except Exception as e:
         log.info(u"Couldn't get basket of id {}: {}".format(pk, e))
