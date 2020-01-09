@@ -30,6 +30,7 @@ from search.models import PlaceCopies
 from search.models import Publisher
 from search.models import RestockingCopies
 from search.models import Sell
+from search.models import SoldCards
 
 # Custom admin for the client admin:
 # show less things than the default admin,
@@ -111,6 +112,12 @@ class ShelfAdmin(admin.ModelAdmin):
     search_fields = ["name"]
 
 
+class SoldCardsAdmin(admin.ModelAdmin):
+    class Meta:
+        model = SoldCards
+
+    list_display = ("card", "quantity", "price_sold", "created",)
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
@@ -126,6 +133,7 @@ admin.site.register(PlaceCopies)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(RestockingCopies)
 admin.site.register(Sell)
+admin.site.register(SoldCards, SoldCardsAdmin)
 
 admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author)
