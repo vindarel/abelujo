@@ -4706,7 +4706,7 @@ class Command(TimeStampedModel):
         return reverse("commands_view", args=(self.id,))
 
     def __unicode__(self):
-        return "command {} for {}".format(self.id, self.supplier_name)
+        return u"command {} for {}".format(self.id, self.supplier_name)
 
     def to_list(self):
         date_received = ""
