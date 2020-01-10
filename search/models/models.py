@@ -4197,7 +4197,6 @@ class InventoryBase(TimeStampedModel):
         taskqueue). It can be slow with non-small card lists.
 
         Return: a tuple status (bool), alerts (list of dicts with a level and a message).
-
         """
         if self.applied or (self.closed is not None and self.closed):
             return False, [{"level": ALERT_WARNING, "message": _("This inventory is already closed, you can't apply it again.")}]
@@ -4345,6 +4344,10 @@ class Inventory(InventoryBase):
     def apply_inventory(pk):
         inv = Inventory.objects.get(id=pk)
         return inv.apply()
+
+def do_inventory_apply(pk):
+    log.info("do_inventory_apply for {}".format(pk))
+    Inventory.apply_inventory(pk)
 
 
 def shelf_age_sort_key(it):
@@ -4668,6 +4671,9 @@ class InventoryCommand(InventoryBase):
     def apply_inventory(pk, add_qty=True):
         inv = InventoryCommand.objects.get(id=pk)
         return inv.apply(add_qty=add_qty)
+
+def do_command_apply(pk):
+    InventoryCommand.apply_inventory(pk)
 
 class Command(TimeStampedModel):
     """A command records that some cards were ordered to a supplier.

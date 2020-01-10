@@ -202,7 +202,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     # Custom:
     'mod_wsgi.server',
-    'huey.contrib.djhuey',
+    'django_q',
     'rest_framework',
 
     'search',
@@ -299,28 +299,16 @@ BOOTSTRAP3 = {
 
 BOOTSTRAP_BASE_URL = '/static/'
 
-HUEY = {
-    'name': DATABASES['default']['NAME'],  # Use db name for huey.
-    'result_store': True,  # Store return values of tasks.
-    'events': True,  # Consumer emits events allowing real-time monitoring.
-    'store_none': False,  # If a task returns None, do not save to results.
-    'always_eager': False,  # If DEBUG=True, run synchronously.
-    'store_errors': True,  # Store error info if task throws exception.
-    'blocking': False,  # Poll the queue rather than do blocking pop.
-    'connection': {
-        'host': 'localhost',
-        'port': 6379,
-        'db': 0,
-        'connection_pool': None,  # Definitely you should use pooling!
-        # ... tons of other options, see redis-py for details.
-
-        # huey-specific connection parameters.
-        'read_timeout': 5,  # If not polling (blocking pop), use timeout.
-        'max_errors': 1000,  # Only store the 1000 most recent errors.
-        # 'url': None,  # Allow Redis config via a DSN.
-    },
+# djangoq task queue: use django's ORM as message broker: simple.
+Q_CLUSTER = {
+    'name': 'DjangORM',
+    'workers': 4,
+    'timeout': 90,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default'
 }
-
 
 # private token for Sentry. It is sent to the server by a fabric task.
 RAVEN_CONFIG = {}

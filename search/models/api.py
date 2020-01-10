@@ -23,6 +23,8 @@ import json
 import locale
 import logging
 
+from django_q.tasks import async
+
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage
@@ -55,6 +57,8 @@ from models import Stats
 from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
     reviews as frenchreviews
 from search.models import history
+from search.models import do_inventory_apply
+from search.models import do_command_apply
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
@@ -64,7 +68,6 @@ from search.models.utils import get_logger
 from search.models.utils import get_page_count
 from search.models.utils import page_start_index
 from search.tasks import command_inventory_apply_task
-from search.tasks import inventory_apply_task
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 
@@ -1746,7 +1749,7 @@ def inventory_apply(request, pk, **kwargs):
              ]})
 
     # Run asynchronously:
-    inventory_apply_task(pk)
+    async(do_inventory_apply, pk, task_name='apply inventory {}'.format(pk))  # XXX: async_task in python 3.7
 
     to_ret = {
         "status": ALERT_INFO,
@@ -2047,7 +2050,7 @@ def command_receive_diff(request, pk, **kwargs):
 
 def command_receive_apply(request, pk, **kwargs):
     """
-    Apply this inv to the stock, asynchronously (huey task).
+    Apply this inv to the stock, asynchronously (django-q task).
     """
     if pk is None or pk == "undefined":
         log.error(u'Error: you want to apply an inventory but its given pk is undefined')
@@ -2068,7 +2071,7 @@ def command_receive_apply(request, pk, **kwargs):
              ]})
 
     # Run asynchronously:
-    command_inventory_apply_task(pk)
+    async(do_command_apply, pk, task_name='apply command {}'.format(pk))  # XXX: async_task in python 3.7
 
     to_ret = {
         "status": ALERT_INFO,

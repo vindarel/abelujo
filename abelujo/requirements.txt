@@ -19,6 +19,7 @@ setuptools==39.2
 
 django==1.8
 django-bootstrap3==6.2.2
+django_q==0.9.4         # task queue
 pyjade                  # process jade templates.
 bootstrap-admin==0.3.6  # bootstrap theme, nice search feature.
 pyyaml
@@ -56,9 +57,6 @@ dateparser==0.5         # parser for human readable dates
 whitenoise==2.0         # serve static files. Easily, efficiently.
 gunicorn==19.4          # wsgi server
 
-huey==1.2               # task queue
-redis==2.10
-honcho==0.7             # task supervisor based on a Procfile
 
 # temporary fixes ?
 html5lib==1.0b8         # for "cannot import viewkeys" runtime error.
