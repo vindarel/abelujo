@@ -199,7 +199,7 @@ shell:
 	python manage.py shell_plus
 
 taskqueue:
-	python manage.py run_huey
+	python manage.py qcluster
 
 # run only unit tests.
 unit:
