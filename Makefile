@@ -198,8 +198,9 @@ gunicorn: run-gunicorn
 shell:
 	python manage.py shell_plus
 
+# Define processes in the Procfile.
 taskqueue:
-	python manage.py qcluster
+	honcho start &
 
 # run only unit tests.
 unit:
