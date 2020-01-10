@@ -296,6 +296,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             $scope.total_missing = response.data.missing
             # Update the progress bar.
             $scope.updateProgress $scope.nb_copies, $scope.total_missing
+            $scope.alerts = response.data.alerts
 
     $scope.save = ->
         """Send the new copies and quantities to be saved.

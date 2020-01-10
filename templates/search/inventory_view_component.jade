@@ -28,11 +28,19 @@
 {% load ngfilter %}
 
 div(ng-controller=controller)
+  div
+      uib-alert(
+        ng-repeat="alert in alerts"
+        type="{{ 'alert.level' | ng }}"
+        close="closeAlert($item)"
+        ng-click="closeAlert($item)"
+      )
+        {{ 'alert.message' | ng }}
+
   .row
     .col-lg-4
       h3#title {% trans "Inventory of " %}{{ 'cur_inv' | ng }}
 
-    div {{ 'alerts ' | ng }}
   form(method="get")
 
     .row

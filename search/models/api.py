@@ -2010,12 +2010,18 @@ def command_receive_update(request, pk, **kwargs):
                 inv_obj = cmd.get_inventory()
             except ObjectDoesNotExist:
                 return
-            ids_qties = json.loads(request.body)
-            ids_qties = ids_qties_to_pairs(ids_qties['ids_qties'])
-            status, _msgs = inv_obj.add_pairs(ids_qties)
-            msgs.append(_msgs)
-            to_ret['status'] = msgs.status
-            to_ret['alerts'] = msgs.to_alerts()
+            try:
+                ids_qties = json.loads(request.body)
+                ids_qties = ids_qties_to_pairs(ids_qties['ids_qties'])
+                status, _msgs = inv_obj.add_pairs(ids_qties)
+                msgs.append(_msgs)
+                to_ret['status'] = msgs.status
+                to_ret['alerts'] = msgs.to_alerts()
+            except Exception as e:
+                log.error(u"Error updating the parcel {}: {}".format(pk, e))
+                msgs.add_error(_("An error occured. We have been notified."))
+            finally:
+                to_ret['alerts'] = msgs.msgs
 
             return JsonResponse(to_ret)
 
