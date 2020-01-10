@@ -34,7 +34,6 @@ import barcode
 import dateparser
 import pendulum
 import pytz
-from django.core.cache import cache as djcache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.core.paginator import EmptyPage
@@ -698,14 +697,7 @@ class Card(TimeStampedModel):
     def to_list(self, in_deposits=False, with_quantity=True):
         """
         Return a *dict* of this card's fields.
-
         """
-        # Have cached results for a few minutes (for long csv export of all the stock).
-        # but it delays the accuracy of a book quantity in My Stock too.
-        timeout = 1 * 10  # seconds
-        if djcache.get(self.id):
-            return djcache.get(self.id)
-
         authors = self.authors.all()
         # comply to JS format (needs harmonization!)
         auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
@@ -777,7 +769,6 @@ class Card(TimeStampedModel):
         if with_quantity:
             res['quantity'] = self.quantity
 
-        djcache.set(self.id, res, timeout)
         return res
 
     @staticmethod
