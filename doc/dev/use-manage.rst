@@ -45,14 +45,10 @@ An administrator can also do it from the command line::
 Re-initialize quantities to zero
 --------------------------------
 
-Use our custom management command `my_reset_quantities` (all our
-custom commands start with `my_` for better exploration).::
+Use our custom management command `reset_quantities`::
 
-        ./manage.py my_reset_quantities
+        ./manage.py reset_quantities
 
-If you wish to be more precise (set to n copies instead of zero, reset
-for only a place), this needs more work. See the method
-`Card.quantities_to_zero` and the same on `Place`.
 
 Managing inventories
 --------------------

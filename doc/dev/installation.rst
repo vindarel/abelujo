@@ -34,14 +34,16 @@ To restart the application, use ``make gunicorn-restart``.
 See also the ``fab start/stop/restart`` commands.
 
 
-Some tasks need to run asynchronously (applying an inventory,…). Start redis and the Huey task runner::
-
-    redis-server
+Some tasks need to run asynchronously (applying an inventory,…). Start
+ the asyncronous task runner with::
 
     make taskqueue
 
+Since Abelujo > 0.7 it became a pure Django solution, without Redis
+anymore.
 
-Deployment and website management
+
+deployment and website management
 ---------------------------------
 
 We use gunicorn and whitenoise to serve static files.
