@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 
 import httplib
 import json
@@ -895,7 +896,6 @@ def auto_command_basket(request, action="", **response_kwargs):
             page = int(page)
             copies_no_dist = copies_no_dist[page_start_index(page): page * page_size]
 
-        print "-------------", len(copies)
         # ret = [it.to_dict() for it in copies]
         ret = [it.to_dict() for it in copies[:3]]
         to_ret['data'] = ret

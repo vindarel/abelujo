@@ -21,6 +21,7 @@ Test the models.
 
 Note: to compare two objects, don't use assertEqual but the == operator.
 """
+from __future__ import unicode_literals
 
 import datetime
 

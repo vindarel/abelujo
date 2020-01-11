@@ -19,6 +19,7 @@
 """
 Test the user models.
 """
+from __future__ import unicode_literals
 
 import datetime
 
