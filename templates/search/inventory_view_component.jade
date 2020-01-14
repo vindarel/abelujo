@@ -145,7 +145,7 @@ div(ng-controller=controller)
     tbody
         tr.repeated-item(ng-show="cards_to_show", ng-repeat="card in cards_to_show")
 
-         td.col-md-6
+         td.col-md-5
           a(href="{{ 'card.url ' | ng }}") {{ 'card.title' | ng }}
          td.col-md-3
           span {{ 'card.authors_repr' | ng }}
@@ -158,7 +158,7 @@ div(ng-controller=controller)
 
          td.col-md-1 {{ 'card.price_discounted' | ng }}  €
 
-         td.col-md-2
+         td.col-md-3
             p.input-group
                 label.sr-only {% trans "Quantity" %}
                 span.input-group-addon X
