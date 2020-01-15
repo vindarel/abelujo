@@ -3903,7 +3903,6 @@ class InventoryBase(TimeStampedModel):
             ret["created"] = self.created.strftime(DATE_FORMAT) if self.created else ""
             ret["nb_cards"] = self.nb_cards()
             ret["nb_copies"] = self.nb_copies()
-            ret["progress"] = self.progress()
             ret["value"] = self.value()
 
         return ret
