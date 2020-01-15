@@ -48,7 +48,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.cards_to_show = []
     # Total value
     $scope.total_value = 0
-    $scope.total_value_with_discount = 0
 
     # Nb of cards and copies
     $scope.nb_cards = 0
@@ -111,7 +110,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
     $scope.inv_or_cmd_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
     $log.info "found inv_or_cmd_id: ", $scope.inv_or_cmd_id
     $scope.cur_inv = ""
-    $scope.progress_current = 0
 
     $scope.setCardsToShow = !->
         " Show all the cards inventoried, or the current ones. "
@@ -151,20 +149,9 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
             , $scope.state.copies
 
             $scope.selected_ids = map (.card.id), $scope.state.copies
-            $scope.total_missing = $scope.state.total_missing
-            #XXX update the progress bar on the fly
-            $scope.total_copies = $scope.state.nb_copies
-            $scope.total_missing = $scope.state.total_missing
-            $scope.updateProgress($scope.total_copies, $scope.total_missing)
-            $scope.progressStyle = do
-                min-width: 4em
-                width: $scope.progress_current + "%"
-
             $scope.cur_inv = $scope.state.inv_name
 
             $scope.total_value = response.data.data.total_value
-            $scope.total_value_with_discount = response.data.data.total_value_with_discount
-
             return
 
     $scope.getCopies = !->
@@ -187,11 +174,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
                 $scope.all[* - 1].quantity = it.quantity
             , response.data
             $scope.setCardsToShow!
-
-    $scope.updateProgress = (current, missing) !->
-        if (current + missing != 0)
-            $scope.progress_current = current / (current + missing) * 100
-            $scope.progress_current = $scope.progress_current.toFixed(1)
 
     $scope.getCards = (val) ->
         $http.get "/api/cards", do
@@ -261,10 +243,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $http.post get_api(api_inventory_id_remove), params
         .then (response) !->
             $scope.cards_to_show.splice index_to_rm, 1
-            # Update the progress bar.
-            $scope.total_missing += 1
-            $scope.total_copies -= 1
-            $scope.updateProgress $scope.total_copies, $scope.total_missing
             $scope.total_value -= card.price * card.quantity
             $scope.total_value = round($scope.total_value * 10) / 10
             $scope.nb_cards -= 1
@@ -292,10 +270,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
 
             $scope.nb_cards = response.data.nb_cards
             $scope.nb_copies = response.data.nb_copies
-            $scope.total_copies = response.data.nb_copies
-            $scope.total_missing = response.data.missing
-            # Update the progress bar.
-            $scope.updateProgress $scope.nb_copies, $scope.total_missing
             $scope.alerts = response.data.alerts
 
     $scope.save = ->
@@ -311,10 +285,6 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
         $http.post get_api(api_inventory_id_update), params
         .then (response) !->
             $scope.alerts = response.data.msgs
-            # Update the progress bar.
-            $scope.total_missing -= $scope.cards_selected.length
-            $scope.total_copies += $scope.cards_selected.length
-            $scope.updateProgress($scope.total_copies, $scope.total_missing)
             # Reset the cards to display
             # $scope.cards_selected = []
             return response.data.status

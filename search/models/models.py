@@ -3867,20 +3867,6 @@ class InventoryBase(TimeStampedModel):
         """
         return self.inventorycopies_set.count() or 0
 
-    def progress(self):
-        """Return the percentage of progress (int < 100).
-        """
-        done_qty = self.nb_copies()
-        orig_qty = self._orig_cards_qty()
-
-        progress = 0
-        if orig_qty:
-            progress = done_qty / float(orig_qty) * 100
-        elif done_qty:
-            progress = 100
-
-        return roundfloat(progress)
-
     def value(self, discount=False):
         """Total value. Sum of public prices of all books in this inventory.
 
@@ -3935,7 +3921,6 @@ class InventoryBase(TimeStampedModel):
         nb_copies = self.nb_copies()
 
         total_value = self.value()
-        total_value_with_discount = self.value(discount=True)
 
         paginator = Paginator(all_copies, page_size)
         if page is not None:
@@ -3957,7 +3942,6 @@ class InventoryBase(TimeStampedModel):
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
         orig_cards_qty = self._orig_cards_qty()
-        missing = orig_cards_qty - nb_cards
         if hasattr(self, "shelf") and self.shelf:
             shelf_dict = self.shelf.to_dict()
             inv_name = self.shelf.name
@@ -3978,9 +3962,7 @@ class InventoryBase(TimeStampedModel):
             "inv_name": inv_name,
             "nb_cards": nb_cards,
             "nb_copies": nb_copies,
-            "total_missing": missing,
             "total_value": total_value,
-            "total_value_with_discount": total_value_with_discount,
             "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,
@@ -4653,7 +4635,6 @@ class InventoryCommand(InventoryBase):
         nb_copies = self.nb_copies()
         inv_name = ""
         orig_cards_qty = self._orig_cards_qty()
-        missing = orig_cards_qty - nb_cards
         inv_name = self.command.title
         inv_dict = self.to_dict()
 
@@ -4662,7 +4643,6 @@ class InventoryCommand(InventoryBase):
             "inv_name": inv_name,
             "nb_cards": nb_cards,
             "nb_copies": nb_copies,
-            "total_missing": missing,
             "object": inv_dict,
             "command": inv_dict,
         }

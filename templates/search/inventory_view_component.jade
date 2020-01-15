@@ -56,16 +56,8 @@ div(ng-controller=controller)
             div.col-md-4
               table.table.table-condensed
                 tr
-                  td(ng-show="total_missing >= 0") {% trans "It remains" %}
-                  td {{ 'total_missing' |ng }} {% trans "non-inventoried cards in the stock." %}
-            div.col-md-4
-              table.table.table-condensed
-                tr
                   td {% trans "Total value" %}
                   td {{ 'total_value' | ng }} €
-                tr
-                  td {% trans "with discount" %}
-                  td {{ 'total_value_with_discount' | ng }} €
 
     .row
        .row
@@ -99,19 +91,6 @@ div(ng-controller=controller)
               span.input-group-btn
                   button.btn.btn-default
                       i.glyphicon.glyphicon-search
-
-         .col-md-4
-                   div {{ 'progress_current' | ng }} %.
-                     div.progress
-                      div.progress-bar.progress-bar-info(role="progress-bar"
-                        aria-valuenow="{{ progress_current }}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        ng-style="progressStyle"
-                        title="Inventory: {{ progress_current }}% done") {{ 'progress_current ' | ng }}
-                        span.sr-only {{ 'progress_current ' | ng }}
-
-
 
   div(ng-show="cards_to_show.length > 0")
    .col-md-7
