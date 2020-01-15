@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
-
 from abelujo import settings
 
 import io  # write to file in utf8
