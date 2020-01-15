@@ -91,6 +91,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         if $scope.cur_basket
             $location.hash($scope.cur_basket.id)
             $window.document.title = "Abelujo - " + gettext("Baskets") + ", " + $scope.cur_basket.name
+            # For the choose-shelf modale. We didn't find how to pass a custom parameter to it.
+            $window.localStorage.setItem('cur_basket_id', $scope.cur_basket.id)
 
             if not $scope.cur_basket.copies
                 $scope.getCopies index
@@ -299,6 +301,28 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         , !->
               $log.info "modal dismissed"
 
+    #############################
+    # Choose and add to shelf modal
+    # ###########################
+    ## $scope.add_to_shelf = (size) !->
+    $scope.add_to_shelf = (cur_basket_id) !->
+        $log.info "add_to_shelf got basket id", cur_basket_id
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'chooseShelfModal.html'
+            controller: 'ChooseShelfModalControllerInstance'
+            ## backdrop: 'static'
+            ## size: size,
+            cur_basket_id: cur_basket_id,
+            resolve: do
+                utils: ->
+                    utils
+
+        modalInstance.result.then (basket) !->
+            $log.info "modal ok"
+        , !->
+              $log.info "modal dismissed"
+
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
 
@@ -406,3 +430,54 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
+
+#####################
+# Choose/add to shelf modal
+# ###################
+angular.module "abelujo" .controller "ChooseShelfModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils) !->
+
+    utils.set_focus!
+    $scope.shelves = []
+    $scope.selected_shelf = null
+
+    $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
+    $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
+
+    $http.get "/api/shelfs"
+    .then (response) ->
+        $log.info "response: ", response
+        $scope.shelves = response.data
+        $log.info "shelves: ", $scope.shelves
+
+    $scope.ok = !->
+        if typeof ($scope.selected_shelf) == "undefined" || $scope.selected_shelf == ""
+            $uibModalInstance.dismiss('cancel')
+            return
+
+        $log.info "selected shelf: ", $scope.selected_shelf
+
+        #  This is needed for Django to process the params to its
+        #  request.POST dictionnary:
+        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+
+        #  We need not to pass the parameters encoded as json to Django.
+        #  Encode them like url parameters.
+        $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
+        config = do
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+
+        params = do
+            shelf_id: $scope.selected_shelf.pk
+
+        $http.post "/api/baskets/#{$scope.cur_basket_id}/add_to_shelf/", params
+        .then (response) !->
+            # basket = response.data.data
+            $scope.alerts = response.data.alerts
+            $uibModalInstance.close()
+            $scope.alerts = response.data.alerts
+            language = utils.url_language($window.location.pathname)
+            $window.location.href = "/#{language}/baskets/"
+
+    $scope.cancel = !->
+        $uibModalInstance.dismiss('cancel')
+        $scope.alerts = response.data.alerts

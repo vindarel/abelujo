@@ -493,7 +493,6 @@ def cards_set_supplier(request, **response_kwargs):
             'url': "/stock/set_supplier/",
         })
 
-
 def shelfs(request, **response_kwargs):
     # Note: for easier search, replace and auto-generation, we choose
     # to pluralize wrongly.
@@ -1334,6 +1333,33 @@ def baskets_return(request, pk, **kw):
             to_ret['alerts'] = msgs.msgs
             to_ret['status'] = msgs.status
             return JsonResponse(to_ret)
+
+def baskets_add_to_shelf(request, pk, **kw):
+    """
+    Add the cards of the given basket to the given shelf, and archive the basket.
+
+    POST params:
+    - shelf_id (int)
+    """
+    to_ret = {}
+    msgs = Messages()
+    if request.method == 'POST':
+        shelf_id = request.POST.get('shelf_id')
+        if not shelf_id:
+            msgs.add_error('No shelf id to add the basket to')
+            to_ret['alerts'] = msgs.msgs
+            to_ret['status'] = ALERT_ERROR
+            return JsonResponse(to_ret)
+
+        try:
+            shelf = Shelf.objects.get(id=shelf_id)
+            shelf.add_cards_from(basket_id=pk)
+        except Exception as e:
+            raise e
+
+        msgs.add_success('The card were successfully added to the shelf.')
+        to_ret['alerts'] = msgs.msgs
+        return JsonResponse(to_ret)
 
 def baskets_archive(request, pk, **kw):
     """

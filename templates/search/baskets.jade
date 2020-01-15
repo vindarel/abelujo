@@ -70,6 +70,7 @@ div(ng-cloak, ng-controller="basketsController")
            li: a(href="/databasesearch/basket/{{ 'cur_basket.id'|ng }}/", target="_blank") {% trans "Set the supplier" %}
 
            li.divider(role="separator")
+           li: a(href="#", ng-click="add_to_shelf(cur_basket.id)", title='{% trans "Add all the cards to a shelf and archive the list." %}') {% trans "Add to shelf…" %}
            li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
            li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
            li: a(href="#", ng-click="return_to_supplier()", title='{% trans "Return the cards to the distributor of this basket." %}') {% trans "Return to supplier" %}…
@@ -240,6 +241,20 @@ div(ng-cloak, ng-controller="basketsController")
     div.modal-body
       label {% trans "Name" %}
       input#default-input(type="text", ng-model="new_name")
+
+      button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
+      button.btn(ng-click="cancel()") {% trans "Cancel" %}
+
+ script(type="text/ng-template", id="chooseShelfModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Choose a shelf" %}
+
+    div.modal-body
+      span
+         div {% trans "All the cards will be added to this shelf in the default place, and the list will be archived." %}
+         select.form-control(
+           ng-model="selected_shelf",
+           ng-options="it.fields.name for it in shelves")
 
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}

@@ -329,6 +329,27 @@ class Shelf(models.Model):
         qty = Card.objects.filter(shelf=self.id).count()
         return qty
 
+    def add_cards_from(self, basket_id=None):
+        """
+        Mark all the cards of the basket to be of this shelf, and add their quantities to
+        the default place.
+        """
+        basket = Basket.objects.get(id=basket_id)
+
+        # Set all the cards to be in this shelf.
+        basket.copies.all().update(shelf=self)
+
+        # Add the card's quantity from the basket into the default place.
+        basket_copies = basket.basketcopies_set.all()
+        place = Preferences.get_default_place()
+        for copy in basket_copies:
+            place.add_copy(copy.card, nb=copy.nb)
+
+        # Archive the basket.
+        basket.archive()
+
+        return True
+
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
@@ -1757,6 +1778,7 @@ class Place (models.Model):
         - nothing
 
         """
+        assert isinstance(card, Card)
         if not isinstance(nb, int):
             # log.warning("nb '{}' is not an int: the quantity was malformed".format(nb))
             nb = 1
