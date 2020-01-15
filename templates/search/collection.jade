@@ -124,8 +124,6 @@ div(ng-cloak, ng-controller="collectionController")
          li: a(href="/stock/export?query={{ 'query' | ng }}&format=csv&select=selection&publisher_id={{ 'publisher.pk' | ng}}&place_id={{ 'place.id' | ng}}&card_type={{ 'card_type' | ng}}&shelf_id={{ 'shelf.pk' | ng}}&distributor_id={{ 'distributor.id' | ng}}&quantity_choice={{ 'quantity_choice.id' | ng }}", ng-show="selected", title='{% trans "Export the selection to txt" %}'){% trans 'Selection - csv' %}
          li.divider(role="separator")
          li: a(href="/stock/export?format=csv&select=all", title='{% trans "Export the stock to csv" %}'){% trans 'Stock - csv (Excel, LibreOffice) (this may take a while)' %}
-         li.divider(role="separator")
-         li: a(href="/stock/exports/") {% trans "List of exports" %}
 
       .btn-group
         button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
