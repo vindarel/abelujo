@@ -165,8 +165,6 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             url = "/#{$scope.language}/stock/card/#{$scope.card_created_id}/"
             if next_view == "view"
                $window.location.href = url
-            else if next_view == "buy"
-                $window.location.href = url + buy
 
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1

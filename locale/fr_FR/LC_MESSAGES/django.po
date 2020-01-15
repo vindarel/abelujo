@@ -923,20 +923,11 @@ msgstr "Ajouter au(x) dépôt(s)"
 msgid "total"
 msgstr "total"
 
-#: templates/search/card_add.jade:70
-msgid "Buy copies for each place"
-msgstr "Acheter des exemplaires pour chaque lieu"
+#: templates/search/card_add.jade:71
+msgid "Add copies for each place"
+msgstr "Ajouter des exemplaires pour chaque lieu"
 
-#: templates/search/card_add.jade:78 templates/search/card_add.jade.py:89
-#: templates/search/card_buy.jade:39 templates/search/card_edit.jade:124
-#: templates/search/card_move.jade:35 templates/search/card_places_add.jade:32
-#: templates/search/deposits_create.jade:110
-#: templates/search/sell_create.jade:113 templates/search/set_supplier.jade:41
-#: templates/search/set_supplier.jade:53
-msgid "Validate"
-msgstr "Valider"
-
-#: templates/search/card_add.jade:81
+#: templates/search/card_add.jade:80
 msgid "Add to lists"
 msgstr "Ajouter aux listes"
 
@@ -997,10 +988,6 @@ msgstr "Changer de fournisseur"
 #: templates/search/card_edit.jade:119
 msgid "Create a supplier"
 msgstr "Créer un fournisseur"
-
-#: templates/search/card_edit.jade:125
-msgid "Buy..."
-msgstr "Acheter..."
 
 #: templates/search/card_history.jade:31
 msgid "This page is under construction."
