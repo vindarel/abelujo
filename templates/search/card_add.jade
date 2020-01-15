@@ -31,6 +31,7 @@ div.ng-cloak(ng-controller="cardAddController")
       tr
         td.my-narrow {% trans "shelf" %}
         td: select.my-narrow(ng-model="shelf", ng-options="it.fields.name for it in shelfs")
+        td(style="padding-left: 10em"): input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate()")
       tr
         td.my-narrow {% trans "supplier" %}
         td
@@ -75,8 +76,6 @@ div.ng-cloak(ng-controller="cardAddController")
             form(ng-submit="validate()")
               input(type="number", min=0, ng-model="places[$index].quantity", ng-change="update_total_places()")
 
-  input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate()")
-
   .row
       h4 {% trans "Add to lists" %}:
       table.table.table-condensed.table-striped.my-table-narrow
@@ -84,8 +83,5 @@ div.ng-cloak(ng-controller="cardAddController")
           td.my-narrow {{ "it.name" | ng }}
           td
             input(type="number", min=0, ng-model="baskets[$index].quantity")
-
-
-  input.btn.btn-primary(value="{% trans 'Validate' %}", ng-click="validate()")
 
 {% endblock content %}
