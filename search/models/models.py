@@ -1243,7 +1243,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def from_dict(card, to_list=False):
-        """Add a card from a dict.
+        """Add or edit a card from a dict.
 
         Check if it already exists in the db (the card may have no
         isbn). If so, update its secondary fields.
@@ -1376,6 +1376,10 @@ class Card(TimeStampedModel):
 
             if card.get('threshold') is not None:
                 card_obj.threshold = card.get('threshold')
+
+            for field in ['title', 'price', 'year_published', 'has_isbn', 'details_url']:
+                if card.get(field) not in [None, '', u'']:
+                    setattr(card_obj, field, card.get(field))
 
             card_obj.isbn = isbn
             card_obj.save()

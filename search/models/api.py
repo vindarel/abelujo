@@ -333,7 +333,7 @@ def card(request, **kwargs):
     return JsonResponse(ret)
 
 def card_create(request, **response_kwargs):
-    """Create a card with either request params or json in request.body
+    """Create or edit a card with either request params or json in request.body
 
     Return: a tuple (card_id, status, alerts)
     """
