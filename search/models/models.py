@@ -22,8 +22,6 @@ You can produce a graph of the db with django_extension's
 
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
-from __future__ import unicode_literals
-
 import datetime
 import locale
 import json
