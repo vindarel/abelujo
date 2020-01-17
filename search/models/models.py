@@ -46,7 +46,7 @@ from django.db.models import FloatField
 from django.db.models import Q
 from django.utils import timezone
 from django.utils import translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
@@ -94,10 +94,11 @@ MSG_INTERNAL_ERROR = _(u"An internal error occured, we have been notified.")
 locale.setlocale(locale.LC_ALL, "")
 
 class Author(TimeStampedModel):
-    name = models.CharField(unique=True, max_length=200)
+    name = models.CharField(unique=True, max_length=200, verbose_name=_("name"))
 
     class Meta:
         ordering = ('name',)
+        verbose_name = _("author")
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -128,10 +129,10 @@ class Distributor(TimeStampedModel):
     # comment above: we have once considered that publishers can be distributors.
     # They should not. Its complicates everything.
 
-    name = models.CharField(max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH, verbose_name=_("name"))
     #: The discount (in %). When we pay the distributor we keep the amount of
     # the discount.
-    discount = models.FloatField(default=0, blank=True)
+    discount = models.FloatField(default=0, blank=True, verbose_name=_("discount"))
     #: Star the distributors to give precendence to our favourite ones.
     stars = models.IntegerField(default=0, null=True, blank=True)
     #: Contact: email adress. To complete, create a Contact class.
@@ -139,6 +140,7 @@ class Distributor(TimeStampedModel):
 
     class Meta:
         ordering = ("name",)
+        verbose_name = _("distributor")
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -208,16 +210,17 @@ class Publisher (models.Model):
     """
 
     #: Name of the publisher
-    name = models.CharField(max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH, verbose_name=_("name"))
     #: ISBN of the publisher
     isbn = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: Contact address (to put in own table)
-    address = models.TextField(null=True, blank=True)
+    address = models.TextField(null=True, blank=True, verbose_name=_("address"))
     #: Optional comment
-    comment = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True, verbose_name=_("comment"))
 
     class Meta:
         ordering = ("name",)
+        verbose_name = _("publisher")
 
     def __unicode__(self):
         return u"{}, {}".format(self.id, self.name)
@@ -255,15 +258,16 @@ class Collection (models.Model):
     """
 
     #: Name of the collection
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, verbose_name=_("name"))
     #: Is it an ordered collection ?
-    ordered = models.IntegerField(null=True, blank=True)
+    ordered = models.IntegerField(null=True, blank=True, verbose_name=_("ordered"))
     #: Parent collection. A null field means this collection is not
     # the sub-collection of another one.
     parent = models.ForeignKey("Collection", null=True, blank=True)
 
     class Meta:
         ordering = ("name",)
+        verbose_name = _("collection")
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -278,7 +282,11 @@ class Shelf(models.Model):
 
     """
     #: Name of the shelf
-    name = models.CharField(unique=True, max_length=CHAR_LENGTH)
+    name = models.CharField(unique=True, max_length=CHAR_LENGTH, verbose_name=_("name"))
+
+    class Meta:
+        verbose_name = _("shelf")
+        verbose_name_plural = _("shelves")
 
     def get_absolute_url(self):
         return ""  # TODO: url parameters in stock search to reference a shelf.
@@ -353,7 +361,10 @@ class Shelf(models.Model):
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
-    name = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100, null=True, verbose_name=_("name"))
+
+    class Meta:
+        verbose_name = _("Card type")
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -429,59 +440,61 @@ class Card(TimeStampedModel):
     """
 
     #: Title:
-    title = models.CharField(max_length=CHAR_LENGTH)
+    title = models.CharField(max_length=CHAR_LENGTH, verbose_name=_("title"))
     #: type of the card, if specified (book, CD, tshirt, …)
-    card_type = models.ForeignKey(CardType, blank=True, null=True)
+    card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=_("card type"))
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
-    has_isbn = models.NullBooleanField(default=True, blank=True, null=True)
+    has_isbn = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=_("has isbn"))
     #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
     isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
-    authors = models.ManyToManyField(Author, blank=True)
-    price = models.FloatField(null=True, blank=True, default=0.0)
+    authors = models.ManyToManyField(Author, blank=True, verbose_name=_("authors"))
+    price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=_("price"))
     #: price_sold is only used to generate an angular form, it is not
     #: stored here in the db.
-    price_sold = models.FloatField(null=True, blank=True)
+    price_sold = models.FloatField(null=True, blank=True, verbose_name=_("price sold"))
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
-    in_stock = models.BooleanField(default=False)
+    in_stock = models.BooleanField(default=False, verbose_name=_("in stock"))
     #: Quantity (caution: this field is denormalized, computed on each save).
-    quantity = models.IntegerField(null=True, blank=True, editable=False)
+    quantity = models.IntegerField(null=True, blank=True, editable=False, verbose_name=_("quantity"))
     #: The minimal quantity we want to always have in stock:
-    threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT)
+    threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT,
+                                    verbose_name=_("threshold"))
     #: Publisher of the card:
-    publishers = models.ManyToManyField(Publisher, blank=True)
-    year_published = models.DateField(blank=True, null=True)
+    publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=_("publishers"))
+    year_published = models.DateField(blank=True, null=True, verbose_name=_("year published"))
     #: Distributor:
-    distributor = models.ForeignKey("Distributor", blank=True, null=True)
+    distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=_("distributor"))
     #: Collection
-    collection = models.ForeignKey(Collection, blank=True, null=True)
+    collection = models.ForeignKey(Collection, blank=True, null=True, verbose_name=_("collection"))
     #: Shelf (for now, only one shelf).
-    shelf = models.ForeignKey("Shelf", blank=True, null=True)
+    shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=_("shelf"))
     # location = models.ForeignKey(Location, blank=True, null=True)
     #    default=u'?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
-    places = models.ManyToManyField("Place", through="PlaceCopies", blank=True)
+    places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, verbose_name=_("places"))
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
-    cover = models.URLField(null=True, blank=True)
+    cover = models.URLField(null=True, blank=True, verbose_name=_("cover"))
     #: the cover, saved on the file system. Use card.cover to get the most relevant.
     imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
-    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=_("data source"))
     #: link to the card's data source
-    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True)
+    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=_("details url"))
     #: date of publication
-    date_publication = models.DateField(blank=True, null=True)
+    date_publication = models.DateField(blank=True, null=True, verbose_name=_("date publication"))
     #: the summary (of the back cover)
-    summary = models.TextField(null=True, blank=True)
+    summary = models.TextField(null=True, blank=True, verbose_name=_("summary"))
     #: Book format (pocket, big)
     fmt = models.TextField(null=True, blank=True)
     #: a user's comment
-    comment = models.TextField(blank=True)
+    comment = models.TextField(blank=True, verbose_name=_("comment"))
 
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
+        verbose_name = _("card")
 
     @property
     def ean(self):
@@ -1649,30 +1662,26 @@ class Place (models.Model):
     """A place can be a selling point, a warehouse or a stand.
     """
     #: Name of this place
-    name = models.CharField(max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH, verbose_name=_("name"))
 
     #: Copies: PlaceCopies
 
     #: Date of creation
-    date_creation = models.DateField(auto_now_add=True)
-
+    date_creation = models.DateField(auto_now_add=True, verbose_name=_("creation date"))
     #: Date of deletion
-    date_deletion = models.DateField(null=True, blank=True)
-
+    date_deletion = models.DateField(null=True, blank=True, verbose_name=_("deletion date"))
     #: Is this place a stand ?
-    is_stand = models.BooleanField(default=False)
-
+    is_stand = models.BooleanField(default=False, verbose_name=_("is stand?"))
     #: Is it allowed to sell books from here ?
-    can_sell = models.BooleanField(default=True)
-
+    can_sell = models.BooleanField(default=True, verbose_name=_("can sell?"))
     #: Are we doing an inventory on it right now ?
-    inventory_ongoing = models.BooleanField(default=False)
-
+    inventory_ongoing = models.BooleanField(default=False, verbose_name=_("inventory ongoing"))
     #: Optional comment
-    comment = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True, verbose_name=_("comment"))
 
     class Meta:
         ordering = ("name",)
+        verbose_name = _("place")
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -1911,14 +1920,18 @@ class Preferences(models.Model):
     Default preferences.
     """
     #: Name of the asso/group running this project. To appear in bills and emails.
-    asso_name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)  # XXX to use in preferences
+    asso_name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True,
+                                 verbose_name=_("bookshop name"))  # XXX to use in preferences
     #: What place to add the cards by default ? (we register them, then move them)
-    default_place = models.OneToOneField(Place)
+    default_place = models.OneToOneField(Place, verbose_name=_("default place"))
     #: VAT, the tax
-    vat_book = models.FloatField(null=True, blank=True)
+    vat_book = models.FloatField(null=True, blank=True, verbose_name=_("book vat"))
     #: the default language: en, fr, es, de.
     #: Useful for non-rest views that must set the language on the url or for UI messages.
-    language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
+    language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=_("language"))
+
+    class Meta:
+        verbose_name = _("Preferences")
 
     def __unicode__(self):
         return u"default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
@@ -2039,22 +2052,23 @@ class Basket(models.Model):
     """
     # This class is really similar to PlaceCopies. Do something about it.
     #: Name of the basket
-    name = models.CharField(max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH, verbose_name=_("name"))
     #: Type of the basket (preparation of a command, a stand, other, etc)
-    basket_type = models.ForeignKey("BasketType", null=True, blank=True)
+    basket_type = models.ForeignKey("BasketType", null=True, blank=True, verbose_name=_("basket type"))
     #: Copies in it:
     copies = models.ManyToManyField(Card, through="BasketCopies", blank=True)
     # Access the intermediate table with basketcopies_set.all(), basketcopies_set.get(card=card)
     #: Comment:
-    comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True)
+    comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True, verbose_name=_("comment"))
     #: We can also choose a supplier for this basket.
     #: This will help when applying the basket to the stock, receiving a parcel, etc.
-    distributor = models.ForeignKey(Distributor, blank=True, null=True)
-    archived = models.BooleanField(default=False)
-    archived_date = models.DateField(blank=True, null=True)
+    distributor = models.ForeignKey(Distributor, blank=True, null=True, verbose_name=_("distributor"))
+    archived = models.BooleanField(default=False, verbose_name=_("archived"))
+    archived_date = models.DateField(blank=True, null=True, verbose_name=_("date archived"))
 
     class Meta:
         ordering = ("name",)
+        verbose_name = _("Basket")
 
     def __unicode__(self):
         return u"{}".format(self.name)
@@ -2858,9 +2872,9 @@ class Deposit(TimeStampedModel):
     distributor and carry on using the deposit and seeing balances.
 
     """
-    name = models.CharField(unique=True, max_length=CHAR_LENGTH)
+    name = models.CharField(unique=True, max_length=CHAR_LENGTH, verbose_name=_("name"))
     #: the distributor (or person) we have the copies from.
-    distributor = models.ForeignKey(Distributor, blank=True, null=True)
+    distributor = models.ForeignKey(Distributor, blank=True, null=True, verbose_name=_("distributor"))
 
     #: To include cards, use add_copy/ies.
 
@@ -2868,24 +2882,27 @@ class Deposit(TimeStampedModel):
     #: library and act like a distributor.
     deposit_type = models.CharField(choices=DEPOSIT_TYPES_CHOICES,
                                     default="fix",
-                                    max_length=CHAR_LENGTH)
+                                    max_length=CHAR_LENGTH,
+                                    verbose_name=_("deposit type"))
 
     #: in case of a deposit for a publisher, the place (client?) who
     #: we send our cards to.
-    dest_place = models.ForeignKey(Place, blank=True, null=True)
+    dest_place = models.ForeignKey(Place, blank=True, null=True, verbose_name=_("destination place"))
     #: due date for payment (optional)
-    due_date = models.DateField(blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True, verbose_name=_("due date"))
     #: minimal number of copies to have in stock. When not, do an action (raise an alert).
     minimal_nb_copies = models.IntegerField(blank=True, null=True, default=0,
-                                            verbose_name="Nombre minimun d'exemplaires")
+                                            verbose_name=_("Minimun number of copies to have in stock"))
     #: auto-command when the minimal nb of copies is reached ?
     # (for now: add to the "to command" basket).
-    auto_command = models.BooleanField(default=True, verbose_name="Automatiquement marquer les fiches à commander")
+    auto_command = models.BooleanField(default=True,
+                                       verbose_name=_("Automatically mark the cards to command"))
     #: Comment.
-    comment = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True, verbose_name=_("comment"))
 
     class Meta:
         ordering = ("name",)
+        verbose_name = _("deposit")
 
     def __unicode__(self):
         return u"Deposit '{}' with distributor: {} (type: {})".format(
@@ -3343,16 +3360,20 @@ class Sell(models.Model):
     payment = models.CharField(choices=PAYMENT_CHOICES,  # XXX: table
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
-                               blank=True, null=True)
+                               blank=True, null=True,
+                               verbose_name=_("payment"))
     #: We can choose to sell from a specific place.
-    place = models.ForeignKey("Place", blank=True, null=True)
+    place = models.ForeignKey("Place", blank=True, null=True, verbose_name=_("place"))
     #: We can also choose to sell from a specific deposit.
-    deposit = models.ForeignKey("Deposit", blank=True, null=True)
+    deposit = models.ForeignKey("Deposit", blank=True, null=True, verbose_name=_("deposit"))
     #: If True, this sell was already canceled. It can not be undone twice.
-    canceled = models.BooleanField(default=False, blank=True)
+    canceled = models.BooleanField(default=False, blank=True, verbose_name=_("canceled"))
 
     # alerts
     # client
+
+    class Meta:
+        verbose_name = _("sell")
 
     def __unicode__(self):
         return u"Sell {} of {} copies at {}.".format(self.id,
@@ -4293,14 +4314,18 @@ class Inventory(InventoryBase):
     copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
     #: We can do the inventory of a shelf.
     # XXX: use InventoryBase now that we have it.
-    shelf = models.ForeignKey("Shelf", blank=True, null=True)
+    shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=_("shelf"))
     #: we can also do the inventory of a whole place.
-    place = models.ForeignKey("Place", blank=True, null=True)
+    place = models.ForeignKey("Place", blank=True, null=True, verbose_name=_("place"))
     #: we can also do the inventory of publishers
-    publisher = models.ForeignKey("publisher", blank=True, null=True)
+    publisher = models.ForeignKey("publisher", blank=True, null=True, verbose_name=_("publisher"))
     #: At last, we can also do "inventories" of baskets, meaning we compare it
     # with a newly received command, or a pack of cards returned.
-    basket = models.ForeignKey("Basket", blank=True, null=True)
+    basket = models.ForeignKey("Basket", blank=True, null=True, verbose_name=_("basket"))
+
+    class Meta:
+        verbose_name = _("Inventory")
+        verbose_name_plural = _("Inventories")
 
     def __unicode__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
@@ -4684,25 +4709,31 @@ class Command(TimeStampedModel):
     """
 
     #: Name
-    name = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True)
+    name = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=_("name"))
     #: Command to supplier: a publisher or a distributor (see `supplier`).
-    publisher = models.ForeignKey("Publisher", blank=True, null=True)
-    distributor = models.ForeignKey("Distributor", blank=True, null=True)
+    publisher = models.ForeignKey("Publisher", blank=True, null=True, verbose_name=_("publisher"))
+    distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=_("distributor"))
     #: Copies in it:
     copies = models.ManyToManyField(Card, through="CommandCopies", blank=True)
     #: Date of reception. To check if the command was received, use the received property.
-    date_received = models.DateTimeField(blank=True, null=True)
+    date_received = models.DateTimeField(blank=True, null=True, verbose_name=_("date received"))
     #: Date of reception of the bill from the supplier. See also the `bill_received` property
-    date_bill_received = models.DateTimeField(blank=True, null=True)
+    date_bill_received = models.DateTimeField(blank=True, null=True,
+                                              verbose_name=_("date bill received"))
     #: When did we send the payment ? See also `payment_sent`.
-    date_payment_sent = models.DateTimeField(blank=True, null=True)
+    date_payment_sent = models.DateTimeField(blank=True, null=True,
+                                             verbose_name=_("date payment sent"))
     #: When did the supplier accept the payment ? See also `paid`.
-    date_paid = models.DateTimeField(blank=True, null=True)
+    date_paid = models.DateTimeField(blank=True, null=True,
+                                     verbose_name=_("date paid"))
     #: Inventory of the parcel we received, to check its content.
-    inventory = models.OneToOneField('InventoryCommand', blank=True, null=True)
-
+    inventory = models.OneToOneField('InventoryCommand', blank=True, null=True,
+                                     verbose_name=_("inventory"))
     #: Short comment
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True, verbose_name=_("comment"))
+
+    class Meta:
+        verbose_name = _("Command")
 
     def get_absolute_url(self):
         return reverse("commands_view", args=(self.id,))
