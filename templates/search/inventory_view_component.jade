@@ -86,6 +86,7 @@ div(ng-controller=controller)
                   id="default-input"
                   placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
                   autocomplete="off"
+                  tabindex="1"
               )
 
               span.input-group-btn
@@ -145,6 +146,7 @@ div(ng-controller=controller)
                     type="number", min=0, max=99
                     ng-model="cards_to_show[$index].quantity"
                     ng-change="updateCard($index)"
+                    tabindex="{{ '$index+2' | ng }}"
                 )
 
          td.col-md-1
