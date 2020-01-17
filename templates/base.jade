@@ -50,18 +50,19 @@ html(ng-app="abelujo")
           li#database.dropdown.push-right
             a.dropdown-toggle(href="#", data-toggle="dropdown", role="button", title='{% trans "Access everything on the database" %}') {% trans "Database" %}
               span.caret
+            {% get_current_language as LANGUAGE_CODE %}
             ul.dropdown-menu
                 li(href="#")
-                    a(href='/databasesearch/place', title='{% trans "List and edit the bookshop\'s places" %}') {% trans "Places" %}
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/place', title='{% trans "List and edit the bookshop\'s places" %}') {% trans "Places" %}
                 li(href="#")
-                    a(href='/databasesearch/shelf', title='{% trans "List and edit the shelves" %}') {% trans "Shelves" %}
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/shelf', title='{% trans "List and edit the shelves" %}') {% trans "Shelves" %}
                 li(href="#")
-                    a(href='/databasesearch/distributor') {% trans "Distributors" %}
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/distributor') {% trans "Distributors" %}
                 li(href="#")
-                    a(href='/databasesearch/publisher') {% trans "Publisher" %}
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/publisher') {% trans "Publishers" %}
                 li.divider(role="separator")
                 li(href="#")
-                    a(href='/database') {% trans "All" %}
+                    a(href='/{{ LANGUAGE_CODE }}/database') {% trans "All" %}
 
         form#titlesearch.navbar-form.navbar-left
           .form-group

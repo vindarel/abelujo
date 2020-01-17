@@ -1682,6 +1682,7 @@ class Place (models.Model):
     class Meta:
         ordering = ("name",)
         verbose_name = _("place")
+        verbose_name_plural = _("places")
 
     def __unicode__(self):
         return u"{}".format(self.name)
