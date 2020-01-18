@@ -20,11 +20,13 @@
 Import a csv files with two columns: an isbn and a quantity.
 """
 from __future__ import print_function
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 
 from search.models import Card
 from search.models import Preferences
+from search.models import Shelf
 from search.models.api import to_int
 from search.models.utils import is_isbn
 from search.views_utils import search_on_data_source
@@ -36,6 +38,33 @@ def find_separator(line, default=None):
     if "," in line:
         return ","
     return default
+
+def search_and_create_card(source, isbn, shelf=None):
+    res, traces = search_on_data_source(source, isbn)
+    if not res:
+        print(" no result :( Exiting.")
+        exit(1)
+
+    print(" ok ({} results)".format(len(res)))
+
+    if len(res) > 1:
+        print("INFO: got more than 1 result for {}, we pick the first one.".
+              format(isbn))
+
+    res = res[0]
+    if shelf:
+        res['shelf'] = shelf
+
+    print("\t Creating card {}: {}...".format(isbn, res['title']), end="")
+    try:
+        card, msgs = Card.from_dict(res)  # XXX quite long
+    except Exception as e:
+        print()
+        print("Error with res {}: {}.".format(res, e))
+        print("Exiting.")
+        exit(1)
+
+    return card
 
 class Command(BaseCommand):
 
@@ -52,14 +81,23 @@ class Command(BaseCommand):
             dest='lang',
             help='Set the language to better choose the bibliographic source.',
         )
+        parser.add_argument(
+            '-s',
+            dest='shelf_id',
+            help='Set the shelf (by its id).',
+        )
+
 
     def handle(self, *args, **options):
         """
-        Add a card with a quantity.
+        Import cards and set their quantity.
 
-        !!! the script can add some cards and exit. It is not indempotent !
+        The script can add some cards and exit. If it is run a second time, it will process
+        everything again.
+
+        It is indempotent: we *set* the card's quantity, we don't *add* it to the stock (changed in january 2020).
         """
-        WARN_MSG = "***** This script is not indempotent. If you run it twice it will add cards twice. Contact us if you are in such a situation. *****"
+        WARN_MSG = "***** This script was changed in 2020/01. It is now indempotent: it sets the quantities instead of adding them. *****"
         print(WARN_MSG)
 
         csvfile = options.get('input')
@@ -78,6 +116,11 @@ class Command(BaseCommand):
             self.stdout.write("Unimplemented. Would you buy me a beer ?")
             exit(1)
 
+        shelf = None
+        if options.get('shelf_id'):
+            shelf = Shelf.objects.filter(id=options.get('shelf_id')).first()
+            self.stdout.write(u"Found shelf: {}".format(shelf.name))
+
         default_place = Preferences.prefs().default_place
         if not default_place:
             print("We couldn't find a default place. Please check and try again.")
@@ -90,26 +133,19 @@ class Command(BaseCommand):
                 self.stdout.write("It seems that {} is not a valid isbn or one that we know around here. Please check and try again.".format(isbn))
                 exit(1)
 
-            print("[{}] - searching for {}...".format(i + 1, isbn), end="")
-            res, traces = search_on_data_source(source, isbn)
-            if not res:
-                print(" no result :( Exiting.")
-                exit(1)
-            print(" ok ({} results)".format(len(res)))
+            card = Card.objects.filter(isbn=isbn).first()
+            if not card:
+                print("[{}] - searching for {}...".format(i + 1, isbn), end="")
+                card = search_and_create_card(source, isbn, shelf=shelf)
+            else:
+                # Update the shelf.
+                # Do it at once in the end? => no, the script can fail early.
+                if card.shelf != shelf:
+                    self.stdout.write("\tupdating the shelf.")
+                    card.shelf = shelf
 
-            if len(res) > 1:
-                print("INFO: got more than 1 result for {}, we pick the first one.".
-                      format(isbn))
-
-            res = res[0]
-
-            print("\t adding to {}...".format(default_place), end="")
-            try:
-                card, msgs = Card.from_dict(res)  # XXX quite long
-            except Exception as e:
-                print()
-                print("Error with res {}: {}.".format(res, e))
-                print("Exiting.")
-                exit(1)
-            default_place.add_copy(card, to_int(quantity))
+            print("\t setting to {}...".format(default_place), end="")
+            default_place.add_copy(card, to_int(quantity), add=False)
             print(" done quantity x{}.".format(quantity))
+
+        print("All done.")
