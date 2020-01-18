@@ -120,7 +120,7 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row(ng-show="cards_selected.length > 0")
-          h3.col-md-6 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} €
+          h3.col-md-5 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} €
           .col-md-2
           .col-md-1
             select(
@@ -131,7 +131,7 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row(ng-show="cards_selected", ng-repeat="card in cards_selected")
-        h4.col-md-6
+        h4.col-md-5
           a(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
 
         //- .col-md-3
@@ -161,7 +161,7 @@ div.ng-cloak(ng-controller="sellController")
               ng-change='discount_apply($index)'
               )
 
-        .col-md-1
+        .col-md-2
             p.input-group
                 label.sr-only {% trans "Quantity" %}
                 span.input-group-addon X
