@@ -46,7 +46,7 @@ from django.db.models import FloatField
 from django.db.models import Q
 from django.utils import timezone
 from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
