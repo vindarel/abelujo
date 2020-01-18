@@ -39,36 +39,10 @@ def find_separator(line, default=None):
         return ","
     return default
 
-def search_and_create_card(source, isbn, shelf=None):
-    res, traces = search_on_data_source(source, isbn)
-    if not res:
-        print(" no result :( Exiting.")
-        exit(1)
-
-    print(" ok ({} results)".format(len(res)))
-
-    if len(res) > 1:
-        print("INFO: got more than 1 result for {}, we pick the first one.".
-              format(isbn))
-
-    res = res[0]
-    if shelf:
-        res['shelf'] = shelf
-
-    print("\t Creating card {}: {}...".format(isbn, res['title']), end="")
-    try:
-        card, msgs = Card.from_dict(res)  # XXX quite long
-    except Exception as e:
-        print()
-        print("Error with res {}: {}.".format(res, e))
-        print("Exiting.")
-        exit(1)
-
-    return card
-
 class Command(BaseCommand):
 
     help = "Import a csv file with two columns: an isbn and a quantity."
+    not_found = []
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -87,6 +61,39 @@ class Command(BaseCommand):
             help='Set the shelf (by its id).',
         )
 
+    def search_and_create_card(self, source, isbn, shelf=None):
+        res, traces = search_on_data_source(source, isbn)
+        if not res:
+            print(" no result for {} :( Exiting.".format(isbn))
+            self.not_found.append(isbn)
+            return
+            # exit(1)
+
+        print(" ok ({} results)".format(len(res)))
+
+        if len(res) > 1:
+            print("INFO: got more than 1 result for {}, we pick the first one.".
+                  format(isbn))
+
+        res = res[0]
+        if shelf:
+            res['shelf'] = shelf
+
+        print("\t Creating card {}: {}...".format(isbn, res['title']), end="")
+        try:
+            card, msgs = Card.from_dict(res)  # XXX quite long
+        except Exception as e:
+            print()
+            print("Error with res {}: {}.".format(res, e))
+            print("Exiting.")
+            exit(1)
+
+        return card
+
+    def print_status(self, msg="Done"):
+        self.stdout.write(msg)
+        if self.not_found:
+            self.stdout.write("ISBNs not found:\n{}".format("\n".join(self.not_found)))
 
     def handle(self, *args, **options):
         """
@@ -127,25 +134,32 @@ class Command(BaseCommand):
             exit(1)
 
         separator = find_separator(lines[0], default=";")
-        for i, line in enumerate(lines):
-            isbn, quantity = line.split(separator)
-            if not is_isbn(isbn):
-                self.stdout.write("It seems that {} is not a valid isbn or one that we know around here. Please check and try again.".format(isbn))
-                exit(1)
+        # TODO: should count success & errors.
+        try:
+            for i, line in enumerate(lines):
+                isbn, quantity = line.split(separator)
+                if not is_isbn(isbn):
+                    self.stdout.write("It seems that {} is not a valid isbn or one that we know around here. Please check and try again.".format(isbn))
+                    exit(1)
 
-            card = Card.objects.filter(isbn=isbn).first()
-            if not card:
-                print("[{}] - searching for {}...".format(i + 1, isbn), end="")
-                card = search_and_create_card(source, isbn, shelf=shelf)
-            else:
-                # Update the shelf.
-                # Do it at once in the end? => no, the script can fail early.
-                if card.shelf != shelf:
-                    self.stdout.write("\tupdating the shelf.")
-                    card.shelf = shelf
+                card = Card.objects.filter(isbn=isbn).first()
+                if not card:
+                    print("[{}] - searching for {}...".format(i + 1, isbn), end="")
+                    card = self.search_and_create_card(source, isbn, shelf=shelf)
+                    if not card:
+                        continue
+                else:
+                    # Update the shelf.
+                    # Do it at once in the end? => no, the script can fail early.
+                    if card.shelf != shelf:
+                        self.stdout.write("\tupdating the shelf.")
+                        card.shelf = shelf
 
-            print("\t setting to {}...".format(default_place), end="")
-            default_place.add_copy(card, to_int(quantity), add=False)
-            print(" done quantity x{}.".format(quantity))
+                print("\t setting to {}...".format(default_place), end="")
+                default_place.add_copy(card, to_int(quantity), add=False)
+                print(" done quantity x{}.".format(quantity))
 
-        print("All done.")
+            self.print_status()
+
+        except KeyboardInterrupt:
+            self.print_status(msg="Abort.")
