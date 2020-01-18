@@ -69,7 +69,7 @@ Import a csv file of ISBNs and quantities
 The CSV file has two columns: the ISBN and the quantity.
 
 This command will search for the bibliographic information of this
-ISBN and add it to the database with the given quantity.
+ISBN and save it to the database with the given quantity.
 
 You can export your Excel or LibreOffice calc sheet into csv, preferably
 with a ``;`` as separator.
@@ -82,13 +82,14 @@ Options:
 
 - ``-l`` to choose the language of the bibliographic search (a french
   source by default)
+- ``-s <id>`` to choose a shelf.
 
 The script will search each ISBN on the datasource, create a Card
-object, and add the given quantity into the default Place. Consequently, before running the script, you must choose the appropriate default place.
+object, and save the given quantity into the default Place. Consequently, before running the script, you must choose the appropriate default place.
 
-The script will fail early if any error were to occure.
+If an ISBN is not found, the script carries on and prints all the ones not found at the end.
 
-**warning**: presently the script is not indempotent, meaning if you run it twice, it will add twice the quantities.
+**update january, 2020**: the script was not indempotent but is now. You can run it twice in a row, it will not add up the quantities, only set them.
 
 If you need more features, get in touch.
 
