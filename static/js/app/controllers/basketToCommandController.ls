@@ -154,7 +154,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
                 $log.info response.data
                 if response.data.status == 'success'
                     $log.info "success !"
-                    #TODO: redirect
+                    $window.location.href = "#{$scope.language}/commands/"
                     $scope.cards = []
 
                 else
