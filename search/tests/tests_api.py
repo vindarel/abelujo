@@ -76,7 +76,12 @@ class ApiTest(TestCase):
             "minimal_nb_copies": 1,
             "auto_command": "true",
         }
+        # A default place.
         self.place = PlaceFactory.create()
+        self.preferences = PreferencesFactory()
+        self.preferences.default_place = self.place
+        self.preferences.save()
+
         self.c = Client()
 
     def tearDown(self):

@@ -3594,11 +3594,13 @@ class Sell(models.Model):
 
         # Get the place we sell from (optional).
         place_obj = place
-        if not place_obj and place_id and place_id not in [0, "0"]:
+        if not place_obj and place_id and place_id:
             try:
                 place_obj = Place.objects.get(id=place_id)
             except ObjectDoesNotExist:
                 log.error(u"Registering a Sell, couldn't get place of id {}.".format(place_id, e))
+        elif not place_obj:
+            place_obj = Preferences.get_default_place()
 
         # Create the Sell object.
         try:

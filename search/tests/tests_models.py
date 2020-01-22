@@ -1300,7 +1300,6 @@ class TestInventory(TestCase):
     def test_inventory_state(self):
         self.inv.add_copy(self.card, nb=2)
         state = self.inv.state()
-        self.assertEqual(state['total_missing'], 0)
         self.assertEqual(state['nb_copies'], 2)
         self.assertEqual(state['nb_cards'], 1)
 
@@ -1546,7 +1545,6 @@ class TestCommandsReceive(TestCase):
     def test_inventory_command_state(self):
         # may be redundant with test of add_pairs
         state = self.inv.state()
-        self.assertEqual(state['total_missing'], 0)
         self.assertEqual(state['nb_cards'], 1)
 
     def test_inventory_command_apply(self):
