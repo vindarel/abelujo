@@ -340,7 +340,7 @@ def ids_qties_to_pairs(string):
     # For unknown reason, we now get a proper list straight in.
     # So we removed the ; and we don't need this method anymore.
     # But is that in all methods using it ? see command_receive_update
-    if isinstance(string, str) and string and ';' in string:
+    if string and (isinstance(string, str) or isinstance(string, unicode)) and ';' in string:
         together = string.split(';')
         pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
         return pairs
