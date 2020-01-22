@@ -91,6 +91,8 @@ THRESHOLD_DEFAULT = 1
 
 MSG_INTERNAL_ERROR = _(u"An internal error occured, we have been notified.")
 
+BAD_IDS = [None, 0, '0', u'0', '-1', u'-1']
+
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
 
@@ -4762,8 +4764,8 @@ class Command(TimeStampedModel):
             'id': self.id,
             'name': self.name,
             'created': self.created.strftime(DATE_FORMAT),
-            'distributor_name': self.distributor.name,
-            'distributor_id': self.distributor.id,
+            'distributor_name': self.distributor.name if self.distributor else _(u"NO SUPPLIER"),
+            'distributor_id': self.distributor.id if self.distributor else 0,
             'nb_copies': self.copies.count(),
             'date_received': date_received,
             'date_bill_received': date_bill_received,
@@ -4878,12 +4880,12 @@ class Command(TimeStampedModel):
 
     @staticmethod
     def ongoing(to_dict=None):
-        """Return a queryset of ongoing commands (to be more defined).
+        """
+        Return a queryset of ongoing commands (to be more defined).
         Return: a queryset, so to apply .all() or .count().
         """
         # XXX: fix return type.
-        res = Command.objects.filter(date_paid__isnull=True)\
-                             .exclude(Q(publisher__isnull=True) & Q(distributor__isnull=True))
+        res = Command.objects.filter(date_paid__isnull=True)
         if res and to_dict:
             # return [it.to_dict() for it in res]  # f* to_dict returns null O_o
             return [it.to_list() for it in res]
@@ -4967,14 +4969,11 @@ class Command(TimeStampedModel):
         # We must have a distributor.
         dist_obj = None
         if distributor_id is None:
-            msgs.add_error("Provide a distributor_id for the new command.")
+            msgs.add_error("Please provide a distributor for the new command.")
             return None, msgs
 
-        elif distributor_id:
+        elif distributor_id and distributor_id not in BAD_IDS:
             dist_obj = Distributor.objects.get(id=distributor_id)
-
-        if not dist_obj:
-            return None, msgs.status
 
         cmd = Command()
         cmd.save()
@@ -4988,12 +4987,13 @@ class Command(TimeStampedModel):
             __, messages = cmd.add_copy(None, card_id=id, nb=nb)
             msgs.merge(messages)
 
-        # Register the supplier
-        cmd.distributor = dist_obj
-        cmd.save()
+        # Register the (optional) supplier.
+        if dist_obj:
+            cmd.distributor = dist_obj
+            cmd.save()
 
-        # Remove from the ToCommand basket.
-        tocmd = Basket.objects.get(id=1)  # TODO: don't hardcode the id.
+        # Remove the given cards from the AutoCommand basket.
+        tocmd = Basket.objects.get(id=1)  # XXX: don't hardcode the id.
         ids = [it[0] for it in ids_qties]
         tocmd.remove_copies(ids)
 
