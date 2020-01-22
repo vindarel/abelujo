@@ -19,7 +19,7 @@
 """
 Apply one or many inventories.
 
-./manage.py apply_inventories --ids [id, id,id,id]
+./manage.py apply_inventories --ids [id,id,id,id] [--all]
 
 """
 

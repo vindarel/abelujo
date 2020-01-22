@@ -3461,12 +3461,7 @@ class Sell(models.Model):
                 sells = soldcards
 
             if deposit_id:
-                # By default, a Sell doesn't reference a place or a deposit.
-                # Here, exclude the sells that are linked to another deposit than this one,
-                # but most of all exclude the ones linked to a place.
-                sells = sells.filter(sell__place__isnull=True)
-                sells = sells.exclude(Q(sell__deposit__isnull=False),
-                                      ~Q(sell__deposit_id=deposit_id))
+                sells = sells.filter(sell__deposit_id=deposit_id)
 
         except Exception as e:
             log.error(u"search for sells of card id {}: {}".format(card_id, e))

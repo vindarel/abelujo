@@ -1262,16 +1262,24 @@ class TestSellSearch(TestCase):
         # Create two deposits.
         self.deposit = DepositFactory()
         self.deposit2 = DepositFactory()
+        # We add the cards that are also in the default place.
         self.deposit.add_copies([self.autobio])
-        # Two sells, one for deposit 1 only.
+        # Two sells:
+        # 1 is for the default place (by default)
         Sell.sell_card(self.autobio)
+        # 1 is explicitely for the deposit.
         Sell.sell_card(self.autobio, deposit_id=self.deposit.id)
-        sells = Sell.search(deposit_id=self.deposit.id)
-        self.assertEqual(sells['nb_sells'], 2)
-
-        # deposit 2 sees only one sell.
+        # So there are 2 sells in total
+        all_sells = Sell.search()
+        self.assertEqual(all_sells['nb_sells'], 2)
+        # there is one linked to deposit 1
+        deposit_sells = Sell.search(deposit_id=self.deposit.id)
+        # self.assertEqual(deposit_sells['nb_sells'], 2)
+        self.assertEqual(deposit_sells['nb_sells'], 1)
+        # and deposit 2 sees no sell.
         sells = Sell.search(deposit_id=self.deposit2.id)
-        self.assertEqual(sells['nb_sells'], 1)
+        self.assertEqual(sells['nb_sells'], 0)
+        # => the Sell UI should warn that a card is both in a place and in a deposit.
 
 
 class TestHistory(TestCase):
