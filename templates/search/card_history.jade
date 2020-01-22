@@ -60,7 +60,7 @@ div {% trans "Total sells" %}: {{ sells_data.total_sells }}
   .col-lg-3
     h4 {% trans "Other output movements" %}
     if not outs
-      div: em {% trans "There is no other other output movements than sells." %}
+      div: em {% trans "There are no other movements out of the stock than sells." %}
     for out in outs
       div {{ out.movement.created}}: x{{ out.quantity }} - {% if out.movement.basket %} {{ out.movement.basket }} {% endif %} {{ out.movement.distributor }}
 
