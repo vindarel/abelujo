@@ -140,9 +140,7 @@ def get_suppliers_choices():
 class DepositForm(forms.ModelForm):
     """Create a new deposit.
     """
-    copies = forms.ModelMultipleChoiceField(Card.objects.all(),
-                                            cache_choices=True,
-                                            required=False)
+    copies = forms.ModelMultipleChoiceField(Card.objects.all(), required=False)
 
     class Meta:
         model = Deposit
