@@ -471,6 +471,8 @@ class TestPlace(TestCase):
     def setUp(self):
         self.place = PlaceFactory.create()
         self.card = CardFactory.create()
+        # Preferences
+        self.preferences = Preferences(default_place=self.place).save()
 
     def tearDown(self):
         pass
@@ -630,7 +632,7 @@ class TestDeposits(TransactionTestCase):
         self.sell = SellsFactory()
         # self.sell.sell_cards(None, cards=[self.card2])
 
-        # a needed place:
+        # default Place
         self.place_name = "test place"
         self.place = Place(name=self.place_name, is_stand=False, can_sell=True)
         self.place.save()
@@ -902,7 +904,7 @@ class TestSells(TestCase):
         # a Deposit:
         self.depo = Deposit(name="deposit test", distributor=self.dist)
         self.depo.save()
-        # mandatory: preferences table
+        # Preferences.
         self.preferences = Preferences(default_place=self.place).save()
 
     def tearDown(self):
@@ -1282,15 +1284,19 @@ class TestSellSearch(TestCase):
         # => the Sell UI should warn that a card is both in a place and in a deposit.
 
 
-class TestHistory(TestCase):
+# class TestHistory(TestCase):
 
-    def setUp(self):
-        self.card = CardFactory.create()
-        self.sell = SellsFactory.create()
-        Sell.sell_cards([{"id": "1", "price_sold": 1, "quantity": 1}])
+#     def setUp(self):
+#         self.card = CardFactory.create()
+#         self.sell = SellsFactory.create()
+#         Sell.sell_cards([{"id": "1", "price_sold": 1, "quantity": 1}])
 
-    def tearDown(self):
-        pass
+#         # Preferences and default Place.
+#         self.place = PlaceFactory.create()
+#         self.preferences = Preferences(default_place=self.place).save()
+
+#     def tearDown(self):
+#         pass
 
 
 class TestInventory(TestCase):
@@ -1304,6 +1310,9 @@ class TestInventory(TestCase):
         self.inv = InventoryFactory()
         self.inv.place = self.place
         self.inv.save()
+
+        # Preferences.
+        self.preferences = Preferences(default_place=self.place).save()
 
     def test_inventory_state(self):
         self.inv.add_copy(self.card, nb=2)
@@ -1449,11 +1458,9 @@ class TestCommands(TestCase):
         self.com = Command(publisher=self.publisher)
         self.com.save()
 
-        # A default place in Preferences (to import views).
-        # self.preferences = PreferencesFactory()
-        # self.preferences.default_place = PlaceFactory()
-        # self.preferences.save()
-        # self.new_place = PlaceFactory()
+        # Preferences and default Place.
+        self.place = PlaceFactory.create()
+        self.preferences = Preferences(default_place=self.place).save()
 
     def tearDown(self):
         pass
@@ -1575,6 +1582,7 @@ class TestStats(TestCase):
     def setUp(self):
         self.card = CardFactory.create()
         self.card2 = CardFactory.create()
+        self.shelf = ShelfFactory.create()
         CardType.objects.create(name="book")
         CardType.objects.create(name="unknown")
 

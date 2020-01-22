@@ -19,6 +19,7 @@
 import datetime
 import httplib
 import json
+import logging
 import unittest
 
 from django.core.urlresolvers import reverse
@@ -35,10 +36,12 @@ from search.models.common import (ALERT_SUCCESS,  # noqa: F401
                                   ALERT_ERROR,
                                   ALERT_INFO,
                                   ALERT_WARNING)
+from search.models.utils import get_logger
 from tests_models import SellsFactory
 from tests_models import PlaceFactory
 from tests_models import PreferencesFactory
 
+log = get_logger()
 
 class DistributorFactory(DjangoModelFactory):
     class Meta:
@@ -65,6 +68,13 @@ class ApiTest(TestCase):
     def setUp(self):
         self.card = CardFactory.create()
         self.sell = SellsFactory.create()
+        # Preferences, default Place.
+        self.place = PlaceFactory.create()
+        self.preferences = PreferencesFactory()
+        self.preferences.default_place = self.place
+        self.preferences.save()
+
+        # Create a first Sell.
         models.Sell.sell_cards([{"id": "1", "price_sold": 1, "quantity": 1}])
         self.card_unicode = CardFactory.create(title="title unicode éèà")
         self.params = {
@@ -76,11 +86,6 @@ class ApiTest(TestCase):
             "minimal_nb_copies": 1,
             "auto_command": "true",
         }
-        # A default place.
-        self.place = PlaceFactory.create()
-        self.preferences = PreferencesFactory()
-        self.preferences.default_place = self.place
-        self.preferences.save()
 
         self.c = Client()
 
@@ -99,7 +104,6 @@ class ApiTest(TestCase):
         resp = self.c.post("/api/deposits", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, 200)
-        print resp_data
         self.assertEqual(resp_data["status"], ALERT_WARNING)
 
     def test_deposits_add_pubtype(self):
@@ -130,6 +134,7 @@ class ApiTest(TestCase):
         self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)
 
     def test_sell_cards_nocards(self):
+        log.setLevel(logging.ERROR)
         self.params["to_sell"] = u""
         resp = self.c.post("/api/sell", self.params)
         # resp_data = json.loads(resp.content)
@@ -167,9 +172,6 @@ class ApiTest(TestCase):
         self.assertTrue(data[0]["name"] == self.place.name)
 
 class TestBasket(TestCase):
-    """
-    Test api.basket.
-    """
 
     def setUp(self):
         self.c = Client()
@@ -184,6 +186,10 @@ class TestBasket(TestCase):
 
         # a Distributor.
         self.dist = DistributorFactory.create()
+
+        # Preferences, default Place.
+        self.place = PlaceFactory.create()
+        self.preferences = models.Preferences(default_place=self.place).save()
 
     def tearDown(self):
         pass
@@ -248,6 +254,8 @@ class TestBaskets(TestCase):
         self.params = {
             "cards_id": self.card.id,
         }
+        self.place = PlaceFactory.create()
+        self.preferences = models.Preferences(default_place=self.place).save()
         self.c = Client()
 
     # XXX: Django: we can't read request.body twice. It appears a middleware reads it before us
@@ -278,6 +286,7 @@ class TestBaskets(TestCase):
         self.assertFalse(baskets)
 
     def test_basket_delete_bad(self):
+        log.setLevel(logging.CRITICAL)
         resp = self.c.post(reverse("api_basket_delete", args=('9')),
                            content_type='application/json')
         data = json.loads(resp.content)

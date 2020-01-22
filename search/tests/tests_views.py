@@ -305,29 +305,3 @@ class TestDeposit(TestCase, DBFixture):
         deposit = DepositFactory()
         resp = self.c.get(reverse('deposit_add_copies', args=(deposit.id,)))
         self.assertEqual(resp.status_code, 200)
-
-
-class TestInventories(TestCase):
-    def setUp(self):
-        self.c = Client()
-        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
-        self.c.login(username="admin", password="admin")
-
-        self.place = PlaceFactory()
-        self.card = CardFactory()
-        self.card2 = CardFactory()
-
-    def test_create_inventory(self):
-        form = {"place_id": 1}
-        resp = self.c.post(reverse("api_inventories"), data=form)
-        self.assertEqual(resp.status_code, 200)
-
-    # def test_update(self):
-    #     self.inv = InventoryFactory()
-    #     self.inv.place = self.place
-    #     data = {"ids_qties": [u'1, 2;, 2, 2;']}
-    # # xxx passing json data is not correct
-    #     esp = self.c.post(reverse("api_inventories_update", args=(1,)), data=data)
-    #     state = self.inv.state()
-    #     self.assertEqual(resp.status_code, 200)
-    #     self.assertEqual(state['total_copies'], 2)

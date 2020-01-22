@@ -1396,7 +1396,7 @@ def baskets_delete(request, pk, **kw):
         try:
             b_obj = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error(u"Basket delete: {}".format(e))
+            log.error(u"Basket delete pk {}: {}".format(pk, e))
             return JsonResponse({'status': ALERT_ERROR,
                                  'message': "basket {} does not exist".format(pk)})
 
@@ -1516,8 +1516,8 @@ def inventories(request, **kwargs):
             shelf_id = params.get("shelf_id")
             publisher_id = params.get("publisher_id")
         except Exception as e:
-            log.error(u'Error while getting query params for inventories: {}.\nrequest: {}'.
-                      format(e, request))
+            log.error(u'Error while getting query params for inventories with request {}: {}'.
+                      format(request, e))
             data = {
                 "status": ALERT_ERROR,
                 "datab": []
