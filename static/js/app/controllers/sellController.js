@@ -237,8 +237,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
         var params = {
             "to_sell": [ids, prices, quantities],
-            "date": $filter('date')($scope.date, $scope.format, 'UTC')
-                .toString($scope.format),
+            "date": $filter('date')(new Date(), $scope.format, 'UTC') .toString($scope.format),
             "language": $scope.language,
             "place_id": place_id,
             "deposit_id": deposit_id
