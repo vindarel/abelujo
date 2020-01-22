@@ -4886,7 +4886,7 @@ class Command(TimeStampedModel):
         Return: a queryset, so to apply .all() or .count().
         """
         # XXX: fix return type.
-        res = Command.objects.filter(date_paid__isnull=True)
+        res = Command.objects.filter(date_paid__isnull=True).filter(date_received__isnull=True)
         if res and to_dict:
             # return [it.to_dict() for it in res]  # f* to_dict returns null O_o
             return [it.to_list() for it in res]
