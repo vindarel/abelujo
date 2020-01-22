@@ -1631,7 +1631,6 @@ class Card(TimeStampedModel):
         """
         # Get command_copies objects (card, quantity) of commands *received*.
         cmd_copies = self.commandcopies_set.filter(command__date_received__isnull=False).all()
-
         return cmd_copies
 
     def commands_pending(self):
@@ -4224,7 +4223,7 @@ class InventoryBase(TimeStampedModel):
         """Apply this inventory to the stock. Changes each card's quantity of
         the needed place and closes the inventory.
 
-        This user action needs the asynchronous task queue (see make
+        When called from the UI, this action needs the asynchronous task queue (see make
         taskqueue). It can be slow with non-small card lists.
 
         Return: a tuple status (bool), alerts (list of dicts with a level and a message).
@@ -4274,6 +4273,8 @@ class InventoryBase(TimeStampedModel):
             all_copies = self.shelf.cards()
         elif hasattr(self, "publisher") and self.publisher:
             all_copies = self.publisher.card_set.all()
+        elif hasattr(self, "command") and self.command:
+            all_copies = self.command.copies.all()
         else:
             log.error("Applying inventory {}, getting all cards: missing implementation.".format(self.id))
             raise NotImplementedError
