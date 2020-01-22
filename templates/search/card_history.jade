@@ -38,24 +38,31 @@ em.bg-danger {% trans "This page is under construction." %}
         a(href="{% url 'card_history' card.pk %}") {% trans "History" %}
 
 h3 {{ card.title }}
+div {% trans "Total sells" %}: {{ sells_data.total_sells }}
 
 .row
   .col-lg-3
     h4 {% trans "Last sells" %}
 
-    if not sells
-      em {% trans "This card has no no registered sells." %}
+    if not sells_data.data
+      em {% trans "This card has no registered sells." %}
 
-    for sell in sells
-      div {{ sell.created }}
-
-  .col-lg-3
-    h4 {% trans "Last output movements" %}
-    for out in outs
-      div {{ out.movement.created}}: x{{ out.quantity }} - {% if out.movement.basket %} {{ out.movement.basket }} {% endif %} {{ out.movement.distributor }}
+    for sell in sells_data.data
+      div {{ sell.created }} - {{ sell.price_sold }} {% trans "€" %}
 
   .col-lg-3
     h4 {% trans "Last entries" %}
+    if not entries
+      div: em {% trans "There is no other entries." %}
+    for it in entries
+      div {{ it.created}}
+
+  .col-lg-3
+    h4 {% trans "Other output movements" %}
+    if not outs
+      div: em {% trans "There is no other other output movements than sells." %}
+    for out in outs
+      div {{ out.movement.created}}: x{{ out.quantity }} - {% if out.movement.basket %} {{ out.movement.basket }} {% endif %} {{ out.movement.distributor }}
 
   .col-lg-3
    .row

@@ -291,7 +291,7 @@ def card_history(request, pk):
         card = get_object_or_404(Card, pk=pk)
 
         # Sells
-        sells = Sell.search(card.id)
+        sells_data = Sell.search(card_id=card.id)
 
         # OutMovements
         # TODO: get all out movements
@@ -303,9 +303,13 @@ def card_history(request, pk):
         pending_commands = card.commands_pending()
         commands = card.commands_received()
 
+        # Other entries
+        entries = card.entrycopies_set.order_by('-created').all()[:MAX]
+
     return render(request, template, {
         "card": card,
-        "sells": sells,
+        "sells_data": sells_data,
+        "entries": entries,
         "outs": outs,
         "pending_commands": pending_commands,
         "commands": commands,
