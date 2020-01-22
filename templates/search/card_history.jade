@@ -84,6 +84,6 @@ div {% trans "Total sells" %}: {{ sells_data.total_sells }}
           div: em {% trans "You did not receive parcels for this card." %}
 
       for cmd in commands
-          div {{ cmd.name }}
+          a(href="{{ cmd.command.get_absolute_url }}") {{ cmd.command.date_received }}
 
 {% endblock content %}
