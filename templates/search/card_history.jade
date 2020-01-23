@@ -47,6 +47,8 @@ div {% trans "Total sells" %}: {{ sells_data.total_sells }}
 
     for sell in sells_data.data
       div {{ sell.created }} - {{ sell.price_sold }} {% trans "€" %}
+        if sell.quantity != 1
+          span &nbsp x {{ sell.quantity }}
 
   .col-lg-3
     h4 {% trans "Other output movements" %}

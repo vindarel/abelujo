@@ -3444,7 +3444,7 @@ class Sell(models.Model):
 
             sells = sells.exclude(sell__canceled=True)
 
-            total_sells = sells.count()
+            total_sells = sum(sells.values_list('quantity', flat=True))
 
             if month:
                 month = int(month)
