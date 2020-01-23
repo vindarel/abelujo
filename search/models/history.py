@@ -43,7 +43,7 @@ class InternalMovement(TimeStampedModel):
     nb = models.IntegerField()
 
     def __unicode__(self):
-        return "move card {} from '{}' to '{}', x{}, at {}".format(
+        return u"move card {} from '{}' to '{}', x{}, at {}".format(
             self.card.id, self.origin.name, self.dest.name, self.nb, self.created)
 
     def to_dict(self):
@@ -117,7 +117,7 @@ class OutMovement(models.Model):
     recipient = models.ForeignKey("search.Contact", blank=True, null=True)
 
     # def __unicode__(self):
-    # return "id {}, type {}".format(self.pk,
+    # return u"id {}, type {}".format(self.pk,
     # OutMovement.OUTMOVEMENT_TYPES_CHOICES[self.typ - 1])
 
     # def get_absolute_url(self):
@@ -246,7 +246,7 @@ class Entry(TimeStampedModel):
     reason = models.CharField(max_length=CHAR_MAX_LENGTH, blank=True, null=True)
 
     def __unicode__(self):
-        return "type {}, created at {}".format(self.typ, self.created)
+        return u"type {}, created at {}".format(self.typ, self.created)
 
     def get_absolute_url(self):
         """Actually, return the url of the related Entry.
