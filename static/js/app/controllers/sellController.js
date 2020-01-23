@@ -136,11 +136,15 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           }) ;
           $scope.tmpcard = $scope.tmpcard[0].item;
           $scope.tmpcard.price_orig = $scope.tmpcard.price_sold;
-          // TODO: don't put duplicates. ONGOING !
-          if (! _.contains($scope.selected_ids, $scope.tmpcard.id)) {
+          if (!_.contains($scope.selected_ids, $scope.tmpcard.id)) {
               $scope.cards_selected.push($scope.tmpcard);
               $scope.total_price += $scope.tmpcard.price;
               $scope.selected_ids.push($scope.tmpcard.id);
+          } else {
+              var existing = _.find($scope.cards_selected, function(it){
+                  return it.id === card_repr.id;
+              });
+              existing.quantity_sell += 1;
           }
           $scope.copy_selected = undefined;
           $scope.updateTotalPrice();
