@@ -131,7 +131,7 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row(ng-show="cards_selected", ng-repeat="card in cards_selected")
-        h4.col-md-5
+        h4.col-md-4
           a(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
 
         //- .col-md-3
@@ -171,7 +171,7 @@ div.ng-cloak(ng-controller="sellController")
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )
 
-        .col-md-1
+        .col-md-2
           div stock: {{ 'card.quantity' | ng }} => {{ 'card.quantity - card.quantity_sell' | ng }}
 
         .col-md-1
