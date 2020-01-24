@@ -67,6 +67,8 @@ it creates the directory "abelujo":
 
     cd abelujo
 
+Ensure you have Python 2.7.
+
 Install the required dependencies for Debian (Ubuntu/LinuxMint/etc):
 
     make debian
@@ -110,7 +112,7 @@ and open your browser to <http://127.0.0.1:8000> (admin/admin).
 
 You might need to create a superuser: see [the dev documentation](http://dev.abelujo.cc/use-manage.html).
 
-Enjoy ! Don't forget to give feedback at ehvince at mailz dot org !
+Enjoy ! Don't forget to give feedback at vindarel at mailz dot org !
 
 
 Install without sudo
@@ -140,7 +142,9 @@ In the virtual env, run:
 Actions required for updates
 ----------------------------
 
-Some updates need to be completed with a command run manually.
+- for version **0.8** (january, 24th 2020): update pip, run `make
+update`, and start the new task queue with `make taskqueue`. You don't
+need Redis anymore.
 
 - october 2019, 31st (commit 7a3ac86bfde821f546e6c66cd352a7038278fc3b):
   after the update, you need to run a management command:
@@ -157,10 +161,7 @@ The command is idempotent, it waits for confirmation and it prints a status.
 Development
 ===========
 
-Django project (1.8), in python (2.7), with AngularJS (1.3) (transitioning to Vue) and the
-[Django Rest Framework](http://www.django-rest-framework.org)
-(partly).
-
+Django project, in python (2.7), with AngularJS (1.3) (transitioning to Vue).
 
 We also use:
 
@@ -168,7 +169,7 @@ We also use:
 - [jade templates](http://jade-lang.com/), which compile to html,
     and pyjade for the Django integration
 - [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
-- the [Huey](https://huey.readthedocs.io/en/latest/django.html) asynchronous task queue.
+- the [Django-q](https://django-q.readthedocs.org/) asynchronous task queue.
 
 Read more about our [tools choices](http://dev.abelujo.cc/choices.html)
 to understand better what does what and how everything works together.
@@ -195,17 +196,19 @@ To livereload Django and Vue assets using Brunch and Django's runserver:
 
     make watch
 
-### Quality assurance ###
-
-Check you code with:
-
-- `make unit`
-- `make flake8`, `make mccabe`
-
 
 ## Configure services
 
-### Sentry
+### Task queue (mandatory)
+
+We need a task queue for long operations (notably applying an inventory to the stock). We use Django-q in pure-Django mode (no more Redis).
+
+Start it with
+
+    make task-queue &
+    # aka honcho start &
+
+### Sentry (optional)
 
 Put your
 [Sentry](https://docs.sentry.io/clients/python/integrations/django/)
@@ -217,19 +220,6 @@ calls `fab save_variables`), add the token into your `clients.yaml`
 under `sentry_token` (see the fabfile).
 
 Test with `python manage.py raven test` and see the new message in your dashboard.
-
-### Start Redis
-
-We need Redis for long operations (dowloading the whole stock as csv, applying an inventory to the stock,…).
-
-    redis-server &
-
-and start our asynchronous task runner:
-
-    make task-queue &
-
-see [#83](https://gitlab.com/vindarel/abelujo/issues/83).
-
 
 Run unit tests
 --------------
