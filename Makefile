@@ -99,11 +99,11 @@ stash:
 
 update: stash
 	make set-prod
+	make pip
+	make pip-submodule
 	make rebase
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
-	make pip
-	make pip-submodule
 	make npm
 	gulp
 	make collectstatic
