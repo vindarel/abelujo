@@ -39,23 +39,6 @@ div
               button.btn.btn-default(type='button', ng-click='user_open_datepicker($event)')
                 i.glyphicon.glyphicon-calendar
 
-
-      // Not sure it's working well enough. Disabling before redesign.
-      //- .col-md-3
-        p.input-group
-          ui-select(ng-model="distributor.selected", ng-change="distChanged()")
-            ui-select-match(placeholder="{% trans 'Distributor' %}")
-              span(ng-bind="$select.selected.repr")
-            ui-select-choices(
-              repeat="item in (distributors | filter:$select.search) track by item.id",
-              refresh="refreshDistributors($select.search, $select)",
-              refresh-delay="100")
-              span(ng-bind="item.name")
-
-          span.input-group-btn
-            button.btn.btn-default(ng-click="distErased()", title="cancel the distributor selection")
-              i.glyphicon.glyphicon-remove
-
     .row
        .col-md-1
         .btn-group

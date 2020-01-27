@@ -28,9 +28,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.show_unique= false
     $scope.show_tab = 'sells'
     $scope.last_sort = "created"
-    $scope.distributors = []
-    $scope.distributor = {}
-
 
     $scope.today = ->
         $scope.user_date = new Date()
@@ -43,13 +40,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
     $scope.sortorder = 0  # ascending/descending. 0: default, 1 other.
     $scope.sortby = ""    # sort key (created, title etc)
     # $scope.cache_per_month_per_page = {}  # key: month -> dict with key: page
-
-    Distributors = $resource('/api/distributors/:id')
-    getDistributors = !->
-        Distributors.query (res) !->
-            $scope.distributors = res
-
-    getDistributors!
 
     $scope.get_history = !->
         params = do
@@ -172,59 +162,6 @@ angular.module "abelujo" .controller 'historyController', ['$http', '$scope', '$
         $scope.sortorder = ($scope.sortorder + 1) % 2
         $scope.get_history!
 
-
-    $scope.refreshDistributors = (search, select) !->
-        "For ui-select"
-        getDistributors!
-        select.refreshItems!
-
-    # DistSells = $resource '/api/history/sells/'
-    DistSells = $resource '/api/sell/'
-
-    $scope.distChanged = !->
-        $scope.sells = DistSells.get do
-            distributor_id: $scope.distributor.selected.id if $scope.distributor.selected
-            # +1: mismatch with python dates
-            month: $scope.user_date.getMonth! + 1
-            year: $scope.user_date.getFullYear!
-            page: $scope.page
-            page_size: $scope.page_size
-            sortby: $scope.sortby
-            sortorder: $scope.sortorder
-            , (resp) !->
-                $scope.sells = []
-                $scope.nb_sells = resp.data.data.length
-                $scope.sells_month = 0
-                $scope.total_sells_month_excl_tax = 0  # total revenue of cards sold, minus the tax
-
-                # $scope.best_sells = utils.best_sells resp.data.data
-                # $scope.sells_mean = utils.sells_mean resp.data
-
-                sells = resp.data.data
-                sells.map (item) !->
-                    repr = "sell n° " + item.id
-                    created = Date.parse(item.created)
-                    created = created.toString("d-MMM-yyyy") # human representation
-                    item.created = created
-                    item.repr = repr
-                    item.show_row = false
-                    item.show_covers = false
-                    $scope.sells.push item
-
-                    $scope.sells_month += item.price_sold
-                    $scope.total_sells_month_excl_tax += item.price_sold_excl_tax
-
-                    return do
-                        repr: repr
-                        id: item.id
-
-                if $scope.show_unique
-                    $scope.filter_unique!
-
-    $scope.distErased = !->
-        # caching ? See later, rely on django.
-        $scope.distributor.selected = undefined
-        $scope.distChanged!
 
     # Keyboard shortcuts (hotkeys)
     hotkeys.bindTo($scope)
