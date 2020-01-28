@@ -24,6 +24,7 @@ import toolz
 import os
 import urllib
 
+import pendulum
 import unicodecsv
 from django import forms
 from django.contrib import messages
@@ -88,6 +89,8 @@ log = get_logger()
 
 MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
+
+PENDULUM_YMD = '%Y-%m-%d'  # caution, %m is a bit different than datetime's %M.
 
 EXTENSION_TO_CONTENT_TYPE = {
     'csv': 'text/csv',
@@ -1221,6 +1224,63 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
     return response
+
+def history_sells(request, **kwargs):
+    now = pendulum.now()
+    url = reverse('history_sells_month',
+                  args=(now.strftime('%Y-%m'),))
+    return HttpResponseRedirect(url)
+
+def history_sells_month(request, date, **kwargs):
+    template = 'search/history_sells.jade'
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception as e:
+        return HttpResponseRedirect(reverse('history_sells'))
+
+    year = day.year
+    month = day.month
+    previous_month = day.subtract(months=1).replace(day=1)
+    next_month = day.add(months=1).replace(day=1)
+
+    data = Sell.stat_days_of_month(month=month, year=year)
+
+    return render(request, template, {'sells_data': data,
+                                      'today': day,
+                                      'previous_month_obj': previous_month,
+                                      'previous_month': previous_month.strftime('%Y-%m'),
+                                      'next_month_obj': next_month,
+                                      'next_month': next_month.strftime('%Y-%m'),
+                                      'year': year})
+
+def history_sells_day(request, date, **kwargs):
+    """
+    Return the list of sells of this day.
+
+    - date: string (format %Y-%M-%d)
+    """
+    template = 'search/history_sells_day.jade'
+    # XXX: view called twice?? as well as history_sells
+    try:
+        day = pendulum.datetime.strptime(date, PENDULUM_YMD)
+    except Exception as e:
+        return HttpResponseRedirect(reverse('history_sells'))
+
+    sells_data = Sell.search(day=day.day, month=day.month, year=day.year,
+                             with_total_price_sold=True,
+                             sortorder=1)  # ascending
+
+    previous_day = day.subtract(days=1)  # yes, not subStract.
+    previous_day_fmt = previous_day.strftime(PENDULUM_YMD)
+    next_day = day.add(days=1)
+    next_day_fmt = next_day.strftime(PENDULUM_YMD)
+
+    return render(request, template, {'sells_data': sells_data,
+                                      'previous_day': previous_day,
+                                      'previous_day_fmt': previous_day_fmt,
+                                      'next_day': next_day,
+                                      'next_day_fmt': next_day_fmt,
+                                      'day': day})
 
 def history_sells_exports(request, **kwargs):
     """Export a list of Sells in csv or txt.

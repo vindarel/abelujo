@@ -121,14 +121,17 @@ urlpatterns = patterns('',
     # Simple presentation:
     url(r'^lists/?$', 'search.views.basket_list', name="basket_list"),
     # Vue app
-    url(r'^lists/(?P<pk>\d+)/?$', 'search.views.basket_view', name="basket_view"),
+    url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="basket_view"),
 
-    # Export sells history
+    # Sells history
+    url(r'^history/sells/month/(?P<date>.*)/?', 'search.views.history_sells_month', name="history_sells_month"),
+    url(r'^history/sells/day/(?P<date>.*)/?', 'search.views.history_sells_day', name="history_sells_day"),
+    url(r'^history/?', 'search.views.history_sells', name="history_sells"),
     url(r'^history/sells/export/?', 'search.views.history_sells_exports',
         name="history_sells_exports"),
 
-    url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
-        name="search_history"),
+    # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
+        # name="search_history"),
 
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),

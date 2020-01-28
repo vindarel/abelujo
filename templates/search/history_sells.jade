@@ -14,118 +14,50 @@
 // You should have received a copy of the GNU General Public License
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-{% block history_sells %}
+{% extends "base.jade" %}
+{% block content %}
 
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 {% load i18n %}
-{% load ngfilter %}
 
-div
-    .row.ng-cloak
+//.row
+ nav(aria-label="...").col-md-3.col-md-3
+  ul(class="pager")
+    li
+      a(href="#", class="previous") &larr; Previous
+    li
+      a(href="#") Next &rarr;
 
+span
+  a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  span  &nbsp;
+span
+  a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
 
-      .col-md-3
-        p.input-group
-            input.form-control(
-              title='{% trans "Choose another month to see its stats" %}'
-              type='text'
-              placeholder='{% trans "month" %}'
-              uib-datepicker-popup='{{"user_date_format"|ng}}'
-              ng-model="user_date"
-              ng-change="user_change_month()"
-              is-open="user_popup_status.opened"
-              datepicker-options="datepicker_user_options"
-            )
-            span.input-group-btn
-              button.btn.btn-default(type='button', ng-click='user_open_datepicker($event)')
-                i.glyphicon.glyphicon-calendar
+h1 {{ today | date:'F o' | title }}
 
-    .row
-       .col-md-1
-        .btn-group
-           button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the selection' %}") {% trans "Export" %}
-             span.caret
+.row
+  .col-md-3.panel.panel-info
+    div.panel-heading {% trans "Cash register" %}
+    div.panel-body {{ sells_data.total_price_sold }} {% trans "€" %}
 
-           ul.dropdown-menu
-             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=txt") {% trans "Export selection" %} - txt
+  .col-md-3.panel.panel-info
+    div.panel-heading {% trans "Articles sold" %}
+    div.panel-body {{ sells_data.total_cards_sold }}
 
-             li: a(href="/history/sells/export?distributor_id={{ 'distributor.selected.id' | ng}}&month={{ 'getMonth()' | ng }}&year={{ 'user_date.getFullYear()' | ng }}&format=csv") {% trans "Export selection" %} - csv
+.col-md-4
+  table.table.table-striped
+    for it in sells_data.data
+      tr
+        td
+          if it.weekday == 6
+            span(style="color: grey;") {{ it.date_obj | date:'l' }} 
+          else
+            span {{ it.date_obj | date:'l' }} 
+        td
+          a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
+        td.text-right {{ it.total_price_sold }} {% trans "€" %}
 
-
-       .col-md-2
-        .btn-group
-          button.button.btn.btn-default(type="button", ng-click="toggle_details()", title='{% trans "Hide and show details (d)" %}')
-              i.glyphicon.glyphicon-th-list
-          a.btn.btn-default(role="button"
-                            href="http://abelujo.cc/docs/hist/"
-                            target="_blank",
-                            title='{% trans "Read the documentation" %}')
-             i.glyphicon.glyphicon-question-sign
-
-    .row.ng-cloak
-      .col-md-9
-
-        div.middle(ng-show="sells.length==0", style="height: 30%; width: 60%")
-          em(style="inline: block") {% trans "No data." %}
-        div.middle(ng-show="sells.length==0", style="height: 70%; width: 60%")
-          img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
-
-        table.table.table-striped.table-condensed(ng-hide="sells.length==0")
-          thead
-            th.col-md-2.mouse-pointer(ng-click="sort_by('created')") {% trans "Date" %}
-              span.caret
-            th.col-md-1.mouse-pointer(ng-click="sort_by('price')") {% trans "Price" %}
-              span.caret
-            th.mouse-pointer(ng-click="sort_by('title')") {% trans "Titles" %}
-              span.caret
-            th.col-md-1
-
-          tbody
-            tr(ng-repeat="sell in sells")
-             td {{ 'sell.created' | ng }}
-             td {{ 'sell.price_sold' | ng }} €
-             td
-               .row
-                 img.myImg.col-md-3(ng-show="show_details", src="{{ 'sell.card.cover' | ng }}")
-                 a.col-md-9(href="{{ 'sell.card.get_absolute_url' | ng }}") {{ 'sell.card.title' | ng }}
-
-             td
-                i.col-md-2.button.glyphicon.glyphicon-remove.mouse-pointer(
-                  ng-click="sellUndo($index)"
-                  title="{% trans 'Undo this sell' %}")
-
-        ul.pagination.pagination-sm.no-margin.pull-right(ng-show="sells.length")
-            li: a(ng-click="firstPage()")
-                  span.glyphicon.glyphicon-step-backward
-            li: a(ng-click="previousPage()")
-                  span.glyphicon.glyphicon-menu-left
-            li: span {{ 'page' | ng }}/{{ 'page_max' | ng }}
-            li.mouse-pointer: a(ng-click="nextPage()", title='{% trans "next page" %}')
-                  span.glyphicon.glyphicon-menu-right
-            li: a(ng-click="lastPage()")
-                  span.glyphicon.glyphicon-step-forward
-
-
-
-      .col-md-3.panel.panel-info
-        div.panel-heading {% trans "Statistics" %}
-        div.panel-body
-          div
-            //- h4 {% trans "Total sells" %}: {{'stats_month.nb_sold_cards.toFixed(2)'|ng}} {% trans "€" %}
-            h4 {% trans "Total" %} {% trans "excl. tax" %}: {{ 'stats_month.revenue.toFixed(2)' | ng }} {% trans "€" %}
-            div {% trans "total cards sold" %}: {{'stats_month.nb_cards_sold'|ng}}
-            div {% trans "mean" %}: {{'stats_month.mean.toFixed(2)'|ng}} {% trans "€" %}
-            h4 {% trans "Best 10 sells" %}
-            table.table
-                thead
-                  tr
-                    th {% trans "Title" %}
-                    th {% trans "Quantity sold" %}
-                tbody
-                  tr(ng-repeat="it in stats_month.best_sells")
-                    td {{ 'it.title' | ng }}
-                    td {{ 'it.quantity' | ng }}
-                tfoot
-                  tr
-                    td.text-center(colspan="5")
-
-{% endblock history_sells %}
+{% endblock content %}

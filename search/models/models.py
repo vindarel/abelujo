@@ -22,11 +22,13 @@ You can produce a graph of the db with django_extension's
 
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
+import calendar
 import datetime
 import locale
 import json
 import os
 import tempfile
+import time
 import urllib
 from datetime import date
 
@@ -3406,6 +3408,8 @@ class Sell(models.Model):
                deposit_id=None,
                year=None,
                month=None,
+               day=None,
+               with_total_price_sold=None,
                page=None,
                page_size=None,
                sortby=None,
@@ -3420,6 +3424,7 @@ class Sell(models.Model):
         - count: if True, only return the count() of the result, not the result list.
         - year, month: ints (month in 1..12)
         - distributor_id: int.
+        - with_total_price_sold: if True, sum the prices sold (x their quantity).
 
         Pagination:
         - page: int
@@ -3444,8 +3449,6 @@ class Sell(models.Model):
 
             sells = sells.exclude(sell__canceled=True)
 
-            total_sells = sum(sells.values_list('quantity', flat=True))
-
             if month:
                 month = int(month)
                 year = int(year) if year else timezone.now().year
@@ -3455,6 +3458,11 @@ class Sell(models.Model):
                 sells = sells.filter(created__gt=month_beg)
                 sells = sells.filter(created__lt=month_end)
 
+            if day:
+                day = int(day)
+                sells = sells.filter(created__day=day)
+
+            # by Django 1.9 we can chain created__month__gt (new: __gt).
             if date_min:
                 # dates must be timezone.now() for precision.
                 sells = sells.filter(created__gt=date_min)
@@ -3492,9 +3500,20 @@ class Sell(models.Model):
         else:
             log.warning(u"Warning sorting Sell.search: uncaught case with sortby {} and sortorder {}".format(sortby, sortorder))
 
+        # Totals.
+        # nb_sells = sells.count()  # = nb of articles sold, != nb sells (passages en caisse).
+        nb_sells = sells.values('sell_id').distinct().count()
+        # nb_cards_sold = sum([it.quantity for it in sells])
+        nb_cards_sold = sum(sells.values_list('quantity', flat=True))
+        total_sells = sum(sells.values_list('quantity', flat=True))
+        total_price_sold = None
+        sell_mean = None
+        if with_total_price_sold:
+            total_price_sold = sum([it[0] * it[1] for it in sells.values_list('quantity', 'price_sold')])
+            if total_price_sold:
+                sell_mean = total_price_sold / nb_sells
+
         # Pagination.
-        nb_sells = sells.count()
-        nb_cards_sold = sum([it.quantity for it in sells])
         if page is not None and page_size is not None:
             try:
                 sells = sells[page_size * (page - 1):page_size * page]
@@ -3509,6 +3528,8 @@ class Sell(models.Model):
                 "nb_sells": nb_sells, # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "total_sells": total_sells,  # total
+                "total_price_sold": total_price_sold,
+                "sell_mean": sell_mean,
                 }
 
     def to_list(self):
@@ -3531,6 +3552,48 @@ class Sell(models.Model):
         }
 
         return ret
+
+
+    @staticmethod
+    def stat_days_of_month(month=None, year=None, sortby=None, sortorder=None):
+        assert year
+        assert month
+        sells = SoldCards.objects.exclude(sell__canceled=True)
+        sells = sells.filter(created__year=year).filter(created__month=month)
+        sells.order_by("created")
+        nb_sells = sells.count()
+        today = timezone.now().day
+        sells_per_day = []
+        sells_this_day = []
+        total_price_sold = 0
+        total_cards_sold = 0
+        TWO_DIGITS_SPEC = '0>2'
+        YMD = '%Y-%M-%d'
+        DATE_LONG_FORMAT = '%a %d%b'
+        for day in range(1, today + 1):
+            date = "{}-{}-{}".format(year,
+                                     format(month, TWO_DIGITS_SPEC),
+                                     format(day, TWO_DIGITS_SPEC))
+            date_obj = datetime.datetime.strptime(date, YMD)
+            sells_this_day = sells.filter(created__day=day)
+            cards_sold = sum(sells_this_day.values_list('quantity', flat=True))
+            total_cards_sold += cards_sold
+            total = sum(sells_this_day.values_list('price_sold', flat=True))
+            sells_per_day.append({'date': date,
+                                  'date_obj': date_obj,
+                                  'weekday': calendar.weekday(year, month, day),
+                                  'nb_cards_sold': cards_sold,
+                                  'total_price_sold': total})
+            total_price_sold += total
+
+        sell_mean = 0
+        if total_cards_sold:
+            sell_mean = total_price_sold / total_cards_sold
+        return {'total_price_sold': total_price_sold,
+                'total_cards_sold': total_cards_sold,
+                'sell_mean': sell_mean,
+                'nb_sells': nb_sells,
+                'data': sells_per_day}
 
     @staticmethod
     def sell_card(card, nb=1, **kwargs):
