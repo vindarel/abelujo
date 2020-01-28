@@ -1,0 +1,64 @@
+// Copyright 2014 - 2020 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+{% extends "base.jade" %}
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load i18n %}
+
+span
+  a(href="{% url 'history_sells_day' previous_day_fmt %}") &larr; {% trans "Previous" %}
+  span  &nbsp;
+span
+  a(href="{% url 'history_sells_day' next_day_fmt %}") {% trans "Next" %} &rarr;
+
+h1 {{ day | date:'l d F Y' | title }}
+
+// div plus gros panier (?)
+
+.col-md-3.panel.panel-info
+  div.panel-heading {% trans "Cash register" %}
+  div.panel-body {{ sells_data.total_price_sold | floatformat:2 }} {% trans "€" %}
+
+.col-md-3.panel.panel-info
+  div.panel-heading {% trans "Articles sold" %}
+  div.panel-body {{ sells_data.nb_cards_sold }}
+
+.col-md-3.panel.panel-info
+  div.panel-heading {% trans "Cash register movements" %}
+  div.panel-body {{ sells_data.nb_sells }}
+
+.col-md-3.panel.panel-info
+  div.panel-heading  {% trans "Average basket" %}
+  div.panel-body {{ sells_data.sell_mean | floatformat:2 }} {% trans "€" %}
+
+table.table.table-striped
+  for it in sells_data.data
+   tr
+    td {{ it.created | date:'H:i' }} 
+    td &nbsp;
+      a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}
+    td {{ it.card.authors_repr }}
+    td {{ it.card.pubs_repr }}
+    td.text-right {{ it.price_sold | floatformat:2 }} {% trans "€" %}
+    td
+      if it.quantity != 1
+        span x {{ it.quantity }}
+
+{% endblock content %}
