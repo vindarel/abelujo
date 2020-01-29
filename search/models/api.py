@@ -252,6 +252,7 @@ def cards(request, **response_kwargs):
     order_by = request.GET.get("order_by")
     # bought = request.GET.get("in_stock")
     quantity_choice = request.GET.get("quantity_choice")
+    price_choice = request.GET.get("price_choice")
 
     # The quantity of a card is costly. It was a bottleneck. Avoid
     # this calculation if possible.
@@ -280,6 +281,7 @@ def cards(request, **response_kwargs):
                              in_deposits=True,
                              with_quantity=with_quantity,
                              quantity_choice=quantity_choice,
+                             price_choice=price_choice,
                              page=page,
                              page_size=page_size)
     # XXX: :return the msgs.

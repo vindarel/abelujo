@@ -55,6 +55,14 @@ div(ng-cloak, ng-controller="collectionController")
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
 
+   .col-md-6
+    div.form-group
+        label.col-sm-4 {% trans "Place" %}
+        div.col-md-8
+          select.form-control(
+            ng-model="place"
+            ng-options="elt.name for elt in places")
+
   .row
    .col-md-6
     form
@@ -82,13 +90,6 @@ div(ng-cloak, ng-controller="collectionController")
 
    .col-md-6
     div.form-group
-        label.col-sm-4 {% trans "Places" %}
-        div.col-md-8
-          select.form-control(
-            ng-model="place"
-            ng-options="elt.name for elt in places")
-
-    div.form-group
       label.col-sm-4 {% trans "Shelf" %}
       div.col-md-8
         select.form-control(
@@ -101,6 +102,14 @@ div(ng-cloak, ng-controller="collectionController")
         select.form-control(
           ng-model="quantity_choice"
           ng-options="elt.name for elt in quantity_choices")
+
+    div
+        label.col-sm-4 {% trans "Price" %}
+        div.col-md-8
+          select.form-control(
+            ng-model="price_choice"
+            ng-options="elt.name group by elt.group for elt in price_choices"
+          )
 
  .row
    .col-md-7(style="margin-top: 7px; margin-bottom: 7px")

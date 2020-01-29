@@ -52,6 +52,21 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
       {name: gettext("between 5 and 10"), id: "[5,10]"}
       {name: gettext("> 10"), id: ">10"}
     ]
+    $scope.price_choice = null
+    $scope.price_choices = [
+      {name: gettext(" "), id: ""}
+      {name: "0", id: "0"}
+      {name: "<= 3 €", id: "<=3"}
+      {name: "<= 5 €", id: "<=5"}
+      {name: "<= 10 €", id: "<=10"}
+      {name: "<= 20 €", id: "<=20"}
+      {name: gettext("between 0 and 5 €"), id: "[0,5]"}
+      {name: gettext("between 0 and 10 €"), id: "[0,10]"}
+      {name: gettext("between 5 and 10 €"), id: "[5,10]"}
+      {name: gettext("> 5 €"), id: ">5"}
+      {name: gettext("> 10 €"), id: ">10"}
+      {name: gettext("> 20 €"), id: ">20"}
+    ]
 
     # pagination
     $scope.page = 1
@@ -155,6 +170,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params.distributor_id = $scope.distributor.id
         if $scope.quantity_choice
             params.quantity_choice = $scope.quantity_choice.id
+        if $scope.price_choice
+            params.price_choice = $scope.price_choice.id
         params.page = $scope.page
         params.page_size = $scope.page_size
 

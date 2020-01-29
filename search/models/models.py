@@ -852,6 +852,7 @@ class Card(TimeStampedModel):
                order_by=None,
                with_quantity=True,
                quantity_choice=None,
+               price_choice=None,
                page=None,
                page_size=10):
         """Search a card (by title, authors' names, ean/isbn).
@@ -867,6 +868,7 @@ class Card(TimeStampedModel):
           denormalized.
 
         - quantity_choice: string, one of QUANTITY_CHOICES (negative quantity, between 0 and 3, etc).
+        - price_choice: string, one of PRICE_CHOICES.
 
         - to_list: if True, we return a list of dicts, not Card objects.
 
@@ -984,6 +986,31 @@ class Card(TimeStampedModel):
                 cards = cards.filter(quantity__gte=5).filter(quantity__lte=10)
             elif quantity_choice == ">10":
                 cards = cards.filter(quantity__gte=10)
+
+        if price_choice and price_choice != "":
+            # caution: values are duplicated on collectionController.ls
+            if price_choice == "0":
+                cards = cards.filter(price=0)
+            elif price_choice == "<=3":
+                cards = cards.filter(price__lte=3)
+            elif price_choice == "<=5":
+                cards = cards.filter(price__lte=5)
+            elif price_choice == "<=10":
+                cards = cards.filter(price__lte=10)
+            elif price_choice == "<=20":
+                cards = cards.filter(price__lte=20)
+            elif price_choice == "[0,5]":
+                cards = cards.filter(price__gte=0).filter(price__lte=5)
+            elif price_choice == "[0,10]":
+                cards = cards.filter(price__gte=0).filter(price__lte=10)
+            elif price_choice == "[5,10]":
+                cards = cards.filter(price__gte=5).filter(price__lte=10)
+            elif price_choice == ">5":
+                cards = cards.filter(price__gte=5)
+            elif price_choice == ">10":
+                cards = cards.filter(price__gte=10)
+            elif price_choice == ">20":
+                cards = cards.filter(price__gte=20)
 
         # Sort
         if cards and order_by:
