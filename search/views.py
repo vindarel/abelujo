@@ -1238,6 +1238,7 @@ def history_sells_month(request, date, **kwargs):
     except Exception as e:
         return HttpResponseRedirect(reverse('history_sells'))
 
+    now = pendulum.datetime.now()
     year = day.year
     month = day.month
     previous_month = day.subtract(months=1).replace(day=1)
@@ -1247,6 +1248,7 @@ def history_sells_month(request, date, **kwargs):
 
     return render(request, template, {'sells_data': data,
                                       'today': day,
+                                      'now': now,
                                       'previous_month_obj': previous_month,
                                       'previous_month': previous_month.strftime('%Y-%m'),
                                       'next_month_obj': next_month,
@@ -1270,6 +1272,7 @@ def history_sells_day(request, date, **kwargs):
                              with_total_price_sold=True,
                              sortorder=1)  # ascending
 
+    now = pendulum.datetime.now()
     previous_day = day.subtract(days=1)  # yes, not subStract.
     previous_day_fmt = previous_day.strftime(PENDULUM_YMD)
     next_day = day.add(days=1)
@@ -1280,6 +1283,7 @@ def history_sells_day(request, date, **kwargs):
                                       'previous_day_fmt': previous_day_fmt,
                                       'next_day': next_day,
                                       'next_day_fmt': next_day_fmt,
+                                      'now': now,
                                       'day': day})
 
 def history_sells_exports(request, **kwargs):

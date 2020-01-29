@@ -27,14 +27,16 @@
   ul(class="pager")
     li
       a(href="#", class="previous") &larr; Previous
-    li
-      a(href="#") Next &rarr;
+    if today.month < now.month
+      li
+        a(href="#") Next &rarr;
 
 span
   a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
-span
-  a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
+if today.month < now.month
+  span
+    a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
 
 h1 {{ today | date:'F o' | title }}
 
