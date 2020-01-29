@@ -24,7 +24,6 @@ bootstrap-admin==0.3.6  # bootstrap theme, nice search feature.
 pyyaml
 psycopg2                # postgresql database engine.
 pytz			# timezone
-requests-cache==0.5.0
 
 ### Django extensions
 djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc
