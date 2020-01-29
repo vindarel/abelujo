@@ -149,12 +149,20 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           $scope.copy_selected = undefined;
           $scope.updateTotalPrice();
           $scope.alerts = [];
+
+          // Prevent from quitting the page when sells are entered but not confirmed.
+          $window.addEventListener('beforeunload', unloadlistener);
       };
 
       $scope.remove_from_selection = function(index_to_rm){
           $scope.selected_ids.splice(index_to_rm, 1);
           $scope.cards_selected.splice(index_to_rm, 1);
           $scope.updateTotalPrice();
+
+          // If no sells anymore, don't protect leaving the page anymore.
+          if ($scope.cards_selected.length == 0) {
+              $window.removeEventListener('beforeunload', unloadlistener);
+          }
       };
 
       $scope.reset_card_list_following_dist = function(dist_name){
@@ -270,6 +278,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   // }, 3000); // maybe '}, 3000, false);' to avoid calling apply
 
                   $scope.cancelCurrentData();
+                  $window.removeEventListener('beforeunload', unloadlistener);
                   return response.data;
               });
       };
@@ -313,5 +322,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     angular.element('#default-input').trigger('focus');
 
     $window.document.title = "Abelujo - " + gettext("Sell");
+
+    function unloadlistener (event) {
+        // Cancel the event as stated by the standard.
+        event.preventDefault();
+        // Chrome requires returnValue to be set.
+        event.returnValue = '';
+    };
 
   }]);
