@@ -295,7 +295,6 @@ def cards(request, **response_kwargs):
         isbn_in_query = filter(is_isbn, query)
         if isbn_in_query:
             datasource = get_datasource_from_lang(lang)
-            log.info('Nothing in stock ? Search larger for isbn {} on {}'.format(query[0], datasource))
             data, traces = search_on_data_source(datasource, isbn_in_query[0])
 
             # add the result into our db
