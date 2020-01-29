@@ -83,7 +83,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 $scope.baskets[index].copies = response.data.data
                 $scope.meta = response.data.meta
                 $scope.copies = response.data.data
-                |> sort-by (.title)
 
     $scope.showBasket = (index) !->
         "Show the copies of the given basket."

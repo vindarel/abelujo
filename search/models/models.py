@@ -2155,7 +2155,7 @@ class Basket(models.Model):
 
         # Here accented letters are not sorted correctly:
         # e ... z ... é
-        # I'm afraid we have to resort in Python here, even though there is an ICU SQLite extension.
+        # I'm afraid we have to resort to Python here, even though there is an ICU SQLite extension.
         # So, sort with the locale. It also sorts correctly regarding the case:
         # E..É..d..F
         copies_qties = sorted(copies_qties, cmp=locale.strcoll, key=lambda it: it.card.title)

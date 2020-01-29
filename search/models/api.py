@@ -963,7 +963,6 @@ def basket(request, pk, action="", card_id="", **kwargs):
         copies = basket.basketcopies_set.order_by("card__title").all()
         # We must re-sort to get downcase and accents right.
         copies = sorted(copies, cmp=locale.strcoll, key=lambda it: it.card.title)
-        # but... is É sorted correctly this time ?? It appears after L.
         nb_results = len(copies)
         to_ret['data_length'] = nb_results
         num_pages = get_page_count(copies, size=page_size)  # better with Django's paginator
