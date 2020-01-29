@@ -966,7 +966,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         # but... is É sorted correctly this time ?? It appears after L.
         nb_results = len(copies)
         to_ret['data_length'] = nb_results
-        num_pages = get_page_count(copies)  # better with Django's paginator
+        num_pages = get_page_count(copies, size=page_size)  # better with Django's paginator
         to_ret['page_count'] = num_pages
         if page:
             page = int(page)
