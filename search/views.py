@@ -284,7 +284,7 @@ def card_show(request, pk):
 
 def card_history(request, pk):
     """Show the card's sells, entries and commands history."""
-    MAX = 50
+    MAX = 100
     card = None
     template = "search/card_history.jade"
 
