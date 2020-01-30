@@ -919,6 +919,7 @@ class TestSells(TestCase):
                     "quantity": 2,
                     "price_sold": p2}]
         self.assertEqual(self.place.quantity_of(self.autobio), 1)
+        # Sell
         sell, status, msgs = Sell.sell_cards(to_sell)
         self.assertEqual(self.place.quantity_of(self.autobio), 0)
         self.assertEqual(ALERT_SUCCESS, status)
@@ -941,7 +942,7 @@ class TestSells(TestCase):
         # Stats.
         stats = Stats.sells_month()
         self.assertEqual(2 * 3, stats['nb_cards_sold'])
-        self.assertEqual(2 * 2, stats['nb_sells'])
+        self.assertEqual(2, stats['nb_sells'])
         self.assertEqual(2 * 2, stats['best_sells'][0]['quantity'])
         self.assertEqual(2 * 1, stats['best_sells'][1]['quantity'])
         self.assertEqual(2 * p1 + 4 * p2, stats['revenue'])
