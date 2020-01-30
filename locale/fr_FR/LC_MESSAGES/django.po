@@ -182,7 +182,7 @@ msgstr "CHQ"
 
 #. Translators: abbreviation of the "credit card" payment method.
 #: search/models/common.py:52
-msgid "card"
+msgid "credit"
 msgstr "CB"
 
 #. Translators: abbreviation of the "transfert" payment method.
