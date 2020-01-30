@@ -1249,7 +1249,7 @@ def history_sells_month(request, date, **kwargs):
     data = Sell.stat_days_of_month(month=month, year=year)
 
     return render(request, template, {'sells_data': data,
-                                      'today': day,
+                                      'day': day,
                                       'now': now,
                                       'previous_month_obj': previous_month,
                                       'previous_month': previous_month.strftime('%Y-%m'),

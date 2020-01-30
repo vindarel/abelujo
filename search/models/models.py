@@ -3590,18 +3590,25 @@ class Sell(models.Model):
     def stat_days_of_month(month=None, year=None, sortby=None, sortorder=None):
         assert year
         assert month
+        assert isinstance(month, int)
         sells = SoldCards.objects.exclude(sell__canceled=True)
         sells = sells.filter(created__year=year).filter(created__month=month)
         sells.order_by("created")
         nb_sells = sells.count()
-        today = timezone.now().day
+        now = timezone.now()
+        today = now.day
+        last_day = 31
+        if now.month == month:
+            last_day = now.day
+        else:
+            _, last_day = calendar.monthrange(year, month)
         sells_per_day = []
         sells_this_day = []
         total_price_sold = 0
         total_cards_sold = 0
         TWO_DIGITS_SPEC = '0>2'
         YMD = '%Y-%M-%d'
-        for day in range(1, today + 1):
+        for day in range(1, last_day + 1):
             date = "{}-{}-{}".format(year,
                                      format(month, TWO_DIGITS_SPEC),
                                      format(day, TWO_DIGITS_SPEC))

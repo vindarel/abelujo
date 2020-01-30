@@ -34,11 +34,11 @@
 span
   a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
-if today.month < now.month
+if day.year < now.year or day.month < now.month
   span
     a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
 
-h1 {{ today | date:'F o' | title }}
+h1 {{ day | date:'F o' | title }}
 
 .row
   .col-md-3.panel.panel-info
