@@ -31,7 +31,6 @@ cache:
     # - make pip
     - make pip-dev
     - make db
-    - redis-server &  # for redis cache
 
 py-qa:
   <<: *py
@@ -43,17 +42,3 @@ test:
   <<: *py
   stage: test
   script: make unit
-
-install:
-  <<: *py
-  stage: release
-  # Build everything only when a new tag is pushed. A waste to do everytime.
-  only:
-    - tags
-  script:
-    - make install-yarn
-    - node --version
-    - yarn --version
-    - echo "running install-nosudo"
-    - make install-nosudo
-    - python manage.py check
