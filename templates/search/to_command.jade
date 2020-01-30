@@ -89,7 +89,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
                    li: a(href="/baskets/1/export?format=pdf&report=listing&barcodes=true&distributor_id={{ 'distributor.id' | ng}}", title='{% trans "Export the list of all cards to command in a pdf." %}') {% trans "pdf with barcodes" %}
 
-               button#ok.btn.btn-success(ng-click="validate_command()",
+               button.btn.btn-success(ng-click="validate_command()",
                  title='{% trans "The command was passed, we`ll wait to receive it." %}') {% trans "Ok" %}
 
                .btn-group
@@ -99,11 +99,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
                  button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
                    i.glyphicon.glyphicon-th-list
 
-                 button.btn.btn-default(ng-click="start_tour()")
-                   i.glyphicon.glyphicon-info-sign
-
      .col-md-6
-       form#addcard
+       form
         .col-md-12
           p.input-group
             input.nullable.form-control#default-input(

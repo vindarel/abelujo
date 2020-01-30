@@ -221,38 +221,9 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
         callback: !->
             $scope.toggle_images!
 
-    ##############################
-    # Tour
-    ##############################
-    tour = new Tour do
-        storage: false  # doesn't prevent to start from last step the second time.
-        steps:
-          * element: "\#suppliers",
-            title: gettext "Commands",
-            content: gettext "The commands are grouped by supplier."
-          * element: "\#export",
-            title: gettext "Export",
-            content: gettext "You can export the list of commands as pdf or csv."
-          * element: "\#ok",
-            title: gettext "Register the command."
-            content: gettext "You can send a pre-filled email to your supplier or download a document and send it by yourself. When you've done it, click OK."
-          * element: "\#ongoing"
-            title: gettext "Ongoing commands"
-            content: gettext "Now, you can follow each command and change their status, to be sure it's been received and paid."
-            placement: "bottom"
-
-    # Initialize the tour
-
-    $scope.start_tour = !->
-        tour.init()
-        tour.setCurrentStep(0)  # the second time would start from the end.
-        # Start the tour
-        tour.start(true)
-
     # Set focus:
     # angular.element('#default-input').trigger('focus')
 
     $window.document.title = "Abelujo - " + gettext("To command")
-
 
 ]

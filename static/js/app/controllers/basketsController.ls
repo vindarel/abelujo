@@ -364,33 +364,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         callback: !->
             $scope.open!
 
-
-    ##############################
-    # Tour
-    ##############################
-    tour = new Tour do
-        storage: false  # doesn't prevent to start from last step the second time.
-        steps:
-          * element: "\#actions",
-            title: gettext "Actions",
-            content: gettext "Be aware that you can make something out of your list. You can add the books to be ordered, or compare it with a parcel you just received."
-          * element: "\#search",
-            title: gettext "Search titles",
-            content: gettext "Here you can search any book by isbn, like with a barcode scanner. Keywords will search into your stock."
-            placement: "bottom"
-          * element: "\#quantity",
-            title: gettext "In real time"
-            content: gettext "When you change the quantities the value is saved automatically."
-            placement: "left"
-
-    # Initialize the tour
-
-    $scope.start_tour = !->
-        tour.init()
-        tour.setCurrentStep(0)  # the second time would start from the end.
-        # Start the tour
-        tour.start(true)
-
 ]
 
 #####################

@@ -58,7 +58,7 @@ div(ng-cloak, ng-controller="basketsController")
      .btn-group
       .dropdown
 
-         button#actions.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+         button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
            span.caret
 
          ul.dropdown-menu
@@ -101,16 +101,13 @@ div(ng-cloak, ng-controller="basketsController")
        button.btn.btn-default(type="button", ng-click="showing_notes = ! showing_notes", title='{% trans "Show your notes (n)" %}')
          i.glyphicon.glyphicon-pencil
 
-       button.btn.btn-default(ng-click="start_tour()")
-           i.glyphicon.glyphicon-info-sign
-
        a.btn.btn-default(href="http://abelujo.cc/docs/lists/", target="_blank", title='{% trans "Read the documentation" %}')
          i.glyphicon.glyphicon-question-sign
 
     .col-md-2
 
     .col-md-6
-       form#search
+       form
           p.input-group
             input.nullable.form-control#default-input(
               type='text'
@@ -173,9 +170,8 @@ div(ng-cloak, ng-controller="basketsController")
          span.caret
        th.mouse-pointer.text-right(ng-click="sort_by('price')") {% trans "Price" %}
          span.caret
-       th#quantity.mouse-pointer(ng-click="sort_by('basket_qty')")
+       th.mouse-pointer(ng-click="sort_by('basket_qty')")
          span.caret
-
 
      tbody
        tr
