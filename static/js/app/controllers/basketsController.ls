@@ -98,6 +98,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             else
                 $scope.copies = $scope.cur_basket.copies
 
+            # Set focus.
+            angular.element('#default-input').trigger('focus')
+
     $scope.archive_basket =  !->
         sure = confirm(gettext("Are you sure to archive this list {}?")replace "{}", $scope.cur_basket.name)
         if sure
