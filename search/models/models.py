@@ -28,7 +28,6 @@ import locale
 import json
 import os
 import tempfile
-import time
 import urllib
 from datetime import date
 
@@ -778,7 +777,7 @@ class Card(TimeStampedModel):
             # Card link/url:
             "details_url": self.details_url,  # external (on data source)
             "get_absolute_url": get_absolute_url,  # internal
-            "url": get_absolute_url or details_url,
+            "url": get_absolute_url or self.details_url,
 
             "distributor_repr": dist_repr,
             "dist_repr": dist_repr,
@@ -884,7 +883,6 @@ class Card(TimeStampedModel):
         - a dict: list of messages, pagination meta info.
         """
         isbns = []
-        isbn_input_list = None
         isbn_list_search_complete = None
 
         cards = []
@@ -894,7 +892,6 @@ class Card(TimeStampedModel):
         if words:
             # Separate search terms that are isbns.
             isbns = filter(is_isbn, words)
-            isbns_input_list = len(isbns)
             words = list(set(words) - set(isbns))
 
         if words:
@@ -956,8 +953,8 @@ class Card(TimeStampedModel):
                 else:
                     isbn_list_search_complete = False
             except Exception as e:
-                log.error(u"Error searching for isbn {}: {}".format(isbn, e))
-                msgs.add_error(_("Error searching for isbn ".format(isbn)))
+                log.error(u"Error searching for isbns {}: {}".format(isbns, e))
+                msgs.add_error(_(u"Error searching for isbn ".format(isbns)))
 
         # Filter by quantity in stock.
         if quantity_choice and quantity_choice != "":
@@ -1066,7 +1063,6 @@ class Card(TimeStampedModel):
                 meta['message_status'] = ALERT_SUCCESS
             else:
                 meta['message_status'] = ALERT_WARNING
-
 
         return cards, meta
 
@@ -1345,7 +1341,7 @@ class Card(TimeStampedModel):
                             format(type(card)))
 
         msgs = Messages()
-        msg_success = _("Card saved.") # both for creation and edit: simple message.
+        msg_success = _("Card saved.")  # both for creation and edit: simple message.
         # msg_exists = _("This card already exists.")
 
         # Unknown years is okay
@@ -2516,7 +2512,7 @@ class Restocking(models.Model):
         return qty_to_restock
 
     @staticmethod
-    def remove_card(pk):
+    def remove_card_id(pk):
         assert isinstance(pk, (str, int))  # first type checking?!
         try:
             res = RestockingCopies.objects.filter(card_id=pk)
@@ -3552,7 +3548,7 @@ class Sell(models.Model):
             sells = [it.to_list() for it in sells]
 
         return {"data": sells[:max_sells],
-                "nb_sells": nb_sells, # within search criteria
+                "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "total_sells": total_sells,  # total
                 "total_price_sold": total_price_sold,
@@ -3580,7 +3576,6 @@ class Sell(models.Model):
 
         return ret
 
-
     @staticmethod
     def stat_days_of_month(month=None, year=None, sortby=None, sortorder=None):
         assert year
@@ -3596,7 +3591,6 @@ class Sell(models.Model):
         total_cards_sold = 0
         TWO_DIGITS_SPEC = '0>2'
         YMD = '%Y-%M-%d'
-        DATE_LONG_FORMAT = '%a %d%b'
         for day in range(1, today + 1):
             date = "{}-{}-{}".format(year,
                                      format(month, TWO_DIGITS_SPEC),
@@ -4079,7 +4073,7 @@ class InventoryBase(TimeStampedModel):
         }
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
-        orig_cards_qty = self._orig_cards_qty()
+        # orig_cards_qty = self._orig_cards_qty()
         if hasattr(self, "shelf") and self.shelf:
             shelf_dict = self.shelf.to_dict()
             inv_name = self.shelf.name
@@ -4778,7 +4772,7 @@ class InventoryCommand(InventoryBase):
         nb_cards = len(copies)
         nb_copies = self.nb_copies()
         inv_name = ""
-        orig_cards_qty = self._orig_cards_qty()
+        # orig_cards_qty = self._orig_cards_qty()
         inv_name = self.command.title
         inv_dict = self.to_dict()
 

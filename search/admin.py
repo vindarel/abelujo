@@ -118,6 +118,7 @@ class SoldCardsAdmin(admin.ModelAdmin):
 
     list_display = ("card", "quantity", "price_sold", "created",)
 
+
 admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)

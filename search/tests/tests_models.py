@@ -49,7 +49,6 @@ from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
 from search.models import Restocking
-from search.models import RestockingCopies
 from search.models import Sell
 from search.models import Shelf
 from search.models import SoldCards

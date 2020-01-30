@@ -25,9 +25,8 @@ It is not a bug, it is not right.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 
-from search.models import Place, PlaceCopies
+from search.models import PlaceCopies
 
 
 class Command(BaseCommand):

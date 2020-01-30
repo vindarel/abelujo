@@ -24,7 +24,6 @@ Apply one or many inventories.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 
 from search.models import Inventory
 

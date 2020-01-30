@@ -24,7 +24,6 @@ Archive (and close) a bunch of inventories.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 
 from search.models import Inventory
 
@@ -43,7 +42,7 @@ class Command(BaseCommand):
                             help="Close all inventories, except the ones in the --exclude list.")
 
     def handle(self, *args, **options):
-        exclude_ids= options.get('exclude')
+        exclude_ids = options.get('exclude')
         if exclude_ids and ',' in exclude_ids:
             exclude_ids = exclude_ids.split(',')
             exclude_ids = [int(it) for it in exclude_ids]

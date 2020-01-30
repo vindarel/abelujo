@@ -131,7 +131,7 @@ urlpatterns = patterns('',
         name="history_sells_exports"),
 
     # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
-        # name="search_history"),
+    # name="search_history"),
 
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),

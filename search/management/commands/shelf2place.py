@@ -29,9 +29,7 @@ python manage.py shelf2place --shelf <id> [--can_sell true/false]
 
 from django.core.management.base import BaseCommand
 
-from search.models import Preferences, Place, Shelf, Card
-
-import termcolor
+from search.models import Preferences, Place, Shelf
 
 
 class Command(BaseCommand):

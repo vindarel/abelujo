@@ -24,7 +24,6 @@ Apply one or many inventories.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 
 from search.models import Inventory
 
@@ -42,14 +41,14 @@ class Command(BaseCommand):
                             help="Apply all open inventories.")
 
     def handle(self, *args, **options):
-        ids= options.get('ids')
+        ids = options.get('ids')
         apply_all = options.get('all')
         if not apply_all:
             try:
                 if ',' not in ids:
                     invs = [Inventory.objects.get(pk=ids)]
                 else:
-                    ids= ids.split(',')
+                    ids = ids.split(',')
                     invs = Inventory.objects.filter(pk__in=ids)
             except Exception as e:
                 self.stderr.write("{}".format(e))

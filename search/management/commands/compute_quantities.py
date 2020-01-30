@@ -26,7 +26,6 @@ Takes around 3 minutes for a thousand objects.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
 
 from search.models import Card
 
@@ -44,7 +43,6 @@ class Command(BaseCommand):
         count_ok = 0
         count_updated = 0
         for card in cards:
-        # for card in cards[:10]:
             qty = card.quantity_compute()
             if card.quantity == qty:
                 count_ok += 1

@@ -706,7 +706,6 @@ def collection_export(request, **kwargs):
             with io.open(filepath, 'w', encoding='utf8') as f:
                 f.write(content)
 
-
         # Build the response.
         response = HttpResponse(content, content_type=content_type)
         filename = u"Abelujo stock search"
@@ -944,6 +943,7 @@ def deposit_add_copies(request, pk):
         "pk": pk,
     })
 
+
 #: id of the basket of automatic commands.
 AUTO_COMMAND_ID = 1
 
@@ -1124,9 +1124,9 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         # List of ISBN / quantity to command (BasketCopy.nb)
         rows = copies_set.values_list('card__isbn', 'nb')
         # rows = [
-            # (ic.card.isbn,
-             # ic.quantity)
-            # for ic in rows]
+        # (ic.card.isbn,
+        # ic.quantity)
+        # for ic in rows]
         # generating simplelisting rows took 0:00:02.602288
         # with values_list:
         # generating simplelisting rows took 0:00:00.000188  \o/
@@ -1235,7 +1235,7 @@ def history_sells_month(request, date, **kwargs):
     template = 'search/history_sells.jade'
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
-    except Exception as e:
+    except Exception:
         return HttpResponseRedirect(reverse('history_sells'))
 
     now = pendulum.datetime.now()
@@ -1265,7 +1265,7 @@ def history_sells_day(request, date, **kwargs):
     # XXX: view called twice?? as well as history_sells
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
-    except Exception as e:
+    except Exception:
         return HttpResponseRedirect(reverse('history_sells'))
 
     sells_data = Sell.search(day=day.day, month=day.month, year=day.year,

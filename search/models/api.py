@@ -65,7 +65,6 @@ from search.models.utils import Messages
 from search.models.utils import get_logger
 from search.models.utils import get_page_count
 from search.models.utils import page_start_index
-from search.tasks import command_inventory_apply_task
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 
@@ -181,7 +180,6 @@ def datasource_search(request, **response_kwargs):
         translation.activate(language)
 
     isbn_list = None  # when the user queries a list of ISBNs at once.
-    isbn_list_found = {}  # a dict ISBN-> card object. Needs two passes: DB and datasource.
     isbn_list_search_complete = False  # True when we find all of them.
 
     query_isbn = is_isbn(query)
@@ -222,7 +220,6 @@ def datasource_search(request, **response_kwargs):
             data['message_status'] = ALERT_SUCCESS
         else:
             data['message_status'] = ALERT_WARNING
-
 
     return JsonResponse(data)
 
@@ -761,9 +758,10 @@ def restocking_remove(request, pk):
     to_ret = {'status': status, 'alerts': []}
     if request.method == 'POST':
         try:
-            Restocking.remove_card(pk)
+            Restocking.remove_card_id(pk)
         except Exception as e:
             msgs.add_error(_("An error happened. We were notified about it."))
+            logging.error(u"Error on removing the card {} from restocking list: {}".format(pk, e))
         msgs.add_success(_("The card was removed with success."))
         to_ret['alerts'] = msgs.msgs
         return JsonResponse(to_ret)
