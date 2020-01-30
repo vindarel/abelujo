@@ -665,7 +665,7 @@ def sell(request, **response_kwargs):
         date = params.get("date")
         deposit_id = int(params.get("deposit_id", 0))
         place_id = int(params.get("place_id", 0))
-        payment_id = int(params.get("payment_id"))
+        payment_id = int(params.get("payment_id", 0))
 
         # Sell from a deposit, then normal sell.
         if deposit_id and deposit_id not in [0, "0"]:

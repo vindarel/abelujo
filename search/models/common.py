@@ -45,7 +45,7 @@ PAYMENT_CHOICES = [
 
 PAYMENT_ABBR = [
      # Translators: abbreviation of the "cash" payment method.
-    (1, _("CASH")),
+    (1, _("CASH")),  # noqa: E131
      # Translators: abbreviation of the "check" payment method.
     (2, _("CHK")),
      # Translators: abbreviation of the "credit card" payment method.

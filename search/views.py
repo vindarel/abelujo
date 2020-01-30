@@ -1286,10 +1286,12 @@ def history_sells_day(request, date, **kwargs):
     grey = "#f9f9f9"
     previous_sell_id = -1
     cur_color = grey
+
     def flip_color(color):
         if color == white:
             return grey
         return white
+
     # Show payments (abbreviated).
     payments = []
     for it in sells_data['data']:
