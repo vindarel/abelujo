@@ -37,12 +37,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       ];
 
       $scope.payment_means = [
-          {name: gettext("cash"), id:1},
-          {name: gettext("cheque"), id:2},
-          {name: gettext("visa card"), id:3},
-          {name: gettext("gift"), id:4},
-          {name: gettext("transfer"), id:6},
-          {name: gettext("other"), id:5},
+           {name: gettext("cash"), id:1},
+           {name: gettext("cheque"), id:2},
+           {name: gettext("visa card"), id:3},
+           {name: gettext("gift"), id:4},
+           {name: gettext("transfer"), id:5},
+           {name: gettext("other"), id:6},
       ];
       $scope.payment = $scope.payment_means[0];
 
@@ -246,13 +246,18 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         if ($scope.deposit) {
             deposit_id = $scope.deposit.id;
         }
+        var payment_id;
+        if ($scope.payment) {
+            payment_id = $scope.payment.id;
+        }
 
         var params = {
             "to_sell": [ids, prices, quantities],
             "date": $filter('date')(new Date(), $scope.format, 'UTC') .toString($scope.format),
             "language": $scope.language,
             "place_id": place_id,
-            "deposit_id": deposit_id
+            "deposit_id": deposit_id,
+            "payment_id": payment_id
         };
 
           // This is needed for Django to process the params to its

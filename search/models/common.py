@@ -35,12 +35,12 @@ ALERT_INFO = "info"
 
 # warning: keep ids in sync with the UI in sellController.
 PAYMENT_CHOICES = [
-    (0, _("cash")),
-    (1, _("check")),
-    (2, _("credit card")),
-    (3, _("gift")),
+    (1, _("cash")),
+    (2, _("check")),
+    (3, _("credit card")),
+    (4, _("gift")),
     (5, _("transfer")),
-    (4, _("other")),
+    (6, _("other")),
 ]
 
 class TimeStampedModel(models.Model):

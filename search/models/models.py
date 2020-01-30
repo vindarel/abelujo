@@ -3699,7 +3699,8 @@ class Sell(models.Model):
 
         # Create the Sell object.
         try:
-            sell = Sell(created=date, payment=payment,
+            sell = Sell(created=date,
+                        payment=payment,
                         place=place_obj,
                         deposit=deposit_obj)
             sell.save()

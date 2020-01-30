@@ -665,6 +665,7 @@ def sell(request, **response_kwargs):
         date = params.get("date")
         deposit_id = int(params.get("deposit_id", 0))
         place_id = int(params.get("place_id", 0))
+        payment_id = int(params.get("payment_id"))
 
         # Sell from a deposit, then normal sell.
         if deposit_id and deposit_id not in [0, "0"]:
@@ -680,6 +681,7 @@ def sell(request, **response_kwargs):
         try:
             sell, status, alerts = Sell.sell_cards(to_sell, date=date,
                                                    place_id=place_id,
+                                                   payment=payment_id,
                                                    deposit_id=deposit_id)
 
         except Exception as e:
