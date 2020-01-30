@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-30 17:39+0000\n"
-"PO-Revision-Date: 2020-01-30 18:40+0100\n"
+"POT-Creation-Date: 2020-01-30 19:11+0000\n"
+"PO-Revision-Date: 2020-01-30 20:15+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -53,95 +53,95 @@ msgstr "Oups, noun n'avons pas pu créer cette notice. C'est un bug !"
 msgid "Please provide a supplier"
 msgstr "Veuillez choisir un fournisseur"
 
-#: search/models/api.py:650 search/models/models.py:3782
+#: search/models/api.py:650 search/models/models.py:3783
 msgid "Sell successfull."
 msgstr "La vente a été réalisée avec succès."
 
-#: search/models/api.py:747
+#: search/models/api.py:749
 msgid "Cards moved with success"
 msgstr "Notices déplacées avec succès"
 
-#: search/models/api.py:763
+#: search/models/api.py:765
 msgid "An error happened. We were notified about it."
 msgstr "Une erreur est survenue. Nous en avons été alerté."
 
-#: search/models/api.py:765
+#: search/models/api.py:767
 msgid "The card was removed with success."
 msgstr "La notice a été enlevée avec succès."
 
-#: search/models/api.py:1074
+#: search/models/api.py:1076
 msgid "We couldn't set the quantity of the card."
 msgstr "Nous n'avons pas pu modifier la quantité de cette notice."
 
-#: search/models/api.py:1093
+#: search/models/api.py:1095
 msgid "We couldn't set this list as a deposit. Sorry !"
 msgstr "Nous n'avons pas pu transformer cette liste en dépôt. Désolé !"
 
-#: search/models/api.py:1254
+#: search/models/api.py:1256
 msgid ""
 "This card has already a supplier ({}), we can't mark it to command for {}."
 msgstr ""
 "Cette notice a déjà un fournisseur ({}), nous ne pouvons pas l'ajouter dans "
 "la commande de {}."
 
-#: search/models/api.py:1265
+#: search/models/api.py:1267
 msgid "The card '{}' was successfully added to the supplier '{}'."
 msgstr "La notice '{}' a été ajoutée avec succès au fournisseur '{}'."
 
-#: search/models/api.py:1268
+#: search/models/api.py:1270
 msgid ""
 "The card '{}' was successfully marked to command, with no default supplier."
 msgstr ""
 "La notice '{}' a été ajoutée avec succès au panier de commandes, sans "
 "fournisseur attitré."
 
-#: search/models/api.py:1368
+#: search/models/api.py:1370
 msgid "Basket archived succesfully."
 msgstr "Liste archivée.."
 
-#: search/models/api.py:1381
+#: search/models/api.py:1383
 msgid "The basket could not be archived"
 msgstr "La liste n'a pas pu être archivée"
 
-#: search/models/api.py:1393
+#: search/models/api.py:1395
 msgid "Basket deleted succesfully"
 msgstr "Liste supprimée."
 
-#: search/models/api.py:1406
+#: search/models/api.py:1408
 msgid "The basket could not be deleted"
 msgstr "La liste n'a pas pu être supprimée"
 
-#: search/models/api.py:1447 search/models/models.py:4188
+#: search/models/api.py:1449 search/models/models.py:4189
 msgid "Internal error, sorry !"
 msgstr "Erreur interne :("
 
-#: search/models/api.py:1547
+#: search/models/api.py:1549
 msgid "We couldn't create the requested inventory. This is an error, sorry !"
 msgstr "Nous n'avons pas pu créer l'inventaire demandé. C'est un bug, désolé."
 
-#: search/models/api.py:1669
+#: search/models/api.py:1671
 msgid "Internal error. We couldn't save the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu sauvegarder l'inventaire"
 
-#: search/models/api.py:1712
+#: search/models/api.py:1714
 msgid "Inventory saved. Keep working !"
 msgstr "Inventaire sauvegardé. Il faut s'y remettre !"
 
-#: search/models/api.py:1732
+#: search/models/api.py:1734
 msgid "Internal error. We couldn't update the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu mettre à jour l'inventaire"
 
-#: search/models/api.py:1770 search/models/api.py:2092
+#: search/models/api.py:1772 search/models/api.py:2094
 msgid "This inventory is already applied"
 msgstr "Cet inventaire a déjà été appliqué"
 
-#: search/models/api.py:1780 search/models/api.py:2102
+#: search/models/api.py:1782 search/models/api.py:2104
 msgid "The inventory is being applied. This may take a few minutes."
 msgstr ""
 "L'inventaire est en train d'être mis à jour. Cela peut prendre quelques "
 "minutes."
 
-#: search/models/api.py:2047
+#: search/models/api.py:2049
 msgid "An error occured. We have been notified."
 msgstr "Une erreur interne est survenue. Nous en avons été alerté."
 
@@ -157,7 +157,8 @@ msgstr "chèque"
 msgid "credit card"
 msgstr "Carte de crédit"
 
-#: search/models/common.py:41
+#. Translators: abbreviation of "gift"
+#: search/models/common.py:41 search/models/common.py:54
 msgid "gift"
 msgstr "cadeau"
 
@@ -169,7 +170,27 @@ msgstr "virement"
 msgid "other"
 msgstr "autre"
 
-#: search/models/models.py:93 search/views.py:608
+#. Translators: abbreviation of the "cash" payment method.
+#: search/models/common.py:48
+msgid "CASH"
+msgstr "ESP"
+
+#. Translators: abbreviation of the "check" payment method.
+#: search/models/common.py:50
+msgid "CHK"
+msgstr "CHQ"
+
+#. Translators: abbreviation of the "credit card" payment method.
+#: search/models/common.py:52
+msgid "card"
+msgstr "CB"
+
+#. Translators: abbreviation of the "transfert" payment method.
+#: search/models/common.py:56
+msgid "TR"
+msgstr "VIR"
+
+#: search/models/models.py:93 search/views.py:610
 msgid "An internal error occured, we have been notified."
 msgstr "Une erreur interne est survenue, nous en avons été alertés."
 
@@ -326,122 +347,122 @@ msgstr "Erreur lors de la vente de la notice '{}' pour le dépôt {}"
 msgid "Operation successful"
 msgstr "L'opération a réussie."
 
-#: search/models/models.py:3773
+#: search/models/models.py:3774
 msgid "Warning: we couldn't sell {}."
 msgstr "Attention: la vente de {} a échoué."
 
-#: search/models/models.py:3804
+#: search/models/models.py:3805
 msgid "Error while undoing sell {}"
 msgstr "Erreur en annulant la vente {}"
 
-#: search/models/models.py:3832
+#: search/models/models.py:3833
 msgid "Error while undoing sell {}."
 msgstr "Une erreur est apparue en annulant la vente {}."
 
-#: search/models/models.py:3849
+#: search/models/models.py:3850
 msgid "Sell {} canceled with success."
 msgstr "La vente {} a été annulée avec succès"
 
-#: search/models/models.py:4326
+#: search/models/models.py:4327
 msgid "This inventory is already closed, you can't apply it again."
 msgstr ""
 "Cet inventaire est déjà fermé. Vous ne pouvez pas l'appliquer de nouveau."
 
-#: search/models/models.py:4388 search/models/models.py:4398
+#: search/models/models.py:4389 search/models/models.py:4399
 msgid "There was an internal error, sorry !"
 msgstr "Erreur interne :("
 
-#: search/models/models.py:4404
+#: search/models/models.py:4405
 msgid "The inventory got succesfully applied to your stock."
 msgstr "L'inventaire a été appliqué à votre fonds avec succès."
 
-#: search/models/models.py:4542
+#: search/models/models.py:4543
 msgid "Number of book titles"
 msgstr "Nombre de titres"
 
-#: search/models/models.py:4545 templates/search/collection.jade:148
+#: search/models/models.py:4546 templates/search/collection.jade:148
 #: templates/search/dashboard.jade:38
 msgid "Number of books"
 msgstr "Nombre de livres"
 
-#: search/models/models.py:4547 templates/search/dashboard.jade:41
+#: search/models/models.py:4548 templates/search/dashboard.jade:41
 msgid "Number of products"
 msgstr "Nombre de produits"
 
-#: search/models/models.py:4549
+#: search/models/models.py:4550
 msgid "Number of products of unknown type"
 msgstr "Nombre de produits de type inconnu"
 
-#: search/models/models.py:4558
+#: search/models/models.py:4559
 msgid "Number of titles with no copy"
 msgstr "nombre de titres sans exemplaire"
 
-#: search/models/models.py:4561
+#: search/models/models.py:4562
 msgid "Number of titles with one copy"
 msgstr "nombre de titres avec un exemplaire"
 
-#: search/models/models.py:4579
+#: search/models/models.py:4580
 msgid "Number of books in deposits"
 msgstr "Nombre de livres en dépôts"
 
-#: search/models/models.py:4584
+#: search/models/models.py:4585
 msgid "Total cost of the books in deposits"
 msgstr "Valeur totale des livres en dépôts"
 
-#: search/models/models.py:4588
+#: search/models/models.py:4589
 msgid "Total cost of the stock"
 msgstr "Valeur du fonds"
 
-#: search/models/models.py:4594
+#: search/models/models.py:4595
 msgid "Total cost of the stock, excl. tax"
 msgstr "Valeur totale du fonds HT"
 
-#: search/models/models.py:4603
+#: search/models/models.py:4604
 msgid "next appointments"
 msgstr "prochaines échéances"
 
-#: search/models/models.py:4862 search/views.py:965
+#: search/models/models.py:4863 search/views.py:967
 msgid "NO SUPPLIER"
 msgstr "AUCUN FOURNISSEUR"
 
-#: search/models/models.py:4974
+#: search/models/models.py:4975
 msgid "command #{} - {}"
 msgstr "Commande #{} - {}"
 
-#: search/models/models.py:5132
+#: search/models/models.py:5133
 msgid "Command updated succesfully."
 msgstr "La commande a été mise à jour avec succès."
 
-#: search/views.py:113 templates/base.jade:60
+#: search/views.py:115 templates/base.jade:60
 msgid "Distributors"
 msgstr "Diffuseurs"
 
-#: search/views.py:115 search/views.py:1104 templates/base.jade:62
+#: search/views.py:117 search/views.py:1106 templates/base.jade:62
 #: templates/search/card_edit.jade:97 templates/search/card_show.jade:93
 #: templates/search/collection.jade:180 templates/search/history.jade:52
 #: templates/search/searchresults.jade:101
 msgid "Publishers"
 msgstr "Éditeurs"
 
-#: search/views.py:177
+#: search/views.py:179
 msgid "Add to the deposit:"
 msgstr "Ajouter au dépôt:"
 
-#: search/views.py:317 templates/base.jade:127
+#: search/views.py:319 templates/base.jade:127
 #: templates/search/card_history.jade:36 templates/search/card_show.jade:39
 msgid "History"
 msgstr "Historique"
 
-#: search/views.py:371 templates/search/sell_create.jade:60
+#: search/views.py:373 templates/search/sell_create.jade:60
 #: templates/search/sell_details.jade:26
 msgid "Payment"
 msgstr "Paiement"
 
-#: search/views.py:372
+#: search/views.py:374
 msgid "Bill"
 msgstr "Facture"
 
-#: search/views.py:373 search/views.py:1079 search/views.py:1108
+#: search/views.py:375 search/views.py:1081 search/views.py:1110
 #: templates/search/basket_list.html:19 templates/search/collection.jade:100
 #: templates/search/collection.jade:183
 #: templates/search/commands_ongoing.jade:65
@@ -453,68 +474,68 @@ msgstr "Facture"
 msgid "Quantity"
 msgstr "Quantité"
 
-#: search/views.py:374 templates/search/collection.jade:60
+#: search/views.py:376 templates/search/collection.jade:60
 msgid "Place"
 msgstr "Lieu de stockage"
 
-#: search/views.py:410 templates/search/card_buy.jade:32
+#: search/views.py:412 templates/search/card_buy.jade:32
 #: templates/search/deposits_view.jade:45
 msgid "discount"
 msgstr "remise"
 
-#: search/views.py:531
+#: search/views.py:533
 msgid "The card \"{}\" was added successfully."
 msgstr "La notice \\\"{}\\\" a été ajoutée avec succès."
 
-#: search/views.py:599
+#: search/views.py:601
 msgid "A supplier with the same name already exists."
 msgstr "Un fournisseur avec ce nom existe déjà."
 
 # L'inventaire est en train d'être mis à jour
-#: search/views.py:613
+#: search/views.py:615
 msgid "The form is invalid."
 msgstr "Le formulaire est invalide."
 
-#: search/views.py:628
+#: search/views.py:630
 msgid "Internal error :("
 msgstr "Erreur interne :("
 
-#: search/views.py:632
+#: search/views.py:634
 msgid "The supplier was correctly set for those {} cards."
 msgstr "Le fournisseur a été correctement modifié pour ces {} notices."
 
-#: search/views.py:808 templates/base.jade:116
+#: search/views.py:810 templates/base.jade:116
 #: templates/search/card_show.jade:130
 msgid "Deposits"
 msgstr "Dépôts"
 
-#: search/views.py:839
+#: search/views.py:841
 msgid "Error when adding the deposit"
 msgstr "Erreur en ajoutant le dépôt"
 
-#: search/views.py:865
+#: search/views.py:867
 msgid "We could not add the card to the deposit: the given isbn is null."
 msgstr "Impossible d'ajouter cette notice au dépôt: l'isbn est nul."
 
-#: search/views.py:870
+#: search/views.py:872
 msgid "The card were successfully added to the deposit."
 msgstr "La notice a été ajoutée au dépôt."
 
-#: search/views.py:887
+#: search/views.py:889
 msgid "This deposit doesn't exist !"
 msgstr "Le dépôt demandé n'existe pas !"
 
-#: search/views.py:911
+#: search/views.py:913
 msgid "Woops, there was an error :S we can't close this deposit state."
 msgstr ""
 "Ouups, il y a eu une erreur :S nous ne pouvons pas cloturer cet état de "
 "dépôt."
 
-#: search/views.py:1046
+#: search/views.py:1048
 msgid "Liste"
 msgstr "Liste"
 
-#: search/views.py:1085 search/views.py:1104
+#: search/views.py:1087 search/views.py:1106
 #: templates/pdftemplates/pdf-barcode.jade:47 templates/search/alerts.jade:33
 #: templates/search/baskets.jade:162 templates/search/card_edit.jade:42
 #: templates/search/collection.jade:177 templates/search/commands_view.jade:106
@@ -528,18 +549,18 @@ msgstr "Liste"
 msgid "Title"
 msgstr "Titre"
 
-#: search/views.py:1085 search/views.py:1174
+#: search/views.py:1087 search/views.py:1176
 #: templates/search/dashboard.jade:119
 msgid "Quantity sold"
 msgstr "Quantité vendue"
 
-#: search/views.py:1104 templates/pdftemplates/pdf-barcode.jade:48
+#: search/views.py:1106 templates/pdftemplates/pdf-barcode.jade:48
 #: templates/search/card_edit.jade:79 templates/search/collection.jade:179
 #: templates/search/searchresults.jade:100
 msgid "Authors"
 msgstr "Auteurs"
 
-#: search/views.py:1104 templates/search/baskets.jade:166
+#: search/views.py:1106 templates/search/baskets.jade:166
 #: templates/search/card_edit.jade:110 templates/search/card_show.jade:99
 #: templates/search/collection.jade:85 templates/search/collection.jade:181
 #: templates/search/commands_ongoing.jade:59
@@ -550,13 +571,13 @@ msgstr "Auteurs"
 msgid "Supplier"
 msgstr "Fournisseur"
 
-#: search/views.py:1105 templates/search/card_edit.jade:54
+#: search/views.py:1107 templates/search/card_edit.jade:54
 #: templates/search/card_show.jade:104 templates/search/collection.jade:93
 #: templates/search/collection.jade:182 templates/search/dashboard.jade:136
 msgid "Shelf"
 msgstr "Rayon"
 
-#: search/views.py:1106 templates/pdftemplates/pdf-barcode.jade:49
+#: search/views.py:1108 templates/pdftemplates/pdf-barcode.jade:49
 #: templates/search/baskets.jade:171 templates/search/collection.jade:107
 #: templates/search/collection.jade:178
 #: templates/search/inventory_view_component.jade:120
@@ -565,47 +586,47 @@ msgstr "Rayon"
 msgid "Price"
 msgstr "Prix"
 
-#: search/views.py:1107 templates/pdftemplates/pdf-barcode.jade:50
+#: search/views.py:1109 templates/pdftemplates/pdf-barcode.jade:50
 #: templates/search/commands_view.jade:110
 #: templates/search/deposits_view.jade:139
 #: templates/search/inventory_view_component.jade:121
 msgid "with discount"
 msgstr "avec remise"
 
-#: search/views.py:1305
+#: search/views.py:1333
 msgid "Sells history"
 msgstr "Historique des ventes"
 
-#: search/views.py:1330 search/views.py:1343
+#: search/views.py:1358 search/views.py:1371
 msgid "date sold"
 msgstr "Vendu le"
 
-#: search/views.py:1331 search/views.py:1344
+#: search/views.py:1359 search/views.py:1372
 msgid "price sold"
 msgstr "Prix de vente"
 
-#: search/views.py:1332 search/views.py:1345 search/views_utils.py:100
+#: search/views.py:1360 search/views.py:1373 search/views_utils.py:100
 msgid "title"
 msgstr "titre"
 
-#: search/views.py:1333 search/views.py:1346 templates/search/baskets.jade:130
+#: search/views.py:1361 search/views.py:1374 templates/search/baskets.jade:130
 #: templates/search/card_add.jade:36
 msgid "supplier"
 msgstr "fournisseur"
 
-#: search/views.py:1419
+#: search/views.py:1447
 msgid "The inventory {} was closed and archived."
 msgstr "L'inventaire {} a été fermé et archivé."
 
-#: search/views.py:1424
+#: search/views.py:1452
 msgid "There was an error when trying to archive the inventory {}: {}."
 msgstr "Une erreur est survenue en archivant l'inventaire {}: {}."
 
-#: search/views.py:1438
+#: search/views.py:1466
 msgid "The inventory {} was deleted."
 msgstr "L'inventaire {} a été supprimé."
 
-#: search/views.py:1443
+#: search/views.py:1471
 msgid "There was an error when trying to delete the inventory {}: {}."
 msgstr "Une erreur est survenue en supprimant l'inventaire {}: {}."
 
@@ -1087,7 +1108,7 @@ msgstr "Aucune vente."
 #: templates/search/history_sells.jade:63
 #: templates/search/history_sells_day.jade:38
 #: templates/search/history_sells_day.jade:50
-#: templates/search/history_sells_day.jade:60
+#: templates/search/history_sells_day.jade:61
 msgid "€"
 msgstr "€"
 

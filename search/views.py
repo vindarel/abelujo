@@ -82,6 +82,8 @@ from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import truncate
 
+from search.models.common import get_payment_abbr
+
 from views_utils import Echo
 from views_utils import cards2csv
 
@@ -1288,20 +1290,23 @@ def history_sells_day(request, date, **kwargs):
         if color == white:
             return grey
         return white
+    # Show payments (abbreviated).
+    payments = []
     for it in sells_data['data']:
         if it.sell_id == previous_sell_id:
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
+            payments.append("")
         else:
             cur_color = flip_color(cur_color)
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
-    assert len(bg_colors), len(sells_data['data'])
-    sells_and_bg = zip(sells_data['data'], bg_colors)
+            payments.append(get_payment_abbr(it.sell.payment))
+
+    data = zip(sells_data['data'], bg_colors, payments)
 
     return render(request, template, {'sells_data': sells_data,
-                                      'bg_colors': bg_colors,
-                                      'sells_and_bg': sells_and_bg,
+                                      'data': data,
                                       'previous_day': previous_day,
                                       'previous_day_fmt': previous_day_fmt,
                                       'next_day': next_day,

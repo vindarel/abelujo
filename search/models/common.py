@@ -43,6 +43,25 @@ PAYMENT_CHOICES = [
     (6, _("other")),
 ]
 
+PAYMENT_ABBR = [
+     # Translators: abbreviation of the "cash" payment method.
+    (1, _("CASH")),
+     # Translators: abbreviation of the "check" payment method.
+    (2, _("CHK")),
+     # Translators: abbreviation of the "credit card" payment method.
+    (3, _("card")),
+     # Translators: abbreviation of "gift"
+    (4, _("gift")),
+     # Translators: abbreviation of the "transfert" payment method.
+    (5, _("TR")),
+]
+
+def get_payment_abbr(id):
+    id = int(id)
+    for it in PAYMENT_ABBR:
+        if id == it[0]:
+            return it[1]
+
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

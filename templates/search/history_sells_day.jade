@@ -50,7 +50,7 @@ h1 {{ day | date:'l d F Y' | title }}
   div.panel-body {{ sells_data.sell_mean | floatformat:2 }} {% trans "€" %}
 
 table.table
-  for it, bg_color in sells_and_bg
+  for it, bg_color, payment in data
    tr(style="background-color: {{ bg_color }}")
     td {{ it.created | date:'H:i' }} 
     td &nbsp;
@@ -61,5 +61,6 @@ table.table
     td
       if it.quantity != 1
         span x {{ it.quantity }}
+    td {{ payment }}
 
 {% endblock content %}
