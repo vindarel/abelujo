@@ -1334,7 +1334,7 @@ def baskets_return(request, pk, **kw):
 
 def baskets_add_to_shelf(request, pk, **kw):
     """
-    Add the cards of the given basket to the given shelf, and archive the basket.
+    Add the cards of the given basket to the given shelf, and empty the basket.
 
     POST params:
     - shelf_id (int)

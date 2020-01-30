@@ -344,7 +344,8 @@ class Shelf(models.Model):
     def add_cards_from(self, basket_id=None):
         """
         Mark all the cards of the basket to be of this shelf, and add their quantities to
-        the default place.
+        the default place. Then, empty the basket (so than we can repeat the operation
+        with the same basket).
         """
         basket = Basket.objects.get(id=basket_id)
 
@@ -358,7 +359,7 @@ class Shelf(models.Model):
             place.add_copy(copy.card, nb=copy.nb)
 
         # Archive the basket.
-        basket.archive()
+        basket.empty()
 
         return True
 
@@ -1801,7 +1802,9 @@ class Place (models.Model):
 
     def add_copy(self, card, nb=1, add=True):
         """Adds the given number of copies (1 by default) of the given
-        car to this place.
+        card to this place.
+
+        Create an Entry movement.
 
         Be sure to update the card.quantity denormalized field. Saving
         a Card object is enough as it re-computes it.
@@ -2289,6 +2292,13 @@ class Basket(models.Model):
         """
         for id in card_ids:
             self.remove_copy(id)
+
+    def empty(self):
+        """
+        Remove all the cards of this basket.
+        """
+        self.basketcopies_set.all().delete()
+        return True
 
     def quantity(self, card=None, card_id=None):
         """Return the total quantity of copies in it, or the quantity of the given card.

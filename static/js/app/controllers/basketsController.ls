@@ -325,6 +325,10 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                     utils
 
         modalInstance.result.then (basket) !->
+            # Empty the basket (double work from the api).
+            basket = $scope.baskets[cur_basket_id]
+            basket.copies = []
+            $scope.copies = []
             $log.info "modal ok"
         , !->
             $log.info "modal dismissed"
@@ -447,12 +451,9 @@ angular.module "abelujo" .controller "ChooseShelfModalControllerInstance", ($htt
 
         $http.post "/api/baskets/#{$scope.cur_basket_id}/add_to_shelf/", params
         .then (response) !->
-            # basket = response.data.data
             $scope.alerts = response.data.alerts
             $uibModalInstance.close()
             $scope.alerts = response.data.alerts
-            language = utils.url_language($window.location.pathname)
-            $window.location.href = "/#{language}/baskets/"
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
