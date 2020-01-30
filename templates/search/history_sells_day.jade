@@ -49,9 +49,9 @@ h1 {{ day | date:'l d F Y' | title }}
   div.panel-heading  {% trans "Average basket" %}
   div.panel-body {{ sells_data.sell_mean | floatformat:2 }} {% trans "€" %}
 
-table.table.table-striped
-  for it in sells_data.data
-   tr
+table.table
+  for it, bg_color in sells_and_bg
+   tr(style="background-color: {{ bg_color }}")
     td {{ it.created | date:'H:i' }} 
     td &nbsp;
       a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}

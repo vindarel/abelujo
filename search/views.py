@@ -1278,7 +1278,30 @@ def history_sells_day(request, date, **kwargs):
     next_day = day.add(days=1)
     next_day_fmt = next_day.strftime(PENDULUM_YMD)
 
+    # Visually show the same sells with the same background color.
+    bg_colors = []
+    white = ""
+    grey = "#f9f9f9"
+    previous_sell_id = -1
+    cur_color = grey
+    def flip_color(color):
+        if color == white:
+            return grey
+        return white
+    for it in sells_data['data']:
+        if it.sell_id == previous_sell_id:
+            bg_colors.append(cur_color)
+            previous_sell_id = it.sell_id
+        else:
+            cur_color = flip_color(cur_color)
+            bg_colors.append(cur_color)
+            previous_sell_id = it.sell_id
+    assert len(bg_colors), len(sells_data['data'])
+    sells_and_bg = zip(sells_data['data'], bg_colors)
+
     return render(request, template, {'sells_data': sells_data,
+                                      'bg_colors': bg_colors,
+                                      'sells_and_bg': sells_and_bg,
                                       'previous_day': previous_day,
                                       'previous_day_fmt': previous_day_fmt,
                                       'next_day': next_day,
