@@ -57,10 +57,11 @@ PAYMENT_ABBR = [
 ]
 
 def get_payment_abbr(id):
-    id = int(id)
-    for it in PAYMENT_ABBR:
-        if id == it[0]:
-            return it[1]
+    if id is not None:
+        id = int(id)
+        for it in PAYMENT_ABBR:
+            if id == it[0]:
+                return it[1]
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
