@@ -235,11 +235,12 @@ div(ng-cloak, ng-controller="basketsController")
       h3.modal-title {% trans "Create a list" %}
 
     div.modal-body
-      label {% trans "Name" %}
-      input#default-input(type="text", ng-model="new_name")
+      form
+        label {% trans "Name" %}
+        input#modal-input(type="text", ng-model="new_name")
 
-      button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
-      button.btn(ng-click="cancel()") {% trans "Cancel" %}
+        button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
+        button.btn(ng-click="cancel()") {% trans "Cancel" %}
 
  script(type="text/ng-template", id="chooseShelfModal.html")
     div.modal-header

@@ -288,6 +288,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     # Open new basket modal
     # ###########################
     $scope.open_new_basket = (size) !->
+        # angular.element('#modal-input').trigger('focus')  # noop :(
         modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
             templateUrl: 'basketModal.html'
@@ -300,8 +301,11 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
         modalInstance.result.then (basket) !->
             $scope.baskets.push basket
+            $log.info "new basket: ", basket
+            $log.info "all baskets: ", $scope.baskets
+            ## $scope.showBasket basket.id  # doesn't work :(
         , !->
-              $log.info "modal dismissed"
+            $log.info "modal dismissed"
 
     #############################
     # Choose and add to shelf modal
@@ -323,7 +327,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         modalInstance.result.then (basket) !->
             $log.info "modal ok"
         , !->
-              $log.info "modal dismissed"
+            $log.info "modal dismissed"
 
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
@@ -381,8 +385,6 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
             $uibModalInstance.dismiss('cancel')
             return
 
-        $log.info "create new basket !"
-
         #  This is needed for Django to process the params to its
         #  request.POST dictionnary:
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -401,7 +403,6 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
             basket = response.data.data
             $scope.alerts = response.data.alerts
             $uibModalInstance.close(basket)
-
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
