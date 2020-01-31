@@ -3596,7 +3596,6 @@ class Sell(models.Model):
         sells.order_by("created")
         nb_sells = sells.count()
         now = timezone.now()
-        today = now.day
         last_day = 31
         if now.month == month:
             last_day = now.day

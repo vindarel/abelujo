@@ -410,7 +410,7 @@ def card_add(request, **response_kwargs):
         pk = response_kwargs.pop("pk")
         card_obj = Card.objects.get(id=pk)
 
-        # distributor_id = params.get('distributor_id')
+        distributor_id = params.get('distributor_id')
         shelf_id = params.get("shelf_id")
         deposits_ids_qties = params.get('deposits_ids_qties')
         baskets_ids_qties = params.get('baskets_ids_qties')
@@ -443,6 +443,12 @@ def card_add(request, **response_kwargs):
             cat = Shelf.objects.get(id=shelf_id)
             card_obj.shelf = cat
             to_save = True
+
+        if distributor_id and distributor_id not in [-1, 0, '0', u'0']:
+            if card_obj.distributor_id != distributor_id:
+                distributor = Distributor.objects.get(id=distributor_id)
+                card_obj.distributor = distributor
+                to_save = True
 
         if threshold is not None:
             if threshold != card_obj.threshold:
