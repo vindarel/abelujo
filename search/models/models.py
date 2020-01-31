@@ -3616,7 +3616,8 @@ class Sell(models.Model):
             sells_this_day = sells.filter(created__day=day)
             cards_sold = sum(sells_this_day.values_list('quantity', flat=True))
             total_cards_sold += cards_sold
-            total = sum(sells_this_day.values_list('price_sold', flat=True))
+            values = sells_this_day.values_list('price_sold', 'quantity')
+            total = sum([it[0] * it[1] for it in values])
             sells_per_day.append({'date': date,
                                   'date_obj': date_obj,
                                   'weekday': calendar.weekday(year, month, day),
