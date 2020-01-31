@@ -943,8 +943,6 @@ class TestSells(TestCase):
         stats = Stats.sells_month()
         self.assertEqual(2 * 3, stats['nb_cards_sold'])
         self.assertEqual(2, stats['nb_sells'])
-        self.assertEqual(2 * 2, stats['best_sells'][0]['quantity'])
-        self.assertEqual(2 * 1, stats['best_sells'][1]['quantity'])
         self.assertEqual(2 * p1 + 4 * p2, stats['revenue'])
 
     def test_sell_none(self):

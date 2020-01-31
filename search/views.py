@@ -1278,7 +1278,7 @@ def history_entries_month(request, date, **kwargs):
                                       'day': day,
                                       'previous_month': previous_month,
                                       'next_month': next_month,
-                                      'year': year,})
+                                      'year': year})
 
 def history_sells_day(request, date, **kwargs):
     """

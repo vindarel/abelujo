@@ -24,7 +24,6 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
 
     $scope.stats = undefined
     $scope.sells_month = {}     # Keys are different stats: "best_sells" is a list, etc.
-    $scope.stock_age_cards = [] # list of cards
 
     params = do
         language: $scope.language
@@ -35,97 +34,13 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
         response.data.data
         $scope.stats = response.data
 
-        chart = c3.generate do
-            bindto: \#chart
-            data: do
-                type: "pie"
-                columns: [
-                    [$scope.stats.nb_titles.label, $scope.stats.nb_titles.value]
-                    [$scope.stats.nb_unknown.label, $scope.stats.nb_unknown.value]
-                ]
-
-
-        chart2 = c3.generate do
-            bindto: \#chart2
-            data: do
-                type: "pie"
-                columns: [
-                    [$scope.stats.total_cost.label, $scope.stats.total_cost.value]
-                    [$scope.stats.deposits_cost.label, $scope.stats.deposits_cost.value]
-                ]
-            color: do
-                pattern: ['#0000cd', '#ffd700']
-
-        chart-no-stock = c3.generate do
-            bindto: \#chartNoStock
-            data: do
-                type: "pie"
-                columns: [
-                    [$scope.stats.nb_cards_no_stock.label, $scope.stats.nb_cards_no_stock.value]
-                    [$scope.stats.nb_cards_one_copy.label, $scope.stats.nb_cards_one_copy.value]
-                    [$scope.stats.nb_titles.label, $scope.stats.nb_titles.value]
-                ]
-            color: do
-                pattern: ['#ff8c00', '#ffd700', '#6495ed']
-
-
     $scope.shelfs = []
     $scope.shelf = {}
 
-    $scope.age_shelf = !->
-      """
-      """
-
-      if $scope.shelfs
-          params = do
-              shelf_id: $scope.shelf.pk
-
-          $http.get "/api/stats/stock_age/", do
-              params: params
-
-          .then (response) !->
-              data = response.data
-              if data
-                  $log.info "Building the age shelf graph with new data"
-                  chart-age = c3.generate do
-                    bindto: \#chart-age
-                    data: do
-                        type: "pie"
-                        columns: [
-                            [gettext("3 months"), data["0"].length],
-                            [gettext("6 months"), data["1"].length],
-                            [gettext("12 months"), data["2"].length],
-                            [gettext("18 months"), data["3"].length],
-                            [gettext("24 months"), data["4"].length],
-                            [gettext("more than 24 months"), data["5"].length],
-                        ]
-                        onclick: (d, i) !->
-                            # d: data, i: chart info
-                            $log.info "onclick", d, i
-                            $log.info data[d.index]
-                            $scope.stock_age_cards = data[d.index]
-                            $log.info $scope.stock_age_cards
-                            $scope.$apply! # otherwise the scope doesn't refresh
-
-                    color: do
-                        pattern: ['#077efa', '#07fac9', '#cdfa07', '#faea07', '#fa6507', '#fa0c07']
-
-    getShelfs = ->
-      utils.shelfs!
-      .then (response) ->
-          $scope.shelfs = response.data
-          if $scope.shelfs.length
-              $scope.shelf = $scope.shelfs[0]
-              $scope.age_shelf!
-    getShelfs!
 
     $http.get "/api/stats/sells/month"
     .then (response) !->
         $scope.sells_month = response.data
-
-    $http.get "/api/stats/static"
-    .then (response) !->
-        $scope.static_stock = response.data
 
     $http.get "/api/deposits/due_dates/"
     .then (response) !->

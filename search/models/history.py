@@ -21,9 +21,6 @@ import calendar
 from django.core.urlresolvers import reverse
 from django.db import models
 
-# from common import ALERT_WARNING
-# from common import ALERT_ERROR
-from common import ALERT_SUCCESS
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
 from common import TimeStampedModel
@@ -348,7 +345,6 @@ class Entry(TimeStampedModel):
         entries_this_day = []
         price_entered = 0
         total_price_entered = 0
-        total_cards_sold = 0
         TWO_DIGITS_SPEC = '0>2'
         YMD = '%Y-%M-%d'
         for day in range(1, last_day + 1):

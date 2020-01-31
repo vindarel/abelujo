@@ -1641,6 +1641,7 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def never_sold(page=None, pagecount=20):
+        # 2020-01-31 - removed from dashboard
         notsold = Card.objects.filter(in_stock=True).exclude(id__in = SoldCards.objects.all().values_list('id', flat=True))
         if page is not None:
             notsold = notsold[page:page + pagecount]
@@ -4636,35 +4637,18 @@ class Stats(object):
             year = start_time.year
         if month is not None:
             month = int(month)
-            #TODO: check not in future
+            assert month, int
             start_time = timezone.datetime(year=year, month=month, day=1)
+        else:
+            month = start_time.month
 
-        month_beg = start_time - timezone.timedelta(days=start_time.day - 1)
-        month_end = date_last_day_of_month(month_beg)
+        soldcards = SoldCards.objects.exclude(sell__canceled=True).filter(created__year=year).filter(created__month=month)
+        price_qties = soldcards.values_list('price_sold', 'quantity')
+        revenue = sum([it[0] * it[1] for it in price_qties])
 
-        sells_obj = Sell.search(date_min=month_beg, date_max=month_end, page_size=None)
-
-        # Add the quantity sold of each card.
-        best_sells = {}  # title -> qty
-        # and count the total revenue
-        nb_sells = sells_obj['nb_sells']
-        nb_cards_sold = sells_obj['nb_cards_sold']
-        revenue = 0
-        for soldcard in sells_obj['data']:
-            title = soldcard.card.title
-            qty = soldcard.quantity
-            revenue += qty * soldcard.price_sold
-            if not best_sells.get(title):
-                best_sells[title] = 0
-            best_sells[title] += qty
-
-        # Put into a list.
-        res = []
-        for (title, qty) in best_sells.iteritems():
-            res.append({'title': title, 'quantity': qty})
-
-        # Sort by decreasing qty
-        res = sorted(res, key=lambda it: it['quantity'], reverse=True)
+        # Count the total revenue
+        nb_sells = soldcards.values('sell_id').distinct().count()
+        nb_cards_sold = sum(soldcards.values_list('quantity', flat=True))
 
         # Average sell
         sell_mean = None
@@ -4672,7 +4656,6 @@ class Stats(object):
             sell_mean = revenue / nb_sells
 
         to_ret = {
-            "best_sells": res[:limit],
             "revenue": roundfloat(revenue) if revenue else 0,
             "nb_sells": nb_sells,
             "nb_cards_sold": nb_cards_sold,
@@ -4719,6 +4702,7 @@ class Stats(object):
 
     @staticmethod
     def stock_age(shelf_id):
+        # 2020-01-31 removed from dashboard.
         return Stats._shelf_age(shelf_id)
 
 class CommandCopies(TimeStampedModel):

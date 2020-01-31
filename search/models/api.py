@@ -1838,29 +1838,6 @@ def stats_sells_month(request, **kwargs):
     res = Stats.sells_month(limit=LIMIT, year=year, month=month)
     return JsonResponse(res)
 
-def stats_entries_month(request, **kwargs):
-    """
-    """
-    res = Stats.entries_month()
-    return JsonResponse(res, safe=False)
-
-def stats_static(request, page=0, **kwargs):
-    """Return the static stock.
-    """
-    notsold = Card.never_sold(page=page, pagecount=PAGE_SIZE)
-    ret = [it.to_dict() for it in notsold]
-
-    to_ret = {
-        'never_sold_nb': Card.never_sold_nb(),
-        'never_sold_list': ret,
-    }
-
-    return JsonResponse(to_ret)
-
-def stats_stock_age(request, **kwargs):
-    shelf = request.GET.get('shelf_id')
-    stats = Stats.stock_age(shelf)
-    return JsonResponse(stats, safe=False)
 
 ###############################################################################
 # Commands
