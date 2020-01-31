@@ -126,10 +126,13 @@ urlpatterns = patterns('',
     # Sells history
     url(r'^history/sells/month/(?P<date>.*)/?', 'search.views.history_sells_month', name="history_sells_month"),
     url(r'^history/sells/day/(?P<date>.*)/?', 'search.views.history_sells_day', name="history_sells_day"),
-    url(r'^history/?', 'search.views.history_sells', name="history_sells"),
     url(r'^history/sells/export/?', 'search.views.history_sells_exports',
         name="history_sells_exports"),
 
+    # Entries history
+    url(r'^history/entries/month/(?P<date>.*)/?', 'search.views.history_entries_month', name="history_entries_month"),
+
+    url(r'^history/?', 'search.views.history_sells', name="history_sells"),
     # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
     # name="search_history"),
 

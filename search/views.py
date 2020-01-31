@@ -58,6 +58,8 @@ from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisS
 
 
 import models
+from search.models import history
+
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -1238,7 +1240,7 @@ def history_sells_month(request, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
-        return HttpResponseRedirect(reverse('history_sells'))
+        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
 
     now = pendulum.datetime.now()
     year = day.year
@@ -1256,6 +1258,27 @@ def history_sells_month(request, date, **kwargs):
                                       'next_month_obj': next_month,
                                       'next_month': next_month.strftime('%Y-%m'),
                                       'year': year})
+
+def history_entries_month(request, date, **kwargs):
+    template = 'search/history_entries.jade'
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_sells'))
+
+    now = pendulum.datetime.now()
+    year = day.year
+    month = day.month
+    previous_month = day.subtract(months=1).replace(day=1)
+    next_month = day.add(months=1).replace(day=1)
+
+    data = history.Entry.history(year=year, month=month)
+    return render(request, template, {'data': data,
+                                      'now': now,
+                                      'day': day,
+                                      'previous_month': previous_month,
+                                      'next_month': next_month,
+                                      'year': year,})
 
 def history_sells_day(request, date, **kwargs):
     """

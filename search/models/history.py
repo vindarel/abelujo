@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import pendulum
+import calendar
 
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -199,7 +201,7 @@ class EntryCopies(TimeStampedModel):
     card = models.ForeignKey("search.Card", db_index=True)
     entry = models.ForeignKey("Entry")
     #: we may want to remember the price of the card at this time.
-    price_init = models.FloatField(null=True, blank=True)
+    price_init = models.FloatField(null=True, blank=True, default=0.0)
 
     @staticmethod
     def last_entry(card):
@@ -323,16 +325,62 @@ class Entry(TimeStampedModel):
             return None, False
 
     @staticmethod
-    def history(to_dict=True, to_list=True, page=None, page_size=PAGE_SIZE):
-        alerts = []
+    def history(year=None, month=None, page=None, page_size=PAGE_SIZE):
+        assert year
+        assert month
         entries = []
-
+        beg = pendulum.now()
         try:
-            entries = Entry.objects.order_by("-created")[:page_size]
+            entries = EntryCopies.objects.order_by("-created").filter(created__year=year).filter(created__month=month)
         except Exception as e:
             log.error('Error in Entry.history: {}'.format(e))
 
-        if to_list:
-            entries = [it.to_list() for it in entries]
+        nb_entries = entries.count()
+        now = pendulum.now()
+        last_day = 31
+        if now.month == month:
+            last_day = now.day
+        else:
+            _, last_day = calendar.monthrange(year, month)
 
-        return entries, ALERT_SUCCESS, alerts
+        # In the UI, we want to see all days of the month with their total of cards entered.
+        entries_per_day = []
+        entries_this_day = []
+        price_entered = 0
+        total_price_entered = 0
+        total_cards_sold = 0
+        TWO_DIGITS_SPEC = '0>2'
+        YMD = '%Y-%M-%d'
+        for day in range(1, last_day + 1):
+            start = pendulum.now()
+            date = "{}-{}-{}".format(year,
+                                     format(month, TWO_DIGITS_SPEC),
+                                     format(day, TWO_DIGITS_SPEC))
+            date_obj = pendulum.datetime.strptime(date, YMD)
+            entries_this_day = entries.filter(created__day=day)
+            price_entered = 0
+            if entries_this_day:
+                prices = entries_this_day.values_list('price_init', flat=True)
+                prices = filter(lambda it: it is not None, prices)
+                price_entered = sum(prices)
+                # sum = bad perf. With 3 entries, total 42€: 0.25s. It sums up too.
+                # XXX: now the model defaults to 0. We could apply a data migration script
+                # and simply sum the values_list.
+                total_price_entered += price_entered
+
+            entries_per_day.append({'date': date,
+                                    'date_obj': date_obj,
+                                    'weekday': calendar.weekday(year, month, day),
+                                    'nb_entered': len(entries_this_day),
+                                    'price_entered': price_entered})
+            end = pendulum.now()
+            print("------- for day {}: {}".format(day, end - start))
+
+        en = pendulum.now()
+        print("--- entries search took {}".format(beg, en))
+
+        return {'entries': entries,
+                'nb_entries': nb_entries,
+                'entries_per_day': entries_per_day,
+                'total_price_entered': total_price_entered,
+                }
