@@ -1290,18 +1290,22 @@ def history_sells_day(request, date, **kwargs):
     # XXX: view called twice?? as well as history_sells
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
-    except Exception:
+    except Exception as e:
+        log.error(u'History per days: could not parse {}: {}'.format(date, e))
         return HttpResponseRedirect(reverse('history_sells'))
 
     sells_data = Sell.search(day=day.day, month=day.month, year=day.year,
                              with_total_price_sold=True,
                              sortorder=1)  # ascending
 
-    now = pendulum.datetime.now()
+    now = pendulum.datetime.today()
     previous_day = day.subtract(days=1)  # yes, not subStract.
     previous_day_fmt = previous_day.strftime(PENDULUM_YMD)
-    next_day = day.add(days=1)
-    next_day_fmt = next_day.strftime(PENDULUM_YMD)
+    next_day = None
+    next_day_fmt = None
+    if day < now:
+        next_day = day.add(days=1)
+        next_day_fmt = next_day.strftime(PENDULUM_YMD)
 
     # Visually show the same sells with the same background color.
     bg_colors = []
