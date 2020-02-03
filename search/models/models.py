@@ -63,7 +63,6 @@ from search.models.common import PAYMENT_CHOICES
 from search.models.common import TEXT_LENGTH
 from search.models.common import TimeStampedModel
 from search.models.utils import Messages
-from search.models.utils import date_last_day_of_month
 from search.models.utils import get_logger
 from search.models.utils import is_invalid
 from search.models.utils import is_isbn
