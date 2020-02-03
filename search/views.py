@@ -1340,6 +1340,8 @@ def history_sells_day(request, date, **kwargs):
                                       'previous_day_fmt': previous_day_fmt,
                                       'next_day': next_day,
                                       'next_day_fmt': next_day_fmt,
+                                      'month_fmt': '{}-{}'.format(day.year,
+                                                                  format(day.month, '0>2')),
                                       'now': now,
                                       'day': day})
 

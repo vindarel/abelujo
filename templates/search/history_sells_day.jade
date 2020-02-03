@@ -25,6 +25,8 @@
 span
   a(href="{% url 'history_sells_day' previous_day_fmt %}") &larr; {% trans "Previous" %}
   span  &nbsp;
+  a(href="{% url 'history_sells_month' month_fmt %}") {{ day | date:'F' }}
+  span &nbsp;
 if next_day_fmt
   span
     a(href="{% url 'history_sells_day' next_day_fmt %}") {% trans "Next" %} &rarr;
