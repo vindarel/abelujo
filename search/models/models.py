@@ -3607,7 +3607,7 @@ class Sell(models.Model):
         total_price_sold = 0
         total_cards_sold = 0
         TWO_DIGITS_SPEC = '0>2'
-        YMD = '%Y-%M-%d'
+        YMD = '%Y-%m-%d'
         for day in range(1, last_day + 1):
             date = "{}-{}-{}".format(year,
                                      format(month, TWO_DIGITS_SPEC),
@@ -3620,7 +3620,7 @@ class Sell(models.Model):
             total = sum([it[0] * it[1] for it in values])
             sells_per_day.append({'date': date,
                                   'date_obj': date_obj,
-                                  'weekday': calendar.weekday(year, month, day),
+                                  'weekday': date_obj.weekday(),
                                   'nb_cards_sold': cards_sold,
                                   'total_price_sold': total})
             total_price_sold += total
