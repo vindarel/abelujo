@@ -25,11 +25,18 @@
 span
   a(href="{% url 'history_sells_day' previous_day_fmt %}") &larr; {% trans "Previous" %}
   span  &nbsp;
-  a(href="{% url 'history_sells_month' month_fmt %}") {{ day | date:'F' }}
+  a(href="{% url 'history_sells_month' month_fmt %}") {{ day | date:'F' | title }}
   span &nbsp;
 if next_day_fmt
   span
     a(href="{% url 'history_sells_day' next_day_fmt %}") {% trans "Next" %} &rarr;
+
+.row
+  .col-lg-10
+    ul.nav.nav-tabs
+      li.active(role="presentation")
+        a {% trans "Sells" %}
+      li(role="presentation"): a(href="{% url 'history_entries_day' day|date:'Y-m-d'  %}") {% trans "Entries" %}
 
 h1 {{ day | date:'l d F Y' | title }}
 

@@ -387,3 +387,19 @@ class Entry(TimeStampedModel):
                 'entries_per_day': entries_per_day,
                 'total_price_entered': total_price_entered,
                 }
+
+    @staticmethod
+    def history_day(day=None, month=None, year=None):
+        """
+        List of cards entered on this day.
+
+        - day: int (mandatory)
+        - month, year: int (optional)
+        """
+        assert day
+        entries = EntryCopies.objects.order_by("-created")\
+                                     .filter(created__year=year)\
+                                     .filter(created__month=month)\
+                                     .filter(created__day=day)
+
+        return {'entries': entries}

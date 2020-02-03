@@ -23,33 +23,29 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  a(href="{% url 'history_entries_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
 if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'history_entries_month' next_month %}") {% trans "Next" %} &rarr;
 
 .row
   .col-lg-10
     ul.nav.nav-tabs
-      li.active(role="presentation")
-        a {% trans "Sells" %}
-      li(role="presentation"): a(href="{% url 'history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
+      li(role="presentation")
+        a(href="{% url 'history_sells_month' day|date:'Y-m'  %}") {% trans "Sells" %}
+      li.active(role="presentation"): a(href="#") {% trans "Entries" %}
 
 h1 {{ day | date:'F o' | title }}
 
 .row
   .col-md-3.panel.panel-info
-    div.panel-heading {% trans "Cash register" %}
-    div.panel-body {{ sells_data.total_price_sold }} {% trans "€" %}
-
-  .col-md-3.panel.panel-info
-    div.panel-heading {% trans "Articles sold" %}
-    div.panel-body {{ sells_data.total_cards_sold }}
+    div.panel-heading {% trans "Products received" %}
+    div.panel-body {{ data.nb_entries }} {% trans "products" %}
 
 .col-md-4
   table.table.table-striped
-    for it in sells_data.data
+    for it in data.entries_per_day
       tr
         td
           if it.weekday == 6
@@ -57,7 +53,8 @@ h1 {{ day | date:'F o' | title }}
           else
             span {{ it.date_obj | date:'l' }} 
         td
-          a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
-        td.text-right {{ it.total_price_sold }} {% trans "€" %}
+          a(href="{% url 'history_entries_day' it.date %}") {{ it.date }}
+        td.text-right {{ it.price_entered }} {% trans "€" %}
+        td.text-right x {{ it.nb_entered }}
 
 {% endblock content %}

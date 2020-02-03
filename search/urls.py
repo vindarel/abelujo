@@ -131,6 +131,7 @@ urlpatterns = patterns('',
 
     # Entries history
     url(r'^history/entries/month/(?P<date>.*)/?', 'search.views.history_entries_month', name="history_entries_month"),
+    url(r'^history/entries/day/(?P<date>.*)/?', 'search.views.history_entries_day', name="history_entries_day"),
 
     url(r'^history/?', 'search.views.history_sells', name="history_sells"),
     # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),

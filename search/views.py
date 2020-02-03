@@ -1345,6 +1345,51 @@ def history_sells_day(request, date, **kwargs):
                                       'now': now,
                                       'day': day})
 
+def history_entries_day(request, date, **kwargs):
+    """
+    Return the list of entries of this day.
+
+    - date: string (format %Y-%M-%d)
+    """
+    template = 'search/history_entries_day.jade'
+    try:
+        day = pendulum.datetime.strptime(date, PENDULUM_YMD)
+    except Exception as e:
+        log.error(u'Entries history per day: could not parse {}: {}'.format(date, e))
+        return HttpResponseRedirect(reverse('history_entries_month'))
+
+    data = history.Entry.history_day(year=day.year, month=day.month, day=day.day)
+
+    now = pendulum.datetime.today()
+    previous_day = day.subtract(days=1)  # yes, not subStract.
+    previous_day_fmt = previous_day.strftime(PENDULUM_YMD)
+    next_day = None
+    next_day_fmt = None
+    if day < now:
+        next_day = day.add(days=1)
+        next_day_fmt = next_day.strftime(PENDULUM_YMD)
+
+    shelves = data['entries'].values_list('card__shelf__name', flat=True)
+    # remove duplicates
+    shelves = filter(lambda it: it is not None, shelves)
+    shelves = list(set(shelves))
+
+    publishers = data['entries'].values_list('card__publishers__name', flat=True)
+    publishers = list(set(publishers))
+    publishers = filter(lambda it: it is not None, publishers)
+
+    return render(request, template, {'data': data,
+                                      'shelves': shelves,
+                                      'publishers': publishers,
+                                      'previous_day': previous_day,
+                                      'previous_day_fmt': previous_day_fmt,
+                                      'next_day': next_day,
+                                      'next_day_fmt': next_day_fmt,
+                                      'month_fmt': '{}-{}'.format(day.year,
+                                                                  format(day.month, '0>2')),
+                                      'now': now,
+                                      'day': day})
+
 def history_sells_exports(request, **kwargs):
     """Export a list of Sells in csv or txt.
     If no date nor distributor is given, export the first 50 results.

@@ -23,41 +23,43 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  a(href="{% url 'history_entries_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
+  a(href="{% url 'history_entries_month' month_fmt %}") {{ day | date:'F' | title }}
+  span &nbsp;
 if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'history_entries_month' next_month %}") {% trans "Next" %} &rarr;
 
 .row
   .col-lg-10
     ul.nav.nav-tabs
-      li.active(role="presentation")
-        a {% trans "Sells" %}
-      li(role="presentation"): a(href="{% url 'history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
+      li(role="presentation")
+        a(href="{% url 'history_sells_day' day|date:'Y-m-d' %}") {% trans "Sells" %}
+      li.active(role="presentation"): a {% trans "Entries" %}
 
-h1 {{ day | date:'F o' | title }}
+h1 {% trans "Entries" %} - {{ day | date:'l d F Y' | title }}
 
 .row
   .col-md-3.panel.panel-info
-    div.panel-heading {% trans "Cash register" %}
-    div.panel-body {{ sells_data.total_price_sold }} {% trans "€" %}
-
+    div.panel-heading {% trans "Products received" %}
+    div.panel-body {{ data.entries.count }} {% trans "products" %}
   .col-md-3.panel.panel-info
-    div.panel-heading {% trans "Articles sold" %}
-    div.panel-body {{ sells_data.total_cards_sold }}
+    div.panel-heading {% trans "Publishers" %}
+    div {{ publishers | join:', ' }}
+  .col-md-3.panel.panel-info
+    div.panel-heading {% trans "Shelves" %}
+    div {{ shelves | join:', ' }}
 
-.col-md-4
-  table.table.table-striped
-    for it in sells_data.data
+table.table.table-striped
+    for it in data.entries
       tr
         td
-          if it.weekday == 6
-            span(style="color: grey;") {{ it.date_obj | date:'l' }} 
-          else
-            span {{ it.date_obj | date:'l' }} 
-        td
-          a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
-        td.text-right {{ it.total_price_sold }} {% trans "€" %}
+          a {{ it.date }}
+          a {{ it.created }}
+        td {{ it.card.title }}
+        td {{ it.card.pubs_repr }}
+        td {{ it.card.shelf }}
+        td.text-right {{ it.card.price }} {% trans "€" %}
 
 {% endblock content %}
