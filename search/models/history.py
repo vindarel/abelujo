@@ -225,6 +225,13 @@ class Entry(TimeStampedModel):
     """An entry. Can be for many cards at once.
     We record the original price.
 
+    An entry can be:
+    - a new card saved in the DB
+    - a card added in a place (new entry -> add)
+    - a card received in a command
+    - a sell, canceled
+    - ...
+
     """
 
     ENTRY_TYPES_CHOICES = (
@@ -346,7 +353,7 @@ class Entry(TimeStampedModel):
         price_entered = 0
         total_price_entered = 0
         TWO_DIGITS_SPEC = '0>2'
-        YMD = '%Y-%M-%d'
+        YMD = '%Y-%M-%d'  # for datetime it is %m
         for day in range(1, last_day + 1):
             start = pendulum.now()
             date = "{}-{}-{}".format(year,
@@ -366,7 +373,7 @@ class Entry(TimeStampedModel):
 
             entries_per_day.append({'date': date,
                                     'date_obj': date_obj,
-                                    'weekday': calendar.weekday(year, month, day),
+                                    'weekday': date_obj.weekday(),
                                     'nb_entered': len(entries_this_day),
                                     'price_entered': price_entered})
             end = pendulum.now()

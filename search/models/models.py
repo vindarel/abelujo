@@ -3448,7 +3448,6 @@ class Sell(models.Model):
                page_size=None,
                sortby=None,
                sortorder=0,  # "-"
-               max_sells=50,
                to_list=False):
         """Search for the given card id in sells more recent than "date_min".
 
@@ -3558,7 +3557,7 @@ class Sell(models.Model):
         if to_list:
             sells = [it.to_list() for it in sells]
 
-        return {"data": sells[:max_sells],
+        return {"data": sells,
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "total_sells": total_sells,  # total
