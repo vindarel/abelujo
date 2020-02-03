@@ -3483,14 +3483,14 @@ class Sell(models.Model):
 
             sells = sells.exclude(sell__canceled=True)
 
+            if year:
+                year = int(year)
+            else:
+                year = timezone.now().year
+
             if month:
                 month = int(month)
-                year = int(year) if year else timezone.now().year
-
-                month_beg = timezone.datetime(year=year, month=month, day=1)
-                month_end = date_last_day_of_month(month_beg)
-                sells = sells.filter(created__gt=month_beg)
-                sells = sells.filter(created__lt=month_end)
+                sells = sells.filter(created__month=month)
 
             if day:
                 day = int(day)
