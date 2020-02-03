@@ -1872,7 +1872,7 @@ class Place (models.Model):
         Return: int (None on error)
         """
         try:
-            return sum([it.nb for it in self.placecopies_set.all()])
+            return sum(self.placecopies_set.values_list('nb', flat=True))
         except Exception as e:
             log.error(u"Error getting the total quantities in place {}: {}".format(self.name, e))
 
