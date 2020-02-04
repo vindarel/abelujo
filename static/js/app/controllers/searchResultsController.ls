@@ -39,8 +39,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.datasources =
         * name: "librairiedeparis - fr"
           id: "librairiedeparis"
-        # * name: "Decitre - fr"
-          # id: "decitre"
+        * name: "dilicom - fr"
+          id: "dilicom"
         * name: "Casa del libro - es"
           id: "casadellibro"
         * name: "Buchlentner - de"
@@ -50,9 +50,11 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         * name: "discogs - CDs"
           id: "discogs"
 
-    $scope.datasource = $scope.datasources[0]
     $scope.results_page = [] # list of dicts with page and other search params.
     $scope.show_images = true
+
+    $scope.saveDatasource = !->
+        $window.localStorage.setItem('datasource', $scope.datasource.id)
 
     $scope.details_url_for = (card) ->
         if card.in_stock
@@ -143,10 +145,20 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     search_obj = $location.search()
     $scope.query = search_obj.q
     source_id = search_obj.source
-    $scope.datasource = $scope.datasources
-    |> find (.id == source_id)
-    if not $scope.datasource
-        $scope.datasource = $scope.datasources[0]
+    if source_id
+        $scope.datasource = $scope.datasources
+        |> find (.id == source_id)
+        if not $scope.datasource
+            $scope.datasource = $scope.datasources[0]
+
+    else
+        datasource_id = $window.localStorage.getItem "datasource"
+        if datasource_id
+           $scope.datasource = $scope.datasources
+           |> find ( -> it.id == datasource_id)
+        else
+           $scope.datasource = $scope.datasources[0]
+
     $scope.validate!
 
     $window.document.title = "Abelujo - " + gettext("search") + " " + $scope.query

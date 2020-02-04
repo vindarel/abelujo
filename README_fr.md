@@ -1,14 +1,14 @@
 Abelujo - logiciel libre de gestion de librairie
 ================================================
 
-Projet actuellement ~~en chantier~~ utilisé au quotidien par des
+Projet actuellement utilisé au quotidien par des
 particuliers, des assocations, des salons de thé, restaurants,
 théâtres, centres d'arts et des libraires professionnels.
 
 Abelujo permet de:
 
--   rechercher des **livres** par mots-clefs ou par n°ISBN/EAN. La recherche
-    utilise les résultats de [librairie-de-paris](http://www.librairie-de-paris.fr/),
+-   rechercher des **livres** par mots-clefs ou par n°EAN. La recherche
+    peut se faire via **Dilicom** si vous avez un compte ou utiliser les résultats de [librairie-de-paris](http://www.librairie-de-paris.fr/),
 -   utiliser un **lecteur de codes barres** à travers toute l'application,
 -   rechercher des **CDs** (via [discogs.com](http://www.discogs.com)),
 -   gérer son stock et voir des statistiques,

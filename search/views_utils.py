@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
 from django.utils.translation import ugettext as _
 
 import unicodecsv
@@ -27,10 +29,14 @@ from search.datasources.bookshops.esES.casadellibro import \
 from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre  # noqa: F401
 from search.datasources.bookshops.frFR.librairiedeparis import \
     librairiedeparisScraper as librairiedeparis  # noqa: F401
+from search.datasources.bookshops.frFR.dilicom import \
+    dilicomScraper as dilicom  # noqa: F401
 from search.models import Card
 
 #: Default datasource to be used when searching isbn, if source not supplied.
 DEFAULT_DATASOURCE = "librairiedeparis"
+if os.getenv('DILICOM_PASSWORD'):
+    DEFAULT_DATASOURCE = 'dilicom'
 
 def get_datasource_from_lang(lang):
     """From a lang (str), return the name (str) of the datasource module.
@@ -40,8 +46,10 @@ def get_datasource_from_lang(lang):
     if not lang:
         return DEFAULT_DATASOURCE
 
-    if lang.startswith("fr"):
+    if lang.startswith("fr") and not os.getenv('DILICOM_PASSWORD'):
         return "librairiedeparis"
+    elif lang.startswith("fr") and os.getenv('DILICOM_PASSWORD'):
+        return "dilicom"
     elif lang.startswith("de"):
         return "buchlentner"
     elif lang.startswith("es"):

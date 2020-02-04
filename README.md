@@ -3,15 +3,16 @@ Abelujo - free software to manage independent book (and records) shops.
 
 français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr.md "README en français")
 
-This project is ~~at its debut stage~~ used daily by individuals,
-associations, tea and wine shops, theaters, art centers and
-professional bookshops.
+This project is used daily by individuals, associations, tea and wine
+shops, theaters, art centers and professional bookshops.
 
 Abelujo allows to:
 
 -   look up for **books**, either by keywords or by isbn/ean (which works with a **barcode scanner**). See the https://gitlab.com/vindarel/bookshops library. You can currently search for:
 
-    * french books (through [librairiedeparis](http://www.librairie-de-paris.fr/))  ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=french_scraper)
+    * french books:
+      * through [Dilicom](https://dilicom-prod.centprod.com) (the profesional provider)
+      * or [librairiedeparis](http://www.librairie-de-paris.fr/)  ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=french_scraper)
     * spanish books (through [casadellibro.com](http://www.casadellibro.com)) ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=spanish_scraper)
     * german books(through [buchlentner.de](http://www.buchlentner.de)) ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=german_scraper)
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
@@ -20,10 +21,9 @@ Abelujo allows to:
 -   manage lists of books, export them to **csv** and **pdf** (with **barcodes**),
 -   send an email to distributors to **order** books,
 -   manage deposits and distributors, see **the balance of your deposits**,
--   sell books, see conflicts of distributors, see the history,
--   import data from a LibreOffice Calc file (.ods) (experimental, cli only. See the [user documentation](doc/user/index.rst "user doc")).
+-   sell books, see the history,
 
-It is translated to english, french and spanish.
+It is translated to English, French and Spanish.
 
 We base our work on the software specifications from the Ruche project
 (to which we particpated):
@@ -36,7 +36,7 @@ tell me now if you're interested).
 
 **Abelujo** means Beehive in Esperanto.
 
-Feedback welcome at vindarel at mailz dot org.
+Enjoy!
 
 <a href="https://liberapay.com/vindarel/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
 
@@ -112,8 +112,6 @@ and open your browser to <http://127.0.0.1:8000> (admin/admin).
 
 You might need to create a superuser: see [the dev documentation](http://dev.abelujo.cc/use-manage.html).
 
-Enjoy ! Don't forget to give feedback at vindarel at mailz dot org !
-
 
 Install without sudo
 --------------------
@@ -161,7 +159,7 @@ The command is idempotent, it waits for confirmation and it prints a status.
 Development
 ===========
 
-Django project, in python (2.7), with AngularJS (1.3) (transitioning to Vue).
+Django project, in python (2.7) and JavaScript (AngularJS).
 
 We also use:
 
@@ -170,9 +168,6 @@ We also use:
     and pyjade for the Django integration
 - [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
 - the [Django-q](https://django-q.readthedocs.org/) asynchronous task queue.
-
-Read more about our [tools choices](http://dev.abelujo.cc/choices.html)
-to understand better what does what and how everything works together.
 
 See the developer documentation: http://dev.abelujo.cc/ This is
 [our database graph](http://dev.abelujo.cc/graph-db.png) (`make
@@ -230,8 +225,8 @@ Code coverage:
 
     make cov  # and open your browser at htmlcov/index.html
 
-Testing the installation script in Docker
------------------------------------------
+Testing the installation script in Docker (experimental)
+--------------------------------------------------------
 
 Given you have Docker already installed, run the installation script
 in a fresh Ubuntu 16.04 with:
@@ -277,5 +272,3 @@ Documentation
 -------------
 
 We have developer documentation: http://dev.abelujo.cc/
-
-<a href="https://liberapay.com/vindarel/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>

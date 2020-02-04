@@ -41,7 +41,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
    form(ng-submit="validate()")
     div
       div.col-md-2
-        select.form-control(ng-model="datasource", ng-options="elt.name for elt in datasources")
+        select.form-control(ng-model="datasource", ng-options="elt.name for elt in datasources", ng-change="saveDatasource()")
       div.col-md-4
        div.input-group
         input.form-control#default-input(
@@ -90,7 +90,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
 
   div.middle(ng-cloak, ng-hide="cards.length"): em {% trans "Search cards by key words or by isbn." %}
 
- div(id="message", ng-show="data.message", ng-class="data.message_status") {{ 'data.message' | ng }} 
+ div(id="message", ng-show="data.message", ng-class="data.message_status") {{ 'data.message' | ng }}
 
  table.table.table-striped(ng-cloak, ng-show="cards.length != 0")
     thead
