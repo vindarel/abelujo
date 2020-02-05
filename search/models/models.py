@@ -3349,7 +3349,10 @@ class SoldCards(TimeStampedModel):
     @staticmethod
     def undo(pk):
         """
-        Undo the soldcard of the given pk: add it to the stock again.
+        Undo the sell linked to this soldcard: add it to the stock again.
+
+        Return:
+        - status, list of messages.
         """
         msgs = Messages()
         status = True

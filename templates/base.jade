@@ -31,6 +31,8 @@ html(ng-app="abelujo")
     link(rel='stylesheet', type='text/css', href='{% static "css/index.css" %}')
 
     script(src="{% static 'app.js' %}")
+    script(type='text/javascript', src="{% static 'search/js/abelujo-js.js' %}")
+
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
     script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')

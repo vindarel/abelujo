@@ -714,25 +714,27 @@ def sell(request, **response_kwargs):
         return JsonResponse(ret)
 
 def sell_undo(request, pk, **response_kwargs):
-    """Undo eithe a whole sell or the given soldcard.
-    - pk: objects id.
+    """
+    Undo either the given soldcard. Eventually, undo a whole sell with its many cards.
+
+    - pk: SoldCard id (we undo the sell of one card, not the payment
+      transaction with potentially many cards).
+
     re-buy the card.
     """
-    msgs = []
+    msgs = []  # returned by undo()
     status = True
-    if request.method == "GET":
+    if request.method == 'POST':
         if pk:
             # We undo only 1 card, not the entire sell (grouping many cards).
-            if request.GET.get('soldcard_id') is not None:
-                status, msgs = SoldCards.undo(request.GET.get('soldcard_id'))
-            else:
-                status, msgs = Sell.sell_undo(pk)
+            status, msgs = SoldCards.undo(pk)
+            # status, msgs = Sell.sell_undo(pk)
         else:
             msgs.append({"message": u"Internal error: we didn't receive which sell to cancel.",
                          "status": ALERT_ERROR})
 
         to_ret = {"status": status,
-                  "alerts": msgs}
+                  "alerts": msgs,}
         return JsonResponse(to_ret)
 
 

@@ -1314,6 +1314,12 @@ def history_sells_day(request, date, **kwargs):
     previous_sell_id = -1
     cur_color = grey
 
+    # In the template, we want to know the first soldcard of a sell
+    # transaction.
+    # Yes, we should have iterated over sells and then over soldcards.
+    sell_transaction_markers = []
+    sells_ids = []
+
     def flip_color(color):
         if color == white:
             return grey
@@ -1322,17 +1328,20 @@ def history_sells_day(request, date, **kwargs):
     # Show payments (abbreviated).
     payments = []
     for it in sells_data['data']:
+        sells_ids.append("{}".format(it.sell_id))
         if it.sell_id == previous_sell_id:
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
             payments.append("")
+            sell_transaction_markers.append(False)
         else:
             cur_color = flip_color(cur_color)
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
             payments.append(get_payment_abbr(it.sell.payment))
+            sell_transaction_markers.append(True)
 
-    data = zip(sells_data['data'], bg_colors, payments)
+    data = zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids)
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,

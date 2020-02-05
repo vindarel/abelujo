@@ -31,6 +31,10 @@ if next_day_fmt
   span
     a(href="{% url 'history_sells_day' next_day_fmt %}") {% trans "Next" %} &rarr;
 
+div#alerts
+  div#success.alert.alert-success(role="alert", hidden)
+  div#warnings
+
 .row
   .col-lg-10
     ul.nav.nav-tabs
@@ -59,8 +63,9 @@ h1 {{ day | date:'l d F Y' | title }}
   div.panel-body {{ sells_data.sell_mean | floatformat:2 }} {% trans "€" %}
 
 table.table
-  for it, bg_color, payment in data
-   tr(style="background-color: {{ bg_color }}")
+  // better: iterate over sells, and iterate over soldcards.
+  for it, bg_color, payment, new_sell, sell_id in data
+   tr(style="background-color: {{ bg_color }}", id="sell{{ sell_id }}")
     td {{ it.created | date:'H:i' }} 
     td &nbsp;
       a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}
@@ -71,5 +76,8 @@ table.table
       if it.quantity != 1
         span x {{ it.quantity }}
     td {{ payment }}
+    td
+      if new_sell
+        div.mouse-pointer.glyphicon.glyphicon-remove(onclick="sellUndo({{ sell_id }})", title='{% trans "Cancel a sell" %}')
 
 {% endblock content %}
