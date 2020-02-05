@@ -333,7 +333,7 @@ class Entry(TimeStampedModel):
         assert year
         assert month
         entries = []
-        beg = pendulum.now()
+        # beg = pendulum.now()
         try:
             entries = EntryCopies.objects.order_by("-created").filter(created__year=year).filter(created__month=month)
         except Exception as e:
@@ -355,7 +355,7 @@ class Entry(TimeStampedModel):
         TWO_DIGITS_SPEC = '0>2'
         YMD = '%Y-%M-%d'  # for datetime it is %m
         for day in range(1, last_day + 1):
-            start = pendulum.now()
+            # start = pendulum.now()
             date = "{}-{}-{}".format(year,
                                      format(month, TWO_DIGITS_SPEC),
                                      format(day, TWO_DIGITS_SPEC))
@@ -376,11 +376,11 @@ class Entry(TimeStampedModel):
                                     'weekday': date_obj.weekday(),
                                     'nb_entered': len(entries_this_day),
                                     'price_entered': price_entered})
-            end = pendulum.now()
-            print("------- for day {}: {}".format(day, end - start))
+            # end = pendulum.now()
+            # print("------- for day {}: {}".format(day, end - start))
 
-        en = pendulum.now()
-        print("--- entries search took {}".format(beg, en))
+        # en = pendulum.now()
+        # print("--- entries search took {}".format(en - beg))
 
         return {'entries': entries,
                 'nb_entries': nb_entries,
