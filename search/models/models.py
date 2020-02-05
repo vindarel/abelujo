@@ -87,7 +87,7 @@ DEPOSIT_TYPES_CHOICES = [
     )),
 ]
 
-THRESHOLD_DEFAULT = 1
+THRESHOLD_DEFAULT = 0
 
 MSG_INTERNAL_ERROR = _(u"An internal error occured, we have been notified.")
 
