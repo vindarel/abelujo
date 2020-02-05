@@ -734,7 +734,8 @@ def sell_undo(request, pk, **response_kwargs):
                          "status": ALERT_ERROR})
 
         to_ret = {"status": status,
-                  "alerts": msgs,}
+                  "alerts": msgs,
+        }
         return JsonResponse(to_ret)
 
 

@@ -1310,9 +1310,11 @@ def history_sells_day(request, date, **kwargs):
     # Visually show the same sells with the same background color.
     bg_colors = []
     white = ""
-    grey = "#f9f9f9"
+    # grey = "#d3d3d3"
+    grey = "#eee9e9"  # snow2
+    grey2 = "#cdc9c9"
     previous_sell_id = -1
-    cur_color = grey
+    cur_color = grey2
 
     # In the template, we want to know the first soldcard of a sell
     # transaction.
@@ -1323,6 +1325,8 @@ def history_sells_day(request, date, **kwargs):
     def flip_color(color):
         if color == white:
             return grey
+        elif color == grey:
+            return grey2
         return white
 
     # Show payments (abbreviated).

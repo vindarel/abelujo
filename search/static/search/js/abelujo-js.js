@@ -22,7 +22,6 @@ function sellUndo(id) {
                 for (var i = 0; i < lines.length; i++) {
                     lines[i].remove();
                 }
-                // xxx: ok, but now two elements in a row can have the same color…
             }
         })
         .catch((error) => {
