@@ -52,14 +52,23 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.discounts.choices = [
         {discount: 0,
          name: "0%", // caution. a "" may introduce a bug
-         id:1},
+         id:1,
+        },
         {discount: 5,
          name: "5%",
          id:2
         },
+        {discount: 9,
+         name: "9%",
+         id:3
+        },
+        {discount: 20,
+         name: "20%",
+         id:4
+        },
         {discount: 30,
          name: "30%",
-         id:3}
+         id:5}
     ];
 
       $scope.card_type = $scope.card_types[0];
