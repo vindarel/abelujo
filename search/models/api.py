@@ -20,6 +20,7 @@ import httplib
 import json
 import locale
 import logging
+import os
 
 from django_q.tasks import async
 
@@ -182,8 +183,8 @@ def datasource_search(request, **response_kwargs):
     isbn_list = None  # when the user queries a list of ISBNs at once.
     isbn_list_search_complete = False  # True when we find all of them.
 
-    query_isbn = is_isbn(query)
-    if query_isbn:
+    is_isbn_query = is_isbn(query)
+    if is_isbn_query:
         res = Card.objects.filter(isbn=query).first()
         if res:
             res = [res.to_dict()]
@@ -197,15 +198,18 @@ def datasource_search(request, **response_kwargs):
                 res = [it.to_dict() for it in res]
             if len(res) == len(isbn_list):
                 isbn_list_search_complete = True
-                # TODO: add alerts for the user to know everything was retrieved.
 
     if isbn_list and not isbn_list_search_complete:
         # TODO: search remaining ISBNs on the datasource.
         logging.error("Not implemented: searching many ISBNs at once on the datasource.")
 
-    if (not query_isbn and not isbn_list) or not res:
+    if (not is_isbn_query and not isbn_list) or not res:
         datasource = request.GET.get('datasource', 'librairiedeparis')
         page = request.GET.get('page', 1)
+        if (not is_isbn_query) and datasource == 'dilicom' and os.getenv('DILICOM_USER'):
+            # We can not make text searches on Dilicom :/ Only ISBN queries.
+            # So we make keyword searches with the right datasource.
+            datasource = 'librairiedeparis'
         res, traces = search_on_data_source(datasource, query, PAGE=page)
 
     data = {"data": res,
@@ -214,7 +218,7 @@ def datasource_search(request, **response_kwargs):
             "message_status": None,
             "status": 200, }
 
-    if isbn_list:
+    if isbn_list and len(isbn_list) > 1:
         data['message'] = _("You asked for {} ISBNs. {} found.".format(len(isbn_list), len(res)))
         if isbn_list_search_complete:
             data['message_status'] = ALERT_SUCCESS
