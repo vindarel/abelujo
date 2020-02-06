@@ -137,6 +137,12 @@ urlpatterns = patterns('',
     # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
     # name="search_history"),
 
+    # Suppliers: sells of suppliers by month.
+    url(r'^suppliers/sells/month/(?P<date>.*)/?', 'search.views.suppliers_sells_month', name="suppliers_sells_month"),
+    url(r'^publishers/(?P<pk>\d+)/sells/month/(?P<date>.*)/?', 'search.views.publisher_sells_month_list', name="publisher_sells_month_list"),
+    url(r'^distributors/(?P<pk>\d+)/sells/month/(?P<date>.*)/?', 'search.views.distributors_sells_month_list', name="distributors_sells_month_list"),
+    url(r'^suppliers/?', 'search.views.suppliers_sells', name="suppliers_sells"),
+
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),
 

@@ -1,0 +1,64 @@
+// Copyright 2014 - 2020 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+{% extends "base.jade" %}
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load i18n %}
+
+span
+  a(href="{{ previous_month_url }}") &larr; {% trans "Previous" %}
+  span  &nbsp;
+if day.year < now.year or day.month < now.month
+  span
+    a(href="{{ next_month_url }}") {% trans "Next" %} &rarr;
+
+h1
+  span {% trans "Sells" %} &nbsp;
+  a(href="{{ obj.get_absolute_url }}", target="_blank") {{ obj.name | title }}
+  if obj.discount >= 0
+    span &nbsp; ({{ obj.discount }}%)
+  span &nbsp; - &nbsp;
+  span {{ day | date:'F o' | title }}
+
+.row
+  .col-md-3.panel.panel-info
+    div.panel-heading {% trans "Total" %}
+    div.panel-body {{ total }} {% trans "€" %} / {{ total_public_price }} {% trans "€" %}
+
+.col-md-9
+ if sells
+  table.table.table-striped
+    thead
+      th {% trans "Title" %}
+      th {% trans "Authors" %}
+      th.text-right {% trans "Price sold" %}
+      th.text-right {% trans "Public price" %}
+    for it in sells
+      tr
+        td
+          a(href="{{ it.card.get_absolute_url }}"){{ it.card.title | title }}
+        td {{ it.card.authors_repr }}
+        td.text-right {{ it.price_sold }} {% trans "€" %}
+        td.text-right {{ it.price_init }} {% trans "€" %}
+        td.text-right
+          if it.quantity > 1
+            span x {{ it.quantity }}
+
+{% endblock content %}

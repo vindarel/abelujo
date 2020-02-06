@@ -3593,6 +3593,20 @@ class Sell(models.Model):
         return ret
 
     @staticmethod
+    def sells_of_month(year=None, month=None, publisher_id=None, distributor_id=None):
+        assert year
+        assert month
+        assert isinstance(month, int)
+        sells = SoldCards.objects.exclude(sell__canceled=True)
+        sells = sells.filter(created__year=year).filter(created__month=month)
+        if publisher_id is not None:
+            sells = sells.filter(card__publishers__id=publisher_id)
+        if distributor_id is not None:
+            sells = sells.filter(card__distributor_id=distributor_id)
+        sells = sells.order_by('card__title')
+        return sells
+
+    @staticmethod
     def stat_days_of_month(month=None, year=None, sortby=None, sortorder=None):
         assert year
         assert month

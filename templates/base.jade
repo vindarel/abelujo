@@ -127,6 +127,9 @@ html(ng-app="abelujo")
           li(ng-class="{active: url == 'history' }")
             a(href='{% url "history_sells" %}') {% trans "History" %}
 
+          li(ng-class="{active: url == 'suppliers' }")
+            a(href='{% url "suppliers_sells" %}') {% trans "Suppliers" %}
+
           //li(ng-class="{active: url == 'alerts' }")
             a(href='{% url "search_alerts" %}') {% trans "Alerts" %}
               span.badge.ng-cloak {{ "alerts_open" | ng }}

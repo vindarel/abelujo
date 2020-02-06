@@ -1478,6 +1478,189 @@ def history_sells_exports(request, **kwargs):
     return response
 
 @login_required
+def suppliers_sells(request, **kwargs):
+    now = pendulum.now()
+    url = reverse('suppliers_sells_month',
+                  args=(now.strftime('%Y-%m'),))
+    return HttpResponseRedirect(url)
+
+@login_required
+def suppliers_sells_month(request, date, **kwargs):
+    """
+    Total sells of the month for distributors and publishers.
+    """
+    template = 'search/suppliers_sells_month.jade'
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+
+    now = pendulum.now()
+    year = day.year
+    month = day.month
+    previous_month = day.subtract(months=1).replace(day=1)
+    next_month = day.add(months=1).replace(day=1)
+
+    sells = Sell.sells_of_month(month=month, year=year)
+    sells_with_distributor = sells.filter(card__distributor__isnull=False)
+    sells_with_publishers = sells.filter(card__publishers__isnull=False)
+    # without any pub or dist:
+    # sells_without_supplier = sells.exclude(card__publishers__isnull=False)\
+    #                              .exclude(card__distributor__isnull=False)
+
+    current_distributors = []
+    if sells_with_distributor:
+        current_distributors = sells_with_distributor.values_list('card__distributor__name', 'card__distributor__id').distinct()  # no effect?!
+        current_distributors = list(set(current_distributors))
+    current_publishers = []
+    if sells_with_publishers:
+        current_publishers = sells_with_publishers.values_list('card__publishers__name', 'card__publishers__id').distinct()
+        current_publishers = list(set(current_publishers))
+
+    # distinct('card__distributor__id')  # not supported on SQLite.
+
+    publishers_data = []
+    for name, pk in current_publishers:
+        data = {}
+        data['publisher'] = (name, pk)
+        pub_sells = sells_with_publishers.filter(card__publishers__id=pk)
+        data['sells'] = pub_sells
+        cards_sold = pub_sells.values_list('quantity', flat=True)
+        nb_cards_sold = sum(cards_sold)
+        data['nb_cards_sold'] = nb_cards_sold
+        prices_sold = pub_sells.values_list('price_sold', flat=True)
+        public_prices = pub_sells.values_list('price_init', flat=True)
+        assert len(cards_sold) == len(prices_sold)
+        total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+        data['total'] = total
+        total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+        data['total_public_price'] = total_public_price
+        publishers_data.append(data)
+
+    publishers_data = sorted(publishers_data, key=lambda it: it['publisher'][0])  # sort by name
+
+    distributors_data = []
+    for name, pk in current_distributors:
+        data = {}
+        data['distributor'] = (name, pk)
+        pub_sells = sells_with_distributor.filter(card__distributor__id=pk)
+        data['sells'] = pub_sells
+        cards_sold = pub_sells.values_list('quantity', flat=True)
+        nb_cards_sold = sum(cards_sold)
+        data['nb_cards_sold'] = nb_cards_sold
+        prices_sold = pub_sells.values_list('price_sold', flat=True)
+        public_prices = public_prices.values_list('price_init', flat=True)
+        assert len(cards_sold) == len(prices_sold)
+        total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+        data['total'] = total
+        total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+        data['total_public_price'] = total_public_price
+        distributors_data.append(data)
+
+    distributors_data = sorted(distributors_data, key=lambda it: it['distributor'][0])  # sort by name
+
+    return render(request, template, {'publishers_data': publishers_data,
+                                      'distributors_data': distributors_data,
+                                      'day': day,
+                                      'now': now,
+                                      'previous_month_obj': previous_month,
+                                      'previous_month': previous_month.strftime('%Y-%m'),
+                                      'next_month_obj': next_month,
+                                      'next_month': next_month.strftime('%Y-%m'),
+                                      'year': year})
+
+@login_required
+def publisher_sells_month_list(request, pk, date, **kwargs):
+    template = 'search/supplier_sells_month_list.jade'
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+
+    try:
+        publisher_obj = Publisher.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        # XXX: add message.
+        return HttpResponseRedirect(reverse('suppliers_sells_month'))
+
+    now = pendulum.now()
+    year = day.year
+    month = day.month
+    previous_month = day.subtract(months=1).replace(day=1)
+    next_month = day.add(months=1).replace(day=1)
+
+    sells = Sell.sells_of_month(year=year, month=month, publisher_id=pk)
+    cards_sold = sells.values_list('quantity', flat=True)
+    nb_cards_sold = sum(cards_sold)
+    prices_sold = sells.values_list('price_sold', flat=True)
+    public_prices = sells.values_list('price_init', flat=True)
+    assert len(prices_sold) == len(cards_sold)
+    total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+    total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+
+    url_name = 'publisher_sells_month_list'
+    previous_month_url = reverse(url_name, args=(pk, previous_month.strftime('%Y-%m')))
+    next_month_url = reverse(url_name, args=(pk, next_month.strftime('%Y-%m')))
+
+    return render(request, template, {'sells': sells,
+                                      'cards_sold': cards_sold,
+                                      'nb_cards_sold': nb_cards_sold,
+                                      'total': total,
+                                      'total_public_price': total_public_price,
+                                      'obj': publisher_obj,
+                                      'day': day,
+                                      'now': now,
+                                      'next_month_url': next_month_url,
+                                      'previous_month_url': previous_month_url,
+    })
+
+@login_required
+def distributors_sells_month_list(request, pk, date, **kwargs):
+    template = 'search/supplier_sells_month_list.jade'
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+
+    try:
+        obj = Distributor.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        # XXX: add message.
+        return HttpResponseRedirect(reverse('suppliers_sells_month'))
+
+    now = pendulum.now()
+    year = day.year
+    month = day.month
+    previous_month = day.subtract(months=1).replace(day=1)
+    next_month = day.add(months=1).replace(day=1)
+
+    sells = Sell.sells_of_month(year=year, month=month, distributor_id=pk)
+    # copy pasted :S
+    cards_sold = sells.values_list('quantity', flat=True)
+    nb_cards_sold = sum(cards_sold)
+    prices_sold = sells.values_list('price_sold', flat=True)
+    public_prices = sells.values_list('price_init', flat=True)
+    assert len(prices_sold) == len(cards_sold)
+    total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+    total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+
+    url_name = 'distributors_sells_month_list'
+    previous_month_url = reverse(url_name, args=(pk, previous_month.strftime('%Y-%m')))
+    next_month_url = reverse(url_name, args=(pk, next_month.strftime('%Y-%m')))
+
+    return render(request, template, {'sells': sells,
+                                      'cards_sold': cards_sold,
+                                      'nb_cards_sold': nb_cards_sold,
+                                      'total': total,
+                                      'total_public_price': total_public_price,
+                                      'obj': obj,
+                                      'day': day,
+                                      'now': now,
+                                      'next_month_url': next_month_url,
+                                      'previous_month_url': previous_month_url,
+    })
+
+@login_required
 def inventory_export(request, pk):
     total = total_with_discount = 0
     try:

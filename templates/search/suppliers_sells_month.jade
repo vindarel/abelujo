@@ -1,0 +1,67 @@
+// Copyright 2014 - 2020 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+{% extends "base.jade" %}
+{% block content %}
+
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load i18n %}
+
+span
+  a(href="{% url 'suppliers_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  span  &nbsp;
+if day.year < now.year or day.month < now.month
+  span
+    a(href="{% url 'suppliers_sells_month' next_month %}") {% trans "Next" %} &rarr;
+
+h1 {{ day | date:'F o' | title }}
+
+.col-md-6
+  //h4 {% trans "Publishers" %}
+  table.table.table-striped
+    thead
+      th {% trans "Publisher" %}
+      th.text-right {% trans "Quantity sold" %}
+      th.text-right {% trans "Total" %}
+      th.text-right {% trans "Total (public)" %}
+    for it in publishers_data
+      tr
+        td
+          a(href="{% url 'publisher_sells_month_list' it.publisher.1 day|date:'Y-m' %}", target="_blank"){{ it.publisher.0 | title }}
+        td.text-right {{ it.nb_cards_sold }}
+        td.text-right {{ it.total }} {% trans "€" %}
+        td.text-right {{ it.total_public_price }} {% trans "€" %}
+
+.col-md-6
+  if not distributors_data
+    div {% trans "No data" %}
+  table.table.table-striped
+    thead
+      th {% trans "Distributor" %}
+      th.text-right {% trans "Quantity sold" %}
+      th.text-right {% trans "Total" %}
+      th.text-right {% trans "Total (public)" %}
+    for it in distributors_data
+      tr
+        td
+          a(href="{% url 'distributors_sells_month_list' it.distributor.1 day|date:'Y-m' %}", target="_blank"){{ it.distributor.0 | title }}
+        td.text-right {{ it.nb_cards_sold }}
+        td.text-right {{ it.total }} {% trans "€" %}
+        td.text-right {{ it.total_public_price }} {% trans "€" %}
+
+{% endblock content %}
