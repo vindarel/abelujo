@@ -39,8 +39,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     $scope.datasources =
         * name: "librairiedeparis - fr"
           id: "librairiedeparis"
-        ## * name: "dilicom - fr"
-          ## id: "dilicom"
+        * name: "dilicom - fr"
+          id: "dilicom"
         * name: "Casa del libro - es"
           id: "casadellibro"
         * name: "Buchlentner - de"
