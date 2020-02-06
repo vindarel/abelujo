@@ -53,4 +53,9 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
     if res
         $scope.url = res[* - 1] # *: last
 
+    $scope.highlight_supplier_menu = !->
+        if $scope.url in ['suppliers', 'publishers', 'distributors']
+            return true
+        return false
+
 ]
