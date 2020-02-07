@@ -17,9 +17,9 @@
 pip==9
 setuptools==39.2
 
-django==1.8
-django-bootstrap3==6.2.2
-pyjade                  # process jade templates.
+django==1.11
+django-bootstrap3==11
+pypugjs==5.9            # process pugjs/jade templates.
 bootstrap-admin==0.3.6  # bootstrap theme, nice search feature.
 pyyaml
 psycopg2                # postgresql database engine.
@@ -28,8 +28,7 @@ pytz			# timezone
 ### Django extensions
 djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc
 django_extensions==1.7    # more useful commands to manage.py (shell_plus).
-django-brunch==1.0        # build Vue files.
-django-redis-cache==1.7.1
+# django-brunch==1.0        # build Vue files.  # currently usage paused. 2020-02
 mod_wsgi==4.4             # apache server for development.
 # mod_wsgi-httpd           # discard the system's apache httpd server if needed.
 Werkzeug                  # runserver_plus: richer tracebacks and inline console.
@@ -40,7 +39,6 @@ tabulate                # pretty print tabular data.
 addict                  # dotted notation to dict attributes and more.
 unidecode               # ASCII transliteration of unicode text.
 distance                # between two strings.
-clize==3                # build command line arguments
 tqdm                    # progress bar
 termcolor               # colorful terminal output
 isbnlib<4               # isbn utils
@@ -63,6 +61,6 @@ honcho==0.7.0           # start django-q's cluster.
 html5lib==1.0b8         # for "cannot import viewkeys" runtime error.
 
 pendulum==1.1           # easy timezone, diffs, human info, etc
-raven==6.0              # sentry
+raven==6.10              # sentry
 
 ruamel.yaml             # to remove the yaml.load unsafe warning (of third party libs).
