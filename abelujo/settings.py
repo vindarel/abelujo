@@ -30,11 +30,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 if os.path.exists(os.path.join(BASE_DIR, "PROD.txt")):
     DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
+ADMINS = [
     # ('Your Name', 'your_email@example.com'),
-)
+]
 
 MANAGERS = ADMINS
 
@@ -67,16 +66,16 @@ TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en'
 
 ugettext = lambda s: s
-LANGUAGES = (
+LANGUAGES = [
     ('en', ugettext('English')),
     ('fr', ugettext('Français')),
     ('de', ugettext('German')),
     ('es', ugettext('Castellano')),
     ('ca', ugettext('Catalan')),
-)
-LOCALE_PATHS = (
+]
+LOCALE_PATHS = [
     ('locale'),
-)
+]
 
 SITE_ID = 1
 
@@ -102,21 +101,21 @@ STATIC_ROOT = 'collectedstatic/'
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (
+STATICFILES_DIRS = [
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, "static"),  # all that are not related to a certain app
     os.path.join(BASE_DIR, "public"),  # for brunch and vue.
-)
+]
 
 # List of finder classes that know how to find static files in
 # various locations.
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',  # looks for "static" in the app folder
     'django.contrib.staticfiles.finders.FileSystemFinder',
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-)
+]
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -185,7 +184,7 @@ if os.environ.get('MOD_WSGI_DEBUGGER_ENABLED'):
     # http://blog.dscpl.com.au/2015/05/using-modwsgi-express-as-development.html
     DEBUG_PROPAGATE_EXCEPTIONS = True
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -206,7 +205,7 @@ INSTALLED_APPS = (
     'rest_framework',
 
     'search',
-)
+]
 
 if not DEBUG:
     INSTALLED_APPS += ('raven.contrib.django.raven_compat',)  # sentry
