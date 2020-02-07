@@ -1,0 +1,42 @@
+// Copyright 2014 - 2019 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+{% extends "registration/headers.pug" %}
+{% load i18n %}
+
+{% block content %}
+.col-lg-4
+.col-lg-4
+   form.form-signin(method="post", action="{% url 'login' %}")
+    {% csrf_token %}
+    h2.form-signin-heading {% trans "Please sign in to Abelujo" %}
+    table.table-condensed
+      tr
+        td {{ form.username.label_tag }}
+        td {{ form.username }}
+      tr
+      tr
+        td {{ form.password.label_tag }}
+        td {{ form.password }}
+
+    input#submit_button.btn.btn-lg.btn-primary.btn-block(type="submit", value='{% trans "login" %}')
+    input(type="hidden", name="next", value="{{ next }}")
+    {% if form.errors %}
+    p {% trans "Your username and password didn't match. Please try again." %}
+  {% endif %}
+.col-lg-4
+
+{% endblock content %}

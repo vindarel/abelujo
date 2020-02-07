@@ -148,10 +148,10 @@ from django.contrib.auth import views as auth_views
 # Authentication
 urlpatterns += [
     url("^login/", auth_views.LoginView.as_view(),
-        {"template_name": "registration/login.jade"},
+        {"template_name": "registration/login.pug"},
         name="login"),
     url("^logout/", auth_views.LogoutView.as_view(),
-        {"template_name": "registration/logout.jade", },
+        {"template_name": "registration/logout.pug", },
         name="logout"),
 ]
 
