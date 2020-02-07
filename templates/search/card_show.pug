@@ -36,14 +36,14 @@ div#abelujo
     ul.nav.nav-tabs
       li.active(role="presentation"): a(href="#") {% trans "Card details" %}
       li(role="presentation")
-        a(href="{% url 'card_history' object.pk %}") {% trans "History" %}
+        a(href="{% url 'search:card_history' object.pk %}") {% trans "History" %}
 
 .row
   .col-lg-3
     .btn-group
-      a.btn.btn-default(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
-      a.btn.btn-default(href="{% url 'card_places_add' object.pk %}", title="{% trans 'Add to places' %}") {% trans "Add..." %}
-      a.btn.btn-default(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
+      a.btn.btn-default(href="{% url 'search:card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
+      a.btn.btn-default(href="{% url 'search:card_places_add' object.pk %}", title="{% trans 'Add to places' %}") {% trans "Add..." %}
+      a.btn.btn-default(href="{% url 'search:card_move' object.pk %}") {% trans 'Move…' %}
 
   .col-lg-7
     h3 {{ object.title }}

@@ -31,9 +31,9 @@
 .row
   .col-lg-10
     ul.nav.nav-tabs
-      li(role="presentation"): a(href="{% url 'card_show' card.pk %}") {% trans "Card details" %}
+      li(role="presentation"): a(href="{% url 'search:card_show' card.pk %}") {% trans "Card details" %}
       li.active(role="presentation")
-        a(href="{% url 'card_history' card.pk %}") {% trans "History" %}
+        a(href="{% url 'search:card_history' card.pk %}") {% trans "History" %}
 
 h3 {{ card.title }}
 div {% trans "Total sells" %}: {{ sells_data.total_sells }}

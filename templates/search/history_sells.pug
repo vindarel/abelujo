@@ -23,18 +23,18 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  a(href="{% url 'search:history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
 if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'search:history_sells_month' next_month %}") {% trans "Next" %} &rarr;
 
 .row
   .col-lg-10
     ul.nav.nav-tabs
       li.active(role="presentation")
         a {% trans "Sells" %}
-      li(role="presentation"): a(href="{% url 'history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
+      li(role="presentation"): a(href="{% url 'search:history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
 
 h1 {{ day | date:'F o' | title }}
 
@@ -57,7 +57,7 @@ h1 {{ day | date:'F o' | title }}
           else
             span {{ it.date_obj | date:'l' }} 
         td
-          a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
+          a(href="{% url 'search:history_sells_day' it.date %}") {{ it.date }}
         td.text-right {{ it.total_price_sold }} {% trans "€" %}
 
 {% endblock content %}

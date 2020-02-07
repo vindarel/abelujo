@@ -23,11 +23,11 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'suppliers_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  a(href="{% url 'search:suppliers_sells_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
 if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'suppliers_sells_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'search:suppliers_sells_month' next_month %}") {% trans "Next" %} &rarr;
 
 h1 {{ day | date:'F o' | title }}
 
@@ -42,7 +42,7 @@ h1 {{ day | date:'F o' | title }}
     for it in publishers_data
       tr
         td
-          a(href="{% url 'publisher_sells_month_list' it.publisher.1 day|date:'Y-m' %}", target="_blank"){{ it.publisher.0 | title }}
+          a(href="{% url 'search:publisher_sells_month_list' it.publisher.1 day|date:'Y-m' %}", target="_blank"){{ it.publisher.0 | title }}
         td.text-right {{ it.nb_cards_sold }}
         td.text-right {{ it.total }} {% trans "€" %}
         td.text-right {{ it.total_public_price }} {% trans "€" %}
@@ -59,7 +59,7 @@ h1 {{ day | date:'F o' | title }}
     for it in distributors_data
       tr
         td
-          a(href="{% url 'distributors_sells_month_list' it.distributor.1 day|date:'Y-m' %}", target="_blank"){{ it.distributor.0 | title }}
+          a(href="{% url 'search:distributors_sells_month_list' it.distributor.1 day|date:'Y-m' %}", target="_blank"){{ it.distributor.0 | title }}
         td.text-right {{ it.nb_cards_sold }}
         td.text-right {{ it.total }} {% trans "€" %}
         td.text-right {{ it.total_public_price }} {% trans "€" %}
