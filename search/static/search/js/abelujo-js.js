@@ -1,3 +1,6 @@
+function gettext(string){
+    return string;
+}
 
 function sellUndo(id) {
     // Undo the sell of the given id.
