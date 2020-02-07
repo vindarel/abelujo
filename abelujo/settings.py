@@ -160,6 +160,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE_CLASSES = (
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # i18n in url patterns
     # (before CommonMiddleware for i18n urls withouth a trailing slash to redict correcly).
