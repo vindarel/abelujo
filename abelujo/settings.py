@@ -18,8 +18,9 @@
 
 import os
 import warnings
-
 import ruamel.yaml
+
+from pypugjs.ext.django.compiler import enable_pug_translations
 
 # Django settings for abelujo project.
 
@@ -137,28 +138,44 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, "templates")],
         # 'APP_DIRS': True,
+        # 'TEMPLATE_DEBUG': DEBUG,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                "django.core.context_processors.i18n",
-                "django.core.context_processors.media",
-                "django.core.context_processors.static",
-                "django.core.context_processors.tz",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
             ],
+            # 'loaders': [
+            #     ('pypugjs.ext.django.Loader', (
+            #         'django.template.loaders.filesystem.Loader',
+            #         'django.template.loaders.app_directories.Loader',
+            #     ))
+            # ],
+
+            # PyPugJS part:
             'loaders': [
-                ('pyjade.ext.django.Loader', (
+                ('pypugjs.ext.django.Loader', (
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader',
                 ))
+            ],
+            'builtins': [
+                'pypugjs.ext.django.templatetags',
             ],
         },
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+# In case you want to use Djangos translation feature add the following call to settings.py
+# https://github.com/kakulukia/pypugjs/blob/master/docs/installation.rst
+enable_pug_translations()
+
+MIDDLEWARE_CLASSES = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # i18n in url patterns
@@ -171,7 +188,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
 
 ROOT_URLCONF = 'abelujo.urls'
 
