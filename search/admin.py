@@ -100,7 +100,7 @@ class PublisherAdmin(admin.ModelAdmin):
         model = Publisher
 
     list_display = ("name",)
-    list_editable = ("name",)
+    list_display_links = ("name",)
     search_fields = ["name"]
 
 class ShelfAdmin(admin.ModelAdmin):
@@ -108,7 +108,7 @@ class ShelfAdmin(admin.ModelAdmin):
         model = Shelf
 
     list_display = ("name",)
-    list_editable = ("name",)
+    list_display_links = ("name",)
     search_fields = ["name"]
 
 
