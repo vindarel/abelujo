@@ -121,20 +121,20 @@ class TestLogin(TestCase):
         self.c = Client()
 
     def test_login_no_user(self):
-        resp = self.c.get(reverse("card_search"))
+        resp = self.c.get(reverse('search:card_search'))
         self.assertEqual(resp.status_code, 302)
 
     def test_login(self):
         self.user = auth.models.User.objects.create_user(username="admin", password="admin")
         self.c.login(username="admin", password="admin")
-        resp = self.c.get(reverse("card_search"))
+        resp = self.c.get(reverse('search:card_search'))
         self.assertEqual(resp.status_code, 200)
 
     def test_logout(self):
         self.user = auth.models.User.objects.create_user(username="admin", password="admin")
         self.c.login(username="admin", password="admin")
-        self.c.get(reverse("logout"))
-        resp = self.c.get(reverse("card_search"))
+        self.c.get(reverse('logout'))
+        resp = self.c.get(reverse('search:card_search'))
         self.assertEqual(resp.status_code, 302)
         self.assertTrue("login/?next" in resp.url)
 
@@ -166,7 +166,7 @@ class TestViews(TestCase):
         post_params = {}
         if isbn:
             post_params["isbn"] = isbn
-        return self.c.post(reverse("card_sell"), post_params)
+        return self.c.post(reverse('search:card_sell'), post_params)
 
     def test_sell_isbn_doesnt_exist(self):
         resp = self.post_to_view(isbn="9876")
@@ -197,12 +197,12 @@ class TestSells(TestCase):
         sell, status, msgs = Sell.sell_cards(to_sell)
 
     def test_sell_details_no_sell(self):
-        resp = self.c.get(reverse("sell_details", args=(1,)))
+        resp = self.c.get(reverse('search:sell_details', args=(1,)))
         self.assertTrue(resp)
 
     def test_sell_details(self):
         self.populate()
-        resp = self.c.get(reverse("sell_details", args=(self.card.id,)))
+        resp = self.c.get(reverse('search:sell_details', args=(self.card.id,)))
         self.assertTrue(resp.status_code, "200")
 
 
@@ -214,7 +214,7 @@ class TestSearchView(TestCase):
         self.user = auth.models.User.objects.create_user(username="admin", password="admin")
         self.c.login(username="admin", password="admin")
 
-    def get_for_view(self, cleaned_data, url_name="card_search"):
+    def get_for_view(self, cleaned_data, url_name="search:card_search"):
         """Use our view utility to get the reverse url with encoded query parameters.
         """
         cleaned_data["source"] = "chapitre"
@@ -280,9 +280,9 @@ class TestAddView(TestCase):
         self.c.login(username="admin", password="admin")
 
     def test_move(self, mock_data_source):
-        resp = self.c.get(reverse("card_move", args=(1,)))
+        resp = self.c.get(reverse('search:card_move', args=(1,)))
         self.assertEqual(resp.status_code, 200)
-        resp = self.c.post(reverse("card_move", args=(1,)), data={
+        resp = self.c.post(reverse('search:card_move', args=(1,)), data={
             "origin": 1,
             "destination": 2,
             "nb": 2,
@@ -298,10 +298,10 @@ class TestDeposit(TestCase, DBFixture):
         self.c.login(username="admin", password="admin")
 
     def test_new_nominal(self):
-        resp = self.c.get(reverse("deposits_new"))
+        resp = self.c.get(reverse('search:deposits_new'))
         self.assertEqual(resp.status_code, 200)
 
     def test_add_copies_form(self):
         deposit = DepositFactory()
-        resp = self.c.get(reverse('deposit_add_copies', args=(deposit.id,)))
+        resp = self.c.get(reverse('search:deposit_add_copies', args=(deposit.id,)))
         self.assertEqual(resp.status_code, 200)
