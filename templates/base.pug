@@ -35,7 +35,7 @@ html(ng-app="abelujo")
 
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
-    script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')
+    //- script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')
     title {% block pagetitle %} {% endblock %}
 
   body.container-fullwidth(ng-controller="navbarController", style="padding-top: 60px;")
