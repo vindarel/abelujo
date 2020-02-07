@@ -335,7 +335,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     // Set focus:
     angular.element('#default-input').trigger('focus');
 
-    $window.document.title = "Abelujo - " + gettext("Sell");
+    $window.document.title = "Abelujo - " + "Sell";
 
     function unloadlistener (event) {
         // Cancel the event as stated by the standard.
