@@ -1098,7 +1098,7 @@ class Card(TimeStampedModel):
 
             card['in_stock'] = quantity
             card['id'] = found_id
-            url = reverse("card_show", args=(card['id'],))  # XXX: it switches to /en/ :(
+            url = reverse('search:card_show', args=(card['id'],))  # XXX: it switches to /en/ :(
             card['get_absolute_url'] = url
             card['url'] = url
 
@@ -1574,7 +1574,7 @@ class Card(TimeStampedModel):
 
     def get_absolute_url(self):
         # The current user language is given from the UI and set in the api point.
-        return reverse("card_show", args=(self.id,))
+        return reverse('search:card_show', args=(self.id,))
 
     def display_year_published(self):
         "We only care about the year"
@@ -3089,7 +3089,7 @@ class Deposit(TimeStampedModel):
             # The Deposits page, a django view, can't read the *current* language (on url) for now.
             translation.activate(prefs.language)
 
-        return reverse("deposits_view", args=(self.id,))
+        return reverse('search:deposits_view', args=(self.id,))
 
     def to_list(self):
         return self.to_dict()
@@ -3440,7 +3440,7 @@ class Sell(models.Model):
         return total
 
     def get_absolute_url(self):
-        return reverse("sell_details", args=(self.id,))
+        return reverse('search:sell_details', args=(self.id,))
 
     @staticmethod
     def search(card_id=None, date_min=None, count=False, date_max=None,
@@ -3906,7 +3906,7 @@ class Alert(models.Model):
         return u"alert for card {}, created {}".format(self.card.id, self.date_creation)
 
     def get_absolute_url(self):
-        # return reverse("sell_view", args=(self.id,))
+        # return reverse('search:sell_view', args=(self.id,))
         return "not_implemented"  # TODO: view a sell
 
     def obj_to_list(self):
@@ -4847,7 +4847,7 @@ class Command(TimeStampedModel):
         verbose_name = __("Command")
 
     def get_absolute_url(self):
-        return reverse("commands_view", args=(self.id,))
+        return reverse('search:commands_view', args=(self.id,))
 
     def __unicode__(self):
         return u"command {} for {}".format(self.id, self.supplier_name)
