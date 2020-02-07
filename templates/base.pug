@@ -45,7 +45,7 @@ html(ng-app="abelujo")
           li
             a Abelujo
           li.push-right#dashboard(href="#")
-            a(href='{% url "stats" %}') {% trans "Statistics" %} 
+            a(href='{% url "search:stats" %}') {% trans "Statistics" %} 
               i.glyphicon.glyphicon-stats
 
           li.dropdown.push-right
@@ -88,7 +88,7 @@ html(ng-app="abelujo")
             a(href="#").dropdown-toggle(data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false") {{'username'|ng}}
               span.caret
             ul.dropdown-menu
-              li: a(href="{% url 'preferences' %}") {% trans "Preferences" %}
+              li: a(href="{% url 'search:preferences' %}") {% trans "Preferences" %}
               li: a(href="/logout/", title=' {% trans "Logout" %}') {% trans "Logout" %}  
                   i.glyphicon.glyphicon-log-out
 
@@ -98,40 +98,40 @@ html(ng-app="abelujo")
 
         ul.sidebar-nav.nav.nav-pills.nav-stacked
           li(ng-class="{active: url == 'collection' }")
-            a(href='{% url "card_collection" %}') {% trans "My stock" %}
+            a(href='{% url "search:card_collection" %}') {% trans "My stock" %}
 
           li(ng-class="{active: url == 'search' }")
-            a(href='{% url "card_search" %}') {% trans "New entry" %}
+            a(href='{% url "search:card_search" %}') {% trans "New entry" %}
 
           li(ng-class="{active: url == 'sell' }")
-            a(href='{% url "card_sell" %}') {% trans "Sell" %}
+            a(href='{% url "search:card_sell" %}') {% trans "Sell" %}
 
-          //li(ng-class="{active: url == 'restocking' }")
-            a(href='{% url "card_restocking" %}' title='{% trans "Cards to move from the stock place to the shelves" %}') {% trans "Restocking" %}
+          //li(ng-class="{active: url == 'search:restocking' }")
+            a(href='{% url "search:card_restocking" %}' title='{% trans "Cards to move from the stock place to the shelves" %}') {% trans "Restocking" %}
               span.badge.ng-cloak(title='{% trans "Number of cards to move from the stock to their shelves." %}') {{ "restocking_total" | ng }}
 
           li(ng-class="{active: url == 'inventories' }")
-            a(href='{% url "inventories" %}') {% trans "Inventories" %}
+            a(href='{% url "search:inventories" %}') {% trans "Inventories" %}
 
           li(ng-class="{active: url == 'deposits' }")
-            a(href='{% url "deposits" %}') {% trans "Deposits" %}
+            a(href='{% url "search:deposits" %}') {% trans "Deposits" %}
 
           li(ng-class="{active: url == 'baskets' }")
-            a(href='{% url "baskets" %}') {% trans "Lists" %}
+            a(href='{% url "search:baskets" %}') {% trans "Lists" %}
 
           li(ng-class="{active: url == 'commands' }")
-            a(href='{% url "basket_auto_command" %}') {% trans "Commands" %}
+            a(href='{% url "search:basket_auto_command" %}') {% trans "Commands" %}
               span.badge.ng-cloak(title='{% trans "Number of cards needing a command." %}') {{ "auto_command_total" | ng }}
               span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}') {{ "ongoing_commands_nb" | ng }}
 
           li(ng-class="{active: url == 'history' }")
-            a(href='{% url "history_sells" %}') {% trans "History" %}
+            a(href='{% url "search:history_sells" %}') {% trans "History" %}
 
           li(ng-class="{active: highlight_supplier_menu() }")
-            a(href='{% url "suppliers_sells" %}') {% trans "Suppliers" %}
+            a(href='{% url "search:suppliers_sells" %}') {% trans "Suppliers" %}
 
           //li(ng-class="{active: url == 'alerts' }")
-            a(href='{% url "search_alerts" %}') {% trans "Alerts" %}
+            a(href='{% url "search:search_alerts" %}') {% trans "Alerts" %}
               span.badge.ng-cloak {{ "alerts_open" | ng }}
 
 
