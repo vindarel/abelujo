@@ -216,7 +216,7 @@ def get_reverse_url(cleaned_data, url_name="search:card_search"):
 def preferences(request):
     """
     """
-    template = "search/preferences.jade"
+    template = "search/preferences.pug"
     return render(request, template)
 
 def postSearch(data_source, details_url):
@@ -246,12 +246,12 @@ def _session_result_set(request, key, val):
 
 @login_required
 def search(request):
-    template = "search/searchresults.jade"
+    template = "search/searchresults.pug"
     return render(request, template)
 
 @login_required
 def card_show(request, pk):
-    template = "search/card_show.jade"
+    template = "search/card_show.pug"
     card = None
     sells = []
     places = Place.objects.order_by("id").all()
@@ -290,7 +290,7 @@ def card_history(request, pk):
     """Show the card's sells, entries and commands history."""
     MAX = 100
     card = None
-    template = "search/card_history.jade"
+    template = "search/card_history.pug"
 
     if request.method == 'GET':
         card = get_object_or_404(Card, pk=pk)
@@ -417,7 +417,7 @@ class NewSupplierForm(forms.Form):
 @login_required
 def card_buy(request, pk=None):
     form = BuyForm()
-    template = "search/card_buy.jade"
+    template = "search/card_buy.pug"
     card = Card.objects.get(id=pk)
     form = BuyForm(initial={"quantity": 1})
     if request.method == 'GET':
@@ -461,7 +461,7 @@ def card_buy(request, pk=None):
             except Exception as e:
                 log.error("couldn't add Entry in history: {}".format(e))
 
-            return HttpResponseRedirect(reverse("card_search"))
+            return HttpResponseRedirect(reverse('search:card_search'))
 
     return render(request, template, {
         "form": form,
@@ -474,7 +474,7 @@ def card_places_add(request, pk=None):
     """
     Add the given card to Places.
     """
-    template = "search/card_places_add.jade"
+    template = "search/card_places_add.pug"
     params = request.GET
 
     if request.method == 'GET':
@@ -504,7 +504,7 @@ def card_places_add(request, pk=None):
 
 @login_required
 def card_move(request, pk=None):
-    template = "search/card_move.jade"
+    template = "search/card_move.pug"
     BasketsForm = CardMove2BasketForm()
     internalForm = MoveInternalForm()
     params = request.GET
@@ -563,7 +563,7 @@ def card_move(request, pk=None):
 
 @login_required
 def cards_set_supplier(request, **kwargs):
-    template = 'search/set_supplier.jade'
+    template = 'search/set_supplier.pug'
     form = SetSupplierForm()
     newsupplier_form = NewSupplierForm()
     cards_ids = request.session.get('set_supplier_cards_ids')
@@ -753,15 +753,15 @@ def collection(request):
     - return: a list (of card dicts)
     """
 
-    return render(request, "search/collection.jade")
+    return render(request, "search/collection.pug")
 
 @login_required
 def sell(request):
-    return render(request, "search/sell_create.jade")
+    return render(request, "search/sell_create.pug")
 
 @login_required
 def sell_details(request, pk):
-    template = "search/sell_details.jade"
+    template = "search/sell_details.pug"
     sell = None
     soldcards = []
     total_sell = None
@@ -796,7 +796,7 @@ def restocking(request):
 
 class DepositsListView(ListView):
     model = Deposit
-    template_name = "search/deposits.jade"
+    template_name = "search/deposits.pug"
     context_object_name = "deposits"
 
     def get_context_data(self, **kwargs):
@@ -815,12 +815,12 @@ class DepositsListView(ListView):
 #  # for a comparison:
 # def deposits(request):
     # deposits = Deposit.objects.all()
-    # return render(request, "search/deposits.jade", {
+    # return render(request, "search/deposits.pug", {
         # "deposits": deposits})
 
 @login_required
 def deposits_new(request):
-    return render(request, "search/deposits_create.jade", {
+    return render(request, "search/deposits_create.pug", {
         "DepositForm": DepositForm(),
     })
 
@@ -843,7 +843,7 @@ def deposits_create(request):
                                      _(u"Error when adding the deposit"))
 
         else:
-            return render(request, "search/deposits_create.jade", {
+            return render(request, "search/deposits_create.pug", {
                 "DepositForm": form,
             })
 
@@ -882,7 +882,7 @@ def deposits_add_card(request):
 def deposits_view(request, pk):
     """Display the given deposit."""
     deposit = None
-    template = "search/deposits_view.jade"
+    template = "search/deposits_view.pug"
     try:
         deposit = Deposit.objects.get(pk=pk)
         cards_balance = deposit.checkout_balance()
@@ -902,7 +902,7 @@ def deposits_view(request, pk):
 def deposits_checkout(request, pk):
     """
     """
-    # template = "search/deposits_view.jade"
+    # template = "search/deposits_view.pug"
     deposit = Deposit.objects.get(pk=pk)
     msgs = []
     try:
@@ -927,7 +927,7 @@ def deposit_delete(request, pk):
 def deposit_add_copies(request, pk):
     """Add copies to this deposit. (only ones that already exist)
     """
-    template = "search/deposit_add_copies.jade"
+    template = "search/deposit_add_copies.pug"
     form = DepositAddCopiesForm(pk=pk)
     if request.method == "GET":
         pass
@@ -953,7 +953,7 @@ AUTO_COMMAND_ID = 1
 
 @login_required
 def basket_auto_command(request):
-    template = "search/to_command_index.jade"
+    template = "search/to_command_index.pug"
 
     basket = Basket.objects.get(id=AUTO_COMMAND_ID)
     # We get all cards, and group them by distributor.
@@ -979,12 +979,12 @@ def basket_auto_command(request):
 
 @login_required
 def command_supplier(request, pk):
-    template = "search/to_command.jade"
+    template = "search/to_command.pug"
     return render(request, template)
 
 @login_required
 def baskets(request):
-    template = "search/baskets.jade"
+    template = "search/baskets.pug"
     if request.method == "GET":
         return render(request, template)
 
@@ -1171,7 +1171,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
 
-        template = get_template('pdftemplates/pdf-barcode.jade')
+        template = get_template('pdftemplates/pdf-barcode.pug')
         if report == "listing":
             cards_qties = [(it.card, it.quantity) for it in copies_set]
         elif report == "bill":
@@ -1236,7 +1236,7 @@ def history_sells(request, **kwargs):
     return HttpResponseRedirect(url)
 
 def history_sells_month(request, date, **kwargs):
-    template = 'search/history_sells.jade'
+    template = 'search/history_sells.pug'
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1260,7 +1260,7 @@ def history_sells_month(request, date, **kwargs):
                                       'year': year})
 
 def history_entries_month(request, date, **kwargs):
-    template = 'search/history_entries.jade'
+    template = 'search/history_entries.pug'
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1286,7 +1286,7 @@ def history_sells_day(request, date, **kwargs):
 
     - date: string (format %Y-%M-%d)
     """
-    template = 'search/history_sells_day.jade'
+    template = 'search/history_sells_day.pug'
     # XXX: view called twice?? as well as history_sells
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
@@ -1364,7 +1364,7 @@ def history_entries_day(request, date, **kwargs):
 
     - date: string (format %Y-%M-%d)
     """
-    template = 'search/history_entries_day.jade'
+    template = 'search/history_entries_day.pug'
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
     except Exception as e:
@@ -1489,7 +1489,7 @@ def suppliers_sells_month(request, date, **kwargs):
     """
     Total sells of the month for distributors and publishers.
     """
-    template = 'search/suppliers_sells_month.jade'
+    template = 'search/suppliers_sells_month.pug'
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1571,7 +1571,7 @@ def suppliers_sells_month(request, date, **kwargs):
 
 @login_required
 def publisher_sells_month_list(request, pk, date, **kwargs):
-    template = 'search/supplier_sells_month_list.jade'
+    template = 'search/supplier_sells_month_list.pug'
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1616,7 +1616,7 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
 
 @login_required
 def distributors_sells_month_list(request, pk, date, **kwargs):
-    template = 'search/supplier_sells_month_list.jade'
+    template = 'search/supplier_sells_month_list.pug'
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1691,13 +1691,13 @@ def inventory_export(request, pk):
 def inventories(request):
     """Get all inventories.
     """
-    template = "search/inventories.jade"
+    template = "search/inventories.pug"
     if request.method == 'GET':
         return render(request, template)
 
 @login_required
 def inventory(request, pk):
-    template = "search/inventory_view.jade"
+    template = "search/inventory_view.pug"
     if request.method == "GET":
         if pk:
             try:
@@ -1748,12 +1748,12 @@ def inventory_delete(request, pk):
 def inventory_terminate(request, pk):
     """
     """
-    template = "search/inventory_terminate.jade"
+    template = "search/inventory_terminate.pug"
     return render(request, template)
 
 @login_required
 def dashboard(request):
-    template = "search/dashboard.jade"
+    template = "search/dashboard.pug"
     stock = Stats.stock()
     return render(request, template, {
         "stats_stock": stock,
@@ -1762,7 +1762,7 @@ def dashboard(request):
 
 class CommandDetailView(DetailView):
     model = Command
-    template_name = "search/commands_view.jade"
+    template_name = "search/commands_view.pug"
 
 
 @login_required
@@ -1771,7 +1771,7 @@ def command_receive(request, pk):
     GET: get the inventory state for this command.
     POST: create a new one.
     """
-    template = "search/command_receive.jade"
+    template = "search/command_receive.pug"
     cmd = None
 
     try:
@@ -1795,7 +1795,7 @@ def command_receive(request, pk):
 def command_receive_terminate(request, pk):
     """
     """
-    template = "search/inventory_terminate.jade"
+    template = "search/inventory_terminate.pug"
     return render(request, template)
 
 
@@ -1824,7 +1824,7 @@ def command_card(request, pk):
     """
     Command the card of the given id, choose a client (optional).
     """
-    template = "search/card_command.jade"
+    template = "search/card_command.pug"
 
     if request.method == 'GET':
         card = None
