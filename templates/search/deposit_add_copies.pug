@@ -25,13 +25,13 @@
 h3 {% trans "Add copies to the deposit" %}
 div {% trans "Did you receive more copies of the titles you have in this deposit ? You can add them here." %}
 
-form(action='{% url "deposit_add_copies" pk %}', method="post")
+form(action="{% url 'search:deposit_add_copies' pk %}", method="post")
   {% csrf_token %}
   table
     tbody
       {{ form.as_table }}
   input.btn.btn-primary(type='submit', value="{% trans 'validate' %}")
-  a(href="{% url 'deposits_view' pk %}")
+  a(href="{% url 'search:deposits_view' pk %}")
     input.btn.btn-default(value="{% trans 'Cancel' %}")
 
 {% endblock content %}

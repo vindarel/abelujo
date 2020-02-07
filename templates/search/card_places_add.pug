@@ -24,7 +24,7 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-form(method='post', action="{% url 'card_places_add' pk %}")
+form(method='post', action="{% url 'search:card_places_add' pk %}")
   {% csrf_token %}
   h4 {% trans "Add copies" %}
   {{ form.as_p }}

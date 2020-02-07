@@ -32,7 +32,7 @@ ul.messages
   {% endfor %}
 {% endif %}
 
-form(method='post', action="{% url 'cards_set_supplier' %}")
+form(method='post', action="{% url 'search:cards_set_supplier' %}")
   {% csrf_token %}
   h4 {% trans "Set the supplier" %}
   div {% trans "cards impacted: " %} {{ nb_cards }}
@@ -43,7 +43,7 @@ form(method='post', action="{% url 'cards_set_supplier' %}")
 
 h4 {% trans "Or create a new one" %}
 
-form(method='post', action="{% url 'cards_set_supplier' %}")
+form(method='post', action="{% url 'search:cards_set_supplier' %}")
   {% csrf_token %}
   h4 {% trans "New distributor" %}
 

@@ -24,7 +24,7 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-form(method='post', action="{% url 'card_move' pk %}")
+form(method='post', action="{% url 'search:card_move' pk %}")
   {% csrf_token %}
   h4 {% trans "Move copies" %}
   {{ internalForm }}

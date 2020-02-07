@@ -23,19 +23,19 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'history_entries_month' previous_month %}") &larr; {% trans "Previous" %}
+  a(href="{% url 'search:history_entries_month' previous_month %}") &larr; {% trans "Previous" %}
   span  &nbsp;
-  a(href="{% url 'history_entries_month' month_fmt %}") {{ day | date:'F' | title }}
+  a(href="{% url 'search:history_entries_month' month_fmt %}") {{ day | date:'F' | title }}
   span &nbsp;
 if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'history_entries_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'search:history_entries_month' next_month %}") {% trans "Next" %} &rarr;
 
 .row
   .col-lg-10
     ul.nav.nav-tabs
       li(role="presentation")
-        a(href="{% url 'history_sells_day' day|date:'Y-m-d' %}") {% trans "Sells" %}
+        a(href="{% url 'search:history_sells_day' day|date:'Y-m-d' %}") {% trans "Sells" %}
       li.active(role="presentation"): a {% trans "Entries" %}
 
 h1 {% trans "Entries" %} - {{ day | date:'l d F Y' | title }}

@@ -23,7 +23,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-form(method='post', action="{% url 'card_buy' card.id %}")
+form(method='post', action="{% url 'search:card_buy' card.id %}")
   {% csrf_token %}
   .row
     .col-lg-9
