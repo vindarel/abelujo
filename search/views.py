@@ -186,7 +186,7 @@ def get_bills_choices():
     ret = [(0, "---")] + [(it.id, it.long_name) for it in bills]
     return ret
 
-def get_reverse_url(cleaned_data, url_name="card_search"):
+def get_reverse_url(cleaned_data, url_name="search:card_search"):
     """Get the reverse url with the query parameters taken from the
     form's cleaned data.
 
@@ -486,7 +486,7 @@ def card_places_add(request, pk=None):
         })
 
     else:
-        back_to = reverse("card_show", args=(pk,))
+        back_to = reverse('search:card_show', args=(pk,))
         form = CardPlacesAddForm(request.POST)
         if form.is_valid():
             for (id, nb) in form.data.iteritems():  # cleaned_data won't have nothing...
@@ -539,7 +539,7 @@ def card_move(request, pk=None):
             qparams = {'q': request.POST.get('q')}
             back_to = request.session.get("back_to")
             if not back_to:
-                back_to = reverse("card_show", args=(pk,))
+                back_to = reverse('search:card_show', args=(pk,))
             # back_to += "?" + urlparse.urlsplit(url).query
             back_to += "?" + urllib.urlencode(qparams)
             # XXX back_to should be set more than once, per-search.
@@ -568,7 +568,7 @@ def cards_set_supplier(request, **kwargs):
     newsupplier_form = NewSupplierForm()
     cards_ids = request.session.get('set_supplier_cards_ids')
     if not cards_ids:
-        return HttpResponseRedirect(reverse('card_collection'))
+        return HttpResponseRedirect(reverse('search:card_collection'))
     cards_ids = cards_ids.split(',')
     response_dict = {
         'form': form,
@@ -635,7 +635,7 @@ def cards_set_supplier(request, **kwargs):
 
         messages.add_message(request, messages.SUCCESS, _("The supplier was correctly set for those {} cards.".format(len(cards_ids))))
 
-        return HttpResponseRedirect(reverse('card_collection'))
+        return HttpResponseRedirect(reverse('search:card_collection'))
 
 
 @login_required
@@ -890,7 +890,7 @@ def deposits_view(request, pk):
     except Deposit.DoesNotExist as e:
         messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
         log.error("le depot demande (%s) n'existe pas: %s" % (pk, e))
-        return HttpResponseRedirect(reverse("deposits"))
+        return HttpResponseRedirect(reverse('search:deposits'))
 
     return render(request, template, {
         "page_title": "Abelujo - " + deposit.name,
@@ -913,9 +913,9 @@ def deposits_checkout(request, pk):
         log.error("Error while closing deposing state: {}".format(e))
         messages.add_message(request, messages.ERROR,
                              _(u"Woops, there was an error :S we can't close this deposit state."))
-        return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
+        return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
 
-    return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
+    return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
 
 @login_required
 def deposit_delete(request, pk):
@@ -940,7 +940,7 @@ def deposit_add_copies(request, pk):
             for id, qty in data.iteritems():
                 dep.add_copies([id], quantities=[qty])
 
-            return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
+            return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
 
     return render(request, template, {
         "form": form,
@@ -1231,7 +1231,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
 def history_sells(request, **kwargs):
     now = pendulum.now()
-    url = reverse('history_sells_month',
+    url = reverse('search:history_sells_month',
                   args=(now.strftime('%Y-%m'),))
     return HttpResponseRedirect(url)
 
@@ -1240,7 +1240,7 @@ def history_sells_month(request, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
-        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+        return HttpResponseRedirect(reverse('search:history_sells'))  # xxx: loop?
 
     now = pendulum.datetime.now()
     year = day.year
@@ -1264,7 +1264,7 @@ def history_entries_month(request, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
-        return HttpResponseRedirect(reverse('history_sells'))
+        return HttpResponseRedirect(reverse('search:history_sells'))
 
     now = pendulum.datetime.now()
     year = day.year
@@ -1292,7 +1292,7 @@ def history_sells_day(request, date, **kwargs):
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
     except Exception as e:
         log.error(u'History per days: could not parse {}: {}'.format(date, e))
-        return HttpResponseRedirect(reverse('history_sells'))
+        return HttpResponseRedirect(reverse('search:history_sells'))
 
     sells_data = Sell.search(day=day.day, month=day.month, year=day.year,
                              with_total_price_sold=True,
@@ -1369,7 +1369,7 @@ def history_entries_day(request, date, **kwargs):
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
     except Exception as e:
         log.error(u'Entries history per day: could not parse {}: {}'.format(date, e))
-        return HttpResponseRedirect(reverse('history_entries_month'))
+        return HttpResponseRedirect(reverse('search:history_entries_month'))
 
     data = history.Entry.history_day(year=day.year, month=day.month, day=day.day)
 
@@ -1480,7 +1480,7 @@ def history_sells_exports(request, **kwargs):
 @login_required
 def suppliers_sells(request, **kwargs):
     now = pendulum.now()
-    url = reverse('suppliers_sells_month',
+    url = reverse('search:suppliers_sells_month',
                   args=(now.strftime('%Y-%m'),))
     return HttpResponseRedirect(url)
 
@@ -1493,7 +1493,7 @@ def suppliers_sells_month(request, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
-        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+        return HttpResponseRedirect(reverse('search:history_sells'))  # xxx: loop?
 
     now = pendulum.now()
     year = day.year
@@ -1575,13 +1575,13 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
-        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+        return HttpResponseRedirect(reverse('search:history_sells'))  # xxx: loop?
 
     try:
         publisher_obj = Publisher.objects.get(id=pk)
     except ObjectDoesNotExist:
         # XXX: add message.
-        return HttpResponseRedirect(reverse('suppliers_sells_month'))
+        return HttpResponseRedirect(reverse('search:suppliers_sells_month'))
 
     now = pendulum.now()
     year = day.year
@@ -1598,7 +1598,7 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
     total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
     total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
 
-    url_name = 'publisher_sells_month_list'
+    url_name = 'search:publisher_sells_month_list'
     previous_month_url = reverse(url_name, args=(pk, previous_month.strftime('%Y-%m')))
     next_month_url = reverse(url_name, args=(pk, next_month.strftime('%Y-%m')))
 
@@ -1620,13 +1620,13 @@ def distributors_sells_month_list(request, pk, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
-        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+        return HttpResponseRedirect(reverse('search:history_sells'))  # xxx: loop?
 
     try:
         obj = Distributor.objects.get(id=pk)
     except ObjectDoesNotExist:
         # XXX: add message.
-        return HttpResponseRedirect(reverse('suppliers_sells_month'))
+        return HttpResponseRedirect(reverse('search:suppliers_sells_month'))
 
     now = pendulum.now()
     year = day.year
@@ -1644,7 +1644,7 @@ def distributors_sells_month_list(request, pk, date, **kwargs):
     total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
     total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
 
-    url_name = 'distributors_sells_month_list'
+    url_name = 'search:distributors_sells_month_list'
     previous_month_url = reverse(url_name, args=(pk, previous_month.strftime('%Y-%m')))
     next_month_url = reverse(url_name, args=(pk, next_month.strftime('%Y-%m')))
 
@@ -1723,7 +1723,7 @@ def inventory_archive(request, pk):
                     request, messages.ERROR,
                     _("There was an error when trying to archive the inventory {}: {}.").format(pk, e))
 
-    return HttpResponseRedirect(reverse("inventories"))
+    return HttpResponseRedirect(reverse('search:inventories'))
 
 @login_required
 def inventory_delete(request, pk):
@@ -1742,7 +1742,7 @@ def inventory_delete(request, pk):
                     request, messages.ERROR,
                     _("There was an error when trying to delete the inventory {}: {}.").format(pk, e))
 
-    return HttpResponseRedirect(reverse("inventories"))
+    return HttpResponseRedirect(reverse('search:inventories'))
 
 @login_required
 def inventory_terminate(request, pk):
@@ -1780,7 +1780,7 @@ def command_receive(request, pk):
         log.warning(e)
         messages.add_message(request, messages.ERROR,
                              u"Internal erorr: the command you requested does not exist.")
-        return HttpResponseRedirect(reverse("commands_view", args=(pk,)))
+        return HttpResponseRedirect(reverse('search:commands_view', args=(pk,)))
 
     if not cmd.inventory:
         inv = InventoryCommand()
