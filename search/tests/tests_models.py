@@ -648,6 +648,7 @@ class TestDeposits(TransactionTestCase):
         self.assertFalse(dist.depositstate.closed)
 
     def test_from_dict(self):
+        log.setLevel(logging.DEBUG)
         depo_dict = {
             'name': "depo test",
             "distributor": self.distributor,
