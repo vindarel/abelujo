@@ -43,7 +43,7 @@ pip-dev:
 pip-submodule:
 	pip install -U pip
 	pip install -U setuptools
-	cd search/datasources && python setup.py install
+	cd search/datasources && pip install -r requirements.txt
 
 pip-submodule-dev:
 	cd search/datasources && pip install -r requirements-dev.txt
