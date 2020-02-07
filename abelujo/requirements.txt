@@ -20,9 +20,8 @@ setuptools==39.2
 django==1.11
 django-bootstrap3==11
 pypugjs==5.9            # process pugjs/jade templates.
-bootstrap-admin==0.3.6  # bootstrap theme, nice search feature.
+bootstrap-admin==0.4.3  # bootstrap theme, nice search feature.
 pyyaml
-psycopg2                # postgresql database engine.
 pytz			# timezone
 
 ### Django extensions
