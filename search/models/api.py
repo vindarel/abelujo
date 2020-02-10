@@ -1178,7 +1178,12 @@ def baskets_create(request, **response_kwargs):
         return JsonResponse({'data': "Use a POST request"})
 
     if request.method == "POST":
-        name = request.POST.get('name')
+        # When the client asks to encode params in url parameters: POST.get
+        # name = request.POST.get('name')
+        # (older client code).
+        # Otherwise they get in the request body.
+        params = json.loads(request.body)
+        name = params.get('name')
         b_obj, status, msgs = Basket.new(name=name)
         to_ret = {"data": b_obj.to_dict() if b_obj else {},
                   "alerts": msgs,
