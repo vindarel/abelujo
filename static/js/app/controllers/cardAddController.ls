@@ -56,11 +56,6 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
                 "query": ""
         .then (response) ->
             $scope.distributor_list = response.data
-            if response.data.length == 0
-                $scope.distributor = {}
-            else
-                $scope.distributor = $scope.distributor_list[0]
-
             response.data
 
     getDistributors()
@@ -94,12 +89,6 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         params: {}
     .then (response) !->
         $scope.shelfs = response.data
-
-    $scope.filter_deposits = !->
-        $scope.filtered_deposits = $scope.deposits |> filter (.distributor == $scope.distributor.selected.name)
-        for depo in $scope.deposits
-            depo.quantity = 0
-        $scope.update_total_deposits()
 
     #
     # Validate

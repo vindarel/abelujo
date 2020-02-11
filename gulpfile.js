@@ -112,7 +112,6 @@ gulp.task('concatjs:vendor', function () {
 
 // Concatenate js app files
 gulp.task('concatjs:app', ['compile:livescript'], function () {
-  console.log("warning: we deactived jshint.");
   return gulp.src(appFiles)
     // .pipe(jshint('.jshintrc'))  // many errors are ls's boilerplate.
     // .pipe(jshint.reporter('default'))

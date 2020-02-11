@@ -115,10 +115,6 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.remove_from_selection = (index_to_rm, model_list) ->
         $scope[model_list].splice index_to_rm, 1
 
-    $scope.refreshDistributors = (search, select) ->
-        getDistributors()
-        select.refreshItems()
-
     # Post the form
     $scope.validate = (next_view) ->
 
