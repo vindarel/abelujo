@@ -3654,7 +3654,7 @@ class Sell(models.Model):
                 'data': sells_per_day}
 
     @staticmethod
-    def sells_suppliers_distributors(year=None, month=None):
+    def history_suppliers(year=None, month=None):
         """
         Information on what to pay to distributors and publishers.
 
@@ -3730,7 +3730,6 @@ class Sell(models.Model):
 
         return {'distributors_data': distributors_data,
                 'publishers_data': publishers_data, }
-
 
     @staticmethod
     def sell_card(card, nb=1, **kwargs):

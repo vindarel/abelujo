@@ -900,6 +900,9 @@ class TestSells(TestCase):
         # a Distributor:
         self.dist = Distributor(name="dist test")
         self.dist.save()
+        # a Publisher:
+        self.pub = Publisher(name="pub test")
+        self.pub.save()
         # a Deposit:
         self.depo = Deposit(name="deposit test", distributor=self.dist)
         self.depo.save()
@@ -1183,6 +1186,26 @@ class TestSells(TestCase):
         self.assertEqual(0, self.place.quantity_of(self.autobio))
         self.assertEqual(0, self.reserve.quantity_of(self.autobio))
 
+    def test_history_suppliers(self):
+        # A card gets both a dist and a pub:
+        self.autobio.distributor = self.dist
+        self.autobio.save()
+        self.autobio.publishers.add(self.pub)
+        # The secondcard gets a pub (the same):
+        self.secondcard.publishers.add(self.pub)
+        # A third card gets nothing.
+        thirdcard = CardFactory()
+        # We sell the three:
+        Sell.sell_cards(None, cards=[self.autobio, self.secondcard, thirdcard])
+        # We get our history for distributors and publishers:
+        now = datetime.datetime.now()
+        history = Sell.history_suppliers(year=now.year, month=now.month)
+
+        # The first card was counted for the distributors and NOT for the publishers,
+        # even though it has both information.
+        self.assertEqual(1, history['distributors_data'][0]['nb_cards_sold'])
+        self.assertEqual(1, history['publishers_data'][0]['nb_cards_sold'])
+        # The thirdcard does not appear here.
 
 class TestSellSearch(TestCase):
 

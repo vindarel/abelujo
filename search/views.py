@@ -1501,7 +1501,7 @@ def suppliers_sells_month(request, date, **kwargs):
     month = day.month
     previous_month = day.subtract(months=1).replace(day=1)
     next_month = day.add(months=1).replace(day=1)
-    res = Sell.sells_suppliers_distributors(year=year, month=month)
+    res = Sell.history_suppliers(year=year, month=month)
 
     return render(request, template, {'publishers_data': res['publishers_data'],
                                       'distributors_data': res['distributors_data'],
