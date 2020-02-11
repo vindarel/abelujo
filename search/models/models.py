@@ -1376,13 +1376,23 @@ class Card(TimeStampedModel):
         card_distributor = None
         if card.get("distributor"):
             try:
+                # OK: card: edit -> card_create
                 card_distributor = Distributor.objects.get(id=card.get("distributor"))
             except Exception as e:
                 # XXX use distributor_id and distributor
                 try:
-                    card_distributor = Distributor.objects.get(name=card.get("distributor"))
+                    # Fix in JS and view. But where ? :S
+                    it = card.get('distributor')
+                    it_id = 1
+                    if isinstance(it, str):
+                        it_id = it
+                    elif isinstance(it, dict):
+                        it_id = it.get('id')
+                    else:
+                        log.warning(u"We couldn't handle the distributor of this form inside this card: {}.".format(card))
+                    card_distributor = Distributor.objects.get(id=it_id)
                 except Exception as e:
-                    log.warning(u"couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
+                    log.warning(u"couldn't get distributor of {}. This is not necessarily a bug.".format(card.get('distributor')))
 
         # Get the shelf
         card_shelf = None
@@ -1402,7 +1412,7 @@ class Card(TimeStampedModel):
         # Get the publishers:
         card_publishers = []
         if card.get("publishers_ids"):
-            card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
+            card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]  # noqa: F812 ignore "it" redefinition.
 
         # Get the publication date (from a human readable string)
         date_publication = None
