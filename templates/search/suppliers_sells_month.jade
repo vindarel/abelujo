@@ -23,16 +23,43 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'suppliers_sells_month' previous_month %}") &larr; {% trans "Previous" %}
-  span  &nbsp;
-if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'suppliers_sells_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'suppliers_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+    span  &nbsp;
+  if day.year < now.year or day.month < now.month
+    span
+      a(href="{% url 'suppliers_sells_month' next_month %}") {% trans "Next" %} &rarr;
 
 h1 {{ day | date:'F o' | title }}
 
+div.panel.panel-default
+  div.panel-body
+    span {% trans "This page might be useful to you if you don't exclusively pass commands to distributors, but if you also take books directly from publishers. Also, if you have deposits. It answers the question 'How much do we have to pay this distributor and this publisher at the end of the month?'." %}&nbsp;
+    span {% trans "For all the books sold this month, we first consider the ones that have a distributor, and for each distributor we sum up how much is due. This is the left table. Then, we take the remaining books that have a publisher and we do the same. This is the right table. As a consequence, this page does NOT list all the books sold for a given publisher. It says how much we have to pay them, excluding the books counted for their distributor." %}
+
+h4
+
 .col-md-6
-  //h4 {% trans "Publishers" %}
+  if not distributors_data
+    span
+      b {% trans "Distributors" %}:&nbsp;
+      span {% trans "no data" %}
+  else
+    table.table.table-striped
+      thead
+        th {% trans "Distributor" %}
+        th.text-right {% trans "Quantity sold" %}
+        th.text-right {% trans "Total" %}
+        th.text-right {% trans "Total (public)" %}
+      for it in distributors_data
+        tr
+          td
+            a(href="{% url 'distributors_sells_month_list' it.distributor.1 day|date:'Y-m' %}", target="_blank"){{ it.distributor.0 | title }}
+          td.text-right {{ it.nb_cards_sold }}
+          td.text-right {{ it.total }} {% trans "€" %}
+          td.text-right {{ it.total_public_price }} {% trans "€" %}
+
+.col-md-6
   table.table.table-striped
     thead
       th {% trans "Publisher" %}
@@ -43,23 +70,6 @@ h1 {{ day | date:'F o' | title }}
       tr
         td
           a(href="{% url 'publisher_sells_month_list' it.publisher.1 day|date:'Y-m' %}", target="_blank"){{ it.publisher.0 | title }}
-        td.text-right {{ it.nb_cards_sold }}
-        td.text-right {{ it.total }} {% trans "€" %}
-        td.text-right {{ it.total_public_price }} {% trans "€" %}
-
-.col-md-6
-  if not distributors_data
-    div {% trans "No data" %}
-  table.table.table-striped
-    thead
-      th {% trans "Distributor" %}
-      th.text-right {% trans "Quantity sold" %}
-      th.text-right {% trans "Total" %}
-      th.text-right {% trans "Total (public)" %}
-    for it in distributors_data
-      tr
-        td
-          a(href="{% url 'distributors_sells_month_list' it.distributor.1 day|date:'Y-m' %}", target="_blank"){{ it.distributor.0 | title }}
         td.text-right {{ it.nb_cards_sold }}
         td.text-right {{ it.total }} {% trans "€" %}
         td.text-right {{ it.total_public_price }} {% trans "€" %}
