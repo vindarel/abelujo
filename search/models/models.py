@@ -3654,6 +3654,85 @@ class Sell(models.Model):
                 'data': sells_per_day}
 
     @staticmethod
+    def sells_suppliers_distributors(year=None, month=None):
+        """
+        Information on what to pay to distributors and publishers.
+
+        This does NOT return the full list of sells for publishers, since we don't want
+        one book to appear both on the distributors and publishers side.
+
+        Return: a dict with keys
+        - publishers_data
+        - distributors_data
+        """
+        assert year
+        assert month
+        sells = Sell.sells_of_month(month=month, year=year)
+        # Consider sells of distributors.
+        sells_with_distributor = sells.filter(card__distributor__isnull=False)
+        # and then the *remaining* sells for publishers.
+        sells_with_publishers = sells.exclude(card__distributor__isnull=False)\
+                                     .filter(card__publishers__isnull=False)
+        # without any pub or dist:
+        # sells_without_supplier = sells.exclude(card__publishers__isnull=False)\
+        #                              .exclude(card__distributor__isnull=False)
+
+        current_distributors = []
+        if sells_with_distributor:
+            current_distributors = sells_with_distributor.values_list('card__distributor__name', 'card__distributor__id').distinct()  # distinct has no effect?!
+            current_distributors = list(set(current_distributors))
+        current_publishers = []
+        if sells_with_publishers:
+            current_publishers = sells_with_publishers.values_list('card__publishers__name', 'card__publishers__id').distinct()
+            current_publishers = list(set(current_publishers))
+
+        # distinct('card__distributor__id')  # not supported on SQLite.
+
+        publishers_data = []
+        for name, pk in current_publishers:
+            data = {}
+            data['publisher'] = (name, pk)
+            pub_sells = sells_with_publishers.filter(card__publishers__id=pk)
+            data['sells'] = pub_sells
+            cards_sold = pub_sells.values_list('quantity', flat=True)
+            nb_cards_sold = sum(cards_sold)
+            data['nb_cards_sold'] = nb_cards_sold
+            prices_sold = pub_sells.values_list('price_sold', flat=True)
+            public_prices = pub_sells.values_list('price_init', flat=True)
+            assert len(cards_sold) == len(prices_sold)
+            total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+            data['total'] = total
+            total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+            data['total_public_price'] = total_public_price
+            publishers_data.append(data)
+
+        publishers_data = sorted(publishers_data, key=lambda it: it['publisher'][0])  # sort by name
+
+        distributors_data = []
+        for name, pk in current_distributors:
+            data = {}
+            data['distributor'] = (name, pk)
+            pub_sells = sells_with_distributor.filter(card__distributor__id=pk)
+            data['sells'] = pub_sells
+            cards_sold = pub_sells.values_list('quantity', flat=True)
+            nb_cards_sold = sum(cards_sold)
+            data['nb_cards_sold'] = nb_cards_sold
+            prices_sold = pub_sells.values_list('price_sold', flat=True)
+            public_prices = public_prices.values_list('price_init', flat=True)
+            assert len(cards_sold) == len(prices_sold)
+            total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+            data['total'] = total
+            total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+            data['total_public_price'] = total_public_price
+            distributors_data.append(data)
+
+        distributors_data = sorted(distributors_data, key=lambda it: it['distributor'][0])  # sort by name
+
+        return {'distributors_data': distributors_data,
+                'publishers_data': publishers_data, }
+
+
+    @staticmethod
     def sell_card(card, nb=1, **kwargs):
         """Sell a Card. Simple wrapper to Sell.sell_cards.
         """
