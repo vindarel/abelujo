@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-06 18:07+0000\n"
-"PO-Revision-Date: 2020-02-06 19:09+0100\n"
+"POT-Creation-Date: 2020-02-11 09:58+0000\n"
+"PO-Revision-Date: 2020-02-11 11:11+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -53,7 +53,7 @@ msgstr "Oups, noun n'avons pas pu créer cette notice. C'est un bug !"
 msgid "Please provide a supplier"
 msgstr "Veuillez choisir un fournisseur"
 
-#: search/models/api.py:660 search/models/models.py:3810
+#: search/models/api.py:660 search/models/models.py:3888
 msgid "Sell successfull."
 msgstr "La vente a été réalisée avec succès."
 
@@ -77,71 +77,71 @@ msgstr "Nous n'avons pas pu modifier la quantité de cette notice."
 msgid "We couldn't set this list as a deposit. Sorry !"
 msgstr "Nous n'avons pas pu transformer cette liste en dépôt. Désolé !"
 
-#: search/models/api.py:1269
+#: search/models/api.py:1274
 msgid ""
 "This card has already a supplier ({}), we can't mark it to command for {}."
 msgstr ""
 "Cette notice a déjà un fournisseur ({}), nous ne pouvons pas l'ajouter dans "
 "la commande de {}."
 
-#: search/models/api.py:1280
+#: search/models/api.py:1285
 msgid "The card '{}' was successfully added to the supplier '{}'."
 msgstr "La notice '{}' a été ajoutée avec succès au fournisseur '{}'."
 
-#: search/models/api.py:1283
+#: search/models/api.py:1288
 msgid ""
 "The card '{}' was successfully marked to command, with no default supplier."
 msgstr ""
 "La notice '{}' a été ajoutée avec succès au panier de commandes, sans "
 "fournisseur attitré."
 
-#: search/models/api.py:1383
+#: search/models/api.py:1388
 msgid "Basket archived succesfully."
 msgstr "Liste archivée.."
 
-#: search/models/api.py:1396
+#: search/models/api.py:1401
 msgid "The basket could not be archived"
 msgstr "La liste n'a pas pu être archivée"
 
-#: search/models/api.py:1408
+#: search/models/api.py:1413
 msgid "Basket deleted succesfully"
 msgstr "Liste supprimée."
 
-#: search/models/api.py:1421
+#: search/models/api.py:1426
 msgid "The basket could not be deleted"
 msgstr "La liste n'a pas pu être supprimée"
 
-#: search/models/api.py:1462 search/models/models.py:4216
+#: search/models/api.py:1467 search/models/models.py:4294
 msgid "Internal error, sorry !"
 msgstr "Erreur interne :("
 
-#: search/models/api.py:1562
+#: search/models/api.py:1567
 msgid "We couldn't create the requested inventory. This is an error, sorry !"
 msgstr "Nous n'avons pas pu créer l'inventaire demandé. C'est un bug, désolé."
 
-#: search/models/api.py:1684
+#: search/models/api.py:1689
 msgid "Internal error. We couldn't save the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu sauvegarder l'inventaire"
 
-#: search/models/api.py:1727
+#: search/models/api.py:1732
 msgid "Inventory saved. Keep working !"
 msgstr "Inventaire sauvegardé. Il faut s'y remettre !"
 
-#: search/models/api.py:1747
+#: search/models/api.py:1752
 msgid "Internal error. We couldn't update the inventory"
 msgstr "Erreur interne. Nous n'avons pas pu mettre à jour l'inventaire"
 
-#: search/models/api.py:1785 search/models/api.py:2084
+#: search/models/api.py:1790 search/models/api.py:2089
 msgid "This inventory is already applied"
 msgstr "Cet inventaire a déjà été appliqué"
 
-#: search/models/api.py:1795 search/models/api.py:2094
+#: search/models/api.py:1800 search/models/api.py:2099
 msgid "The inventory is being applied. This may take a few minutes."
 msgstr ""
 "L'inventaire est en train d'être mis à jour. Cela peut prendre quelques "
 "minutes."
 
-#: search/models/api.py:2039
+#: search/models/api.py:2044
 msgid "An error occured. We have been notified."
 msgstr "Une erreur interne est survenue. Nous en avons été alerté."
 
@@ -347,93 +347,94 @@ msgstr "Erreur lors de la vente de la notice '{}' pour le dépôt {}"
 msgid "Operation successful"
 msgstr "L'opération a réussie."
 
-#: search/models/models.py:3801
+#: search/models/models.py:3879
 msgid "Warning: we couldn't sell {}."
 msgstr "Attention: la vente de {} a échoué."
 
-#: search/models/models.py:3832
+#: search/models/models.py:3910
 msgid "Error while undoing sell {}"
 msgstr "Erreur en annulant la vente {}"
 
-#: search/models/models.py:3860
+#: search/models/models.py:3938
 msgid "Error while undoing sell {}."
 msgstr "Une erreur est apparue en annulant la vente {}."
 
-#: search/models/models.py:3877
+#: search/models/models.py:3955
 msgid "Sell {} canceled with success."
 msgstr "La vente {} a été annulée avec succès"
 
-#: search/models/models.py:4354
+#: search/models/models.py:4432
 msgid "This inventory is already closed, you can't apply it again."
 msgstr ""
 "Cet inventaire est déjà fermé. Vous ne pouvez pas l'appliquer de nouveau."
 
-#: search/models/models.py:4416 search/models/models.py:4426
+#: search/models/models.py:4494 search/models/models.py:4504
 msgid "There was an internal error, sorry !"
 msgstr "Erreur interne :("
 
-#: search/models/models.py:4432
+#: search/models/models.py:4510
 msgid "The inventory got succesfully applied to your stock."
 msgstr "L'inventaire a été appliqué à votre fonds avec succès."
 
-#: search/models/models.py:4570
+#: search/models/models.py:4648
 msgid "Number of book titles"
 msgstr "Nombre de titres"
 
-#: search/models/models.py:4573 templates/search/collection.jade:148
+#: search/models/models.py:4651 templates/search/collection.jade:148
 #: templates/search/dashboard.jade:38
 msgid "Number of books"
 msgstr "Nombre de livres"
 
-#: search/models/models.py:4575 templates/search/dashboard.jade:41
+#: search/models/models.py:4653 templates/search/dashboard.jade:41
 msgid "Number of products"
 msgstr "Nombre de produits"
 
-#: search/models/models.py:4577
+#: search/models/models.py:4655
 msgid "Number of products of unknown type"
 msgstr "Nombre de produits de type inconnu"
 
-#: search/models/models.py:4586
+#: search/models/models.py:4664
 msgid "Number of titles with no copy"
 msgstr "nombre de titres sans exemplaire"
 
-#: search/models/models.py:4589
+#: search/models/models.py:4667
 msgid "Number of titles with one copy"
 msgstr "nombre de titres avec un exemplaire"
 
-#: search/models/models.py:4607
+#: search/models/models.py:4685
 msgid "Number of books in deposits"
 msgstr "Nombre de livres en dépôts"
 
-#: search/models/models.py:4612
+#: search/models/models.py:4690
 msgid "Total cost of the books in deposits"
 msgstr "Valeur totale des livres en dépôts"
 
-#: search/models/models.py:4616
+#: search/models/models.py:4694
 msgid "Total cost of the stock"
 msgstr "Valeur du fonds"
 
-#: search/models/models.py:4622
+#: search/models/models.py:4700
 msgid "Total cost of the stock, excl. tax"
 msgstr "Valeur totale du fonds HT"
 
-#: search/models/models.py:4631
+#: search/models/models.py:4709
 msgid "next appointments"
 msgstr "prochaines échéances"
 
-#: search/models/models.py:4873 search/views.py:969
+#: search/models/models.py:4951 search/views.py:969
 msgid "NO SUPPLIER"
 msgstr "AUCUN FOURNISSEUR"
 
-#: search/models/models.py:4985
+#: search/models/models.py:5063
 msgid "command #{} - {}"
 msgstr "Commande #{} - {}"
 
-#: search/models/models.py:5143
+#: search/models/models.py:5221
 msgid "Command updated succesfully."
 msgstr "La commande a été mise à jour avec succès."
 
 #: search/views.py:117 templates/base.jade:61
+#: templates/search/suppliers_sells_month.jade:45
 msgid "Distributors"
 msgstr "Diffuseurs"
 
@@ -442,7 +443,6 @@ msgstr "Diffuseurs"
 #: templates/search/collection.jade:180
 #: templates/search/history_entries_day.jade:48
 #: templates/search/searchresults.jade:101
-#: templates/search/suppliers_sells_month.jade:35
 msgid "Publishers"
 msgstr "Éditeurs"
 
@@ -551,8 +551,8 @@ msgid "Title"
 msgstr "Titre"
 
 #: search/views.py:1089 search/views.py:1178
-#: templates/search/suppliers_sells_month.jade:39
-#: templates/search/suppliers_sells_month.jade:56
+#: templates/search/suppliers_sells_month.jade:51
+#: templates/search/suppliers_sells_month.jade:66
 msgid "Quantity sold"
 msgstr "Quantité vendue"
 
@@ -617,19 +617,19 @@ msgstr "titre"
 msgid "supplier"
 msgstr "fournisseur"
 
-#: search/views.py:1724
+#: search/views.py:1663
 msgid "The inventory {} was closed and archived."
 msgstr "L'inventaire {} a été fermé et archivé."
 
-#: search/views.py:1729
+#: search/views.py:1668
 msgid "There was an error when trying to archive the inventory {}: {}."
 msgstr "Une erreur est survenue en archivant l'inventaire {}: {}."
 
-#: search/views.py:1743
+#: search/views.py:1682
 msgid "The inventory {} was deleted."
 msgstr "L'inventaire {} a été supprimé."
 
-#: search/views.py:1748
+#: search/views.py:1687
 msgid "There was an error when trying to delete the inventory {}: {}."
 msgstr "Une erreur est survenue en supprimant l'inventaire {}: {}."
 
@@ -784,8 +784,8 @@ msgstr "Alertes"
 #: templates/pdftemplates/pdf-barcode.jade:81 templates/search/baskets.jade:181
 #: templates/search/commands_ongoing.jade:66 templates/search/deposits.jade:94
 #: templates/search/supplier_sells_month_list.jade:42
-#: templates/search/suppliers_sells_month.jade:40
-#: templates/search/suppliers_sells_month.jade:57
+#: templates/search/suppliers_sells_month.jade:52
+#: templates/search/suppliers_sells_month.jade:67
 #: templates/search/to_command.jade:61
 msgid "Total"
 msgstr "Total"
@@ -951,7 +951,7 @@ msgid "This list has no books inside… yet."
 msgstr "Cette liste n'a pas (encore) de livres."
 
 #: templates/search/baskets.jade:164 templates/search/collection.jade:78
-#: templates/search/suppliers_sells_month.jade:38
+#: templates/search/suppliers_sells_month.jade:65
 #: templates/search/to_command.jade:146
 msgid "Publisher"
 msgstr "Éditeur"
@@ -1125,10 +1125,10 @@ msgstr "Aucune vente."
 #: templates/search/supplier_sells_month_list.jade:43
 #: templates/search/supplier_sells_month_list.jade:58
 #: templates/search/supplier_sells_month_list.jade:59
-#: templates/search/suppliers_sells_month.jade:47
-#: templates/search/suppliers_sells_month.jade:48
-#: templates/search/suppliers_sells_month.jade:64
-#: templates/search/suppliers_sells_month.jade:65
+#: templates/search/suppliers_sells_month.jade:59
+#: templates/search/suppliers_sells_month.jade:60
+#: templates/search/suppliers_sells_month.jade:74
+#: templates/search/suppliers_sells_month.jade:75
 msgid "€"
 msgstr "€"
 
@@ -1247,6 +1247,7 @@ msgid "Last entry"
 msgstr "Dernière entrée"
 
 #: templates/search/card_show.jade:163
+#: templates/search/suppliers_sells_month.jade:46
 msgid "no data"
 msgstr "Aucune donnée"
 
@@ -1478,7 +1479,6 @@ msgid "due date"
 msgstr "échéance"
 
 #: templates/search/dashboard.jade:66
-#: templates/search/suppliers_sells_month.jade:52
 msgid "No data"
 msgstr "Aucune donnée à afficher"
 
@@ -1689,7 +1689,7 @@ msgstr "qté courante"
 #: templates/search/history_sells.jade:26
 #: templates/search/history_sells_day.jade:26
 #: templates/search/supplier_sells_month_list.jade:26
-#: templates/search/suppliers_sells_month.jade:26
+#: templates/search/suppliers_sells_month.jade:27
 msgid "Previous"
 msgstr "Précédent"
 
@@ -1698,7 +1698,7 @@ msgstr "Précédent"
 #: templates/search/history_sells.jade:30
 #: templates/search/history_sells_day.jade:32
 #: templates/search/supplier_sells_month_list.jade:30
-#: templates/search/suppliers_sells_month.jade:30
+#: templates/search/suppliers_sells_month.jade:31
 msgid "Next"
 msgstr "Suivant"
 
@@ -2133,14 +2133,32 @@ msgstr "Ou créez-en un nouveau"
 msgid "New distributor"
 msgstr "Nouveau diffuseur"
 
-#: templates/search/suppliers_sells_month.jade:41
-#: templates/search/suppliers_sells_month.jade:58
-msgid "Total (public)"
-msgstr "Total (public)"
+#: templates/search/suppliers_sells_month.jade:37
+msgid ""
+"This page might be useful to you if you don't exclusively pass commands to "
+"distributors, but if you also take books directly from publishers. Also, if "
+"you have deposits. It answers the question 'How much do we have to pay this "
+"distributor and this publisher at the end of the month?'."
+msgstr "Cette page vous sera utile si vous ne passez pas commande exclusivement auprès de distributeurs, mais si vous recevez aussi des livres directement des éditeurs. Ou si vous gérez des dépôts. Cette page répond à la question 'Combien doit-on à ce fourniseur ou à cet éditeur ?'."
 
-#: templates/search/suppliers_sells_month.jade:55
+#: templates/search/suppliers_sells_month.jade:38
+msgid ""
+"For all the books sold this month, we first consider the ones that have a "
+"distributor, and for each distributor we sum up how much is due. This is the "
+"left table. Then, we take the remaining books that have a publisher and we "
+"do the same. This is the right table. As a consequence, this page does NOT "
+"list all the books sold for a given publisher. It says how much we have to "
+"pay them, excluding the books counted for their distributor."
+msgstr "Pour tous les livres vendus ce mois, on regarde d'abord ceux avec un fournisseur. Pour chacun, on donne le total des ventes. C'est le tableau de gauche. Ensuite on fait la même chose avec les éditeurs, mais seulement pour les livres qui n'ont pas été comptés pour leur fournisseur. C'est le tableau de droite. Ainsi, cette page ne liste PAS tous les livres vendus pour un éditeur. Elle renseigne combien on lui doit."
+
+#: templates/search/suppliers_sells_month.jade:50
 msgid "Distributor"
 msgstr "Diffuseur"
+
+#: templates/search/suppliers_sells_month.jade:53
+#: templates/search/suppliers_sells_month.jade:68
+msgid "Total (public)"
+msgstr "Total (public)"
 
 #: templates/search/to_command.jade:50
 msgid "Copies to command"
