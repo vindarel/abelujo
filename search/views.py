@@ -1487,7 +1487,8 @@ def suppliers_sells(request, **kwargs):
 @login_required
 def suppliers_sells_month(request, date, **kwargs):
     """
-    Total sells of the month for distributors and publishers.
+    Total sells of the month for distributors and
+    publishers (for books that were not counted for distributors first).
     """
     template = 'search/suppliers_sells_month.jade'
     try:
@@ -1502,15 +1503,18 @@ def suppliers_sells_month(request, date, **kwargs):
     next_month = day.add(months=1).replace(day=1)
 
     sells = Sell.sells_of_month(month=month, year=year)
+    # Consider sells of distributors.
     sells_with_distributor = sells.filter(card__distributor__isnull=False)
-    sells_with_publishers = sells.filter(card__publishers__isnull=False)
+    # and then the *remaining* sells for publishers.
+    sells_with_publishers = sells.exclude(card__distributor__isnull=False)\
+                                 .filter(card__publishers__isnull=False)
     # without any pub or dist:
     # sells_without_supplier = sells.exclude(card__publishers__isnull=False)\
     #                              .exclude(card__distributor__isnull=False)
 
     current_distributors = []
     if sells_with_distributor:
-        current_distributors = sells_with_distributor.values_list('card__distributor__name', 'card__distributor__id').distinct()  # no effect?!
+        current_distributors = sells_with_distributor.values_list('card__distributor__name', 'card__distributor__id').distinct()  # distinct has no effect?!
         current_distributors = list(set(current_distributors))
     current_publishers = []
     if sells_with_publishers:
