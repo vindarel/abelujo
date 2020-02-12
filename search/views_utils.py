@@ -26,7 +26,6 @@ from search.datasources.bookshops.deDE.buchlentner import \
     buchlentnerScraper as buchlentner  # noqa: F401
 from search.datasources.bookshops.esES.casadellibro import \
     casadellibroScraper as casadellibro  # noqa: F401
-from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre  # noqa: F401
 from search.datasources.bookshops.frFR.librairiedeparis import \
     librairiedeparisScraper as librairiedeparis  # noqa: F401
 from search.datasources.bookshops.frFR.dilicom import \
