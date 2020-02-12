@@ -3368,8 +3368,9 @@ class SoldCards(TimeStampedModel):
         status = True
         try:
             soldcard = SoldCards.objects.get(id=pk)
-        except Exception as e:
-            log.error(u'Error while trying to undo soldcard n° {}: {}'.format(pk, e))
+        except ObjectDoesNotExist as e:
+            msgs.add_error(u'Error while trying to get soldcard n° {}: {}'.format(pk, e))
+            log.error(msgs.msgs)
             return False, msgs.msgs
 
         try:
