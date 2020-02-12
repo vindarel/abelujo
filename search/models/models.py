@@ -3728,8 +3728,8 @@ class Sell(models.Model):
             nb_cards_sold = sum(cards_sold)
             data['nb_cards_sold'] = nb_cards_sold
             prices_sold = pub_sells.values_list('price_sold', flat=True)
-            public_prices = public_prices.values_list('price_init', flat=True)
-            assert len(cards_sold) == len(prices_sold)
+            public_prices = pub_sells.values_list('price_init', flat=True)
+            assert len(cards_sold) == len(prices_sold) == len(public_prices)
             total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
             data['total'] = total
             total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
