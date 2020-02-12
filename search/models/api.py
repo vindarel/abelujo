@@ -51,7 +51,6 @@ from models import Publisher
 from models import Restocking
 from models import Sell
 from models import Shelf
-from models import SoldCards
 from models import Stats
 from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
     reviews as frenchreviews
@@ -717,20 +716,20 @@ def sell(request, **response_kwargs):
 
 def sell_undo(request, pk, **response_kwargs):
     """
-    Undo either the given soldcard. Eventually, undo a whole sell with its many cards.
+    Undo a whole sell with its many cards.
 
-    - pk: SoldCard id (we undo the sell of one card, not the payment
-      transaction with potentially many cards).
+    - pk: Sell id (we undo the sell and all its soldcards).
 
-    re-buy the card.
+    Re-buy the card.
     """
     msgs = []  # returned by undo()
     status = True
     if request.method == 'POST':
         if pk:
             # We undo only 1 card, not the entire sell (grouping many cards).
-            status, msgs = SoldCards.undo(pk)
-            # status, msgs = Sell.sell_undo(pk)
+            # status, msgs = SoldCards.undo(pk)
+            # We undo the entire sell.
+            status, msgs = Sell.sell_undo(pk)
         else:
             msgs.append({"message": u"Internal error: we didn't receive which sell to cancel.",
                          "status": ALERT_ERROR})

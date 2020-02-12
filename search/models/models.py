@@ -3920,7 +3920,7 @@ class Sell(models.Model):
             log.error(u"Error while trying to undo sell id {}: {}".format(sell_id, e))
             msgs.add_error(_(u"Error while undoing sell {}".format(sell_id)))
 
-        return status, msgs.msgs
+        return status, msgs
 
     def undo(self):
         """Undo:
