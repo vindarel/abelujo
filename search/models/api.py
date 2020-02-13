@@ -445,7 +445,8 @@ def card_add(request, **response_kwargs):
             card_obj.shelf = cat
             to_save = True
 
-        if distributor_id and distributor_id not in [-1, 0, '0', u'0']:
+        if distributor_id and distributor_id not in [-1, 0, '0', u'0',
+                                                     'undefined', u'undefined']:
             if card_obj.distributor_id != distributor_id:
                 distributor = Distributor.objects.get(id=distributor_id)
                 card_obj.distributor = distributor
