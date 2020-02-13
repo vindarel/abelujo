@@ -602,7 +602,7 @@ class Card(TimeStampedModel):
         Currency symbol depending on the data source.
         This info is currently not saved in DB (and doesn't need it).
         """
-        if self.data_source and self.data_source.contains('lelivre'):
+        if self.data_source and 'lelivre' in self.data_source:
             return 'CHF'
         return '€'
 
@@ -796,7 +796,7 @@ class Card(TimeStampedModel):
             "price_discounted": self.price_discounted,
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_excl_vat": self.price_excl_vat,
-            "currency": self.currency(),
+            # "currency": self.currency(),
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
