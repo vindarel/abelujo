@@ -30,6 +30,8 @@ from search.datasources.bookshops.frFR.librairiedeparis import \
     librairiedeparisScraper as librairiedeparis  # noqa: F401
 from search.datasources.bookshops.frFR.dilicom import \
     dilicomScraper as dilicom  # noqa: F401
+from search.datasources.bookshops.frFR.lelivre import \
+    lelivreScraper as lelivre  # noqa: F401
 from search.models import Card
 
 #: Default datasource to be used when searching isbn, if source not supplied.
@@ -49,6 +51,8 @@ def get_datasource_from_lang(lang):
         return "librairiedeparis"
     elif lang.startswith("fr") and os.getenv('DILICOM_PASSWORD'):
         return "dilicom"
+    elif lang.startswith('ch'):
+        return 'lelivre'
     elif lang.startswith("de"):
         return "buchlentner"
     elif lang.startswith("es"):
