@@ -602,7 +602,7 @@ class Card(TimeStampedModel):
         Currency symbol depending on the data source.
         This info is currently not saved in DB (and doesn't need it).
         """
-        if self.data_source.contains('lelivre'):
+        if self.data_source and self.data_source.contains('lelivre'):
             return 'CHF'
         return '€'
 
