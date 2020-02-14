@@ -292,34 +292,6 @@ class TestBaskets(TestCase):
         data = json.loads(resp.content)
         self.assertEqual(data['status'], ALERT_ERROR)
 
-class TestPreferences(TestCase):
-
-    def setUp(self):
-        self.preferences = PreferencesFactory()
-        self.preferences.default_place = PlaceFactory()
-        self.preferences.save()
-        self.new_place = PlaceFactory()
-        self.c = Client()
-
-    def tearDown(self):
-        pass
-
-    def test_post_prefs(self):
-        """
-        """
-        resp = self.c.post(reverse('api_preferences'),
-                           json.dumps({'vat_book': 2}),
-                           content_type='application/json')
-        res = json.loads(resp.content)
-        self.assertEqual(ALERT_SUCCESS, res['status'])
-
-        # Bad place
-        resp = self.c.post(reverse('api_preferences'),
-                           json.dumps({'vat_book': 2,
-                                       'default_place': "rst"}),
-                           content_type='application/json')
-        res = json.loads(resp.content)
-        self.assertEqual(ALERT_SUCCESS, res['status'])
 
 class TestUtils(TestCase):
 
