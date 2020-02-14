@@ -395,6 +395,19 @@ def distributors_match(cards):
     no_duplicates = set(dists)
     return len(no_duplicates) == 1
 
+
+def card_currency(card):
+    """
+    Currency symbol depending on the data source.
+    This info is currently not saved in DB (and doesn't need it).
+    """
+    if hasattr(card, 'currency') and card.currency:
+        return card.currency
+    if card.data_source and 'lelivre' in card.data_source:
+        return 'CHF'
+    return '€'
+
+
 def price_fmt(price, currency):
     """
     Return: a string, with the price formatted correctly with its currency symbol.

@@ -67,6 +67,7 @@ from search.models.utils import get_logger
 from search.models.utils import is_invalid
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
+from search.models.utils import card_currency
 from search.models.utils import price_fmt
 from search.models.utils import roundfloat
 from search.models.utils import distributors_match
@@ -544,17 +545,6 @@ class Card(TimeStampedModel):
 
         return self.price
 
-    def get_currency(self):
-        """
-        Currency symbol depending on the data source.
-        This info is currently not saved in DB (and doesn't need it).
-        """
-        if hasattr(self, 'currency') and self.currency:
-            return self.currency
-        if self.data_source and 'lelivre' in self.data_source:
-            return 'CHF'
-        return '€'
-
     @property
     def img(self):
         """
@@ -799,8 +789,8 @@ class Card(TimeStampedModel):
             "price_discounted": self.price_discounted,
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_excl_vat": self.price_excl_vat,
-            'price_fmt': price_fmt(self.price, self.get_currency()),
-            "currency": self.get_currency(),
+            'price_fmt': price_fmt(self.price, card_currency()),
+            "currency": card_currency(),
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
@@ -1982,6 +1972,9 @@ class Preferences(models.Model):
     #: the default language: en, fr, es, de.
     #: Useful for non-rest views that must set the language on the url or for UI messages.
     language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("language"))
+    #: All other, newer preferences. They don't need to be stored in DB. Here: JSON text.
+    #: - default_currency
+    others = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = __("Preferences")
@@ -3363,6 +3356,9 @@ class SoldCards(TimeStampedModel):
 
     def to_list(self):
         return self.to_dict()
+
+    def price_sold_fmt(self):
+        return price_fmt(self.price_sold, card_currency(self.card))
 
     @staticmethod
     def undo(pk):

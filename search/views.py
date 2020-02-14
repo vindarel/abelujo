@@ -19,6 +19,7 @@ from abelujo import settings
 
 import io  # write to file in utf8
 import datetime
+import json
 import time
 import toolz
 import os
@@ -212,12 +213,62 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     rev_url = reverse(url_name) + "?" + params
     return rev_url
 
+
+class PrefsForm(forms.Form):
+    # bookshop_name = forms.CharField(label='Your bookshop name', max_length=100)
+    # vat_book = forms.FloatField(label='VAT of books')
+    CURRENCY_CHOICES = [
+        ('euro', '€'),
+        ('chf', 'CHF'),
+    ]
+    default_currency = forms.ChoiceField(choices=CURRENCY_CHOICES)
+
+    def __init__(self, *args, **kwargs):
+        # Not on form validation.
+        if not args:
+            prefs = Preferences.objects.first()
+            currency = 'euro'
+            try:
+                currency = json.loads(prefs.others)['default_currency']
+            except Exception as e:
+                log.error(u"Error getting the default currency: {}.".format(e))
+
+            # Change the default presentation: show € in we have CHF. # TODO:
+            if currency and currency == 'chf':
+                self.CURRENCY_CHOICES = [
+                    ('chf', 'CHF'),
+                    ('euro', '€'),
+                ]
+            else:
+                self.CURRENCY_CHOICES = [
+                    ('euro', '€'),
+                    ('chf', 'CHF'),
+                ]
+
+        super(self.__class__, self).__init__(*args, **kwargs)
+
 @login_required
 def preferences(request):
     """
     """
     template = "search/preferences.jade"
-    return render(request, template)
+
+    if request.method == 'GET':
+        form = PrefsForm()
+        return render(request, template, {'form': form})
+
+    elif request.method == 'POST':
+        form = PrefsForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            prefs = Preferences.objects.first()
+            prefs.others = json.dumps(data)
+            prefs.save()
+            messages.add_message(
+                request, messages.SUCCESS, _("Preferences saved."))
+            form = PrefsForm()
+            return render(request, template, {'form': form})
+
 
 def postSearch(data_source, details_url):
     """Call the postSearch function of the module imported with the name

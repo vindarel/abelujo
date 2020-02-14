@@ -123,34 +123,6 @@ def preferences(request, **response_kwargs):
         ret['status'] = ALERT_SUCCESS
         return JsonResponse(ret)
 
-    elif request.method == 'POST':
-        place = None
-        status = ALERT_SUCCESS
-        msgs = Messages()
-        try:
-            params = json.loads(request.body)
-        except Exception as e:
-            log.error(u'Error getting requests body on Preferences: {}'.format(e))
-            return JsonResponse(
-                {'status': ALERT_ERROR,
-                 'message': u'Error getting Preferences: {}'.format(e)})
-
-        place_id = params.get('place_id')
-        if place_id:
-            try:
-                place = Place.objects.get(id=place_id)
-                if place is None:
-                    params.pop('place_id')
-            except Exception as e:
-                log.error(u"Error getting place with id {}: {}".format(place_id, e))
-                params.pop('place_id', None)
-
-        status, _msgs = Preferences.setprefs(default_place=place,
-                                             vat_book=params.get('vat_book'),
-                                             language=params.get('language'))
-        msgs.append(_msgs)
-
-        return JsonResponse({'status': status, 'alerts': msgs.msgs})
 
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.

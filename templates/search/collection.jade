@@ -204,7 +204,7 @@ div(ng-cloak, ng-controller="collectionController")
                 div(ng-show="show_images && card.fmt") {{ 'card.fmt' | ng }}
 
         td
-          div {{ 'card.price | currency' | ng}}
+          div {{ 'card.price_fmt' | ng}}
 
         td
           div(ng-repeat="author in card.authors")

@@ -71,7 +71,7 @@ table.table
       a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}
     td {{ it.card.authors_repr }}
     td {{ it.card.pubs_repr }}
-    td.text-right {{ it.price_sold | floatformat:2 }} {% trans "€" %}
+    td.text-right {{ it.price_sold_fmt }} {{ it.card.get_currency }}
     td
       if it.quantity != 1
         span x {{ it.quantity }}
