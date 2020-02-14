@@ -58,7 +58,7 @@ div#abelujo
 
       .row(style="margin-left: 1px;")
 
-        h4 {{ object.price | floatformat:2 | intcomma}} {% trans "€" %}
+        h4 {{ object.price_fmt }}
         table.table.table-condensed.table-bordered
           tbody
             tr
