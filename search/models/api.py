@@ -227,7 +227,7 @@ def datasource_search(request, **response_kwargs):
     return JsonResponse(data)
 
 def cards(request, **response_kwargs):
-    """search for cards in the stock with the given query, or return all of them (with
+    """Search for cards in the stock with the given query, or return all of them (with
     a limit).
 
     Don't return cards added in the DB but not bought.

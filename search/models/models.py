@@ -544,8 +544,7 @@ class Card(TimeStampedModel):
 
         return self.price
 
-    @property
-    def currency(self):
+    def get_currency(self):
         """
         Currency symbol depending on the data source.
         This info is currently not saved in DB (and doesn't need it).
@@ -800,8 +799,8 @@ class Card(TimeStampedModel):
             "price_discounted": self.price_discounted,
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_excl_vat": self.price_excl_vat,
-            'price_fmt': price_fmt(self.price, self.currency),
-            "currency": self.currency(),
+            'price_fmt': price_fmt(self.price, self.get_currency()),
+            "currency": self.get_currency(),
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
