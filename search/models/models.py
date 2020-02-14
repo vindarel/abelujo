@@ -67,6 +67,7 @@ from search.models.utils import get_logger
 from search.models.utils import is_invalid
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
+from search.models.utils import price_fmt
 from search.models.utils import roundfloat
 from search.models.utils import distributors_match
 
@@ -544,6 +545,18 @@ class Card(TimeStampedModel):
         return self.price
 
     @property
+    def currency(self):
+        """
+        Currency symbol depending on the data source.
+        This info is currently not saved in DB (and doesn't need it).
+        """
+        if hasattr(self, 'currency') and self.currency:
+            return self.currency
+        if self.data_source and 'lelivre' in self.data_source:
+            return 'CHF'
+        return '€'
+
+    @property
     def img(self):
         """
         Return the url of the file on disk if it exists, the remote url otherwise.
@@ -596,15 +609,6 @@ class Card(TimeStampedModel):
 
     def display_authors(self):
         return u', '.join([a.name for a in self.authors.all()])
-
-    def currency(self):
-        """
-        Currency symbol depending on the data source.
-        This info is currently not saved in DB (and doesn't need it).
-        """
-        if self.data_source and 'lelivre' in self.data_source:
-            return 'CHF'
-        return '€'
 
     def quantity_compute(self):
         """Return the quantity of this card in all places (not deposits).
@@ -796,7 +800,8 @@ class Card(TimeStampedModel):
             "price_discounted": self.price_discounted,
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_excl_vat": self.price_excl_vat,
-            # "currency": self.currency(),
+            'price_fmt': price_fmt(self.price, self.currency),
+            "currency": self.currency(),
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,

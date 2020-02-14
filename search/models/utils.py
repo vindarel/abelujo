@@ -394,3 +394,14 @@ def distributors_match(cards):
     dists = [it.distributor for it in cards]
     no_duplicates = set(dists)
     return len(no_duplicates) == 1
+
+def price_fmt(price, currency):
+    """
+    Return: a string, with the price formatted correctly with its currency symbol.
+
+    Exemple: 10 € or CHF 10
+    """
+    if currency.lower() == 'chf':
+        return 'CHF {:.2f}'.format(price)
+    else:
+        return '{:.2f} €'.format(price)
