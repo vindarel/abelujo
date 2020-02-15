@@ -412,6 +412,8 @@ def price_fmt(price, currency):
 
     Exemple: 10 € or CHF 10
     """
+    if not price or isinstance(price, str):
+        return price
     if currency.lower() == 'chf':
         return 'CHF {:.2f}'.format(price)
     else:
