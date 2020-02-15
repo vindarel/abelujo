@@ -790,7 +790,7 @@ class Card(TimeStampedModel):
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_excl_vat": self.price_excl_vat,
             'price_fmt': price_fmt(self.price, card_currency(self)),
-            "currency": card_currency(self),
+            "currency": self.get_currency(),
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
@@ -806,6 +806,13 @@ class Card(TimeStampedModel):
             res['quantity'] = self.quantity
 
         return res
+
+    def get_currency(self):
+        # prefer utils.card_currency(card) when possible.
+        # Here, trouble with card_currency(self): 0 argument given.
+        if self.data_source and 'lelivre' in self.data_source:
+            return 'CHF'
+        return '€'
 
     @staticmethod
     def obj_to_list(cards, in_deposits=False, with_quantity=True):

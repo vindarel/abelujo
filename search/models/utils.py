@@ -401,8 +401,6 @@ def card_currency(card):
     Currency symbol depending on the data source.
     This info is currently not saved in DB (and doesn't need it).
     """
-    if hasattr(card, 'currency') and card.currency:
-        return card.currency
     if card.data_source and 'lelivre' in card.data_source:
         return 'CHF'
     return '€'
