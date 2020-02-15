@@ -121,7 +121,7 @@ div.ng-cloak(ng-controller="sellController")
 
       .row(ng-show="cards_selected.length > 0")
           h3.col-md-5 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} {{ 'cards_selected[0].currency' | ng }}
-          .col-md-2
+          .col-md-1
           .col-md-1
             select(
               ng-options="elt.name for elt in discounts.choices"

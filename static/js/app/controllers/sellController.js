@@ -293,6 +293,9 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
                   $scope.cancelCurrentData();
                   $window.removeEventListener('beforeunload', unloadlistener);
+
+                  $scope.payment = $scope.payment_means[0];
+
                   return response.data;
               });
       };
