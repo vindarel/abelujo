@@ -545,6 +545,20 @@ class Card(TimeStampedModel):
 
         return self.price
 
+    def price_fmt(self):
+        """
+        Return: a string, with the price formatted correctly with its currency symbol.
+
+        Exemple: "10 €" or "CHF 10".
+        """
+        if not self.price or isinstance(self.price, str):
+            return self.price
+
+        if self.data_source and 'lelivre' in self.data_source:
+            return 'CHF {:.2f}'.format(self.price)
+        else:
+            return '{:.2f} €'.format(self.price)
+
     @property
     def img(self):
         """
