@@ -50,7 +50,7 @@ pip-submodule-dev:
 
 db:
 	@python manage.py syncdb --noinput           # populate the db for django
-	@python manage.py loaddata dbfixture.json    # set admin user (admin/admin)
+	@python manage.py loaddata dbfixture.json    # set required card types and default place.
 
 dbback:
 	# back up the db, append a timestamp
