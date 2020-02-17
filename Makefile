@@ -31,6 +31,7 @@ rebase:
 # Install in current directory
 pip: pip-submodule
 	@pip install -U pip
+	@pip uninstall bookshops  # around v0.9, an installed "bookshops" lib will hide newer code.
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
 
 pip-nosudo: pip-submodule
