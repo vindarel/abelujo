@@ -36,14 +36,20 @@ from search.models import Card
 
 #: Default datasource to be used when searching isbn, if source not supplied.
 DEFAULT_DATASOURCE = "librairiedeparis"
-if os.getenv('DILICOM_PASSWORD'):
+if os.getenv('DILICOM_PASSWORD') and os.getenv('DILICOM_PASSWORD').strip():
     DEFAULT_DATASOURCE = 'dilicom'
+if os.getenv('DEFAULT_DATASOURCE') and os.getenv('DEFAULT_DATASOURCE').strip():
+    DEFAULT_DATASOURCE = os.getenv('DEFAULT_DATASOURCE')
 
 def get_datasource_from_lang(lang):
     """From a lang (str), return the name (str) of the datasource module.
 
     And for CDs ? The client should be in "recordsop" mode.
     """
+    if os.getenv('DEFAULT_DATASOURCE'):
+        # Required to set the swiss source by default over the french one.
+        return os.getenv('DEFAULT_DATASOURCE')
+
     if not lang:
         return DEFAULT_DATASOURCE
 

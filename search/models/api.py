@@ -174,13 +174,16 @@ def datasource_search(request, **response_kwargs):
         # TODO: search remaining ISBNs on the datasource.
         logging.error("Not implemented: searching many ISBNs at once on the datasource.")
 
+    default_datasource = 'librairiedeparis'
+    if os.getenv('DEFAULT_DATASOURCE'):
+        default_datasource = os.getenv('DEFAULT_DATASOURCE')
     if (not is_isbn_query and not isbn_list) or not res:
-        datasource = request.GET.get('datasource', 'librairiedeparis')
+        datasource = request.GET.get('datasource', default_datasource)
         page = request.GET.get('page', 1)
         if (not is_isbn_query) and datasource == 'dilicom' and os.getenv('DILICOM_USER'):
             # We can not make text searches on Dilicom :/ Only ISBN queries.
             # So we make keyword searches with the right datasource.
-            datasource = 'librairiedeparis'
+            datasource = default_datasource
         res, traces = search_on_data_source(datasource, query, PAGE=page)
 
     data = {"data": res,
