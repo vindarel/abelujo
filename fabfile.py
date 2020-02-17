@@ -455,6 +455,8 @@ def create(name=None):
     venv = name
     # Get the first available port
     ports = [it.port for it in CFG.clients]
+    ports.append(8000)
+    ports.append(8001)
     ports = sorted(ports)
     possible_ports = range(8000, 8000 + len(CFG.clients) + 1)
     free_port = list(set(possible_ports) - set(ports))[0]
