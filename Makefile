@@ -63,7 +63,7 @@ install-nodejs:
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  debian pip pip-submodule db npm-system npm gulp collectstatic translation-compile
+install:  debian pip pip-submodule db npm-system npm gulp translation-compile collectstatic
 
 # xxx: there must be a better way (to do the same task with and without sudo)
 install-nosudo:  debian-nosudo pip-nosudo db npm-system-nosudo npm gulp collectstatic translation-compile
