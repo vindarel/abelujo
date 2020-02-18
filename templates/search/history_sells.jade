@@ -41,7 +41,7 @@ h1 {{ day | date:'F o' | title }}
 .row
   .col-md-3.panel.panel-info
     div.panel-heading {% trans "Cash register" %}
-    div.panel-body {{ sells_data.total_price_sold }} {% trans "€" %}
+    div.panel-body {{ sells_data.total_price_sold_fmt }}
 
   .col-md-3.panel.panel-info
     div.panel-heading {% trans "Articles sold" %}

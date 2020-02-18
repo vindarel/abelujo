@@ -56,8 +56,8 @@ h4
           td
             a(href="{% url 'distributors_sells_month_list' it.distributor.1 day|date:'Y-m' %}", target="_blank"){{ it.distributor.0 | title }}
           td.text-right {{ it.nb_cards_sold }}
-          td.text-right {{ it.total }} {% trans "€" %}
-          td.text-right {{ it.total_public_price }} {% trans "€" %}
+          td.text-right {{ it.total_fmt }}
+          td.text-right {{ it.total_public_price_fmt }}
 
 .col-md-6
   table.table.table-striped
@@ -71,7 +71,7 @@ h4
         td
           a(href="{% url 'publisher_sells_month_list' it.publisher.1 day|date:'Y-m' %}", target="_blank"){{ it.publisher.0 | title }}
         td.text-right {{ it.nb_cards_sold }}
-        td.text-right {{ it.total }} {% trans "€" %}
-        td.text-right {{ it.total_public_price }} {% trans "€" %}
+        td.text-right {{ it.total_fmt }}
+        td.text-right {{ it.total_public_price_fmt }}
 
 {% endblock content %}

@@ -48,7 +48,7 @@ h1 {{ day | date:'l d F Y' | title }}
 
 .col-md-3.panel.panel-info
   div.panel-heading {% trans "Cash register" %}
-  div.panel-body {{ sells_data.total_price_sold | floatformat:2 }} {% trans "€" %}
+  div.panel-body {{ sells_data.total_price_sold_fmt }}
 
 .col-md-3.panel.panel-info
   div.panel-heading {% trans "Articles sold" %}
@@ -60,7 +60,7 @@ h1 {{ day | date:'l d F Y' | title }}
 
 .col-md-3.panel.panel-info
   div.panel-heading  {% trans "Average basket" %}
-  div.panel-body {{ sells_data.sell_mean | floatformat:2 }} {% trans "€" %}
+  div.panel-body {{ sells_data.sell_mean_fmt }}
 
 table.table
   // better: iterate over sells, and iterate over soldcards.
@@ -71,7 +71,7 @@ table.table
       a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}
     td {{ it.card.authors_repr }}
     td {{ it.card.pubs_repr }}
-    td.text-right {{ it.price_sold_fmt }} {{ it.card.get_currency }}
+    td.text-right {{ it.price_sold_fmt }}
     td
       if it.quantity != 1
         span x {{ it.quantity }}

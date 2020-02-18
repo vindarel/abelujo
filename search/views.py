@@ -83,6 +83,7 @@ from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
+from search.models.utils import price_fmt
 from search.models.utils import truncate
 
 from search.models.common import get_payment_abbr
@@ -1562,11 +1563,14 @@ def suppliers_sells_month(request, date, **kwargs):
                                       'previous_month': previous_month.strftime('%Y-%m'),
                                       'next_month_obj': next_month,
                                       'next_month': next_month.strftime('%Y-%m'),
-                                      'year': year})
+                                      'year': year,
+                                      'default_currency': Preferences.get_default_currency(),
+    })
 
 @login_required
 def publisher_sells_month_list(request, pk, date, **kwargs):
     template = 'search/supplier_sells_month_list.jade'
+    default_currency = Preferences.get_default_currency()
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1585,6 +1589,7 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
     next_month = day.add(months=1).replace(day=1)
 
     sells = Sell.sells_of_month(year=year, month=month, publisher_id=pk)
+
     cards_sold = sells.values_list('quantity', flat=True)
     nb_cards_sold = sum(cards_sold)
     prices_sold = sells.values_list('price_sold', flat=True)
@@ -1601,7 +1606,9 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
                                       'cards_sold': cards_sold,
                                       'nb_cards_sold': nb_cards_sold,
                                       'total': total,
+                                      'total_fmt': price_fmt(total, default_currency),
                                       'total_public_price': total_public_price,
+                                      'total_public_price_fmt': price_fmt(total_public_price, default_currency),
                                       'obj': publisher_obj,
                                       'day': day,
                                       'now': now,
@@ -1612,6 +1619,7 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
 @login_required
 def distributors_sells_month_list(request, pk, date, **kwargs):
     template = 'search/supplier_sells_month_list.jade'
+    default_currency = Preferences.get_default_currency()
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1647,7 +1655,9 @@ def distributors_sells_month_list(request, pk, date, **kwargs):
                                       'cards_sold': cards_sold,
                                       'nb_cards_sold': nb_cards_sold,
                                       'total': total,
+                                      'total_fmt': price_fmt(total, default_currency),
                                       'total_public_price': total_public_price,
+                                      'total_public_price_fmt': price_fmt(total_public_price, default_currency),
                                       'obj': obj,
                                       'day': day,
                                       'now': now,

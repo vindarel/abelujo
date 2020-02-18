@@ -3392,6 +3392,9 @@ class SoldCards(TimeStampedModel):
     def price_sold_fmt(self):
         return price_fmt(self.price_sold, card_currency(self.card))
 
+    def price_init_fmt(self):
+        return price_fmt(self.price_init, card_currency(self.card))
+
     @staticmethod
     def undo(pk):
         """
@@ -3614,8 +3617,11 @@ class Sell(models.Model):
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "total_sells": total_sells,  # total
+                "total_sells_fmt": price_fmt(total_sells, Preferences.get_default_currency()),  # total
                 "total_price_sold": total_price_sold,
+                "total_price_sold_fmt": price_fmt(total_price_sold, Preferences.get_default_currency()),
                 "sell_mean": sell_mean,
+                "sell_mean_fmt": price_fmt(sell_mean, Preferences.get_default_currency()),
                 }
 
     def to_list(self):
@@ -3632,7 +3638,9 @@ class Sell(models.Model):
             "total_copies_sold": total_copies_sold,
             # "payment": self.payment,
             "total_price_init": self.total_price_init,
+            "total_price_init_fmt": price_fmt(self.total_price_init, Preferences.get_default_currency()),
             "total_price_sold": self.total_price_sold,
+            "total_price_sold_fmt": price_fmt(self.total_price_sold, Preferences.get_default_currency()),
             "details_url": "/admin/search/{}/{}".format(self.__class__.__name__.lower(), self.id),
             "model": self.__class__.__name__,
         }
@@ -3644,7 +3652,9 @@ class Sell(models.Model):
         assert year
         assert month
         assert isinstance(month, int)
+
         sells = SoldCards.objects.exclude(sell__canceled=True)
+
         sells = sells.filter(created__year=year).filter(created__month=month)
         if publisher_id is not None:
             sells = sells.filter(card__publishers__id=publisher_id)
@@ -3658,6 +3668,7 @@ class Sell(models.Model):
         assert year
         assert month
         assert isinstance(month, int)
+        default_currency = Preferences.get_default_currency()
         sells = SoldCards.objects.exclude(sell__canceled=True)
         sells = sells.filter(created__year=year).filter(created__month=month)
         sells.order_by("created")
@@ -3695,8 +3706,10 @@ class Sell(models.Model):
         if total_cards_sold:
             sell_mean = total_price_sold / total_cards_sold
         return {'total_price_sold': total_price_sold,
+                'total_price_sold_fmt': price_fmt(total_price_sold, default_currency),
                 'total_cards_sold': total_cards_sold,
                 'sell_mean': sell_mean,
+                'sell_mean_fmt': price_fmt(sell_mean, default_currency),
                 'nb_sells': nb_sells,
                 'data': sells_per_day}
 
@@ -3714,6 +3727,7 @@ class Sell(models.Model):
         """
         assert year
         assert month
+        default_currency = Preferences.get_default_currency()
         sells = Sell.sells_of_month(month=month, year=year)
         # Consider sells of distributors.
         sells_with_distributor = sells.filter(card__distributor__isnull=False)
@@ -3749,8 +3763,10 @@ class Sell(models.Model):
             assert len(cards_sold) == len(prices_sold)
             total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
             data['total'] = total
+            data['total_fmt'] = price_fmt(total, default_currency)
             total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
             data['total_public_price'] = total_public_price
+            data['total_public_price_fmt'] = price_fmt(total_public_price, default_currency)
             publishers_data.append(data)
 
         publishers_data = sorted(publishers_data, key=lambda it: it['publisher'][0])  # sort by name
@@ -3769,8 +3785,10 @@ class Sell(models.Model):
             assert len(cards_sold) == len(prices_sold) == len(public_prices)
             total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
             data['total'] = total
+            data['total_fmt'] = price_fmt(total, default_currency)
             total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
             data['total_public_price'] = total_public_price
+            data['total_public_price_fmt'] = price_fmt(total_public_price, default_currency)
             distributors_data.append(data)
 
         distributors_data = sorted(distributors_data, key=lambda it: it['distributor'][0])  # sort by name
