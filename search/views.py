@@ -215,6 +215,25 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     return rev_url
 
 
+def validate_and_get_discounts(data):
+    """
+    data: string, percentages separated by ;
+    """
+    if not data.strip():
+        return []
+    data = data.replace(',', '.')
+    str_discounts = data.split(';')
+    discounts = []
+    for it in str_discounts:
+        try:
+            discounts.append(float(it))
+        except Exception:
+            log.debug("Discounts form not valid: {}".format(data))
+            raise forms.ValidationError(_("Bad discounts: enter percentages separated by ';'."))
+
+    return discounts
+
+
 class PrefsForm(forms.Form):
     # bookshop_name = forms.CharField(label='Your bookshop name', max_length=100)
     # vat_book = forms.FloatField(label='VAT of books')
@@ -222,7 +241,16 @@ class PrefsForm(forms.Form):
         ('euro', '€'),
         ('chf', 'CHF'),
     ]
-    default_currency = forms.ChoiceField(choices=CURRENCY_CHOICES)
+    default_currency = forms.ChoiceField(choices=CURRENCY_CHOICES, required=False)
+    #: Discounts we are allowed to apply for a sell.
+    #: Char field, percentages separated by ;
+    sell_discounts = forms.CharField(
+        max_length=100,
+        required=False,
+        # label='Hello',
+        widget=forms.TextInput(),
+        validators=[validate_and_get_discounts],
+    )
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -249,6 +277,18 @@ class PrefsForm(forms.Form):
 
             self.fields['default_currency'] = forms.ChoiceField(choices=self.CURRENCY_CHOICES)
 
+            current_discounts = ''
+            if 'sell_discounts' in prefs.others:
+                current_discounts = "; ".join(["{}".format(it) for it in json.loads(prefs.others)['sell_discounts']])
+
+                self.fields['sell_discounts'] = forms.CharField(
+                    max_length=100,
+                    required=False,
+                    # label='Hello',
+                    widget=forms.TextInput(attrs={'placeholder': current_discounts}),
+                    validators=[validate_and_get_discounts],
+                )
+
 
 @login_required
 def preferences(request):
@@ -265,11 +305,16 @@ def preferences(request):
         if form.is_valid():
             data = form.cleaned_data
             prefs = Preferences.objects.first()
+            discounts = validate_and_get_discounts(data['sell_discounts'])
+            data['sell_discounts'] = discounts
             prefs.others = json.dumps(data)
             prefs.save()
             messages.add_message(
                 request, messages.SUCCESS, _("Preferences saved."))
             form = PrefsForm()
+            return render(request, template, {'form': form})
+
+        else:
             return render(request, template, {'form': form})
 
 

@@ -121,6 +121,7 @@ def preferences(request, **response_kwargs):
                                  'data': ret})
 
         ret['data'] = PreferencesSerializer(pref).data
+        ret['all_preferences'] = pref.to_dict()
         ret['status'] = ALERT_SUCCESS
         return JsonResponse(ret)
 
@@ -201,6 +202,7 @@ def datasource_search(request, **response_kwargs):
             data['message_status'] = ALERT_WARNING
 
     return JsonResponse(data)
+
 
 def cards(request, **response_kwargs):
     """Search for cards in the stock with the given query, or return all of them (with

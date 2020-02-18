@@ -36,7 +36,6 @@ div.ng-cloak(ng-controller="sellController")
       {{ 'alert.message' | ng }}
 
   form(method='post', novalidate)
-
       .row
         .col-md-3
           form
@@ -124,7 +123,7 @@ div.ng-cloak(ng-controller="sellController")
           .col-md-1
           .col-md-1
             select(
-              ng-options="elt.name for elt in discounts.choices"
+              ng-options="elt.name for elt in preferences.sell_discounts_with_labels"
               title='{% trans "Set this discount to all" %}'
               ng-model="discounts.global_discount"
               ng-change="discount_global()")
@@ -155,7 +154,7 @@ div.ng-cloak(ng-controller="sellController")
 
         .col-md-1
             select(
-              ng-options="elt.name for elt in discounts.choices"
+              ng-options="elt.name for elt in preferences.sell_discounts_with_labels"
               title='{% trans "Choose a discount" %}'
               ng-model="card.quick_discount"
               ng-change='discount_apply($index)'

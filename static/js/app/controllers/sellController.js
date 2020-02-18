@@ -80,6 +80,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       $scope.alerts = undefined;
 
 
+      $http.get("/api/preferences")
+        .then(function(response) {
+            $scope.preferences = response.data.all_preferences;
+      });
+
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
               return response.data.map(function(item){

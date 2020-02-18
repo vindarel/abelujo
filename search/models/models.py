@@ -2003,13 +2003,48 @@ class Preferences(models.Model):
     language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("language"))
     #: All other, newer preferences. They don't need to be stored in DB. Here: JSON, as text.
     #: - default_currency
+    #: - sell_discounts
     others = models.TextField(null=True, blank=True)
+
+    default_discounts = [0, 5, 9, 20, 30]
+    default_discounts_with_labels = []
+    for i, it in enumerate(default_discounts):
+        default_discounts_with_labels.append({'name': '{}%'.format(it),
+                                              'discount': it,
+                                              'id': i})
 
     class Meta:
         verbose_name = __("Preferences")
 
     def __unicode__(self):
         return u"default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
+
+    def to_dict(self):
+        res = {}
+        res['asso_name'] = self.asso_name
+        res['default_place'] = self.default_place.name
+        res['default_place_id'] = self.default_place.id
+
+        others = self.others
+        if others:
+            others = json.loads(others)
+            res['default_currency'] = others['default_currency']
+            sell_discounts = others['sell_discounts']
+            sell_discounts_with_labels = [{'discount': 0,
+                                           'name': '0%',
+                                           'id': 0}]
+            for i, it in enumerate(sell_discounts, start=1):
+                sell_discounts_with_labels.append({'discount': it,
+                                                   'name': '{}%'.format(it),
+                                                   'id': i})
+            if sell_discounts:
+                res['sell_discounts'] = sell_discounts
+                res['sell_discounts_with_labels'] = sell_discounts_with_labels
+            else:
+                res['sell_discounts'] = self.default_discounts
+                res['sell_discounts_with_labels'] = self.default_discounts_with_labels
+
+        return res
 
     @staticmethod
     def prefs():
