@@ -134,8 +134,6 @@ div.ng-cloak(ng-controller="sellController")
           a(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
 
         //- .col-md-3
-          span(ng-repeat="auth in card.authors")
-            span {{ 'auth.fields.name' | ng }}
           i.glyphicon.glyphicon-warning-sign(
             ng-show="{% verbatim %} card.ambiguous_sell {% endverbatim %}"
             title="{% trans 'There is a conflict with deposits.' %}")

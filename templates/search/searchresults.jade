@@ -133,11 +133,9 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                 ng-show="show_images") {{ 'card.availability' | ng }}
 
         td
-          div(ng-repeat="author in card.authors")
-            div {{ 'author' |ng}}
+          div {{ 'card.authors_repr' | ng }}
         td
-          div(ng-repeat="pub in card.publishers")
-            div {{ 'pub' | ng }}
+          div{{ 'card.pubs_repr' | ng }}
         td: div {{ 'card.price_fmt'|ng }}&nbsp;
         td
           div.row

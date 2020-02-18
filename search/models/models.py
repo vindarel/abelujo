@@ -753,6 +753,7 @@ class Card(TimeStampedModel):
         auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
         authors_repr = self.authors_repr
         publishers = self.publishers.all()
+        # Still a bit used client side.
         pubs = [{'fields': {'name': it.name,
                             "id": it.id}} for it in publishers]
         pubs_repr = self.pubs_repr
