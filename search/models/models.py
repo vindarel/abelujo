@@ -3618,11 +3618,12 @@ class Sell(models.Model):
         if to_list:
             sells = [it.to_list() for it in sells]
 
+        default_currency = Preferences.get_default_currency()
         return {"data": sells,
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "total_sells": total_sells,  # total
-                "total_sells_fmt": price_fmt(total_sells, Preferences.get_default_currency()),  # total
+                "total_sells_fmt": price_fmt(total_sells, default_currency),  # total
                 "total_price_sold": total_price_sold,
                 "total_price_sold_fmt": price_fmt(total_price_sold, Preferences.get_default_currency()),
                 "sell_mean": sell_mean,

@@ -225,6 +225,7 @@ class PrefsForm(forms.Form):
     default_currency = forms.ChoiceField(choices=CURRENCY_CHOICES)
 
     def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
         # Not on form validation.
         if not args:
             prefs = Preferences.objects.first()
@@ -234,7 +235,7 @@ class PrefsForm(forms.Form):
             except Exception as e:
                 log.error(u"Error getting the default currency: {}.".format(e))
 
-            # Change the default presentation: show € in we have CHF. # TODO:
+            # Change the default presentation: show € in we have CHF.
             if currency and currency == 'chf':
                 self.CURRENCY_CHOICES = [
                     ('chf', 'CHF'),
@@ -246,7 +247,8 @@ class PrefsForm(forms.Form):
                     ('chf', 'CHF'),
                 ]
 
-        super(self.__class__, self).__init__(*args, **kwargs)
+            self.fields['default_currency'] = forms.ChoiceField(choices=self.CURRENCY_CHOICES)
+
 
 @login_required
 def preferences(request):
