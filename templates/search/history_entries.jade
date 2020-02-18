@@ -54,7 +54,7 @@ h1 {{ day | date:'F o' | title }}
             span {{ it.date_obj | date:'l' }} 
         td
           a(href="{% url 'history_entries_day' it.date %}") {{ it.date }}
-        td.text-right {{ it.price_entered }} {% trans "€" %}
+        td.text-right {{ it.price_entered_fmt }}
         td.text-right x {{ it.nb_entered }}
 
 {% endblock content %}

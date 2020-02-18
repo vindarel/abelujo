@@ -51,7 +51,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                   td.text-right {{ 'totals.total_copies' | ng }}
                 tr
                   td {% trans "total" %}
-                  td.text-right {{ 'totals.total_price | number:2' |ng}}  €
+                  td.text-right {{ 'totals.total_price_fmt' |ng}}
 
       .col-md-6
         table.table.table-condensed
@@ -68,7 +68,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
                   td.text-right todo  {{ 'get_total_price_excl_vat()' |ng}}  €
                 tr
                   td {% trans "total discounted excl. vat" %}
-                  td.text-right  todo {{ 'get_total_price_discounted_excl_vat()' |ng}}  €
+                  td.text-right  todo {{ 'get_total_price_discounted_excl_vat()' |ng}} {{ 'currency' | ng }}
 
 
     div
@@ -158,8 +158,8 @@ div(ng-cloak, ng-controller="basketToCommandController")
                     span: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
                   td.col-md-1 {{ 'card.pubs_repr' | ng }}
-                  td.col-md-1.text-right {{ 'card.price | number:2' |ng }} €
-                  td.col-md-1.text-right {{ 'card.price_discounted | number:2' |ng }} €
+                  td.col-md-1.text-right {{ 'card.price_fmt' |ng }}
+                  td.col-md-1.text-right {{ 'card.price_discounted_fmt' |ng }}
                   td.col-md-1.text-right {{ 'card.quantity' |ng }}
                   td.col-md-1
                     input.my-number-input(type="number", min=0, max=99,

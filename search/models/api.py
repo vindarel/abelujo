@@ -65,6 +65,7 @@ from search.models.utils import Messages
 from search.models.utils import get_logger
 from search.models.utils import get_page_count
 from search.models.utils import page_start_index
+from search.models.utils import price_fmt
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 
@@ -1858,6 +1859,7 @@ def commands_supplier(request, pk):
     totals['total_copies'] = sum([it.quantity for it in copies_from_dist])
     totals['total_price'] = sum([it.card.price if it.card.price else 0
                                  for it in copies_from_dist])
+    totals['total_price_fmt'] = price_fmt(totals['total_price'], Preferences.get_default_currency())
     # total_price_discounted
     # total_price_excl_vat
     # total_price_discounted_excl_vat

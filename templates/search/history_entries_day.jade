@@ -60,6 +60,6 @@ table.table.table-striped
         td {{ it.card.title }}
         td {{ it.card.pubs_repr }}
         td {{ it.card.shelf }}
-        td.text-right {{ it.card.price }} {% trans "€" %}
+        td.text-right {{ it.card.price_fmt }}
 
 {% endblock content %}

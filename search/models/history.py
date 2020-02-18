@@ -31,6 +31,26 @@ log = get_logger()
 CHAR_MAX_LENGTH = 200
 PAGE_SIZE = 50
 
+
+def price_fmt(price, currency):
+    """
+    Similar as models.utils.
+    """
+    # Cannot import models.Preferences to get the default currency, circular import.
+    if price is None or isinstance(price, str):
+        return price
+    if currency.lower() == 'chf':
+        return 'CHF {:.2f}'.format(price)
+    else:
+        return '{:.2f} €'.format(price)
+
+def card_currency(card):
+    # models.utils
+    if card.data_source and 'lelivre' in card.data_source:
+        return 'CHF'
+    return '€'
+
+
 class InternalMovement(TimeStampedModel):
     """An internal movement
     For a single Card (or a Basket).
@@ -334,10 +354,13 @@ class Entry(TimeStampedModel):
         assert month
         entries = []
         # beg = pendulum.now()
+        fake_default_currency = '€'
         try:
             entries = EntryCopies.objects.order_by("-created").filter(created__year=year).filter(created__month=month)
         except Exception as e:
             log.error('Error in Entry.history: {}'.format(e))
+
+        fake_default_currency = card_currency(entries.first().card)
 
         nb_entries = entries.count()
         now = pendulum.now()
@@ -375,7 +398,10 @@ class Entry(TimeStampedModel):
                                     'date_obj': date_obj,
                                     'weekday': date_obj.weekday(),
                                     'nb_entered': len(entries_this_day),
-                                    'price_entered': price_entered})
+                                    'price_entered': price_entered,
+                                    'price_entered_fmt': price_fmt(price_entered,
+                                                                   fake_default_currency),
+            })
             # end = pendulum.now()
             # print("------- for day {}: {}".format(day, end - start))
 
@@ -386,6 +412,8 @@ class Entry(TimeStampedModel):
                 'nb_entries': nb_entries,
                 'entries_per_day': entries_per_day,
                 'total_price_entered': total_price_entered,
+                'total_price_entered_fmt': price_fmt(total_price_entered,
+                                                     fake_default_currency),
                 }
 
     @staticmethod
