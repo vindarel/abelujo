@@ -42,6 +42,7 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from weasyprint import HTML
@@ -433,7 +434,6 @@ class CardMoveForm(forms.Form):
     write our form directly in a template instead, using angularjs
     calls to an api to fetch the places and baskets.
     """
-    #XXX: replace these forms with a template and api calls.
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         model = "Place"
@@ -446,7 +446,7 @@ class CardMoveForm(forms.Form):
 
 
 class CardMove2BasketForm(forms.Form):
-    # needs refacto etc… too complicating and unecessary.
+    # I don't like, but I now like it better than JS and api calls.
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         model = "Basket"
@@ -498,19 +498,21 @@ class CardPlacesAddForm(forms.Form):
 
 
 class MoveInternalForm(forms.Form):
-    nb = forms.IntegerField()
+    nb = forms.IntegerField(label=__("Quantity"))
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['origin'] = forms.ChoiceField(choices=get_places_choices())
-        self.fields['destination'] = forms.ChoiceField(choices=get_places_choices())
+        self.fields['origin'] = forms.ChoiceField(choices=get_places_choices(),
+                                                  label=__("origin"))
+        self.fields['destination'] = forms.ChoiceField(choices=get_places_choices(),
+                                                       label=__("destination"))
 
 
 class SetSupplierForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['supplier'] = forms.ChoiceField(choices=get_suppliers_choices())
+        self.fields[_('supplier')] = forms.ChoiceField(choices=get_suppliers_choices())
 
 
 class NewSupplierForm(forms.Form):
@@ -1295,7 +1297,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         # barcode
         start = time.time()
         if barcodes:
-            for card, __ in cards_qties:
+            for card, _noop in cards_qties:
                 # Find or create the base64 barcode.
                 search = Barcode64.objects.filter(ean=card.ean)
                 if not search:
