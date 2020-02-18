@@ -2040,9 +2040,11 @@ class Preferences(models.Model):
             if sell_discounts:
                 res['sell_discounts'] = sell_discounts
                 res['sell_discounts_with_labels'] = sell_discounts_with_labels
-            else:
-                res['sell_discounts'] = self.default_discounts
-                res['sell_discounts_with_labels'] = self.default_discounts_with_labels
+
+        else:
+            res['default_currency'] = '€'
+            res['sell_discounts'] = self.default_discounts
+            res['sell_discounts_with_labels'] = self.default_discounts_with_labels
 
         return res
 
