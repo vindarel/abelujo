@@ -551,7 +551,9 @@ class Card(TimeStampedModel):
 
         Exemple: "10 €" or "CHF 10".
         """
-        if not self.price or isinstance(self.price, str):
+        # WARN: duplicated from utils.py, because the template wants an object method.
+        # I consider this a Python fail.
+        if self.price is None or isinstance(self.price, str):
             return self.price
 
         if self.data_source and 'lelivre' in self.data_source:

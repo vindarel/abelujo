@@ -174,6 +174,11 @@ class TestCards(TestCase):
     def tearDown(self):
         log.setLevel(logging.DEBUG)
 
+    def test_to_dict(self):
+        res = self.autobio.to_dict()
+        assert res
+        self.assertTrue('€' in res['price_fmt'])
+
     def test_shelf_repr(self):
         self.assertNotEqual("", self.autobio.shelf_repr)
         self.autobio.shelf = None
