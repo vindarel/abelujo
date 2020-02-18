@@ -412,6 +412,9 @@ def price_fmt(price, currency):
 
     Exemple: 10 € or CHF 10
     """
+    if not currency:
+        # Happens in tests, in bare bones setup.
+        return price
     if price is None or isinstance(price, str):
         return price
     if currency.lower() == 'chf':

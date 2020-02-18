@@ -801,16 +801,16 @@ class Card(TimeStampedModel):
             "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
-            'price_fmt': price_fmt(self.price, card_currency(self)),
+            'price_fmt': price_fmt(self.price, self.get_currency()),
             "price_sold": self.price_sold,
-            "price_sold_fmt": price_fmt(self.price_sold, Preferences.get_default_currency()),
+            "price_sold_fmt": price_fmt(self.price_sold, self.get_currency()),
             "price_discounted": self.price_discounted,
-            "price_discounted_fmt": price_fmt(self.price_discounted, Preferences.get_default_currency()),
+            "price_discounted_fmt": price_fmt(self.price_discounted, self.get_currency()),
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_discounted_excl_vat_fmt": price_fmt(self.price_discounted_excl_vat,
-                                                       Preferences.get_default_currency()),
+                                                       self.get_currency()),
             "price_excl_vat": self.price_excl_vat,
-            "price_excl_vat_fmt": price_fmt(self.price_excl_vat, Preferences.get_default_currency()),
+            "price_excl_vat_fmt": price_fmt(self.price_excl_vat, self.get_currency()),
             "currency": self.get_currency(),
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
@@ -1081,6 +1081,7 @@ class Card(TimeStampedModel):
             'page': page,
             'page_size': page_size,
             'nb_results': nb_results,
+            'currency': Preferences.get_default_currency(),
         }
 
         if isbns:
@@ -2082,7 +2083,6 @@ class Preferences(models.Model):
 
     @staticmethod
     def get_default_currency():
-        default = '€'
         try:
             currency = json.loads(Preferences.prefs().others)
             return currency.get('default_currency', '€').upper()
@@ -4223,6 +4223,7 @@ class InventoryBase(TimeStampedModel):
             ret["nb_cards"] = self.nb_cards()
             ret["nb_copies"] = self.nb_copies()
             ret["value"] = self.value()
+            ret["value_fmt"] = price_fmt(self.value(), Preferences.get_default_currency())
 
         return ret
 
@@ -4234,6 +4235,7 @@ class InventoryBase(TimeStampedModel):
         - total value of the inventory
         - total value with discount
         """
+        default_currency = Preferences.get_default_currency()
         all_copies = self.copies_set.order_by("card__title").all()
         nb_cards = all_copies.count()
         nb_copies = self.nb_copies()
@@ -4256,6 +4258,7 @@ class InventoryBase(TimeStampedModel):
         meta = {
             'nb_results': nb_cards,
             'num_pages': paginator.num_pages,
+            'currency': default_currency,
         }
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
@@ -4281,6 +4284,7 @@ class InventoryBase(TimeStampedModel):
             "nb_cards": nb_cards,
             "nb_copies": nb_copies,
             "total_value": total_value,
+            "total_value_fmt": price_fmt(total_value, default_currency),
             "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,

@@ -42,7 +42,7 @@ div(ng-controller="inventoryTerminateController")
 
    .col-md-3.panel.panel-warning(ng-if="is_missing")
     div.panel-heading
-    div.panel-body {% trans "Warning: some cards are missing in the inventory." %} (x {{'obj_length(missing)'|ng}}, {{ 'missing_cost'|ng}} €)
+    div.panel-body {% trans "Warning: some cards are missing in the inventory." %} (x {{'obj_length(missing)'|ng}})
 
    .col-md-3(ng-if="is_less_in_inv").panel.panel-warning
     div.panel-heading

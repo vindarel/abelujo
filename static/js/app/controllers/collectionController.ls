@@ -53,20 +53,23 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
       {name: gettext("> 10"), id: ">10"}
     ]
     $scope.price_choice = null
-    $scope.price_choices = [
-      {name: gettext(" "), id: ""}
-      {name: "0", id: "0"}
-      {name: "<= 3 €", id: "<=3"}
-      {name: "<= 5 €", id: "<=5"}
-      {name: "<= 10 €", id: "<=10"}
-      {name: "<= 20 €", id: "<=20"}
-      {name: gettext("between 0 and 5 €"), id: "[0,5]"}
-      {name: gettext("between 0 and 10 €"), id: "[0,10]"}
-      {name: gettext("between 5 and 10 €"), id: "[5,10]"}
-      {name: gettext("> 5 €"), id: ">5"}
-      {name: gettext("> 10 €"), id: ">10"}
-      {name: gettext("> 20 €"), id: ">20"}
-    ]
+    $scope.price_choices = []
+
+    $scope.define_price_choices = !->
+        $scope.price_choices = [
+          {name: gettext(" "), id: ""}
+          {name: "0", id: "0"}
+          {name: "<= 3 #{$scope.meta.currency}", id: "<=3"}
+          {name: "<= 5 #{$scope.meta.currency}", id: "<=5"}
+          {name: "<= 10 #{$scope.meta.currency}", id: "<=10"}
+          {name: "<= 20 #{$scope.meta.currency}", id: "<=20"}
+          {name: gettext("between 0 and 5 #{$scope.meta.currency}"), id: "[0,5]"}
+          {name: gettext("between 0 and 10 #{$scope.meta.currency}"), id: "[0,10]"}
+          {name: gettext("between 5 and 10 #{$scope.meta.currency}"), id: "[5,10]"}
+          {name: gettext("> 5 #{$scope.meta.currency}"), id: ">5"}
+          {name: gettext("> 10 #{$scope.meta.currency}"), id: ">10"}
+          {name: gettext("> 20 #{$scope.meta.currency}"), id: ">20"}
+        ]
 
     # pagination
     $scope.page = 1
@@ -144,6 +147,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         for elt in $scope.cards
             $scope.selected[elt.id] = false
             elt.date_publication = Date.parse(elt.date_publication)
+
+        $scope.define_price_choices!
 
     $scope.validate = !->
         params = do

@@ -114,11 +114,6 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
         $scope.missing = $scope.diff
         |> Obj.filter (.inv == 0)
 
-        $scope.missing_cost = 0
-        for k, v of $scope.missing
-            $scope.missing_cost += v.card.price * v.diff
-        $scope.missing_cost = $scope.missing_cost.toFixed 2 # round a float
-
         $scope.is_missing = ! Obj.empty $scope.missing
         # Cards not present initially
         $scope.no_origin = $scope.diff

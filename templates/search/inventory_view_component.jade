@@ -57,7 +57,7 @@ div(ng-controller=controller)
               table.table.table-condensed
                 tr
                   td {% trans "Total value" %}
-                  td {{ 'total_value' | ng }} €
+                  td {{ 'total_value' | ng }} {{ 'meta.currency' | ng }}
 
     .row
        .row
@@ -134,9 +134,9 @@ div(ng-controller=controller)
             title="{% trans 'There is a conflict with deposits.' %}")
           i.glyphicon.glyphicon-exclamation-s
 
-         td.col-md-1 {{ 'card.price' | ng }}  €
+         td.col-md-1 {{ 'card.price_fmt' | ng }}
 
-         td.col-md-1 {{ 'card.price_discounted' | ng }}  €
+         td.col-md-1 {{ 'card.price_discounted_fmt' | ng }}
 
          td.col-md-3
             p.input-group
