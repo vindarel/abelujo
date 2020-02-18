@@ -278,9 +278,14 @@ class PrefsForm(forms.Form):
             self.fields['default_currency'] = forms.ChoiceField(choices=self.CURRENCY_CHOICES)
 
             current_discounts = ''
-            if 'sell_discounts' in prefs.others:
-                current_discounts = "; ".join(["{}".format(it) for it in json.loads(prefs.others)['sell_discounts']])
-
+            sell_discounts = None
+            if prefs.others and 'sell_discounts' in prefs.others:
+                try:
+                    sell_discounts = json.loads(prefs.others)['sell_discounts']
+                except Exception:
+                    pass
+            if sell_discounts:
+                current_discounts = "; ".join(["{}".format(it) for it in sell_discounts])
                 self.fields['sell_discounts'] = forms.CharField(
                     max_length=100,
                     required=False,
