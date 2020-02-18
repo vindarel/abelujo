@@ -183,7 +183,7 @@ div(ng-cloak, ng-controller="basketsController")
          td
          td
          td
-         td {{ 'get_total_price()'|ng}} €
+         td {{ 'get_total_price()'|ng}} {{ 'meta.default_currency' | ng }}
          td {{ 'get_total_copies()'|ng}}
          td
 
@@ -204,7 +204,7 @@ div(ng-cloak, ng-controller="basketsController")
 
          td {{ 'it.created' | ng }}
          td.text-right {{ 'it.quantity' | ng}}
-         td.text-right {{ 'it.price | number:2' | ng }} €
+         td.text-right {{ 'it.price_fmt' | ng }}
          td
           input.my-number-input(type="number", min=0, max=99,
             ng-model="it.basket_qty"

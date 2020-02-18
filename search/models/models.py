@@ -1995,7 +1995,7 @@ class Preferences(models.Model):
     #: the default language: en, fr, es, de.
     #: Useful for non-rest views that must set the language on the url or for UI messages.
     language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("language"))
-    #: All other, newer preferences. They don't need to be stored in DB. Here: JSON text.
+    #: All other, newer preferences. They don't need to be stored in DB. Here: JSON, as text.
     #: - default_currency
     others = models.TextField(null=True, blank=True)
 
@@ -2074,6 +2074,15 @@ class Preferences(models.Model):
             vat = None
 
         return vat
+
+    @staticmethod
+    def get_default_currency():
+        default = '€'
+        try:
+            currency = json.loads(Preferences.prefs().others)
+            return currency.get('default_currency', '€').upper()
+        except Exception as e:
+            log.error(u"Error getting the default currency: {}.".format(e))
 
     @staticmethod
     def price_excl_tax(price):

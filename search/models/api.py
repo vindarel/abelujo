@@ -964,6 +964,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
             'page_size': page_size,
             'nb_results': nb_results,
             'num_pages': num_pages,
+            'default_currency': Preferences.get_default_currency(),
         }
         return JsonResponse(to_ret, safe=False)
 
