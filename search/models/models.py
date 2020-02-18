@@ -3625,14 +3625,15 @@ class Sell(models.Model):
                 "total_sells": total_sells,  # total
                 "total_sells_fmt": price_fmt(total_sells, default_currency),  # total
                 "total_price_sold": total_price_sold,
-                "total_price_sold_fmt": price_fmt(total_price_sold, Preferences.get_default_currency()),
+                "total_price_sold_fmt": price_fmt(total_price_sold, default_currency),
                 "sell_mean": sell_mean,
-                "sell_mean_fmt": price_fmt(sell_mean, Preferences.get_default_currency()),
+                "sell_mean_fmt": price_fmt(sell_mean, default_currency),
                 }
 
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
         json-ified."""
+        default_currency = Preferences.get_default_currency()
         cards_sold = [it.to_dict() for it in self.soldcards_set.all()]
         total_copies_sold = sum([it['quantity'] for it in cards_sold])
         ret = {
@@ -3644,9 +3645,9 @@ class Sell(models.Model):
             "total_copies_sold": total_copies_sold,
             # "payment": self.payment,
             "total_price_init": self.total_price_init,
-            "total_price_init_fmt": price_fmt(self.total_price_init, Preferences.get_default_currency()),
+            "total_price_init_fmt": price_fmt(self.total_price_init, default_currency),
             "total_price_sold": self.total_price_sold,
-            "total_price_sold_fmt": price_fmt(self.total_price_sold, Preferences.get_default_currency()),
+            "total_price_sold_fmt": price_fmt(self.total_price_sold, default_currency),
             "details_url": "/admin/search/{}/{}".format(self.__class__.__name__.lower(), self.id),
             "model": self.__class__.__name__,
         }
