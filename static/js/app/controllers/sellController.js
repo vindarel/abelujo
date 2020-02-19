@@ -23,13 +23,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
 
+      // Respect the backend ids.
       $scope.payment_means = [
-           {name: gettext("cash"), id:1},
-           {name: gettext("cheque"), id:2},
-           {name: gettext("visa card"), id:3},
-           {name: gettext("gift"), id:4},
-           {name: gettext("transfer"), id:5},
-           {name: gettext("other"), id:6},
+          {name: gettext("ESPECES"), id:1},
+           {name: gettext("CB"), id:3},
+           {name: gettext("CHEQUE"), id:2},
+           {name: gettext("transfert"), id:5},
+           {name: gettext("autre"), id:6},
       ];
       $scope.payment = $scope.payment_means[0];
 
