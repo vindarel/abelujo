@@ -95,24 +95,27 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         $scope.validate!
 
     $scope.validate = !->
+        $scope.validate_with_query $scope.query
+
+    $scope.validate_with_query = (query) !->
         """Search for cards.
         """
-        if not $scope.query
+        if not query
             return
-        $location.search('q', $scope.query)
+        $location.search('q', query)
         $location.search('source', $scope.datasource.id)
         search_obj = $location.search()
 
         # Look at the history, for Previous button
         cache = $scope.results_page
-        |> find ( -> it.page == $scope.page and it.query == $scope.query and it.datasource == $scope.datasource.id)
+        |> find ( -> it.page == $scope.page and it.query == query and it.datasource == $scope.datasource.id)
         if cache
             $scope.cards = cache.cards
             return
 
         params = do
-            # query: $scope.query
-            query: search_obj.q
+            query: query
+            ## query: search_obj.q
             # datasource: $scope.datasource.id
             datasource: search_obj.source
             page: search_obj.page
@@ -121,7 +124,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         $http.get "/api/datasource/search/", do
             params: params
         .then (response) !->
-            $window.document.title = "Abelujo - " + gettext("search") + " " + $scope.query
+            $window.document.title = "Abelujo - " + gettext("search") + " " + query
             $scope.cards = response.data.data
 
             if response.data.data.length == 0
@@ -136,7 +139,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             $scope.results_page.push do
                 cards: $scope.cards
                 page: $scope.page
-                query: $scope.query
+                query: query
                 datasource: $scope.datasource.id
         , (response) !->
             $scope.alerts.push do
@@ -145,7 +148,10 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
     # Initial search results, read the url's query params after the #
     search_obj = $location.search()
-    $scope.query = search_obj.q
+    ## $scope.query = search_obj.q
+    # Re-search with the query (with a simple cache at the backend),
+    # but don't save it in $scope.query, to not populate the input field.
+    previous_query = search_obj.q
     source_id = search_obj.source
     if source_id
         $scope.datasource = $scope.datasources
@@ -161,9 +167,9 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         else
            $scope.datasource = $scope.datasources[0]
 
-    $scope.validate!
+    $scope.validate_with_query previous_query
 
-    $window.document.title = "Abelujo - " + gettext("search") + " " + $scope.query
+    $window.document.title = "Abelujo - " + gettext("search") + " " + previous_query
 
     # Add a checkbox column to select rows.
     $scope.toggleAll = !->
@@ -187,10 +193,11 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
             card: card
         $http.post "/api/cards/create", params
         .then (response) !->
+            query = $location.search().q
             card_id = response.data.card_id
             # Card created in DB. Now add it to places, deposits, etc.
             if card_id
-                $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{$scope.query}&source=#{$scope.datasource.id}"
+                $window.location.href = "/#{$scope.language}/stock/card/create/#{card_id}?q=#{query}&source=#{$scope.datasource.id}"
             else
                 $scope.alerts.push do
                     level: 'danger'
