@@ -138,16 +138,18 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         promise = utils.getCards args
         promise.then (res) ->
             $scope.cards_fetched = res
-            if utils.is_isbn query
-               $window.document.getElementById("default-input").select()
+            if utils.is_isbn query and res.length == 1
+               $window.document.getElementById("default-input").value = ""
+               $scope.add_selected_card res[0]
+               return
             return res
 
-    $scope.add_selected_card = (card_repr) !->
+    $scope.add_selected_card = (card) !->
         """ Add the card selected from the autocomplete to the current list's copies.
         Save it.
         """
         tmpcard = $scope.cards_fetched
-        |> find (.repr == card_repr.repr)
+        |> find (.repr == card.repr)
         tmpcard = tmpcard.item
         # $scope.copies.push tmpcard
         # Insert at the right sorted place
