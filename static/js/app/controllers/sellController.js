@@ -22,19 +22,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       $scope.cards_selected = [];
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
-      //TODO: use django-angular to limit code duplication.
-      $scope.card_types = [
-          // WARNING duplication from dbfixture.json
-          {name: gettext("all publication"), id:null},
-          {name: gettext("book"), group: gettext("book"), id:1},
-          {name: gettext("booklet"), group: gettext("book"),id:2},
-          {name: gettext("periodical"), group: gettext("book"), id:3},
-          {name: gettext("other print"), group: gettext("book"), id:4},
-          {name: gettext("CD"), group: gettext("CD"), id:5},
-          {name: gettext("DVD"), group: gettext("CD"), id:6},
-          {name: gettext("vinyl"), group: gettext("CD"), id:8},
-          {name: gettext("others"), group: gettext("others"), id:9},
-      ];
 
       $scope.payment_means = [
            {name: gettext("cash"), id:1},
@@ -71,7 +58,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
          id:5}
     ];
 
-      $scope.card_type = $scope.card_types[0];
       // $scope.tmpcard = undefined;
       $scope.tmpcard = [];
       $scope.selected_ids = [];
@@ -126,8 +112,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   "lang": $scope.language,
                   "language": $scope.language,
                   "deposit_id": deposit_id,
-                  "place_id": place_id,
-                  "card_type_id": $scope.card_type.id
+                  "place_id": place_id
               }})
 
               .then(function(response){ // "then", not "success"
@@ -244,6 +229,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           // So let's just erase the card list.
           $scope.cards_selected = [];
       });
+
+    $scope.sellCardsWith = function(payment) {
+        console.log("Sell with ", payment);
+        $scope.payment = payment;
+        $scope.sellCards();
+    };
 
     $scope.sellCards = function() {
           var ids = [];

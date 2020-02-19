@@ -56,15 +56,6 @@ div.ng-cloak(ng-controller="sellController")
 
         .col-md-3
           form
-            label {% trans "Payment" %}
-            select.form-control(
-              ng-model="payment"
-              ng-options="elt.name for elt in payment_means"
-              required
-            )
-
-        .col-md-3
-          form
             label {% trans "Selling place" %}
             select.form-control(
                 ng-model="place"
@@ -80,14 +71,6 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row
-        .col-md-3
-            span.input-group-btn
-              label.sr-only {% trans "Card type" %}
-              select.form-control(
-                ng-model="card_type"
-                ng-options="elt.name group by elt.group for elt in card_types"
-                required
-              )
         .col-md-9
           p.input-group
            form()
@@ -106,8 +89,9 @@ div.ng-cloak(ng-controller="sellController")
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
       .row
-        .col-md-3
-          input.btn.btn-success(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
+        .col-md-12
+          span(ng-repeat="payment in payment_means")
+            input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
           input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
           .btn-group
