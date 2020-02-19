@@ -321,6 +321,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.total_price = null;
         $scope.selected_ids = [];
         $scope.cards_selected = [];
+        $scope.cards_fetched = [];
     };
 
    // The date picker:
