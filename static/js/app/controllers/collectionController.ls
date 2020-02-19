@@ -180,6 +180,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         .then (response) !->
             $scope.cards = response.data.cards
             $scope.meta = response.data.meta
+            $window.document.getElementById("default-input").select()
 
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages

@@ -1085,7 +1085,7 @@ class Card(TimeStampedModel):
             'currency': Preferences.get_default_currency(),
         }
 
-        if isbns:
+        if isbns and len(isbns) > 1:
             meta['message'] = _("You asked for {} ISBNs. {} found.".format(len(isbns), len(cards)))
             if isbn_list_search_complete:
                 meta['message_status'] = ALERT_SUCCESS
