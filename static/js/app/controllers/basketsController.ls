@@ -129,10 +129,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
-    is_isbn = (text) ->
-        reg = /^[0-9]{10,13}/g
-        text.match reg
-
     $scope.getCards = (query) ->
         args = do
             query: query
@@ -142,7 +138,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         promise = utils.getCards args
         promise.then (res) ->
             $scope.cards_fetched = res
-            if is_isbn query
+            if utils.is_isbn query
                $window.document.getElementById("default-input").select()
             return res
 
