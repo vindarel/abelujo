@@ -182,7 +182,7 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
                 card_type_id: null
                 lang: $scope.language
         .then (response) ->
-            response.data.cards.map (item) ->
+            res = response.data.cards.map (item) ->
                 repr = "#{item.title}, #{item.authors_repr}, éd #{item.pubs_repr}"
                 item.quantity = 1
                 $scope.cards_fetched.push do
@@ -193,14 +193,21 @@ angular.module "abelujo" .controller 'inventoryNewController', ['$http', '$scope
                     "repr": repr
                     "id": item.id
 
+            if utils.is_isbn val and res.length == 1
+               setTimeout( ->
+                 $window.document.getElementById("default-input").value = ""
+                 $scope.add_selected_card res[0]
+               , 500)
+               return
+
+            return res
+
     # Add the choice of the autocomplete.
-    # card_repr: the string representation.
-    $scope.add_selected_card = (card_repr) !->
+    $scope.add_selected_card = (card) !->
         $scope.tmpcard = _.filter $scope.cards_fetched, (it) ->
-            it.repr == card_repr.repr
+            it.repr == card.repr
         $scope.tmpcard = $scope.tmpcard[0].item
 
-        # TODO: get rid of underscore js
         if not _.contains $scope.selected_ids, $scope.tmpcard.id
             $scope.cards_selected.push $scope.tmpcard
             $scope.all.push $scope.tmpcard
