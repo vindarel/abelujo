@@ -139,9 +139,12 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         promise.then (res) ->
             $scope.cards_fetched = res
             if utils.is_isbn query and res.length == 1
-               $window.document.getElementById("default-input").value = ""
-               $scope.add_selected_card res[0]
+               setTimeout( ->
+                 $window.document.getElementById("default-input").value = ""
+                 $scope.add_selected_card res[0]
+               , 700)
                return
+
             return res
 
     $scope.add_selected_card = (card) !->
