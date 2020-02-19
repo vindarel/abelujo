@@ -72,7 +72,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     ];
 
       $scope.card_type = $scope.card_types[0];
-      $scope.tmpcard = undefined;
+      // $scope.tmpcard = undefined;
+      $scope.tmpcard = [];
       $scope.selected_ids = [];
       $scope.total_price = 0;
 
@@ -128,8 +129,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   "place_id": place_id,
                   "card_type_id": $scope.card_type.id
               }})
+
               .then(function(response){ // "then", not "success"
-                  return response.data.cards.map(function(item){
+                  // map over the results and return a list of card objects.
+                  var resp = response.data.cards.map(function(item){
                       // give a string representation for each object (result)
                       // xxx: take the repr from django
                       // return item.title + ", " + item.authors + ", éd. " + item.publishers;
@@ -138,15 +141,24 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                       $scope.cards_fetched.push({"repr": repr,
                                                  "id": item.id,
                                                  "item": item});
+
                       return {"repr": repr, "id": item.id};
                   });
+
+                  if (utils.is_isbn(val) && resp.length == 1) {
+                      $scope.add_selected_card(resp[0]);
+                      $window.document.getElementById("default-input").value = "";
+                      return [];
+                  }
+
+                  return resp;
               });
       };
 
-      $scope.add_selected_card = function(card_repr){
-          // $scope.cards_selected.push(card_repr);
+      $scope.add_selected_card = function(card){
+          // $scope.cards_selected.push(card);
           $scope.tmpcard = _.filter($scope.cards_fetched, function(it){
-              return it.repr === card_repr.repr;
+              return it.repr === card.repr;
           }) ;
           $scope.tmpcard = $scope.tmpcard[0].item;
           $scope.tmpcard.price_orig = $scope.tmpcard.price_sold;
@@ -156,7 +168,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               $scope.selected_ids.push($scope.tmpcard.id);
           } else {
               var existing = _.find($scope.cards_selected, function(it){
-                  return it.id === card_repr.id;
+                  return it.id === card.id;
               });
               existing.quantity_sell += 1;
           }
