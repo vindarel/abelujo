@@ -111,6 +111,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         |> find ( -> it.page == $scope.page and it.query == query and it.datasource == $scope.datasource.id)
         if cache
             $scope.cards = cache.cards
+            $window.document.getElementById("default-input").select()
             return
 
         params = do
@@ -126,6 +127,9 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         .then (response) !->
             $window.document.title = "Abelujo - " + gettext("search") + " " + query
             $scope.cards = response.data.data
+
+            # select the input text, ready to accept another one.
+            $window.document.getElementById("default-input").select()
 
             if response.data.data.length == 0
                 $scope.no_results = true
@@ -148,9 +152,10 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
 
     # Initial search results, read the url's query params after the #
     search_obj = $location.search()
-    ## $scope.query = search_obj.q
-    # Re-search with the query (with a simple cache at the backend),
+    # Re-search with the query (with a simple cache both here and at the backend),
     # but don't save it in $scope.query, to not populate the input field.
+    # As a consequence, the value of query is set and retrieved with the url,
+    # not with $scope.query.
     previous_query = search_obj.q
     source_id = search_obj.source
     if source_id
