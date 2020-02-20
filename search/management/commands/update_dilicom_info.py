@@ -40,18 +40,16 @@ class Command(BaseCommand):
         self.stdout.write("Go...")
         start = timezone.datetime(year=2020, month=01, day=01)
         cards = Card.objects.filter(created__gt=start).filter(data_source='dilicom')
-        # cards whose price has no decimal, hence are suspicious.
+
+        # Cards whose price has no decimal, hence are suspicious.
         cards = filter(lambda card: card.price % 1 == 0, cards)
-        self.stdout.write("Looking at {} Card objects.".format(len(cards)))
-        self.stdout.write("This count is a mix of good and erroneous cards. WARN: current maximum 100 lookup for Dilicom bulk search.")
+        self.stdout.write("Looking up {} cards on Dilicom.".format(len(cards)))
+        self.stdout.write("(Not all will need an update)")
         confirmation = raw_input("Continue ? [Y/n]")
         if confirmation == "n":
             exit(0)
 
         isbns = [it.isbn for it in cards]
-        if len(isbns) > 100:
-            self.stdout.write("We have to check more than 100 ISBNs, which is our current Dilicom limit. Stopping, waiting for dev.")
-            exit(1)
         dilicom_query = dilicomScraper.Scraper(*isbns)
         bklist, errors = dilicom_query.search()
         if not len(bklist) == len(cards):
@@ -64,10 +62,11 @@ class Command(BaseCommand):
             bk = filter(lambda it: it['isbn'] == card.isbn, bklist)
             if bk:
                 bk = bk[0]
+
             if not bk:
                 self.stdout.write("No matching result for card {}. Pass.".format(card.isbn))
                 continue
-            # self.stdout.write("Comparing card's price to Dilicom's: {} / {}" .format(card.price, bk['price']))
+
             if bk['price'] != card.price:
                 self.stdout.write("{}: {} => {}".format(card.title, card.price, bk['price']))
                 card.price = bk['price']
