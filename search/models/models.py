@@ -135,6 +135,8 @@ class Distributor(TimeStampedModel):
     # They should not. Its complicates everything.
 
     name = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("name"))
+    #: GLN (official ID, given by Dilicom).
+    gln = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("GLN"))
     #: The discount (in %). When we pay the distributor we keep the amount of
     # the discount.
     discount = models.FloatField(default=0, blank=True, verbose_name=__("discount"))
