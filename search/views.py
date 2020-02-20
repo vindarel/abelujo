@@ -262,7 +262,7 @@ class PrefsForm(forms.Form):
             try:
                 currency = json.loads(prefs.others)['default_currency']
             except Exception as e:
-                log.error(u"Error getting the default currency: {}.".format(e))
+                log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
 
             # Change the default presentation: show € in we have CHF.
             if currency and currency == 'chf':

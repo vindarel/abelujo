@@ -2127,7 +2127,7 @@ class Preferences(models.Model):
             currency = json.loads(Preferences.prefs().others)
             return currency.get('default_currency', '€').upper()
         except Exception as e:
-            log.error(u"Error getting the default currency: {}.".format(e))
+            log.warn(u"Could not load the default currency from Preferences' json, will use euro: {}.".format(e))
 
     @staticmethod
     def price_excl_tax(price):
