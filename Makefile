@@ -21,11 +21,12 @@ debian:
 	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs sudo apt-get install -y
 	@sudo pip install virtualenvwrapper
 
-# Rebase main repo and submodules
-rebase:
-	git stash save "for make rebase"
+pull:
+	git stash save "autostash from make rebase"
 	git pull --rebase
 	git submodule update --remote
+# Rebase main repo and submodules
+rebase: pull
 	python manage.py migrate
 
 # Install in current directory
