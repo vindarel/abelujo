@@ -91,6 +91,8 @@ from search.models.common import get_payment_abbr
 
 from views_utils import Echo
 from views_utils import cards2csv
+from views_utils import dilicom_enabled
+from views_utils import update_from_dilicom
 
 log = get_logger()
 
@@ -364,6 +366,10 @@ def card_show(request, pk):
     total_sold = "0"
     if request.method == 'GET':
         card = get_object_or_404(Card, id=pk)
+
+        # Update critical data from Dilicom, if possible.
+        if dilicom_enabled():
+            card, msgs = update_from_dilicom(card)
 
         # Ongoing commands.
         pending_commands = card.commands_pending()

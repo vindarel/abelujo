@@ -16,10 +16,11 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import unicodecsv
 
 from django.utils.translation import ugettext as _
 
-import unicodecsv
+from search.models.utils import is_isbn
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs  # noqa: F401
 from search.datasources.bookshops.all.momox import momox  # noqa: F401
 from search.datasources.bookshops.deDE.buchlentner import \
@@ -88,6 +89,49 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     res = Card.is_in_stock(res)
 
     return res, traces
+
+
+def dilicom_enabled():
+    """
+    Return a boolean indicating if the connection to Dilicom is possible.
+    Currently, check we have the required environment variables.
+    """
+    return os.getenv('DILICOM_PASSWORD') is not None \
+        and os.getenv('DILICOM_USER') is not None
+
+
+def update_from_dilicom(card):
+    """
+    Update "critical" data: price, availability, distributor.
+    - card: card object.
+
+    Return:
+    - card,
+    - list of messages (str).
+    """
+    if not card or not card.isbn or not (is_isbn(card.isbn)):
+        return card, []
+
+    scraper = getattr(globals()['dilicom'], "Scraper")
+    res, traces = scraper(card.isbn).search()
+
+    if res and res[0]:
+        to_save = False
+        res = res[0]
+        if card.price != res['price']:
+            card.price = res['price']
+            to_save = True
+
+        if to_save:
+            card.save()
+
+        # trick: add object fields, not saved to the DB, only for display.
+        card.availability = res['availability']
+        card.availability_fmt = res['availability_fmt']
+
+    else:
+        res = card
+    return card, traces
 
 
 class Echo(object):

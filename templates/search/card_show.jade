@@ -64,6 +64,10 @@ div#abelujo
             tr
               td {% trans "isbn" %}
               td {{ object.isbn }}
+            if object.availability
+              tr
+                td Disponibilité
+                td {{ object.availability_fmt }}
             tr
               td
                 | {# Translators: format like pocket or big (livre de poche) #}
