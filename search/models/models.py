@@ -458,9 +458,6 @@ class Card(TimeStampedModel):
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author, blank=True, verbose_name=__("authors"))
     price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=__("price"))
-    #: price_sold is only used to generate an angular form, it is not
-    #: stored here in the db.
-    price_sold = models.FloatField(null=True, blank=True, verbose_name=__("price sold"))
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))
@@ -573,13 +570,9 @@ class Card(TimeStampedModel):
         return self.imgfile.url
 
     def save(self, *args, **kwargs):
-        """We override the save method in order to copy the price to
-        price_sold, save covers on disk and denormalize the quantity.
-        We want it to initialize the angular form.
+        """We override the save method in order to
+        save covers on disk and denormalize the quantity.
         """
-        # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
-        self.price_sold = self.price
-
         # Update quantity.
         self.quantity = self.quantity_compute()
 
