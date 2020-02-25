@@ -1507,7 +1507,6 @@ class Card(TimeStampedModel):
                 title=card.get('title'),
                 year_published=year,
                 price = card.get('price', 0),
-                price_sold = card.get('price_sold', 0),
                 isbn = isbn,
                 fmt = card.get('fmt'),
                 has_isbn = card.get('has_isbn'),
