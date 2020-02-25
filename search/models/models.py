@@ -4752,6 +4752,7 @@ class Stats(object):
         return: a dict by default, a json if to_json is set to True.
 
         """
+        default_currency = Preferences.get_default_currency()
         places = Place.objects.all()
         # default_place = Preferences.get_default_place()
         # XXX: Everything below needs unit tests.
@@ -4804,17 +4805,24 @@ class Stats(object):
 
         # Cost
         res['deposits_cost'] = {'label': _(u"Total cost of the books in deposits"),
-                                'value': deposits_cost}
+                                'value': deposits_cost,
+                                'value_fmt': price_fmt(deposits_cost, default_currency),
+        }
+
         try:
             total_cost = sum([it.cost() for it in places])
             res['total_cost'] = {'label': _(u"Total cost of the stock"),
                                  # Round the float... or just {:.2f}.format.
-                                 'value': roundfloat(total_cost)}
+                                 'value': roundfloat(total_cost),
+                                 'value_fmt': price_fmt(roundfloat(total_cost), default_currency),
+            }
             # The same, excluding vat.
             # xxx: all Cards will not be books.
             total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
             res['total_cost_excl_tax'] = {'label': _(u"Total cost of the stock, excl. tax"),
-                                          'value': total_cost_excl_tax}
+                                          'value': total_cost_excl_tax,
+                                          'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
+            }
 
         except Exception as e:
             log.error(u"Error with total_cost: {}".format(e))
@@ -4845,6 +4853,7 @@ class Stats(object):
             "mean": mean of sells (float),
             }
         """
+        default_currency = Preferences.get_default_currency()
         # Get the sells since the beginning of the given month
         start_time = timezone.now()
         if year is None:
@@ -4859,7 +4868,7 @@ class Stats(object):
         soldcards = SoldCards.objects.exclude(sell__canceled=True).filter(created__year=year).filter(created__month=month)
         price_qties = soldcards.values_list('price_sold', 'quantity')
         revenue = sum([it[0] * it[1] for it in price_qties])
-
+        revenue = roundfloat(revenue) if revenue else 0
         # Count the total revenue
         nb_sells = soldcards.values('sell_id').distinct().count()
         nb_cards_sold = sum(soldcards.values_list('quantity', flat=True))
@@ -4868,12 +4877,15 @@ class Stats(object):
         sell_mean = None
         if nb_sells:
             sell_mean = revenue / nb_sells
+            sell_mean = roundfloat(sell_mean)
 
         to_ret = {
-            "revenue": roundfloat(revenue) if revenue else 0,
+            "revenue": revenue,
+            "revenue_fmt": price_fmt(revenue, default_currency),
             "nb_sells": nb_sells,
             "nb_cards_sold": nb_cards_sold,
-            "mean": roundfloat(sell_mean),
+            "mean": sell_mean,
+            "mean_fmt": price_fmt(sell_mean, default_currency),
             # nb of sells
         }
 
