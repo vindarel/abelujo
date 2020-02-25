@@ -58,6 +58,7 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.common import CHAR_LENGTH
+from search.models.common import CURRENCY_CHOICES
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TEXT_LENGTH
@@ -446,7 +447,6 @@ class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
     """
-
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
     #: type of the card, if specified (book, CD, tshirt, …)
@@ -460,7 +460,12 @@ class Card(TimeStampedModel):
     #: The public price.
     price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=__("price"))
     #: Currency: euro, CHF, other?
-    currency = models.CharField(max_length=10, null=True, blank=True, verbose_name=__("currency"))
+    currency = models.CharField(max_length=10,
+                                choices=CURRENCY_CHOICES,
+                                # cannot access Preferences which wants Place.
+                                # Python has no late bindings.
+                                # default='euro',
+                                null=True, blank=True, verbose_name=__("currency"))
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))
@@ -468,7 +473,7 @@ class Card(TimeStampedModel):
     quantity = models.IntegerField(null=True, blank=True, editable=False, verbose_name=__("quantity"))
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT,
-                                    verbose_name=__("threshold"))
+                                    verbose_name=__("Minimal quantity before command"))
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=__("publishers"))
     year_published = models.DateField(blank=True, null=True, verbose_name=__("year published"))
@@ -484,19 +489,25 @@ class Card(TimeStampedModel):
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, verbose_name=__("places"))
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
-    cover = models.URLField(null=True, blank=True, verbose_name=__("cover"))
+    cover = models.URLField(null=True, blank=True, verbose_name=__("cover url"))
     #: the cover, saved on the file system. Use card.cover to get the most relevant.
     imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
-    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("data source"))
+    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True,
+                                   editable=False,
+                                   verbose_name=__("data source"))
     #: link to the card's data source
-    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("details url"))
+    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True,
+                                  editable=False,
+                                  verbose_name=__("details url"))
     #: date of publication
     date_publication = models.DateField(blank=True, null=True, verbose_name=__("date publication"))
     #: the summary (of the back cover)
     summary = models.TextField(null=True, blank=True, verbose_name=__("summary"))
     #: Book format (pocket, big)
-    fmt = models.TextField(null=True, blank=True)
+    fmt = models.TextField(null=True, blank=True,
+                           editable=False,
+                           verbose_name=__("Book format (pocket, etc)"))
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 

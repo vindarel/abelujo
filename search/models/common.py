@@ -56,6 +56,12 @@ PAYMENT_ABBR = [
     (5, _("TR")),
 ]
 
+CURRENCY_CHOICES = [
+    ('euro', '€'),
+    ('chf', 'CHF'),
+]
+
+
 def get_payment_abbr(id):
     if id is not None:
         id = int(id)
