@@ -414,9 +414,9 @@ def price_fmt(price, currency):
     """
     if not currency:
         # Happens in tests, in bare bones setup.
-        return price
+        return '{:.2f} €'.format(price)
     if price is None or isinstance(price, str):
-        return price
+        return ''
     if currency.lower() == 'chf':
         return 'CHF {:.2f}'.format(price)
     else:
