@@ -457,7 +457,10 @@ class Card(TimeStampedModel):
     isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author, blank=True, verbose_name=__("authors"))
+    #: The public price.
     price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=__("price"))
+    #: Currency: euro, CHF, other?
+    currency = models.CharField(max_length=10, null=True, blank=True, verbose_name=__("currency"))
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))
