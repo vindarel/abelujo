@@ -29,9 +29,11 @@ if messages
 
 h1 {% trans "Preferences" %}
 
-form(action="{% url 'preferences' %}", method="post")
-    {% csrf_token %}
-    {{ form.as_p }}
-    input(type="submit", value="Submit")
+.col-lg-6
+  form(action="{% url 'preferences' %}", method="post")
+      {% csrf_token %}
+      //- {{ form.as_p }}
+      {% bootstrap_form form %}
+      input(type="submit", value="Submit")
 
 {% endblock content %}
