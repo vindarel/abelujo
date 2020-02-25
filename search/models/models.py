@@ -569,7 +569,8 @@ class Card(TimeStampedModel):
         if self.price is None or isinstance(self.price, str):
             return self.price
 
-        if self.data_source and 'lelivre' in self.data_source:
+        currency = self.get_currency()
+        if currency.upper() == 'CHF':
             return 'CHF {:.2f}'.format(self.price)
         else:
             return '{:.2f} €'.format(self.price)
@@ -787,6 +788,8 @@ class Card(TimeStampedModel):
             log.error(e)
             get_absolute_url = ""
 
+        currency = self.get_currency()
+
         res = {
             "id": self.id,
             "authors": auth,
@@ -811,17 +814,15 @@ class Card(TimeStampedModel):
             "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
-            'price_fmt': price_fmt(self.price, self.get_currency()),
-            "price_sold": self.price_sold,
-            "price_sold_fmt": price_fmt(self.price_sold, self.get_currency()),
+            'price_fmt': price_fmt(self.price, currency),
             "price_discounted": self.price_discounted,
-            "price_discounted_fmt": price_fmt(self.price_discounted, self.get_currency()),
+            "price_discounted_fmt": price_fmt(self.price_discounted, currency),
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
             "price_discounted_excl_vat_fmt": price_fmt(self.price_discounted_excl_vat,
-                                                       self.get_currency()),
+                                                       currency),
             "price_excl_vat": self.price_excl_vat,
-            "price_excl_vat_fmt": price_fmt(self.price_excl_vat, self.get_currency()),
-            "currency": self.get_currency(),
+            "price_excl_vat_fmt": price_fmt(self.price_excl_vat, currency),
+            "currency": currency,
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
@@ -841,6 +842,8 @@ class Card(TimeStampedModel):
     def get_currency(self):
         # prefer utils.card_currency(card) when possible.
         # Here, trouble with card_currency(self): 0 argument given.
+        if hasattr(self, 'currency') and self.currency:
+            return self.currency
         if self.data_source and 'lelivre' in self.data_source:
             return 'CHF'
         return '€'
