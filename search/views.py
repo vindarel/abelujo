@@ -27,12 +27,10 @@ import urllib
 
 import pendulum
 import unicodecsv
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
@@ -42,7 +40,6 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from weasyprint import HTML
@@ -59,9 +56,7 @@ from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisS
 from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre  # noqa: F401
 
 
-import models
 from search.models import history
-
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -89,6 +84,7 @@ from search.models.utils import truncate
 
 from search.models.common import get_payment_abbr
 
+from search import forms as viewforms
 from views_utils import Echo
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
@@ -96,7 +92,6 @@ from views_utils import update_from_dilicom
 
 log = get_logger()
 
-MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 
 PENDULUM_YMD = '%Y-%m-%d'  # caution, %m is a bit different than datetime's %M.
@@ -111,85 +106,6 @@ def filename_content_type(filename):
     extension = filename.split('.')[-1]
     return EXTENSION_TO_CONTENT_TYPE[extension]
 
-class MyNumberInput(TextInput):
-    # render an IntegerField with a "number" html5 widget, not text.
-    input_type = 'number'
-
-
-def get_distributor_choices():
-    dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
-    pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
-    choices = [(_(u"Distributors"),
-                dists),
-               (_(u"Publishers"),
-                pubs)]
-    return choices
-
-
-class AddForm(forms.Form):
-    """The form populated when the user clicks on "add this card"."""
-    # The search is saved to the session so we need to get the element we want: hence the for counter.
-    # We couldn't find how to populate its value (which is {{ forloop.counter0 }})
-    # without not writting it explicitely in the template.
-    forloop_counter0 = forms.IntegerField(min_value=0,
-                                          widget=forms.HiddenInput())
-
-def get_places_choices():
-    not_stands = Place.objects.filter(is_stand=False)
-    preferences = Preferences.objects.first()
-    ret = []
-    if preferences:
-        default_place = preferences.default_place
-        ret = [(default_place.id, default_place.name)] + [(p.id, p.name) for p in not_stands
-                                                          if not p.id == default_place.id]
-    return ret
-
-def get_suppliers_choices():
-    res = Distributor.objects.order_by("-name").all()
-    res = [(it.id, it.__repr__()) for it in res]
-    return res
-
-class DepositForm(forms.ModelForm):
-    """Create a new deposit.
-    """
-    copies = forms.ModelMultipleChoiceField(Card.objects.all(), required=False)
-
-    class Meta:
-        model = Deposit
-        fields = "__all__"
-        # exclude = ["copies",]
-
-class DepositAddCopiesForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        pk = kwargs.pop('pk')
-        super(self.__class__, self).__init__(*args, **kwargs)
-
-        # Build fields depending on the deposit existing cards.
-        dep = Deposit.objects.get(id=pk)
-        cards = dep.copies()
-        for card in cards:
-            self.fields[str(card.id)] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
-                       'step': 1, 'value': 0,
-                       'style': 'width: 70px'}),
-                                                           label=card.title)
-
-
-def get_deposits_choices():
-    choices = [(depo.name, depo.name) for depo in Deposit.objects.all()]
-    return choices
-
-class AddToDepositForm(forms.Form):
-    """When we view our stock, choose to add the card to a deposit.
-    """
-    deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                label=_(u"Add to the deposit:"),
-                                required=False)
-
-def get_bills_choices():
-    bills = Bill.objects.all()
-    ret = [(0, "---")] + [(it.id, it.long_name) for it in bills]
-    return ret
 
 def get_reverse_url(cleaned_data, url_name="card_search"):
     """Get the reverse url with the query parameters taken from the
@@ -218,86 +134,6 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
     return rev_url
 
 
-def validate_and_get_discounts(data):
-    """
-    data: string, percentages separated by ;
-    """
-    if not data.strip():
-        return []
-    data = data.replace(',', '.')
-    str_discounts = data.split(';')
-    discounts = []
-    for it in str_discounts:
-        try:
-            discounts.append(float(it))
-        except Exception:
-            log.debug("Discounts form not valid: {}".format(data))
-            raise forms.ValidationError(_("Bad discounts: enter percentages separated by ';'."))
-
-    return discounts
-
-
-class PrefsForm(forms.Form):
-    # bookshop_name = forms.CharField(label='Your bookshop name', max_length=100)
-    # vat_book = forms.FloatField(label='VAT of books')
-    CURRENCY_CHOICES = [
-        ('euro', '€'),
-        ('chf', 'CHF'),
-    ]
-    default_currency = forms.ChoiceField(choices=CURRENCY_CHOICES, required=False)
-    #: Discounts we are allowed to apply for a sell.
-    #: Char field, percentages separated by ;
-    sell_discounts = forms.CharField(
-        max_length=100,
-        required=False,
-        # label='Hello',
-        widget=forms.TextInput(),
-        validators=[validate_and_get_discounts],
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        # Not on form validation.
-        if not args:
-            prefs = Preferences.objects.first()
-            currency = 'euro'
-            try:
-                currency = json.loads(prefs.others)['default_currency']
-            except Exception as e:
-                log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
-
-            # Change the default presentation: show € in we have CHF.
-            if currency and currency == 'chf':
-                self.CURRENCY_CHOICES = [
-                    ('chf', 'CHF'),
-                    ('euro', '€'),
-                ]
-            else:
-                self.CURRENCY_CHOICES = [
-                    ('euro', '€'),
-                    ('chf', 'CHF'),
-                ]
-
-            self.fields['default_currency'] = forms.ChoiceField(choices=self.CURRENCY_CHOICES)
-
-            current_discounts = ''
-            sell_discounts = None
-            if prefs.others and 'sell_discounts' in prefs.others:
-                try:
-                    sell_discounts = json.loads(prefs.others)['sell_discounts']
-                except Exception:
-                    pass
-            if sell_discounts:
-                current_discounts = "; ".join(["{}".format(it) for it in sell_discounts])
-                self.fields['sell_discounts'] = forms.CharField(
-                    max_length=100,
-                    required=False,
-                    # label='Hello',
-                    widget=forms.TextInput(attrs={'placeholder': current_discounts}),
-                    validators=[validate_and_get_discounts],
-                )
-
-
 @login_required
 def preferences(request):
     """
@@ -305,21 +141,21 @@ def preferences(request):
     template = "search/preferences.jade"
 
     if request.method == 'GET':
-        form = PrefsForm()
+        form = viewforms.PrefsForm()
         return render(request, template, {'form': form})
 
     elif request.method == 'POST':
-        form = PrefsForm(request.POST)
+        form = viewforms.PrefsForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             prefs = Preferences.objects.first()
-            discounts = validate_and_get_discounts(data['sell_discounts'])
+            discounts = viewforms.validate_and_get_discounts(data['sell_discounts'])
             data['sell_discounts'] = discounts
             prefs.others = json.dumps(data)
             prefs.save()
             messages.add_message(
                 request, messages.SUCCESS, _("Preferences saved."))
-            form = PrefsForm()
+            form = viewforms.PrefsForm()
             return render(request, template, {'form': form})
 
         else:
@@ -433,105 +269,12 @@ def card_history(request, pk):
     })
 
 
-class CardMoveForm(forms.Form):
-    """We want to create a field for each Place and Basket object
-
-    This approch is too much work to create a simple form. We want to
-    write our form directly in a template instead, using angularjs
-    calls to an api to fetch the places and baskets.
-    """
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        model = "Place"
-        query = models.__dict__[model].objects.all()
-        for obj in query:
-            self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
-                       'step': 1, 'value': 1,
-                       'style': 'width: 70px'}))
-
-
-class CardMove2BasketForm(forms.Form):
-    # I don't like, but I now like it better than JS and api calls.
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        model = "Basket"
-        query = models.__dict__[model].objects.all()
-        for obj in query:
-            self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
-                       'step': 1, 'value': 0,
-                       'style': 'width: 70px'}))
-
-
-class CardMoveTypeForm(forms.Form):
-    choices = [(1, "Pay these cards"),
-               (2, "Add to a deposit"),
-               (3, "Internal movement"),
-    ]
-    typ = forms.ChoiceField(choices=choices)
-
-
-PAYMENT_MEANS = [
-    (1, "cash"),
-    (2, "credit card"),
-    (3, "cheque"),
-    (4, "gift"),
-    (5, "lost"),
-]
-
-
-class BuyForm(forms.Form):
-    payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
-    bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
-    quantity = forms.FloatField(label=_("Quantity"))
-    place = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
-
-
-class MoveDepositForm(forms.Form):
-    choices = forms.ChoiceField(choices=get_deposits_choices())
-
-
-class CardPlacesAddForm(forms.Form):
-    """
-    Add exemplaries to some Places, from the Card view.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        for place in Place.objects.order_by("id").all():
-            self.fields[place.id] = forms.IntegerField(required=False, label=place.name)
-
-
-class MoveInternalForm(forms.Form):
-    nb = forms.IntegerField(label=__("Quantity"))
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['origin'] = forms.ChoiceField(choices=get_places_choices(),
-                                                  label=__("origin"))
-        self.fields['destination'] = forms.ChoiceField(choices=get_places_choices(),
-                                                       label=__("destination"))
-
-
-class SetSupplierForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields[_('supplier')] = forms.ChoiceField(choices=get_suppliers_choices())
-
-
-class NewSupplierForm(forms.Form):
-    name = forms.CharField()
-    discount = forms.IntegerField(label=_("discount"))
-
-
 @login_required
 def card_buy(request, pk=None):
-    form = BuyForm()
+    form = viewforms.BuyForm()
     template = "search/card_buy.jade"
     card = Card.objects.get(id=pk)
-    form = BuyForm(initial={"quantity": 1})
+    form = viewforms.BuyForm(initial={"quantity": 1})
     if request.method == 'GET':
         try:
             buying_price = card.price - (card.price * card.distributor.discount / 100)
@@ -546,7 +289,7 @@ def card_buy(request, pk=None):
 
     if request.method == 'POST':
         # buying the card
-        form = BuyForm(request.POST)
+        form = viewforms.BuyForm(request.POST)
         if form.is_valid():
             place = form.cleaned_data['place']
             nb = form.cleaned_data['quantity']
@@ -590,7 +333,7 @@ def card_places_add(request, pk=None):
     params = request.GET
 
     if request.method == 'GET':
-        form = CardPlacesAddForm()
+        form = viewforms.CardPlacesAddForm()
         return render(request, template, {
             "form": form,
             "pk": pk,
@@ -599,7 +342,7 @@ def card_places_add(request, pk=None):
 
     else:
         back_to = reverse("card_show", args=(pk,))
-        form = CardPlacesAddForm(request.POST)
+        form = viewforms.CardPlacesAddForm(request.POST)
         if form.is_valid():
             for (id, nb) in form.data.iteritems():  # cleaned_data won't have nothing...
                 if nb:
@@ -617,13 +360,13 @@ def card_places_add(request, pk=None):
 @login_required
 def card_move(request, pk=None):
     template = "search/card_move.jade"
-    BasketsForm = CardMove2BasketForm()
-    internalForm = MoveInternalForm()
+    BasketsForm = viewforms.CardMove2BasketForm()
+    internalForm = viewforms.MoveInternalForm()
     params = request.GET
 
     if request.method == 'POST':
-        placeForm = MoveInternalForm(request.POST)
-        basketForm = CardMove2BasketForm(request.POST)
+        placeForm = viewforms.MoveInternalForm(request.POST)
+        basketForm = viewforms.CardMove2BasketForm(request.POST)
 
         if placeForm.is_valid() and basketForm.is_valid():
             card_obj = Card.objects.get(pk=pk)
@@ -661,7 +404,7 @@ def card_move(request, pk=None):
 
         else:
             # form not valid
-            internalForm = MoveInternalForm(request.POST)
+            internalForm = viewforms.MoveInternalForm(request.POST)
 
     # method: GET
     return render(request, template, {
@@ -676,8 +419,8 @@ def card_move(request, pk=None):
 @login_required
 def cards_set_supplier(request, **kwargs):
     template = 'search/set_supplier.jade'
-    form = SetSupplierForm()
-    newsupplier_form = NewSupplierForm()
+    form = viewforms.SetSupplierForm()
+    newsupplier_form = viewforms.NewSupplierForm()
     cards_ids = request.session.get('set_supplier_cards_ids')
     if not cards_ids:
         return HttpResponseRedirect(reverse('card_collection'))
@@ -698,14 +441,14 @@ def cards_set_supplier(request, **kwargs):
 
         # The user chose an existing distributor.
         if 'supplier' in req.keys():
-            form = SetSupplierForm(req)
+            form = viewforms.SetSupplierForm(req)
             if form.is_valid():
                 dist_id = form.cleaned_data['supplier']
                 dist_obj = Distributor.objects.get(id=dist_id)
 
         # Create distributor.
         elif 'discount' in req.keys():
-            form = NewSupplierForm(req)
+            form = viewforms.NewSupplierForm(req)
             if form.is_valid():
                 data = form.cleaned_data
 
@@ -933,7 +676,7 @@ class DepositsListView(ListView):
 @login_required
 def deposits_new(request):
     return render(request, "search/deposits_create.jade", {
-        "DepositForm": DepositForm(),
+        "DepositForm": viewforms.DepositForm(),
     })
 
 @login_required
@@ -941,7 +684,7 @@ def deposits_create(request):
     # results = 200
     if request.method == "POST":
         req = request.POST.copy()
-        form = DepositForm(req)
+        form = viewforms.DepositForm(req)
         if form.is_valid():
             deposit = form.cleaned_data
             try:
@@ -967,7 +710,7 @@ def deposits_add_card(request):
     """
     resp_status = 200
     req = request.POST.copy()
-    form = AddToDepositForm(req)
+    form = viewforms.AddToDepositForm(req)
     if request.method == "POST":
         if not form.is_valid():
             log.debug("deposits_add_card: form is not valid")
@@ -1040,12 +783,12 @@ def deposit_add_copies(request, pk):
     """Add copies to this deposit. (only ones that already exist)
     """
     template = "search/deposit_add_copies.jade"
-    form = DepositAddCopiesForm(pk=pk)
+    form = viewforms.DepositAddCopiesForm(pk=pk)
     if request.method == "GET":
         pass
 
     if request.method == "POST":
-        form = DepositAddCopiesForm(request.POST, pk=pk)
+        form = viewforms.DepositAddCopiesForm(request.POST, pk=pk)
         if form.is_valid():
             data = form.cleaned_data
             dep = Deposit.objects.get(id=pk)
