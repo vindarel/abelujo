@@ -298,10 +298,11 @@ class NewSupplierForm(forms.Form):
     discount = forms.IntegerField(label=_("discount"))
 
 
-class CardCreateForm(forms.ModelForm):
+class CardForm(forms.ModelForm):
     """
     Create a card manually.
-    Add quantities to the places at the same time.
+
+    Pre-set the currency given the default one.
     """
 
     class Meta:
@@ -327,9 +328,6 @@ class CardCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        # add fields:
-        # - currency
-        # - add to places
         currency = forms.ChoiceField(choices=CURRENCY_CHOICES, required=False)
         prefs = Preferences.objects.first()
         currency = 'euro'
@@ -337,9 +335,10 @@ class CardCreateForm(forms.ModelForm):
             default_currency = json.loads(prefs.others)['default_currency']
         except Exception as e:
             log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
+            default_currency = currency
 
         # Change the default presentation: show € in we have CHF.
-        if default_currency and default_currency == 'chf':
+        if default_currency == 'chf':
             self.CURRENCY_CHOICES = [
                 ('chf', 'CHF'),
                 ('euro', '€'),
@@ -351,4 +350,52 @@ class CardCreateForm(forms.ModelForm):
             ]
 
         self.fields['currency'] = forms.ChoiceField(choices=self.CURRENCY_CHOICES)
-        # import ipdb; ipdb.set_trace()
+
+
+class CardCreateForm(forms.Form):
+    """
+    Start with the CardForm, and add fields:
+    - possibility to create a publisher,
+    - a distributor,
+    - authors,
+    - a shelf.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        card_form = CardForm()
+
+        # We know the fields' order, so we insert new ones based on
+        # that order.
+        new_authors_field = forms.CharField(
+            label=_("Optional names of new authors"),
+            required=False,
+            widget=forms.Textarea(),
+            help_text=_("One author per line"))
+        new_publishers_field = forms.CharField(
+            label=_("Optional name to create a new publisher"),
+            required=False)
+        new_distributor_name_field = forms.CharField(
+            label=_("Optional name to create a new distributor"),
+            required=False)
+        new_distributor_discount_field = forms.FloatField(
+            label=_("Optional discount of the new distributor (in %)"),
+            required=False,
+            initial=0.0)
+        new_shelf_name_field = forms.CharField(
+            label=_("Optional name to create a new shelf"),
+            required=False)
+
+        for name_widget in card_form.fields.items():
+            name = name_widget[0]
+            widget = name_widget[1]
+            self.fields[name] = widget
+            if name == 'publishers':
+                self.fields['new_publisher_name'] = new_publishers_field
+            elif name == 'distributor':
+                self.fields['new_distributor_name'] = new_distributor_name_field
+                self.fields['new_distributor_discount'] = new_distributor_discount_field
+            elif name == 'authors':
+                self.fields['new_authors'] = new_authors_field
+            elif name == 'shelf':
+                self.fields['new_shelf_name'] = new_shelf_name_field

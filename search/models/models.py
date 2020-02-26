@@ -1355,8 +1355,8 @@ class Card(TimeStampedModel):
             year:       int or None
             authors:    list of authors names (list of str) or list of Author objects.
             shelf:   id (int)
-            distributor: id of a Distributor
-            publishers: list of names of publishers (create one on the fly, like with webscraping)
+            distributor: id or object of a Distributor
+            publishers: list of names of publishers (create one on the fly, like with webscraping), or list of objects
             publishers_ids: list of ids of publishers
             has_isbn:   boolean
             isbn:       str
@@ -1411,8 +1411,11 @@ class Card(TimeStampedModel):
             isbn = isbn_cleanup(isbn)
 
         # Get the distributor:
-        card_distributor = None
-        if card.get("distributor"):
+        # it's either already an object
+        card_distributor = card.get('distributor')
+        # or an id.
+        if card_distributor and isinstance(card_distributor, str)\
+           or isinstance(card_distributor, int):
             try:
                 # OK: card: edit -> card_create
                 card_distributor = Distributor.objects.get(id=card.get("distributor"))
@@ -1448,8 +1451,10 @@ class Card(TimeStampedModel):
                          format(card.get('shelf_id')))
 
         # Get the publishers:
-        card_publishers = []
-        if card.get("publishers_ids"):
+        card_publishers = card.get('publishers', [])
+        if card_publishers and isinstance(card_publishers[0], models.base.ModelBase):
+            pass
+        elif card.get("publishers_ids"):
             card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]  # noqa: F812 ignore "it" redefinition.
 
         # Get the publication date (from a human readable string)
@@ -1479,6 +1484,9 @@ class Card(TimeStampedModel):
             msgs.append(_msgs)
             created = False
 
+        #######################################################
+        # Update existing card.
+        #######################################################
         if exists_list:
             card_obj = exists_list
             # Update fields, except isbn (as with "else" below)
@@ -1497,8 +1505,10 @@ class Card(TimeStampedModel):
                     setattr(card_obj, field, card.get(field))
 
             card_obj.isbn = isbn
-            card_obj.save()
 
+        ######################################################
+        # Create new card.
+        ######################################################
         else:
             # Create the card with its simple fields.
             # Add the relationships afterwards.
@@ -1521,19 +1531,17 @@ class Card(TimeStampedModel):
 
             #TODO: we can also update every field for the existing card.
 
-            # add the authors
+            # Set the authors
             if card_authors:  # TODO: more tests !
-                card_obj.authors.add(*card_authors)
-                card_obj.save()
+                card_obj.authors = card_authors
 
             # add the distributor
             if card_distributor:
                 card_obj.distributor = card_distributor
-                card_obj.save()
 
             # add many publishers
             if card_publishers:
-                card_obj.publishers.add(*card_publishers)
+                card_obj.publishers = card_publishers
 
             # add the collection
             collection = card.get("collection")
@@ -1542,17 +1550,18 @@ class Card(TimeStampedModel):
                 try:
                     collection_obj, created = Collection.objects.get_or_create(name=collection)
                     card_obj.collection = collection_obj
-                    card_obj.save()
                 except Exception as e:
                     log.error(u"--- error while adding the collection: %s" % (e,))
 
             # add the shelf
+            shelf = card.get('shelf')
             shelf_id = card.get('shelf_id')
-            if shelf_id and shelf_id != "0":
+            if shelf and isinstance(shelf, models.base.ModelBase):
+                card_obj.shelf = shelf
+            elif shelf_id and shelf_id != "0":
                 try:
                     cat_obj = Shelf.objects.get(id=shelf_id)
                     card_obj.shelf = cat_obj
-                    card_obj.save()
                 except Exception as e:
                     log.error(u"error adding shelf {}: {}".format(shelf_id, e))
 
@@ -1567,18 +1576,20 @@ class Card(TimeStampedModel):
                 type_obj = CardType.objects.filter(name="unknown")[0]
 
             card_obj.card_type = type_obj
-            card_obj.save()
 
             # add the publishers
             pubs = card.get("publishers")
             if pubs:
                 try:
                     for pub in pubs:
-                        pub = pub.lower()
-                        pub_obj, created = Publisher.objects.get_or_create(name=pub)
-                        card_obj.publishers.add(pub_obj)
+                        if isinstance(pub, str):
+                            pub = pub.lower()
+                            pub_obj, created = Publisher.objects.get_or_create(name=pub)
+                            card_obj.publishers.add(pub_obj)
+                        # objects? already done at the beginning.
+                        # elif isinstance(pub, models.base.ModelBase):
+                            # pub_obj = pub
 
-                    card_obj.save()
                 except Exception, e:
                     log.error(u"--- error while adding the publisher: %s" % (e,))
 
@@ -1598,7 +1609,6 @@ class Card(TimeStampedModel):
         if card_shelf:
             try:
                 card_obj.shelf = card_shelf
-                card_obj.save()
             except Exception as e:
                 log.error(e)
 
@@ -1608,13 +1618,13 @@ class Card(TimeStampedModel):
             in_stock = card.get('in_stock')
         try:
             card_obj.in_stock = in_stock
-            card_obj.save()
         except Exception as e:
             log.error(u'Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
 
         if card.get('price') is not None:
             card_obj.price = float(card.get('price'))
-            card_obj.save()
+
+        card_obj.save()
 
         card = card_obj
         if to_list:
