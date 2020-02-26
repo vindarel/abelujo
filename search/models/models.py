@@ -1360,6 +1360,8 @@ class Card(TimeStampedModel):
             publishers_ids: list of ids of publishers
             has_isbn:   boolean
             isbn:       str
+            price:     int
+            currency:  str (euro, chf)
             details_url: url (string)
             date_publication: string. Human readable date, coming from the scraped source. Gets parsed to a Date.
             card_type:  name of the type (string)
@@ -1369,12 +1371,8 @@ class Card(TimeStampedModel):
                         the cover
             shelf_id:   id (int) of the shelf.
             threshold: int
-            origkey:    (optional) original key, like an ISBN, or if
-                        converting from another system
 
-
-        return: a tuple Card objec created or existing, message (str).
-
+        return: a tuple Card object created or existing, message (str).
         """
         if not isinstance(card, dict):
             raise TypeError("Card.from_dict expects a dict, and got a {}.".
@@ -1493,7 +1491,8 @@ class Card(TimeStampedModel):
             if card.get('threshold') is not None:
                 card_obj.threshold = card.get('threshold')
 
-            for field in ['title', 'price', 'year_published', 'has_isbn', 'details_url']:
+            for field in ['title', 'price', 'year_published', 'has_isbn',
+                          'details_url', 'currency']:
                 if card.get(field) not in [None, '', u'']:
                     setattr(card_obj, field, card.get(field))
 
@@ -1503,10 +1502,12 @@ class Card(TimeStampedModel):
         else:
             # Create the card with its simple fields.
             # Add the relationships afterwards.
+            default_currency = Preferences.get_default_currency()
             card_obj, created = Card.objects.get_or_create(
                 title=card.get('title'),
                 year_published=year,
                 price = card.get('price', 0),
+                currency = card.get('currency', default_currency),
                 isbn = isbn,
                 fmt = card.get('fmt'),
                 has_isbn = card.get('has_isbn'),

@@ -193,6 +193,53 @@ def search(request):
     return render(request, template)
 
 @login_required
+def card_create_manually(request):
+    template = 'search/card_create.jade'
+    if request.method == 'GET':
+        card_form = viewforms.CardCreateForm()
+        add_places_form = viewforms.CardPlacesAddForm()
+        return render(request, template, {'form': card_form,
+                                          'add_places_form': add_places_form})
+    elif request.method == 'POST':
+        card_form = viewforms.CardCreateForm(request.POST)
+        add_places_form = viewforms.CardPlacesAddForm(request.POST)
+        card = None
+
+        if card_form.is_valid():
+            card_dict = card_form.cleaned_data
+            card, msgs = Card.from_dict(card_dict)
+            if not card:
+                log.warning("create card manually: card not created? {}, {}"\
+                            .format(card_dict, msgs))
+        else:
+            return render(request, template, {'form': card_form,
+                                              'add_places_form': viewforms.CardPlacesAddForm()})
+
+        if card and add_places_form.is_valid():
+            places_qties = add_places_form.cleaned_data
+            for name_id, qty  in places_qties.iteritems():
+                if not qty:
+                    continue
+                place_id = name_id.split('_')[1]
+                if place_id:
+                    place_id = int(place_id)
+                    place = Place.objects.get(id=place_id)
+                    place.add_copy(card, nb=qty)
+                    log.info("Card added to place {} x{}".format(place_id, qty))
+
+            messages.add_message(request, messages.SUCCESS, _(u'The card was created successfully.'))
+
+        else:
+            return render(request, template, {'form': card_form,
+                                              'add_places_form': add_places_form})
+
+        # Return to… new void form?
+        card_form = viewforms.CardCreateForm()
+        add_places_form = viewforms.CardPlacesAddForm()
+        return render(request, template, {'form': card_form,
+                                          'add_places_form': add_places_form})
+
+@login_required
 def card_show(request, pk):
     template = "search/card_show.jade"
     card = None
@@ -344,8 +391,13 @@ def card_places_add(request, pk=None):
         back_to = reverse("card_show", args=(pk,))
         form = viewforms.CardPlacesAddForm(request.POST)
         if form.is_valid():
-            for (id, nb) in form.data.iteritems():  # cleaned_data won't have nothing...
+            # When the field name was an int (the place id),
+            # the form was valid but cleaned_data had None values.
+            for (label_id, nb) in form.cleaned_data.iteritems():
                 if nb:
+                    # the form field name is
+                    # place_<id>
+                    id = int(label_id.split('_')[1])
                     place = Place.objects.get(id=id)
                     if place:
                         card = Card.objects.get(id=pk)

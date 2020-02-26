@@ -267,7 +267,12 @@ class CardPlacesAddForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         for place in Place.objects.order_by("id").all():
-            self.fields[place.id] = forms.IntegerField(required=False, label=place.name)
+            place_id = 'place_{}'.format(place.id)
+            self.fields[place_id] = forms.IntegerField(required=False,
+                                                       label=place.name,
+                                                       initial=0,
+                                                       min_value=0,
+                                                       max_value=50)
 
 
 class MoveInternalForm(forms.Form):
@@ -291,3 +296,59 @@ class SetSupplierForm(forms.Form):
 class NewSupplierForm(forms.Form):
     name = forms.CharField()
     discount = forms.IntegerField(label=_("discount"))
+
+
+class CardCreateForm(forms.ModelForm):
+    """
+    Create a card manually.
+    Add quantities to the places at the same time.
+    """
+
+    class Meta:
+        model = Card
+        fields = ['title',
+                  'card_type',
+                  'has_isbn',
+                  'isbn',
+                  'price',
+                  'currency',
+                  'threshold',
+                  'authors',
+                  'publishers',
+                  'year_published',
+                  'distributor',
+                  'collection',
+                  'shelf',
+                  'cover',
+                  'date_publication',
+                  'summary',
+                  'comment',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        # add fields:
+        # - currency
+        # - add to places
+        currency = forms.ChoiceField(choices=CURRENCY_CHOICES, required=False)
+        prefs = Preferences.objects.first()
+        currency = 'euro'
+        try:
+            default_currency = json.loads(prefs.others)['default_currency']
+        except Exception as e:
+            log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
+
+        # Change the default presentation: show € in we have CHF.
+        if default_currency and default_currency == 'chf':
+            self.CURRENCY_CHOICES = [
+                ('chf', 'CHF'),
+                ('euro', '€'),
+            ]
+        else:
+            self.CURRENCY_CHOICES = [
+                ('euro', '€'),
+                ('chf', 'CHF'),
+            ]
+
+        self.fields['currency'] = forms.ChoiceField(choices=self.CURRENCY_CHOICES)
+        # import ipdb; ipdb.set_trace()

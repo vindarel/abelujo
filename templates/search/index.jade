@@ -27,7 +27,6 @@
 form(action="{% url 'card_search' %}")
   {% csrf_token %}
   {% bootstrap_form searchForm %}
-  // {{ form.as_p }}
   span
     input.btn.btn-primary(type='submit', value='{% trans "Search" %}')
     span  {% trans "or" %}: 

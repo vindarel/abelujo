@@ -20,7 +20,6 @@
 
 {% load i18n %}
 {% load bootstrap3 %}
-{% load ngfilter %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
@@ -32,24 +31,24 @@ ul.messages
   {% endfor %}
 {% endif %}
 
-form(method='post', action="{% url 'cards_set_supplier' %}")
-  {% csrf_token %}
-  h4 {% trans "Set the supplier" %}
-  div {% trans "cards impacted: " %} {{ nb_cards }}
-  {{ form.as_p }}
+.row
+  form.col-lg-5(method='post', action="{% url 'cards_set_supplier' %}")
+    {% csrf_token %}
+    h4 {% trans "Set the supplier" %}
+    div {% trans "cards impacted: " %} {{ nb_cards }}
+    {% bootstrap_form form %}
 
-  input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
+    input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
 
+.row
+  h4 {% trans "Or create a new one" %}
+  form.col-lg-4(method='post', action="{% url 'cards_set_supplier' %}")
+    {% csrf_token %}
+    h4 {% trans "New distributor" %}
 
-h4 {% trans "Or create a new one" %}
+    // xxx: missing form errors.
+    {% bootstrap_form newsupplier_form %}
 
-form(method='post', action="{% url 'cards_set_supplier' %}")
-  {% csrf_token %}
-  h4 {% trans "New distributor" %}
-
-  // xxx: missing form errors.
-  {{ newsupplier_form.as_p }}
-
-  input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
+    input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
 
 {% endblock content %}

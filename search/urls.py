@@ -51,9 +51,11 @@ urlpatterns = patterns('',
         name="card_show"),
     # works to edit a card with /edit/\d+. JS will fetch the existing info.
     # url(r'^stock/card/edit/', login_required(TemplateView.as_view(template_name="search/card_edit.jade")),
+
     url(r'^stock/card/create/(?P<pk>\d+)',
         login_required(TemplateView.as_view(template_name="search/card_add.jade")),
         name="card_create"),
+    url(r'^stock/card/create/?', 'search.views.card_create_manually', name='card_create_manually'),
     # Add exemplaries to Places, from the Card view.
     url(r'^stock/card/add/(?P<pk>\d+)', 'search.views.card_places_add',
         name="card_places_add"),

@@ -32,7 +32,6 @@ h1 {% trans "Preferences" %}
 .col-lg-6
   form(action="{% url 'preferences' %}", method="post")
       {% csrf_token %}
-      //- {{ form.as_p }}
       {% bootstrap_form form %}
       input(type="submit", value="Submit")
 

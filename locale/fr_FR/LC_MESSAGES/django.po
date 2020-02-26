@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-18 17:08+0000\n"
-"PO-Revision-Date: 2020-02-18 18:11+0100\n"
+"PO-Revision-Date: 2020-02-26 18:17+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -860,7 +860,7 @@ msgstr "Créer une liste"
 
 #: templates/search/baskets.jade:70 templates/search/set_supplier.jade:37
 msgid "Set the supplier"
-msgstr "Choisir le fournisseur"
+msgstr "Choisissez le fournisseur"
 
 #: templates/search/baskets.jade:73
 msgid "Add all the cards to a shelf."
