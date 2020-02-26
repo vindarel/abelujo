@@ -24,12 +24,10 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-form(method='post', action="{% url 'card_move' pk %}")
+form.col-lg-6(method='post', action="{% url 'card_move' pk %}")
   {% csrf_token %}
   h4 {% trans "Move copies" %}
-  {{ internalForm }}
-  h4 {% trans "and add some to baskets" %}:
-  {{ BasketsForm.as_p }}
+  {% bootstrap_form internalForm layout='horizontal' %}
 
   input(type='hidden', value="{{ q }}", name="q")
   input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
