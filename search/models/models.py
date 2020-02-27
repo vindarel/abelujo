@@ -1541,6 +1541,14 @@ class Card(TimeStampedModel):
 
             # add many publishers
             if card_publishers:
+                if isinstance(card_publishers[0], str):
+                    pubs = []
+                    for name in card_publishers:
+                        pub = Publisher.objects.filter(name__iexact=name)
+                        if pub:
+                            pubs.append(pub.first())
+                    card_publishers = pubs
+
                 card_obj.publishers = card_publishers
 
             # add the collection
