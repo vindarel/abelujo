@@ -20,6 +20,7 @@ from search.models import Basket
 from search.models import BasketCopies
 from search.models import Bill
 from search.models import Card
+from search.models import Client
 from search.models import Command
 from search.models import Shelf
 from search.models import Distributor
@@ -140,6 +141,7 @@ admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author)
 admin_site.register(Basket)
 admin_site.register(Card, CardAdmin)
+admin_site.register(Client)
 admin_site.register(Command, CommandAdmin)
 admin_site.register(Distributor)
 admin_site.register(Deposit, DepositAdmin)
