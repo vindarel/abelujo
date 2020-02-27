@@ -133,7 +133,7 @@ class OutMovement(models.Model):
     distributor = models.ForeignKey("search.Distributor", blank=True, null=True)
     #: In case of a loss, nothing.
     #: In case of a gift, the recipient:
-    recipient = models.ForeignKey("search.Contact", blank=True, null=True)
+    recipient = models.ForeignKey("search.Client", blank=True, null=True)
 
     # def __unicode__(self):
     # return u"id {}, type {}".format(self.pk,

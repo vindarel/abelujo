@@ -30,12 +30,14 @@ class Contact(models.Model):
     """
     class Meta:
         ordering = ("city",)
+        abstract = True
 
-    responsability = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    cellphone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH)
+    firstname = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    mobilephone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     telephone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     email = models.EmailField(blank=True, null=True)
+    website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
     address1 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     address2 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
@@ -46,12 +48,6 @@ class Contact(models.Model):
 
     comment = models.TextField(blank=True, null=True)
 
-
-class Client(models.Model):
-    name = models.CharField(max_length=CHAR_LENGTH)
-    firstname = models.CharField(max_length=CHAR_LENGTH)
-    contact = models.ForeignKey("Contact", null=True, blank=True)
-
     def save(self, *args, **kwargs):
         """
         name: uppercase
@@ -61,15 +57,24 @@ class Client(models.Model):
         self.firstname = self.firstname.capitalize()
         super(self.__class__, self).save(*args, **kwargs)
 
-    def __repr__(self):
-        return "{} {}".format(self.name, self.firstname)
-
     def to_dict(self):
         return {'id': self.id,
                 'name': self.name.upper(),
                 'firstname': self.firstname.capitalize(),
                 '__repr__': self.__repr__(),
-                }
+        }
+
+    def __repr__(self):
+        return "{} {}".format(self.name, self.firstname)
+
+
+class Client(Contact):
+    """
+    A client of the bookshop.
+    He can reserve books (not implemented), buy coupons, etc.
+    """
+    pass
+
 
 class BillCopies(models.Model):
     card = models.ForeignKey("search.Card")
