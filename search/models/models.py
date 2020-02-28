@@ -1392,7 +1392,7 @@ class Card(TimeStampedModel):
 
         # Make the card
         # Get authors or create
-        card_authors = []
+        card_authors = card.get('authors', [])
         if card.get('authors'):
             auts = card.get('authors')
             if not isinstance(auts, list):
@@ -1401,9 +1401,6 @@ class Card(TimeStampedModel):
                 for aut in auts:
                     author, created = Author.objects.get_or_create(name=aut)
                     card_authors.append(author)
-            else:
-                # We already have objects.
-                card_authors = card["authors"]
 
         # Get and clean the ean/isbn (beware of form data)
         isbn = card.get("isbn", card.get("ean", ""))
@@ -1490,6 +1487,9 @@ class Card(TimeStampedModel):
         if exists_list:
             card_obj = exists_list
             # Update fields, except isbn (as with "else" below)
+            if card_authors:
+                card_obj.authors = card_authors
+
             if card_distributor:
                 card_obj.distributor = card_distributor
 
@@ -1578,12 +1578,9 @@ class Card(TimeStampedModel):
             if card.get("card_type"):
                 typ = card.get("card_type")
 
-            try:
-                type_obj = CardType.objects.get(name=typ)
-            except Exception as e:
-                type_obj = CardType.objects.filter(name="unknown")[0]
-
-            card_obj.card_type = type_obj
+            type_obj = CardType.objects.filter(name=typ).first()
+            if type_obj:
+                card_obj.card_type = type_obj
 
             # add the publishers
             pubs = card.get("publishers")

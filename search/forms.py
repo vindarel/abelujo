@@ -26,11 +26,13 @@ import models
 from search.models import Card
 from search.models import Preferences
 
+from search.models import Author
 from search.models import Bill
 from search.models import Deposit
 from search.models import Distributor
 from search.models import Place
 from search.models import Publisher
+from search.models import Shelf
 
 from search.models.utils import get_logger
 
@@ -112,7 +114,8 @@ class PrefsForm(forms.Form):
             try:
                 currency = json.loads(prefs.others)['default_currency']
             except Exception as e:
-                log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
+                # log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
+                pass
 
             # Change the default presentation: show € in we have CHF.
             if currency and currency == 'chf':
@@ -334,7 +337,7 @@ class CardForm(forms.ModelForm):
         try:
             default_currency = json.loads(prefs.others)['default_currency']
         except Exception as e:
-            log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
+            # log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
             default_currency = currency
 
         # Change the default presentation: show € in we have CHF.
@@ -399,3 +402,46 @@ class CardCreateForm(forms.Form):
                 self.fields['new_authors'] = new_authors_field
             elif name == 'shelf':
                 self.fields['new_shelf_name'] = new_shelf_name_field
+
+    @staticmethod
+    def create_card(card_dict):
+        """
+        Create a card, from the "create card manually" form.
+
+        - card_dict: the card data (dict), cleaned data from CardCreateForm.
+
+        Return:
+        - a tuple card object, list of messages (str).
+        """
+        assert isinstance(card_dict, dict)
+        # Create new objects, if any.
+        new_authors_text = card_dict.pop('new_authors')
+        if new_authors_text:
+            new_authors_names = new_authors_text.split('\n')
+            authors = []
+            for name in new_authors_names:
+                author, noop = Author.objects.get_or_create(name=name.strip())
+                # author.save()
+                authors.append(author)
+            card_dict['authors'] = authors
+
+        new_shelf_name = card_dict.pop('new_shelf_name')
+        if new_shelf_name:
+            shelf, noop = Shelf.objects.get_or_create(name=new_shelf_name.strip())
+            card_dict['shelf'] = shelf
+
+        new_publisher_name = card_dict.pop('new_publisher_name')
+        if new_publisher_name:
+            publisher, noop = Publisher.objects.get_or_create(name=new_publisher_name.strip())
+            card_dict['publishers'] = [publisher]
+
+        new_distributor_name = card_dict.pop('new_distributor_name')
+        new_distributor_discount = card_dict.pop('new_distributor_discount')
+        if new_distributor_name:
+            dist, noop = Distributor.objects.get_or_create(name=new_distributor_name.strip(),
+                                                     discount=new_distributor_discount)
+            card_dict['distributor'] = dist
+
+        card, msgs = Card.from_dict(card_dict)
+
+        return card, msgs

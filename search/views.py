@@ -57,7 +57,6 @@ from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre 
 
 
 from search.models import history
-from search.models import Author
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -72,7 +71,6 @@ from search.models import Preferences
 from search.models import Publisher
 from search.models import Restocking
 from search.models import Sell
-from search.models import Shelf
 from search.models import Stats
 from search.models import Entry
 from search.models import EntryCopies
@@ -209,35 +207,7 @@ def card_create_manually(request):
 
         if card_form.is_valid():
             card_dict = card_form.cleaned_data
-
-            # Create new objects, if any.
-            new_authors_text = card_dict.pop('new_authors')
-            if new_authors_text:
-                new_authors_names = new_authors_text.split('\n')
-                authors = []
-                for name in new_authors_names:
-                    author, noop = Author.objects.get_or_create(name=name.strip())
-                    authors.append(author)
-                card_dict['authors'] = authors
-
-            new_shelf_name = card_dict.pop('new_shelf_name')
-            if new_shelf_name:
-                shelf, noop = Shelf.objects.get_or_create(name=new_shelf_name.strip())
-                card_dict['shelf'] = shelf
-
-            new_publisher_name = card_dict.pop('new_publisher_name')
-            if new_publisher_name:
-                publisher, noop = Publisher.objects.get_or_create(name=new_publisher_name.strip())
-                card_dict['publishers'] = [publisher]
-
-            new_distributor_name = card_dict.pop('new_distributor_name')
-            new_distributor_discount = card_dict.pop('new_distributor_discount')
-            if new_distributor_name:
-                dist, noop = Distributor.objects.get_or_create(name=new_distributor_name.strip(),
-                                                         discount=new_distributor_discount)
-                card_dict['distributor'] = dist
-
-            card, msgs = Card.from_dict(card_dict)
+            card, msgs = viewforms.CardCreateForm.create_card(card_dict)
 
             if not card:
                 log.warning("create card manually: card not created? {}, {}"
