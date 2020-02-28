@@ -53,9 +53,12 @@ class Contact(models.Model):
         name: uppercase
         firstname: capitalize
         """
-        self.name = self.name.upper()
-        self.firstname = self.firstname.capitalize()
-        super(self.__class__, self).save(*args, **kwargs)
+        if self.name:
+            self.name = self.name.upper()
+        if hasattr(self, 'firstname') and self.firstname:
+            self.firstname = self.firstname.capitalize()
+
+        super(Contact, self).save(*args, **kwargs)
 
     def to_dict(self):
         return {'id': self.id,

@@ -6,3 +6,4 @@ from history import Entry, EntryCopies, EntryTypes, InternalMovement  # noqa: F4
 from history import OutMovement
 from common import *  # noqa: F401, 403
 from users import Client, Contact, Bill  # noqa: F401
+from coupons import Coupon, CouponGeneric
