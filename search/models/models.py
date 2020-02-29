@@ -1420,10 +1420,10 @@ class Card(TimeStampedModel):
                 card_distributor = res.first()
 
         # or a new name.
-        if card.get('distributor') and isinstance(card.get('distributor'), str)\
-           or isinstance(card.get('distributor'), int):
+        if card_distributor and isinstance(card_distributor, str)\
+           or isinstance(card_distributor, int):
 
-            if isinstance(card.get('distributor'), int):
+            if isinstance(card_distributor, int):
                 # Kept the inner if logic to check old cases.
                 # Hopefully we don't encounter those now.
                 log.warning(_("card from_dict: we found a distributor argument with type int: this shouldn't happen, the id should be given in distributor_id. distributor gets an object or a name (str)."))
@@ -1468,6 +1468,16 @@ class Card(TimeStampedModel):
         card_publishers = card.get('publishers', [])
         if card_publishers and isinstance(card_publishers[0], models.base.ModelBase):
             pass
+
+        elif card_publishers and (isinstance(card_publishers[0], str) or
+                                  isinstance(card_publishers[0], unicode)):
+            pubs = []
+            for name in card_publishers:
+                pub = Publisher.objects.filter(name__iexact=name)
+                if pub:
+                    pubs.append(pub.first())
+            card_publishers = pubs
+
         elif card.get("publishers_ids"):
             card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]  # noqa: F812 ignore "it" redefinition.
 
@@ -1558,14 +1568,6 @@ class Card(TimeStampedModel):
 
             # add many publishers
             if card_publishers:
-                if isinstance(card_publishers[0], str):
-                    pubs = []
-                    for name in card_publishers:
-                        pub = Publisher.objects.filter(name__iexact=name)
-                        if pub:
-                            pubs.append(pub.first())
-                    card_publishers = pubs
-
                 card_obj.publishers = card_publishers
 
             # add the collection

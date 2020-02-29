@@ -21,8 +21,7 @@ import json
 import locale
 import logging
 import os
-
-from django_q.tasks import async
+import traceback
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -34,6 +33,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
+from django_q.tasks import async
 
 from drfserializers import PreferencesSerializer
 from models import Alert
@@ -54,9 +54,9 @@ from models import Shelf
 from models import Stats
 from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
     reviews as frenchreviews
-from search.models import history
-from search.models import do_inventory_apply
 from search.models import do_command_apply
+from search.models import do_inventory_apply
+from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
@@ -69,12 +69,14 @@ from search.models.utils import price_fmt
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 
+from .utils import _is_truthy
 from .utils import ids_qties_to_pairs
 from .utils import is_invalid
-from .utils import is_isbn, split_query, isbns_from_query
+from .utils import is_isbn
+from .utils import isbns_from_query
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
-from .utils import _is_truthy
+from .utils import split_query
 
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
@@ -367,7 +369,8 @@ def card_create(request, **response_kwargs):
                 return JsonResponse(msgs)
 
         except Exception as e:
-            log.error(u"Error adding a card: {}".format(e))
+            tb = traceback.format_exc()
+            log.error(u"Error adding a card: {}\n{}".format(e, tb))
             alerts.append({"level": ALERT_ERROR,
                            "message": _("Woops, we can not create this card. This is a bug.")})
 

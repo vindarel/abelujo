@@ -113,7 +113,7 @@ class PrefsForm(forms.Form):
             currency = 'euro'
             try:
                 currency = json.loads(prefs.others)['default_currency']
-            except Exception as e:
+            except Exception:
                 # log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
                 pass
 
@@ -336,7 +336,7 @@ class CardForm(forms.ModelForm):
         currency = 'euro'
         try:
             default_currency = json.loads(prefs.others)['default_currency']
-        except Exception as e:
+        except Exception:
             # log.warn(u"Preferences: could not load the default currency (will use euro): {}.".format(e))
             default_currency = currency
 
