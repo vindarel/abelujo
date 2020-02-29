@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+# Was used for creation and edition.
+# Still used for edition. Creation re-done with Django forms.
+
 angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope', '$window', 'utils', '$filter', '$log', ($http, $scope, $window, utils, $filter, $log) !->
     # utils: in services.js
 

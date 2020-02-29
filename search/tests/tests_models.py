@@ -193,18 +193,21 @@ class TestCards(TestCase):
     def test_from_dict(self):
         TITLE = "Foo bar"
         ZINN = "zinn"
-        to_add, msgs = Card.from_dict({"title": TITLE,
+        card, msgs = Card.from_dict({"title": TITLE,
                                        "authors": [self.GOLDMAN, ZINN],
                                        "isbn": "foobar",
+                                       "publishers": ['new publisher'],
+                                       # "distributor": "new dist",
                                        "location": "here"})
-        self.assertTrue(to_add)
-        self.assertEqual(to_add.title, TITLE)
+        self.assertTrue(card)
+        self.assertEqual(card.title, TITLE)
         self.assertEqual(len(Author.objects.all()), 2)
-        names = [aut.name for aut in to_add.authors.all()]
+        names = [aut.name for aut in card.authors.all()]
         self.assertTrue(ZINN in names)
         self.assertTrue(self.GOLDMAN in names)
         # Check that the author was created
         self.assertTrue(Author.objects.get(name=ZINN))
+        self.assertEqual("new publisher", card.publishers.first().name)
 
     def test_exists(self):
         """Card.exists unit test.

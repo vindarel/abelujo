@@ -1394,13 +1394,15 @@ class Card(TimeStampedModel):
         # Get authors or create
         card_authors = card.get('authors', [])
         if card.get('authors'):
-            auts = card.get('authors')
+            auts = card_authors
             if not isinstance(auts, list):
                 auts = [auts]
-            if type(auts[0]) in [type("string"), type(u"unicode-str")]:
+            if isinstance(auts[0], str) or isinstance(auts[0], unicode):
+                new_authors = []  # appending to card_authors used in the loop: infinite recursion!
                 for aut in auts:
                     author, created = Author.objects.get_or_create(name=aut)
-                    card_authors.append(author)
+                    new_authors.append(author)
+                card_authors = new_authors
 
         # Get and clean the ean/isbn (beware of form data)
         isbn = card.get("isbn", card.get("ean", ""))
