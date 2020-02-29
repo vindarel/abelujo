@@ -145,7 +145,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             params.type = type.fields.name
 
         if $scope.distributor_selected != undefined
-            params.distributor = $scope.distributor_selected.id
+            params.distributor_id = $scope.distributor_selected.id
 
         # This is needed for Django to process the params to its
         # request.POST dictionnary:

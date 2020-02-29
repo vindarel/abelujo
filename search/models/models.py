@@ -1355,7 +1355,8 @@ class Card(TimeStampedModel):
             year:       int or None
             authors:    list of authors names (list of str) or list of Author objects.
             shelf:   id (int)
-            distributor: id or object of a Distributor
+            distributor: object or new name of a Distributor (deprecated: has accepted an id)
+            distributor_id: id of a Distributor
             publishers: list of names of publishers (create one on the fly, like with webscraping), or list of objects
             publishers_ids: list of ids of publishers
             has_isbn:   boolean
@@ -1413,15 +1414,29 @@ class Card(TimeStampedModel):
         # it's either already an object
         card_distributor = card.get('distributor')
         # or an id.
-        if card_distributor and isinstance(card_distributor, str)\
-           or isinstance(card_distributor, int):
+        if card.get('distributor_id'):
+            res = Distributor.objects.filter(pk=card.get('distributor_id'))
+            if res:
+                card_distributor = res.first()
+
+        # or a new name.
+        if card.get('distributor') and isinstance(card.get('distributor'), str)\
+           or isinstance(card.get('distributor'), int):
+
+            if isinstance(card.get('distributor'), int):
+                # Kept the inner if logic to check old cases.
+                # Hopefully we don't encounter those now.
+                log.warning(_("card from_dict: we found a distributor argument with type int: this shouldn't happen, the id should be given in distributor_id. distributor gets an object or a name (str)."))
+
             try:
                 # OK: card: edit -> card_create
-                card_distributor = Distributor.objects.get(id=card.get("distributor"))
+                card_distributor, noop = Distributor.objects.get_or_create(name=card.get("distributor"))
             except Exception as e:
                 # XXX use distributor_id and distributor
+                # Fix in JS and view. But where ? :S
+                # Was (at least) in cardCreateController, only used for edit now.
+                # Should be OK...
                 try:
-                    # Fix in JS and view. But where ? :S
                     it = card.get('distributor')
                     it_id = 1
                     if isinstance(it, str):

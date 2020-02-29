@@ -342,6 +342,8 @@ def card_create(request, **response_kwargs):
                 card_dict['shelf_id'] = shelf
             if params.get('distributor'):
                 card_dict['distributor'] = params.get('distributor')
+            if params.get('distributor_id'):
+                card_dict['distributor_id'] = params.get('distributor_id')
             if params.get('publishers'):
                 card_dict['publishers_ids'] = list_from_coma_separated_ints(params.get('publishers'))
             if threshold is not None:

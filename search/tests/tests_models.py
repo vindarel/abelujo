@@ -197,7 +197,7 @@ class TestCards(TestCase):
                                        "authors": [self.GOLDMAN, ZINN],
                                        "isbn": "foobar",
                                        "publishers": ['new publisher'],
-                                       # "distributor": "new dist",
+                                       "distributor": "new dist",
                                        "location": "here"})
         self.assertTrue(card)
         self.assertEqual(card.title, TITLE)
