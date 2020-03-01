@@ -353,7 +353,7 @@ class TestCards(TestCase):
         obj, msgs = Card.from_dict({"title": "living",
                               "card_type": badtype})
         self.assertEqual(obj.title, "living")
-        self.assertEqual(obj.card_type.name, "unknown")
+        self.assertFalse(obj.card_type)
 
     def test_type_unknown(self):
         obj, msgs = Card.from_dict({"title": "living",
@@ -436,10 +436,9 @@ class TestPublisher(TestCase):
     def test_publisher_non_existing(self):
         pub = "Foo"
         obj, msgs = Card.from_dict({"title": "living", "publishers": [pub]})
-        self.assertEqual(pub.lower(), obj.publishers.all()[0].name)
+        self.assertEqual(pub.lower(), obj.publishers.all()[0].name.lower())
         publishers = Publisher.objects.all()
         self.assertEqual(2, len(publishers))
-        self.assertTrue(pub.lower() in [p.name for p in publishers])
 
 class TestCollection(TestCase):
     """Testing the addition of a collection to a card.

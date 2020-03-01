@@ -39,7 +39,6 @@ class TestCards(TestCase):
         # No new authors or publisher yet.
         card_dict = {
             'title': 'Card created manually',
-            'card_type': 'foo',
             'has_isbn': 'yes',
             'isbn': '9782757837009',
             'price': '9.99',

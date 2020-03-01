@@ -476,6 +476,7 @@ class Card(TimeStampedModel):
                                     verbose_name=__("Minimal quantity before command"))
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=__("publishers"))
+    year_published = models.DateField(blank=True, null=True, verbose_name=__("year published"))
     #: Distributor:
     distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
     #: Collection
@@ -511,7 +512,7 @@ class Card(TimeStampedModel):
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
     class Meta:
-        ordering = ('sortkey', 'title')
+        ordering = ('sortkey', 'year_published', 'title')
         verbose_name = __("card")
 
     @property
@@ -1355,25 +1356,25 @@ class Card(TimeStampedModel):
 
         Return: the new object, saved.
         """
-        assert isinstance(card_obj, models.base.ModelBase)
+        assert isinstance(card_obj, models.base.Model)
         assert isinstance(card_dict, dict)
         # Update fields, except isbn (as with "else" below)
         if authors:
-            assert isinstance(authors[0], models.base.ModelBase)
+            assert isinstance(authors[0], models.base.Model)
             card_obj.authors = authors
 
         if distributor:
-            assert isinstance(distributor, models.base.ModelBase)
+            assert isinstance(distributor, models.base.Model)
             card_obj.distributor = distributor
 
         if publishers:
-            assert isinstance(publishers[0], models.base.ModelBase)
+            assert isinstance(publishers[0], models.base.Model)
             card_obj.publishers = publishers
 
         if card_dict.get('threshold') is not None:
             card_obj.threshold = card_dict.get('threshold')
 
-        for field in ['title', 'price', 'date_publication', 'has_isbn',
+        for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
                       'details_url', 'currency']:
             if card_dict.get(field) not in [None, '', u'']:
                 setattr(card_obj, field, card_dict.get(field))
@@ -1392,6 +1393,16 @@ class Card(TimeStampedModel):
         assert isinstance(card_dict, dict)
         # Create the card with its simple fields.
         # Add the relationships afterwards.
+        # for field, val in card_dict.items():
+        #     if val in [None, '', u'']:
+        #         del card_dict[field]
+
+        # We should do more data validation before this.
+        # For instance, date_publication cannot be ''.
+        # card_obj, created = Card.objects.get_or_create(
+        #     **card_dict
+        # )
+
         card_obj, created = Card.objects.get_or_create(
             title=card_dict.get('title'),
             price = card_dict.get('price', 0),
@@ -1401,16 +1412,15 @@ class Card(TimeStampedModel):
             has_isbn = card_dict.get('has_isbn'),
             cover = card_dict.get('img', ""),
             details_url = card_dict.get('details_url'),
-            date_publication = card_dict.get('date_publication'),
+            date_publication = card_dict.get('date_publication') if card_dict.get('date_publication') else None,
             data_source = card_dict.get('data_source'),
             summary = card_dict.get('summary'),
-            threshold = card_dict.get('threshold', THRESHOLD_DEFAULT),
-        )
+            threshold = card_dict.get('threshold', THRESHOLD_DEFAULT))
 
         # We can also update every field for the existing card.
 
         # Set the authors
-        if authors:  # TODO: more tests !
+        if authors:  # XXX: more tests !
             card_obj.authors = authors
 
         # add the distributor
@@ -1434,7 +1444,7 @@ class Card(TimeStampedModel):
         # add the shelf
         shelf = card_dict.get('shelf')
         shelf_id = card_dict.get('shelf_id')
-        if shelf and isinstance(shelf, models.base.ModelBase):
+        if shelf and isinstance(shelf, models.base.Model):
             card_obj.shelf = shelf
         elif shelf_id and shelf_id != "0":
             try:
@@ -1457,13 +1467,10 @@ class Card(TimeStampedModel):
         if pubs:
             try:
                 for pub in pubs:
-                    if isinstance(pub, str):
+                    if isinstance(pub, str) or isinstance(pub, unicode):
                         pub = pub.lower()
                         pub_obj, created = Publisher.objects.get_or_create(name=pub)
                         card_obj.publishers.add(pub_obj)
-                    # objects? already done at the beginning.
-                    # elif isinstance(pub, models.base.ModelBase):
-                        # pub_obj = pub
 
             except Exception, e:
                 log.error(u"--- error while adding the publisher: {}".format(e))
@@ -1592,8 +1599,8 @@ class Card(TimeStampedModel):
                          format(card.get('shelf_id')))
 
         # Get the publishers:
-        card_publishers = card.get('publishers', [])
-        if card_publishers and isinstance(card_publishers[0], models.base.ModelBase):
+        card_publishers = card.pop('publishers', [])
+        if card_publishers and isinstance(card_publishers[0], models.base.Model):
             pass
 
         elif card_publishers and (isinstance(card_publishers[0], str) or
@@ -1603,10 +1610,13 @@ class Card(TimeStampedModel):
                 pub = Publisher.objects.filter(name__iexact=name)
                 if pub:
                     pubs.append(pub.first())
+                else:
+                    pub = Publisher.objects.create(name=name)
+                    pubs.append(pub)
             card_publishers = pubs
 
-        elif card.get("publishers_ids"):
-            card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]  # noqa: F812 ignore "it" redefinition.
+        elif card.get('publishers_ids'):
+            card_publishers = [Publisher.objects.get(id=it) for it in card.get('publishers_ids')]  # noqa: F812 ignore "it" redefinition.
 
         # Get the publication date (from a human readable string)
         date_publication = None
