@@ -1344,6 +1344,134 @@ class Card(TimeStampedModel):
         return None, msgs.msgs
 
     @staticmethod
+    def update_from_dict(card_obj,
+                         card_dict=None,
+                         authors=[],
+                         distributor=None,
+                         publishers=[]):
+        """
+        - card_obj: Card object.
+        - card_dict: dict of fields.
+        - other params: objects.
+
+        Return: the new object, saved.
+        """
+        assert isinstance(card_obj, models.base.ModelBase)
+        assert isinstance(card_dict, dict)
+        # Update fields, except isbn (as with "else" below)
+        if authors:
+            assert isinstance(authors[0], models.base.ModelBase)
+            card_obj.authors = authors
+
+        if distributor:
+            assert isinstance(distributor, models.base.ModelBase)
+            card_obj.distributor = distributor
+
+        if publishers:
+            assert isinstance(publishers[0], models.base.ModelBase)
+            card_obj.publishers = publishers
+
+        if card_dict.get('threshold') is not None:
+            card_obj.threshold = card_dict.get('threshold')
+
+        for field in ['title', 'price', 'date_publication', 'has_isbn',
+                      'details_url', 'currency']:
+            if card_dict.get(field) not in [None, '', u'']:
+                setattr(card_obj, field, card_dict.get(field))
+
+        if card_dict.get('isbn'):
+            card_obj.isbn = card_dict.get('isbn')
+
+        card_obj.save()
+        return card_obj
+
+    @staticmethod
+    def get_or_create_from_dict(card_dict,
+                                authors=[],
+                                publishers=[],
+                                distributor=None):
+        assert isinstance(card_dict, dict)
+        # Create the card with its simple fields.
+        # Add the relationships afterwards.
+        card_obj, created = Card.objects.get_or_create(
+            title=card_dict.get('title'),
+            price = card_dict.get('price', 0),
+            currency = card_dict.get('currency'),
+            isbn = card_dict.get('isbn'),
+            fmt = card_dict.get('fmt'),
+            has_isbn = card_dict.get('has_isbn'),
+            cover = card_dict.get('img', ""),
+            details_url = card_dict.get('details_url'),
+            date_publication = card_dict.get('date_publication'),
+            data_source = card_dict.get('data_source'),
+            summary = card_dict.get('summary'),
+            threshold = card_dict.get('threshold', THRESHOLD_DEFAULT),
+        )
+
+        # We can also update every field for the existing card.
+
+        # Set the authors
+        if authors:  # TODO: more tests !
+            card_obj.authors = authors
+
+        # add the distributor
+        if distributor:
+            card_obj.distributor = distributor
+
+        # add many publishers
+        if publishers:
+            card_obj.publishers = publishers
+
+        # add the collection
+        collection = card_dict.get("collection")
+        if collection:
+            collection = collection.lower()
+            try:
+                collection_obj, created = Collection.objects.get_or_create(name=collection)
+                card_obj.collection = collection_obj
+            except Exception as e:
+                log.error(u"--- error while adding the collection: %s" % (e,))
+
+        # add the shelf
+        shelf = card_dict.get('shelf')
+        shelf_id = card_dict.get('shelf_id')
+        if shelf and isinstance(shelf, models.base.ModelBase):
+            card_obj.shelf = shelf
+        elif shelf_id and shelf_id != "0":
+            try:
+                cat_obj = Shelf.objects.get(id=shelf_id)
+                card_obj.shelf = cat_obj
+            except Exception as e:
+                log.error(u"error adding shelf {}: {}".format(shelf_id, e))
+
+        # add the type of the card
+        typ = "unknown"
+        if card_dict.get("card_type"):
+            typ = card_dict.get("card_type")
+
+        type_obj = CardType.objects.filter(name=typ).first()
+        if type_obj:
+            card_obj.card_type = type_obj
+
+        # add the publishers
+        pubs = card_dict.get("publishers")
+        if pubs:
+            try:
+                for pub in pubs:
+                    if isinstance(pub, str):
+                        pub = pub.lower()
+                        pub_obj, created = Publisher.objects.get_or_create(name=pub)
+                        card_obj.publishers.add(pub_obj)
+                    # objects? already done at the beginning.
+                    # elif isinstance(pub, models.base.ModelBase):
+                        # pub_obj = pub
+
+            except Exception, e:
+                log.error(u"--- error while adding the publisher: {}".format(e))
+
+        return card_obj
+
+    @staticmethod
     def from_dict(card, to_list=False):
         """Add or edit a card from a dict.
 
@@ -1383,13 +1511,12 @@ class Card(TimeStampedModel):
         msg_success = _("Card saved.")  # both for creation and edit: simple message.
         # msg_exists = _("This card already exists.")
 
-        # Unknown years is okay
-        year = card.get('year', None)
+        # Unknown year is okay
         try:
-            int(year)
-            year = date(year, 1, 1)
+            year = int(card.get('year'))
+            card['year'] = date(year, 1, 1)
         except Exception:
-            year = None
+            card['year'] = None
 
         # Make the card
         # Get authors or create
@@ -1409,6 +1536,7 @@ class Card(TimeStampedModel):
         isbn = card.get("isbn", card.get("ean", ""))
         if isbn:
             isbn = isbn_cleanup(isbn)
+            card['isbn'] = isbn
 
         # Get the distributor:
         # it's either already an object
@@ -1487,17 +1615,14 @@ class Card(TimeStampedModel):
             if isinstance(card.get('date_publication'), str):
                 try:
                     date_publication = dateparser.parse(card.get('date_publication'))  # also languages=['fr']
+                    card['date_publication'] = date_publication
                 except Exception as e:
                     log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
-            elif isinstance(card.get('date_publication'), datetime.date):
-                # For example, coming from Dilicom, we parsed the date, because we know its format.
-                date_publication = card.get('date_publication')
 
         # Check if the card already exists (it may not have an isbn).
         if card.get('id'):
             try:
                 exists_list = Card.objects.get(id=card.get('id'))
-                created = False
             except ObjectDoesNotExist:
                 log.error(u"Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
                 msgs.add_error("Could not find card of id {}".format(card.get('id')))
@@ -1506,116 +1631,32 @@ class Card(TimeStampedModel):
         else:
             exists_list, _msgs = Card.exists(card)
             msgs.append(_msgs)
-            created = False
+
+        default_currency = Preferences.get_default_currency()
+        card['currency'] = default_currency
 
         #######################################################
         # Update existing card.
         #######################################################
         if exists_list:
-            card_obj = exists_list
-            # Update fields, except isbn (as with "else" below)
-            if card_authors:
-                card_obj.authors = card_authors
-
-            if card_distributor:
-                card_obj.distributor = card_distributor
-
-            if card_publishers:
-                card_obj.publishers = card_publishers
-
-            if card.get('threshold') is not None:
-                card_obj.threshold = card.get('threshold')
-
-            for field in ['title', 'price', 'year_published', 'has_isbn',
-                          'details_url', 'currency']:
-                if card.get(field) not in [None, '', u'']:
-                    setattr(card_obj, field, card.get(field))
-
-            card_obj.isbn = isbn
+            card_obj = Card.update_from_dict(
+                exists_list,
+                card_dict=card,
+                authors=card_authors,
+                distributor=card_distributor,
+                publishers=card_publishers,
+            )
 
         ######################################################
         # Create new card.
         ######################################################
         else:
-            # Create the card with its simple fields.
-            # Add the relationships afterwards.
-            default_currency = Preferences.get_default_currency()
-            card_obj, created = Card.objects.get_or_create(
-                title=card.get('title'),
-                year_published=year,
-                price = card.get('price', 0),
-                currency = card.get('currency', default_currency),
-                isbn = isbn,
-                fmt = card.get('fmt'),
-                has_isbn = card.get('has_isbn'),
-                cover = card.get('img', ""),
-                details_url = card.get('details_url'),
-                date_publication = date_publication,
-                data_source = card.get('data_source'),
-                summary = card.get('summary'),
-                threshold = card.get('threshold', THRESHOLD_DEFAULT),
+            card_obj = Card.get_or_create_from_dict(
+                card_dict=card,
+                authors=card_authors,
+                distributor=card_distributor,
+                publishers=card_publishers,
             )
-
-            #TODO: we can also update every field for the existing card.
-
-            # Set the authors
-            if card_authors:  # TODO: more tests !
-                card_obj.authors = card_authors
-
-            # add the distributor
-            if card_distributor:
-                card_obj.distributor = card_distributor
-
-            # add many publishers
-            if card_publishers:
-                card_obj.publishers = card_publishers
-
-            # add the collection
-            collection = card.get("collection")
-            if collection:
-                collection = collection.lower()
-                try:
-                    collection_obj, created = Collection.objects.get_or_create(name=collection)
-                    card_obj.collection = collection_obj
-                except Exception as e:
-                    log.error(u"--- error while adding the collection: %s" % (e,))
-
-            # add the shelf
-            shelf = card.get('shelf')
-            shelf_id = card.get('shelf_id')
-            if shelf and isinstance(shelf, models.base.ModelBase):
-                card_obj.shelf = shelf
-            elif shelf_id and shelf_id != "0":
-                try:
-                    cat_obj = Shelf.objects.get(id=shelf_id)
-                    card_obj.shelf = cat_obj
-                except Exception as e:
-                    log.error(u"error adding shelf {}: {}".format(shelf_id, e))
-
-            # add the type of the card
-            typ = "unknown"
-            if card.get("card_type"):
-                typ = card.get("card_type")
-
-            type_obj = CardType.objects.filter(name=typ).first()
-            if type_obj:
-                card_obj.card_type = type_obj
-
-            # add the publishers
-            pubs = card.get("publishers")
-            if pubs:
-                try:
-                    for pub in pubs:
-                        if isinstance(pub, str):
-                            pub = pub.lower()
-                            pub_obj, created = Publisher.objects.get_or_create(name=pub)
-                            card_obj.publishers.add(pub_obj)
-                        # objects? already done at the beginning.
-                        # elif isinstance(pub, models.base.ModelBase):
-                            # pub_obj = pub
-
-                except Exception, e:
-                    log.error(u"--- error while adding the publisher: %s" % (e,))
 
         # Update fields of new or existing card.
         # add the quantity of exemplaries: in "move" view.
