@@ -476,7 +476,6 @@ class Card(TimeStampedModel):
                                     verbose_name=__("Minimal quantity before command"))
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=__("publishers"))
-    year_published = models.DateField(blank=True, null=True, verbose_name=__("year published"))
     #: Distributor:
     distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
     #: Collection
@@ -512,7 +511,7 @@ class Card(TimeStampedModel):
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
     class Meta:
-        ordering = ('sortkey', 'year_published', 'title')
+        ordering = ('sortkey', 'title')
         verbose_name = __("card")
 
     @property
