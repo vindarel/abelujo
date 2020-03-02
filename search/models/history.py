@@ -46,7 +46,9 @@ def price_fmt(price, currency):
 
 def card_currency(card):
     # models.utils
-    if card.data_source and 'lelivre' in card.data_source:
+    if card and card.data_source and 'lelivre' in card.data_source:
+        return 'CHF'
+    if os.getenv('DEFAULT_DATASOURCE') == 'lelivre':
         return 'CHF'
     return '€'
 
@@ -360,7 +362,7 @@ class Entry(TimeStampedModel):
         except Exception as e:
             log.error('Error in Entry.history: {}'.format(e))
 
-        fake_default_currency = card_currency(entries.first().card)
+        fake_default_currency = card_currency(entries.first().card if entries.first() else None)
 
         nb_entries = entries.count()
         now = pendulum.now()
