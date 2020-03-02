@@ -45,7 +45,7 @@ h1 {{ day | date:'F o' | title }}
 
 .col-md-4
   table.table.table-striped
-    for it in data.entries_per_day
+      {% for it in data.entries_per_day reversed %}
       tr
         td
           if it.weekday == 6
@@ -56,5 +56,6 @@ h1 {{ day | date:'F o' | title }}
           a(href="{% url 'history_entries_day' it.date %}") {{ it.date }}
         td.text-right {{ it.price_entered_fmt }}
         td.text-right x {{ it.nb_entered }}
+      {% endfor %}
 
 {% endblock content %}
