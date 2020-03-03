@@ -147,7 +147,7 @@ class Messages(object):
                 for it in self.msgs]
 
 
-def truncate(it):
+def truncate(it, max_length=MAX_CELL):
     """Truncate only strings to MAX_CELL characters.
 
     param string it: a string
@@ -155,8 +155,8 @@ def truncate(it):
     returns: a string
     """
     if it and (isinstance(it, str) or isinstance(it, unicode))\
-       and len(it) >= MAX_CELL:
-        return it[:MAX_CELL] + "..."
+       and len(it) >= max_length:
+        return it[:max_length] + "..."
     return it
 
 def _ppcard_listofdicts(cards):

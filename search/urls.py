@@ -126,6 +126,7 @@ urlpatterns = patterns('',
     url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="basket_view"),
 
     # Sells history
+    url(r'^history/sells/month/(?P<date>.*)/export/?', 'search.views.history_sells_month_export', name="history_sells_month_export"),
     url(r'^history/sells/month/(?P<date>.*)/?', 'search.views.history_sells_month', name="history_sells_month"),
     url(r'^history/sells/day/(?P<date>.*)/?', 'search.views.history_sells_day', name="history_sells_day"),
     url(r'^history/sells/export/?', 'search.views.history_sells_exports',

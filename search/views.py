@@ -1169,6 +1169,90 @@ def history_sells_month(request, date, **kwargs):
                                       'next_month': next_month.strftime('%Y-%m'),
                                       'year': year})
 
+def _csv_response_from_rows(rows, headers=None, filename=''):
+    pseudo_buffer = Echo()
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+    content = writer.writerow("")
+
+    if headers:
+        rows.insert(0, headers)
+    start = timezone.now()
+    content = "".join([writer.writerow(row) for row in rows])
+    end = timezone.now()
+    print("writing rows to csv took {}".format(end - start))
+
+    response = StreamingHttpResponse(content, content_type="text/csv")
+    response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(filename)
+    return response
+
+def _txt_response_from_rows(rows, filename=""):
+    # 63 = MAX_CELL + 3 because of trailing "..."
+    # Not ideal, but for compliance with the csv method we get a list of data, not a dict:
+    # (sell.card.title,         # 0
+    #      sell.card.isbn,      # 1
+    #      sell.card.authors_repr,
+    #      sell.card.pubs_repr,
+    #      sell.card.distributor_repr, # 4
+    #      sell.card.shelf.name if sell.card.shelf else "",
+    #      sell.card.price,      # 6
+    #      sell.card.price_discounted, # 7
+    #      sell.quantity)        # 8
+
+    format_str = u"{:63} {} {:23} {:20} {:5} {:5} {:3}"
+    rows = [format_str.
+            format(truncate(it[0]),
+                   it[1],
+                   truncate(it[3], max_length=20),
+                   it[4],
+                   it[6],
+                   it[7],
+                   it[8],
+            ) for it in rows]
+    rows = sorted(rows)
+    content = "\n".join(rows)
+    response = HttpResponse(content, content_type="text/raw")
+    response['Content-Disposition'] = u'attachment; filename={}.txt'.format(filename)
+    return response
+
+def history_sells_month_export(request, date, **response_kwargs):
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+
+    data = Sell.search(year=day.year, month=day.month,
+                       with_total_price_sold=False)
+
+    fileformat = request.GET.get('fileformat')
+    filename = _("Sells_{}-{}".format(day.year, day.month))
+
+    headers = (_("Title"), "ISBN", _("Authors"), _("Publishers"), _("Supplier"),
+              _("Shelf"),
+              _("Price"),
+              _("with discount"),
+              _("Quantity"))
+    rows = [
+        (sell.card.title,
+         sell.card.isbn,
+         sell.card.authors_repr,
+         sell.card.pubs_repr,
+         sell.card.distributor_repr,
+         sell.card.shelf.name if sell.card.shelf else "",
+         sell.card.price,
+         sell.card.price_discounted,
+         sell.quantity)
+        for sell in data['data']]
+    rows = sorted(rows)
+
+    if fileformat in ['csv']:
+        response = _csv_response_from_rows(rows, headers=headers, filename=filename)
+        return response
+
+    if fileformat in ['txt']:
+        response = _txt_response_from_rows(rows, filename=filename)
+        return response
+
+
 def history_entries_month(request, date, **kwargs):
     template = 'search/history_entries.jade'
     try:

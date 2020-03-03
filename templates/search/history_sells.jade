@@ -36,7 +36,18 @@ if day.year < now.year or day.month < now.month
         a {% trans "Sells" %}
       li(role="presentation"): a(href="{% url 'history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
 
-h1 {{ day | date:'F o' | title }}
+span
+  span(style="font-size: 36pt; font-size: 500; margin-right: 1em;") {{ day | date:'F o' | title }}
+  span
+    .btn-group
+      .dropdown
+         button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}
+           span.caret
+         ul.dropdown-menu
+           li
+             a(href="/history/sells/month/{{day.year}}-{{day.month}}/export?fileformat=txt", title='') {% trans "All sells of this month" %} - txt
+             a(href="/history/sells/month/{{day.year}}-{{day.month}}/export?fileformat=csv", title='') {% trans "All sells of this month" %} - csv
+
 
 .row
   .col-md-3.panel.panel-info
