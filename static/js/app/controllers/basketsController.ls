@@ -212,16 +212,14 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.remove_from_selection = (index_to_rm) !->
         "Remove the card from the list. Server call to the api."
-        sure = confirm(gettext("Are you sure to remove the card '{}' from the basket ?").replace("{}", $scope.copies[index_to_rm].title))
-        if sure
-            card_id = $scope.copies[index_to_rm].id
-            $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
-            .then (response) !->
-                $scope.copies.splice(index_to_rm, 1)
-                # $scope.alerts = response.data.msgs # useless
+        card_id = $scope.copies[index_to_rm].id
+        $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
+        .then (response) !->
+            $scope.copies.splice(index_to_rm, 1)
+            # $scope.alerts = response.data.msgs # useless
 
-            .catch (resp) !->
-                $log.info "Error when trying to remove the card " + card_id
+        .catch (resp) !->
+            $log.info "Error when trying to remove the card " + card_id
 
     $scope.get_data = ->
         # coma-sep list of ids:
