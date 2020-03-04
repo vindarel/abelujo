@@ -17,6 +17,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sys
 import warnings
 
 import ruamel.yaml
@@ -338,3 +339,24 @@ if DEBUG:
     )
 
     # logging.disable(logging.CRITICAL)
+
+# long migrations to setup tests?
+# https://stackoverflow.com/questions/36487961/django-unit-testing-taking-a-very-long-time-to-create-test-database
+TESTING = 'test' in sys.argv[1:]
+if TESTING:
+    # Also: use pytest.
+    print('==================================')
+    print('In TEST Mode - Migrations disabled')
+    print('==================================')
+
+    class DisableMigrations(object):
+
+        def __contains__(self, item):
+            return True
+
+        def __getitem__(self, item):
+            # With django 2.1 I had to change return "notmigrations" to return None, otherwise it complained that ModuleNotFoundError: No module named 'notmigrations' – frnhr Jun 11 '19 at 17:58
+
+            return "notmigrations"
+
+    MIGRATION_MODULES = DisableMigrations()
