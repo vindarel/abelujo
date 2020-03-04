@@ -39,16 +39,13 @@ from search.models.utils import get_logger
 
 log = get_logger()
 
-def gen_coupon_code():
-    return "coupon code"
 
-
-def create_default_coupons():
-    amounts = [10, 15, 20, 30, 50]
-    for amount in amounts:
-        coupon, created = CouponGeneric.get_or_create(amount=amount)
-        if created:
-            log.info("Coupon model of amount {} created.".format(amount))
+# def create_default_coupons():
+#     amounts = [10, 15, 20, 30, 50]
+#     for amount in amounts:
+#         coupon, created = CouponGeneric.get_or_create(amount=amount)
+#         if created:
+#             log.info("Coupon model of amount {} created.".format(amount))
 
 class CouponGeneric(TimeStampedModel):
     amount = models.FloatField(verbose_name=__("Amount"), null=False)
@@ -56,11 +53,23 @@ class CouponGeneric(TimeStampedModel):
                                  verbose_name=__("Active"),
                                  help_text=_("Can we currently generate coupons of this amount to clients?"))
     #: A code that is transformable into a barcode (image).
-    code = models.CharField(default=gen_coupon_code, max_length=CHAR_LENGTH,
-                            blank=True, editable=False)
+    code = models.CharField(max_length=CHAR_LENGTH, blank=True, editable=False)
 
     def __unicode__(self):
         return u"amount {}".format(self.amount)
+
+    def save(self, *args, **kwargs):
+        code = '8000000000' + format(self.amount, '0>3')
+        # assert len(code) == 13
+        self.code = code
+        super(CouponGeneric, self).save(*args, **kwargs)
+
+    @staticmethod
+    def search():
+        """
+        Return all active generic coupons.
+        """
+        return CouponGeneric.objects.exclude(active=False).all()
 
 
 class Coupon(TimeStampedModel):

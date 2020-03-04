@@ -15,13 +15,15 @@ def create_coupons(apps, schema_editor):
         if created:
             print("Coupon created: {}€".format(amount))
 
+def backwards(apps, schema_editor):
+    pass
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('search', '0077_coupon_generic'),
+        ('search', '0076_auto_20200304_1557'),
     ]
 
     operations = [
-        migrations.RunPython(create_coupons),
+        migrations.RunPython(create_coupons, backwards),
     ]

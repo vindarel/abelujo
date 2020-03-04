@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import search.models.coupons
 import uuid
 
 
@@ -37,10 +36,15 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('amount', models.FloatField(verbose_name='Amount')),
                 ('active', models.BooleanField(default=True, help_text='Can we currently generate coupons of this amount to clients?', max_length=200, verbose_name='Active')),
-                ('code', models.CharField(default=search.models.coupons.gen_coupon_code, max_length=200, editable=False, blank=True)),
+                ('code', models.CharField(max_length=200, editable=False, blank=True)),
             ],
             options={
                 'abstract': False,
             },
+        ),
+        migrations.AddField(
+            model_name='coupon',
+            name='generic',
+            field=models.ForeignKey(to='search.CouponGeneric', null=True),
         ),
     ]
