@@ -181,7 +181,7 @@ def check_uptodate(name=None):
 
     with cd(wd):
         res = run("git rev-parse HEAD")
-        # print("commit of {} is {}".format(wd, res))
+        tag = run("git describe --tags")
         if res == git_head:
             print(termcolor.colored("- {} is up to date".format(client.name), "green"))
         else:
@@ -193,12 +193,14 @@ def check_uptodate(name=None):
                 print(termcolor.colored("- {}", 'blue').format(client.name) +
                     " is " +
                     termcolor.colored("{}", "yellow").format(index) +
-                      " commits behind. Head is at: {} ({})".format(last_commit_date, res))
+                      " commits behind. Head is at: {}, {} ({})".format(
+                          tag, last_commit_date, res))
             else:
                 print(termcolor.colored("- {}", "blue").format(client.name) +
                     " is  " +
                     termcolor.colored("{}", "red").format(index) +
-                      " commits behind. Head is at: {} ({})".format(last_commit_date, res))
+                      " commits behind. Head is at: {}, {} ({})".format(
+                          tag, last_commit_date, res))
 
 def _request_call(url):
     status = 0
