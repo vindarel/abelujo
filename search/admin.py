@@ -20,6 +20,8 @@ from search.models import Basket
 from search.models import BasketCopies
 from search.models import Bill
 from search.models import Card
+from search.models import CouponGeneric
+from search.models import Coupon
 from search.models import Client
 from search.models import Command
 from search.models import Shelf
@@ -125,6 +127,8 @@ admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
+admin.site.register(CouponGeneric)
+admin.site.register(Coupon)
 admin.site.register(Command, CommandAdmin)
 admin.site.register(Shelf, ShelfAdmin)
 admin.site.register(Deposit, DepositAdmin)
