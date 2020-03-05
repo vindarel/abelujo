@@ -12,8 +12,6 @@ def create_coupons(apps, schema_editor):
     default_coupons = [5, 10, 15, 20, 30, 50, 90]
     for amount in default_coupons:
         coupon, created = CouponGeneric.objects.get_or_create(amount=amount)
-        if created:
-            print("Coupon created: {}€".format(amount))
 
 def backwards(apps, schema_editor):
     pass
