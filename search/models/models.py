@@ -1622,12 +1622,14 @@ class Card(TimeStampedModel):
         # Get the publication date (from a human readable string)
         date_publication = None
         if card.get('date_publication') and not is_invalid(card.get('date_publication')):
-            if isinstance(card.get('date_publication'), str):
+            if isinstance(card.get('date_publication'), str) \
+               or isinstance(card.get('date_publication'), unicode):
                 try:
                     date_publication = dateparser.parse(card.get('date_publication'))  # also languages=['fr']
                     card['date_publication'] = date_publication
                 except Exception as e:
                     log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
+                    card['date_publication'] = None
 
         # Check if the card already exists (it may not have an isbn).
         if card.get('id'):
