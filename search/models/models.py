@@ -1361,7 +1361,9 @@ class Card(TimeStampedModel):
         assert isinstance(card_dict, dict)
         # Update fields, except isbn (as with "else" below)
         if authors:
-            assert isinstance(authors[0], models.base.Model)
+            # assert isinstance(authors[0], models.base.Model)
+            if not isinstance(authors[0], models.base.Model):
+                log.warning(u"Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
             card_obj.authors = authors
 
         if distributor:
