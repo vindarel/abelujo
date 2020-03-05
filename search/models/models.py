@@ -814,6 +814,7 @@ class Card(TimeStampedModel):
             "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
+            "price_sold": self.price,  # used for Sell form, when the price sold can change.
             'price_fmt': price_fmt(self.price, currency),
             "price_discounted": self.price_discounted,
             "price_discounted_fmt": price_fmt(self.price_discounted, currency),
