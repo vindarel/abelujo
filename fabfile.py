@@ -306,6 +306,19 @@ def updatelight(name=None):
 
     print("Client updated: {}".format(client))
 
+def updateverylight(name=None):
+    """
+    Only pull new code, submodule included. Don't run migrations, don't build JS.
+    """
+    if not name:
+        print("Give a client name as argument.")
+        exit(1)
+    client = fabutils.select_client_cfg(name, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    with cd(wd):
+        make('pull', client.name)
+        print("Client updated (pull): {}".format(client))
+
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
     Only for users marked in production in clients.yaml.
@@ -568,7 +581,7 @@ def make(cmd, name=None):
                 run("make {}".format(cmd))
 
     else:
-        print("no client name given")
+        print("fab make: no client name given")
 
 def cmd(cmd, name=None):
     """Run any command to client "name".
