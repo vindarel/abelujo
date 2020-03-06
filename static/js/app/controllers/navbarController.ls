@@ -36,6 +36,8 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
         promise = utils.getCards args
         promise.then (res) ->
             $scope.cards_fetched = res
+            if utils.is_isbn(query) and res.length == 1
+               $scope.go_to_card res[0]
             return res
 
     $scope.go_to_card = (item) !->
