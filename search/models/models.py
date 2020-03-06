@@ -2108,6 +2108,8 @@ class Preferences(models.Model):
     #: - sell_discounts
     others = models.TextField(null=True, blank=True)
 
+    default_currency = "€"  # just a cached variable.
+
     default_discounts = [0, 5, 9, 20, 30]
     default_discounts_with_labels = []
     for i, it in enumerate(default_discounts):
@@ -2222,11 +2224,13 @@ class Preferences(models.Model):
 
     @staticmethod
     def get_default_currency():
+        if Preferences.default_currency:
+            return Preferences.default_currency
         try:
             currency = json.loads(Preferences.prefs().others)
+            Preferences.default_currency = currency
             return currency.get('default_currency', '€').upper()
         except Exception:
-            # log.warn(u"Could not load the default currency from Preferences' json, will use euro: {}.".format(e))
             pass
 
     @staticmethod
