@@ -58,6 +58,10 @@ span
     div.panel-heading {% trans "Articles sold" %}
     div.panel-body {{ sells_data.total_cards_sold }}
 
+  .col-md-3.panel.panel-info
+    div.panel-heading {% trans "Cash register movements" %}
+    div.panel-body {{ sells_data.nb_sells }}
+
 .col-md-4
   table.table.table-striped
       {% for it in sells_data.data reversed %}

@@ -3828,7 +3828,7 @@ class Sell(models.Model):
         sells = SoldCards.objects.exclude(sell__canceled=True)
         sells = sells.filter(created__year=year).filter(created__month=month)
         sells.order_by("created")
-        nb_sells = sells.count()
+        nb_sells = sells.values('sell_id').distinct().count()
         now = timezone.now()
         last_day = 31
         if now.month == month:
