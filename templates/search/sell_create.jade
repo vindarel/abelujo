@@ -95,6 +95,12 @@ div.ng-cloak(ng-controller="sellController")
           input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
           .btn-group
+           button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}
+             span.caret
+           ul.dropdown-menu
+             li: a(href="#", ng-click="export_csv()") csv
+
+          .btn-group
              a.btn.btn-default(role="button"
                                href="http://abelujo.cc/docs/sell/"
                                target="_blank",

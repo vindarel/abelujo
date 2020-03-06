@@ -317,6 +317,39 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.cards_fetched = [];
     };
 
+    $scope.export_csv = function () {
+        let date = $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format);
+        let filename = "Vente " + date + ".csv";
+        let text = "";
+        let rows = [];
+        let total = 0;
+        for (var i = 0; i < $scope.cards_selected.length; i++) {
+            total += $scope.cards_selected[i].price_sold * $scope.cards_selected[i].quantity_sell;
+            let row = $scope.cards_selected[i].title + ';' +
+                $scope.cards_selected[i].pubs_repr + ';' +
+                $scope.cards_selected[i].price_sold + ';' +
+                $scope.cards_selected[i].quantity_sell;
+            if ($scope.cards_selected[i].quick_discount) {
+                row += ';' + $scope.cards_selected[i].quick_discount.name;
+            }
+            rows.push(row + '\n');
+        }
+        // * 100 and / 100: avoid decimial precision errors.
+        // 3*21.9 = 38.6999999 lol.
+        total = Math.round(total * 100) / 100;
+        rows.push("\nTotal;;" + parseFloat(total) + $scope.cards_selected[0].currency + '\n');
+        for (var i = 0; i < rows.length; i++) {
+            text += rows[i];
+        }
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    };
+
    // The date picker:
 
     $scope.today = function() {
