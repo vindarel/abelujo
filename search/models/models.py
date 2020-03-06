@@ -3628,6 +3628,11 @@ class Sell(models.Model):
         return total
 
     @property
+    def total_price_sold_fmt(self):
+        total = self.total_price_sold
+        return price_fmt(total, Preferences.get_default_currency())
+
+    @property
     def total_price_init(self):
         total = 0
         for card in self.soldcards_set.all():

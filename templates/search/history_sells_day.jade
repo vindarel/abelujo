@@ -69,12 +69,14 @@ table.table
     td {{ it.created | date:'H:i' }} 
     td &nbsp;
       a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}
-    td {{ it.card.authors_repr }}
     td {{ it.card.pubs_repr }}
     td.text-right {{ it.price_sold_fmt }}
     td
       if it.quantity != 1
         span x {{ it.quantity }}
+    td
+      if new_sell
+        span {{ it.sell.total_price_sold_fmt }}
     td {{ payment }}
     td
       if new_sell
