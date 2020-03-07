@@ -1364,15 +1364,20 @@ class Card(TimeStampedModel):
             # assert isinstance(authors[0], models.base.Model)
             if not isinstance(authors[0], models.base.Model):
                 log.warning(u"Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
-            card_obj.authors = authors
+            else:
+                card_obj.authors = authors
 
         if distributor:
-            assert isinstance(distributor, models.base.Model)
-            card_obj.distributor = distributor
+            if isinstance(distributor, models.base.Model):
+                card_obj.distributor = distributor
+            else:
+                log.warning(u"Card.update_from_dict: distributor should be an object.")
 
         if publishers:
-            assert isinstance(publishers[0], models.base.Model)
-            card_obj.publishers = publishers
+            if isinstance(publishers[0], models.base.Model):
+                card_obj.publishers = publishers
+            else:
+                log.warning(u"Card.update_from_dict: publishers should be a list of objects.")
 
         if card_dict.get('threshold') is not None:
             card_obj.threshold = card_dict.get('threshold')
