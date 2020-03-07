@@ -383,7 +383,9 @@ def card_add(request, **response_kwargs):
     """Add the given card to places (=buy it), deposits and baskets.
 
     - card_id
-    - places_ids_qties:
+    - places_ids_qties: a string with comma-separated place id, quantity (ints).
+
+    - default_place: quantity (int) (card_add_one_to_default_place).
     """
     if request.method == "POST":
         params = request.POST.copy()
@@ -393,6 +395,15 @@ def card_add(request, **response_kwargs):
 
         pk = response_kwargs.pop("pk")
         card_obj = Card.objects.get(id=pk)
+
+        if 'default_place' in request.body:
+            # Add one quantity. abelujo-js.js card_add_one_to_default_place
+            default_place = Preferences.get_default_place()
+            default_place.add_copy(card_obj)
+            return JsonResponse({'status': status,
+                                 'quantity': default_place.quantity_of(card_obj),
+                                 },
+                                safe=False)
 
         distributor_id = params.get('distributor_id')
         shelf_id = params.get("shelf_id")

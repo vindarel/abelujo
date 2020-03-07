@@ -269,7 +269,9 @@ def card_show(request, pk):
         # Quantity per place.
         for place in places:
             places_quantities.append((place.name,
-                                      place.quantity_of(card)))
+                                      place.quantity_of(card),
+                                      place.name.replace(" ", "_").lower(),  # html id.
+            ))
 
         # Sells since the last entry
         if last_entry:

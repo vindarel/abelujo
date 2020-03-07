@@ -44,6 +44,8 @@ div#abelujo
       a.btn.btn-default(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
       a.btn.btn-default(href="{% url 'card_places_add' object.pk %}", title="{% trans 'Add to places' %}") {% trans "Add..." %}
       a.btn.btn-default(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
+      a.btn.btn-default(href="#", title='{% trans "Add 1 copy to the default place" %}', onclick="card_add_one_to_default_place({{ object.pk }})")
+        i.glyphicon.glyphicon-plus 1
 
   .col-lg-7
     h3 {{ object.title }}
@@ -112,7 +114,7 @@ div#abelujo
 
           tr(class="{% if object.quantity > 0 %} active {% elif object.quantity < 0 %} danger {% endif %}")
             td {% trans "In stock" %}
-            td {{ object.quantity }}
+            td(id="in_stock") {{ object.quantity }}
 
           tr
             td {% trans "Presente in" %}
@@ -120,8 +122,8 @@ div#abelujo
               table.table.table-condensed
                 for name_qty in places_quantities
                   tr
-                    td {{ name_qty.0 }} 
-                    td  {{ name_qty.1 }}
+                    td(id="{{ name_qty.2 }}") {{ name_qty.0 }} 
+                    td(id="{{ name_qty.2}}_quantity")  {{ name_qty.1 }}
 
           tr
               td {% trans "Minimal qty" %}

@@ -2062,6 +2062,7 @@ class Place (models.Model):
             place_copies = self.placecopies_set.filter(card__id=card.id)
             if len(place_copies) > 1:
                 log.error(u"more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
+                return -1
             if place_copies:
                 return place_copies[0].nb
             else:
