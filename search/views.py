@@ -255,7 +255,10 @@ def card_show(request, pk):
 
         # Update critical data from Dilicom, if possible.
         if dilicom_enabled():
-            card, msgs = update_from_dilicom(card)
+            try:
+                card, msgs = update_from_dilicom(card)
+            except Exception:  # for ConnectionError
+                pass
 
         # Ongoing commands.
         pending_commands = card.commands_pending()
