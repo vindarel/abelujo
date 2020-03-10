@@ -564,12 +564,12 @@ def start(name):
             run(gunicorn)
 
 def restart(name):
-    """Restart a server.
     """
-    stop(name)
-    start(name)
+    Send a restart signal to gunicorn.
+    """
+    cmd = "gunicorn-restart"
+    make(cmd, name)
 
-    os.system("sleep 200; fab check_uptodate:{}".format(name))
 
 def make(cmd, name=None):
     """Run any make command remotevy
