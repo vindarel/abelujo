@@ -2223,7 +2223,7 @@ class Preferences(models.Model):
         """
         if Preferences.objects.count():
             return Preferences.objects.first().default_place
-        return None
+        return Place.objects.first()
 
     @staticmethod
     def get_vat_book():
