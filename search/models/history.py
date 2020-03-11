@@ -208,7 +208,7 @@ class OutMovement(models.Model):
             place = card_qty.card.get_return_place()
             place.remove(card_qty.card, quantity=card_qty.quantity)
 
-        # close the basket ?
+        basket.archive()
 
         return out
 

@@ -1902,6 +1902,7 @@ class Place (models.Model):
             # Delete the intermediate object when nb is 0, so a search
             # filter by this place doesn't erronously return (see card.search: we
             # filter by the place id present in placecopies).
+            # That broke placecopies_set.get => used .filter() and first().
             if dest_copies.nb == 0:
                 dest_copies.delete()
 
@@ -1923,7 +1924,14 @@ class Place (models.Model):
         # to remove many cards in a single transaction, use
         # with atomic.transaction
         if quantity >= 0:
-            pc = self.placecopies_set.get(card__id=card.id)
+            pc = self.placecopies_set.filter(card__id=card.id)
+            # Place.move deletes the placecopies object when
+            # quantity = 0, for accurate search purposes.
+            if pc:
+                pc = pc.first()
+            else:
+                pc = self.placecopies_set.create(card=card, place=self)
+
             pc.nb -= quantity
             pc.save()
             card.quantity = card.quantity_compute()  # update denormalized fields (like the quantity).
@@ -2470,7 +2478,8 @@ class Basket(models.Model):
         return {'level': ALERT_SUCCESS, 'message': _(u"The cards were successfully added to the basket '{}'".format(self.name))}
 
     def remove_copy(self, card_id):
-        """Remove the given card (id) from the basket.
+        """
+        Remove the given card (id) from the basket.
         """
         status = True
         msgs = Messages()
@@ -2582,7 +2591,9 @@ class Basket(models.Model):
         The cards are removed from the stock. The movement is recorded in an OutMovement.
         The basket must have a publisher or a distributor.
 
-        Return: a tuple xxx, xxx.
+        The basket is archived.
+
+        Return: a tuple Out movement, Messages object.
         """
         # The logic goes in OutMovement.
         msgs = Messages()
@@ -2590,11 +2601,9 @@ class Basket(models.Model):
             return None, msgs.add_info(_("This basket has no distributor to "
                                           "return the cards to."))
 
-        # TODO: we should close the basket.
-        # or delete, since it is saved in the OutMovement.
         out = history.OutMovement.return_from_basket(self)
         msgs.add_success(_("Return to {} succesfully created.".format(self.distributor)))
-        # xxx: here, we return the msgs object, though earlier we return the
+        # Here, we return the msgs object, though earlier we return the
         # msgs.msgs list of messages. Inconsistent, but better…
         return out, msgs
 
