@@ -94,6 +94,8 @@ class Command(BaseCommand):
         self.stdout.write(msg)
         if self.not_found:
             self.stdout.write("ISBNs not found:\n{}".format("\n".join(self.not_found)))
+        else:
+            self.stdout.write("All ISBNs were found")
 
     def handle(self, *args, **options):
         """
