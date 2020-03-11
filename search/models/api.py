@@ -1337,9 +1337,10 @@ def baskets_return(request, pk, **kw):
             return JsonResponse(to_ret)
 
         try:
+            # XXX: a return operation is not idempotent :S
             out, msgs = basket.create_return()
         except Exception as e:
-            log.error(u"return basket {}: {}".format(pk, e))
+            log.error(u"return basket {}: {}\n{}".format(pk, e, traceback.format_exc()))
         finally:
             to_ret['alerts'] = msgs.msgs
             to_ret['status'] = msgs.status
