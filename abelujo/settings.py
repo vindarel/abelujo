@@ -111,6 +111,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "public"),  # for brunch and vue.
 )
 
+STATIC_PDF = STATICFILES_DIRS[1]
+
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (

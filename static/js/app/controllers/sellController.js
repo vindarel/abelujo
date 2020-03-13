@@ -7,6 +7,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
 
+    // List of clients.
+    $scope.clients = [];
+    $scope.client = undefined;
+
     // List of places we can sell from.
     $scope.places = [];
     $scope.place = undefined;
@@ -80,6 +84,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               });
 
           });
+
+    $http.get("/api/clients")
+        .then(function(response) {
+            $scope.clients = [{"name": "", "id": 0}];
+            $scope.clients = $scope.clients.concat(response.data.data);
+            $log.info("-- clients:", $scope.clients);
+        });
 
     $http.get("/api/places")
         .then(function(response) {
@@ -237,22 +248,22 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     };
 
     $scope.sellCards = function() {
-          var ids = [];
-          var prices = [];
-          var quantities = [];
-          if ($scope.cards_selected.length > 0) {
-              ids = _.map($scope.cards_selected, function(card) {
-                  return card.id;
-              });
-              prices = _.map($scope.cards_selected, function(card){
-                  return card.price_sold;
-              });
-              quantities = _.map($scope.cards_selected, function(card){
-                  return card.quantity_sell;
-              });
-          } else {
-              return;
-          }
+        var ids = [];
+        var prices = [];
+        var quantities = [];
+        if ($scope.cards_selected.length > 0) {
+            ids = _.map($scope.cards_selected, function(card) {
+                return card.id;
+            });
+            prices = _.map($scope.cards_selected, function(card){
+                return card.price_sold;
+            });
+            quantities = _.map($scope.cards_selected, function(card){
+                return card.quantity_sell;
+            });
+        } else {
+            return;
+        }
 
         var place_id = 0;
         if ($scope.place) {
@@ -348,6 +359,53 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
+    };
+
+    $scope.create_bill = function() {
+    // $scope.bill_url_params = function() {
+        // copied from sell_cards.
+        var ids = [];
+        var prices = [];
+        var quantities = [];
+        if ($scope.cards_selected.length > 0) {
+            ids = _.map($scope.cards_selected, function(card) {
+                return card.id;
+            });
+            prices = _.map($scope.cards_selected, function(card){
+                return card.price_sold;
+            });
+            quantities = _.map($scope.cards_selected, function(card){
+                return card.quantity_sell;
+            });
+        } else {
+            $log.info("-- no cards selected, won't create a bill!");
+            return 0;
+        }
+
+        $log.info($scope.place);
+        var payment_id;
+        if ($scope.payment) {
+            payment_id = $scope.payment.id;
+        }
+        var params = {
+            "to_sell": [ids, prices, quantities],
+            "date": $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
+            "language": $scope.language,
+            "payment_id": payment_id
+        };
+
+        $http.get("/api/bill", params)
+            .then(function(response){
+                if (response.status == 200) {
+                    $log.info(response);
+                    let element = document.createElement('a');
+                    element.setAttribute('href', response.data.fileurl);
+                    element.setAttribute('download', response.data.filename);
+                    element.style.display = 'none';
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                }});
     };
 
    // The date picker:

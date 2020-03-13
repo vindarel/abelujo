@@ -64,11 +64,12 @@ class Contact(models.Model):
         return {'id': self.id,
                 'name': self.name.upper(),
                 'firstname': self.firstname.capitalize(),
+                'mobilephone': self.mobilephone,
                 '__repr__': self.__repr__(),
         }
 
     def __repr__(self):
-        return "{} {}".format(self.name, self.firstname)
+        return "{} {} - {}".format(self.name, self.firstname, self.mobilephone)
 
 
 class Client(Contact):
@@ -77,6 +78,9 @@ class Client(Contact):
     He can reserve books (not implemented), buy coupons, etc.
     """
     pass
+
+    def __repr__(self):
+        return "{} {} - {}".format(self.name, self.firstname, self.mobilephone)
 
 
 class BillCopies(models.Model):

@@ -130,6 +130,9 @@ apipatterns = patterns("",
     # Clients
     url(r'^api/clients/?', 'search.models.api_users.clients', name='api_clients'),
 
+    # Bills
+    url(r'^api/bill/?', 'search.models.api_users.bill', name='api_bill'),
+
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

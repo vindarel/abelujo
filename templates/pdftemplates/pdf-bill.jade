@@ -1,0 +1,75 @@
+{% load staticfiles %}
+{% load i18n %}
+!!! 5
+html
+head
+  link(rel='stylesheet', type='text/css', href='{% static "search/style.css" %}')
+  style.
+    @page {
+      margin: 2cm;
+      size: a4 portrait;
+
+        @bottom-right{
+          content: counter(page) " / " counter(pages);
+        }
+
+        @frame header_frame {
+            -pdf-frame-content: header_content;
+            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+        }
+
+        @frame content_frame {
+            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+        }
+
+        @frame footer_frame {
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+        }
+
+        @bottom-center {
+          content: "Abelujo http://abelujo.cc/ - logiciel libre pour librairies et éditeurs"
+        }
+    }
+
+  body
+
+    h2#header_content(style="{text-align: center;}")  {{ name }}
+    em {{ date }}
+
+    table
+      thead(style="background-color: lightgrey")
+        tr
+          th {% trans "Title" %}
+          th {% trans "Price" %}
+          th {% trans "with discount" %}
+          th {{ quantity_header }}
+
+      tbody
+        for card_qty in cards_qties
+          tr
+            td {{ forloop.counter }}-
+              a(href='{{ card_qty.0.details_url }}') {{ card_qty.0.title }}
+            td {{ card_qty.0.authors_repr }}
+            td(style='{text-align: center;}')
+              if card_qty.0.price
+                {{ card_qty.0.price }} €
+            td(style='{text-align: center;}')
+              if card_qty.0.price_discounted
+                {{ card_qty.0.price_discounted }} €
+
+            td(style='{text-align: center;}') {{ card_qty.1 }}
+        endfor
+
+      tfoot
+        tr(style="background-color: lightgrey")
+          td
+            b {% trans "Total" %}
+          td
+          td
+          td(style='{text-align: center;}')
+            b {{ total }} €
+          td(style='{text-align: center;}')
+            b {{ total_with_discount }} €
+          td(style='{text-align: center;}')
+            b {{ total_qty }}

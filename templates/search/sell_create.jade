@@ -56,6 +56,13 @@ div.ng-cloak(ng-controller="sellController")
 
         .col-md-3
           form
+            label {% trans "Client" %}
+            select.form-control(
+                ng-model="client"
+                ng-options="it.__repr__ for it in clients"
+          )
+        .col-md-3
+          form
             label {% trans "Selling place" %}
             select.form-control(
                 ng-model="place"
@@ -71,7 +78,7 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row
-        .col-md-9
+        .col-md-12
           p.input-group
            form()
             input.nullable.form-control(
@@ -89,16 +96,21 @@ div.ng-cloak(ng-controller="sellController")
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
       .row
-        .col-md-12
           span(ng-repeat="payment in payment_means")
             input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
-          input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
+
+          a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
+            i.glyphicon.glyphicon-file
+          //- a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", href="/api/bill{{ 'bill_url_params()' | ng }}", style="margin-left:1em;")
+            i.glyphicon.glyphicon-file
 
           .btn-group
            button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}
              span.caret
            ul.dropdown-menu
              li: a(href="#", ng-click="export_csv()") csv
+
+          input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
           .btn-group
              a.btn.btn-default(role="button"
