@@ -54,7 +54,7 @@ div.ng-cloak(ng-controller="sellController")
                 button.btn.btn-default(type='button', ng-click='open($event)')
                   i.glyphicon.glyphicon-calendar
 
-        .col-md-3
+        //- .col-md-3
           form
             label {% trans "Client" %}
             select.form-control(
@@ -99,9 +99,7 @@ div.ng-cloak(ng-controller="sellController")
           span(ng-repeat="payment in payment_means")
             input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
 
-          a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
-            i.glyphicon.glyphicon-file
-          //- a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", href="/api/bill{{ 'bill_url_params()' | ng }}", style="margin-left:1em;")
+          //- a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
             i.glyphicon.glyphicon-file
 
           .btn-group
