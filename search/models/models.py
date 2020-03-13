@@ -2484,9 +2484,14 @@ class Basket(models.Model):
         status = True
         msgs = Messages()
         try:
-            inter_table = self.basketcopies_set.filter(card__id=card_id).get()
-            inter_table.delete()
-            msgs.add_success(_(u"The card was successfully removed from the basket"))
+            inter_table = self.basketcopies_set.filter(card__id=card_id)
+            if inter_table:
+                inter_table = inter_table.first()
+                inter_table.delete()
+                msgs.add_success(_(u"The card was successfully removed from the basket"))
+            else:
+                log.warn(u"Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only): {}".format(card_id, self.id, e))
+
         except ObjectDoesNotExist as e:
             log.error(u"Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
             status = False
