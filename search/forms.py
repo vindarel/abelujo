@@ -292,7 +292,7 @@ class SetSupplierForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields[_('supplier')] = forms.ChoiceField(choices=get_suppliers_choices())
+        self.fields['supplier'] = forms.ChoiceField(choices=get_suppliers_choices())
 
 
 class NewSupplierForm(forms.Form):

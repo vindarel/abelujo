@@ -533,7 +533,7 @@ def cards_set_supplier(request, **kwargs):
                 return render(request, template, response_dict)
 
         else:
-            log.error(u"Error in the form setting the supplier for many cards")
+            log.error(u"Error in the form setting the supplier for many cards. We didn't recognize any of the two forms.")
             return render(request, template, response_dict)
 
         # Set supplier for all cards.
