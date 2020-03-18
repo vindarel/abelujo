@@ -2122,7 +2122,7 @@ class Preferences(models.Model):
     #: - sell_discounts
     others = models.TextField(null=True, blank=True)
 
-    default_currency = "€"  # just a cached variable.
+    default_currency = u"€"  # just a cached variable.
 
     default_discounts = [0, 5, 9, 20, 30]
     default_discounts_with_labels = []
