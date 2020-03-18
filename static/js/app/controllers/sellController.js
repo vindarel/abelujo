@@ -37,7 +37,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       ];
       $scope.payment = $scope.payment_means[0];
 
-    $scope.discounts = {};
+    $scope.discounts = {choices: [],
+                        global_discount: null};
     // and store the selected discount in this object.
     // For the first time had pbs with another variable.
     $scope.discounts.choices = [
@@ -366,13 +367,17 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         // copied from sell_cards.
         var ids = [];
         var prices = [];
+        var prices_sold = [];
         var quantities = [];
         if ($scope.cards_selected.length > 0) {
             ids = _.map($scope.cards_selected, function(card) {
                 return card.id;
             });
-            prices = _.map($scope.cards_selected, function(card){
+            prices_sold = _.map($scope.cards_selected, function(card){
                 return card.price_sold;
+            });
+            prices = _.map($scope.cards_selected, function(card){
+                return card.price;
             });
             quantities = _.map($scope.cards_selected, function(card){
                 return card.quantity_sell;
@@ -387,14 +392,21 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         if ($scope.payment) {
             payment_id = $scope.payment.id;
         }
+
+        var discount = $scope.discounts.global_discount;
+
         var params = {
-            "to_sell": [ids, prices, quantities],
+            "ids": ids,
+            "prices_sold": prices_sold,
+            "prices": prices,
+            "quantities": quantities,
             "date": $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
+            discount: discount,
             "language": $scope.language,
             "payment_id": payment_id
         };
 
-        $http.get("/api/bill", params)
+        $http.post("/api/bill", params)
             .then(function(response){
                 if (response.status == 200) {
                     $log.info(response);

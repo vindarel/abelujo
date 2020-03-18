@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>A simple, clean, and responsive HTML invoice template</title>
+
+    <style>
+     @page {
+         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+         font-size: 14px;
+         color: #555;
+         @bottom-center {
+             content: "Chèques à l'ordre de La Palpitante. IBAN: FR76 1390 6000 2185 0564 à487 061 Code BIC: AGRIFRPP839"
+         }
+     }
+
+     .invoice-box {
+         max-width: 800px;
+         margin: auto;
+         padding: 30px;
+         border: 1px solid #eee;
+         box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+         font-size: 16px;
+         line-height: 24px;
+         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+         color: #555;
+     }
+
+     .invoice-box table {
+         width: 100%;
+         line-height: inherit;
+         text-align: left;
+     }
+
+     .invoice-box table td {
+         padding: 5px;
+         vertical-align: top;
+     }
+
+     .invoice-box table tr td:nth-child(2) {
+         text-align: right;
+     }
+
+     .invoice-box table tr.top table td {
+         padding-bottom: 20px;
+     }
+
+     .invoice-box table tr.top table td.title {
+         font-size: 45px;
+         line-height: 45px;
+         color: #333;
+     }
+
+     .invoice-box table tr.information table td {
+         padding-bottom: 40px;
+     }
+
+     .invoice-box table tr.heading td {
+         background: #eee;
+         border-bottom: 1px solid #ddd;
+         font-weight: bold;
+     }
+
+     .invoice-box table tr.details td {
+         padding-bottom: 20px;
+     }
+
+     .invoice-box table tr.item td{
+         border-bottom: 1px solid #eee;
+     }
+
+     .invoice-box table tr.item.last td {
+         border-bottom: none;
+     }
+
+     .invoice-box table tr.total td:nth-child(2) {
+         border-top: 2px solid #eee;
+         font-weight: bold;
+     }
+
+     @media only screen and (max-width: 600px) {
+         .invoice-box table tr.top table td {
+             width: 100%;
+             display: block;
+             text-align: center;
+         }
+
+         .invoice-box table tr.information table td {
+             width: 100%;
+             display: block;
+             text-align: center;
+         }
+     }
+
+    </style>
+</head>
+
+<body>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                              Librairie<br> La Palpitante
+                                <img style="width:100%; max-width:300px;">
+                            </td>
+
+                            <td>
+                                Facture n° 123<br>
+                                {{ creation_date_label}}: {{ creation_date_fmt }}<br>
+                                {{ due_date_label }}: {{ due_date_fmt }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                          <td>
+                            La Palpitante<br>
+                            48 place de la Halle<br>
+                            38710 Mens<br>
+                            www.lapalpitante.fr<br>
+                            librairie@lapalpitante.fr<br>
+                            gencode : 3025597646407
+                            <br>
+                            Gérée par<br>
+                            Le Jardin Statuaire<br>
+                            Association de loi 1901<br>
+                            déclarée sous le numéro : W381020458<br>
+                          </td>
+
+                            <td>
+                                Alice Bob.<br>
+                                alice@example.com
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+              <td colspan="2">
+                <h3>Object: vente collectivités</h3>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                {{ total_label }}
+              </td>
+
+              <td>
+                {{ total_fmt }}
+              </td>
+            </tr>
+
+            <tr class="item">
+                <td>
+                    {{ discount_label }}
+                </td>
+
+                <td>
+                    {{ discount_fmt }}
+                </td>
+            </tr>
+
+            <tr class="item">
+                <td>
+                  Total remisé<br>
+                  <em>exonéré de TVA</em>
+                </td>
+
+                <td>
+                    {{ total_discounted_fmt }}
+                </td>
+            </tr>
+
+            <tr class="total">
+                <td></td>
+
+                <td>
+                   Total: {{ total_discounted_fmt }}
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
