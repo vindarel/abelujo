@@ -16,20 +16,25 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
-from common import CHAR_LENGTH
-from common import TimeStampedModel
+from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 
+from common import CHAR_LENGTH, TEXT_LENGTH
+from common import TimeStampedModel
 from search.models.utils import get_logger
 
 log = get_logger()
 
+class PaymentDetails(models.Model):
+    pass
+
 class Contact(models.Model):
-    """A contact information (client, supplier, etc).
+    """
+    A contact information (client or supplier), with payment information, etc.
 
     Distinguish the informations between a physical or a moral person ?
     """
     class Meta:
-        ordering = ("city",)
+        ordering = ("firstname",)
         abstract = True
 
     name = models.CharField(max_length=CHAR_LENGTH)
@@ -39,12 +44,26 @@ class Contact(models.Model):
     email = models.EmailField(blank=True, null=True)
     website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
+    # Official numbers
+    company_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"The company's registered number (State's industry chamber)"))
+    bookshop_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"The bookshop's official number."))
+
+    # Address
     address1 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     address2 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     zip_code = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     city = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     state = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     country = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+
+    presentation_comment = models.TextField(blank=True, null=True, max_length=TEXT_LENGTH, verbose_name=__(u"A comment to add after the default presentation, which contains name, address, contact and official number. Can be useful when the bookshop is officially administrated by another entity. This appears on bills."))
+
+    # Bank/payment details
+    checks_order = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"Checks order (if different from name)"))
+    checks_address = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"Checks address (if different than address)"))
+    bank_IBAN = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"IBAN"))
+    bank_BIC = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"BIC"))
+    is_vat_exonerated = models.BooleanField(default=False, verbose_name=__(u"Exonerated of VAT?"))
 
     comment = models.TextField(blank=True, null=True)
 
@@ -81,6 +100,16 @@ class Client(Contact):
 
     def __repr__(self):
         return "{} {} - {}".format(self.name, self.firstname, self.mobilephone)
+
+
+class Bookshop(Contact):
+    """
+    Me, the bookshop. My address and payment details.
+    """
+    pass
+
+    def __repr__(self):
+        return "{} {} - {}".format(self.name, self.firstname)
 
 
 class BillCopies(models.Model):
