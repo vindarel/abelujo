@@ -2243,7 +2243,7 @@ class Preferences(models.Model):
         try:
             currency = json.loads(Preferences.prefs().others)
             Preferences.default_currency = currency
-            return currency.get('default_currency', '€').upper()
+            return currency.get('default_currency', u'€').upper()
         except Exception:
             pass
 

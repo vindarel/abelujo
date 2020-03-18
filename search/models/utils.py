@@ -42,6 +42,8 @@ def get_logger():
     else:
         return logging.getLogger('sentry_logger')
 
+log = get_logger()
+
 
 class Messages(object):
     """List of messages for UI <-> api communication in json.
@@ -412,12 +414,16 @@ def price_fmt(price, currency):
 
     Exemple: 10 € or CHF 10
     """
-    if price is None or isinstance(price, str):
+    if price is None or isinstance(price, str) or isinstance(price, unicode):
         return ''
-    if not currency:
-        # Happens in tests, in bare bones setup.
-        return '{:.2f} €'.format(price)
-    if currency.lower() == 'chf':
-        return 'CHF {:.2f}'.format(price)
-    else:
-        return '{:.2f} €'.format(price)
+    try:
+        if not currency:
+            # Happens in tests, in bare bones setup.
+            return '{:.2f} €'.format(price)
+        if currency.lower() == 'chf':
+            return 'CHF {:.2f}'.format(price)
+        else:
+            return '{:.2f} €'.format(price)
+    except Exception as e:
+        log.warning(u'Error for models.utils.price_fmt: {}'.format(e))
+        return '{:.2f}'.format(price)
