@@ -24,8 +24,6 @@ from search.models.utils import get_logger
 
 log = get_logger()
 
-class PaymentDetails(models.Model):
-    pass
 
 class Contact(models.Model):
     """

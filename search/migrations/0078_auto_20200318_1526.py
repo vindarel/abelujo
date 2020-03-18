@@ -42,12 +42,6 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
-        migrations.CreateModel(
-            name='PaymentDetails',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-        ),
         migrations.AlterModelOptions(
             name='client',
             options={'ordering': ('firstname',)},
