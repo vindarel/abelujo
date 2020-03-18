@@ -65,15 +65,6 @@ def bill(request, *args, **response_kwargs):
     # template = 'pdftemplates/pdf-bill-main.jade'
     template = 'pdftemplates/pdf-bill-main.html'
 
-    # Creation date, due date.
-    DATE_FMT = '%d-%m-%Y'
-    creation_date = pendulum.today()
-    creation_date_fmt = creation_date.strftime(DATE_FMT)
-    creation_date_label = _(u"Créée le")
-    due_date_label = _(u"Dûe le")
-    due_date = creation_date.add(months=1)
-    due_date_fmt = due_date.strftime(DATE_FMT)
-
     title = "Facture-xx-xx"
     filename = title + '.pdf'
 
@@ -83,7 +74,22 @@ def bill(request, *args, **response_kwargs):
     except Exception as e:
         log.error(u'Sell bill: could not decode json body: {}\n{}'.format(e, request.body))
 
+    # Creation date, due date.
+    DATE_FMT = '%d-%m-%Y'
+    creation_date = pendulum.today()
+    creation_date_label = _(u"Créée le")
+    due_date_label = _(u"Dûe le")
+
     sell_date = params.get('date')
+    if sell_date:
+        creation_date = pendulum.parse(sell_date)
+    else:
+        # unlikely, JS always sets the date.
+        creation_date = pendulum.today()
+    creation_date_fmt = creation_date.strftime(DATE_FMT)
+    due_date = creation_date.add(months=1)
+    due_date_fmt = due_date.strftime(DATE_FMT)
+
     payment_id = params.get('payment_id')
     language = params.get('language')
     ids = params.get('ids')
@@ -91,8 +97,6 @@ def bill(request, *args, **response_kwargs):
     prices_sold = params.get('prices_sold')
     quantities = params.get('quantities')
     discount = params.get('discount', {})
-    # to_sell = params.get('to_sell')  # list of lists: ids, prices, quantities.
-    # TODO: discount
 
     # Totals
     total = 0
