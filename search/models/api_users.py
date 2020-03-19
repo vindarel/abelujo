@@ -23,12 +23,14 @@ import pendulum
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template.loader import get_template
+from django.utils import translation
 from django.utils.translation import ugettext as _
 from weasyprint import HTML
 
 from abelujo import settings
 from search.models import Card
 from search.models import Preferences
+from search.models import users
 from search.models.users import Client
 from search.models.utils import get_logger
 from search.models.utils import price_fmt
@@ -74,11 +76,15 @@ def bill(request, *args, **response_kwargs):
     except Exception as e:
         log.error(u'Sell bill: could not decode json body: {}\n{}'.format(e, request.body))
 
+    language = params.get('language')
+    if language:
+        translation.activate(language)
+
     # Creation date, due date.
     DATE_FMT = '%d-%m-%Y'
     creation_date = pendulum.today()
-    creation_date_label = _(u"Créée le")
-    due_date_label = _(u"Dûe le")
+    creation_date_label = _(u"Created")  # this can be in trans template tags.
+    due_date_label = _(u"Due")
 
     sell_date = params.get('date')
     if sell_date:
@@ -91,12 +97,15 @@ def bill(request, *args, **response_kwargs):
     due_date_fmt = due_date.strftime(DATE_FMT)
 
     payment_id = params.get('payment_id')
-    language = params.get('language')
     ids = params.get('ids')
     prices = params.get('prices')
     prices_sold = params.get('prices_sold')
     quantities = params.get('quantities')
     discount = params.get('discount', {})
+
+    # Identity.
+    # import ipdb; ipdb.set_trace()
+    bookshop = users.Bookshop.objects.first()
 
     # Totals
     total = 0
@@ -122,7 +131,7 @@ def bill(request, *args, **response_kwargs):
 
     sourceHtml = template.render({'cards_qties': cards_qties,
                                   'name': title,
-                                  'total_label': _("Total avant remise"),
+                                  'total_label': _("Total before discount"),
                                   'total_fmt': total_fmt,
                                   'total_discounted_fmt': total_discounted_fmt,
                                   'total_qty': 8,
@@ -135,6 +144,7 @@ def bill(request, *args, **response_kwargs):
                                   'due_date_label': due_date_label,
                                   'due_date': due_date,
                                   'due_date_fmt': due_date_fmt,
+                                  'bookshop': bookshop,
     })
 
     filepath = os.path.realpath(os.path.join(settings.STATIC_PDF, filename))

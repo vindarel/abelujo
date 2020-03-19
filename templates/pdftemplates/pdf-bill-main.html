@@ -1,8 +1,10 @@
+{% load i18n %}
+
 <!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>A simple, clean, and responsive HTML invoice template</title>
+    <title> {% trans "Bill" %} {{ bookshop.name }}</title>
 
     <style>
      @page {
@@ -10,7 +12,7 @@
          font-size: 14px;
          color: #555;
          @bottom-center {
-             content: "Chèques à l'ordre de La Palpitante. IBAN: FR76 1390 6000 2185 0564 à487 061 Code BIC: AGRIFRPP839"
+             content: "Chèques à l'ordre de {% if bookshop.checks_order %} {{ bookshop.checks_order }} {% else %} {{ bookshop.name }} {% endif %}. {% if bookshop.bank_IBAN %} IBAN: {{ bookshop.bank_IBAN }} {% endif %} {% if bookshop.bank_BIC %} Code BIC: {{ bookshop.bank_BIC}} {% endif %}"
          }
      }
 
@@ -103,12 +105,12 @@
                     <table>
                         <tr>
                             <td class="title">
-                              Librairie<br> La Palpitante
+                              Librairie<br> {{ bookshop.name }}
                                 <img style="width:100%; max-width:300px;">
                             </td>
 
                             <td>
-                                Facture n° 123<br>
+                                <!-- Facture n° 123<br> -->
                                 {{ creation_date_label}}: {{ creation_date_fmt }}<br>
                                 {{ due_date_label }}: {{ due_date_fmt }}
                             </td>
@@ -122,17 +124,26 @@
                     <table>
                         <tr>
                           <td>
-                            La Palpitante<br>
-                            48 place de la Halle<br>
-                            38710 Mens<br>
-                            www.lapalpitante.fr<br>
-                            librairie@lapalpitante.fr<br>
-                            gencode : 3025597646407
+                            {{ bookshop.name }}<br>
+                            {{ bookshop.address1 }}<br>
+                            <!-- {{ bookshop.address2 }}<br> -->
+                            {{ bookshop.zip_code }} &nbsp; {{ bookshop.city }}<br>
+                            <!-- {{ bookshop.state }}<br> -->
+                            {% if bookshop.website %}
+                            {{ bookshop.website }}<br>
+                            {% endif %}
+                            {% if bookshop.email %}
+                            {{ bookshop.email }}<br>
+                            {% endif %}
+                            {% if bookshop.bookshop_number %}
+                            {{ bookshop.bookshop_number }}<br>
+                            {% endif %}
+
                             <br>
-                            Gérée par<br>
-                            Le Jardin Statuaire<br>
-                            Association de loi 1901<br>
-                            déclarée sous le numéro : W381020458<br>
+                            {% if bookshop.presentation_comment %}
+                            {{ bookshop.presentation_comment | safe }}
+                            {% endif %}
+
                           </td>
 
                             <td>
@@ -146,7 +157,7 @@
 
             <tr>
               <td colspan="2">
-                <h3>Object: vente collectivités</h3>
+                <h3> {% trans "Object" %}: {% trans "sell" %}</h3>
               </td>
             </tr>
 
@@ -172,8 +183,10 @@
 
             <tr class="item">
                 <td>
-                  Total remisé<br>
+                  {% trans "Total with discount" %}<br>
+                  {% if bookshop.is_vat_exonerated %}
                   <em>exonéré de TVA</em>
+                  {% endif %}
                 </td>
 
                 <td>
@@ -185,7 +198,7 @@
                 <td></td>
 
                 <td>
-                   Total: {{ total_discounted_fmt }}
+                   {% trans "Total" %}: {{ total_discounted_fmt }}
                 </td>
             </tr>
         </table>
