@@ -36,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^$', 'search.views.dashboard', name="dashboard"),
     url(r'^database/?', admin_site.urls),
 
+    url(r'^preferences/bookshop/?$', 'search.views.preferences_bookshop', name="preferences_bookshop"),
     url(r'^preferences/?$', 'search.views.preferences', name="preferences"),
 
     url(r'^search/?$', 'search.views.search', name="card_search"),

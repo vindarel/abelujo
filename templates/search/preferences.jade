@@ -28,11 +28,20 @@ if messages
       li  {{ msg }}
 
 h1 {% trans "Preferences" %}
+.row
+  h3 {% trans "Sells" %}
+  .col-lg-6
+    form(action="{% url 'preferences' %}", method="post")
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        input(type="submit", value="Submit")
 
-.col-lg-6
-  form(action="{% url 'preferences' %}", method="post")
-      {% csrf_token %}
-      {% bootstrap_form form %}
-      input(type="submit", value="Submit")
+.row
+  h3 {% trans "Personal and banking information" %}
+  .col-lg-6
+    form(action="{% url 'preferences_bookshop' %}", method="post")
+        {% csrf_token %}
+        {% bootstrap_form bookshopform %}
+        input(type="submit", value="Submit")
 
 {% endblock content %}

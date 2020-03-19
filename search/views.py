@@ -15,17 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from abelujo import settings
-
-import io  # write to file in utf8
 import datetime
+import io  # write to file in utf8
 import json
-import time
-import toolz
 import os
+import time
+import traceback
 import urllib
 
 import pendulum
+import toolz
 import unicodecsv
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -44,19 +43,21 @@ from django.views.generic import DetailView
 from django.views.generic import ListView
 from weasyprint import HTML
 
+from abelujo import settings
+from search import forms as viewforms
 #
 # The datasources imports must have the name as their self.SOURCE_NAME
 # Also add the search engine in the client side controller.
 #
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs  # noqa: F401
 from search.datasources.bookshops.all.momox import momox  # noqa: F401
-from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner  # noqa: F401
-from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro  # noqa: F401
-from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis  # noqa: F401
+from search.datasources.bookshops.deDE.buchlentner import \
+    buchlentnerScraper as buchlentner  # noqa: F401
+from search.datasources.bookshops.esES.casadellibro import \
+    casadellibroScraper as casadellibro  # noqa: F401
 from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre  # noqa: F401
-
-
-from search.models import history
+from search.datasources.bookshops.frFR.librairiedeparis import \
+    librairiedeparisScraper as librairiedeparis  # noqa: F401
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -64,6 +65,8 @@ from search.models import Card
 from search.models import Command
 from search.models import Deposit
 from search.models import Distributor
+from search.models import Entry
+from search.models import EntryCopies
 from search.models import Inventory
 from search.models import InventoryCommand
 from search.models import Place
@@ -72,19 +75,16 @@ from search.models import Publisher
 from search.models import Restocking
 from search.models import Sell
 from search.models import Stats
-from search.models import Entry
-from search.models import EntryCopies
+from search.models import history
+from search.models import users
 from search.models.api import _get_command_or_return
+from search.models.common import get_payment_abbr
 from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import price_fmt
 from search.models.utils import truncate
-
-from search.models.common import get_payment_abbr
-
-from search import forms as viewforms
 from views_utils import Echo
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
@@ -139,12 +139,22 @@ def preferences(request):
     """
     """
     template = "search/preferences.jade"
-
     if request.method == 'GET':
         form = viewforms.PrefsForm()
-        return render(request, template, {'form': form})
+        bs_model = users.Bookshop.objects.first()
+        # note: we handle its POST on preferences_bookshop url.
+        if bs_model:
+            bookshopform = viewforms.BookshopForm(instance=bs_model)
+        else:
+            bookshopform = viewforms.BookshopForm()
+
+        return render(request, template, {
+            'form': form,
+            'bookshopform': bookshopform,
+        })
 
     elif request.method == 'POST':
+        bookshopform = viewforms.BookshopForm()  # we handle it on preferences_bookshop
         form = viewforms.PrefsForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -156,11 +166,46 @@ def preferences(request):
             messages.add_message(
                 request, messages.SUCCESS, _("Preferences saved."))
             form = viewforms.PrefsForm()
-            return render(request, template, {'form': form})
+            return render(request, template, {
+                'form': form,
+                'bookshopform': bookshopform,
+            })
 
-        else:
-            return render(request, template, {'form': form})
+        return render(request, template, {
+            'form': form,
+            'bookshopform': bookshopform,
+        })
 
+def preferences_bookshop(request):
+    # If we POST to preferences/, the currency&discount form is submitted as well,
+    # hence its data is null, but valid, and we don't want to erase it.
+    # It's simple to use another url. We could use hidden form fields.
+    template = "search/preferences.jade"
+    if request.method == 'POST':
+        form = viewforms.BookshopForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            try:
+                existing = users.Bookshop.objects.first()
+                bookshop_model = users.Bookshop(**data)
+                if existing:
+                    bookshop_model.pk = existing.pk
+                bookshop_model.save()
+                messages.add_message(
+                    request, messages.SUCCESS, _("Preferences saved."))
+                return HttpResponseRedirect(reverse('preferences'))
+            except Exception as e:
+                log.error(u'Error saving the bookshop form: {}\n{}'.
+                          format(e, traceback.format_exc))
+                messages.add_message(
+                    request, messages.ERROR, _("Preferences NOT saved."))
+
+    form = viewforms.PrefsForm()
+    bookshopform = viewforms.BookshopForm()
+    return render(request, template, {
+        'form': form,
+        'bookshopform': bookshopform,
+    })
 
 def postSearch(data_source, details_url):
     """Call the postSearch function of the module imported with the name

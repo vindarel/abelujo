@@ -107,7 +107,7 @@ class Bookshop(Contact):
     pass
 
     def __repr__(self):
-        return "{} {} - {}".format(self.name, self.firstname)
+        return "Bookshop {}".format(self.name)
 
 
 class BillCopies(models.Model):

@@ -147,6 +147,16 @@ class PrefsForm(forms.Form):
                     validators=[validate_and_get_discounts],
                 )
 
+
+class BookshopForm(forms.ModelForm):
+    class Meta:
+        model = models.users.Bookshop
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+
 class AddForm(forms.Form):
     """The form populated when the user clicks on "add this card"."""
     # The search is saved to the session so we need to get the element we want: hence the for counter.
