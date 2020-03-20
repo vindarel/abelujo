@@ -42,6 +42,7 @@ def get_logger():
     else:
         return logging.getLogger('sentry_logger')
 
+
 log = get_logger()
 
 

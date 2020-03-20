@@ -414,8 +414,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             discount: discount,
             language: $scope.language,
             payment_id: payment_id,
-            client_id: $scope.client.id,
+            client_id: 0,
         };
+
+        if ($scope.client !== undefined) {
+            params['client_id'] = $scope.client.id;
+        }
 
         $http.post("/api/bill", params)
             .then(function(response){
@@ -428,6 +432,16 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                     document.body.appendChild(element);
                     element.click();
                     document.body.removeChild(element);
+
+                    // Second pdf with the books list.
+                    // XXX: this opens the same PDF twice...
+                    // let elt2 = document.createElement('a');
+                    // elt2.setAttribute('href', response.data.details_fileurl);
+                    // elt2.setAttribute('download', response.data.details_filename);
+                    // elt2.style.display = 'none';
+                    // document.body.appendChild(elt2);
+                    // elt2.click();
+                    // document.body.removeChild(elt2);
                 }});
     };
 

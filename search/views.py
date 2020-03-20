@@ -51,13 +51,10 @@ from search import forms as viewforms
 #
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs  # noqa: F401
 from search.datasources.bookshops.all.momox import momox  # noqa: F401
-from search.datasources.bookshops.deDE.buchlentner import \
-    buchlentnerScraper as buchlentner  # noqa: F401
-from search.datasources.bookshops.esES.casadellibro import \
-    casadellibroScraper as casadellibro  # noqa: F401
+from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner  # noqa: F401
+from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro  # noqa: F401
 from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre  # noqa: F401
-from search.datasources.bookshops.frFR.librairiedeparis import \
-    librairiedeparisScraper as librairiedeparis  # noqa: F401
+from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis  # noqa: F401
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill

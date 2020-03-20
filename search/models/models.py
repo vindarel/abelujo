@@ -2490,7 +2490,7 @@ class Basket(models.Model):
                 inter_table.delete()
                 msgs.add_success(_(u"The card was successfully removed from the basket"))
             else:
-                log.warn(u"Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only): {}".format(card_id, self.id, e))
+                log.warn(u"Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
 
         except ObjectDoesNotExist as e:
             log.error(u"Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))

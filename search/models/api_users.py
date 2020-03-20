@@ -15,12 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
 import json
 import os
 
 import pendulum
-from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template.loader import get_template
 from django.utils import translation
@@ -69,9 +67,7 @@ def bill(request, *args, **response_kwargs):
     if request.method == 'GET':
         return
 
-    # template = 'pdftemplates/pdf-bill-main.jade'
     template = 'pdftemplates/pdf-bill-main.html'
-
 
     # ids, prices, quantities
     try:
@@ -100,13 +96,19 @@ def bill(request, *args, **response_kwargs):
     due_date = creation_date.add(months=1)
     due_date_fmt = due_date.strftime(DATE_FMT)
 
-    payment_id = params.get('payment_id')
+    # payment_id = params.get('payment_id')
     ids = params.get('ids')
     prices = params.get('prices')
     prices_sold = params.get('prices_sold')
     quantities = params.get('quantities')
     discount = params.get('discount', {})
     discount_fmt = discount['name'] if discount else ''
+
+    # Cards
+    cards = Card.objects.filter(pk__in=ids)
+    # sort as in ids and quantities:
+    sorted_cards = sorted(cards, cmp=lambda x, y: -1 if ids.index(x.pk) <= ids.index(y.pk) else 1)
+    cards_data = zip(sorted_cards, quantities)
 
     # Identity.
     bookshop = users.Bookshop.objects.first()
@@ -124,6 +126,11 @@ def bill(request, *args, **response_kwargs):
     bookshop_name = bookshop.name if bookshop else u""
     title = u"{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
     filename = title + '.pdf'
+
+    # File 2, with books list.
+    # details_title = u"{} {} - {} - list".format(bill_label, bookshop_name, creation_date_fmt)
+    # details_filename = title + '.pdf'
+    # details_template = "pdftemplates/pdf-bill-details.html"
 
     # Totals
     total = 0
@@ -164,7 +171,12 @@ def bill(request, *args, **response_kwargs):
                                   'due_date_fmt': due_date_fmt,
                                   'bookshop': bookshop,
                                   'client': client,
+                                  'cards_data': cards_data,
+                                  'prices_sold': prices_sold,
     })
+
+    # template2 = get_template(details_template)
+    # details_html = template2.render({'cards': cards})
 
     filepath = os.path.realpath(os.path.join(settings.STATIC_PDF, filename))
     fileurl = "/static/{}".format(filename)
@@ -172,11 +184,19 @@ def bill(request, *args, **response_kwargs):
               'filename': filename,
               'status': 200}
 
+    # details_filepath = os.path.realpath(os.path.join(settings.STATIC_PDF, details_filename))
+    # details_fileurl = '/static/{}'.format(details_filename)
+    # to_ret['details_fileurl'] = details_fileurl
+    # to_ret['details_filename'] = details_filename
+
     try:
         with open(filepath, 'wb') as f:
-            # XXX: créer avec LibreOffice ??!
             HTML(string=sourceHtml).write_pdf(target=f.name)
-            response = JsonResponse(to_ret)
+
+        # with open(details_filepath, 'wb') as ff:
+        #     HTML(string=details_html).write_pdf(target=ff.name)
+
+        response = JsonResponse(to_ret)
     except Exception as e:
         log.error(u"Error writing bill in pdf to {}: {}".format(filepath, e))
         response = JsonResponse({'status': 400})
