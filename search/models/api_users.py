@@ -67,8 +67,6 @@ def bill(request, *args, **response_kwargs):
     # template = 'pdftemplates/pdf-bill-main.jade'
     template = 'pdftemplates/pdf-bill-main.html'
 
-    title = "Facture-xx-xx"
-    filename = title + '.pdf'
 
     # ids, prices, quantities
     try:
@@ -86,6 +84,7 @@ def bill(request, *args, **response_kwargs):
     creation_date_label = _(u"Created")  # this can be in trans template tags.
     due_date_label = _(u"Due")
 
+    # Sell and due dates.
     sell_date = params.get('date')
     if sell_date:
         creation_date = pendulum.parse(sell_date)
@@ -102,10 +101,24 @@ def bill(request, *args, **response_kwargs):
     prices_sold = params.get('prices_sold')
     quantities = params.get('quantities')
     discount = params.get('discount', {})
+    discount_fmt = discount['name'] if discount else ''
 
     # Identity.
-    # import ipdb; ipdb.set_trace()
     bookshop = users.Bookshop.objects.first()
+
+    # Client
+    client_id = params.get('client_id')
+    client = None
+    if client_id:
+        qs = Client.objects.filter(pk=client_id)
+        if qs:
+            client = qs.first()
+
+    # Title, filename
+    bill_label = _(u"Bill")
+    bookshop_name = bookshop.name if bookshop else u""
+    title = u"{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
+    filename = title + '.pdf'
 
     # Totals
     total = 0
@@ -140,11 +153,12 @@ def bill(request, *args, **response_kwargs):
                                   'creation_date': creation_date,
                                   'creation_date_fmt': creation_date_fmt,
                                   'discount_label': _(u"Discount"),
-                                  'discount_fmt': discount['name'],
+                                  'discount_fmt': discount_fmt,
                                   'due_date_label': due_date_label,
                                   'due_date': due_date,
                                   'due_date_fmt': due_date_fmt,
                                   'bookshop': bookshop,
+                                  'client': client,
     })
 
     filepath = os.path.realpath(os.path.join(settings.STATIC_PDF, filename))

@@ -147,8 +147,17 @@
                           </td>
 
                             <td>
-                                Alice Bob.<br>
-                                alice@example.com
+                                {{ client.name }} {{ client.firstname }}<br>
+                                {% if client.phone %}
+                                {{ client.phone }}
+                                {% endif %}
+                                {% if client.mobilephone %}
+                                {{ client.mobilephone }}
+                                {% endif %}
+                                {% if client.email %}
+                                {{ client.email }}
+                                {% endif %}
+
                             </td>
                         </tr>
                     </table>

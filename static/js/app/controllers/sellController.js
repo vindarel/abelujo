@@ -90,7 +90,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         .then(function(response) {
             $scope.clients = [{"name": "", "id": 0}];
             $scope.clients = $scope.clients.concat(response.data.data);
-            $log.info("-- clients:", $scope.clients);
         });
 
     $http.get("/api/places")
@@ -396,14 +395,15 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         var discount = $scope.discounts.global_discount;
 
         var params = {
-            "ids": ids,
-            "prices_sold": prices_sold,
-            "prices": prices,
-            "quantities": quantities,
-            "date": $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
+            ids: ids,
+            prices_sold: prices_sold,
+            prices: prices,
+            quantities: quantities,
+            date: $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
             discount: discount,
-            "language": $scope.language,
-            "payment_id": payment_id
+            language: $scope.language,
+            payment_id: payment_id,
+            client_id: $scope.client.id,
         };
 
         $http.post("/api/bill", params)
