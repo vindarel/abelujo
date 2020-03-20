@@ -60,6 +60,14 @@ class CardAdmin(admin.ModelAdmin):
     filter_horizontal = ("authors", "publishers",)
 
 
+class ClientAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Client
+
+    search_fields = ["name", "firstname", "mobilephone", "address1", "city", "country", "zip_code"]
+    list_display = ["name", "firstname", "mobilephone"]
+
+
 class CommandAdmin(admin.ModelAdmin):
     class Meta:
         model = Command
@@ -145,7 +153,7 @@ admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author)
 admin_site.register(Basket)
 admin_site.register(Card, CardAdmin)
-admin_site.register(Client)
+admin_site.register(Client, ClientAdmin)
 admin_site.register(Command, CommandAdmin)
 admin_site.register(Distributor)
 admin_site.register(Deposit, DepositAdmin)
