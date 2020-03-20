@@ -86,11 +86,22 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
           });
 
-    $http.get("/api/clients")
-        .then(function(response) {
-            $scope.clients = [{"name": "", "id": 0}];
-            $scope.clients = $scope.clients.concat(response.data.data);
-        });
+    $scope.getClients = function(val) {
+        return $http.get("/api/clients", {
+            params: {
+                query: val
+            }
+        })
+            .then(function(response) {
+                // $scope.clients = [{"name": "", "id": 0}];
+                // $scope.clients = $scope.clients.concat(response.data.data);
+                return response.data.data;
+            });
+    };
+
+    $scope.select_client = function(item) {
+        $scope.client = item;
+    };
 
     $http.get("/api/places")
         .then(function(response) {

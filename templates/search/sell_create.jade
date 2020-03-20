@@ -54,13 +54,26 @@ div.ng-cloak(ng-controller="sellController")
                 button.btn.btn-default(type='button', ng-click='open($event)')
                   i.glyphicon.glyphicon-calendar
 
-        //- .col-md-3
-          form
+        .col-md-3
+         form
             label {% trans "Client" %}
-            select.form-control(
-                ng-model="client"
-                ng-options="it.__repr__ for it in clients"
-          )
+            p.input-group
+             input.nullable.form-control(
+              type='text'
+              //- typeahead-loading="loadingCards"
+              ng-model='client_selected'
+              uib-typeahead='client.__repr__ for client in getClients($viewValue)'
+              typeahead-min-length="3"
+              typeahead-on-select="select_client($item)"
+              title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
+              id="client-input"
+              autocomplete="off"
+              placeholder='{% trans "Search clients" %}'
+              )
+             span.input-group-btn
+               a.btn.btn-default(type='button', href='/databasesearch/client/add/', title='{% trans "Create" %} {% trans "client" %}', target='_blank')
+                 i.glyphicon.glyphicon-plus
+
         .col-md-3
           form
             label {% trans "Selling place" %}
@@ -99,7 +112,7 @@ div.ng-cloak(ng-controller="sellController")
           span(ng-repeat="payment in payment_means")
             input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
 
-          //- a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
+          a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
             i.glyphicon.glyphicon-file
 
           .btn-group

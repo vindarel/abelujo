@@ -43,7 +43,12 @@ def clients(request, **response_kwargs):
     """
     if request.method == 'GET':
         try:
-            res = [it.to_dict() for it in Client.objects.all()]
+            params = request.GET
+            query = params.get('query')
+            if query:
+                res = Client.search(query, to_dict=True)
+            else:
+                res = [it.to_dict() for it in Client.objects.all()]
             return JsonResponse({'data': res})
         except Exception as e:
             log.error(u"error getting clients: {}".format(e))

@@ -16,9 +16,11 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 
-from common import CHAR_LENGTH, TEXT_LENGTH
+from common import CHAR_LENGTH
+from common import TEXT_LENGTH
 from common import TimeStampedModel
 from search.models.utils import get_logger
 
@@ -97,7 +99,16 @@ class Client(Contact):
     pass
 
     def __repr__(self):
-        return "{} {} - {}".format(self.name, self.firstname, self.mobilephone)
+        return "{} {}".format(self.name, self.firstname)
+
+    @staticmethod
+    def search(query, to_dict=False):
+        res = Client.objects.filter(Q(name__icontains=query) |
+                                    Q(firstname__icontains=query))
+        if to_dict:
+            res = [it.to_dict() for it in res]
+
+        return res
 
 
 class Bookshop(Contact):
