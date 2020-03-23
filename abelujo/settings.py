@@ -305,6 +305,7 @@ LOGGING = {
 }
 
 LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
 
 # Don't get bootstrap and jquery from a CDN (a step towards offline work).
 BOOTSTRAP3 = {

@@ -147,19 +147,23 @@ urlpatterns += apipatterns
 # urlpatterns = apipatterns
 
 from django.contrib.auth import views as auth_views
+
 # Authentication
 urlpatterns += [
-    url("^login/", auth_views.LoginView.as_view(),
-        {"template_name": "registration/login.pug"},
-        name="login"),
-    url("^logout/", auth_views.LogoutView.as_view(),
-        {"template_name": "registration/logout.pug", },
-        name="logout"),
+    url(
+        '^login/?$',
+        auth_views.LoginView.as_view(
+            template_name='registration/login.pug'),
+    ),
+    url(
+        '^logout/?$',
+        auth_views.LogoutView.as_view(
+            template_name='registration/logout.pug'),
+    ),
 ]
 
 # the following does include a login/ too, but the first one will match.
 urlpatterns += [url('^', include('django.contrib.auth.urls'))]
-
 
 # Serve media (images).
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
