@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -45,6 +45,7 @@ urlpatterns += [
     url(r'^$', views.dashboard, name="dashboard"),
     url(r'^database/?', admin_site.urls),
 
+    url(r'^preferences/bookshop/?$', views.preferences_bookshop, name="preferences_bookshop"),
     url(r'^preferences/?$', views.preferences, name="preferences"),
 
     url(r'^search/?$', views.search, name="card_search"),
@@ -60,9 +61,11 @@ urlpatterns += [
         name="card_show"),
     # works to edit a card with /edit/\d+. JS will fetch the existing info.
     # url(r'^stock/card/edit/', login_required(TemplateView.as_view(template_name="search/card_edit.jade")),
+
     url(r'^stock/card/create/(?P<pk>\d+)',
         login_required(TemplateView.as_view(template_name="search/card_add.jade")),
         name="card_create"),
+    url(r'^stock/card/create/?', 'search.views.card_create_manually', name='card_create_manually'),
     # Add exemplaries to Places, from the Card view.
     url(r'^stock/card/add/(?P<pk>\d+)', views.card_places_add,
         name="card_places_add"),
@@ -133,6 +136,7 @@ urlpatterns += [
     url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="basket_view"),
 
     # Sells history
+    url(r'^history/sells/month/(?P<date>.*)/export/?', views.history_sells_month_export, name="history_sells_month_export"),
     url(r'^history/sells/month/(?P<date>.*)/?', views.history_sells_month, name="history_sells_month"),
     url(r'^history/sells/day/(?P<date>.*)/?', views.history_sells_day, name="history_sells_day"),
     url(r'^history/sells/export/?', views.history_sells_exports,

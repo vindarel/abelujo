@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ h1 {{ day | date:'F o' | title }}
 
 .col-md-4
   table.table.table-striped
-    for it in data.entries_per_day
+      {% for it in data.entries_per_day reversed %}
       tr
         td
           if it.weekday == 6
@@ -54,7 +54,8 @@ h1 {{ day | date:'F o' | title }}
             span {{ it.date_obj | date:'l' }} 
         td
           a(href="{% url 'search:history_entries_day' it.date %}") {{ it.date }}
-        td.text-right {{ it.price_entered }} {% trans "€" %}
+        td.text-right {{ it.price_entered_fmt }}
         td.text-right x {{ it.nb_entered }}
+      {% endfor %}
 
 {% endblock content %}

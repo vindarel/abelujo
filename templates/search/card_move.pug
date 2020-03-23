@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -24,12 +24,10 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-form(method='post', action="{% url 'search:card_move' pk %}")
+form.col-lg-6(method='post', action="{% url 'search:card_move' pk %}")
   {% csrf_token %}
   h4 {% trans "Move copies" %}
-  {{ internalForm }}
-  h4 {% trans "and add some to baskets" %}:
-  {{ BasketsForm.as_p }}
+  {% bootstrap_form internalForm layout='horizontal' %}
 
   input(type='hidden', value="{{ q }}", name="q")
   input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')

@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -105,8 +105,6 @@ div(ng-controller="inventoriesController")
         span.caret
       th.mouse-pointer(ng-click="sort_by('name')") {% trans "Inventory of..." %}
         span.caret
-      th.mouse-pointer(ng-click="sort_by('progress')") {% trans "Progress" %}
-        span.caret
       th.mouse-pointer(ng-click="sort_by('nb_cards')") {% trans "Nb of titles/copies" %}
         span.caret
       th.mouse-pointer(ng-click="sort_by('value')") {% trans "Value" %}
@@ -119,9 +117,8 @@ div(ng-controller="inventoriesController")
       tr.my-animated-item(ng-repeat="inv in inventories")
         td {{ 'inv.created'|ng  }}
         td: a(href="{{ 'inv.get_absolute_url'|ng }}") {{ 'inv.name'|ng }}
-        td {{ 'inv.progress'|ng  }} %
         td {{ 'inv.nb_cards'|ng  }} / {{ 'inv.nb_copies'|ng  }}
-        td(title='{% trans "Value of all the copies in this inventory" %}') {{ 'inv.value | currency'|ng  }}
+        td(title='{% trans "Value of all the copies in this inventory" %}') {{ 'inv.value_fmt'|ng  }}
 
         td.i.glyphicon.glyphicon-refresh(title="{% trans 'the inventory is being applied' %}", ng-if="inv.ongoing")
         td.i.glyphicon.glyphicon-ok(title="{{'inv.closed'|ng}}", ng-if="inv.applied")

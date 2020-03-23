@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -113,11 +113,6 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
         # (not a list but an object: id-> card)
         $scope.missing = $scope.diff
         |> Obj.filter (.inv == 0)
-
-        $scope.missing_cost = 0
-        for k, v of $scope.missing
-            $scope.missing_cost += v.card.price * v.diff
-        $scope.missing_cost = $scope.missing_cost.toFixed 2 # round a float
 
         $scope.is_missing = ! Obj.empty $scope.missing
         # Cards not present initially

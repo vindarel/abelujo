@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -16,6 +16,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import pendulum
+import os
 import calendar
 
 from django.core.urlresolvers import reverse
@@ -30,6 +31,28 @@ log = get_logger()
 
 CHAR_MAX_LENGTH = 200
 PAGE_SIZE = 50
+
+
+def price_fmt(price, currency):
+    """
+    Similar as models.utils.
+    """
+    # Cannot import models.Preferences to get the default currency, circular import.
+    if price is None or isinstance(price, str):
+        return price
+    if currency.lower() == 'chf':
+        return 'CHF {:.2f}'.format(price)
+    else:
+        return '{:.2f} €'.format(price)
+
+def card_currency(card):
+    # models.utils
+    if card and card.data_source and 'lelivre' in card.data_source:
+        return 'CHF'
+    if os.getenv('DEFAULT_DATASOURCE') == 'lelivre':
+        return 'CHF'
+    return '€'
+
 
 class InternalMovement(TimeStampedModel):
     """An internal movement
@@ -113,7 +136,7 @@ class OutMovement(models.Model):
     distributor = models.ForeignKey("search.Distributor", blank=True, null=True)
     #: In case of a loss, nothing.
     #: In case of a gift, the recipient:
-    recipient = models.ForeignKey("search.Contact", blank=True, null=True)
+    recipient = models.ForeignKey("search.Client", blank=True, null=True)
 
     # def __unicode__(self):
     # return u"id {}, type {}".format(self.pk,
@@ -185,7 +208,7 @@ class OutMovement(models.Model):
             place = card_qty.card.get_return_place()
             place.remove(card_qty.card, quantity=card_qty.quantity)
 
-        # close the basket ?
+        basket.archive()
 
         return out
 
@@ -334,10 +357,13 @@ class Entry(TimeStampedModel):
         assert month
         entries = []
         # beg = pendulum.now()
+        fake_default_currency = '€'
         try:
             entries = EntryCopies.objects.order_by("-created").filter(created__year=year).filter(created__month=month)
         except Exception as e:
             log.error('Error in Entry.history: {}'.format(e))
+
+        fake_default_currency = card_currency(entries.first().card if entries.first() else None)
 
         nb_entries = entries.count()
         now = pendulum.now()
@@ -375,7 +401,10 @@ class Entry(TimeStampedModel):
                                     'date_obj': date_obj,
                                     'weekday': date_obj.weekday(),
                                     'nb_entered': len(entries_this_day),
-                                    'price_entered': price_entered})
+                                    'price_entered': price_entered,
+                                    'price_entered_fmt': price_fmt(price_entered,
+                                                                   fake_default_currency),
+            })
             # end = pendulum.now()
             # print("------- for day {}: {}".format(day, end - start))
 
@@ -386,6 +415,8 @@ class Entry(TimeStampedModel):
                 'nb_entries': nb_entries,
                 'entries_per_day': entries_per_day,
                 'total_price_entered': total_price_entered,
+                'total_price_entered_fmt': price_fmt(total_price_entered,
+                                                     fake_default_currency),
                 }
 
     @staticmethod

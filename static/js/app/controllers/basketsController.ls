@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -138,14 +138,21 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         promise = utils.getCards args
         promise.then (res) ->
             $scope.cards_fetched = res
+            if utils.is_isbn query and res.length == 1
+               setTimeout( ->
+                 $window.document.getElementById("default-input").value = ""
+                 $scope.add_selected_card res[0]
+               , 700)
+               return
+
             return res
 
-    $scope.add_selected_card = (card_repr) !->
+    $scope.add_selected_card = (card) !->
         """ Add the card selected from the autocomplete to the current list's copies.
         Save it.
         """
         tmpcard = $scope.cards_fetched
-        |> find (.repr == card_repr.repr)
+        |> find (.repr == card.repr)
         tmpcard = tmpcard.item
         # $scope.copies.push tmpcard
         # Insert at the right sorted place
@@ -205,16 +212,14 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.remove_from_selection = (index_to_rm) !->
         "Remove the card from the list. Server call to the api."
-        sure = confirm(gettext("Are you sure to remove the card '{}' from the basket ?").replace("{}", $scope.copies[index_to_rm].title))
-        if sure
-            card_id = $scope.copies[index_to_rm].id
-            $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
-            .then (response) !->
-                $scope.copies.splice(index_to_rm, 1)
-                # $scope.alerts = response.data.msgs # useless
+        card_id = $scope.copies[index_to_rm].id
+        $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
+        .then (response) !->
+            $scope.copies.splice(index_to_rm, 1)
+            # $scope.alerts = response.data.msgs # useless
 
-            .catch (resp) !->
-                $log.info "Error when trying to remove the card " + card_id
+        .catch (resp) !->
+            $log.info "Error when trying to remove the card " + card_id
 
     $scope.get_data = ->
         # coma-sep list of ids:
@@ -388,16 +393,6 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
         if typeof ($scope.new_name) == "undefined" || $scope.new_name == ""
             $uibModalInstance.dismiss('cancel')
             return
-
-        #  This is needed for Django to process the params to its
-        #  request.POST dictionnary:
-        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-
-        #  We need not to pass the parameters encoded as json to Django.
-        #  Encode them like url parameters.
-        $http.defaults.transformRequest = utils.transformRequestAsFormPost # don't transfrom params to json.
-        config = do
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
         params = do
             name: $scope.new_name

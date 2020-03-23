@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -41,6 +41,9 @@ def get_logger():
         return logging.getLogger('debug_logger')
     else:
         return logging.getLogger('sentry_logger')
+
+
+log = get_logger()
 
 
 class Messages(object):
@@ -147,7 +150,7 @@ class Messages(object):
                 for it in self.msgs]
 
 
-def truncate(it):
+def truncate(it, max_length=MAX_CELL):
     """Truncate only strings to MAX_CELL characters.
 
     param string it: a string
@@ -155,8 +158,8 @@ def truncate(it):
     returns: a string
     """
     if it and (isinstance(it, str) or isinstance(it, unicode))\
-       and len(it) >= MAX_CELL:
-        return it[:MAX_CELL] + "..."
+       and len(it) >= max_length:
+        return it[:max_length] + "..."
     return it
 
 def _ppcard_listofdicts(cards):
@@ -394,3 +397,34 @@ def distributors_match(cards):
     dists = [it.distributor for it in cards]
     no_duplicates = set(dists)
     return len(no_duplicates) == 1
+
+
+def card_currency(card):
+    """
+    Currency symbol depending on the data source.
+    This info is currently not saved in DB (and doesn't need it).
+    """
+    if card.data_source and 'lelivre' in card.data_source:
+        return 'CHF'
+    return '€'
+
+
+def price_fmt(price, currency):
+    """
+    Return: a string, with the price formatted correctly with its currency symbol.
+
+    Exemple: 10 € or CHF 10
+    """
+    if price is None or isinstance(price, str) or isinstance(price, unicode):
+        return ''
+    try:
+        if not currency:
+            # Happens in tests, in bare bones setup.
+            return '{:.2f} €'.format(price)
+        if currency.lower() == 'chf':
+            return 'CHF {:.2f}'.format(price)
+        else:
+            return '{:.2f} €'.format(price)
+    except Exception as e:
+        log.warning(u'Error for models.utils.price_fmt: {}'.format(e))
+        return '{:.2f}'.format(price)

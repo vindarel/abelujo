@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -60,6 +60,6 @@ table.table.table-striped
         td {{ it.card.title }}
         td {{ it.card.pubs_repr }}
         td {{ it.card.shelf }}
-        td.text-right {{ it.card.price }} {% trans "€" %}
+        td.text-right {{ it.card.price_fmt }}
 
 {% endblock content %}

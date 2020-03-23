@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -63,6 +63,9 @@ html(ng-app="abelujo")
                     a(href='/{{ LANGUAGE_CODE }}/databasesearch/publisher') {% trans "Publishers" %}
                 li.divider(role="separator")
                 li(href="#")
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/client') {% trans "Clients" %}
+                li.divider(role="separator")
+                li(href="#")
                     a(href='/{{ LANGUAGE_CODE }}/database') {% trans "All" %}
 
         form.navbar-form.navbar-left
@@ -101,7 +104,7 @@ html(ng-app="abelujo")
             a(href='{% url "search:card_collection" %}') {% trans "My stock" %}
 
           li(ng-class="{active: url == 'search' }")
-            a(href='{% url "search:card_search" %}') {% trans "New entry" %}
+            a(href='{% url "search:card_search" %}') {% trans "Search" %}
 
           li(ng-class="{active: url == 'sell' }")
             a(href='{% url "search:card_sell" %}') {% trans "Sell" %}

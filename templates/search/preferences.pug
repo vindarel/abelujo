@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -20,55 +20,28 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
-{% bootstrap_javascript %}
 {% load ngfilter %}
 
-div(ng-controller="preferencesController")
-  div
-    uib-alert(
-      ng-repeat="alert in alerts"
-      type="{{ 'alert.level' | ng }}"
-      close="closeAlert($item)"
-      ng-click="closeAlert($item)"
-    )
-      {{ 'alert.message' | ng }}
+if messages
+  ul.messages
+    for msg in messages
+      li  {{ msg }}
 
-  .row
-    .col-md-3
-      h3 {% trans "Preferences" %}
+h1 {% trans "Preferences" %}
+.row
+  h3 {% trans "Sells" %}
+  .col-lg-6
+    form(action="{% url 'preferences' %}", method="post")
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        input(type="submit", value="Submit")
 
-    .col-md-6
-
-      form(name="userForm", ng-submit="save(userForm)", novalidate)
-         .row
-          h3 {% trans "About the shop" %}
-          .col-md-6
-            h4 {% trans "Default place" %}
-            //- div {% trans "This is the place to add products to by default." %}
-
-          .col-md-6
-            select.form-control(name="place", ng-model="place", ng-options="it.name for it in places")
-
-         .row
-          h3 {% trans "VAT" %}
-          .col-md-6
-            h4 {% trans "VAT on books" %}
-
-          .col-md-6
-            input(type="number", ng-model="vat_book")
-
-         //- .row
-         //-   h3 {% trans "User preferences" %}
-         //-   .col-md-6
-         //-     h3 {% trans "Language" %}
-         //-   .col-md-6
-         //-     select(ng-model="user_language", ng-options="it.name for it in language_choices")
-
-         .row
-            .col-md-6
-            .col-md-6
-              button.btn.btn-success(type="submit", ng-disabled="! userForm.$dirty") {% trans "OK" %}
-
-    .col-md-3
+.row
+  h3 {% trans "Personal and banking information" %}
+  .col-lg-6
+    form(action="{% url 'preferences_bookshop' %}", method="post")
+        {% csrf_token %}
+        {% bootstrap_form bookshopform %}
+        input(type="submit", value="Submit")
 
 {% endblock content %}

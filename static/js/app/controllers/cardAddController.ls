@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -56,11 +56,6 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
                 "query": ""
         .then (response) ->
             $scope.distributor_list = response.data
-            if response.data.length == 0
-                $scope.distributor = {}
-            else
-                $scope.distributor = $scope.distributor_list[0]
-
             response.data
 
     getDistributors()
@@ -79,7 +74,8 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
     .then (response) !->
         $scope.places = response.data
         for place in $scope.places
-            place.quantity = 1
+            place.quantity = 0
+        $scope.places[0].quantity = 1
 
     # Get baskets
     $http.get "/api/baskets/", do
@@ -94,12 +90,6 @@ angular.module "abelujo" .controller 'cardAddController', ['$http', '$scope', '$
         params: {}
     .then (response) !->
         $scope.shelfs = response.data
-
-    $scope.filter_deposits = !->
-        $scope.filtered_deposits = $scope.deposits |> filter (.distributor == $scope.distributor.selected.name)
-        for depo in $scope.deposits
-            depo.quantity = 0
-        $scope.update_total_deposits()
 
     #
     # Validate

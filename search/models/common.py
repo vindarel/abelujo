@@ -1,6 +1,6 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -55,6 +55,12 @@ PAYMENT_ABBR = [
      # Translators: abbreviation of the "transfert" payment method.
     (5, _("TR")),
 ]
+
+CURRENCY_CHOICES = [
+    ('euro', '€'),
+    ('chf', 'CHF'),
+]
+
 
 def get_payment_abbr(id):
     if id is not None:

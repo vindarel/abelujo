@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -20,6 +20,9 @@ from search.models import Basket
 from search.models import BasketCopies
 from search.models import Bill
 from search.models import Card
+from search.models import CouponGeneric
+from search.models import Coupon
+from search.models import Client
 from search.models import Command
 from search.models import Shelf
 from search.models import Distributor
@@ -55,6 +58,14 @@ class CardAdmin(admin.ModelAdmin):
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
     filter_horizontal = ("authors", "publishers",)
+
+
+class ClientAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Client
+
+    search_fields = ["name", "firstname", "mobilephone", "address1", "city", "country", "zip_code"]
+    list_display = ["name", "firstname", "mobilephone"]
 
 
 class CommandAdmin(admin.ModelAdmin):
@@ -124,6 +135,8 @@ admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
+admin.site.register(CouponGeneric)
+admin.site.register(Coupon)
 admin.site.register(Command, CommandAdmin)
 admin.site.register(Shelf, ShelfAdmin)
 admin.site.register(Deposit, DepositAdmin)
@@ -140,6 +153,7 @@ admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author)
 admin_site.register(Basket)
 admin_site.register(Card, CardAdmin)
+admin_site.register(Client, ClientAdmin)
 admin_site.register(Command, CommandAdmin)
 admin_site.register(Distributor)
 admin_site.register(Deposit, DepositAdmin)

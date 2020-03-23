@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -36,7 +36,6 @@ div.ng-cloak(ng-controller="sellController")
       {{ 'alert.message' | ng }}
 
   form(method='post', novalidate)
-
       .row
         .col-md-3
           form
@@ -56,13 +55,24 @@ div.ng-cloak(ng-controller="sellController")
                   i.glyphicon.glyphicon-calendar
 
         .col-md-3
-          form
-            label {% trans "Payment" %}
-            select.form-control(
-              ng-model="payment"
-              ng-options="elt.name for elt in payment_means"
-              required
-            )
+         form
+            label {% trans "Client" %}
+            p.input-group
+             input.nullable.form-control(
+              type='text'
+              //- typeahead-loading="loadingCards"
+              ng-model='client_selected'
+              uib-typeahead='client.__repr__ for client in getClients($viewValue)'
+              typeahead-min-length="3"
+              typeahead-on-select="select_client($item)"
+              title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
+              id="client-input"
+              autocomplete="off"
+              placeholder='{% trans "Search clients" %}'
+              )
+             span.input-group-btn
+               a.btn.btn-default(type='button', href='/databasesearch/client/add/', title='{% trans "Create" %} {% trans "client" %}', target='_blank')
+                 i.glyphicon.glyphicon-plus
 
         .col-md-3
           form
@@ -81,15 +91,7 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row
-        .col-md-3
-            span.input-group-btn
-              label.sr-only {% trans "Card type" %}
-              select.form-control(
-                ng-model="card_type"
-                ng-options="elt.name group by elt.group for elt in card_types"
-                required
-              )
-        .col-md-9
+        .col-md-12
           p.input-group
            form()
             input.nullable.form-control(
@@ -107,8 +109,18 @@ div.ng-cloak(ng-controller="sellController")
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
       .row
-        .col-md-3
-          input.btn.btn-success(id="validateButton", type="submit", value="{% trans 'Validate' %}", ng-click="sellCards()")
+          span(ng-repeat="payment in payment_means")
+            input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
+
+          a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
+            i.glyphicon.glyphicon-file
+
+          .btn-group
+           button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}
+             span.caret
+           ul.dropdown-menu
+             li: a(href="#", ng-click="export_csv()") csv
+
           input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
 
           .btn-group
@@ -120,11 +132,11 @@ div.ng-cloak(ng-controller="sellController")
 
 
       .row(ng-show="cards_selected.length > 0")
-          h3.col-md-5 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} €
-          .col-md-2
+          h3.col-md-5 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} {{ 'cards_selected[0].currency' | ng }}
+          .col-md-1
           .col-md-1
             select(
-              ng-options="elt.name for elt in discounts.choices"
+              ng-options="elt.name for elt in preferences.sell_discounts_with_labels"
               title='{% trans "Set this discount to all" %}'
               ng-model="discounts.global_discount"
               ng-change="discount_global()")
@@ -135,8 +147,6 @@ div.ng-cloak(ng-controller="sellController")
           a(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
 
         //- .col-md-3
-          span(ng-repeat="auth in card.authors")
-            span {{ 'auth.fields.name' | ng }}
           i.glyphicon.glyphicon-warning-sign(
             ng-show="{% verbatim %} card.ambiguous_sell {% endverbatim %}"
             title="{% trans 'There is a conflict with deposits.' %}")
@@ -151,11 +161,11 @@ div.ng-cloak(ng-controller="sellController")
                   ng-model="{% verbatim %} card.price_sold {% endverbatim %}"
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )
-                span.input-group-addon €
+                span.input-group-addon {{ 'card.currency' | ng }}
 
         .col-md-1
             select(
-              ng-options="elt.name for elt in discounts.choices"
+              ng-options="elt.name for elt in preferences.sell_discounts_with_labels"
               title='{% trans "Choose a discount" %}'
               ng-model="card.quick_discount"
               ng-change='discount_apply($index)'

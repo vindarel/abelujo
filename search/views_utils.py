@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -16,33 +16,41 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import unicodecsv
 
 from django.utils.translation import ugettext as _
 
-import unicodecsv
+from search.models.utils import is_isbn
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs  # noqa: F401
 from search.datasources.bookshops.all.momox import momox  # noqa: F401
 from search.datasources.bookshops.deDE.buchlentner import \
     buchlentnerScraper as buchlentner  # noqa: F401
 from search.datasources.bookshops.esES.casadellibro import \
     casadellibroScraper as casadellibro  # noqa: F401
-from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre  # noqa: F401
 from search.datasources.bookshops.frFR.librairiedeparis import \
     librairiedeparisScraper as librairiedeparis  # noqa: F401
 from search.datasources.bookshops.frFR.dilicom import \
     dilicomScraper as dilicom  # noqa: F401
+from search.datasources.bookshops.frFR.lelivre import \
+    lelivreScraper as lelivre  # noqa: F401
 from search.models import Card
 
 #: Default datasource to be used when searching isbn, if source not supplied.
 DEFAULT_DATASOURCE = "librairiedeparis"
-if os.getenv('DILICOM_PASSWORD'):
+if os.getenv('DILICOM_PASSWORD') and os.getenv('DILICOM_PASSWORD').strip():
     DEFAULT_DATASOURCE = 'dilicom'
+if os.getenv('DEFAULT_DATASOURCE') and os.getenv('DEFAULT_DATASOURCE').strip():
+    DEFAULT_DATASOURCE = os.getenv('DEFAULT_DATASOURCE')
 
 def get_datasource_from_lang(lang):
     """From a lang (str), return the name (str) of the datasource module.
 
     And for CDs ? The client should be in "recordsop" mode.
     """
+    if os.getenv('DEFAULT_DATASOURCE'):
+        # Required to set the swiss source by default over the french one.
+        return os.getenv('DEFAULT_DATASOURCE')
+
     if not lang:
         return DEFAULT_DATASOURCE
 
@@ -50,6 +58,8 @@ def get_datasource_from_lang(lang):
         return "librairiedeparis"
     elif lang.startswith("fr") and os.getenv('DILICOM_PASSWORD'):
         return "dilicom"
+    elif lang.startswith('ch'):
+        return 'lelivre'
     elif lang.startswith("de"):
         return "buchlentner"
     elif lang.startswith("es"):
@@ -79,6 +89,49 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     res = Card.is_in_stock(res)
 
     return res, traces
+
+
+def dilicom_enabled():
+    """
+    Return a boolean indicating if the connection to Dilicom is possible.
+    Currently, check we have the required environment variables.
+    """
+    return os.getenv('DILICOM_PASSWORD') is not None \
+        and os.getenv('DILICOM_USER') is not None
+
+
+def update_from_dilicom(card):
+    """
+    Update "critical" data: price, availability, distributor.
+    - card: card object.
+
+    Return:
+    - card,
+    - list of messages (str).
+    """
+    if not card or not card.isbn or not (is_isbn(card.isbn)):
+        return card, []
+
+    scraper = getattr(globals()['dilicom'], "Scraper")
+    res, traces = scraper(card.isbn).search()
+
+    if res and res[0]:
+        to_save = False
+        res = res[0]
+        if card.price != res['price']:
+            card.price = res['price']
+            to_save = True
+
+        if to_save:
+            card.save()
+
+        # trick: add object fields, not saved to the DB, only for display.
+        card.availability = res['availability']
+        card.availability_fmt = res['availability_fmt']
+
+    else:
+        res = card
+    return card, traces
 
 
 class Echo(object):

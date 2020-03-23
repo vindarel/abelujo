@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -36,15 +36,8 @@ div.ng-cloak(ng-controller="cardAddController")
         td.my-narrow {% trans "supplier" %}
         td
 
-          ui-select.my-narrow(ng-model="distributor.selected", ng-change="filter_deposits()")
-            ui-select-match
-              span(ng-bind="$select.selected.repr")
-            ui-select-choices(
-              repeat="item in (distributor_list | filter:$select.search) track by item.id",
-              refresh="refreshDistributors($select.search, $select)",
-              refresh-delay="100",)
-              span(ng-bind="item.name")
-          a(target="_blank", href="/admin/search/distributor/add")
+          select.my-narrow(ng-model="distributor", ng-options="it.repr for it in distributor_list")
+          a(target="_blank", href="/admin/search/distributor/add")&nbsp;
                 i.glyphicon.glyphicon-plus-sign(title='{% trans "Add a supplier" %}')
 
       tr

@@ -22,12 +22,11 @@
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
-{% load ngfilter %}
 
-form(method='post', action="{% url 'search:card_places_add' pk %}")
+form.col-lg-4(method='post', action="{% url 'search:card_places_add' pk %}")
   {% csrf_token %}
   h4 {% trans "Add copies" %}
-  {{ form.as_p }}
+  {% bootstrap_form form %}
 
   input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
 

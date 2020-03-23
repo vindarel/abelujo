@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -36,6 +36,8 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
         promise = utils.getCards args
         promise.then (res) ->
             $scope.cards_fetched = res
+            if utils.is_isbn(query) and res.length == 1
+               $scope.go_to_card res[0]
             return res
 
     $scope.go_to_card = (item) !->

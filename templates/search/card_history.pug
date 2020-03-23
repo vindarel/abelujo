@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ div {% trans "Total sells" %}: {{ sells_data.total_sells }}
       em {% trans "This card has no registered sells." %}
 
     for sell in sells_data.data
-      div {{ sell.created }} - {{ sell.price_sold }} {% trans "€" %}
+      div {{ sell.created }} - {{ sell.price_sold_fmt }}
         if sell.quantity != 1
           span &nbsp x {{ sell.quantity }}
 

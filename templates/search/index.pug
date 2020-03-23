@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@
 form(action="{% url 'search:card_search' %}")
   {% csrf_token %}
   {% bootstrap_form searchForm %}
-  // {{ form.as_p }}
   span
     input.btn.btn-primary(type='submit', value='{% trans "Search" %}')
     span  {% trans "or" %}: 

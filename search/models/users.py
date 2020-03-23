@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -16,27 +16,39 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
-from common import CHAR_LENGTH
-from common import TimeStampedModel
+from django.db.models import Q
+from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 
+from common import CHAR_LENGTH
+from common import TEXT_LENGTH
+from common import TimeStampedModel
 from search.models.utils import get_logger
 
 log = get_logger()
 
+
 class Contact(models.Model):
-    """A contact information (client, supplier, etc).
+    """
+    A contact information (client or supplier), with payment information, etc.
 
     Distinguish the informations between a physical or a moral person ?
     """
     class Meta:
-        ordering = ("city",)
+        ordering = ("firstname",)
+        abstract = True
 
-    responsability = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    cellphone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    name = models.CharField(max_length=CHAR_LENGTH)
+    firstname = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
+    mobilephone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     telephone = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
-    website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     email = models.EmailField(blank=True, null=True)
+    website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
+    # Official numbers
+    company_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"The company's registered number (State's industry chamber)"))
+    bookshop_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"The bookshop's official number."))
+
+    # Address
     address1 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     address2 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     zip_code = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
@@ -44,32 +56,70 @@ class Contact(models.Model):
     state = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     country = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
+    presentation_comment = models.TextField(blank=True, null=True, max_length=TEXT_LENGTH, verbose_name=__(u"A comment to add after the default presentation, which contains name, address, contact and official number. Can be useful when the bookshop is officially administrated by another entity. This appears on bills."))
+
+    # Bank/payment details
+    checks_order = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"Checks order (if different from name)"))
+    checks_address = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"Checks address (if different than address)"))
+    bank_IBAN = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"IBAN"))
+    bank_BIC = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"BIC"))
+    is_vat_exonerated = models.BooleanField(default=False, verbose_name=__(u"Exonerated of VAT?"))
+
     comment = models.TextField(blank=True, null=True)
-
-
-class Client(models.Model):
-    name = models.CharField(max_length=CHAR_LENGTH)
-    firstname = models.CharField(max_length=CHAR_LENGTH)
-    contact = models.ForeignKey("Contact", null=True, blank=True)
 
     def save(self, *args, **kwargs):
         """
         name: uppercase
         firstname: capitalize
         """
-        self.name = self.name.upper()
-        self.firstname = self.firstname.capitalize()
-        super(self.__class__, self).save(*args, **kwargs)
+        if self.name:
+            self.name = self.name.upper()
+        if hasattr(self, 'firstname') and self.firstname:
+            self.firstname = self.firstname.capitalize()
 
-    def __repr__(self):
-        return "{} {}".format(self.name, self.firstname)
+        super(Contact, self).save(*args, **kwargs)
 
     def to_dict(self):
         return {'id': self.id,
                 'name': self.name.upper(),
                 'firstname': self.firstname.capitalize(),
+                'mobilephone': self.mobilephone,
                 '__repr__': self.__repr__(),
-                }
+        }
+
+    def __repr__(self):
+        return "{} {} - {}".format(self.name, self.firstname, self.mobilephone)
+
+
+class Client(Contact):
+    """
+    A client of the bookshop.
+    He can reserve books (not implemented), buy coupons, etc.
+    """
+    pass
+
+    def __repr__(self):
+        return "{} {}".format(self.name, self.firstname)
+
+    @staticmethod
+    def search(query, to_dict=False):
+        res = Client.objects.filter(Q(name__icontains=query) |
+                                    Q(firstname__icontains=query))
+        if to_dict:
+            res = [it.to_dict() for it in res]
+
+        return res
+
+
+class Bookshop(Contact):
+    """
+    Me, the bookshop. My address and payment details.
+    """
+    pass
+
+    def __repr__(self):
+        return "Bookshop {}".format(self.name)
+
 
 class BillCopies(models.Model):
     card = models.ForeignKey("search.Card")

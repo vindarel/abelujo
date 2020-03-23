@@ -21,16 +21,18 @@ debian:
 	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs sudo apt-get install -y
 	@sudo pip install virtualenvwrapper
 
-# Rebase main repo and submodules
-rebase:
-	git stash save "for make rebase"
+pull:
+	git stash save "autostash from make rebase"
 	git pull --rebase
 	git submodule update --remote
+# Rebase main repo and submodules
+rebase: pull
 	python manage.py migrate
 
 # Install in current directory
 pip: pip-submodule
 	@pip install -U pip
+	@pip uninstall bookshops  # around v0.9, an installed "bookshops" lib will hide newer code.
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
 
 pip-nosudo: pip-submodule
@@ -50,7 +52,7 @@ pip-submodule-dev:
 
 db:
 	@python manage.py syncdb --noinput           # populate the db for django
-	@python manage.py loaddata dbfixture.json    # set admin user (admin/admin)
+	@python manage.py loaddata dbfixture.json    # set required card types and default place.
 
 dbback:
 	# back up the db, append a timestamp
@@ -63,7 +65,7 @@ install-nodejs:
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  debian pip pip-submodule db npm-system npm gulp collectstatic translation-compile
+install:  debian pip pip-submodule db npm-system npm gulp translation-compile collectstatic
 
 # xxx: there must be a better way (to do the same task with and without sudo)
 install-nosudo:  debian-nosudo pip-nosudo db npm-system-nosudo npm gulp collectstatic translation-compile

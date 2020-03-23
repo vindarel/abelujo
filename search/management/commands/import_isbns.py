@@ -1,6 +1,6 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -94,6 +94,8 @@ class Command(BaseCommand):
         self.stdout.write(msg)
         if self.not_found:
             self.stdout.write("ISBNs not found:\n{}".format("\n".join(self.not_found)))
+        else:
+            self.stdout.write("All ISBNs were found")
 
     def handle(self, *args, **options):
         """
@@ -138,6 +140,7 @@ class Command(BaseCommand):
         try:
             for i, line in enumerate(lines):
                 isbn, quantity = line.split(separator)
+                isbn = isbn.strip()
                 if not is_isbn(isbn):
                     self.stdout.write("It seems that {} is not a valid isbn or one that we know around here. Please check and try again.".format(isbn))
                     exit(1)

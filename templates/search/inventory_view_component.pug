@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@ div(ng-controller=controller)
               table.table.table-condensed
                 tr
                   td {% trans "Total value" %}
-                  td {{ 'total_value' | ng }} €
+                  td {{ 'total_value' | ng }} {{ 'meta.currency' | ng }}
 
     .row
        .row
@@ -123,7 +123,7 @@ div(ng-controller=controller)
           th
 
     tbody
-        tr.repeated-item(ng-show="cards_to_show", ng-repeat="card in cards_to_show")
+        tr.my-animated-item.repeated-item(ng-show="cards_to_show", ng-repeat="card in cards_to_show")
 
          td.col-md-5
           a(href="{{ 'card.url ' | ng }}") {{ 'card.title' | ng }}
@@ -134,9 +134,9 @@ div(ng-controller=controller)
             title="{% trans 'There is a conflict with deposits.' %}")
           i.glyphicon.glyphicon-exclamation-s
 
-         td.col-md-1 {{ 'card.price' | ng }}  €
+         td.col-md-1 {{ 'card.price_fmt' | ng }}
 
-         td.col-md-1 {{ 'card.price_discounted' | ng }}  €
+         td.col-md-1 {{ 'card.price_discounted_fmt' | ng }}
 
          td.col-md-3
             p.input-group

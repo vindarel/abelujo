@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -15,23 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from abelujo import settings
-
-import io  # write to file in utf8
 import datetime
-import time
-import toolz
+import io  # write to file in utf8
+import json
 import os
+import time
+import traceback
 import urllib
 
 import pendulum
+import toolz
 import unicodecsv
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
@@ -45,6 +43,8 @@ from django.views.generic import DetailView
 from django.views.generic import ListView
 from weasyprint import HTML
 
+from abelujo import settings
+from search import forms as viewforms
 #
 # The datasources imports must have the name as their self.SOURCE_NAME
 # Also add the search engine in the client side controller.
@@ -53,13 +53,8 @@ from search.datasources.bookshops.all.discogs import discogsScraper as discogs  
 from search.datasources.bookshops.all.momox import momox  # noqa: F401
 from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as buchlentner  # noqa: F401
 from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro  # noqa: F401
-from search.datasources.bookshops.frFR.decitre import decitreScraper as decitre  # noqa: F401
+from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre  # noqa: F401
 from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis  # noqa: F401
-
-
-import models
-from search.models import history
-
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -67,6 +62,8 @@ from search.models import Card
 from search.models import Command
 from search.models import Deposit
 from search.models import Distributor
+from search.models import Entry
+from search.models import EntryCopies
 from search.models import Inventory
 from search.models import InventoryCommand
 from search.models import Place
@@ -75,23 +72,23 @@ from search.models import Publisher
 from search.models import Restocking
 from search.models import Sell
 from search.models import Stats
-from search.models import Entry
-from search.models import EntryCopies
+from search.models import history
+from search.models import users
 from search.models.api import _get_command_or_return
+from search.models.common import get_payment_abbr
 from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
+from search.models.utils import price_fmt
 from search.models.utils import truncate
-
-from search.models.common import get_payment_abbr
-
 from views_utils import Echo
 from views_utils import cards2csv
+from views_utils import dilicom_enabled
+from views_utils import update_from_dilicom
 
 log = get_logger()
 
-MAX_COPIES_ADDITIONS = 10000  # maximum of copies to add at once
 DEFAULT_NB_COPIES = 1         # default nb of copies to add.
 
 PENDULUM_YMD = '%Y-%m-%d'  # caution, %m is a bit different than datetime's %M.
@@ -106,85 +103,6 @@ def filename_content_type(filename):
     extension = filename.split('.')[-1]
     return EXTENSION_TO_CONTENT_TYPE[extension]
 
-class MyNumberInput(TextInput):
-    # render an IntegerField with a "number" html5 widget, not text.
-    input_type = 'number'
-
-
-def get_distributor_choices():
-    dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
-    pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
-    choices = [(_(u"Distributors"),
-                dists),
-               (_(u"Publishers"),
-                pubs)]
-    return choices
-
-
-class AddForm(forms.Form):
-    """The form populated when the user clicks on "add this card"."""
-    # The search is saved to the session so we need to get the element we want: hence the for counter.
-    # We couldn't find how to populate its value (which is {{ forloop.counter0 }})
-    # without not writting it explicitely in the template.
-    forloop_counter0 = forms.IntegerField(min_value=0,
-                                          widget=forms.HiddenInput())
-
-def get_places_choices():
-    not_stands = Place.objects.filter(is_stand=False)
-    preferences = Preferences.objects.first()
-    ret = []
-    if preferences:
-        default_place = preferences.default_place
-        ret = [(default_place.id, default_place.name)] + [(p.id, p.name) for p in not_stands
-                                                          if not p.id == default_place.id]
-    return ret
-
-def get_suppliers_choices():
-    res = Distributor.objects.order_by("-name").all()
-    res = [(it.id, it.__repr__()) for it in res]
-    return res
-
-class DepositForm(forms.ModelForm):
-    """Create a new deposit.
-    """
-    copies = forms.ModelMultipleChoiceField(Card.objects.all(), required=False)
-
-    class Meta:
-        model = Deposit
-        fields = "__all__"
-        # exclude = ["copies",]
-
-class DepositAddCopiesForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        pk = kwargs.pop('pk')
-        super(self.__class__, self).__init__(*args, **kwargs)
-
-        # Build fields depending on the deposit existing cards.
-        dep = Deposit.objects.get(id=pk)
-        cards = dep.copies()
-        for card in cards:
-            self.fields[str(card.id)] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
-                       'step': 1, 'value': 0,
-                       'style': 'width: 70px'}),
-                                                           label=card.title)
-
-
-def get_deposits_choices():
-    choices = [(depo.name, depo.name) for depo in Deposit.objects.all()]
-    return choices
-
-class AddToDepositForm(forms.Form):
-    """When we view our stock, choose to add the card to a deposit.
-    """
-    deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                label=_(u"Add to the deposit:"),
-                                required=False)
-
-def get_bills_choices():
-    bills = Bill.objects.all()
-    ret = [(0, "---")] + [(it.id, it.long_name) for it in bills]
-    return ret
 
 def get_reverse_url(cleaned_data, url_name="search:card_search"):
     """Get the reverse url with the query parameters taken from the
@@ -212,12 +130,80 @@ def get_reverse_url(cleaned_data, url_name="search:card_search"):
     rev_url = reverse(url_name) + "?" + params
     return rev_url
 
+
 @login_required
 def preferences(request):
     """
     """
     template = "search/preferences.pug"
-    return render(request, template)
+    if request.method == 'GET':
+        form = viewforms.PrefsForm()
+        bs_model = users.Bookshop.objects.first()
+        # note: we handle its POST on preferences_bookshop url.
+        if bs_model:
+            bookshopform = viewforms.BookshopForm(instance=bs_model)
+        else:
+            bookshopform = viewforms.BookshopForm()
+
+        return render(request, template, {
+            'form': form,
+            'bookshopform': bookshopform,
+        })
+
+    elif request.method == 'POST':
+        bookshopform = viewforms.BookshopForm()  # we handle it on preferences_bookshop
+        form = viewforms.PrefsForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            prefs = Preferences.objects.first()
+            discounts = viewforms.validate_and_get_discounts(data['sell_discounts'])
+            data['sell_discounts'] = discounts
+            prefs.others = json.dumps(data)
+            prefs.save()
+            messages.add_message(
+                request, messages.SUCCESS, _("Preferences saved."))
+            form = viewforms.PrefsForm()
+            return render(request, template, {
+                'form': form,
+                'bookshopform': bookshopform,
+            })
+
+        return render(request, template, {
+            'form': form,
+            'bookshopform': bookshopform,
+        })
+
+def preferences_bookshop(request):
+    # If we POST to preferences/, the currency&discount form is submitted as well,
+    # hence its data is null, but valid, and we don't want to erase it.
+    # It's simple to use another url. We could use hidden form fields.
+    template = "search/preferences.jade"
+    if request.method == 'POST':
+        form = viewforms.BookshopForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            try:
+                existing = users.Bookshop.objects.first()
+                bookshop_model = users.Bookshop(**data)
+                if existing:
+                    bookshop_model.pk = existing.pk
+                bookshop_model.save()
+                messages.add_message(
+                    request, messages.SUCCESS, _("Preferences saved."))
+                return HttpResponseRedirect(reverse('preferences'))
+            except Exception as e:
+                log.error(u'Error saving the bookshop form: {}\n{}'.
+                          format(e, traceback.format_exc))
+                messages.add_message(
+                    request, messages.ERROR, _("Preferences NOT saved."))
+
+    form = viewforms.PrefsForm()
+    bookshopform = viewforms.BookshopForm()
+    return render(request, template, {
+        'form': form,
+        'bookshopform': bookshopform,
+    })
+>>>>>>> master
 
 def postSearch(data_source, details_url):
     """Call the postSearch function of the module imported with the name
@@ -250,6 +236,56 @@ def search(request):
     return render(request, template)
 
 @login_required
+def card_create_manually(request):
+    template = 'search/card_create.jade'
+    if request.method == 'GET':
+        card_form = viewforms.CardCreateForm()
+        add_places_form = viewforms.CardPlacesAddForm()
+        return render(request, template, {'form': card_form,
+                                          'add_places_form': add_places_form})
+    elif request.method == 'POST':
+        card_form = viewforms.CardCreateForm(request.POST)
+        add_places_form = viewforms.CardPlacesAddForm(request.POST)
+        card = None
+
+        if card_form.is_valid():
+            card_dict = card_form.cleaned_data
+            card, msgs = viewforms.CardCreateForm.create_card(card_dict)
+
+            if not card:
+                log.warning("create card manually: card not created? {}, {}"
+                            .format(card_dict, msgs))
+                messages.add_message(request, messages.SUCCESS, _(u'Warn: the card was not created.'))
+
+        else:
+            return render(request, template, {'form': card_form,
+                                              'add_places_form': viewforms.CardPlacesAddForm()})
+
+        if card and add_places_form.is_valid():
+            places_qties = add_places_form.cleaned_data
+            for name_id, qty in places_qties.iteritems():
+                if not qty:
+                    continue
+                place_id = name_id.split('_')[1]
+                if place_id:
+                    place_id = int(place_id)
+                    place = Place.objects.get(id=place_id)
+                    place.add_copy(card, nb=qty)
+                    log.info("Card added to place {} x{}".format(place_id, qty))
+
+            messages.add_message(request, messages.SUCCESS, _(u'The card was created successfully.'))
+
+        else:
+            return render(request, template, {'form': card_form,
+                                              'add_places_form': add_places_form})
+
+        # Return to… new void form?
+        card_form = viewforms.CardCreateForm()
+        add_places_form = viewforms.CardPlacesAddForm()
+        return render(request, template, {'form': card_form,
+                                          'add_places_form': add_places_form})
+
+@login_required
 def card_show(request, pk):
     template = "search/card_show.pug"
     card = None
@@ -260,6 +296,13 @@ def card_show(request, pk):
     if request.method == 'GET':
         card = get_object_or_404(Card, id=pk)
 
+        # Update critical data from Dilicom, if possible.
+        if dilicom_enabled():
+            try:
+                card, msgs = update_from_dilicom(card)
+            except Exception:  # for ConnectionError
+                pass
+
         # Ongoing commands.
         pending_commands = card.commands_pending()
 
@@ -269,7 +312,9 @@ def card_show(request, pk):
         # Quantity per place.
         for place in places:
             places_quantities.append((place.name,
-                                      place.quantity_of(card)))
+                                      place.quantity_of(card),
+                                      place.name.replace(" ", "_").lower(),  # html id.
+            ))
 
         # Sells since the last entry
         if last_entry:
@@ -322,104 +367,12 @@ def card_history(request, pk):
     })
 
 
-class CardMoveForm(forms.Form):
-    """We want to create a field for each Place and Basket object
-
-    This approch is too much work to create a simple form. We want to
-    write our form directly in a template instead, using angularjs
-    calls to an api to fetch the places and baskets.
-    """
-    #XXX: replace these forms with a template and api calls.
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        model = "Place"
-        query = models.__dict__[model].objects.all()
-        for obj in query:
-            self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
-                       'step': 1, 'value': 1,
-                       'style': 'width: 70px'}))
-
-
-class CardMove2BasketForm(forms.Form):
-    # needs refacto etc… too complicating and unecessary.
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        model = "Basket"
-        query = models.__dict__[model].objects.all()
-        for obj in query:
-            self.fields[obj.name] = forms.IntegerField(widget=MyNumberInput(
-                attrs={'min': 0, 'max': MAX_COPIES_ADDITIONS,
-                       'step': 1, 'value': 0,
-                       'style': 'width: 70px'}))
-
-
-class CardMoveTypeForm(forms.Form):
-    choices = [(1, "Pay these cards"),
-               (2, "Add to a deposit"),
-               (3, "Internal movement"),
-    ]
-    typ = forms.ChoiceField(choices=choices)
-
-
-PAYMENT_MEANS = [
-    (1, "cash"),
-    (2, "credit card"),
-    (3, "cheque"),
-    (4, "gift"),
-    (5, "lost"),
-]
-
-
-class BuyForm(forms.Form):
-    payment = forms.ChoiceField(choices=PAYMENT_MEANS, label=_("Payment"))
-    bill = forms.ChoiceField(choices=get_bills_choices(), label=_("Bill"))
-    quantity = forms.FloatField(label=_("Quantity"))
-    place = forms.ChoiceField(choices=get_places_choices(), label=_("Place"))
-
-
-class MoveDepositForm(forms.Form):
-    choices = forms.ChoiceField(choices=get_deposits_choices())
-
-
-class CardPlacesAddForm(forms.Form):
-    """
-    Add exemplaries to some Places, from the Card view.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        for place in Place.objects.order_by("id").all():
-            self.fields[place.id] = forms.IntegerField(required=False, label=place.name)
-
-
-class MoveInternalForm(forms.Form):
-    nb = forms.IntegerField()
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['origin'] = forms.ChoiceField(choices=get_places_choices())
-        self.fields['destination'] = forms.ChoiceField(choices=get_places_choices())
-
-
-class SetSupplierForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['supplier'] = forms.ChoiceField(choices=get_suppliers_choices())
-
-
-class NewSupplierForm(forms.Form):
-    name = forms.CharField()
-    discount = forms.IntegerField(label=_("discount"))
-
-
 @login_required
 def card_buy(request, pk=None):
-    form = BuyForm()
+    form = viewforms.BuyForm()
     template = "search/card_buy.pug"
     card = Card.objects.get(id=pk)
-    form = BuyForm(initial={"quantity": 1})
+    form = viewforms.BuyForm(initial={"quantity": 1})
     if request.method == 'GET':
         try:
             buying_price = card.price - (card.price * card.distributor.discount / 100)
@@ -434,7 +387,7 @@ def card_buy(request, pk=None):
 
     if request.method == 'POST':
         # buying the card
-        form = BuyForm(request.POST)
+        form = viewforms.BuyForm(request.POST)
         if form.is_valid():
             place = form.cleaned_data['place']
             nb = form.cleaned_data['quantity']
@@ -478,7 +431,7 @@ def card_places_add(request, pk=None):
     params = request.GET
 
     if request.method == 'GET':
-        form = CardPlacesAddForm()
+        form = viewforms.CardPlacesAddForm()
         return render(request, template, {
             "form": form,
             "pk": pk,
@@ -487,10 +440,15 @@ def card_places_add(request, pk=None):
 
     else:
         back_to = reverse('search:card_show', args=(pk,))
-        form = CardPlacesAddForm(request.POST)
+        form = viewforms.CardPlacesAddForm(request.POST)
         if form.is_valid():
-            for (id, nb) in form.data.iteritems():  # cleaned_data won't have nothing...
+            # When the field name was an int (the place id),
+            # the form was valid but cleaned_data had None values.
+            for (label_id, nb) in form.cleaned_data.iteritems():
                 if nb:
+                    # the form field name is
+                    # place_<id>
+                    id = int(label_id.split('_')[1])
                     place = Place.objects.get(id=id)
                     if place:
                         card = Card.objects.get(id=pk)
@@ -505,13 +463,13 @@ def card_places_add(request, pk=None):
 @login_required
 def card_move(request, pk=None):
     template = "search/card_move.pug"
-    BasketsForm = CardMove2BasketForm()
-    internalForm = MoveInternalForm()
+    BasketsForm = viewforms.CardMove2BasketForm()
+    internalForm = viewforms.MoveInternalForm()
     params = request.GET
 
     if request.method == 'POST':
-        placeForm = MoveInternalForm(request.POST)
-        basketForm = CardMove2BasketForm(request.POST)
+        placeForm = viewforms.MoveInternalForm(request.POST)
+        basketForm = viewforms.CardMove2BasketForm(request.POST)
 
         if placeForm.is_valid() and basketForm.is_valid():
             card_obj = Card.objects.get(pk=pk)
@@ -549,7 +507,7 @@ def card_move(request, pk=None):
 
         else:
             # form not valid
-            internalForm = MoveInternalForm(request.POST)
+            internalForm = viewforms.MoveInternalForm(request.POST)
 
     # method: GET
     return render(request, template, {
@@ -564,8 +522,8 @@ def card_move(request, pk=None):
 @login_required
 def cards_set_supplier(request, **kwargs):
     template = 'search/set_supplier.pug'
-    form = SetSupplierForm()
-    newsupplier_form = NewSupplierForm()
+    form = viewforms.SetSupplierForm()
+    newsupplier_form = viewforms.NewSupplierForm()
     cards_ids = request.session.get('set_supplier_cards_ids')
     if not cards_ids:
         return HttpResponseRedirect(reverse('search:card_collection'))
@@ -586,14 +544,14 @@ def cards_set_supplier(request, **kwargs):
 
         # The user chose an existing distributor.
         if 'supplier' in req.keys():
-            form = SetSupplierForm(req)
+            form = viewforms.SetSupplierForm(req)
             if form.is_valid():
                 dist_id = form.cleaned_data['supplier']
                 dist_obj = Distributor.objects.get(id=dist_id)
 
         # Create distributor.
         elif 'discount' in req.keys():
-            form = NewSupplierForm(req)
+            form = viewforms.NewSupplierForm(req)
             if form.is_valid():
                 data = form.cleaned_data
 
@@ -618,7 +576,7 @@ def cards_set_supplier(request, **kwargs):
                 return render(request, template, response_dict)
 
         else:
-            log.error(u"Error in the form setting the supplier for many cards")
+            log.error(u"Error in the form setting the supplier for many cards. We didn't recognize any of the two forms.")
             return render(request, template, response_dict)
 
         # Set supplier for all cards.
@@ -821,7 +779,7 @@ class DepositsListView(ListView):
 @login_required
 def deposits_new(request):
     return render(request, "search/deposits_create.pug", {
-        "DepositForm": DepositForm(),
+        "DepositForm": viewforms.DepositForm(),
     })
 
 @login_required
@@ -829,7 +787,7 @@ def deposits_create(request):
     # results = 200
     if request.method == "POST":
         req = request.POST.copy()
-        form = DepositForm(req)
+        form = viewforms.DepositForm(req)
         if form.is_valid():
             deposit = form.cleaned_data
             try:
@@ -855,7 +813,7 @@ def deposits_add_card(request):
     """
     resp_status = 200
     req = request.POST.copy()
-    form = AddToDepositForm(req)
+    form = viewforms.AddToDepositForm(req)
     if request.method == "POST":
         if not form.is_valid():
             log.debug("deposits_add_card: form is not valid")
@@ -928,12 +886,12 @@ def deposit_add_copies(request, pk):
     """Add copies to this deposit. (only ones that already exist)
     """
     template = "search/deposit_add_copies.pug"
-    form = DepositAddCopiesForm(pk=pk)
+    form = viewforms.DepositAddCopiesForm(pk=pk)
     if request.method == "GET":
         pass
 
     if request.method == "POST":
-        form = DepositAddCopiesForm(request.POST, pk=pk)
+        form = viewforms.DepositAddCopiesForm(request.POST, pk=pk)
         if form.is_valid():
             data = form.cleaned_data
             dep = Deposit.objects.get(id=pk)
@@ -1191,7 +1149,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         # barcode
         start = time.time()
         if barcodes:
-            for card, __ in cards_qties:
+            for card, _noop in cards_qties:
                 # Find or create the base64 barcode.
                 search = Barcode64.objects.filter(ean=card.ean)
                 if not search:
@@ -1258,6 +1216,90 @@ def history_sells_month(request, date, **kwargs):
                                       'next_month_obj': next_month,
                                       'next_month': next_month.strftime('%Y-%m'),
                                       'year': year})
+
+def _csv_response_from_rows(rows, headers=None, filename=''):
+    pseudo_buffer = Echo()
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+    content = writer.writerow("")
+
+    if headers:
+        rows.insert(0, headers)
+    start = timezone.now()
+    content = "".join([writer.writerow(row) for row in rows])
+    end = timezone.now()
+    print("writing rows to csv took {}".format(end - start))
+
+    response = StreamingHttpResponse(content, content_type="text/csv")
+    response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(filename)
+    return response
+
+def _txt_response_from_rows(rows, filename=""):
+    # 63 = MAX_CELL + 3 because of trailing "..."
+    # Not ideal, but for compliance with the csv method we get a list of data, not a dict:
+    # (sell.card.title,         # 0
+    #      sell.card.isbn,      # 1
+    #      sell.card.authors_repr,
+    #      sell.card.pubs_repr,
+    #      sell.card.distributor_repr, # 4
+    #      sell.card.shelf.name if sell.card.shelf else "",
+    #      sell.card.price,      # 6
+    #      sell.card.price_discounted, # 7
+    #      sell.quantity)        # 8
+
+    format_str = u"{:63} {} {:23} {:20} {:5} {:5} {:3}"
+    rows = [format_str.
+            format(truncate(it[0]),
+                   it[1],
+                   truncate(it[3], max_length=20),
+                   it[4],
+                   it[6],
+                   it[7],
+                   it[8],
+            ) for it in rows]
+    rows = sorted(rows)
+    content = "\n".join(rows)
+    response = HttpResponse(content, content_type="text/raw")
+    response['Content-Disposition'] = u'attachment; filename={}.txt'.format(filename)
+    return response
+
+def history_sells_month_export(request, date, **response_kwargs):
+    try:
+        day = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_sells'))  # xxx: loop?
+
+    data = Sell.search(year=day.year, month=day.month,
+                       with_total_price_sold=False)
+
+    fileformat = request.GET.get('fileformat')
+    filename = _("Sells_{}-{}".format(day.year, day.month))
+
+    headers = (_("Title"), "ISBN", _("Authors"), _("Publishers"), _("Supplier"),
+              _("Shelf"),
+              _("Price"),
+              _("with discount"),
+              _("Quantity"))
+    rows = [
+        (sell.card.title,
+         sell.card.isbn,
+         sell.card.authors_repr,
+         sell.card.pubs_repr,
+         sell.card.distributor_repr,
+         sell.card.shelf.name if sell.card.shelf else "",
+         sell.card.price,
+         sell.card.price_discounted,
+         sell.quantity)
+        for sell in data['data']]
+    rows = sorted(rows)
+
+    if fileformat in ['csv']:
+        response = _csv_response_from_rows(rows, headers=headers, filename=filename)
+        return response
+
+    if fileformat in ['txt']:
+        response = _txt_response_from_rows(rows, filename=filename)
+        return response
+
 
 def history_entries_month(request, date, **kwargs):
     template = 'search/history_entries.pug'
@@ -1487,7 +1529,8 @@ def suppliers_sells(request, **kwargs):
 @login_required
 def suppliers_sells_month(request, date, **kwargs):
     """
-    Total sells of the month for distributors and publishers.
+    Total sells of the month for distributors and
+    publishers (for books that were not counted for distributors first).
     """
     template = 'search/suppliers_sells_month.pug'
     try:
@@ -1500,78 +1543,24 @@ def suppliers_sells_month(request, date, **kwargs):
     month = day.month
     previous_month = day.subtract(months=1).replace(day=1)
     next_month = day.add(months=1).replace(day=1)
+    res = Sell.history_suppliers(year=year, month=month)
 
-    sells = Sell.sells_of_month(month=month, year=year)
-    sells_with_distributor = sells.filter(card__distributor__isnull=False)
-    sells_with_publishers = sells.filter(card__publishers__isnull=False)
-    # without any pub or dist:
-    # sells_without_supplier = sells.exclude(card__publishers__isnull=False)\
-    #                              .exclude(card__distributor__isnull=False)
-
-    current_distributors = []
-    if sells_with_distributor:
-        current_distributors = sells_with_distributor.values_list('card__distributor__name', 'card__distributor__id').distinct()  # no effect?!
-        current_distributors = list(set(current_distributors))
-    current_publishers = []
-    if sells_with_publishers:
-        current_publishers = sells_with_publishers.values_list('card__publishers__name', 'card__publishers__id').distinct()
-        current_publishers = list(set(current_publishers))
-
-    # distinct('card__distributor__id')  # not supported on SQLite.
-
-    publishers_data = []
-    for name, pk in current_publishers:
-        data = {}
-        data['publisher'] = (name, pk)
-        pub_sells = sells_with_publishers.filter(card__publishers__id=pk)
-        data['sells'] = pub_sells
-        cards_sold = pub_sells.values_list('quantity', flat=True)
-        nb_cards_sold = sum(cards_sold)
-        data['nb_cards_sold'] = nb_cards_sold
-        prices_sold = pub_sells.values_list('price_sold', flat=True)
-        public_prices = pub_sells.values_list('price_init', flat=True)
-        assert len(cards_sold) == len(prices_sold)
-        total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
-        data['total'] = total
-        total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
-        data['total_public_price'] = total_public_price
-        publishers_data.append(data)
-
-    publishers_data = sorted(publishers_data, key=lambda it: it['publisher'][0])  # sort by name
-
-    distributors_data = []
-    for name, pk in current_distributors:
-        data = {}
-        data['distributor'] = (name, pk)
-        pub_sells = sells_with_distributor.filter(card__distributor__id=pk)
-        data['sells'] = pub_sells
-        cards_sold = pub_sells.values_list('quantity', flat=True)
-        nb_cards_sold = sum(cards_sold)
-        data['nb_cards_sold'] = nb_cards_sold
-        prices_sold = pub_sells.values_list('price_sold', flat=True)
-        public_prices = public_prices.values_list('price_init', flat=True)
-        assert len(cards_sold) == len(prices_sold)
-        total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
-        data['total'] = total
-        total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
-        data['total_public_price'] = total_public_price
-        distributors_data.append(data)
-
-    distributors_data = sorted(distributors_data, key=lambda it: it['distributor'][0])  # sort by name
-
-    return render(request, template, {'publishers_data': publishers_data,
-                                      'distributors_data': distributors_data,
+    return render(request, template, {'publishers_data': res['publishers_data'],
+                                      'distributors_data': res['distributors_data'],
                                       'day': day,
                                       'now': now,
                                       'previous_month_obj': previous_month,
                                       'previous_month': previous_month.strftime('%Y-%m'),
                                       'next_month_obj': next_month,
                                       'next_month': next_month.strftime('%Y-%m'),
-                                      'year': year})
+                                      'year': year,
+                                      'default_currency': Preferences.get_default_currency(),
+    })
 
 @login_required
 def publisher_sells_month_list(request, pk, date, **kwargs):
     template = 'search/supplier_sells_month_list.pug'
+    default_currency = Preferences.get_default_currency()
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1590,6 +1579,7 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
     next_month = day.add(months=1).replace(day=1)
 
     sells = Sell.sells_of_month(year=year, month=month, publisher_id=pk)
+
     cards_sold = sells.values_list('quantity', flat=True)
     nb_cards_sold = sum(cards_sold)
     prices_sold = sells.values_list('price_sold', flat=True)
@@ -1606,7 +1596,9 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
                                       'cards_sold': cards_sold,
                                       'nb_cards_sold': nb_cards_sold,
                                       'total': total,
+                                      'total_fmt': price_fmt(total, default_currency),
                                       'total_public_price': total_public_price,
+                                      'total_public_price_fmt': price_fmt(total_public_price, default_currency),
                                       'obj': publisher_obj,
                                       'day': day,
                                       'now': now,
@@ -1617,6 +1609,7 @@ def publisher_sells_month_list(request, pk, date, **kwargs):
 @login_required
 def distributors_sells_month_list(request, pk, date, **kwargs):
     template = 'search/supplier_sells_month_list.pug'
+    default_currency = Preferences.get_default_currency()
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
     except Exception:
@@ -1652,7 +1645,9 @@ def distributors_sells_month_list(request, pk, date, **kwargs):
                                       'cards_sold': cards_sold,
                                       'nb_cards_sold': nb_cards_sold,
                                       'total': total,
+                                      'total_fmt': price_fmt(total, default_currency),
                                       'total_public_price': total_public_price,
+                                      'total_public_price_fmt': price_fmt(total_public_price, default_currency),
                                       'obj': obj,
                                       'day': day,
                                       'now': now,

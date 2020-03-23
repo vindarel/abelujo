@@ -63,7 +63,7 @@ the virtualenv and update Abelujo.
    checks and prints the status of all clients.
 
 TODO: restart gunicorn when needed. It can be needed to load new
-templatetags, to load new translations,...
+templatetags, to load new translations, to load submodules python code...
 
 """
 CLIENTS = "clients.yaml"
@@ -181,7 +181,7 @@ def check_uptodate(name=None):
 
     with cd(wd):
         res = run("git rev-parse HEAD")
-        # print("commit of {} is {}".format(wd, res))
+        tag = run("git describe --tags")
         if res == git_head:
             print(termcolor.colored("- {} is up to date".format(client.name), "green"))
         else:
@@ -193,12 +193,14 @@ def check_uptodate(name=None):
                 print(termcolor.colored("- {}", 'blue').format(client.name) +
                     " is " +
                     termcolor.colored("{}", "yellow").format(index) +
-                      " commits behind. Head is at: {} ({})".format(last_commit_date, res))
+                      " commits behind. Head is at: {}, {} ({})".format(
+                          tag, last_commit_date, res))
             else:
                 print(termcolor.colored("- {}", "blue").format(client.name) +
                     " is  " +
                     termcolor.colored("{}", "red").format(index) +
-                      " commits behind. Head is at: {} ({})".format(last_commit_date, res))
+                      " commits behind. Head is at: {}, {} ({})".format(
+                          tag, last_commit_date, res))
 
 def _request_call(url):
     status = 0
@@ -303,6 +305,19 @@ def updatelight(name=None):
         make('update-code', client.name)
 
     print("Client updated: {}".format(client))
+
+def updateverylight(name=None):
+    """
+    Only pull new code, submodule included. Don't run migrations, don't build JS.
+    """
+    if not name:
+        print("Give a client name as argument.")
+        exit(1)
+    client = fabutils.select_client_cfg(name, CFG)
+    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    with cd(wd):
+        make('pull', client.name)
+        print("Client updated (pull): {}".format(client))
 
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
@@ -455,6 +470,8 @@ def create(name=None):
     venv = name
     # Get the first available port
     ports = [it.port for it in CFG.clients]
+    ports.append(8000)
+    ports.append(8001)
     ports = sorted(ports)
     possible_ports = range(8000, 8000 + len(CFG.clients) + 1)
     free_port = list(set(possible_ports) - set(ports))[0]
@@ -547,12 +564,12 @@ def start(name):
             run(gunicorn)
 
 def restart(name):
-    """Restart a server.
     """
-    stop(name)
-    start(name)
+    Send a restart signal to gunicorn.
+    """
+    cmd = "gunicorn-restart"
+    make(cmd, name)
 
-    os.system("sleep 200; fab check_uptodate:{}".format(name))
 
 def make(cmd, name=None):
     """Run any make command remotevy
@@ -564,7 +581,7 @@ def make(cmd, name=None):
                 run("make {}".format(cmd))
 
     else:
-        print("no client name given")
+        print("fab make: no client name given")
 
 def cmd(cmd, name=None):
     """Run any command to client "name".

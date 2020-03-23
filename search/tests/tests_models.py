@@ -1,6 +1,6 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -174,6 +174,11 @@ class TestCards(TestCase):
     def tearDown(self):
         log.setLevel(logging.DEBUG)
 
+    def test_to_dict(self):
+        res = self.autobio.to_dict()
+        assert res
+        self.assertTrue('€' in res['price_fmt'])
+
     def test_shelf_repr(self):
         self.assertNotEqual("", self.autobio.shelf_repr)
         self.autobio.shelf = None
@@ -188,18 +193,21 @@ class TestCards(TestCase):
     def test_from_dict(self):
         TITLE = "Foo bar"
         ZINN = "zinn"
-        to_add, msgs = Card.from_dict({"title": TITLE,
+        card, msgs = Card.from_dict({"title": TITLE,
                                        "authors": [self.GOLDMAN, ZINN],
                                        "isbn": "foobar",
+                                       "publishers": ['new publisher'],
+                                       "distributor": "new dist",
                                        "location": "here"})
-        self.assertTrue(to_add)
-        self.assertEqual(to_add.title, TITLE)
+        self.assertTrue(card)
+        self.assertEqual(card.title, TITLE)
         self.assertEqual(len(Author.objects.all()), 2)
-        names = [aut.name for aut in to_add.authors.all()]
+        names = [aut.name for aut in card.authors.all()]
         self.assertTrue(ZINN in names)
         self.assertTrue(self.GOLDMAN in names)
         # Check that the author was created
         self.assertTrue(Author.objects.get(name=ZINN))
+        self.assertEqual("new publisher", card.publishers.first().name)
 
     def test_exists(self):
         """Card.exists unit test.
@@ -345,7 +353,7 @@ class TestCards(TestCase):
         obj, msgs = Card.from_dict({"title": "living",
                               "card_type": badtype})
         self.assertEqual(obj.title, "living")
-        self.assertEqual(obj.card_type.name, "unknown")
+        self.assertFalse(obj.card_type)
 
     def test_type_unknown(self):
         obj, msgs = Card.from_dict({"title": "living",
@@ -428,10 +436,9 @@ class TestPublisher(TestCase):
     def test_publisher_non_existing(self):
         pub = "Foo"
         obj, msgs = Card.from_dict({"title": "living", "publishers": [pub]})
-        self.assertEqual(pub.lower(), obj.publishers.all()[0].name)
+        self.assertEqual(pub.lower(), obj.publishers.all()[0].name.lower())
         publishers = Publisher.objects.all()
         self.assertEqual(2, len(publishers))
-        self.assertTrue(pub.lower() in [p.name for p in publishers])
 
 class TestCollection(TestCase):
     """Testing the addition of a collection to a card.
@@ -901,6 +908,9 @@ class TestSells(TestCase):
         # a Distributor:
         self.dist = Distributor(name="dist test")
         self.dist.save()
+        # a Publisher:
+        self.pub = Publisher(name="pub test")
+        self.pub.save()
         # a Deposit:
         self.depo = Deposit(name="deposit test", distributor=self.dist)
         self.depo.save()
@@ -1184,6 +1194,26 @@ class TestSells(TestCase):
         self.assertEqual(0, self.place.quantity_of(self.autobio))
         self.assertEqual(0, self.reserve.quantity_of(self.autobio))
 
+    def test_history_suppliers(self):
+        # A card gets both a dist and a pub:
+        self.autobio.distributor = self.dist
+        self.autobio.save()
+        self.autobio.publishers.add(self.pub)
+        # The secondcard gets a pub (the same):
+        self.secondcard.publishers.add(self.pub)
+        # A third card gets nothing.
+        thirdcard = CardFactory()
+        # We sell the three:
+        Sell.sell_cards(None, cards=[self.autobio, self.secondcard, thirdcard])
+        # We get our history for distributors and publishers:
+        now = datetime.datetime.now()
+        history = Sell.history_suppliers(year=now.year, month=now.month)
+
+        # The first card was counted for the distributors and NOT for the publishers,
+        # even though it has both information.
+        self.assertEqual(1, history['distributors_data'][0]['nb_cards_sold'])
+        self.assertEqual(1, history['publishers_data'][0]['nb_cards_sold'])
+        # The thirdcard does not appear here.
 
 class TestSellSearch(TestCase):
 

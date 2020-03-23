@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -13,6 +13,9 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+# Was used for creation and edition.
+# Still used for edition. Creation re-done with Django forms.
 
 angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope', '$window', 'utils', '$filter', '$log', ($http, $scope, $window, utils, $filter, $log) !->
     # utils: in services.js
@@ -115,10 +118,6 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.remove_from_selection = (index_to_rm, model_list) ->
         $scope[model_list].splice index_to_rm, 1
 
-    $scope.refreshDistributors = (search, select) ->
-        getDistributors()
-        select.refreshItems()
-
     # Post the form
     $scope.validate = (next_view) ->
 
@@ -146,7 +145,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             params.type = type.fields.name
 
         if $scope.distributor_selected != undefined
-            params.distributor = $scope.distributor_selected.id
+            params.distributor_id = $scope.distributor_selected.id
 
         # This is needed for Django to process the params to its
         # request.POST dictionnary:

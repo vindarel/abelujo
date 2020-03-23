@@ -144,4 +144,8 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
                 , response.data.cards
                 return cards_fetched
 
+        is_isbn: (text) ->
+            reg = /^[0-9]{10,13}/g
+            text.match reg
+
 ]

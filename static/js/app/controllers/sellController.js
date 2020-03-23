@@ -7,6 +7,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
       $scope.dist_list = [];
 
+    // List of clients.
+    $scope.clients = [];
+    $scope.client = undefined;
+
     // List of places we can sell from.
     $scope.places = [];
     $scope.place = undefined;
@@ -22,31 +26,23 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       $scope.cards_selected = [];
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
-      //TODO: use django-angular to limit code duplication.
-      $scope.card_types = [
-          // WARNING duplication from dbfixture.json
-          {name: "all publication", id:null},
-          {name: "book", group: "book", id:1},
-          {name: "booklet", group: "book",id:2},
-          {name: "periodical", group: "book", id:3},
-          {name: "other print", group: "book", id:4},
-          {name: "CD", group: "CD", id:5},
-          {name: "DVD", group: "CD", id:6},
-          {name: "vinyl", group: "CD", id:8},
-          {name: "others", group: "others", id:9},
-      ];
 
+    $scope.gettext = function(it) {
+        return it;
+    };
+
+      // Respect the backend ids.
       $scope.payment_means = [
-           {name: "cash", id:1},
-           {name: "cheque", id:2},
-           {name: "visa card", id:3},
-           {name: "gift", id:4},
-           {name: "transfer", id:5},
-           {name: "other", id:6},
+          {name: gettext("ESPECES"), id:1},
+           {name: gettext("CB"), id:3},
+           {name: gettext("CHEQUE"), id:2},
+           {name: gettext("transfert"), id:5},
+           {name: gettext("autre"), id:6},
       ];
       $scope.payment = $scope.payment_means[0];
 
-    $scope.discounts = {};
+    $scope.discounts = {choices: [],
+                        global_discount: null};
     // and store the selected discount in this object.
     // For the first time had pbs with another variable.
     $scope.discounts.choices = [
@@ -71,14 +67,19 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
          id:5}
     ];
 
-      $scope.card_type = $scope.card_types[0];
-      $scope.tmpcard = undefined;
+      // $scope.tmpcard = undefined;
+      $scope.tmpcard = [];
       $scope.selected_ids = [];
       $scope.total_price = 0;
 
       // messages for ui feedback: list of couple level/message
       $scope.alerts = undefined;
 
+
+      $http.get("/api/preferences")
+        .then(function(response) {
+            $scope.preferences = response.data.all_preferences;
+      });
 
       $http.get("/api/distributors")
           .then(function(response){ // "then", not "success"
@@ -88,6 +89,23 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               });
 
           });
+
+    $scope.getClients = function(val) {
+        return $http.get("/api/clients", {
+            params: {
+                query: val
+            }
+        })
+            .then(function(response) {
+                // $scope.clients = [{"name": "", "id": 0}];
+                // $scope.clients = $scope.clients.concat(response.data.data);
+                return response.data.data;
+            });
+    };
+
+    $scope.select_client = function(item) {
+        $scope.client = item;
+    };
 
     $http.get("/api/places")
         .then(function(response) {
@@ -120,11 +138,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   "lang": $scope.language,
                   "language": $scope.language,
                   "deposit_id": deposit_id,
-                  "place_id": place_id,
-                  "card_type_id": $scope.card_type.id
+                  "place_id": place_id
               }})
+
               .then(function(response){ // "then", not "success"
-                  return response.data.cards.map(function(item){
+                  // map over the results and return a list of card objects.
+                  var resp = response.data.cards.map(function(item){
                       // give a string representation for each object (result)
                       // xxx: take the repr from django
                       // return item.title + ", " + item.authors + ", éd. " + item.publishers;
@@ -133,15 +152,24 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                       $scope.cards_fetched.push({"repr": repr,
                                                  "id": item.id,
                                                  "item": item});
+
                       return {"repr": repr, "id": item.id};
                   });
+
+                  if (utils.is_isbn(val) && resp.length == 1) {
+                      $scope.add_selected_card(resp[0]);
+                      $window.document.getElementById("default-input").value = "";
+                      return [];
+                  }
+
+                  return resp;
               });
       };
 
-      $scope.add_selected_card = function(card_repr){
-          // $scope.cards_selected.push(card_repr);
+      $scope.add_selected_card = function(card){
+          // $scope.cards_selected.push(card);
           $scope.tmpcard = _.filter($scope.cards_fetched, function(it){
-              return it.repr === card_repr.repr;
+              return it.repr === card.repr;
           }) ;
           $scope.tmpcard = $scope.tmpcard[0].item;
           $scope.tmpcard.price_orig = $scope.tmpcard.price_sold;
@@ -151,7 +179,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
               $scope.selected_ids.push($scope.tmpcard.id);
           } else {
               var existing = _.find($scope.cards_selected, function(it){
-                  return it.id === card_repr.id;
+                  return it.id === card.id;
               });
               existing.quantity_sell += 1;
           }
@@ -228,23 +256,29 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           $scope.cards_selected = [];
       });
 
+    $scope.sellCardsWith = function(payment) {
+        console.log("Sell with ", payment);
+        $scope.payment = payment;
+        $scope.sellCards();
+    };
+
     $scope.sellCards = function() {
-          var ids = [];
-          var prices = [];
-          var quantities = [];
-          if ($scope.cards_selected.length > 0) {
-              ids = _.map($scope.cards_selected, function(card) {
-                  return card.id;
-              });
-              prices = _.map($scope.cards_selected, function(card){
-                  return card.price_sold;
-              });
-              quantities = _.map($scope.cards_selected, function(card){
-                  return card.quantity_sell;
-              });
-          } else {
-              return;
-          }
+        var ids = [];
+        var prices = [];
+        var quantities = [];
+        if ($scope.cards_selected.length > 0) {
+            ids = _.map($scope.cards_selected, function(card) {
+                return card.id;
+            });
+            prices = _.map($scope.cards_selected, function(card){
+                return card.price_sold;
+            });
+            quantities = _.map($scope.cards_selected, function(card){
+                return card.quantity_sell;
+            });
+        } else {
+            return;
+        }
 
         var place_id = 0;
         if ($scope.place) {
@@ -262,7 +296,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
         var params = {
             "to_sell": [ids, prices, quantities],
-            "date": $filter('date')(new Date(), $scope.format, 'UTC') .toString($scope.format),
+            "date": $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
             "language": $scope.language,
             "place_id": place_id,
             "deposit_id": deposit_id,
@@ -293,6 +327,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
                   $scope.cancelCurrentData();
                   $window.removeEventListener('beforeunload', unloadlistener);
+
+                  $scope.payment = $scope.payment_means[0];
+
+                  $scope.date = new Date();
+
                   return response.data;
               });
       };
@@ -301,6 +340,113 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.total_price = null;
         $scope.selected_ids = [];
         $scope.cards_selected = [];
+        $scope.cards_fetched = [];
+    };
+
+    $scope.export_csv = function () {
+        let date = $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format);
+        let filename = "Vente " + date + ".csv";
+        let text = "";
+        let rows = [];
+        let total = 0;
+        for (var i = 0; i < $scope.cards_selected.length; i++) {
+            total += $scope.cards_selected[i].price_sold * $scope.cards_selected[i].quantity_sell;
+            let row = $scope.cards_selected[i].title + ';' +
+                $scope.cards_selected[i].pubs_repr + ';' +
+                $scope.cards_selected[i].price_sold + ';' +
+                $scope.cards_selected[i].quantity_sell;
+            if ($scope.cards_selected[i].quick_discount) {
+                row += ';' + $scope.cards_selected[i].quick_discount.name;
+            }
+            rows.push(row + '\n');
+        }
+        // * 100 and / 100: avoid decimial precision errors.
+        // 3*21.9 = 38.6999999 lol.
+        total = Math.round(total * 100) / 100;
+        rows.push("\nTotal;;" + parseFloat(total) + $scope.cards_selected[0].currency + '\n');
+        for (var i = 0; i < rows.length; i++) {
+            text += rows[i];
+        }
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    };
+
+    $scope.create_bill = function() {
+    // $scope.bill_url_params = function() {
+        // copied from sell_cards.
+        var ids = [];
+        var prices = [];
+        var prices_sold = [];
+        var quantities = [];
+        if ($scope.cards_selected.length > 0) {
+            ids = _.map($scope.cards_selected, function(card) {
+                return card.id;
+            });
+            prices_sold = _.map($scope.cards_selected, function(card){
+                return card.price_sold;
+            });
+            prices = _.map($scope.cards_selected, function(card){
+                return card.price;
+            });
+            quantities = _.map($scope.cards_selected, function(card){
+                return card.quantity_sell;
+            });
+        } else {
+            $log.info("-- no cards selected, won't create a bill!");
+            return 0;
+        }
+
+        $log.info($scope.place);
+        var payment_id;
+        if ($scope.payment) {
+            payment_id = $scope.payment.id;
+        }
+
+        var discount = $scope.discounts.global_discount;
+
+        var params = {
+            ids: ids,
+            prices_sold: prices_sold,
+            prices: prices,
+            quantities: quantities,
+            date: $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
+            discount: discount,
+            language: $scope.language,
+            payment_id: payment_id,
+            client_id: 0,
+        };
+
+        if ($scope.client !== undefined) {
+            params['client_id'] = $scope.client.id;
+        }
+
+        $http.post("/api/bill", params)
+            .then(function(response){
+                if (response.status == 200) {
+                    $log.info(response);
+                    let element = document.createElement('a');
+                    element.setAttribute('href', response.data.fileurl);
+                    element.setAttribute('download', response.data.filename);
+                    element.style.display = 'none';
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+
+                    // Second pdf with the books list.
+                    // XXX: this opens the same PDF twice...
+                    // let elt2 = document.createElement('a');
+                    // elt2.setAttribute('href', response.data.details_fileurl);
+                    // elt2.setAttribute('download', response.data.details_filename);
+                    // elt2.style.display = 'none';
+                    // document.body.appendChild(elt2);
+                    // elt2.click();
+                    // document.body.removeChild(elt2);
+                }});
     };
 
    // The date picker:

@@ -1,25 +1,6 @@
 [
     {
         "pk": 1,
-        "model": "auth.user",
-        "fields": {
-            "username": "admin",
-            "first_name": "",
-            "last_name": "",
-            "is_active": true,
-            "is_superuser": true,
-            "is_staff": true,
-            "last_login": "2014-02-28T22:34:38.179Z",
-            "groups": [],
-            "user_permissions": [],
-            "password": "pbkdf2_sha256$10000$CknB4de8HLEw$dqln3JEFWUPZCOqlTozzTXb4B0eo3VYc8WtuIKrbiOE=",
-            "email": "",
-            "date_joined": "2014-02-27T23:18:24.202Z"
-        }
-    },
-
-    {
-        "pk": 1,
         "model": "search.basket",
         "fields": {
             "name": "auto_command"
@@ -96,8 +77,8 @@
     {
         "fields": {
             "name": "default distributor",
-            "created": "2014-07-27T18:34:23.369Z",
-            "modified": "2014-07-27T18:34:23.369Z"
+            "created": "2019-07-27T18:34:23.369Z",
+            "modified": "2019-07-27T18:34:23.369Z"
         },
         "model": "search.distributor",
         "pk": 1

@@ -1,4 +1,4 @@
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -132,6 +132,9 @@ apipatterns = [
 
     # Clients
     # url(r'^api/clients/?', api.users.clients, name='api_clients'),
+
+    # Bills
+    url(r'^api/bill/?', 'search.models.api_users.bill', name='api_bill'),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:

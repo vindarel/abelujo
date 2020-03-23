@@ -1,6 +1,6 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -21,8 +21,7 @@ import json
 import locale
 import logging
 import os
-
-from django_q.tasks import async
+import traceback
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -34,6 +33,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
+from django_q.tasks import async
 
 from drfserializers import PreferencesSerializer
 from models import Alert
@@ -51,13 +51,12 @@ from models import Publisher
 from models import Restocking
 from models import Sell
 from models import Shelf
-from models import SoldCards
 from models import Stats
 from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
     reviews as frenchreviews
-from search.models import history
-from search.models import do_inventory_apply
 from search.models import do_command_apply
+from search.models import do_inventory_apply
+from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
@@ -66,15 +65,18 @@ from search.models.utils import Messages
 from search.models.utils import get_logger
 from search.models.utils import get_page_count
 from search.models.utils import page_start_index
+from search.models.utils import price_fmt
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 
+from .utils import _is_truthy
 from .utils import ids_qties_to_pairs
 from .utils import is_invalid
-from .utils import is_isbn, split_query, isbns_from_query
+from .utils import is_isbn
+from .utils import isbns_from_query
 from .utils import list_from_coma_separated_ints
 from .utils import list_to_pairs
-from .utils import _is_truthy
+from .utils import split_query
 
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
@@ -121,37 +123,10 @@ def preferences(request, **response_kwargs):
                                  'data': ret})
 
         ret['data'] = PreferencesSerializer(pref).data
+        ret['all_preferences'] = pref.to_dict()
         ret['status'] = ALERT_SUCCESS
         return JsonResponse(ret)
 
-    elif request.method == 'POST':
-        place = None
-        status = ALERT_SUCCESS
-        msgs = Messages()
-        try:
-            params = json.loads(request.body)
-        except Exception as e:
-            log.error(u'Error getting requests body on Preferences: {}'.format(e))
-            return JsonResponse(
-                {'status': ALERT_ERROR,
-                 'message': u'Error getting Preferences: {}'.format(e)})
-
-        place_id = params.get('place_id')
-        if place_id:
-            try:
-                place = Place.objects.get(id=place_id)
-                if place is None:
-                    params.pop('place_id')
-            except Exception as e:
-                log.error(u"Error getting place with id {}: {}".format(place_id, e))
-                params.pop('place_id', None)
-
-        status, _msgs = Preferences.setprefs(default_place=place,
-                                             vat_book=params.get('vat_book'),
-                                             language=params.get('language'))
-        msgs.append(_msgs)
-
-        return JsonResponse({'status': status, 'alerts': msgs.msgs})
 
 def datasource_search(request, **response_kwargs):
     """Search for new cards on external sources.
@@ -203,13 +178,16 @@ def datasource_search(request, **response_kwargs):
         # TODO: search remaining ISBNs on the datasource.
         logging.error("Not implemented: searching many ISBNs at once on the datasource.")
 
+    default_datasource = 'librairiedeparis'
+    if os.getenv('DEFAULT_DATASOURCE'):
+        default_datasource = os.getenv('DEFAULT_DATASOURCE')
     if (not is_isbn_query and not isbn_list) or not res:
-        datasource = request.GET.get('datasource', 'librairiedeparis')
+        datasource = request.GET.get('datasource', default_datasource)
         page = request.GET.get('page', 1)
         if (not is_isbn_query) and datasource == 'dilicom' and os.getenv('DILICOM_USER'):
             # We can not make text searches on Dilicom :/ Only ISBN queries.
             # So we make keyword searches with the right datasource.
-            datasource = 'librairiedeparis'
+            datasource = default_datasource
         res, traces = search_on_data_source(datasource, query, PAGE=page)
 
     data = {"data": res,
@@ -227,8 +205,9 @@ def datasource_search(request, **response_kwargs):
 
     return JsonResponse(data)
 
+
 def cards(request, **response_kwargs):
-    """search for cards in the stock with the given query, or return all of them (with
+    """Search for cards in the stock with the given query, or return all of them (with
     a limit).
 
     Don't return cards added in the DB but not bought.
@@ -355,8 +334,6 @@ def card_create(request, **response_kwargs):
                 "title": params.get('title'),
                 "price": params.get('price'),
                 "card_type": params.get('type'),
-                # "distributor": params.get("distributor"),
-                # "publishers_ids": list_from_coma_separated_ints(params.get("publishers")),
                 "authors": [Author.objects.get(id=it) for it in list_from_coma_separated_ints(params.get('authors'))],
                 "isbn": isbn,
                 "has_isbn": True if params.get("has_isbn") == "true" else False,
@@ -367,6 +344,8 @@ def card_create(request, **response_kwargs):
                 card_dict['shelf_id'] = shelf
             if params.get('distributor'):
                 card_dict['distributor'] = params.get('distributor')
+            if params.get('distributor_id'):
+                card_dict['distributor_id'] = params.get('distributor_id')
             if params.get('publishers'):
                 card_dict['publishers_ids'] = list_from_coma_separated_ints(params.get('publishers'))
             if threshold is not None:
@@ -390,7 +369,8 @@ def card_create(request, **response_kwargs):
                 return JsonResponse(msgs)
 
         except Exception as e:
-            log.error(u"Error adding a card: {}".format(e))
+            tb = traceback.format_exc()
+            log.error(u"Error adding a card: {}\n{}".format(e, tb))
             alerts.append({"level": ALERT_ERROR,
                            "message": _("Woops, we can not create this card. This is a bug.")})
 
@@ -403,7 +383,9 @@ def card_add(request, **response_kwargs):
     """Add the given card to places (=buy it), deposits and baskets.
 
     - card_id
-    - places_ids_qties:
+    - places_ids_qties: a string with comma-separated place id, quantity (ints).
+
+    - default_place: quantity (int) (card_add_one_to_default_place).
     """
     if request.method == "POST":
         params = request.POST.copy()
@@ -413,6 +395,15 @@ def card_add(request, **response_kwargs):
 
         pk = response_kwargs.pop("pk")
         card_obj = Card.objects.get(id=pk)
+
+        if 'default_place' in request.body:
+            # Add one quantity. abelujo-js.js card_add_one_to_default_place
+            default_place = Preferences.get_default_place()
+            default_place.add_copy(card_obj)
+            return JsonResponse({'status': status,
+                                 'quantity': default_place.quantity_of(card_obj),
+                                 },
+                                safe=False)
 
         distributor_id = params.get('distributor_id')
         shelf_id = params.get("shelf_id")
@@ -448,7 +439,8 @@ def card_add(request, **response_kwargs):
             card_obj.shelf = cat
             to_save = True
 
-        if distributor_id and distributor_id not in [-1, 0, '0', u'0']:
+        if distributor_id and distributor_id not in [-1, 0, '0', u'0',
+                                                     'undefined', u'undefined']:
             if card_obj.distributor_id != distributor_id:
                 distributor = Distributor.objects.get(id=distributor_id)
                 card_obj.distributor = distributor
@@ -719,20 +711,20 @@ def sell(request, **response_kwargs):
 
 def sell_undo(request, pk, **response_kwargs):
     """
-    Undo either the given soldcard. Eventually, undo a whole sell with its many cards.
+    Undo a whole sell with its many cards.
 
-    - pk: SoldCard id (we undo the sell of one card, not the payment
-      transaction with potentially many cards).
+    - pk: Sell id (we undo the sell and all its soldcards).
 
-    re-buy the card.
+    Re-buy the card.
     """
     msgs = []  # returned by undo()
     status = True
     if request.method == 'POST':
         if pk:
             # We undo only 1 card, not the entire sell (grouping many cards).
-            status, msgs = SoldCards.undo(pk)
-            # status, msgs = Sell.sell_undo(pk)
+            # status, msgs = SoldCards.undo(pk)
+            # We undo the entire sell.
+            status, msgs = Sell.sell_undo(pk)
         else:
             msgs.append({"message": u"Internal error: we didn't receive which sell to cancel.",
                          "status": ALERT_ERROR})
@@ -991,6 +983,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
             'page_size': page_size,
             'nb_results': nb_results,
             'num_pages': num_pages,
+            'default_currency': Preferences.get_default_currency(),
         }
         return JsonResponse(to_ret, safe=False)
 
@@ -1178,7 +1171,12 @@ def baskets_create(request, **response_kwargs):
         return JsonResponse({'data': "Use a POST request"})
 
     if request.method == "POST":
-        name = request.POST.get('name')
+        # When the client asks to encode params in url parameters: POST.get
+        # name = request.POST.get('name')
+        # (older client code).
+        # Otherwise they get in the request body.
+        params = json.loads(request.body)
+        name = params.get('name')
         b_obj, status, msgs = Basket.new(name=name)
         to_ret = {"data": b_obj.to_dict() if b_obj else {},
                   "alerts": msgs,
@@ -1339,9 +1337,10 @@ def baskets_return(request, pk, **kw):
             return JsonResponse(to_ret)
 
         try:
+            # XXX: a return operation is not idempotent :S
             out, msgs = basket.create_return()
         except Exception as e:
-            log.error(u"return basket {}: {}".format(pk, e))
+            log.error(u"return basket {}: {}\n{}".format(pk, e, traceback.format_exc()))
         finally:
             to_ret['alerts'] = msgs.msgs
             to_ret['status'] = msgs.status
@@ -1879,6 +1878,7 @@ def commands_supplier(request, pk):
     totals['total_copies'] = sum([it.quantity for it in copies_from_dist])
     totals['total_price'] = sum([it.card.price if it.card.price else 0
                                  for it in copies_from_dist])
+    totals['total_price_fmt'] = price_fmt(totals['total_price'], Preferences.get_default_currency())
     # total_price_discounted
     # total_price_excl_vat
     # total_price_discounted_excl_vat

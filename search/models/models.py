@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 - 2019 The Abelujo Developers
+# Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
 # Abelujo is free software: you can redistribute it and/or modify
@@ -58,6 +58,7 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
 from search.models.common import CHAR_LENGTH
+from search.models.common import CURRENCY_CHOICES
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TEXT_LENGTH
@@ -67,6 +68,8 @@ from search.models.utils import get_logger
 from search.models.utils import is_invalid
 from search.models.utils import is_isbn
 from search.models.utils import isbn_cleanup
+from search.models.utils import card_currency
+from search.models.utils import price_fmt
 from search.models.utils import roundfloat
 from search.models.utils import distributors_match
 
@@ -133,6 +136,8 @@ class Distributor(TimeStampedModel):
     # They should not. Its complicates everything.
 
     name = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("name"))
+    #: GLN (official ID, given by Dilicom).
+    gln = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("GLN"))
     #: The discount (in %). When we pay the distributor we keep the amount of
     # the discount.
     discount = models.FloatField(default=0, blank=True, verbose_name=__("discount"))
@@ -442,7 +447,6 @@ class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
     """
-
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
     #: type of the card, if specified (book, CD, tshirt, …)
@@ -453,10 +457,15 @@ class Card(TimeStampedModel):
     isbn = models.CharField(max_length=99, null=True, blank=True)
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author, blank=True, verbose_name=__("authors"))
+    #: The public price.
     price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=__("price"))
-    #: price_sold is only used to generate an angular form, it is not
-    #: stored here in the db.
-    price_sold = models.FloatField(null=True, blank=True, verbose_name=__("price sold"))
+    #: Currency: euro, CHF, other?
+    currency = models.CharField(max_length=10,
+                                choices=CURRENCY_CHOICES,
+                                # cannot access Preferences which wants Place.
+                                # Python has no late bindings.
+                                # default='euro',
+                                null=True, blank=True, verbose_name=__("currency"))
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))
@@ -464,7 +473,7 @@ class Card(TimeStampedModel):
     quantity = models.IntegerField(null=True, blank=True, editable=False, verbose_name=__("quantity"))
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT,
-                                    verbose_name=__("threshold"))
+                                    verbose_name=__("Minimal quantity before command"))
     #: Publisher of the card:
     publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=__("publishers"))
     year_published = models.DateField(blank=True, null=True, verbose_name=__("year published"))
@@ -480,19 +489,25 @@ class Card(TimeStampedModel):
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, verbose_name=__("places"))
     #: when and how this card was sold: sells (see the Sell table).
     #: an url to show a thumbnail of the cover:
-    cover = models.URLField(null=True, blank=True, verbose_name=__("cover"))
+    cover = models.URLField(null=True, blank=True, verbose_name=__("cover url"))
     #: the cover, saved on the file system. Use card.cover to get the most relevant.
     imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
-    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("data source"))
+    data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True,
+                                   editable=False,
+                                   verbose_name=__("data source"))
     #: link to the card's data source
-    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("details url"))
+    details_url = models.URLField(max_length=CHAR_LENGTH, null=True, blank=True,
+                                  editable=False,
+                                  verbose_name=__("details url"))
     #: date of publication
     date_publication = models.DateField(blank=True, null=True, verbose_name=__("date publication"))
     #: the summary (of the back cover)
     summary = models.TextField(null=True, blank=True, verbose_name=__("summary"))
     #: Book format (pocket, big)
-    fmt = models.TextField(null=True, blank=True)
+    fmt = models.TextField(null=True, blank=True,
+                           editable=False,
+                           verbose_name=__("Book format (pocket, etc)"))
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
@@ -543,6 +558,23 @@ class Card(TimeStampedModel):
 
         return self.price
 
+    def price_fmt(self):
+        """
+        Return: a string, with the price formatted correctly with its currency symbol.
+
+        Exemple: "10 €" or "CHF 10".
+        """
+        # WARN: duplicated from utils.py, because the template wants an object method.
+        # I consider this a Python fail.
+        if self.price is None or isinstance(self.price, str):
+            return self.price
+
+        currency = self.get_currency()
+        if currency.upper() == 'CHF':
+            return 'CHF {:.2f}'.format(self.price)
+        else:
+            return '{:.2f} €'.format(self.price)
+
     @property
     def img(self):
         """
@@ -553,13 +585,9 @@ class Card(TimeStampedModel):
         return self.imgfile.url
 
     def save(self, *args, **kwargs):
-        """We override the save method in order to copy the price to
-        price_sold, save covers on disk and denormalize the quantity.
-        We want it to initialize the angular form.
+        """We override the save method in order to
+        save covers on disk and denormalize the quantity.
         """
-        # https://docs.djangoproject.com/en/1.8/topics/db/models/#overriding-model-methods
-        self.price_sold = self.price
-
         # Update quantity.
         self.quantity = self.quantity_compute()
 
@@ -596,12 +624,6 @@ class Card(TimeStampedModel):
 
     def display_authors(self):
         return u', '.join([a.name for a in self.authors.all()])
-
-    def getAuthorsString(self):
-        """returns a string with the list of authors.
-        It is called from the templates so can't take any arg.
-        """
-        return "; ".join([aut.name for aut in self.authors.all()])
 
     def quantity_compute(self):
         """Return the quantity of this card in all places (not deposits).
@@ -741,6 +763,7 @@ class Card(TimeStampedModel):
         auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
         authors_repr = self.authors_repr
         publishers = self.publishers.all()
+        # Still a bit used client side.
         pubs = [{'fields': {'name': it.name,
                             "id": it.id}} for it in publishers]
         pubs_repr = self.pubs_repr
@@ -764,6 +787,8 @@ class Card(TimeStampedModel):
         except Exception as e:
             log.error(e)
             get_absolute_url = ""
+
+        currency = self.get_currency()
 
         res = {
             "id": self.id,
@@ -789,10 +814,16 @@ class Card(TimeStampedModel):
             "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
-            "price_sold": self.price_sold,
+            "price_sold": self.price,  # used for Sell form, when the price sold can change.
+            'price_fmt': price_fmt(self.price, currency),
             "price_discounted": self.price_discounted,
+            "price_discounted_fmt": price_fmt(self.price_discounted, currency),
             "price_discounted_excl_vat": self.price_discounted_excl_vat,
+            "price_discounted_excl_vat_fmt": price_fmt(self.price_discounted_excl_vat,
+                                                       currency),
             "price_excl_vat": self.price_excl_vat,
+            "price_excl_vat_fmt": price_fmt(self.price_excl_vat, currency),
+            "currency": currency,
             # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
             "publishers": pubs,
             "pubs_repr": pubs_repr,
@@ -808,6 +839,15 @@ class Card(TimeStampedModel):
             res['quantity'] = self.quantity
 
         return res
+
+    def get_currency(self):
+        # prefer utils.card_currency(card) when possible.
+        # Here, trouble with card_currency(self): 0 argument given.
+        if hasattr(self, 'currency') and self.currency:
+            return self.currency
+        if self.data_source and 'lelivre' in self.data_source:
+            return 'CHF'
+        return '€'
 
     @staticmethod
     def obj_to_list(cards, in_deposits=False, with_quantity=True):
@@ -1055,9 +1095,10 @@ class Card(TimeStampedModel):
             'page': page,
             'page_size': page_size,
             'nb_results': nb_results,
+            'currency': Preferences.get_default_currency(),
         }
 
-        if isbns:
+        if isbns and len(isbns) > 1:
             meta['message'] = _("You asked for {} ISBNs. {} found.".format(len(isbns), len(cards)))
             if isbn_list_search_complete:
                 meta['message_status'] = ALERT_SUCCESS
@@ -1304,6 +1345,147 @@ class Card(TimeStampedModel):
         return None, msgs.msgs
 
     @staticmethod
+    def update_from_dict(card_obj,
+                         card_dict=None,
+                         authors=[],
+                         distributor=None,
+                         publishers=[]):
+        """
+        - card_obj: Card object.
+        - card_dict: dict of fields.
+        - other params: objects.
+
+        Return: the new object, saved.
+        """
+        assert isinstance(card_obj, models.base.Model)
+        assert isinstance(card_dict, dict)
+        # Update fields, except isbn (as with "else" below)
+        if authors:
+            # assert isinstance(authors[0], models.base.Model)
+            if not isinstance(authors[0], models.base.Model):
+                log.warning(u"Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
+            else:
+                card_obj.authors = authors
+
+        if distributor:
+            if isinstance(distributor, models.base.Model):
+                card_obj.distributor = distributor
+            else:
+                log.warning(u"Card.update_from_dict: distributor should be an object.")
+
+        if publishers:
+            if isinstance(publishers[0], models.base.Model):
+                card_obj.publishers = publishers
+            else:
+                log.warning(u"Card.update_from_dict: publishers should be a list of objects.")
+
+        if card_dict.get('threshold') is not None:
+            card_obj.threshold = card_dict.get('threshold')
+
+        for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
+                      'details_url', 'currency']:
+            if card_dict.get(field) not in [None, '', u'']:
+                setattr(card_obj, field, card_dict.get(field))
+
+        if card_dict.get('isbn'):
+            card_obj.isbn = card_dict.get('isbn')
+
+        card_obj.save()
+        return card_obj
+
+    @staticmethod
+    def get_or_create_from_dict(card_dict,
+                                authors=[],
+                                publishers=[],
+                                distributor=None):
+        assert isinstance(card_dict, dict)
+        # Create the card with its simple fields.
+        # Add the relationships afterwards.
+        # for field, val in card_dict.items():
+        #     if val in [None, '', u'']:
+        #         del card_dict[field]
+
+        # We should do more data validation before this.
+        # For instance, date_publication cannot be ''.
+        # card_obj, created = Card.objects.get_or_create(
+        #     **card_dict
+        # )
+
+        card_obj, created = Card.objects.get_or_create(
+            title=card_dict.get('title'),
+            price = card_dict.get('price', 0),
+            currency = card_dict.get('currency'),
+            isbn = card_dict.get('isbn'),
+            fmt = card_dict.get('fmt'),
+            has_isbn = card_dict.get('has_isbn'),
+            cover = card_dict.get('img', ""),
+            details_url = card_dict.get('details_url'),
+            date_publication = card_dict.get('date_publication') if card_dict.get('date_publication') else None,
+            data_source = card_dict.get('data_source'),
+            summary = card_dict.get('summary'),
+            threshold = card_dict.get('threshold', THRESHOLD_DEFAULT))
+
+        # We can also update every field for the existing card.
+
+        # Set the authors
+        if authors:  # XXX: more tests !
+            card_obj.authors = authors
+
+        # add the distributor
+        if distributor:
+            card_obj.distributor = distributor
+
+        # add many publishers
+        if publishers:
+            card_obj.publishers = publishers
+
+        # add the collection
+        collection = card_dict.get("collection")
+        if collection:
+            collection = collection.lower()
+            try:
+                collection_obj, created = Collection.objects.get_or_create(name=collection)
+                card_obj.collection = collection_obj
+            except Exception as e:
+                log.error(u"--- error while adding the collection: %s" % (e,))
+
+        # add the shelf
+        shelf = card_dict.get('shelf')
+        shelf_id = card_dict.get('shelf_id')
+        if shelf and isinstance(shelf, models.base.Model):
+            card_obj.shelf = shelf
+        elif shelf_id and shelf_id != "0":
+            try:
+                cat_obj = Shelf.objects.get(id=shelf_id)
+                card_obj.shelf = cat_obj
+            except Exception as e:
+                log.error(u"error adding shelf {}: {}".format(shelf_id, e))
+
+        # add the type of the card
+        typ = "unknown"
+        if card_dict.get("card_type"):
+            typ = card_dict.get("card_type")
+
+        type_obj = CardType.objects.filter(name=typ).first()
+        if type_obj:
+            card_obj.card_type = type_obj
+
+        # add the publishers
+        pubs = card_dict.get("publishers")
+        if pubs:
+            try:
+                for pub in pubs:
+                    if isinstance(pub, str) or isinstance(pub, unicode):
+                        pub = pub.lower()
+                        pub_obj, created = Publisher.objects.get_or_create(name=pub)
+                        card_obj.publishers.add(pub_obj)
+
+            except Exception, e:
+                log.error(u"--- error while adding the publisher: {}".format(e))
+
+        return card_obj
+
+    @staticmethod
     def from_dict(card, to_list=False):
         """Add or edit a card from a dict.
 
@@ -1315,11 +1497,14 @@ class Card(TimeStampedModel):
             year:       int or None
             authors:    list of authors names (list of str) or list of Author objects.
             shelf:   id (int)
-            distributor: id of a Distributor
-            publishers: list of names of publishers (create one on the fly, like with webscraping)
+            distributor: object or new name of a Distributor (deprecated: has accepted an id)
+            distributor_id: id of a Distributor
+            publishers: list of names of publishers (create one on the fly, like with webscraping), or list of objects
             publishers_ids: list of ids of publishers
             has_isbn:   boolean
             isbn:       str
+            price:     int
+            currency:  str (euro, chf)
             details_url: url (string)
             date_publication: string. Human readable date, coming from the scraped source. Gets parsed to a Date.
             card_type:  name of the type (string)
@@ -1329,12 +1514,8 @@ class Card(TimeStampedModel):
                         the cover
             shelf_id:   id (int) of the shelf.
             threshold: int
-            origkey:    (optional) original key, like an ISBN, or if
-                        converting from another system
 
-
-        return: a tuple Card objec created or existing, message (str).
-
+        return: a tuple Card object created or existing, message (str).
         """
         if not isinstance(card, dict):
             raise TypeError("Card.from_dict expects a dict, and got a {}.".
@@ -1344,45 +1525,71 @@ class Card(TimeStampedModel):
         msg_success = _("Card saved.")  # both for creation and edit: simple message.
         # msg_exists = _("This card already exists.")
 
-        # Unknown years is okay
-        year = card.get('year', None)
+        # Unknown year is okay
         try:
-            int(year)
-            year = date(year, 1, 1)
+            year = int(card.get('year'))
+            card['year'] = date(year, 1, 1)
         except Exception:
-            year = None
+            card['year'] = None
 
         # Make the card
         # Get authors or create
-        card_authors = []
+        card_authors = card.get('authors', [])
         if card.get('authors'):
-            auts = card.get('authors')
+            auts = card_authors
             if not isinstance(auts, list):
                 auts = [auts]
-            if type(auts[0]) in [type("string"), type(u"unicode-str")]:
+            if isinstance(auts[0], str) or isinstance(auts[0], unicode):
+                new_authors = []  # appending to card_authors used in the loop: infinite recursion!
                 for aut in auts:
                     author, created = Author.objects.get_or_create(name=aut)
-                    card_authors.append(author)
-            else:
-                # We already have objects.
-                card_authors = card["authors"]
+                    new_authors.append(author)
+                card_authors = new_authors
 
         # Get and clean the ean/isbn (beware of form data)
         isbn = card.get("isbn", card.get("ean", ""))
         if isbn:
             isbn = isbn_cleanup(isbn)
+            card['isbn'] = isbn
 
         # Get the distributor:
-        card_distributor = None
-        if card.get("distributor"):
+        # it's either already an object
+        card_distributor = card.get('distributor')
+        # or an id.
+        if card.get('distributor_id'):
+            res = Distributor.objects.filter(pk=card.get('distributor_id'))
+            if res:
+                card_distributor = res.first()
+
+        # or a new name.
+        if card_distributor and isinstance(card_distributor, str)\
+           or isinstance(card_distributor, int):
+
+            if isinstance(card_distributor, int):
+                # Kept the inner if logic to check old cases.
+                # Hopefully we don't encounter those now.
+                log.warning(_("card from_dict: we found a distributor argument with type int: this shouldn't happen, the id should be given in distributor_id. distributor gets an object or a name (str)."))
+
             try:
-                card_distributor = Distributor.objects.get(id=card.get("distributor"))
+                # OK: card: edit -> card_create
+                card_distributor, noop = Distributor.objects.get_or_create(name=card.get("distributor"))
             except Exception as e:
                 # XXX use distributor_id and distributor
+                # Fix in JS and view. But where ? :S
+                # Was (at least) in cardCreateController, only used for edit now.
+                # Should be OK...
                 try:
-                    card_distributor = Distributor.objects.get(name=card.get("distributor"))
+                    it = card.get('distributor')
+                    it_id = 1
+                    if isinstance(it, str):
+                        it_id = it
+                    elif isinstance(it, dict):
+                        it_id = it.get('id')
+                    else:
+                        log.warning(u"We couldn't handle the distributor of this form inside this card: {}.".format(card))
+                    card_distributor = Distributor.objects.get(id=it_id)
                 except Exception as e:
-                    log.warning(u"couldn't get distributor {}. This is not necessarily a bug.".format(card.get('distributor')))
+                    log.warning(u"couldn't get distributor of {}. This is not necessarily a bug.".format(card.get('distributor')))
 
         # Get the shelf
         card_shelf = None
@@ -1400,27 +1607,41 @@ class Card(TimeStampedModel):
                          format(card.get('shelf_id')))
 
         # Get the publishers:
-        card_publishers = []
-        if card.get("publishers_ids"):
-            card_publishers = [Publisher.objects.get(id=it) for it in card.get("publishers_ids")]
+        card_publishers = card.pop('publishers', [])
+        if card_publishers and isinstance(card_publishers[0], models.base.Model):
+            pass
+
+        elif card_publishers and (isinstance(card_publishers[0], str) or
+                                  isinstance(card_publishers[0], unicode)):
+            pubs = []
+            for name in card_publishers:
+                pub = Publisher.objects.filter(name__iexact=name)
+                if pub:
+                    pubs.append(pub.first())
+                else:
+                    pub = Publisher.objects.create(name=name)
+                    pubs.append(pub)
+            card_publishers = pubs
+
+        elif card.get('publishers_ids'):
+            card_publishers = [Publisher.objects.get(id=it) for it in card.get('publishers_ids')]  # noqa: F812 ignore "it" redefinition.
 
         # Get the publication date (from a human readable string)
         date_publication = None
         if card.get('date_publication') and not is_invalid(card.get('date_publication')):
-            if isinstance(card.get('date_publication'), str):
+            if isinstance(card.get('date_publication'), str) \
+               or isinstance(card.get('date_publication'), unicode):
                 try:
                     date_publication = dateparser.parse(card.get('date_publication'))  # also languages=['fr']
+                    card['date_publication'] = date_publication
                 except Exception as e:
                     log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
-            elif isinstance(card.get('date_publication'), datetime.date):
-                # For example, coming from Dilicom, we parsed the date, because we know its format.
-                date_publication = card.get('date_publication')
+                    card['date_publication'] = None
 
         # Check if the card already exists (it may not have an isbn).
         if card.get('id'):
             try:
                 exists_list = Card.objects.get(id=card.get('id'))
-                created = False
             except ObjectDoesNotExist:
                 log.error(u"Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
                 msgs.add_error("Could not find card of id {}".format(card.get('id')))
@@ -1429,108 +1650,32 @@ class Card(TimeStampedModel):
         else:
             exists_list, _msgs = Card.exists(card)
             msgs.append(_msgs)
-            created = False
 
+        default_currency = Preferences.get_default_currency()
+        card['currency'] = default_currency
+
+        #######################################################
+        # Update existing card.
+        #######################################################
         if exists_list:
-            card_obj = exists_list
-            # Update fields, except isbn (as with "else" below)
-            if card_distributor:
-                card_obj.distributor = card_distributor
-
-            if card_publishers:
-                card_obj.publishers = card_publishers
-
-            if card.get('threshold') is not None:
-                card_obj.threshold = card.get('threshold')
-
-            for field in ['title', 'price', 'year_published', 'has_isbn', 'details_url']:
-                if card.get(field) not in [None, '', u'']:
-                    setattr(card_obj, field, card.get(field))
-
-            card_obj.isbn = isbn
-            card_obj.save()
-
-        else:
-            # Create the card with its simple fields.
-            # Add the relationships afterwards.
-            card_obj, created = Card.objects.get_or_create(
-                title=card.get('title'),
-                year_published=year,
-                price = card.get('price', 0),
-                price_sold = card.get('price_sold', 0),
-                isbn = isbn,
-                fmt = card.get('fmt'),
-                has_isbn = card.get('has_isbn'),
-                cover = card.get('img', ""),
-                details_url = card.get('details_url'),
-                date_publication = date_publication,
-                data_source = card.get('data_source'),
-                summary = card.get('summary'),
-                threshold = card.get('threshold', THRESHOLD_DEFAULT),
+            card_obj = Card.update_from_dict(
+                exists_list,
+                card_dict=card,
+                authors=card_authors,
+                distributor=card_distributor,
+                publishers=card_publishers,
             )
 
-            #TODO: we can also update every field for the existing card.
-
-            # add the authors
-            if card_authors:  # TODO: more tests !
-                card_obj.authors.add(*card_authors)
-                card_obj.save()
-
-            # add the distributor
-            if card_distributor:
-                card_obj.distributor = card_distributor
-                card_obj.save()
-
-            # add many publishers
-            if card_publishers:
-                card_obj.publishers.add(*card_publishers)
-
-            # add the collection
-            collection = card.get("collection")
-            if collection:
-                collection = collection.lower()
-                try:
-                    collection_obj, created = Collection.objects.get_or_create(name=collection)
-                    card_obj.collection = collection_obj
-                    card_obj.save()
-                except Exception as e:
-                    log.error(u"--- error while adding the collection: %s" % (e,))
-
-            # add the shelf
-            shelf_id = card.get('shelf_id')
-            if shelf_id and shelf_id != "0":
-                try:
-                    cat_obj = Shelf.objects.get(id=shelf_id)
-                    card_obj.shelf = cat_obj
-                    card_obj.save()
-                except Exception as e:
-                    log.error(u"error adding shelf {}: {}".format(shelf_id, e))
-
-            # add the type of the card
-            typ = "unknown"
-            if card.get("card_type"):
-                typ = card.get("card_type")
-
-            try:
-                type_obj = CardType.objects.get(name=typ)
-            except Exception as e:
-                type_obj = CardType.objects.filter(name="unknown")[0]
-
-            card_obj.card_type = type_obj
-            card_obj.save()
-
-            # add the publishers
-            pubs = card.get("publishers")
-            if pubs:
-                try:
-                    for pub in pubs:
-                        pub = pub.lower()
-                        pub_obj, created = Publisher.objects.get_or_create(name=pub)
-                        card_obj.publishers.add(pub_obj)
-
-                    card_obj.save()
-                except Exception, e:
-                    log.error(u"--- error while adding the publisher: %s" % (e,))
+        ######################################################
+        # Create new card.
+        ######################################################
+        else:
+            card_obj = Card.get_or_create_from_dict(
+                card_dict=card,
+                authors=card_authors,
+                distributor=card_distributor,
+                publishers=card_publishers,
+            )
 
         # Update fields of new or existing card.
         # add the quantity of exemplaries: in "move" view.
@@ -1548,7 +1693,6 @@ class Card(TimeStampedModel):
         if card_shelf:
             try:
                 card_obj.shelf = card_shelf
-                card_obj.save()
             except Exception as e:
                 log.error(e)
 
@@ -1558,13 +1702,13 @@ class Card(TimeStampedModel):
             in_stock = card.get('in_stock')
         try:
             card_obj.in_stock = in_stock
-            card_obj.save()
         except Exception as e:
             log.error(u'Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
 
         if card.get('price') is not None:
             card_obj.price = float(card.get('price'))
-            card_obj.save()
+
+        card_obj.save()
 
         card = card_obj
         if to_list:
@@ -1758,6 +1902,7 @@ class Place (models.Model):
             # Delete the intermediate object when nb is 0, so a search
             # filter by this place doesn't erronously return (see card.search: we
             # filter by the place id present in placecopies).
+            # That broke placecopies_set.get => used .filter() and first().
             if dest_copies.nb == 0:
                 dest_copies.delete()
 
@@ -1779,7 +1924,14 @@ class Place (models.Model):
         # to remove many cards in a single transaction, use
         # with atomic.transaction
         if quantity >= 0:
-            pc = self.placecopies_set.get(card__id=card.id)
+            pc = self.placecopies_set.filter(card__id=card.id)
+            # Place.move deletes the placecopies object when
+            # quantity = 0, for accurate search purposes.
+            if pc:
+                pc = pc.first()
+            else:
+                pc = self.placecopies_set.create(card=card, place=self)
+
             pc.nb -= quantity
             pc.save()
             card.quantity = card.quantity_compute()  # update denormalized fields (like the quantity).
@@ -1918,6 +2070,7 @@ class Place (models.Model):
             place_copies = self.placecopies_set.filter(card__id=card.id)
             if len(place_copies) > 1:
                 log.error(u"more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
+                return -1
             if place_copies:
                 return place_copies[0].nb
             else:
@@ -1964,12 +2117,54 @@ class Preferences(models.Model):
     #: the default language: en, fr, es, de.
     #: Useful for non-rest views that must set the language on the url or for UI messages.
     language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("language"))
+    #: All other, newer preferences. They don't need to be stored in DB. Here: JSON, as text.
+    #: - default_currency
+    #: - sell_discounts
+    others = models.TextField(null=True, blank=True)
+
+    default_currency = u"€"  # just a cached variable.
+
+    default_discounts = [0, 5, 9, 20, 30]
+    default_discounts_with_labels = []
+    for i, it in enumerate(default_discounts):
+        default_discounts_with_labels.append({'name': '{}%'.format(it),
+                                              'discount': it,
+                                              'id': i})
 
     class Meta:
         verbose_name = __("Preferences")
 
     def __unicode__(self):
         return u"default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
+
+    def to_dict(self):
+        res = {}
+        res['asso_name'] = self.asso_name
+        res['default_place'] = self.default_place.name
+        res['default_place_id'] = self.default_place.id
+
+        others = self.others
+        if others:
+            others = json.loads(others)
+            res['default_currency'] = others['default_currency']
+            sell_discounts = others['sell_discounts']
+            sell_discounts_with_labels = [{'discount': 0,
+                                           'name': '0%',
+                                           'id': 0}]
+            for i, it in enumerate(sell_discounts, start=1):
+                sell_discounts_with_labels.append({'discount': it,
+                                                   'name': '{}%'.format(it),
+                                                   'id': i})
+            if sell_discounts:
+                res['sell_discounts'] = sell_discounts
+                res['sell_discounts_with_labels'] = sell_discounts_with_labels
+
+        else:
+            res['default_currency'] = '€'
+            res['sell_discounts'] = self.default_discounts
+            res['sell_discounts_with_labels'] = self.default_discounts_with_labels
+
+        return res
 
     @staticmethod
     def prefs():
@@ -2028,7 +2223,7 @@ class Preferences(models.Model):
         """
         if Preferences.objects.count():
             return Preferences.objects.first().default_place
-        return None
+        return Place.objects.first()
 
     @staticmethod
     def get_vat_book():
@@ -2040,6 +2235,17 @@ class Preferences(models.Model):
             vat = None
 
         return vat
+
+    @staticmethod
+    def get_default_currency():
+        if Preferences.default_currency:
+            return Preferences.default_currency
+        try:
+            currency = json.loads(Preferences.prefs().others)
+            Preferences.default_currency = currency
+            return currency.get('default_currency', u'€').upper()
+        except Exception:
+            pass
 
     @staticmethod
     def price_excl_tax(price):
@@ -2272,14 +2478,20 @@ class Basket(models.Model):
         return {'level': ALERT_SUCCESS, 'message': _(u"The cards were successfully added to the basket '{}'".format(self.name))}
 
     def remove_copy(self, card_id):
-        """Remove the given card (id) from the basket.
+        """
+        Remove the given card (id) from the basket.
         """
         status = True
         msgs = Messages()
         try:
-            inter_table = self.basketcopies_set.filter(card__id=card_id).get()
-            inter_table.delete()
-            msgs.add_success(_(u"The card was successfully removed from the basket"))
+            inter_table = self.basketcopies_set.filter(card__id=card_id)
+            if inter_table:
+                inter_table = inter_table.first()
+                inter_table.delete()
+                msgs.add_success(_(u"The card was successfully removed from the basket"))
+            else:
+                log.warn(u"Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
+
         except ObjectDoesNotExist as e:
             log.error(u"Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
             status = False
@@ -2384,7 +2596,9 @@ class Basket(models.Model):
         The cards are removed from the stock. The movement is recorded in an OutMovement.
         The basket must have a publisher or a distributor.
 
-        Return: a tuple xxx, xxx.
+        The basket is archived.
+
+        Return: a tuple Out movement, Messages object.
         """
         # The logic goes in OutMovement.
         msgs = Messages()
@@ -2392,11 +2606,9 @@ class Basket(models.Model):
             return None, msgs.add_info(_("This basket has no distributor to "
                                           "return the cards to."))
 
-        # TODO: we should close the basket.
-        # or delete, since it is saved in the OutMovement.
         out = history.OutMovement.return_from_basket(self)
         msgs.add_success(_("Return to {} succesfully created.".format(self.distributor)))
-        # xxx: here, we return the msgs object, though earlier we return the
+        # Here, we return the msgs object, though earlier we return the
         # msgs.msgs list of messages. Inconsistent, but better…
         return out, msgs
 
@@ -3346,6 +3558,12 @@ class SoldCards(TimeStampedModel):
     def to_list(self):
         return self.to_dict()
 
+    def price_sold_fmt(self):
+        return price_fmt(self.price_sold, card_currency(self.card))
+
+    def price_init_fmt(self):
+        return price_fmt(self.price_init, card_currency(self.card))
+
     @staticmethod
     def undo(pk):
         """
@@ -3358,8 +3576,9 @@ class SoldCards(TimeStampedModel):
         status = True
         try:
             soldcard = SoldCards.objects.get(id=pk)
-        except Exception as e:
-            log.error(u'Error while trying to undo soldcard n° {}: {}'.format(pk, e))
+        except ObjectDoesNotExist as e:
+            msgs.add_error(u'Error while trying to get soldcard n° {}: {}'.format(pk, e))
+            log.error(msgs.msgs)
             return False, msgs.msgs
 
         try:
@@ -3431,6 +3650,11 @@ class Sell(models.Model):
         for card in self.soldcards_set.all():
             total += card.price_sold * card.quantity
         return total
+
+    @property
+    def total_price_sold_fmt(self):
+        total = self.total_price_sold
+        return price_fmt(total, Preferences.get_default_currency())
 
     @property
     def total_price_init(self):
@@ -3563,17 +3787,22 @@ class Sell(models.Model):
         if to_list:
             sells = [it.to_list() for it in sells]
 
+        default_currency = Preferences.get_default_currency()
         return {"data": sells,
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "total_sells": total_sells,  # total
+                "total_sells_fmt": price_fmt(total_sells, default_currency),  # total
                 "total_price_sold": total_price_sold,
+                "total_price_sold_fmt": price_fmt(total_price_sold, default_currency),
                 "sell_mean": sell_mean,
+                "sell_mean_fmt": price_fmt(sell_mean, default_currency),
                 }
 
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
         json-ified."""
+        default_currency = Preferences.get_default_currency()
         cards_sold = [it.to_dict() for it in self.soldcards_set.all()]
         total_copies_sold = sum([it['quantity'] for it in cards_sold])
         ret = {
@@ -3585,7 +3814,9 @@ class Sell(models.Model):
             "total_copies_sold": total_copies_sold,
             # "payment": self.payment,
             "total_price_init": self.total_price_init,
+            "total_price_init_fmt": price_fmt(self.total_price_init, default_currency),
             "total_price_sold": self.total_price_sold,
+            "total_price_sold_fmt": price_fmt(self.total_price_sold, default_currency),
             "details_url": "/admin/search/{}/{}".format(self.__class__.__name__.lower(), self.id),
             "model": self.__class__.__name__,
         }
@@ -3597,7 +3828,9 @@ class Sell(models.Model):
         assert year
         assert month
         assert isinstance(month, int)
+
         sells = SoldCards.objects.exclude(sell__canceled=True)
+
         sells = sells.filter(created__year=year).filter(created__month=month)
         if publisher_id is not None:
             sells = sells.filter(card__publishers__id=publisher_id)
@@ -3611,10 +3844,11 @@ class Sell(models.Model):
         assert year
         assert month
         assert isinstance(month, int)
+        default_currency = Preferences.get_default_currency()
         sells = SoldCards.objects.exclude(sell__canceled=True)
         sells = sells.filter(created__year=year).filter(created__month=month)
         sells.order_by("created")
-        nb_sells = sells.count()
+        nb_sells = sells.values('sell_id').distinct().count()
         now = timezone.now()
         last_day = 31
         if now.month == month:
@@ -3648,10 +3882,95 @@ class Sell(models.Model):
         if total_cards_sold:
             sell_mean = total_price_sold / total_cards_sold
         return {'total_price_sold': total_price_sold,
+                'total_price_sold_fmt': price_fmt(total_price_sold, default_currency),
                 'total_cards_sold': total_cards_sold,
                 'sell_mean': sell_mean,
+                'sell_mean_fmt': price_fmt(sell_mean, default_currency),
                 'nb_sells': nb_sells,
                 'data': sells_per_day}
+
+    @staticmethod
+    def history_suppliers(year=None, month=None):
+        """
+        Information on what to pay to distributors and publishers.
+
+        This does NOT return the full list of sells for publishers, since we don't want
+        one book to appear both on the distributors and publishers side.
+
+        Return: a dict with keys
+        - publishers_data
+        - distributors_data
+        """
+        assert year
+        assert month
+        default_currency = Preferences.get_default_currency()
+        sells = Sell.sells_of_month(month=month, year=year)
+        # Consider sells of distributors.
+        sells_with_distributor = sells.filter(card__distributor__isnull=False)
+        # and then the *remaining* sells for publishers.
+        sells_with_publishers = sells.exclude(card__distributor__isnull=False)\
+                                     .filter(card__publishers__isnull=False)
+        # without any pub or dist:
+        # sells_without_supplier = sells.exclude(card__publishers__isnull=False)\
+        #                              .exclude(card__distributor__isnull=False)
+
+        current_distributors = []
+        if sells_with_distributor:
+            current_distributors = sells_with_distributor.values_list('card__distributor__name', 'card__distributor__id').distinct()  # distinct has no effect?!
+            current_distributors = list(set(current_distributors))
+        current_publishers = []
+        if sells_with_publishers:
+            current_publishers = sells_with_publishers.values_list('card__publishers__name', 'card__publishers__id').distinct()
+            current_publishers = list(set(current_publishers))
+
+        # distinct('card__distributor__id')  # not supported on SQLite.
+
+        publishers_data = []
+        for name, pk in current_publishers:
+            data = {}
+            data['publisher'] = (name, pk)
+            pub_sells = sells_with_publishers.filter(card__publishers__id=pk)
+            data['sells'] = pub_sells
+            cards_sold = pub_sells.values_list('quantity', flat=True)
+            nb_cards_sold = sum(cards_sold)
+            data['nb_cards_sold'] = nb_cards_sold
+            prices_sold = pub_sells.values_list('price_sold', flat=True)
+            public_prices = pub_sells.values_list('price_init', flat=True)
+            assert len(cards_sold) == len(prices_sold)
+            total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+            data['total'] = total
+            data['total_fmt'] = price_fmt(total, default_currency)
+            total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+            data['total_public_price'] = total_public_price
+            data['total_public_price_fmt'] = price_fmt(total_public_price, default_currency)
+            publishers_data.append(data)
+
+        publishers_data = sorted(publishers_data, key=lambda it: it['publisher'][0])  # sort by name
+
+        distributors_data = []
+        for name, pk in current_distributors:
+            data = {}
+            data['distributor'] = (name, pk)
+            pub_sells = sells_with_distributor.filter(card__distributor__id=pk)
+            data['sells'] = pub_sells
+            cards_sold = pub_sells.values_list('quantity', flat=True)
+            nb_cards_sold = sum(cards_sold)
+            data['nb_cards_sold'] = nb_cards_sold
+            prices_sold = pub_sells.values_list('price_sold', flat=True)
+            public_prices = pub_sells.values_list('price_init', flat=True)
+            assert len(cards_sold) == len(prices_sold) == len(public_prices)
+            total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
+            data['total'] = total
+            data['total_fmt'] = price_fmt(total, default_currency)
+            total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+            data['total_public_price'] = total_public_price
+            data['total_public_price_fmt'] = price_fmt(total_public_price, default_currency)
+            distributors_data.append(data)
+
+        distributors_data = sorted(distributors_data, key=lambda it: it['distributor'][0])  # sort by name
+
+        return {'distributors_data': distributors_data,
+                'publishers_data': publishers_data, }
 
     @staticmethod
     def sell_card(card, nb=1, **kwargs):
@@ -3831,7 +4150,7 @@ class Sell(models.Model):
             log.error(u"Error while trying to undo sell id {}: {}".format(sell_id, e))
             msgs.add_error(_(u"Error while undoing sell {}".format(sell_id)))
 
-        return status, msgs.msgs
+        return status, msgs
 
     def undo(self):
         """Undo:
@@ -4075,6 +4394,7 @@ class InventoryBase(TimeStampedModel):
             ret["nb_cards"] = self.nb_cards()
             ret["nb_copies"] = self.nb_copies()
             ret["value"] = self.value()
+            ret["value_fmt"] = price_fmt(self.value(), Preferences.get_default_currency())
 
         return ret
 
@@ -4086,6 +4406,7 @@ class InventoryBase(TimeStampedModel):
         - total value of the inventory
         - total value with discount
         """
+        default_currency = Preferences.get_default_currency()
         all_copies = self.copies_set.order_by("card__title").all()
         nb_cards = all_copies.count()
         nb_copies = self.nb_copies()
@@ -4108,6 +4429,7 @@ class InventoryBase(TimeStampedModel):
         meta = {
             'nb_results': nb_cards,
             'num_pages': paginator.num_pages,
+            'currency': default_currency,
         }
         inv_name = ""
         shelf_dict, place_dict, basket_dict, pub_dict = ({}, {}, {}, {})
@@ -4133,6 +4455,7 @@ class InventoryBase(TimeStampedModel):
             "nb_cards": nb_cards,
             "nb_copies": nb_copies,
             "total_value": total_value,
+            "total_value_fmt": price_fmt(total_value, default_currency),
             "shelf": shelf_dict,
             "place": place_dict,
             "basket": basket_dict,
@@ -4558,6 +4881,7 @@ class Stats(object):
         return: a dict by default, a json if to_json is set to True.
 
         """
+        default_currency = Preferences.get_default_currency()
         places = Place.objects.all()
         # default_place = Preferences.get_default_place()
         # XXX: Everything below needs unit tests.
@@ -4610,17 +4934,24 @@ class Stats(object):
 
         # Cost
         res['deposits_cost'] = {'label': _(u"Total cost of the books in deposits"),
-                                'value': deposits_cost}
+                                'value': deposits_cost,
+                                'value_fmt': price_fmt(deposits_cost, default_currency),
+        }
+
         try:
             total_cost = sum([it.cost() for it in places])
             res['total_cost'] = {'label': _(u"Total cost of the stock"),
                                  # Round the float... or just {:.2f}.format.
-                                 'value': roundfloat(total_cost)}
+                                 'value': roundfloat(total_cost),
+                                 'value_fmt': price_fmt(roundfloat(total_cost), default_currency),
+            }
             # The same, excluding vat.
             # xxx: all Cards will not be books.
             total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
             res['total_cost_excl_tax'] = {'label': _(u"Total cost of the stock, excl. tax"),
-                                          'value': total_cost_excl_tax}
+                                          'value': total_cost_excl_tax,
+                                          'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
+            }
 
         except Exception as e:
             log.error(u"Error with total_cost: {}".format(e))
@@ -4651,6 +4982,7 @@ class Stats(object):
             "mean": mean of sells (float),
             }
         """
+        default_currency = Preferences.get_default_currency()
         # Get the sells since the beginning of the given month
         start_time = timezone.now()
         if year is None:
@@ -4665,7 +4997,7 @@ class Stats(object):
         soldcards = SoldCards.objects.exclude(sell__canceled=True).filter(created__year=year).filter(created__month=month)
         price_qties = soldcards.values_list('price_sold', 'quantity')
         revenue = sum([it[0] * it[1] for it in price_qties])
-
+        revenue = roundfloat(revenue) if revenue else 0
         # Count the total revenue
         nb_sells = soldcards.values('sell_id').distinct().count()
         nb_cards_sold = sum(soldcards.values_list('quantity', flat=True))
@@ -4674,12 +5006,15 @@ class Stats(object):
         sell_mean = None
         if nb_sells:
             sell_mean = revenue / nb_sells
+            sell_mean = roundfloat(sell_mean)
 
         to_ret = {
-            "revenue": roundfloat(revenue) if revenue else 0,
+            "revenue": revenue,
+            "revenue_fmt": price_fmt(revenue, default_currency),
             "nb_sells": nb_sells,
             "nb_cards_sold": nb_cards_sold,
-            "mean": roundfloat(sell_mean),
+            "mean": sell_mean,
+            "mean_fmt": price_fmt(sell_mean, default_currency),
             # nb of sells
         }
 

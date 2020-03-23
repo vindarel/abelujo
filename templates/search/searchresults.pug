@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           button.btn.btn-primary#submit-button(ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}") {% trans "Search" %}
       div.col-md-4
         span  {% trans "or" %}: 
-            a(href="{% url 'admin:search_card_add' %}") {% trans "Add a card manually" %}
+            a(href="{% url 'card_create_manually' %}") {% trans "Add a card manually" %}
 
  .row(ng-show="cards.length != 0")
     .col-md-10
@@ -133,15 +133,13 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                 ng-show="show_images") {{ 'card.availability' | ng }}
 
         td
-          div(ng-repeat="author in card.authors")
-            div {{ 'author' |ng}}
+          div {{ 'card.authors_repr' | ng }}
         td
-          div(ng-repeat="pub in card.publishers")
-            div {{ 'pub' | ng }}
-        td: div {{ 'card.price | currency'|ng }}&nbsp;
+          div{{ 'card.pubs_repr' | ng }}
+        td: div {{ 'card.price_fmt'|ng }}&nbsp;
         td
           div.row
-            button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}') {% trans "Add…" %}
+            button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}', target="_blank") {% trans "Add…" %}
           //div.row
             button.btn(ng-click="create_and_command_client(card)", title='{% trans "Command for a client" %}') {% trans "Command…" %}
 

@@ -40,7 +40,7 @@ h1
 .row
   .col-md-3.panel.panel-info
     div.panel-heading {% trans "Total" %}
-    div.panel-body {{ total }} {% trans "€" %} / {{ total_public_price }} {% trans "€" %}
+    div.panel-body {{ total_fmt }} / {{ total_public_price_fmt }}
 
 .col-md-9
  if sells
@@ -55,8 +55,8 @@ h1
         td
           a(href="{{ it.card.get_absolute_url }}"){{ it.card.title | title }}
         td {{ it.card.authors_repr }}
-        td.text-right {{ it.price_sold }} {% trans "€" %}
-        td.text-right {{ it.price_init }} {% trans "€" %}
+        td.text-right {{ it.price_sold_fmt }}
+        td.text-right {{ it.price_init_fmt }}
         td.text-right
           if it.quantity > 1
             span x {{ it.quantity }}

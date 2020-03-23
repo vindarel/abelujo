@@ -1,4 +1,4 @@
-// Copyright 2014 - 2019 The Abelujo Developers
+// Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
 // Abelujo is free software: you can redistribute it and/or modify
@@ -42,10 +42,10 @@ div(ng-controller="dashboardController", ng-cloak="stats")
             td: h4{{'stats.nb_products.value'|ng}}
           tr
             td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %}
-            td: h4 {{'stats.total_cost.value | currency'|ng }}
+            td: h4 {{'stats.total_cost.value_fmt'|ng }}
           tr
             td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %} {% trans "excl. tax" %}
-            td: h4 {{'stats.total_cost_excl_tax.value | currency'|ng }}
+            td: h4 {{'stats.total_cost_excl_tax.value_fmt'|ng }}
 
     .row.panel.panel-info
       h3.panel.panel-heading {% trans "Next deposits to pay" %}
@@ -75,7 +75,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
 
   .col-lg-6
     .row.panel.panel-info
-      h3.panel.panel-heading {% trans "Revenue, monthly" %}: {{'sells_month.revenue | currency'|ng}}
+      h3.panel.panel-heading {% trans "Revenue, monthly" %}: {{'sells_month.revenue_fmt'|ng}}
       div.panel.panel-body
 
         .col-md-4
@@ -99,7 +99,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
 
 
         .col-md-5
-          div {% trans "mean" %}: {{'sells_month.mean | currency'|ng}}
+          div {% trans "mean" %}: {{'sells_month.mean_fmt'|ng}}
 
 
 
