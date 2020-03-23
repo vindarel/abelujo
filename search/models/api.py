@@ -328,7 +328,9 @@ def card_create(request, **response_kwargs):
         shelf = params.get('shelf_id')
         threshold = to_int(params.get('threshold'))
         # Mixed style from client (to fix).
-        if params:
+        if params and params.get('card_id'):
+            # march 2020: cardCreateController was replaced by a Django form.
+            # this branch ready for deletion.
             card_dict = {
                 "id": params.get('card_id'),  # create... or edit.
                 "title": params.get('title'),
@@ -353,11 +355,14 @@ def card_create(request, **response_kwargs):
 
         # we got the card dict
         else:
-            params = json.loads(request.body)
-            card_dict = params.get('card')
-            card_dict['has_isbn'] = True if card_dict.get('isbn') else False
-
-        #TODO: call postSearch
+            try:
+                params = json.loads(request.body)
+                card_dict = params.get('card')
+                card_dict['has_isbn'] = True if card_dict.get('isbn') else False
+            except Exception as e:
+                log.error(u'card_create/edit: could not request body as json. Ensure the client does not encode paramaters as url parameters (as before). {}'.format(e))
+                card_dict = {}
+                raise e
 
         try:
             card_obj, msg = Card.from_dict(card_dict)

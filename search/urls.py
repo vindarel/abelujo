@@ -63,15 +63,13 @@ urlpatterns += [
     # url(r'^stock/card/edit/', login_required(TemplateView.as_view(template_name="search/card_edit.jade")),
 
     url(r'^stock/card/create/(?P<pk>\d+)',
-        login_required(TemplateView.as_view(template_name="search/card_add.jade")),
+        login_required(TemplateView.as_view(template_name="search/card_add.pug")),
         name="card_create"),
     url(r'^stock/card/create/?', views.card_create_manually, name='card_create_manually'),
     # Add exemplaries to Places, from the Card view.
     url(r'^stock/card/add/(?P<pk>\d+)', views.card_places_add,
         name="card_places_add"),
-    url(r'^stock/card/edit/(?P<pk>\d+)?',
-        login_required(TemplateView.as_view(template_name="search/card_edit.jade")),
-        name="card_edit"),
+    url(r'^stock/card/edit/(?P<pk>\d+)?', views.card_edit, name="card_edit"),
     url(r'^stock/card/(?P<pk>\d+)/move', views.card_move,
         name="card_move"),
     url(r'^stock/card/(?P<pk>\d+)/history', views.card_history,

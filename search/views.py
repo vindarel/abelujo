@@ -330,6 +330,32 @@ def card_show(request, pk):
         "page_title": u"Abelujo - " + card.title[:50],
     })
 
+@login_required
+def card_edit(request, pk, *args, **kwargs):
+    template = 'search/card_edit.pug'
+    card_form = viewforms.CardCreateForm()
+    if request.method == 'GET':
+        qs = Card.objects.filter(pk=pk)
+        if qs:
+            card = qs.first()
+            # card_form = viewforms.CardCreateForm(instance=card)
+            card_form = viewforms.CardForm(instance=card)
+            return render(request, template, {'form': card_form, 'pk': pk})
+
+    elif request.method == 'POST':
+        card_form = viewforms.CardCreateForm(request.POST)
+        if card_form.is_valid():
+            card_dict = card_form.cleaned_data
+            card, msgs = viewforms.CardCreateForm.create_card(card_dict)
+
+            if not card:
+                log.warning("create card manually: card not created? {}, {}"
+                            .format(card_dict, msgs))
+                messages.add_message(request, messages.SUCCESS, _(u'Warn: the card was not created.'))
+            return HttpResponseRedirect(reverse('search:card_show', args=(pk,)))
+
+    return render(request, template, {'form': card_form})
+
 def card_history(request, pk):
     """Show the card's sells, entries and commands history."""
     MAX = 100

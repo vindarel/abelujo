@@ -373,8 +373,15 @@ class CardCreateForm(forms.Form):
     """
 
     def __init__(self, *args, **kwargs):
+        instance = None
+        if kwargs.has_key('instance'):
+            instance = kwargs.pop('instance')
         super(self.__class__, self).__init__(*args, **kwargs)
-        card_form = CardForm()
+        if instance:
+            # XXX: the view doesn't see populated fields though.
+            card_form = CardForm(instance=instance)
+        else:
+            card_form = CardForm()
 
         # We know the fields' order, so we insert new ones based on
         # that order.
