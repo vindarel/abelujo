@@ -63,7 +63,7 @@ the virtualenv and update Abelujo.
    checks and prints the status of all clients.
 
 TODO: restart gunicorn when needed. It can be needed to load new
-templatetags, to load new translations,...
+templatetags, to load new translations, to load submodules python code...
 
 """
 CLIENTS = "clients.yaml"
