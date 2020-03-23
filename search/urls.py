@@ -65,7 +65,7 @@ urlpatterns += [
     url(r'^stock/card/create/(?P<pk>\d+)',
         login_required(TemplateView.as_view(template_name="search/card_add.jade")),
         name="card_create"),
-    url(r'^stock/card/create/?', 'search.views.card_create_manually', name='card_create_manually'),
+    url(r'^stock/card/create/?', views.card_create_manually, name='card_create_manually'),
     # Add exemplaries to Places, from the Card view.
     url(r'^stock/card/add/(?P<pk>\d+)', views.card_places_add,
         name="card_places_add"),

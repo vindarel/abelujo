@@ -22,14 +22,13 @@ from django.contrib import admin
 from django.contrib import auth
 
 from search.models import api
-# from search.urls import urlpatterns
+from search.models import api_users
 
 js_info_dict = {
     'packages': ('search', '',),
 }
 
 urlpatterns = i18n_patterns(url("^", include("search.urls", namespace=None)))
-# urlpatterns = []
 
 apipatterns = [
     # pylint: disable=bad-continuation
@@ -134,7 +133,7 @@ apipatterns = [
     # url(r'^api/clients/?', api.users.clients, name='api_clients'),
 
     # Bills
-    url(r'^api/bill/?', 'search.models.api_users.bill', name='api_bill'),
+    url(r'^api/bill/?', api_users.bill, name='api_bill'),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
