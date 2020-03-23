@@ -109,7 +109,7 @@ urlpatterns += [
 
     # Commands:
     url(r'^commands/ongoing/?',
-            login_required(TemplateView.as_view(template_name="search/commands_ongoing.jade"))),
+            login_required(TemplateView.as_view(template_name="search/commands_ongoing.pug"))),
     url(r'^commands/(?P<pk>\d+)/receive/terminate/export/?$', views.command_receive_export, name="commands_receive_export"),
     url(r'^commands/(?P<pk>\d+)/receive/terminate/?$', views.command_receive_terminate, name="commands_receive_terminate"),
     url(r'^commands/(?P<pk>\d+)/receive?$', views.command_receive, name="commands_receive"),
@@ -124,7 +124,7 @@ urlpatterns += [
     # Baskets:
     url(r'^baskets/(?P<pk>\d+)/export/$', views.basket_export, name="basket_export"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',
-        login_required(TemplateView.as_view(template_name="search/inventory_view.jade"))),
+        login_required(TemplateView.as_view(template_name="search/inventory_view.pug"))),
     url(r'^baskets/$', views.baskets,
         name="baskets"),
     # Endpoints for vue, to replace the previous ones.
@@ -145,7 +145,7 @@ urlpatterns += [
     url(r'^history/entries/day/(?P<date>.*)/?', views.history_entries_day, name="history_entries_day"),
 
     url(r'^history/?', views.history_sells, name="history_sells"),
-    # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.jade")),
+    # url(r'^history/', login_required(TemplateView.as_view(template_name="search/history.pug")),
     # name="search_history"),
 
     # Suppliers: sells of suppliers by month.
@@ -154,12 +154,12 @@ urlpatterns += [
     url(r'^distributors/(?P<pk>\d+)/sells/month/(?P<date>.*)/?', views.distributors_sells_month_list, name="distributors_sells_month_list"),
     url(r'^suppliers/?', views.suppliers_sells, name="suppliers_sells"),
 
-    url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
+    url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.pug")),
         name="search_alerts"),
 
     url(r'^inventories/$', views.inventories,
         name="inventories"),
-    url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.jade")),
+    url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.pug")),
         name="inventory_new"),
     url(r'^inventories/(?P<pk>\d+)/?$', views.inventory,
         name="inventory_view"),

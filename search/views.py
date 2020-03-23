@@ -236,7 +236,7 @@ def search(request):
 
 @login_required
 def card_create_manually(request):
-    template = 'search/card_create.jade'
+    template = 'search/card_create.pug'
     if request.method == 'GET':
         card_form = viewforms.CardCreateForm()
         add_places_form = viewforms.CardPlacesAddForm()
