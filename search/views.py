@@ -177,7 +177,7 @@ def preferences_bookshop(request):
     # If we POST to preferences/, the currency&discount form is submitted as well,
     # hence its data is null, but valid, and we don't want to erase it.
     # It's simple to use another url. We could use hidden form fields.
-    template = "search/preferences.jade"
+    template = "search/preferences.pug"
     if request.method == 'POST':
         form = viewforms.BookshopForm(request.POST)
         if form.is_valid():
@@ -203,7 +203,6 @@ def preferences_bookshop(request):
         'form': form,
         'bookshopform': bookshopform,
     })
->>>>>>> master
 
 def postSearch(data_source, details_url):
     """Call the postSearch function of the module imported with the name
