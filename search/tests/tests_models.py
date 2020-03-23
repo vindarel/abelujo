@@ -663,7 +663,7 @@ class TestDeposits(TransactionTestCase):
             "quantities": ['1', '1'],
             "deposit_type": "fix",
             "minimal_nb_copies": "1",
-            "auto_command": "",
+            "auto_command": False,
             "due_date": "undefined",
             "dest_place": "",
         }
@@ -684,7 +684,7 @@ class TestDeposits(TransactionTestCase):
             "quantities": ['1', '1'],
             "deposit_type": "fix",
             "minimal_nb_copies": "1",
-            "auto_command": "",
+            "auto_command": False,
             "due_date": "undefined",
             "dest_place": "",
         }
@@ -699,7 +699,7 @@ class TestDeposits(TransactionTestCase):
             "quantities": ['1', '1'],
             "deposit_type": "fix",
             "minimal_nb_copies": "1",
-            "auto_command": "",
+            "auto_command": False,
             "due_date": "undefined",
             "dest_place": "",
         }

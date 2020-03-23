@@ -1546,6 +1546,12 @@ class Card(TimeStampedModel):
                     new_authors.append(author)
                 card_authors = new_authors
 
+        has_isbn = card.get('has_isbn')
+        if has_isbn in ['yes']:
+            card['has_isbn'] = True
+        elif has_isbn in ['no']:
+            card['has_isbn'] = False
+
         # Get and clean the ean/isbn (beware of form data)
         isbn = card.get("isbn", card.get("ean", ""))
         if isbn:

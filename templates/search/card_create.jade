@@ -29,7 +29,7 @@ if messages
 h1 {% trans "Create a card" %}
 
 
-form(action="{% url 'card_create_manually' %}", method="post")
+form(action="{% url 'search:card_create_manually' %}", method="post")
   .col-lg-6
     h4 {% trans "Supply the book's bibliographic information below." %}
     div {% trans "Only the title is mandatory." %}

@@ -375,8 +375,6 @@ if TESTING:
             return True
 
         def __getitem__(self, item):
-            # With django 2.1 I had to change return "notmigrations" to return None, otherwise it complained that ModuleNotFoundError: No module named 'notmigrations' – frnhr Jun 11 '19 at 17:58
-
-            return "notmigrations"
+            return None
 
     MIGRATION_MODULES = DisableMigrations()
