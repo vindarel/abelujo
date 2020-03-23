@@ -210,7 +210,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'brunch',  # before staticfiles
+    # 'brunch',  # before staticfiles
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # for intcomma currency filter only (card show).
     'django_extensions',
