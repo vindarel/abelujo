@@ -23,6 +23,8 @@ import string
 import addict
 from tabulate import tabulate
 
+from django.utils import six
+
 from abelujo import settings
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
@@ -157,7 +159,7 @@ def truncate(it, max_length=MAX_CELL):
 
     returns: a string
     """
-    if it and (isinstance(it, str) or isinstance(it, unicode))\
+    if it and (isinstance(it, six.text_type) or isinstance(it, six.string_types))\
        and len(it) >= max_length:
         return it[:max_length] + "..."
     return it
@@ -272,7 +274,7 @@ def is_isbn(it):
     ISBN_ALLOWED_LENGTHS = [13]
     res = False
     pattern = re.compile("[0-9]+")
-    if (isinstance(it, unicode) or isinstance(it, str)) and \
+    if (isinstance(it, six.text_type) or isinstance(it, six.string_types)) and \
        len(it) in ISBN_ALLOWED_LENGTHS and \
        pattern.match(it):
         res = it
@@ -342,7 +344,7 @@ def ids_qties_to_pairs(string):
     # For unknown reason, we now get a proper list straight in.
     # So we removed the ; and we don't need this method anymore.
     # But is that in all methods using it ? see command_receive_update
-    if string and (isinstance(string, str) or isinstance(string, unicode)) and ';' in string:
+    if string and (isinstance(string, six.string_types) or isinstance(string, six.text_type)) and ';' in string:
         together = string.split(';')
         pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
         return pairs
@@ -415,7 +417,7 @@ def price_fmt(price, currency):
 
     Exemple: 10 € or CHF 10
     """
-    if price is None or isinstance(price, str) or isinstance(price, unicode):
+    if price is None or isinstance(price, six.string_types) or isinstance(price, six.text_type):
         return ''
     try:
         if not currency:

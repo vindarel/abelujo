@@ -23,6 +23,7 @@ You can produce a graph of the db with django_extension's
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils import six
 
 import calendar
 import datetime
@@ -590,7 +591,8 @@ class Card(TimeStampedModel):
         """
         # WARN: duplicated from utils.py, because the template wants an object method.
         # I consider this a Python fail.
-        if self.price is None or isinstance(self.price, str):
+        if self.price is None or isinstance(self.price, six.string_types)\
+           or isinstance(self.price, six.text_type):
             return self.price
 
         currency = self.get_currency()
@@ -1488,7 +1490,7 @@ class Card(TimeStampedModel):
         if pubs:
             try:
                 for pub in pubs:
-                    if isinstance(pub, str) or isinstance(pub, unicode):
+                    if isinstance(pub, six.string_types) or isinstance(pub, six.text_type):
                         pub = pub.lower()
                         pub_obj, created = Publisher.objects.get_or_create(name=pub)
                         card_obj.publishers.add(pub_obj)
@@ -1552,7 +1554,7 @@ class Card(TimeStampedModel):
             auts = card_authors
             if not isinstance(auts, list):
                 auts = [auts]
-            if isinstance(auts[0], str) or isinstance(auts[0], unicode):
+            if isinstance(auts[0], six.string_types) or isinstance(auts[0], six.text_type):
                 new_authors = []  # appending to card_authors used in the loop: infinite recursion!
                 for aut in auts:
                     author, created = Author.objects.get_or_create(name=aut)
@@ -1575,7 +1577,8 @@ class Card(TimeStampedModel):
                 card_distributor = res.first()
 
         # or a new name.
-        if card_distributor and isinstance(card_distributor, str)\
+        if card_distributor and isinstance(card_distributor, six.string_types)\
+           or isinstance(card_distributor, six.text_type)\
            or isinstance(card_distributor, int):
 
             if isinstance(card_distributor, int):
@@ -1594,7 +1597,7 @@ class Card(TimeStampedModel):
                 try:
                     it = card.get('distributor')
                     it_id = 1
-                    if isinstance(it, str):
+                    if isinstance(it, six.string_types) or isinstance(it, six.text_type):
                         it_id = it
                     elif isinstance(it, dict):
                         it_id = it.get('id')
@@ -1624,8 +1627,8 @@ class Card(TimeStampedModel):
         if card_publishers and isinstance(card_publishers[0], models.base.Model):
             pass
 
-        elif card_publishers and (isinstance(card_publishers[0], str) or
-                                  isinstance(card_publishers[0], unicode)):
+        elif card_publishers and (isinstance(card_publishers[0], six.string_types) or
+                                  isinstance(card_publishers[0], six.text_type)):
             pubs = []
             for name in card_publishers:
                 pub = Publisher.objects.filter(name__iexact=name)
@@ -1642,8 +1645,8 @@ class Card(TimeStampedModel):
         # Get the publication date (from a human readable string)
         date_publication = None
         if card.get('date_publication') and not is_invalid(card.get('date_publication')):
-            if isinstance(card.get('date_publication'), str) \
-               or isinstance(card.get('date_publication'), unicode):
+            if isinstance(card.get('date_publication'), six.string_types) \
+               or isinstance(card.get('date_publication'), six.text_type):
                 try:
                     date_publication = dateparser.parse(card.get('date_publication'))  # also languages=['fr']
                     card['date_publication'] = date_publication
@@ -2759,7 +2762,7 @@ class Restocking(models.Model):
 
     @staticmethod
     def remove_card_id(pk):
-        assert isinstance(pk, (str, int))  # first type checking?!
+        assert isinstance(pk, (six.text_type, int))  # first type checking?!
         try:
             res = RestockingCopies.objects.filter(card_id=pk)
             if res:
@@ -2973,7 +2976,7 @@ class DepositState(models.Model):
                 else:
                     qty = nb
 
-                if isinstance(copy, str):
+                if isinstance(copy, six.string_types) or isinstance(copy, six.text_type):
                     copy = Card.objects.get(id=copy)
 
                 depositstate_copy, created = self.depositstatecopies_set.get_or_create(card=copy)
@@ -4043,7 +4046,7 @@ class Sell(models.Model):
             date = timezone.now()
         else:
             # create a timezone aware date
-            if isinstance(date, str):
+            if isinstance(date, six.string_types) or isinstance(date, six.text_type):
                 date = datetime.datetime.strptime(date, DATE_FORMAT)
                 date = pytz.utc.localize(date, pytz.UTC)
 
@@ -4499,7 +4502,7 @@ class InventoryBase(TimeStampedModel):
         ask to *set* the quantity, not add them).
 
         """
-        if isinstance(nb, str):
+        if isinstance(nb, six.string_types) or isinstance(nb, six.text_type):
             nb = int(nb)
         try:
             inv_copies, created = self.copies_set.get_or_create(card=copy)

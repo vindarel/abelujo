@@ -21,6 +21,7 @@ import calendar
 
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils import six
 
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
@@ -38,7 +39,7 @@ def price_fmt(price, currency):
     Similar as models.utils.
     """
     # Cannot import models.Preferences to get the default currency, circular import.
-    if price is None or isinstance(price, str):
+    if price is None or isinstance(price, six.string_types) or isinstance(price, six.text_type):
         return price
     if currency.lower() == 'chf':
         return 'CHF {:.2f}'.format(price)
@@ -290,7 +291,7 @@ class Entry(TimeStampedModel):
         """
         ec = self.entrycopies_set.all()
         payment = self.payment
-        if isinstance(self.payment, unicode):
+        if isinstance(self.payment, six.text_type) or isinstance(self.payment, six.string_types):
             payment = int(self.payment)
 
         copies = [{
@@ -338,7 +339,7 @@ class Entry(TimeStampedModel):
         return: a tuple Entry object, boolean
         """
         try:
-            if isinstance(payment, unicode) or isinstance(payment, str):
+            if isinstance(payment, six.text_type) or isinstance(payment, six.string_types):
                 payment = int(payment)
             en = Entry(payment=payment, reason=reason)
             en.save()
