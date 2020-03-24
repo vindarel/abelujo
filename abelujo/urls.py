@@ -129,7 +129,7 @@ apipatterns = [
     url(r'^api/stats/', api.stats, name='api_stats'),
 
     # Clients
-    # url(r'^api/clients/?', api.users.clients, name='api_clients'),
+    url(r'^api/clients/?', api_users.clients, name='api_clients'),
 
     # Bills
     url(r'^api/bill/?', api_users.bill, name='api_bill'),
