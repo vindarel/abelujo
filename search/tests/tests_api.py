@@ -128,7 +128,7 @@ class ApiTest(TestCase):
 
     def test_sell_cards(self):
         self.params["to_sell"] = u"1,9.5,2"
-        self.params["date"] = "2015-04-17"
+        self.params["date"] = "2015-04-17 00:00:00"
         resp = self.c.post("/api/sell", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)
