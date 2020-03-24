@@ -22,6 +22,8 @@ You can produce a graph of the db with django_extension's
 
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
+from django.utils.encoding import python_2_unicode_compatible
+
 import calendar
 import datetime
 import locale
@@ -99,6 +101,7 @@ BAD_IDS = [None, 0, '0', u'0', '-1', u'-1']
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
 
+@python_2_unicode_compatible
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200, verbose_name=__("name"))
 
@@ -106,7 +109,7 @@ class Author(TimeStampedModel):
         ordering = ('name',)
         verbose_name = __("author")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
     @staticmethod
@@ -126,6 +129,7 @@ class Author(TimeStampedModel):
         return data
 
 
+@python_2_unicode_compatible
 class Distributor(TimeStampedModel):
     """The entity that distributes the copies.
 
@@ -150,7 +154,7 @@ class Distributor(TimeStampedModel):
         ordering = ("name",)
         verbose_name = __("distributor")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
     def get_absolute_url(self):
@@ -213,6 +217,7 @@ class Distributor(TimeStampedModel):
                 card.save()
 
 
+@python_2_unicode_compatible
 class Publisher (models.Model):
     """The publisher of the card.
     """
@@ -230,7 +235,7 @@ class Publisher (models.Model):
         ordering = ("name",)
         verbose_name = __("publisher")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}, {}".format(self.id, self.name)
 
     def get_absolute_url(self):
@@ -258,6 +263,7 @@ class Publisher (models.Model):
 
         return data
 
+@python_2_unicode_compatible
 class Collection (models.Model):
     """A collection (or sub-collection) of books.
 
@@ -277,9 +283,10 @@ class Collection (models.Model):
         ordering = ("name",)
         verbose_name = __("collection")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
+@python_2_unicode_compatible
 class Shelf(models.Model):
     """Shelves are categories for cards, but they have a physical location
     in the bookstore.
@@ -299,7 +306,7 @@ class Shelf(models.Model):
     def get_absolute_url(self):
         return ""  # TODO: url parameters in stock search to reference a shelf.
 
-    def __unicode__(self):
+    def __str__(self):
         #idea: show the nb of cards with that category.
         return u"{}".format(self.name)
 
@@ -367,6 +374,7 @@ class Shelf(models.Model):
 
         return True
 
+@python_2_unicode_compatible
 class CardType(models.Model):
     """The type of a card: a book, a CD, a t-shirt, a DVD,…
     """
@@ -375,7 +383,7 @@ class CardType(models.Model):
     class Meta:
         verbose_name = __("Card type")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
     @staticmethod
@@ -397,6 +405,8 @@ class CardType(models.Model):
 
         return data
 
+
+@python_2_unicode_compatible
 class Barcode64(TimeStampedModel):
     """SVG barcodes encoded as base64, to be included into an html img tag
     for pdf generation:
@@ -409,7 +419,7 @@ class Barcode64(TimeStampedModel):
     ean = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     barcodebase64 = models.CharField(max_length=TEXT_LENGTH, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "ean: {}".format(self.ean)
 
     @staticmethod
@@ -443,6 +453,7 @@ class Barcode64(TimeStampedModel):
                 log.error(u'could not save barcode of ean {}: {}'.format(ean, e))
 
 
+@python_2_unicode_compatible
 class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
@@ -514,6 +525,19 @@ class Card(TimeStampedModel):
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
         verbose_name = __("card")
+
+    def __str__(self):
+        """
+        To pretty print a list of cards, see models.utils.ppcard.
+        """
+        MAX_LENGTH = 15
+        authors = self.authors.all()
+        authors = authors[0].name if authors else ""
+        publishers = ", ".join([pub.name for pub in self.publishers.all()])
+        if len(publishers) > MAX_LENGTH:
+            publishers = publishers[0:MAX_LENGTH] + "..."
+        distributor = self.distributor.name if self.distributor else _("none")
+        return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     @property
     def ean(self):
@@ -610,20 +634,9 @@ class Card(TimeStampedModel):
             except Exception as e:
                 log.error(u"Error retrieving the cover from url: {}".format(e))
 
-    def __unicode__(self):
-        """To pretty print a list of cards, see models.utils.ppcard.
-        """
-        MAX_LENGTH = 15
-        authors = self.authors.all()
-        authors = authors[0].name if authors else ""
-        publishers = ", ".join([pub.name for pub in self.publishers.all()])
-        if len(publishers) > MAX_LENGTH:
-            publishers = publishers[0:MAX_LENGTH] + "..."
-        distributor = self.distributor.name if self.distributor else _("none")
-        return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     def display_authors(self):
-        return u', '.join([a.name for a in self.authors.all()])
+            return u', '.join([a.name for a in self.authors.all()])
 
     def quantity_compute(self):
         """Return the quantity of this card in all places (not deposits).
@@ -1815,6 +1828,7 @@ class Card(TimeStampedModel):
         return cmd_copies
 
 
+@python_2_unicode_compatible
 class PlaceCopies (models.Model):
     """Copies of a card present in a place.
     """
@@ -1830,10 +1844,11 @@ class PlaceCopies (models.Model):
     #: Number of copies
     nb = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
 
+@python_2_unicode_compatible
 class Place (models.Model):
     """A place can be a selling point, a warehouse or a stand.
     """
@@ -1860,7 +1875,7 @@ class Place (models.Model):
         verbose_name = __("place")
         verbose_name_plural = __("places")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
     def get_absolute_url(self):
@@ -2103,6 +2118,7 @@ class Place (models.Model):
             self.add_copy(it)
 
 
+@python_2_unicode_compatible
 class Preferences(models.Model):
     """
     Default preferences.
@@ -2134,7 +2150,7 @@ class Preferences(models.Model):
     class Meta:
         verbose_name = __("Preferences")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
 
     def to_dict(self):
@@ -2257,6 +2273,7 @@ class Preferences(models.Model):
         return price
 
 
+@python_2_unicode_compatible
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).
     """
@@ -2264,7 +2281,7 @@ class BasketCopies(models.Model):
     basket = models.ForeignKey("Basket")
     nb = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
 
     def to_dict(self):
@@ -2286,6 +2303,7 @@ class BasketCopies(models.Model):
         # should rename the arg
         return self.nb
 
+@python_2_unicode_compatible
 class Basket(models.Model):
     """A basket is a set of copies that are put in it for later use. Its
     copies can be present in the stock or not. Manipulating a basket's
@@ -2311,7 +2329,7 @@ class Basket(models.Model):
         ordering = ("name",)
         verbose_name = __("Basket")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
     def get_absolute_url(self):
@@ -2613,6 +2631,7 @@ class Basket(models.Model):
         return out, msgs
 
 
+@python_2_unicode_compatible
 class BasketType (models.Model):
     """
     """
@@ -2622,10 +2641,11 @@ class BasketType (models.Model):
     class Meta:
         ordering = ("name",)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}".format(self.name)
 
 
+@python_2_unicode_compatible
 class RestockingCopies(models.Model):
     """
     Cards present in the restocking list with their quantities (intermediate table).
@@ -2634,7 +2654,7 @@ class RestockingCopies(models.Model):
     restocking = models.ForeignKey("Restocking")
     quantity = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Restocking: %s copies of %s" % (self.quantity, self.card.title)
 
     def to_dict(self):
@@ -2817,6 +2837,7 @@ class Restocking(models.Model):
         return True
 
 
+@python_2_unicode_compatible
 class DepositStateCopies(models.Model):
     """For each card of the deposit state, remember:
 
@@ -2841,7 +2862,7 @@ class DepositStateCopies(models.Model):
     # to stay longer than a certain time in a deposit)
     nb_to_return = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"card {}, initial: {}, current: {}, sells: {}, etc".format(
             self.card.id, self.nb_initial, self.nb_current, self.nb_sells)
 
@@ -2863,6 +2884,7 @@ class DepositStateCopies(models.Model):
         return total
 
 
+@python_2_unicode_compatible
 class DepositState(models.Model):
     """Deposit states. We do a deposit state to know what cards have been
     sold since the last deposit state, so what sum do we need to pay to
@@ -2883,7 +2905,7 @@ class DepositState(models.Model):
     closed = models.DateTimeField(blank=True, null=True)
     # closed = models.DateField(default=None, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         ret = u"{}, deposit '{}' with {} copies. Closed ? {}".format(
             self.id, self.deposit, self.copies.count(), self.closed)
         return ret
@@ -3085,6 +3107,7 @@ class DepositState(models.Model):
         return True, []
 
 
+@python_2_unicode_compatible
 class Deposit(TimeStampedModel):
     """Deposits. The bookshop received copies (of many cards) from
     a distributor but didn't pay them yet.
@@ -3158,7 +3181,7 @@ class Deposit(TimeStampedModel):
         ordering = ("name",)
         verbose_name = __("deposit")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Deposit '{}' with distributor: {} (type: {})".format(
             self.name, self.distributor, self.deposit_type)
 
@@ -3529,6 +3552,7 @@ class Deposit(TimeStampedModel):
         return depostate.cards_balance()
 
 
+@python_2_unicode_compatible
 class SoldCards(TimeStampedModel):
     card = models.ForeignKey(Card)
     sell = models.ForeignKey("Sell")
@@ -3539,7 +3563,7 @@ class SoldCards(TimeStampedModel):
     #: Price sold:
     price_sold = models.FloatField(default=DEFAULT_PRICE)
 
-    def __unicode__(self):
+    def __str__(self):
         ret = u"card sold id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
         return ret
 
@@ -3606,6 +3630,7 @@ class SoldCards(TimeStampedModel):
         msgs.add_success(_(u"Operation successful"))
         return status, msgs.msgs
 
+@python_2_unicode_compatible
 class Sell(models.Model):
     """A sell represents a set of one or more cards that are sold:
     - at the same time,
@@ -3639,7 +3664,7 @@ class Sell(models.Model):
     class Meta:
         verbose_name = __("sell")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Sell {} of {} copies at {}.".format(self.id,
                                                      self.soldcards_set.count(),
                                                      self.created)
@@ -4208,6 +4233,7 @@ def getHistory(**kwargs):
     raise DeprecationWarning("Unused method.")
 
 
+@python_2_unicode_compatible
 class Alert(models.Model):
     """An alert stores the information that a Sell is ambiguous. That
     happens when we want to sell a card and it has at least one
@@ -4221,7 +4247,7 @@ class Alert(models.Model):
     resolution_auto = models.BooleanField(default=False)
     comment = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"alert for card {}, created {}".format(self.card.id, self.date_creation)
 
     def get_absolute_url(self):
@@ -4277,11 +4303,12 @@ class InventoryCopiesBase(models.Model):
         }
 
 
+@python_2_unicode_compatible
 class InventoryCopies(InventoryCopiesBase):
     # we inherit card and quantity.
     inventory = models.ForeignKey("Inventory")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
                                                                self.quantity,
                                                                self.card.title,
@@ -4755,6 +4782,7 @@ class InventoryBase(TimeStampedModel):
         return True, [{"level": ALERT_SUCCESS, "message": _("The inventory got succesfully applied to your stock.")}]
 
 
+@python_2_unicode_compatible
 class Inventory(InventoryBase):
     """
     We can do inventories of baskets, publishers, places, shelves.
@@ -4778,7 +4806,7 @@ class Inventory(InventoryBase):
         verbose_name = __("Inventory")
         verbose_name_plural = __("Inventories")
 
-    def __unicode__(self):
+    def __str__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
         return u"{}: {}".format(self.id, inv_obj.name)
 
@@ -5060,6 +5088,7 @@ class Stats(object):
         # 2020-01-31 removed from dashboard.
         return Stats._shelf_age(shelf_id)
 
+@python_2_unicode_compatible
 class CommandCopies(TimeStampedModel):
     """Intermediate table between a Command and its Cards. Records the
     number of exemplaries for each card.
@@ -5067,6 +5096,9 @@ class CommandCopies(TimeStampedModel):
     card = models.ForeignKey("Card")
     command = models.ForeignKey("Command")
     quantity = models.IntegerField(default=0)
+
+    def __str__(self):
+        return u"Command for card {}".format(self.card.pk)
 
     @property
     def qty(self):
@@ -5092,7 +5124,7 @@ class CommandCopies(TimeStampedModel):
             log.error(u"Error getting discounted value: {}".format(e))
             return 0
 
-    # def __unicode__(self):
+    # def __str__(self):
         # pass
 
     # def to_dict(self):
@@ -5149,6 +5181,7 @@ class InventoryCommand(InventoryBase):
 def do_command_apply(pk):
     InventoryCommand.apply_inventory(pk)
 
+@python_2_unicode_compatible
 class Command(TimeStampedModel):
     """A command records that some cards were ordered to a supplier.
     We have to track when we receive the command and when we pay.
@@ -5184,7 +5217,7 @@ class Command(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("commands_view", args=(self.id,))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"command {} for {}".format(self.id, self.supplier_name)
 
     def to_list(self):
