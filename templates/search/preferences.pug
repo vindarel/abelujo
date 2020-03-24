@@ -31,7 +31,7 @@ h1 {% trans "Preferences" %}
 .row
   h3 {% trans "Sells" %}
   .col-lg-6
-    form(action="{% url 'preferences' %}", method="post")
+    form(action="{% url 'search:preferences' %}", method="post")
         {% csrf_token %}
         {% bootstrap_form form %}
         input(type="submit", value="Submit")
@@ -39,7 +39,7 @@ h1 {% trans "Preferences" %}
 .row
   h3 {% trans "Personal and banking information" %}
   .col-lg-6
-    form(action="{% url 'preferences_bookshop' %}", method="post")
+    form(action="{% url 'search:preferences_bookshop' %}", method="post")
         {% csrf_token %}
         {% bootstrap_form bookshopform %}
         input(type="submit", value="Submit")

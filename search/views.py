@@ -190,7 +190,7 @@ def preferences_bookshop(request):
                 bookshop_model.save()
                 messages.add_message(
                     request, messages.SUCCESS, _("Preferences saved."))
-                return HttpResponseRedirect(reverse('preferences'))
+                return HttpResponseRedirect(reverse('search:preferences'))
             except Exception as e:
                 log.error(u'Error saving the bookshop form: {}\n{}'.
                           format(e, traceback.format_exc))
