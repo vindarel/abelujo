@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import os
 import unicodecsv
 
@@ -146,8 +148,8 @@ class Echo(object):
 
 def cards2csv(cards):
     pseudo_buffer = Echo()
-    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-    content = writer.writerow("")
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
+    content = writer.writerow(b"")
 
     rows = [(it['title'],
              it['authors_repr'],
@@ -166,5 +168,5 @@ def cards2csv(cards):
               _("isbn"),
     )
     rows.insert(0, header)
-    content = "".join([writer.writerow(row) for row in rows])
+    content = b"".join([writer.writerow(row) for row in rows])
     return content

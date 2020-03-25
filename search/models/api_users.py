@@ -49,7 +49,7 @@ def clients(request, **response_kwargs):
                 res = [it.to_dict() for it in Client.objects.all()]
             return JsonResponse({'data': res})
         except Exception as e:
-            log.error(u"error getting clients: {}".format(e))
+            log.error("error getting clients: {}".format(e))
             return JsonResponse()
 
 def bill(request, *args, **response_kwargs):
@@ -73,7 +73,7 @@ def bill(request, *args, **response_kwargs):
     try:
         params = json.loads(request.body)
     except Exception as e:
-        log.error(u'Sell bill: could not decode json body: {}\n{}'.format(e, request.body))
+        log.error('Sell bill: could not decode json body: {}\n{}'.format(e, request.body))
 
     language = params.get('language')
     if language:
@@ -82,8 +82,8 @@ def bill(request, *args, **response_kwargs):
     # Creation date, due date.
     DATE_FMT = '%d-%m-%Y'
     creation_date = pendulum.today()
-    creation_date_label = _(u"Created")  # this can be in trans template tags.
-    due_date_label = _(u"Due")
+    creation_date_label = _("Created")  # this can be in trans template tags.
+    due_date_label = _("Due")
 
     # Sell and due dates.
     sell_date = params.get('date')
@@ -122,13 +122,13 @@ def bill(request, *args, **response_kwargs):
             client = qs.first()
 
     # Title, filename
-    bill_label = _(u"Bill")
-    bookshop_name = bookshop.name if bookshop else u""
-    title = u"{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
+    bill_label = _("Bill")
+    bookshop_name = bookshop.name if bookshop else ""
+    title = "{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
     filename = title + '.pdf'
 
     # File 2, with books list.
-    # details_title = u"{} {} - {} - list".format(bill_label, bookshop_name, creation_date_fmt)
+    # details_title = "{} {} - {} - list".format(bill_label, bookshop_name, creation_date_fmt)
     # details_filename = title + '.pdf'
     # details_template = "pdftemplates/pdf-bill-details.html"
 
@@ -164,7 +164,7 @@ def bill(request, *args, **response_kwargs):
                                   'creation_date_label': creation_date_label,
                                   'creation_date': creation_date,
                                   'creation_date_fmt': creation_date_fmt,
-                                  'discount_label': _(u"Discount"),
+                                  'discount_label': _("Discount"),
                                   'discount_fmt': discount_fmt,
                                   'due_date_label': due_date_label,
                                   'due_date': due_date,
@@ -198,7 +198,7 @@ def bill(request, *args, **response_kwargs):
 
         response = JsonResponse(to_ret)
     except Exception as e:
-        log.error(u"Error writing bill in pdf to {}: {}".format(filepath, e))
+        log.error("Error writing bill in pdf to {}: {}".format(filepath, e))
         response = JsonResponse({'status': 400})
 
     return response

@@ -22,6 +22,8 @@ You can produce a graph of the db with django_extension's
 
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
+from __future__ import unicode_literals
+
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import six
 
@@ -95,9 +97,9 @@ DEPOSIT_TYPES_CHOICES = [
 
 THRESHOLD_DEFAULT = 0
 
-MSG_INTERNAL_ERROR = _(u"An internal error occured, we have been notified.")
+MSG_INTERNAL_ERROR = _("An internal error occured, we have been notified.")
 
-BAD_IDS = [None, 0, '0', u'0', '-1', u'-1']
+BAD_IDS = [None, 0, '0', '0', '-1', '-1']
 
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
@@ -111,7 +113,7 @@ class Author(TimeStampedModel):
         verbose_name = __("author")
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
     @staticmethod
     def search(query):
@@ -120,7 +122,7 @@ class Author(TimeStampedModel):
         try:
             data = Author.objects.filter(name__icontains=query)
         except Exception as e:
-            log.error(u"Author.search error: {}".format(e))
+            log.error("Author.search error: {}".format(e))
             data = [
                 {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for authors"}}
@@ -156,7 +158,7 @@ class Distributor(TimeStampedModel):
         verbose_name = __("distributor")
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
     def get_absolute_url(self):
         return "/admin/search/{}/{}".format(self.__class__.__name__.lower(),
@@ -165,7 +167,7 @@ class Distributor(TimeStampedModel):
     def __repr__(self):
         """Representation for json/javascript.
         """
-        return u"{} ({} %)".format(self.name, self.discount)
+        return "{} ({} %)".format(self.name, self.discount)
 
     def repr(self):
         return self.__repr__()
@@ -237,7 +239,7 @@ class Publisher (models.Model):
         verbose_name = __("publisher")
 
     def __str__(self):
-        return u"{}, {}".format(self.id, self.name)
+        return "{}, {}".format(self.id, self.name)
 
     def get_absolute_url(self):
         return "/admin/search/publisher/{}".format(self.id)
@@ -256,7 +258,7 @@ class Publisher (models.Model):
             else:
                 data = Publisher.objects.all()
         except Exception as e:
-            log.error(u"Publisher.search error: {}".format(e))
+            log.error("Publisher.search error: {}".format(e))
             data = [
                 {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for publishers"}}
@@ -285,7 +287,7 @@ class Collection (models.Model):
         verbose_name = __("collection")
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
 @python_2_unicode_compatible
 class Shelf(models.Model):
@@ -309,7 +311,7 @@ class Shelf(models.Model):
 
     def __str__(self):
         #idea: show the nb of cards with that category.
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
     def to_dict(self):
         """Return a dict with the shelf name and its list of cards.
@@ -385,20 +387,20 @@ class CardType(models.Model):
         verbose_name = __("Card type")
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
     @staticmethod
     def search(query):
         if not query:
             query = ""
         if query == "":
-            log.info(u"CardType: we return everything")
+            log.info("CardType: we return everything")
             return CardType.objects.all()
 
         try:
             data = CardType.objects.filter(name__icontains=query)
         except Exception as e:
-            log.error(u"CardType.search error: {}".format(e))
+            log.error("CardType.search error: {}".format(e))
             data = [
                 {"alerts": {"level": ALERT_ERROR,
                             "message": "error while searching for authors"}}
@@ -441,7 +443,7 @@ class Barcode64(TimeStampedModel):
                 return eanbase64
             except Exception as e:
                 # this well may be an invalid ean. Shall we erase it ?
-                log.warning(u'Barcode generation: error with ean {}: {}'.format(ean, e))
+                log.warning('Barcode generation: error with ean {}: {}'.format(ean, e))
                 return
 
     @staticmethod
@@ -451,7 +453,7 @@ class Barcode64(TimeStampedModel):
             try:
                 Barcode64(ean=ean, barcodebase64=base64).save()
             except Exception as e:
-                log.error(u'could not save barcode of ean {}: {}'.format(ean, e))
+                log.error('could not save barcode of ean {}: {}'.format(ean, e))
 
 
 @python_2_unicode_compatible
@@ -496,7 +498,7 @@ class Card(TimeStampedModel):
     #: Shelf (for now, only one shelf).
     shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=__("shelf"))
     # location = models.ForeignKey(Location, blank=True, null=True)
-    #    default=u'?', on_delete=models.SET_DEFAULT)
+    #    default='?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, verbose_name=__("places"))
     #: when and how this card was sold: sells (see the Sell table).
@@ -538,7 +540,7 @@ class Card(TimeStampedModel):
         if len(publishers) > MAX_LENGTH:
             publishers = publishers[0:MAX_LENGTH] + "..."
         distributor = self.distributor.name if self.distributor else _("none")
-        return u"{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
+        return "{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
 
     @property
     def ean(self):
@@ -634,10 +636,10 @@ class Card(TimeStampedModel):
                     os.path.basename(self.img),
                     File(open(tmp_path)))
             except Exception as e:
-                log.error(u"Error retrieving the cover from url: {}".format(e))
+                log.error("Error retrieving the cover from url: {}".format(e))
 
     def display_authors(self):
-            return u', '.join([a.name for a in self.authors.all()])
+            return ', '.join([a.name for a in self.authors.all()])
 
     def quantity_compute(self):
         """Return the quantity of this card in all places (not deposits).
@@ -663,7 +665,7 @@ class Card(TimeStampedModel):
         try:
             return sum([it.quantities_total() for it in Place.objects.all()])
         except Exception as e:
-            log.error(u"Error while getting the total quantities of all cards: {}".format(e))
+            log.error("Error while getting the total quantities of all cards: {}".format(e))
 
     def get_return_place(self):
         """
@@ -709,7 +711,7 @@ class Card(TimeStampedModel):
         try:
             return self.publishers.filter(id=pub)
         except Exception as e:
-            log.error(u"Error while checking if card {} has publisher {}: {}".format(self.id, pub, e))
+            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, pub, e))
             return None
 
     def has_distributor(self, dist):
@@ -721,7 +723,7 @@ class Card(TimeStampedModel):
                 return False
             return self.distributor.id == dist
         except Exception as e:
-            log.error(u"Error while checking if card {} has publisher {}: {}".format(self.id, dist, e), extra={'stack': True})
+            log.error("Error while checking if card {} has publisher {}: {}".format(self.id, dist, e), extra={'stack': True})
             return None
 
     def has_no_distributor(self):
@@ -782,7 +784,7 @@ class Card(TimeStampedModel):
                             "id": it.id}} for it in publishers]
         pubs_repr = self.pubs_repr
 
-        isbn = u""
+        isbn = ""
         if self.isbn is not None:
             isbn = self.isbn
         elif self.ean is not None:
@@ -965,19 +967,19 @@ class Card(TimeStampedModel):
         if bought and cards:
             cards = cards.filter(in_stock=True)
 
-        if cards and shelf_id and shelf_id not in ["0", u"0"]:
+        if cards and shelf_id and shelf_id not in ["0", "0"]:
             try:
                 cards = cards.filter(shelf=shelf_id)
             except Exception as e:
                 log.error(e)
 
-        if cards and place_id and place_id not in ["0", u"0"]:
+        if cards and place_id and place_id not in ["0", "0"]:
             try:
                 cards = cards.filter(placecopies__place__id=place_id)
             except Exception as e:
                 log.error(e)
 
-        if cards and deposit_id and deposit_id not in ["0", u"0"]:
+        if cards and deposit_id and deposit_id not in ["0", "0"]:
             try:
                 cards = cards.filter(depositcopies__deposit__id=deposit_id)
             except Exception as e:
@@ -996,7 +998,7 @@ class Card(TimeStampedModel):
             try:
                 cards = cards.filter(publishers=publisher_id)
             except Exception as e:
-                log.error(u"we won't search for a publisher that doesn't exist: {}".format(e))
+                log.error("we won't search for a publisher that doesn't exist: {}".format(e))
 
         # Search for the requested ean(s).
         if isbns:
@@ -1007,8 +1009,8 @@ class Card(TimeStampedModel):
                 else:
                     isbn_list_search_complete = False
             except Exception as e:
-                log.error(u"Error searching for isbns {}: {}".format(isbns, e))
-                msgs.add_error(_(u"Error searching for isbn ".format(isbns)))
+                log.error("Error searching for isbns {}: {}".format(isbns, e))
+                msgs.add_error(_("Error searching for isbn ".format(isbns)))
 
         # Filter by quantity in stock.
         if quantity_choice and quantity_choice != "":
@@ -1206,12 +1208,12 @@ class Card(TimeStampedModel):
                         place_obj = Place.objects.get(id=place_id)
                     except ObjectDoesNotExist as e:
                         if not silence:
-                            log.info(u'In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
+                            log.info('In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
                         # xxx: test here
                         place_obj = Preferences.get_default_place()
                     except Exception as e:
-                        log.error(u'In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
-                        return False, _(u"An error occured: it seems this place doesn't exist. We prefer to stop this sell.")
+                        log.error('In Card.sell, error getting place of id {}: {}. Should not reach here.'.format(place_id, e))
+                        return False, _("An error occured: it seems this place doesn't exist. We prefer to stop this sell.")
 
                 # Get the intermediate table PlaceCopy, keeping the quantities.
                 place_copy = None
@@ -1221,7 +1223,7 @@ class Card(TimeStampedModel):
                         place_copy.nb = 0
                         place_copy.save()
                 except Exception as e:
-                    log.error(u"Card.sell error filtering the place {} by id {}: {}".format(place_id, id, e))
+                    log.error("Card.sell error filtering the place {} by id {}: {}".format(place_id, id, e))
                     return (None, MSG_INTERNAL_ERROR)  # xxx to be propagated
 
             else:
@@ -1238,17 +1240,17 @@ class Card(TimeStampedModel):
                         place_copy.nb = 0
                         place_copy.save()
                     msgs.status = ALERT_WARNING
-                    msgs.add_warning(_(u"The card '{}' ({}) wasn't associated to any place. We had to sell it from the default place {}. This can happen if you manipulated it from lists or inventories but didn't properly add it to your stock.".format(card.title, card.id, place_obj.name)))
+                    msgs.add_warning(_("The card '{}' ({}) wasn't associated to any place. We had to sell it from the default place {}. This can happen if you manipulated it from lists or inventories but didn't properly add it to your stock.".format(card.title, card.id, place_obj.name)))
 
             place_copy.nb -= quantity
             place_copy.save()
             card.save()
 
         except ObjectDoesNotExist as e:
-            log.warning(u"Requested card %s does not exist: %s" % (id, e))
+            log.warning("Requested card %s does not exist: %s" % (id, e))
             return (None, "La notice n'existe pas.")
         except Exception as e:
-            log.error(u"Error selling a card: {}.".format(e))
+            log.error("Error selling a card: {}.".format(e))
             # Didn't return an error message, returned OK !
             return (None, _("Internal error, sorry."))
 
@@ -1278,14 +1280,14 @@ class Card(TimeStampedModel):
             elif self.placecopies_set.count():
                 place_obj = self.placecopies_set.filter(card__id=self.id).first()
             else:
-                return False, {"message": _(u"We can not undo the sell of card {}: \
+                return False, {"message": _("We can not undo the sell of card {}: \
                 it is not associated to any place. This shouldn't happen.").format(self.title),
                                "status": ALERT_ERROR}
 
         place_obj.nb = place_obj.nb + quantity
         place_obj.save()
         # TODO: add history.
-        msgs.add_info(u"We added back {} exemplary(ies) in {}.".format(quantity, place_obj.place.name))
+        msgs.add_info("We added back {} exemplary(ies) in {}.".format(quantity, place_obj.place.name))
         self.save()
 
         return True, msgs.msgs
@@ -1377,7 +1379,7 @@ class Card(TimeStampedModel):
         if authors:
             # assert isinstance(authors[0], models.base.Model)
             if not isinstance(authors[0], models.base.Model):
-                log.warning(u"Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
+                log.warning("Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
             else:
                 card_obj.authors = authors
 
@@ -1385,20 +1387,20 @@ class Card(TimeStampedModel):
             if isinstance(distributor, models.base.Model):
                 card_obj.distributor = distributor
             else:
-                log.warning(u"Card.update_from_dict: distributor should be an object.")
+                log.warning("Card.update_from_dict: distributor should be an object.")
 
         if publishers:
             if isinstance(publishers[0], models.base.Model):
                 card_obj.publishers = publishers
             else:
-                log.warning(u"Card.update_from_dict: publishers should be a list of objects.")
+                log.warning("Card.update_from_dict: publishers should be a list of objects.")
 
         if card_dict.get('threshold') is not None:
             card_obj.threshold = card_dict.get('threshold')
 
         for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
                       'details_url', 'currency']:
-            if card_dict.get(field) not in [None, '', u'']:
+            if card_dict.get(field) not in [None, '', '']:
                 setattr(card_obj, field, card_dict.get(field))
 
         if card_dict.get('isbn'):
@@ -1416,7 +1418,7 @@ class Card(TimeStampedModel):
         # Create the card with its simple fields.
         # Add the relationships afterwards.
         # for field, val in card_dict.items():
-        #     if val in [None, '', u'']:
+        #     if val in [None, '', '']:
         #         del card_dict[field]
 
         # We should do more data validation before this.
@@ -1461,7 +1463,7 @@ class Card(TimeStampedModel):
                 collection_obj, created = Collection.objects.get_or_create(name=collection)
                 card_obj.collection = collection_obj
             except Exception as e:
-                log.error(u"--- error while adding the collection: %s" % (e,))
+                log.error("--- error while adding the collection: %s" % (e,))
 
         # add the shelf
         shelf = card_dict.get('shelf')
@@ -1473,7 +1475,7 @@ class Card(TimeStampedModel):
                 cat_obj = Shelf.objects.get(id=shelf_id)
                 card_obj.shelf = cat_obj
             except Exception as e:
-                log.error(u"error adding shelf {}: {}".format(shelf_id, e))
+                log.error("error adding shelf {}: {}".format(shelf_id, e))
 
         # add the type of the card
         typ = "unknown"
@@ -1495,7 +1497,7 @@ class Card(TimeStampedModel):
                         card_obj.publishers.add(pub_obj)
 
             except Exception, e:
-                log.error(u"--- error while adding the publisher: {}".format(e))
+                log.error("--- error while adding the publisher: {}".format(e))
 
         return card_obj
 
@@ -1601,10 +1603,10 @@ class Card(TimeStampedModel):
                     elif isinstance(it, dict):
                         it_id = it.get('id')
                     else:
-                        log.warning(u"We couldn't handle the distributor of this form inside this card: {}.".format(card))
+                        log.warning("We couldn't handle the distributor of this form inside this card: {}.".format(card))
                     card_distributor = Distributor.objects.get(id=it_id)
                 except Exception as e:
-                    log.warning(u"couldn't get distributor of {}. This is not necessarily a bug.".format(card.get('distributor')))
+                    log.warning("couldn't get distributor of {}. This is not necessarily a bug.".format(card.get('distributor')))
 
         # Get the shelf
         card_shelf = None
@@ -1612,13 +1614,13 @@ class Card(TimeStampedModel):
             try:
                 card_shelf, created = Shelf.objects.get_or_create(name=card.get('shelf'))
             except Exception as e:
-                log.warning(u"couldn't get or create the shelf {}: {}.".format(card.get('shelf'), e))
+                log.warning("couldn't get or create the shelf {}: {}.".format(card.get('shelf'), e))
 
         elif card.get('shelf_id') and not is_invalid(card.get('shelf_id')):
             try:
                 card_shelf = Shelf.objects.get(id=card.get('shelf_id'))
             except Exception as e:
-                log.info(u"Creating/editing card: couldn't get shelf of id {}. We won't register a shelf for this card.".
+                log.info("Creating/editing card: couldn't get shelf of id {}. We won't register a shelf for this card.".
                          format(card.get('shelf_id')))
 
         # Get the publishers:
@@ -1650,7 +1652,7 @@ class Card(TimeStampedModel):
                     date_publication = dateparser.parse(card.get('date_publication'))  # also languages=['fr']
                     card['date_publication'] = date_publication
                 except Exception as e:
-                    log.warning(u"Error parsing the publication date of card {}: {}".format(card.get('title'), e))
+                    log.warning("Error parsing the publication date of card {}: {}".format(card.get('title'), e))
                     card['date_publication'] = None
 
         # Check if the card already exists (it may not have an isbn).
@@ -1658,7 +1660,7 @@ class Card(TimeStampedModel):
             try:
                 exists_list = Card.objects.get(id=card.get('id'))
             except ObjectDoesNotExist:
-                log.error(u"Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
+                log.error("Creating/editing card, could not find card of id {}. dict: {}".format(card.get('id'), card))
                 msgs.add_error("Could not find card of id {}".format(card.get('id')))
                 return None, msgs.msgs
 
@@ -1702,7 +1704,7 @@ class Card(TimeStampedModel):
         #     place_copy.nb = 1
         #     place_copy.save()
         # except Exception, e:
-        #     log.error(u"--- error while setting the default place: %s" % (e,))
+        #     log.error("--- error while setting the default place: %s" % (e,))
 
         # add the shelf
         if card_shelf:
@@ -1718,7 +1720,7 @@ class Card(TimeStampedModel):
         try:
             card_obj.in_stock = in_stock
         except Exception as e:
-            log.error(u'Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
+            log.error('Error while setting in_stock of card {}: {}'.format(card.get('title'), e))
 
         if card.get('price') is not None:
             card_obj.price = float(card.get('price'))
@@ -1737,7 +1739,7 @@ class Card(TimeStampedModel):
 
     def display_year_published(self):
         "We only care about the year"
-        return self.year_published.strftime(u'%Y')
+        return self.year_published.strftime('%Y')
 
     def set_sortkey(self):
         "Generate a sortkey"
@@ -1847,7 +1849,7 @@ class PlaceCopies (models.Model):
     nb = models.IntegerField(default=0)
 
     def __str__(self):
-        return u"%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
+        return "%s: %i exemplaries of \"%s\"" % (self.place.name, self.nb, self.card.title)
 
 
 @python_2_unicode_compatible
@@ -1878,7 +1880,7 @@ class Place (models.Model):
         verbose_name_plural = __("places")
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
     def get_absolute_url(self):
         prefs = Preferences.prefs()
@@ -1894,7 +1896,7 @@ class Place (models.Model):
             place_copy.nb += nb
             place_copy.save()
         except Exception, e:
-            log.error(u"--- error while setting the default place: %s" % (e,))
+            log.error("--- error while setting the default place: %s" % (e,))
 
     def move(self, dest, card, nb, create_movement=True):
         """Move the given card from this place to "dest" and create an history
@@ -2013,7 +2015,7 @@ class Place (models.Model):
             card.save()
 
         except Exception, e:
-            log.error(u"Error while adding %s to the place %s" % (card.title, self.name))
+            log.error("Error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
             return 0
 
@@ -2021,7 +2023,7 @@ class Place (models.Model):
         try:
             history.Entry.new([card])
         except Exception as e:
-            log.error(u"Error while adding an Entry to the history for card {}:{}".format(card.id, e))
+            log.error("Error while adding an Entry to the history for card {}:{}".format(card.id, e))
 
         return place_copy.nb
 
@@ -2033,7 +2035,7 @@ class Place (models.Model):
             place_copy.delete()
 
         except Exception, e:
-            log.error(u"Error while removing %s to the place %s" % (card.title, self.name))
+            log.error("Error while removing %s to the place %s" % (card.title, self.name))
             log.error(e)
             return False
 
@@ -2046,7 +2048,7 @@ class Place (models.Model):
         try:
             return sum(self.placecopies_set.values_list('nb', flat=True))
         except Exception as e:
-            log.error(u"Error getting the total quantities in place {}: {}".format(self.name, e))
+            log.error("Error getting the total quantities in place {}: {}".format(self.name, e))
 
     def quantity_cards(self):
         return self.quantities_total()
@@ -2058,7 +2060,7 @@ class Place (models.Model):
         try:
             return self.placecopies_set.filter(nb__lte=0).count()
         except Exception as e:
-            log.error(u"Error getting the quantity of titles with no stock in place {}: {}".format(self.name, e))
+            log.error("Error getting the quantity of titles with no stock in place {}: {}".format(self.name, e))
 
     def quantity_titles_one_copy(self):
         """
@@ -2067,7 +2069,7 @@ class Place (models.Model):
         try:
             return self.placecopies_set.filter(nb=1).count()
         except Exception as e:
-            log.error(u"Error getting the quantity of titles with one exemplary in place {}: {}".format(self.name, e))
+            log.error("Error getting the quantity of titles with one exemplary in place {}: {}".format(self.name, e))
 
     def quantity_titles(self):
         """
@@ -2076,7 +2078,7 @@ class Place (models.Model):
         try:
             return self.placecopies_set.count()
         except Exception as e:
-            log.error(u"Error getting the total of titles in place {}: {}".format(self.name, e))
+            log.error("Error getting the total of titles in place {}: {}".format(self.name, e))
 
     def quantity_of(self, card):
         """How many copies of this card do we have ?
@@ -2086,14 +2088,14 @@ class Place (models.Model):
         try:
             place_copies = self.placecopies_set.filter(card__id=card.id)
             if len(place_copies) > 1:
-                log.error(u"more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
+                log.error("more than 1 place_copies for a place and card {}, this shouldn't happen.".format(card))
                 return -1
             if place_copies:
                 return place_copies[0].nb
             else:
                 return 0
         except Exception as e:
-            log.error(u"Error getting quantity_of for card {} on place {}: {}".format(card, self, e))
+            log.error("Error getting quantity_of for card {} on place {}: {}".format(card, self, e))
             raise e
 
     def cost(self):
@@ -2107,7 +2109,7 @@ class Place (models.Model):
             cost = sum([it.cost for it in res])
             return cost
         except Exception as e:
-            log.error(u"Error getting cost of place {}: {}".format(self.name, e))
+            log.error("Error getting cost of place {}: {}".format(self.name, e))
             return 0
 
     def add_copies(self, cards):
@@ -2140,7 +2142,7 @@ class Preferences(models.Model):
     #: - sell_discounts
     others = models.TextField(null=True, blank=True)
 
-    default_currency = u"€"  # just a cached variable.
+    default_currency = "€"  # just a cached variable.
 
     default_discounts = [0, 5, 9, 20, 30]
     default_discounts_with_labels = []
@@ -2153,7 +2155,7 @@ class Preferences(models.Model):
         verbose_name = __("Preferences")
 
     def __str__(self):
-        return u"default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
+        return "default place: {}, vat: {}".format(self.default_place.name, self.vat_book)
 
     def to_dict(self):
         res = {}
@@ -2208,7 +2210,7 @@ class Preferences(models.Model):
         msgs = Messages()
         prefs = Preferences.objects.first()
         if not prefs:
-            msgs.add_info(_(u"There is no preferences"))
+            msgs.add_info(_("There is no preferences"))
             return msgs.status, msgs.msgs
 
         for key, val in kwargs.iteritems():
@@ -2218,7 +2220,7 @@ class Preferences(models.Model):
                         prefs.default_place = val
                         prefs.save()
                     except Exception as e:
-                        log.error(u"Error while setting preferences: {}".format(e))
+                        log.error("Error while setting preferences: {}".format(e))
                         # status = ALERT_ERROR
 
                 elif key == 'vat_book':
@@ -2226,8 +2228,8 @@ class Preferences(models.Model):
                         prefs.vat_book = val
                         prefs.save()
                     except Exception as e:
-                        log.error(u"Error setting preferences VAT: {}".format(e))
-                        msgs.add_error(_(u"Error while setting the vat"))
+                        log.error("Error setting preferences VAT: {}".format(e))
+                        msgs.add_error(_("Error while setting the vat"))
 
                 else:
                     prefs.__setattr__(key, val)
@@ -2261,7 +2263,7 @@ class Preferences(models.Model):
         try:
             currency = json.loads(Preferences.prefs().others)
             Preferences.default_currency = currency
-            return currency.get('default_currency', u'€').upper()
+            return currency.get('default_currency', '€').upper()
         except Exception:
             pass
 
@@ -2284,7 +2286,7 @@ class BasketCopies(models.Model):
     nb = models.IntegerField(default=0)
 
     def __str__(self):
-        return u"Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
+        return "Basket %s: %s copies of %s" % (self.basket.name, self.nb, self.card.title)
 
     def to_dict(self):
         """Card representation and its quantity in the basket.
@@ -2332,7 +2334,7 @@ class Basket(models.Model):
         verbose_name = __("Basket")
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
     def get_absolute_url(self):
         return "/baskets/##{}".format(self.id)
@@ -2367,7 +2369,7 @@ class Basket(models.Model):
             dist_id = int(dist_id)
         try:
             basket = Basket.objects.get(name="auto_command")
-            if dist_id in [0, '0', u'0']:
+            if dist_id in [0, '0', '0']:
                 copies_qties = basket.basketcopies_set.\
                                filter(card__distributor_id__isnull=True)\
                                .order_by('card__title')
@@ -2411,7 +2413,7 @@ class Basket(models.Model):
             # msg = {'level': ALERT_SUCCESS,
             # 'message': _("New basket created")}
         except Exception as e:
-            log.error(u"Pb when trying to create a new basket: {}".format(e))
+            log.error("Pb when trying to create a new basket: {}".format(e))
             msgs.add_error(_("We could not create a new basket. This is an internal error."))
             return None, False, msgs.msgs
 
@@ -2427,7 +2429,7 @@ class Basket(models.Model):
         - distributor_id
         """
         copies = BasketCopies.objects.filter(basket_id=pk)
-        if distributor_id in [0, '0', u'0', -1, '-1', u'-1']:
+        if distributor_id in [0, '0', '0', -1, '-1', '-1']:
             copies = copies.filter(card__distributor__isnull=True)
         elif distributor_id is not None:
             copies = copies.filter(card__distributor_id=distributor_id)
@@ -2451,7 +2453,7 @@ class Basket(models.Model):
             basket_copy.nb += nb
             basket_copy.save()
         except Exception as e:
-            log.error(u"Error while adding a card to basket %s: %s" % (self.name, e))
+            log.error("Error while adding a card to basket %s: %s" % (self.name, e))
 
     def set_copy(self, card=None, nb=1, card_id=None):
         """Set the given card's quantity.
@@ -2460,14 +2462,14 @@ class Basket(models.Model):
             try:
                 card = Card.objects.get(id=card_id)
             except Exception as e:
-                log.error(u"Basket set_copy: couldn't get card of id {}: {}".format(card_id, e))
+                log.error("Basket set_copy: couldn't get card of id {}: {}".format(card_id, e))
 
         try:
             basket_copy, created = self.basketcopies_set.get_or_create(card=card)
             basket_copy.nb = nb
             basket_copy.save()
         except Exception as e:
-            log.error(u'Error while setting the cards {} quantity: {}'.format(card.id, e))
+            log.error('Error while setting the cards {} quantity: {}'.format(card.id, e))
 
     def add_copies(self, card_ids):
         """Add the given list of card ids to this basket.
@@ -2492,10 +2494,10 @@ class Basket(models.Model):
             try:
                 self.add_copy(it)
             except Exception as e:
-                log.error(u"Error while getting card of id {}: {}".format(id, e))
+                log.error("Error while getting card of id {}: {}".format(id, e))
                 return {'level': ALERT_ERROR, 'message': "Internal error"}
 
-        return {'level': ALERT_SUCCESS, 'message': _(u"The cards were successfully added to the basket '{}'".format(self.name))}
+        return {'level': ALERT_SUCCESS, 'message': _("The cards were successfully added to the basket '{}'".format(self.name))}
 
     def remove_copy(self, card_id):
         """
@@ -2508,18 +2510,18 @@ class Basket(models.Model):
             if inter_table:
                 inter_table = inter_table.first()
                 inter_table.delete()
-                msgs.add_success(_(u"The card was successfully removed from the basket"))
+                msgs.add_success(_("The card was successfully removed from the basket"))
             else:
-                log.warn(u"Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
+                log.warn("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
 
         except ObjectDoesNotExist as e:
-            log.error(u"Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
+            log.error("Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
             status = False
-            msgs.add_error(_(u"Card not found"))
+            msgs.add_error(_("Card not found"))
         except Exception as e:
-            log.error(u"Error while trying to remove card {} from basket {}: {}".format(card_id, self.id, e))
+            log.error("Error while trying to remove card {} from basket {}: {}".format(card_id, self.id, e))
             status = False
-            msgs.add_error(_(u"Could not remove the card from the command basket. This is an internal error."))
+            msgs.add_error(_("Could not remove the card from the command basket. This is an internal error."))
 
         return status, msgs.msgs
 
@@ -2562,7 +2564,7 @@ class Basket(models.Model):
             # that's ok, specially in tests.
             pass
         except Exception as e:
-            log.error(u"Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
+            log.error("Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
 
     def to_deposit(self, distributor=None, name=""):
         """Transform this basket to a deposit.
@@ -2580,17 +2582,17 @@ class Basket(models.Model):
             try:
                 distributor = Distributor.objects.get(id=distributor)
             except ObjectDoesNotExist as e:
-                log.error(u"Basket to deposit: the given distributor of id {} doesn't exist: {}".format(distributor, e))
+                log.error("Basket to deposit: the given distributor of id {} doesn't exist: {}".format(distributor, e))
                 return None, []
 
         if not distributor:
-            msg = _(u"Basket to deposit: no distributor. Abort.")
+            msg = _("Basket to deposit: no distributor. Abort.")
             log.error(msg)
             msgs.add_error(msg)
             return None, msgs.msgs
 
         if not name:
-            msg = _(u"Basket to deposit: no name given.")
+            msg = _("Basket to deposit: no name given.")
             log.error(msg)
             msgs.add_error(msg)
             return None, msgs.msgs
@@ -2605,7 +2607,7 @@ class Basket(models.Model):
             _status, _msgs = dep.add_copies(copies, quantities=qties)
             msgs.append(_msgs)
         except Exception as e:
-            log.error(u"Basket to deposit: error adding copies: {}".format(e))
+            log.error("Basket to deposit: error adding copies: {}".format(e))
             msgs.add_error(_("Error adding copies"))
 
         return dep, msgs.msgs
@@ -2644,7 +2646,7 @@ class BasketType (models.Model):
         ordering = ("name",)
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
 
 @python_2_unicode_compatible
@@ -2657,7 +2659,7 @@ class RestockingCopies(models.Model):
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return u"Restocking: %s copies of %s" % (self.quantity, self.card.title)
+        return "Restocking: %s copies of %s" % (self.quantity, self.card.title)
 
     def to_dict(self):
         """
@@ -2753,7 +2755,7 @@ class Restocking(models.Model):
                 copy.save()
 
         except Exception, e:
-            log.error(u"Error while adding '%s' to the list of restocking" % (card.title))
+            log.error("Error while adding '%s' to the list of restocking" % (card.title))
             log.error(e)
             return 0
 
@@ -2768,7 +2770,7 @@ class Restocking(models.Model):
                 copy = res[0]
                 copy.delete()
         except Exception as e:
-            log.error(u"Error while removing the card {} from the restocking list: {}".format(pk, e))
+            log.error("Error while removing the card {} from the restocking list: {}".format(pk, e))
 
         return True
 
@@ -2785,7 +2787,7 @@ class Restocking(models.Model):
             place_copy.delete()
 
         except Exception, e:
-            log.error(u"Error while removing %s to the restocking list" % (card.title))
+            log.error("Error while removing %s to the restocking list" % (card.title))
             log.error(e)
             return False
 
@@ -2801,7 +2803,7 @@ class Restocking(models.Model):
             restock = Restocking.get_or_create()
             return restock.restockingcopies_set.count()
         except Exception as e:
-            log.error(u"Error getting the total quantities in the restocking list: {}".format(e))
+            log.error("Error getting the total quantities in the restocking list: {}".format(e))
 
     @staticmethod
     def validate(cards=None, quantities=None):
@@ -2865,7 +2867,7 @@ class DepositStateCopies(models.Model):
     nb_to_return = models.IntegerField(default=0)
 
     def __str__(self):
-        return u"card {}, initial: {}, current: {}, sells: {}, etc".format(
+        return "card {}, initial: {}, current: {}, sells: {}, etc".format(
             self.card.id, self.nb_initial, self.nb_current, self.nb_sells)
 
     @property
@@ -2908,7 +2910,7 @@ class DepositState(models.Model):
     # closed = models.DateField(default=None, blank=True, null=True)
 
     def __str__(self):
-        ret = u"{}, deposit '{}' with {} copies. Closed ? {}".format(
+        ret = "{}, deposit '{}' with {} copies. Closed ? {}".format(
             self.id, self.deposit, self.copies.count(), self.closed)
         return ret
 
@@ -2953,7 +2955,7 @@ class DepositState(models.Model):
             return 0
         else:
             if len(depcopies) != 1:
-                log.warning(u"len(depcopies) != 1, this shouldn't happen.")
+                log.warning("len(depcopies) != 1, this shouldn't happen.")
             return depcopies.last().nb_current
 
     def add_copies(self, copies, nb=1, quantities=[]):
@@ -2985,7 +2987,7 @@ class DepositState(models.Model):
             return status, msgs.msgs
 
         except Exception as e:
-            log.error(u"Error while adding a card to the deposit state: {}".format(e))
+            log.error("Error while adding a card to the deposit state: {}".format(e))
             msgs.add_error(_("An error occured while adding a card to the deposit state."))
             return None, msgs.msgs
 
@@ -3000,12 +3002,12 @@ class DepositState(models.Model):
         try:
             dscopies = self.depositstatecopies_set.filter(card__id=card.id)
         except Exception:
-            msgs.add_warning(_(u"Error getting card {}  on this deposit state.".format(card.title)))
+            msgs.add_warning(_("Error getting card {}  on this deposit state.".format(card.title)))
             return msgs.status, msgs.msgs
 
         if not dscopies:
-            log.warning(u"The card {} was not found on this deposit.".format(card.title))
-            msgs.add_warning(_(u"The card {} was not found on this deposit state.".format(card.title)))
+            log.warning("The card {} was not found on this deposit.".format(card.title))
+            msgs.add_warning(_("The card {} was not found on this deposit state.".format(card.title)))
             return msgs.status, msgs.msgs
 
         state_copy = dscopies[0]
@@ -3184,7 +3186,7 @@ class Deposit(TimeStampedModel):
         verbose_name = __("deposit")
 
     def __str__(self):
-        return u"Deposit '{}' with distributor: {} (type: {})".format(
+        return "Deposit '{}' with distributor: {} (type: {})".format(
             self.name, self.distributor, self.deposit_type)
 
     def save(self, *args, **kwargs):
@@ -3355,7 +3357,7 @@ class Deposit(TimeStampedModel):
         # TODO: check new cards aren't in another deposit already ?
         msgs = Messages()
         if not distributors_match(copies):
-            msgs.add_warning(_(u"The cards should be all of the same supplier."))
+            msgs.add_warning(_("The cards should be all of the same supplier."))
             return False, msgs.msgs
 
         checkout = self.ongoing_depostate
@@ -3424,7 +3426,7 @@ class Deposit(TimeStampedModel):
         try:
             dep = Deposit.objects.create(**depo_dict)
         except Exception as e:
-            log.error(u"Adding a Deposit from_dict error ! {}".format(e))
+            log.error("Adding a Deposit from_dict error ! {}".format(e))
             msgs.add_error(_("internal error, sorry !"))
             return None, msgs
 
@@ -3434,7 +3436,7 @@ class Deposit(TimeStampedModel):
             msgs.append(_msgs)
             msgs.add_success(_("The deposit was successfully created."))
         except Exception as e:
-            log.error(u"Adding a Deposit from_dict error ! {}".format(e))
+            log.error("Adding a Deposit from_dict error ! {}".format(e))
             # Delete previously created deposit (we want an atomic operation).
             dep.delete()
             msgs.add_error(_("internal error, sorry !"))
@@ -3449,7 +3451,7 @@ class Deposit(TimeStampedModel):
                 dep.dest_place = Place.objects.get(id=dest_place_id)
                 dep.save()
             except Exception as e:
-                log.error(u"Error adding a Deposit from dict: {}".format(e))
+                log.error("Error adding a Deposit from dict: {}".format(e))
                 msgs.add_error(_("Error adding a deposit"))
 
         return dep, msgs
@@ -3462,7 +3464,7 @@ class Deposit(TimeStampedModel):
         """
         msgs = Messages()
         if not (card or card_id):
-            msgs.add_warning(_(u"Please provide a card or a card id."))
+            msgs.add_warning(_("Please provide a card or a card id."))
             return msgs.status, msgs.msgs
 
         if card_id:
@@ -3470,8 +3472,8 @@ class Deposit(TimeStampedModel):
                 card = Card.objects.get(id=card_id)
             except Exception as e:
                 if not silence:
-                    log.error(u"Exception while getting card of id {}: {}".format(card_id, e))
-                msgs.add_error(_(u"The card of id {} does not exist is this deposit.".format(card_id)))
+                    log.error("Exception while getting card of id {}: {}".format(card_id, e))
+                msgs.add_error(_("The card of id {} does not exist is this deposit.".format(card_id)))
                 return msgs.status, msgs.msgs
 
         if card:
@@ -3492,8 +3494,8 @@ class Deposit(TimeStampedModel):
             state.sell_undo(card=card, quantity=quantity)
 
         except Exception as e:
-            log.error(u"Error undoing the sell of card {} for deposit {}: {}".format(card, self.id, e))
-            msgs.add_error(_(u"Error undoing the sell of card '{}' for deposit {}".format(card.title, self.name)))
+            log.error("Error undoing the sell of card {} for deposit {}: {}".format(card, self.id, e))
+            msgs.add_error(_("Error undoing the sell of card '{}' for deposit {}".format(card.title, self.name)))
             return msgs.status, msgs.msgs
 
         return msgs.status, msgs.msgs
@@ -3566,7 +3568,7 @@ class SoldCards(TimeStampedModel):
     price_sold = models.FloatField(default=DEFAULT_PRICE)
 
     def __str__(self):
-        ret = u"card sold id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
+        ret = "card sold id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
         return ret
 
     def to_dict(self):
@@ -3603,7 +3605,7 @@ class SoldCards(TimeStampedModel):
         try:
             soldcard = SoldCards.objects.get(id=pk)
         except ObjectDoesNotExist as e:
-            msgs.add_error(u'Error while trying to get soldcard n° {}: {}'.format(pk, e))
+            msgs.add_error('Error while trying to get soldcard n° {}: {}'.format(pk, e))
             log.error(msgs.msgs)
             return False, msgs.msgs
 
@@ -3611,7 +3613,7 @@ class SoldCards(TimeStampedModel):
             # Called by the api, to undo the sell of only one book,
             # instead of calling Sell.undo to undo all of it.
             if soldcard.sell.canceled:
-                return True, [{"message": u"This sell was already canceled.",
+                return True, [{"message": "This sell was already canceled.",
                               "level": ALERT_WARNING}]
 
             status, _msgs = soldcard.card.sell_undo(quantity=soldcard.quantity,
@@ -3621,7 +3623,7 @@ class SoldCards(TimeStampedModel):
             soldcard.sell.save()
             msgs.append(_msgs)
         except Exception as e:
-            msg = u'Error while undoing the soldcard {}: {}'.format(pk, e)
+            msg = 'Error while undoing the soldcard {}: {}'.format(pk, e)
             msgs.add_error(msg)
             log.error(msg)
             status = False
@@ -3629,7 +3631,7 @@ class SoldCards(TimeStampedModel):
         # We keep the transaction visible, we don't delete the soldcard.
         # Instead, it must appear as a new entry.
 
-        msgs.add_success(_(u"Operation successful"))
+        msgs.add_success(_("Operation successful"))
         return status, msgs.msgs
 
 @python_2_unicode_compatible
@@ -3667,7 +3669,7 @@ class Sell(models.Model):
         verbose_name = __("sell")
 
     def __str__(self):
-        return u"Sell {} of {} copies at {}.".format(self.id,
+        return "Sell {} of {} copies at {}.".format(self.id,
                                                      self.soldcards_set.count(),
                                                      self.created)
 
@@ -3767,13 +3769,13 @@ class Sell(models.Model):
                 sells = sells.filter(sell__deposit_id=deposit_id)
 
         except Exception as e:
-            log.error(u"search for sells of card id {}: {}".format(card_id, e))
+            log.error("search for sells of card id {}: {}".format(card_id, e))
         if count:
             return sells.count()
 
         # Sorting.
         sortsign = "-"
-        if sortorder in [0, "0", u"0"]:
+        if sortorder in [0, "0", "0"]:
             sortsign = "-"
         else:
             sortsign = ""
@@ -3788,7 +3790,7 @@ class Sell(models.Model):
         elif "title" in sortby:
             sells = sells.order_by(sortsign + "card__title")
         else:
-            log.warning(u"Warning sorting Sell.search: uncaught case with sortby {} and sortorder {}".format(sortby, sortorder))
+            log.warning("Warning sorting Sell.search: uncaught case with sortby {} and sortorder {}".format(sortby, sortorder))
 
         # Totals.
         # nb_sells = sells.count()  # = nb of articles sold, != nb sells (passages en caisse).
@@ -4037,7 +4039,7 @@ class Sell(models.Model):
 
         if not ids_prices_nb:
             if not silence:
-                log.warning(u"Sell: no cards are passed on. That shouldn't happen.")
+                log.warning("Sell: no cards are passed on. That shouldn't happen.")
             status = ALERT_WARNING
             return sell, status, alerts
 
@@ -4056,9 +4058,9 @@ class Sell(models.Model):
             try:
                 deposit_obj = Deposit.objects.get(id=deposit_id)
             except ObjectDoesNotExist:
-                log.error(u"Couldn't get deposit of id {}.".format(deposit_id))
+                log.error("Couldn't get deposit of id {}.".format(deposit_id))
             except Exception as e:
-                log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
+                log.error("Error while getting deposit of id {}: {}".format(deposit_id, e))
 
         # Get the place we sell from (optional).
         place_obj = place
@@ -4066,7 +4068,7 @@ class Sell(models.Model):
             try:
                 place_obj = Place.objects.get(id=place_id)
             except ObjectDoesNotExist:
-                log.error(u"Registering a Sell, couldn't get place of id {}.".format(place_id, e))
+                log.error("Registering a Sell, couldn't get place of id {}.".format(place_id, e))
         elif not place_obj:
             place_obj = Preferences.get_default_place()
 
@@ -4081,7 +4083,7 @@ class Sell(models.Model):
             status = ALERT_ERROR
             alerts.append({"message": "Ooops, we couldn't sell anything :S",
                            "level": ALERT_ERROR})
-            log.error(u"Error on creating Sell object: {}".format(e))
+            log.error("Error on creating Sell object: {}".format(e))
             return None, status, "Error registering the sell"
 
         # Decrement cards quantities from their place or deposit.
@@ -4090,7 +4092,7 @@ class Sell(models.Model):
             id = it.get("id")
             quantity = it.get("quantity", 1)
             if not id:
-                log.error(u"Error: id {} shouldn't be None.".format(id))
+                log.error("Error: id {} shouldn't be None.".format(id))
             card = Card.objects.get(id=id)
             cards_obj.append(card)
 
@@ -4106,14 +4108,14 @@ class Sell(models.Model):
                     status, alerts = Card.sell(id=id, quantity=quantity, place=place_obj)
 
             except ObjectDoesNotExist:
-                msg = u"Error: the card of id {} doesn't exist.".format(id)
+                msg = "Error: the card of id {} doesn't exist.".format(id)
                 log.error(msg)
                 alerts.append({"level": ALERT_ERROR, "message": msg})
                 status = ALERT_WARNING
                 sell.delete()
                 return None, status, msg
             except Exception as e:
-                msg = u"Error selling card {}: {}".format(id, e)
+                msg = "Error selling card {}: {}".format(id, e)
                 log.error(msg)
                 status = ALERT_ERROR
                 sell.delete()
@@ -4123,7 +4125,7 @@ class Sell(models.Model):
         for i, card in enumerate(cards_obj):
             price_sold = ids_prices_nb[i].get("price_sold", card.price)
             if not price_sold:
-                msg = u"We can not sell the card '{}' because it has no sell price and no original price. Please specify the price in the form.".format(card.title)
+                msg = "We can not sell the card '{}' because it has no sell price and no original price. Please specify the price in the form.".format(card.title)
                 if not silence:
                     log.error(msg)
                 alerts.append({"message": msg,
@@ -4144,16 +4146,16 @@ class Sell(models.Model):
                 sold.created = date
                 sold.save()
             except Exception as e:
-                alerts.append({"message": _(u"Warning: we couldn't sell {}.".format(card.id)),
+                alerts.append({"message": _("Warning: we couldn't sell {}.".format(card.id)),
                                "level": ALERT_WARNING})
-                log.error(u"Error on adding the card {} to the sell {}: {}".format(card.id,
+                log.error("Error on adding the card {} to the sell {}: {}".format(card.id,
                                                                                    sell.id,
                                                                                    e))
                 status = ALERT_ERROR
 
         # XXX: misleading names: alerts (messages) and Alert.
         if not alerts:
-            alerts.append({"message": _(u"Sell successfull."),
+            alerts.append({"message": _("Sell successfull."),
                            "level": ALERT_SUCCESS})
 
         return (sell, status, alerts)
@@ -4174,8 +4176,8 @@ class Sell(models.Model):
             sell = Sell.objects.get(id=sell_id)
             status, msgs = sell.undo()
         except Exception as e:
-            log.error(u"Error while trying to undo sell id {}: {}".format(sell_id, e))
-            msgs.add_error(_(u"Error while undoing sell {}".format(sell_id)))
+            log.error("Error while trying to undo sell id {}: {}".format(sell_id, e))
+            msgs.add_error(_("Error while undoing sell {}".format(sell_id)))
 
         return status, msgs
 
@@ -4186,7 +4188,7 @@ class Sell(models.Model):
         - we do not undo alerts here
         """
         if self.canceled:
-            return True, [{"message": u"This sell was already canceled.",
+            return True, [{"message": "This sell was already canceled.",
                           "level": ALERT_WARNING}]
 
         status = True
@@ -4203,8 +4205,8 @@ class Sell(models.Model):
                     status, _msgs = card_obj.sell_undo(quantity=qty, place=self.place)
                 msgs.append(_msgs)
             except Exception as e:
-                msgs.add_error(_(u"Error while undoing sell {}.".format(self.id)))
-                log.error(u"Error while undoing sell {}: {}".format(self.id, e))
+                msgs.add_error(_("Error while undoing sell {}.".format(self.id)))
+                log.error("Error while undoing sell {}: {}".format(self.id, e))
                 status = False
 
         # Add a log to the Entry history
@@ -4217,10 +4219,10 @@ class Sell(models.Model):
             try:
                 history.Entry.new(cards, payment=4, reason=reason)  # 4: canceled sell
             except Exception as e:
-                log.error(u"Error while adding an Entry to the history for card {}:{}".format(self.id, e))
+                log.error("Error while adding an Entry to the history for card {}:{}".format(self.id, e))
                 status = False
 
-            msgs.add_success(_(u"Sell {} canceled with success.").format(self.id))
+            msgs.add_success(_("Sell {} canceled with success.").format(self.id))
 
         return status, msgs.msgs
 
@@ -4250,7 +4252,7 @@ class Alert(models.Model):
     comment = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return u"alert for card {}, created {}".format(self.card.id, self.date_creation)
+        return "alert for card {}, created {}".format(self.card.id, self.date_creation)
 
     def get_absolute_url(self):
         # return reverse("sell_view", args=(self.id,))
@@ -4311,7 +4313,7 @@ class InventoryCopies(InventoryCopiesBase):
     inventory = models.ForeignKey("Inventory")
 
     def __str__(self):
-        return u"Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
+        return "Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
                                                                self.quantity,
                                                                self.card.title,
                                                                self.card.id)
@@ -4476,7 +4478,7 @@ class InventoryBase(TimeStampedModel):
             basket_dict = self.basket.to_dict()
             inv_name = self.basket.name
         else:
-            log.error(u"Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
+            log.error("Inventory of a shelf, place or basket ? We don't know. That shouldn't happen !")
 
         state = {
             "copies": copies,
@@ -4557,7 +4559,7 @@ class InventoryBase(TimeStampedModel):
             id, qty = pair
             try:
                 card = Card.objects.get(id=id)
-                if qty in ["null", u"null", "undefined", u"undefined"]:
+                if qty in ["null", "null", "undefined", "undefined"]:
                     log.warning("updating inventory: got qty of null or undefined. {}".format(pairs))
                     qty = 0
                 else:
@@ -4581,7 +4583,7 @@ class InventoryBase(TimeStampedModel):
             obj = Inventory.objects.get(id=pk)
             return obj.diff(**kwargs)
         except Exception as e:
-            log.error(u"Error getting inventory: {}".format(e))
+            log.error("Error getting inventory: {}".format(e))
             return None
 
     def diff(self, to_dict=False):
@@ -4616,7 +4618,7 @@ class InventoryBase(TimeStampedModel):
             obj_name = self.command.title
             stock_cards_set = self.command.commandcopies_set.all()
         else:
-            log.error(u"An inventory without place nor shelf nor basket nor publisher nor command... that shouldn't happen.")
+            log.error("An inventory without place nor shelf nor basket nor publisher nor command... that shouldn't happen.")
 
         # Cards of the inventory:
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
@@ -4763,7 +4765,7 @@ class InventoryBase(TimeStampedModel):
                 card_qty.card.save()
 
         except Exception as e:
-            log.error(u"Error while applying the inventory {} to {}: {}"
+            log.error("Error while applying the inventory {} to {}: {}"
                       .format(self.id, place_or_deposit, e))
             return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
@@ -4773,7 +4775,7 @@ class InventoryBase(TimeStampedModel):
                 place_or_deposit.remove_card(card)
                 # xxx: shall we mark in_stock to False ? It depends on their quantity in other places.
         except Exception as e:
-            log.error(u"Error while applying the 'missing' cards of the inventory {} to {}: {}"
+            log.error("Error while applying the 'missing' cards of the inventory {} to {}: {}"
                       .format(self.id, place_or_deposit, e))
             return False, [{"level": ALERT_ERROR, "message": _("There was an internal error, sorry !")}]
 
@@ -4810,7 +4812,7 @@ class Inventory(InventoryBase):
 
     def __str__(self):
         inv_obj = self.shelf or self.place or self.basket or self.publisher
-        return u"{}: {}".format(self.id, inv_obj.name)
+        return "{}: {}".format(self.id, inv_obj.name)
 
     @property
     def copies_set(self):
@@ -4847,7 +4849,7 @@ class Inventory(InventoryBase):
         elif self.basket:
             cards_qty = self.basket.basketcopies_set.count()
         else:
-            log.error(u"We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
+            log.error("We are not doing the inventory of a shelf, a place, a basket or a publisher, so what ?")
 
         return cards_qty
 
@@ -4892,7 +4894,7 @@ def get_total_cost():
         total_cost = sum([it[0] * it[1] for it in price_qties])
         return total_cost
     except Exception as e:
-        log.error(u"Error calculating the total cost of the stock: {}".format(e))
+        log.error("Error calculating the total cost of the stock: {}".format(e))
 
 
 class Stats(object):
@@ -4921,14 +4923,14 @@ class Stats(object):
         nb_cards = Card.quantities_total()
         nb_not_books = Card.objects.filter(in_stock=True).exclude(card_type=type_book).count()
         # label: needed for graph creation in js.
-        res['nb_titles'] = {'label': _(u"Number of book titles"),
+        res['nb_titles'] = {'label': _("Number of book titles"),
                             'value': Card.objects.filter(in_stock=True).
                             filter(card_type=type_book).count()}
-        res['nb_cards'] = {'label': _(u"Number of books"),
+        res['nb_cards'] = {'label': _("Number of books"),
                            'value': nb_cards}
-        res['nb_products'] = {'label': _(u"Number of products"),
+        res['nb_products'] = {'label': _("Number of products"),
                               'value': nb_cards + nb_not_books}
-        res['nb_unknown'] = {'label': _(u"Number of products of unknown type"),
+        res['nb_unknown'] = {'label': _("Number of products of unknown type"),
                              'value': Card.objects.filter(card_type=type_unknown).count()}
         # the ones we bought
         # impossible atm
@@ -4937,10 +4939,10 @@ class Stats(object):
 
         # Cleanlyness: nb of cards with stock <= 0
 
-        res['nb_cards_no_stock'] = {'label': _(u"Number of titles with no copy"),
+        res['nb_cards_no_stock'] = {'label': _("Number of titles with no copy"),
                                     # 'value': Card.objects.filter(quantity__lte=0).count()}
                                     'value': sum([it.quantity_titles_no_stock() for it in places])}
-        res['nb_cards_one_copy'] = {'label': _(u"Number of titles with one copy"),
+        res['nb_cards_one_copy'] = {'label': _("Number of titles with one copy"),
                                     # 'value': Card.objects.filter(quantity=1).count()}
                                     'value': sum([it.quantity_titles_one_copy() for it in places])}
 
@@ -4958,19 +4960,19 @@ class Stats(object):
                 if nb_current > 0:
                     in_deposits += nb_current
 
-        res['in_deposits'] = {'label': _(u"Number of books in deposits"),
+        res['in_deposits'] = {'label': _("Number of books in deposits"),
                               'value': in_deposits}
         # xxx: percentage cards we bought / in deposit / in both
 
         # Cost
-        res['deposits_cost'] = {'label': _(u"Total cost of the books in deposits"),
+        res['deposits_cost'] = {'label': _("Total cost of the books in deposits"),
                                 'value': deposits_cost,
                                 'value_fmt': price_fmt(deposits_cost, default_currency),
         }
 
         try:
             total_cost = sum([it.cost() for it in places])
-            res['total_cost'] = {'label': _(u"Total cost of the stock"),
+            res['total_cost'] = {'label': _("Total cost of the stock"),
                                  # Round the float... or just {:.2f}.format.
                                  'value': roundfloat(total_cost),
                                  'value_fmt': price_fmt(roundfloat(total_cost), default_currency),
@@ -4978,13 +4980,13 @@ class Stats(object):
             # The same, excluding vat.
             # xxx: all Cards will not be books.
             total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
-            res['total_cost_excl_tax'] = {'label': _(u"Total cost of the stock, excl. tax"),
+            res['total_cost_excl_tax'] = {'label': _("Total cost of the stock, excl. tax"),
                                           'value': total_cost_excl_tax,
                                           'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
             }
 
         except Exception as e:
-            log.error(u"Error with total_cost: {}".format(e))
+            log.error("Error with total_cost: {}".format(e))
 
         # Next appointments
         # xxx: transform to strings and associate with the deposit.
@@ -5069,7 +5071,7 @@ class Stats(object):
             shelf = Shelf.objects.get(id=shelf_id)
             shelf_name = shelf.name
         except Exception as e:
-            log.error(u"No shelf with id {}: {}".format(shelf_id, e))
+            log.error("No shelf with id {}: {}".format(shelf_id, e))
             return None
 
         hcards = Card.objects.filter(shelf__name=shelf_name)
@@ -5100,7 +5102,7 @@ class CommandCopies(TimeStampedModel):
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return u"Command for card {}".format(self.card.pk)
+        return "Command for card {}".format(self.card.pk)
 
     @property
     def qty(self):
@@ -5115,7 +5117,7 @@ class CommandCopies(TimeStampedModel):
         try:
             return self.card.price * self.quantity
         except Exception as e:
-            log.error(u"Error getting price for value: {}".format(e))
+            log.error("Error getting price for value: {}".format(e))
             return 0
 
     @property
@@ -5123,7 +5125,7 @@ class CommandCopies(TimeStampedModel):
         try:
             return self.card.price_discounted * self.quantity
         except Exception as e:
-            log.error(u"Error getting discounted value: {}".format(e))
+            log.error("Error getting discounted value: {}".format(e))
             return 0
 
     # def __str__(self):
@@ -5220,7 +5222,7 @@ class Command(TimeStampedModel):
         return reverse("commands_view", args=(self.id,))
 
     def __str__(self):
-        return u"command {} for {}".format(self.id, self.supplier_name)
+        return "command {} for {}".format(self.id, self.supplier_name)
 
     def to_list(self):
         date_received = ""
@@ -5240,7 +5242,7 @@ class Command(TimeStampedModel):
             'id': self.id,
             'name': self.name,
             'created': self.created.strftime(DATE_FORMAT),
-            'distributor_name': self.distributor.name if self.distributor else _(u"NO SUPPLIER"),
+            'distributor_name': self.distributor.name if self.distributor else _("NO SUPPLIER"),
             'distributor_id': self.distributor.id if self.distributor else 0,
             'nb_copies': self.copies.count(),
             'date_received': date_received,
@@ -5352,7 +5354,7 @@ class Command(TimeStampedModel):
         """
         Used for example in the inventory UI title.
         """
-        return _(u"command #{} - {}").format(self.id, self.supplier_name)
+        return _("command #{} - {}").format(self.id, self.supplier_name)
 
     @staticmethod
     def ongoing(to_dict=None):
@@ -5412,10 +5414,10 @@ class Command(TimeStampedModel):
             try:
                 card_obj = Card.objects.get(id=card_id)
             except ObjectDoesNotExist:
-                log.warning(u'The card of id {} to add to the command {} does not exist'.format(
+                log.warning('The card of id {} to add to the command {} does not exist'.format(
                     card_id,
                     self.id))
-                msgs.add_error(u"The card of id {} does not exist".format(card_id))
+                msgs.add_error("The card of id {} does not exist".format(card_id))
                 return None, msgs
 
         try:
@@ -5423,10 +5425,10 @@ class Command(TimeStampedModel):
             cmdcopy.quantity += nb
             cmdcopy.save()
         except Exception as e:
-            log.error(u'Error while adding card {} to command {}: {}'.format(card_obj.id,
+            log.error('Error while adding card {} to command {}: {}'.format(card_obj.id,
                                                                              self.id,
                                                                              e))
-            msgs.add_error(u"An error occured while adding the card {} to the command.".format(card_id))
+            msgs.add_error("An error occured while adding the card {} to the command.".format(card_id))
             return False, msgs
 
         return cmdcopy.quantity, msgs
@@ -5490,27 +5492,27 @@ class Command(TimeStampedModel):
         try:
             date = datetime.datetime.strptime(date, DATE_FORMAT)
         except ValueError as e:
-            log.warning(u"commands update: error on date format: {}".format(e))
-            return msgs.add_error(u"Date format is not valid.")
+            log.warning("commands update: error on date format: {}".format(e))
+            return msgs.add_error("Date format is not valid.")
 
         try:
             cmd_obj = Command.objects.get(id=cmd_id)
         except ObjectDoesNotExist as e:
-            return msgs.add_error(u"The queried command does not exist.")
+            return msgs.add_error("The queried command does not exist.")
 
         if label not in dir(cmd_obj):
-            return msgs.add_error(u"The date to change doesn't seem to exist.")
+            return msgs.add_error("The date to change doesn't seem to exist.")
 
         # At last, update the attribute.
         try:
             setattr(cmd_obj, label, date)
             cmd_obj.save()
         except Exception as e:
-            log.error(u"Error updating command {} with attribute {} and value {}: {}".format(
+            log.error("Error updating command {} with attribute {} and value {}: {}".format(
                 cmd_id, label, date, e))
-            return msgs.add_error(u"Internal error.")
+            return msgs.add_error("Internal error.")
 
-        msgs.add_success(_(u"Command updated succesfully."))
+        msgs.add_success(_("Command updated succesfully."))
         return msgs
 
     def get_inventory(self):

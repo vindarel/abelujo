@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import httplib
 import json
 import locale
@@ -284,7 +286,7 @@ def cards(request, **response_kwargs):
                     card, _ = Card.from_dict(data[0], to_list=True)
                     data = [card]
                 except Exception as e:
-                    log.warning(u"Error while adding card from isbn search in db: {}".format(e))
+                    log.warning("Error while adding card from isbn search in db: {}".format(e))
 
     to_ret = {
         'cards': data,
@@ -306,7 +308,7 @@ def card(request, **kwargs):
             ret['alerts'] = msgs
 
         except Exception as e:
-            msg = _(u"couldn't find card of id {}: {}".format(pk, e))
+            msg = _("couldn't find card of id {}: {}".format(pk, e))
             log.warning(msg)
             msgs.add_error(msg)
 
@@ -370,7 +372,7 @@ def card_create(request, **response_kwargs):
 
         except Exception as e:
             tb = traceback.format_exc()
-            log.error(u"Error adding a card: {}\n{}".format(e, tb))
+            log.error("Error adding a card: {}\n{}".format(e, tb))
             alerts.append({"level": ALERT_ERROR,
                            "message": _("Woops, we can not create this card. This is a bug.")})
 
@@ -439,8 +441,8 @@ def card_add(request, **response_kwargs):
             card_obj.shelf = cat
             to_save = True
 
-        if distributor_id and distributor_id not in [-1, 0, '0', u'0',
-                                                     'undefined', u'undefined']:
+        if distributor_id and distributor_id not in [-1, 0, '0', '0',
+                                                     'undefined', 'undefined']:
             if card_obj.distributor_id != distributor_id:
                 distributor = Distributor.objects.get(id=distributor_id)
                 card_obj.distributor = distributor
@@ -592,7 +594,7 @@ def deposits(request, **response_kwargs):
                     return HttpResponse(json.dumps({
                         "data": {},
                         "messages": [{'level': ALERT_WARNING,
-                                      'message': _(u'Please provide a supplier'), }]
+                                      'message': _('Please provide a supplier'), }]
                     }))
                 distributor_obj = distributor_obj[0]
 
@@ -611,7 +613,7 @@ def deposits(request, **response_kwargs):
             depo, msgs = Deposit.from_dict(deposit_dict)
 
         except Exception as e:
-            log.error(u"api/deposit error: {}".format(e))
+            log.error("api/deposit error: {}".format(e))
             msgs["status"] = httplib.INTERNAL_SERVER_ERROR
             msgs["messages"].append({"level": ALERT_ERROR,
                                      "message": "internal error, sorry !"})
@@ -675,9 +677,9 @@ def sell(request, **response_kwargs):
             try:
                 deposit_obj = Deposit.objects.get(id=deposit_id)  # noqa: F841
             except ObjectDoesNotExist:
-                log.error(u"Couldn't get deposit of id {}.".format(deposit_id))
+                log.error("Couldn't get deposit of id {}.".format(deposit_id))
             except Exception as e:
-                log.error(u"Error while getting deposit of id {}: {}".format(deposit_id, e))
+                log.error("Error while getting deposit of id {}: {}".format(deposit_id, e))
 
         # Sell from a place.
         try:
@@ -687,7 +689,7 @@ def sell(request, **response_kwargs):
                                                    deposit_id=deposit_id)
 
         except Exception as e:
-            log.error(u"api/sell error: {}".format(e))
+            log.error("api/sell error: {}".format(e))
             alerts.append({"level": "error",
                            "message": e})
             return JsonResponse(alerts, safe=False)
@@ -726,7 +728,7 @@ def sell_undo(request, pk, **response_kwargs):
             # We undo the entire sell.
             status, msgs = Sell.sell_undo(pk)
         else:
-            msgs.append({"message": u"Internal error: we didn't receive which sell to cancel.",
+            msgs.append({"message": "Internal error: we didn't receive which sell to cancel.",
                          "status": ALERT_ERROR})
 
         to_ret = {"status": status,
@@ -768,7 +770,7 @@ def restocking_remove(request, pk):
             Restocking.remove_card_id(pk)
         except Exception as e:
             msgs.add_error(_("An error happened. We were notified about it."))
-            logging.error(u"Error on removing the card {} from restocking list: {}".format(pk, e))
+            logging.error("Error on removing the card {} from restocking list: {}".format(pk, e))
         msgs.add_success(_("The card was removed with success."))
         to_ret['alerts'] = msgs.msgs
         return JsonResponse(to_ret)
@@ -811,7 +813,7 @@ def history_sells(request, **response_kwargs):
                                sortby=sortby, sortorder=sortorder,
                                to_list=True)
         except Exception as e:
-            log.error(u"api/history error: {}".format(e))
+            log.error("api/history error: {}".format(e))
             return HttpResponse(json.dumps(alerts), **response_kwargs)
 
         to_ret = {"status": status,
@@ -862,7 +864,7 @@ def auto_command_basket(request, action="", **response_kwargs):
     try:
         basket = Basket.objects.get(id=AUTO_COMMAND_ID)
     except Exception as e:
-        log.error(u"Error while getting autocommand basket: {}".format(e))
+        log.error("Error while getting autocommand basket: {}".format(e))
         msgs.append(e.message)
         to_ret['status'] = False
         return JsonResponse(to_ret)  # also return error message.
@@ -952,7 +954,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         basket = Basket.objects.get(id=pk)
 
     except Exception as e:
-        log.info(u"Couldn't get basket of id {}: {}".format(pk, e))
+        log.info("Couldn't get basket of id {}: {}".format(pk, e))
         msgs.append(e.message)
         to_ret['status'] = False
         return JsonResponse(to_ret)  # xxx: also return error message.
@@ -1007,7 +1009,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 try:
                     msg = basket.add_copies(id_list)
                 except ObjectDoesNotExist as e:
-                    log.error(u"Error while adding copies {} to basket {}: {}".format(id_list, pk, e))
+                    log.error("Error while adding copies {} to basket {}: {}".format(id_list, pk, e))
 
             elif req.get('basket_id'):
                 # No card ids: use all the basket copies (from another basket).
@@ -1017,15 +1019,15 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 try:
                     basket_orig = Basket.objects.get(id=basket_id)
                 except ObjectDoesNotExist as e:
-                    log.error(u"Error on command: {}.".format(e))
-                    msg = u"Error: the list of id {} does not exist.".format(basket_id)
+                    log.error("Error on command: {}.".format(e))
+                    msg = "Error: the list of id {} does not exist.".format(basket_id)
 
                 if basket_orig.distributor is not None:
                     try:
                         # Set the cards' distributor, if defined in the basket.
                         basket_orig.distributor.set_distributor(basket=basket_orig)
                     except Exception as e:
-                        log.error(u"Error trying to set the distributor of the cards, for basket {}: {}".
+                        log.error("Error trying to set the distributor of the cards, for basket {}: {}".
                                 format(basket.id, e))
                         return  # xxx error message
 
@@ -1033,7 +1035,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                     msg = basket.add_cards(basket_orig.copies.all())
                     msgs.append(msg)
                 except Exception as e:
-                    log.error(u'Error while adding cards of basket {} to basket {}: {}'.
+                    log.error('Error while adding cards of basket {} to basket {}: {}'.
                             format(basket_id, pk, e))
 
         # Add cards from card dicts, not in db yet (from the Searchresults view or a Vue Basket).
@@ -1057,7 +1059,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                         ids.append(exists.id)
 
                 except Exception as e:
-                    log.error(u"Error while creating card from baskets: {}".format(e))
+                    log.error("Error while creating card from baskets: {}".format(e))
 
             # Add them to the basket.
             try:
@@ -1077,7 +1079,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
                 basket_qty.nb = qty
                 basket_qty.save()
             except Exception as e:
-                log.error(u"Error while setting the card qty in list {}: {}".format(basket.id, e))
+                log.error("Error while setting the card qty in list {}: {}".format(basket.id, e))
                 msgs.append({'level': "error",
                              'message': _("We couldn't set the quantity of the card.")})
 
@@ -1200,7 +1202,7 @@ def baskets_update(request, pk, **response_kwargs):
         try:
             basket = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error(u"Basket update: {}".format(e))
+            log.error("Basket update: {}".format(e))
             return JsonResponse(to_ret)
 
         # fields are in request.body
@@ -1250,7 +1252,7 @@ def baskets_add_card(request, pk, **response_kwargs):
             card_obj = Card.objects.get(id=card_id)
             dist_obj = None
             dist_name = ""
-            COMMAND_IDS = [-1, "-1", u"-1", 0, "0", u"0"]
+            COMMAND_IDS = [-1, "-1", "-1", 0, "0", "0"]
             if dist_id and dist_id not in COMMAND_IDS:
                 dist_obj = Distributor.objects.get(id=dist_id)
 
@@ -1264,7 +1266,7 @@ def baskets_add_card(request, pk, **response_kwargs):
                     card_obj.save()
                     dist_name = dist_obj.name
                 elif card_obj.distributor != dist_obj:
-                    msgs.add_error(_(u"This card has already a supplier ({}), we can't mark it to command for {}.".format(
+                    msgs.add_error(_("This card has already a supplier ({}), we can't mark it to command for {}.".format(
                         card_obj.distributor.name, dist_obj.name)))
                     to_ret['alerts'] = msgs.to_alerts()
                     to_ret['status'] = msgs.status
@@ -1275,10 +1277,10 @@ def baskets_add_card(request, pk, **response_kwargs):
 
             b_obj.add_copy(card_obj)
             if dist_name:
-                msgs.add_success(_(u"The card '{}' was successfully added to the supplier '{}'.".format(
+                msgs.add_success(_("The card '{}' was successfully added to the supplier '{}'.".format(
                     card_obj.title, dist_name)))
             else:
-                msgs.add_success(_(u"The card '{}' was successfully marked to command, with no default supplier.").
+                msgs.add_success(_("The card '{}' was successfully marked to command, with no default supplier.").
                                  format(card_obj.title))
             to_ret['alerts'] = msgs.to_alerts()
             to_ret['card'] = card_obj.to_dict()  # to update the client.
@@ -1292,23 +1294,23 @@ def baskets_add_card(request, pk, **response_kwargs):
                     card_obj = Card.objects.get(id=card_id)
 
                 except ObjectDoesNotExist:
-                    log.error(u"Card of id {} doesn't exist.".format(card_id))
+                    log.error("Card of id {} doesn't exist.".format(card_id))
                     return JsonResponse({'status': ALERT_ERROR,
-                                         'message': u"The card {} does not exist.".format(card_id)})
+                                         'message': "The card {} does not exist.".format(card_id)})
 
             else:
                 try:
                     card_obj, created = Card.from_dict(body)
                 except Exception as e:
-                    log.error(u"Error creating card: {}".format(e))
+                    log.error("Error creating card: {}".format(e))
 
             # Add or increment the card.
             try:
                 b_obj.add_copy(card_obj)
             except Exception as e:
-                log.error(u"Error adding card {} to basket {}: {}".format(card.id, b_obj.id, e))
+                log.error("Error adding card {} to basket {}: {}".format(card.id, b_obj.id, e))
                 return JsonResponse({'status': ALERT_ERROR,
-                                     'message': u"Error, could not add card '{}'".format(card_obj.title)})
+                                     'message': "Error, could not add card '{}'".format(card_obj.title)})
 
             # update the card's id in client.
             to_ret = {"data": {"card": card_obj.to_dict(),
@@ -1331,7 +1333,7 @@ def baskets_return(request, pk, **kw):
         try:
             basket = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error(u"return basket {}: {}".format(pk, e))
+            log.error("return basket {}: {}".format(pk, e))
             to_ret['status'] = ALERT_ERROR
             to_ret['alerts'].append("Error: the basket {} doesn't exist.".format(pk))
             return JsonResponse(to_ret)
@@ -1340,7 +1342,7 @@ def baskets_return(request, pk, **kw):
             # XXX: a return operation is not idempotent :S
             out, msgs = basket.create_return()
         except Exception as e:
-            log.error(u"return basket {}: {}\n{}".format(pk, e, traceback.format_exc()))
+            log.error("return basket {}: {}\n{}".format(pk, e, traceback.format_exc()))
         finally:
             to_ret['alerts'] = msgs.msgs
             to_ret['status'] = msgs.status
@@ -1383,14 +1385,14 @@ def baskets_archive(request, pk, **kw):
         try:
             b_obj = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error(u"Basket archive: {}".format(e))
+            log.error("Basket archive: {}".format(e))
             return JsonResponse({'status': ALERT_ERROR,
                                  'message': "We could not archive the basket n° {}.".format(pk)})
 
         try:
             b_obj.archive()
         except Exception as e:
-            log.error(u"Basket {} could not be archived: {}".format(b_obj.id, e))
+            log.error("Basket {} could not be archived: {}".format(b_obj.id, e))
             msg = {'status': ALERT_ERROR,
                     'message': _("The basket could not be archived")}
         to_ret = {
@@ -1408,14 +1410,14 @@ def baskets_delete(request, pk, **kw):
         try:
             b_obj = Basket.objects.get(id=pk)
         except Exception as e:
-            log.error(u"Basket delete pk {}: {}".format(pk, e))
+            log.error("Basket delete pk {}: {}".format(pk, e))
             return JsonResponse({'status': ALERT_ERROR,
                                  'message': "basket {} does not exist".format(pk)})
 
         try:
             b_obj.delete()
         except Exception as e:
-            log.error(u"Basket {} could not be deleted: {}".format(b_obj.id, e))
+            log.error("Basket {} could not be deleted: {}".format(b_obj.id, e))
             msg = {'status': ALERT_ERROR,
                     'message': _("The basket could not be deleted")}
         to_ret = {
@@ -1504,7 +1506,7 @@ def places(request, **response_kwargs):
         try:
             obj = Place.objects.all()
         except Exception as e:
-            log.error(u"api error while getting places: {}".format(e))
+            log.error("api error while getting places: {}".format(e))
 
     data = [it.to_dict() for it in obj]
     return JsonResponse(data, safe=False)
@@ -1528,7 +1530,7 @@ def inventories(request, **kwargs):
             shelf_id = params.get("shelf_id")
             publisher_id = params.get("publisher_id")
         except Exception as e:
-            log.error(u'Error while getting query params for inventories with request {}: {}'.
+            log.error('Error while getting query params for inventories with request {}: {}'.
                       format(request, e))
             data = {
                 "status": ALERT_ERROR,
@@ -1583,7 +1585,7 @@ def inventories(request, **kwargs):
                 state = inv.state(page=page, page_size=page_size)
                 to_ret['data'] = state
             except Exception as e:
-                log.error(u"Error getting inventory state of {}: {}".format(pk, e))
+                log.error("Error getting inventory state of {}: {}".format(pk, e))
                 # and return error msg
 
         else:
@@ -1616,7 +1618,7 @@ def inventories(request, **kwargs):
                 to_ret['status'] = ALERT_SUCCESS
 
             except Exception as e:
-                log.error(u"Error getting list of inventories: {}".format(e))
+                log.error("Error getting list of inventories: {}".format(e))
                 to_ret['data'] = "Internal error"
                 to_ret['status'] = ALERT_ERROR
 
@@ -1631,7 +1633,7 @@ def inventories_copies(request, **kwargs):
         try:
             inv = Inventory.objects.get(id=pk)
         except Exception as e:
-            log.error(u"Error getting inventory {}: {}".format(pk, e))
+            log.error("Error getting inventory {}: {}".format(pk, e))
 
         if request.method == 'GET':
             # Pagination
@@ -1658,7 +1660,7 @@ def inventories_copies(request, **kwargs):
                 return JsonResponse(copies, safe=False)
 
             except Exception as e:
-                log.error(u"Error getting copies of inventory {}: {}".format(pk, e))
+                log.error("Error getting copies of inventory {}: {}".format(pk, e))
                 return JsonResponse({})
 
 def inventories_update(request, **kwargs):
@@ -1679,7 +1681,7 @@ def inventories_update(request, **kwargs):
             try:
                 inv = Inventory.objects.get(id=pk)
             except Exception as e:
-                log.error(u"Trying to update inventory {}: e".format(pk))
+                log.error("Trying to update inventory {}: e".format(pk))
                 msgs.append(_("Internal error. We couldn't save the inventory"))
                 return  # XXX return 400 error
 
@@ -1687,7 +1689,7 @@ def inventories_update(request, **kwargs):
             params = json.loads(params)
             # We don't receive a well formatted json.
             # We receive this:
-            # {u'ids_qties': [u'185, 1;,50, 1;']}
+            # {'ids_qties': ['185, 1;,50, 1;']}
             # a string with ids an their quantities.
             ids = params.get('ids_qties')
             pairs = []
@@ -1707,7 +1709,7 @@ def inventories_update(request, **kwargs):
                             card_obj, _nop = Card.from_dict(card_dict)
                             card_dict['id'] = card_obj.id
                         except Exception as e:
-                            log.error(u"Error creating the card {} to add to inventory {}: {}".
+                            log.error("Error creating the card {} to add to inventory {}: {}".
                                       format(card_dict['title'], inv.id, e))
 
                 pairs = [(card['id'], 1) for __, card in cards.iteritems()]
@@ -1768,7 +1770,7 @@ def inventory_apply(request, pk, **kwargs):
     """Apply this inv to the stock.
     """
     if pk is None or pk == "undefined":
-        log.error(u'Error: you want to apply an inventory but its given pk is undefined')
+        log.error('Error: you want to apply an inventory but its given pk is undefined')
         to_ret = {
             "status": ALERT_ERROR,
             "datab": []
@@ -1781,7 +1783,7 @@ def inventory_apply(request, pk, **kwargs):
             {"data": "already applied",
              "alerts": [
                  {"level": ALERT_INFO,
-                  "message": _(u"This inventory is already applied")}
+                  "message": _("This inventory is already applied")}
              ]})
 
     # Run asynchronously:
@@ -1817,7 +1819,7 @@ def to_int(string):
     try:
         return int(string)
     except Exception:
-        log.error(u"Unable to parse {} to an int".format(string))
+        log.error("Unable to parse {} to an int".format(string))
         return None
 
 def stats_sells_month(request, **kwargs):
@@ -1967,7 +1969,7 @@ def commands_update(request, **kwargs):
 
         # A bit of argument data validation.
         if not all([date, date_label, cmd_id]):
-            log.warning(u"command update: we don't have date, date_label or the command id: {}, {}, {}"
+            log.warning("command update: we don't have date, date_label or the command id: {}, {}, {}"
                         .format(date, date_label, cmd_id))
 
             to_ret['status'] = ALERT_ERROR
@@ -1991,8 +1993,8 @@ def _get_command_or_return(pk):
     try:
         cmd = Command.objects.get(id=pk)
     except ObjectDoesNotExist as e:
-        log.warning(u"Command {} does not exist. {}".format(pk, e))
-        msgs.add_error(u"Command {} does not exist.")
+        log.warning("Command {} does not exist. {}".format(pk, e))
+        msgs.add_error("Command {} does not exist.")
         to_ret['status'] = msgs.status
         to_ret['alerts'] = msgs.to_alerts()
         return JsonResponse(to_ret)
@@ -2035,7 +2037,7 @@ def command_receive_update(request, pk, **kwargs):
                 to_ret['status'] = msgs.status
                 to_ret['alerts'] = msgs.to_alerts()
             except Exception as e:
-                log.error(u"Error updating the parcel {}: {}".format(pk, e))
+                log.error("Error updating the parcel {}: {}".format(pk, e))
                 msgs.add_error(_("An error occured. We have been notified."))
             finally:
                 to_ret['alerts'] = msgs.msgs
@@ -2067,7 +2069,7 @@ def command_receive_apply(request, pk, **kwargs):
     Apply this inv to the stock, asynchronously (django-q task).
     """
     if pk is None or pk == "undefined":
-        log.error(u'Error: you want to apply an inventory but its given pk is undefined')
+        log.error('Error: you want to apply an inventory but its given pk is undefined')
         to_ret = {
             "status": ALERT_ERROR,
             "datab": []
@@ -2081,7 +2083,7 @@ def command_receive_apply(request, pk, **kwargs):
             {"data": "already applied",
              "alerts": [
                  {"level": ALERT_INFO,
-                  "message": _(u"This inventory is already applied")}
+                  "message": _("This inventory is already applied")}
              ]})
 
     # Run asynchronously:

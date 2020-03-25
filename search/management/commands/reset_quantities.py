@@ -21,6 +21,7 @@ Custom management command.
 
 Set all cards' quantities to zero.
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 

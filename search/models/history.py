@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import pendulum
 import os
 import calendar
@@ -66,7 +68,7 @@ class InternalMovement(TimeStampedModel):
     nb = models.IntegerField()
 
     def __unicode__(self):
-        return u"move card {} from '{}' to '{}', x{}, at {}".format(
+        return "move card {} from '{}' to '{}', x{}, at {}".format(
             self.card.id, self.origin.name, self.dest.name, self.nb, self.created)
 
     def to_dict(self):
@@ -140,7 +142,7 @@ class OutMovement(models.Model):
     recipient = models.ForeignKey("search.Client", blank=True, null=True)
 
     # def __unicode__(self):
-    # return u"id {}, type {}".format(self.pk,
+    # return "id {}, type {}".format(self.pk,
     # OutMovement.OUTMOVEMENT_TYPES_CHOICES[self.typ - 1])
 
     # def get_absolute_url(self):
@@ -276,7 +278,7 @@ class Entry(TimeStampedModel):
     reason = models.CharField(max_length=CHAR_MAX_LENGTH, blank=True, null=True)
 
     def __unicode__(self):
-        return u"type {}, created at {}".format(self.typ, self.created)
+        return "type {}, created at {}".format(self.typ, self.created)
 
     def get_absolute_url(self):
         """Actually, return the url of the related Entry.

@@ -14,6 +14,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
 
 import decimal
 import logging
@@ -327,7 +328,7 @@ def list_from_coma_separated_ints(s):
             return int(nb)
         except ValueError:
             nb = nb.replace(",", ".")
-            if nb in ["null", u"null", "undefined"]:
+            if nb in ["null", "undefined"]:
                 return None
             return float(nb) if nb else None
 
@@ -340,7 +341,7 @@ def list_from_coma_separated_ints(s):
 def ids_qties_to_pairs(string):
     pairs = []
     # [feb 19] old behaviour: string is like
-    # u'3037, 1;', u'3976, 1;', u'3064, 1;', u'3497, 1;'
+    # '3037, 1;', '3976, 1;', '3064, 1;', '3497, 1;'
     # For unknown reason, we now get a proper list straight in.
     # So we removed the ; and we don't need this method anymore.
     # But is that in all methods using it ? see command_receive_update
@@ -366,7 +367,7 @@ def _is_truthy(txt):
     # should be automatic !
     if txt is True:
         return True
-    if txt in ['true', 't', u'true', 'yes']:
+    if txt in ['true', 't', 'yes']:
         return True
     return False
 
@@ -374,7 +375,7 @@ def _is_truthy(txt):
 def is_invalid(txt):
     """When JS client sends "undefined" strings instead of nothing.
     """
-    return txt in ['undefined', u'undefined', 0, "0", u"0"]
+    return txt in ['undefined', 0, "0"]
 
 
 def page_start_index(page, size=PAGE_SIZE):
@@ -428,5 +429,5 @@ def price_fmt(price, currency):
         else:
             return '{:.2f} €'.format(price)
     except Exception as e:
-        log.warning(u'Error for models.utils.price_fmt: {}'.format(e))
+        log.warning('Error for models.utils.price_fmt: {}'.format(e))
         return '{:.2f}'.format(price)

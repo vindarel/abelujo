@@ -26,6 +26,7 @@ Usage:
 
 python manage.py shelf2place --shelf <id> [--can_sell true/false]
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 

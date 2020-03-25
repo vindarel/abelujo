@@ -24,6 +24,7 @@ Compute the quantities and save to a DB field.
 Takes around 3 minutes for a thousand objects.
 
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 

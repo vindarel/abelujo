@@ -22,6 +22,7 @@ Archive (and close) a bunch of inventories.
 ./manage.py archive_inventories --all --exclude [id,id]
 
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 

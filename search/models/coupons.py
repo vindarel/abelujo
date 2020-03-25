@@ -56,7 +56,7 @@ class CouponGeneric(TimeStampedModel):
     code = models.CharField(max_length=CHAR_LENGTH, blank=True, editable=False)
 
     def __unicode__(self):
-        return u"amount {}".format(self.amount)
+        return "amount {}".format(self.amount)
 
     def save(self, *args, **kwargs):
         code = '8000000000' + format(self.amount, '0>3')
