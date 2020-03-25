@@ -636,7 +636,6 @@ class Card(TimeStampedModel):
             except Exception as e:
                 log.error(u"Error retrieving the cover from url: {}".format(e))
 
-
     def display_authors(self):
             return u', '.join([a.name for a in self.authors.all()])
 

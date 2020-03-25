@@ -136,6 +136,18 @@ class CardFactory(DjangoModelFactory):
     price = 9.99
     isbn = ISBN
 
+class TestAuthors(TestCase):
+    def setUp(self):
+        self.author = AuthorFactory()
+        self.author2 = AuthorFactory()
+
+    def tearDown(self):
+        pass
+
+    def test_default(self):
+        res = Author.search('1')
+        self.assertEqual(1, len(res))
+
 class TestCards(TestCase):
     def setUp(self):
         # Create card types
