@@ -26,6 +26,9 @@ The client uses a coupon, and completes the amount required with another payment
 Each coupon has a unique identifier.
 """
 
+from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
+
 import uuid
 
 from django.db import models
@@ -47,6 +50,7 @@ log = get_logger()
 #         if created:
 #             log.info("Coupon model of amount {} created.".format(amount))
 
+@python_2_unicode_compatible
 class CouponGeneric(TimeStampedModel):
     amount = models.FloatField(verbose_name=__("Amount"), null=False)
     active = models.BooleanField(default=True, max_length=CHAR_LENGTH,
@@ -55,7 +59,7 @@ class CouponGeneric(TimeStampedModel):
     #: A code that is transformable into a barcode (image).
     code = models.CharField(max_length=CHAR_LENGTH, blank=True, editable=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "amount {}".format(self.amount)
 
     def save(self, *args, **kwargs):
