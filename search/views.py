@@ -124,7 +124,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
 
     qparam = {}
     qparam['source'] = cleaned_data.get("source")
-    if "q" in cleaned_data.keys():
+    if "q" in list(cleaned_data.keys()):
         qparam['q'] = cleaned_data["q"]
     # construct the query parameters of the form
     # q=query+param&source=discogs
@@ -264,7 +264,7 @@ def card_create_manually(request):
 
         if card and add_places_form.is_valid():
             places_qties = add_places_form.cleaned_data
-            for name_id, qty in places_qties.iteritems():
+            for name_id, qty in places_qties.items():
                 if not qty:
                     continue
                 place_id = name_id.split('_')[1]
@@ -445,7 +445,7 @@ def card_places_add(request, pk=None):
         if form.is_valid():
             # When the field name was an int (the place id),
             # the form was valid but cleaned_data had None values.
-            for (label_id, nb) in form.cleaned_data.iteritems():
+            for (label_id, nb) in form.cleaned_data.items():
                 if nb:
                     # the form field name is
                     # place_<id>
@@ -483,7 +483,7 @@ def card_move(request, pk=None):
                 except Exception as e:
                     log.error("couldn't move copies from {} to {}: {}".format(data['origin'], data['destination'], e))
 
-            for (basket, nb) in basketForm.cleaned_data.iteritems():
+            for (basket, nb) in basketForm.cleaned_data.items():
                 if nb:
                     basket_obj = Basket.objects.get(name=basket)
                     try:
@@ -544,14 +544,14 @@ def cards_set_supplier(request, **kwargs):
         req = request.POST.copy()
 
         # The user chose an existing distributor.
-        if 'supplier' in req.keys():
+        if 'supplier' in list(req.keys()):
             form = viewforms.SetSupplierForm(req)
             if form.is_valid():
                 dist_id = form.cleaned_data['supplier']
                 dist_obj = Distributor.objects.get(id=dist_id)
 
         # Create distributor.
-        elif 'discount' in req.keys():
+        elif 'discount' in list(req.keys()):
             form = viewforms.NewSupplierForm(req)
             if form.is_valid():
                 data = form.cleaned_data
@@ -896,7 +896,7 @@ def deposit_add_copies(request, pk):
         if form.is_valid():
             data = form.cleaned_data
             dep = Deposit.objects.get(id=pk)
-            for id, qty in data.iteritems():
+            for id, qty in data.items():
                 dep.add_copies([id], quantities=[qty])
 
             return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
@@ -921,7 +921,7 @@ def basket_auto_command(request):
     copies_by_dist = toolz.groupby(lambda it: it.distributor_id, copies)
     dists = []
     no_dist = []
-    for (dist_id, copies) in copies_by_dist.items():
+    for (dist_id, copies) in list(copies_by_dist.items()):
         if dist_id is not None:
             dists.append((Distributor.objects.get(id=dist_id), len(copies)))
         else:
@@ -1048,7 +1048,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
             header = (_("Title"), _("Quantity sold"))
             diff = inv.diff()[0]  # that should be cached XXX. A json row in the db ?
             rows = []
-            for k in diff.itervalues():
+            for k in diff.values():
                 if k.get('diff', 0) < 0:
                     qtysold = - k.get('diff')
                 else:
@@ -1142,7 +1142,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
             cards_qties = rows
 
         if total is None:
-            total = sum(map(lambda it: it[1] * it[0].price if it[0].price else 0, cards_qties))
+            total = sum([it[1] * it[0].price if it[0].price else 0 for it in cards_qties])
         if total_with_discount is None:
             total_with_discount = -1  # unemplemented. Inventories should compute it before.
         total_qty = sum([it[1] for it in cards_qties])
@@ -1388,7 +1388,7 @@ def history_sells_day(request, date, **kwargs):
             payments.append(get_payment_abbr(it.sell.payment))
             sell_transaction_markers.append(True)
 
-    data = zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids)
+    data = list(zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids))
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,
@@ -1427,12 +1427,12 @@ def history_entries_day(request, date, **kwargs):
 
     shelves = data['entries'].values_list('card__shelf__name', flat=True)
     # remove duplicates
-    shelves = filter(lambda it: it is not None, shelves)
+    shelves = [it for it in shelves if it is not None]
     shelves = list(set(shelves))
 
     publishers = data['entries'].values_list('card__publishers__name', flat=True)
     publishers = list(set(publishers))
-    publishers = filter(lambda it: it is not None, publishers)
+    publishers = [it for it in publishers if it is not None]
 
     return render(request, template, {'data': data,
                                       'shelves': shelves,

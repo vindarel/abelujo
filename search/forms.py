@@ -399,7 +399,7 @@ class CardCreateForm(forms.Form):
             label=_("Optional name to create a new shelf"),
             required=False)
 
-        for name_widget in card_form.fields.items():
+        for name_widget in list(card_form.fields.items()):
             name = name_widget[0]
             widget = name_widget[1]
             self.fields[name] = widget

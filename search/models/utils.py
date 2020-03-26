@@ -112,13 +112,13 @@ class Messages(object):
 
         Return: a status (str)
         """
-        if any(map(lambda it: it['level'] == ALERT_ERROR, self.msgs)):
+        if any([it['level'] == ALERT_ERROR for it in self.msgs]):
             return ALERT_ERROR
 
-        if any(map(lambda it: it['level'] == ALERT_WARNING, self.msgs)):
+        if any([it['level'] == ALERT_WARNING for it in self.msgs]):
             return ALERT_WARNING
 
-        if any(map(lambda it: it['level'] == ALERT_INFO, self.msgs)):
+        if any([it['level'] == ALERT_INFO for it in self.msgs]):
             return ALERT_INFO
 
         return ALERT_SUCCESS
@@ -238,7 +238,7 @@ def ppcard(cards):
     ]
 
     # Truncate all attributes:
-    tab = map(lambda it: map(truncate, it), tab)
+    tab = list([list(map(truncate, it)) for it in tab])
     tablength = len(tab)
     total = total_quantity(cards)
     tab = tabulate(tab, headers=headers)
@@ -263,7 +263,7 @@ def split_query(string):
 
 def isbns_from_query(string):
     words = split_query(string)
-    return filter(is_isbn, words)
+    return list(filter(is_isbn, words))
 
 def is_isbn(it):
     """Return True is the given string is an ean or an isbn, i.e:
@@ -347,7 +347,7 @@ def ids_qties_to_pairs(string):
     # But is that in all methods using it ? see command_receive_update
     if string and (isinstance(string, six.string_types) or isinstance(string, six.text_type)) and ';' in string:
         together = string.split(';')
-        pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
+        pairs = [[x for x in it.split(',') if x != ""] for it in together]
         return pairs
     return None
 

@@ -56,7 +56,7 @@ def run(*args):
 
     LANG = "fr"
     lang = args[0] if args else LANG
-    langchoices = data.keys()
+    langchoices = list(data.keys())
     if lang not in langchoices:
         print("The requested language ({}) isn't in the initial data. Choices: {}".format(lang, langchoices))
         exit(1)

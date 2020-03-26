@@ -393,7 +393,8 @@ class Entry(TimeStampedModel):
             price_entered = 0
             if entries_this_day:
                 prices = entries_this_day.values_list('price_init', flat=True)
-                prices = filter(lambda it: it is not None, prices)
+                prices = [it for it in prices if it is not None]
+
                 price_entered = sum(prices)
                 # sum = bad perf. With 3 entries, total 42€: 0.25s. It sums up too.
                 # XXX: now the model defaults to 0. We could apply a data migration script

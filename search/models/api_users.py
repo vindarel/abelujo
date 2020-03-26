@@ -108,7 +108,7 @@ def bill(request, *args, **response_kwargs):
     cards = Card.objects.filter(pk__in=ids)
     # sort as in ids and quantities:
     sorted_cards = sorted(cards, cmp=lambda x, y: -1 if ids.index(x.pk) <= ids.index(y.pk) else 1)
-    cards_data = zip(sorted_cards, quantities)
+    cards_data = list(zip(sorted_cards, quantities))
 
     # Identity.
     bookshop = users.Bookshop.objects.first()

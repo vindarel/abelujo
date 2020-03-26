@@ -947,7 +947,7 @@ class Card(TimeStampedModel):
         # Get all isbns, eans.
         if words:
             # Separate search terms that are isbns.
-            isbns = filter(is_isbn, words)
+            isbns = list(filter(is_isbn, words))
             words = list(set(words) - set(isbns))
 
         if words:
@@ -1496,7 +1496,7 @@ class Card(TimeStampedModel):
                         pub_obj, created = Publisher.objects.get_or_create(name=pub)
                         card_obj.publishers.add(pub_obj)
 
-            except Exception, e:
+            except Exception as e:
                 log.error("--- error while adding the publisher: {}".format(e))
 
         return card_obj
@@ -1703,7 +1703,7 @@ class Card(TimeStampedModel):
         #     place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
         #     place_copy.nb = 1
         #     place_copy.save()
-        # except Exception, e:
+        # except Exception as e:
         #     log.error("--- error while setting the default place: %s" % (e,))
 
         # add the shelf
@@ -1895,7 +1895,7 @@ class Place (models.Model):
             place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
             place_copy.nb += nb
             place_copy.save()
-        except Exception, e:
+        except Exception as e:
             log.error("--- error while setting the default place: %s" % (e,))
 
     def move(self, dest, card, nb, create_movement=True):
@@ -2014,7 +2014,7 @@ class Place (models.Model):
             card.in_stock = True
             card.save()
 
-        except Exception, e:
+        except Exception as e:
             log.error("Error while adding %s to the place %s" % (card.title, self.name))
             log.error(e)
             return 0
@@ -2034,7 +2034,7 @@ class Place (models.Model):
             place_copy, created = self.placecopies_set.get_or_create(card=card)
             place_copy.delete()
 
-        except Exception, e:
+        except Exception as e:
             log.error("Error while removing %s to the place %s" % (card.title, self.name))
             log.error(e)
             return False
@@ -2213,7 +2213,7 @@ class Preferences(models.Model):
             msgs.add_info(_("There is no preferences"))
             return msgs.status, msgs.msgs
 
-        for key, val in kwargs.iteritems():
+        for key, val in list(kwargs.items()):
             if val is not None:
                 if key == 'default_place' and not prefs.default_place == val:
                     try:
@@ -2754,7 +2754,7 @@ class Restocking(models.Model):
                 copy.quantity += qty_to_restock
                 copy.save()
 
-        except Exception, e:
+        except Exception as e:
             log.error("Error while adding '%s' to the list of restocking" % (card.title))
             log.error(e)
             return 0
@@ -2786,7 +2786,7 @@ class Restocking(models.Model):
             place_copy, created = restock.restockingcopies_set.get_or_create(card=card)
             place_copy.delete()
 
-        except Exception, e:
+        except Exception as e:
             log.error("Error while removing %s to the restocking list" % (card.title))
             log.error(e)
             return False
@@ -4627,7 +4627,7 @@ class InventoryBase(TimeStampedModel):
         # Cards of the stock (the reference)
         if d_stock is None:
             d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
-        total_copies_in_stock = sum([it['quantity'] for _, it in d_stock.iteritems()])
+        total_copies_in_stock = sum([it['quantity'] for _, it in list(d_stock.items())])
 
         # cards in stock but not in the inventory:
         in_stock = list(set(d_stock) - set(d_inv))  # list of ids
@@ -4640,7 +4640,7 @@ class InventoryBase(TimeStampedModel):
         # Difference of quantities:
         # diff = quantity original - quantity found in inventory
         d_diff = {}  # its quantity is: "how many the inventory has more or less compared with the stock"
-        for id, val in d_inv.iteritems():
+        for id, val in list(d_inv.items()):
             d_diff[id] = {}
             d_diff[id]['in_orig'] = True  # i.e. in place/basket of origin, we get the diff from
             d_diff[id]['in_inv'] = True
@@ -4657,7 +4657,7 @@ class InventoryBase(TimeStampedModel):
                 d_diff[id]['diff'] = d_inv[id]['quantity']
 
         # Add the cards in the inv but not in the origin
-        for id, val in d_stock.iteritems():
+        for id, val in list(d_stock.items()):
             if not d_inv.get(id):
                 d_diff[id] = {'in_inv': False,
                               'in_orig': True,
@@ -4670,7 +4670,7 @@ class InventoryBase(TimeStampedModel):
 
         if to_dict:
             # Update each sub-dict in place, to replace the card obj with its to_dict.
-            d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in d_diff.iteritems()}
+            d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in list(d_diff.items())}
 
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
@@ -4890,7 +4890,7 @@ def get_total_cost():
     """
     try:
         price_qties = [(it.price, it.quantity) for it in Card.objects.all()]
-        price_qties = filter(lambda it: it[0] is not None, price_qties)
+        price_qties = [it for it in price_qties if it[0] is not None]
         total_cost = sum([it[0] * it[1] for it in price_qties])
         return total_cost
     except Exception as e:
@@ -5455,7 +5455,7 @@ class Command(TimeStampedModel):
 
         cmd = Command()
         cmd.save()
-        ids_qties = filter(lambda it: not (not it), ids_qties)
+        ids_qties = [it for it in ids_qties if not (not it)]
         if not ids_qties:
             msgs.add_error("Creating a command with no card ids. Abort.")
             return None, msgs

@@ -43,7 +43,7 @@ class Command(BaseCommand):
         cards = Card.objects.filter(created__gt=start).filter(data_source='dilicom')
 
         # Cards whose price has no decimal, hence are suspicious.
-        cards = filter(lambda card: card.price % 1 == 0, cards)
+        cards = list(filter(lambda card: card.price % 1 == 0, cards))
         self.stdout.write("Looking up {} cards on Dilicom.".format(len(cards)))
         self.stdout.write("(Not all will need an update)")
         confirmation = raw_input("Continue ? [Y/n]")
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         cards_updated = []
         count_ok = 0
         for card in cards:
-            bk = filter(lambda it: it['isbn'] == card.isbn, bklist)
+            bk = list(filter(lambda it: it['isbn'] == card.isbn, bklist))
             if bk:
                 bk = bk[0]
 

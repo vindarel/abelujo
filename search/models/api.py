@@ -274,7 +274,7 @@ def cards(request, **response_kwargs):
     # Search our stock on a keyword search, but search also the web on an isbn search,
     # if we don't find it in stock.
     if not data:
-        isbn_in_query = filter(is_isbn, query)
+        isbn_in_query = list(filter(is_isbn, query))
         if isbn_in_query:
             datasource = get_datasource_from_lang(lang)
             data, traces = search_on_data_source(datasource, isbn_in_query[0])
@@ -558,7 +558,7 @@ def getSellDict(lst):
     (Note: this shitty stuff comes from angular and django pb of encoding parameters. See services.js)
     """
     to_sell = []
-    for i in xrange(len(lst) / 3):
+    for i in list(range(len(lst) / 3)):
         sub = lst[i::len(lst) / 3]
         to_sell.append({"id": sub[0],
                         "price_sold": sub[1],
@@ -1044,7 +1044,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
             # From a Vue Basket: we get usual dicts.
             cards = req.get('cards')
             if type(cards) != list:
-                cards = req['cards'].values()
+                cards = list(req['cards'].values())
             # Create the new cards in the DB.
             ids = []
             for card in cards:
@@ -1695,7 +1695,7 @@ def inventories_update(request, **kwargs):
             pairs = []
             if ids:
                 together = ids.split(';')
-                pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
+                pairs = [[x for x in it.split(',') if x != ""] for it in together]
 
             cards = params.get('cards')
             if cards:
@@ -1712,7 +1712,7 @@ def inventories_update(request, **kwargs):
                             log.error("Error creating the card {} to add to inventory {}: {}".
                                       format(card_dict['title'], inv.id, e))
 
-                pairs = [(card['id'], 1) for __, card in cards.iteritems()]
+                pairs = [(card['id'], 1) for __, card in cards.items()]
 
             status, _msgs = inv.add_pairs(pairs)
             msgs.append(_msgs)
