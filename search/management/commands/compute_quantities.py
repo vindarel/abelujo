@@ -30,6 +30,12 @@ from django.core.management.base import BaseCommand
 
 from search.models import Card
 
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
+
 
 class Command(BaseCommand):
 

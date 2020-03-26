@@ -34,6 +34,12 @@ from django.utils import timezone
 from search.models import Card
 from search.datasources.bookshops.frFR.dilicom import dilicomScraper
 
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
+
 
 class Command(BaseCommand):
 
