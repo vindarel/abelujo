@@ -43,6 +43,7 @@ pip-dev:
 	@pip install -r abelujo/requirements-dev.txt # other python libs, for development
 
 pip-submodule:
+	# 2020/03: may be fixed with inclusion in requirements.txt
 	pip install -U pip
 	pip install -U setuptools
 	cd search/datasources && python setup.py install
