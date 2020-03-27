@@ -16,3 +16,10 @@ node_modules/
 /static/js/build/
 /doc/dev/_build/
 .tox/
+*.py.bak
+search/datasources/build/
+*.csv
+static/css/index.css
+*.min.css
+*.min.js
+logging.log
