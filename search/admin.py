@@ -73,7 +73,7 @@ class CommandAdmin(admin.ModelAdmin):
         model = Command
 
     search_fields = ["supplier_name"]
-    list_display = ("__unicode__", "supplier_name", "date_received", "date_paid")
+    list_display = ("__str__", "supplier_name", "date_received", "date_paid")
 
 
 class DistributorAdmin(admin.ModelAdmin):
