@@ -563,8 +563,8 @@ def getSellDict(lst):
     (Note: this shitty stuff comes from angular and django pb of encoding parameters. See services.js)
     """
     to_sell = []
-    for i in list(range(len(lst) / 3)):
-        sub = lst[i::len(lst) / 3]
+    for i in list(range(len(lst) // 3)):
+        sub = lst[i::len(lst) // 3]
         to_sell.append({"id": sub[0],
                         "price_sold": sub[1],
                         "quantity": sub[2]})
