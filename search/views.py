@@ -27,7 +27,7 @@ import urllib.request, urllib.parse, urllib.error
 
 import pendulum
 import toolz
-import unicodecsv
+import csv
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -1128,7 +1128,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     if format in ['csv']:
         pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        writer = csv.writer(pseudo_buffer, delimiter=';')
         content = writer.writerow("")
 
         if report in ['bill']:
@@ -1247,7 +1247,7 @@ def history_sells_month(request, date, **kwargs):
 
 def _csv_response_from_rows(rows, headers=None, filename=''):
     pseudo_buffer = Echo()
-    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+    writer = csv.writer(pseudo_buffer, delimiter=';')
     content = writer.writerow("")
 
     if headers:
@@ -1505,7 +1505,7 @@ def history_sells_exports(request, **kwargs):
 
     if outformat in ['csv']:
         pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        writer = csv.writer(pseudo_buffer, delimiter=';')
         content = writer.writerow("")
 
         rows = [(it['created'],
