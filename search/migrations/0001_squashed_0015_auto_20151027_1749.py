@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
+import search.models as search_models
 
 from django.db import models, migrations
 from django.utils import timezone
@@ -118,7 +119,7 @@ class Migration(migrations.Migration):
                 ('data_source', models.CharField(max_length=200, null=True, blank=True)),
                 ('details_url', models.URLField(null=True, blank=True)),
                 ('comment', models.TextField(blank=True)),
-                ('authors', models.ManyToManyField(to=b'search.Author')),
+                ('authors', models.ManyToManyField(to=search_models.Author)),
             ],
             options={
                 'ordering': ('sortkey', 'year_published', 'title'),
@@ -323,13 +324,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sell',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.SoldCards', blank=True),
+            field=models.ManyToManyField(to=search_models.Card, null=True, through='search.SoldCards', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='inventory',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.InventoryCopies', blank=True),
+            field=models.ManyToManyField(to=search_models.Card, null=True, through='search.InventoryCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -341,13 +342,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='depositstatecopies',
             name='sells',
-            field=models.ManyToManyField(to=b'search.Sell'),
+            field=models.ManyToManyField(to=search_models.Sell),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='depositstate',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.DepositStateCopies', blank=True),
+            field=models.ManyToManyField(to=search_models.Card, null=True, through='search.DepositStateCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -359,7 +360,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='deposit',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.DepositCopies', blank=True),
+            field=models.ManyToManyField(to=search_models.Card, null=True, through='search.DepositCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -389,13 +390,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='card',
             name='places',
-            field=models.ManyToManyField(to=b'search.Place', null=True, through='search.PlaceCopies', blank=True),
+            field=models.ManyToManyField(to=search_models.Place, null=True, through='search.PlaceCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='card',
             name='publishers',
-            field=models.ManyToManyField(to=b'search.Publisher', null=True, blank=True),
+            field=models.ManyToManyField(to=search_models.Publisher, null=True, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -413,7 +414,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='basket',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.BasketCopies', blank=True),
+            field=models.ManyToManyField(to=search_models.Card, null=True, through='search.BasketCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -425,7 +426,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='alert',
             name='deposits',
-            field=models.ManyToManyField(to=b'search.Deposit', null=True, blank=True),
+            field=models.ManyToManyField(to=search_models.Deposit, null=True, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -525,7 +526,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='bill',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.BillCopies', blank=True),
+            field=models.ManyToManyField(to=search_models.Card, null=True, through='search.BillCopies', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
