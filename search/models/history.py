@@ -15,12 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import pendulum
 import os
 import calendar
 
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils import six
 
 from common import DATE_FORMAT
 from common import PAYMENT_CHOICES
@@ -38,7 +41,7 @@ def price_fmt(price, currency):
     Similar as models.utils.
     """
     # Cannot import models.Preferences to get the default currency, circular import.
-    if price is None or isinstance(price, str):
+    if price is None or isinstance(price, six.string_types) or isinstance(price, six.text_type):
         return price
     if currency.lower() == 'chf':
         return 'CHF {:.2f}'.format(price)
@@ -65,7 +68,7 @@ class InternalMovement(TimeStampedModel):
     nb = models.IntegerField()
 
     def __unicode__(self):
-        return u"move card {} from '{}' to '{}', x{}, at {}".format(
+        return "move card {} from '{}' to '{}', x{}, at {}".format(
             self.card.id, self.origin.name, self.dest.name, self.nb, self.created)
 
     def to_dict(self):
@@ -139,7 +142,7 @@ class OutMovement(models.Model):
     recipient = models.ForeignKey("search.Client", blank=True, null=True)
 
     # def __unicode__(self):
-    # return u"id {}, type {}".format(self.pk,
+    # return "id {}, type {}".format(self.pk,
     # OutMovement.OUTMOVEMENT_TYPES_CHOICES[self.typ - 1])
 
     # def get_absolute_url(self):
@@ -275,7 +278,7 @@ class Entry(TimeStampedModel):
     reason = models.CharField(max_length=CHAR_MAX_LENGTH, blank=True, null=True)
 
     def __unicode__(self):
-        return u"type {}, created at {}".format(self.typ, self.created)
+        return "type {}, created at {}".format(self.typ, self.created)
 
     def get_absolute_url(self):
         """Actually, return the url of the related Entry.
@@ -290,7 +293,7 @@ class Entry(TimeStampedModel):
         """
         ec = self.entrycopies_set.all()
         payment = self.payment
-        if isinstance(self.payment, unicode):
+        if isinstance(self.payment, six.text_type) or isinstance(self.payment, six.string_types):
             payment = int(self.payment)
 
         copies = [{
@@ -338,7 +341,7 @@ class Entry(TimeStampedModel):
         return: a tuple Entry object, boolean
         """
         try:
-            if isinstance(payment, unicode) or isinstance(payment, str):
+            if isinstance(payment, six.text_type) or isinstance(payment, six.string_types):
                 payment = int(payment)
             en = Entry(payment=payment, reason=reason)
             en.save()
@@ -390,7 +393,8 @@ class Entry(TimeStampedModel):
             price_entered = 0
             if entries_this_day:
                 prices = entries_this_day.values_list('price_init', flat=True)
-                prices = filter(lambda it: it is not None, prices)
+                prices = [it for it in prices if it is not None]
+
                 price_entered = sum(prices)
                 # sum = bad perf. With 3 entries, total 42€: 0.25s. It sums up too.
                 # XXX: now the model defaults to 0. We could apply a data migration script

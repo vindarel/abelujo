@@ -21,10 +21,17 @@ Custom management command.
 
 Set all cards' quantities to zero.
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 
 from search.models import Card, PlaceCopies
+
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 
 class Command(BaseCommand):

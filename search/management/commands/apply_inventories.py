@@ -22,10 +22,17 @@ Apply one or many inventories.
 ./manage.py apply_inventories --ids [id,id,id,id] [--all]
 
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 
 from search.models import Inventory
+
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 
 class Command(BaseCommand):

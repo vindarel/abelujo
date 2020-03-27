@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import json
 
 from django import forms
@@ -61,9 +63,9 @@ class MyNumberInput(TextInput):
 def get_distributor_choices():
     dists = [(dist.id, dist.name) for dist in Distributor.objects.all()]
     pubs = [(pub.id, pub.name) for pub in Publisher.objects.all()]
-    choices = [(_(u"Distributors"),
+    choices = [(_("Distributors"),
                 dists),
-               (_(u"Publishers"),
+               (_("Publishers"),
                 pubs)]
     return choices
 
@@ -214,7 +216,7 @@ class AddToDepositForm(forms.Form):
     """When we view our stock, choose to add the card to a deposit.
     """
     deposit = forms.ChoiceField(choices=get_deposits_choices(),
-                                label=_(u"Add to the deposit:"),
+                                label=_("Add to the deposit:"),
                                 required=False)
 
 def get_bills_choices():
@@ -404,7 +406,7 @@ class CardCreateForm(forms.Form):
             label=_("Optional name to create a new shelf"),
             required=False)
 
-        for name_widget in card_form.fields.items():
+        for name_widget in list(card_form.fields.items()):
             name = name_widget[0]
             widget = name_widget[1]
             self.fields[name] = widget

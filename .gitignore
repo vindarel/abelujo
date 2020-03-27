@@ -13,3 +13,5 @@ node_modules/
 /htmlcov/
 /static/bower_components/
 /public/
+/static/js/build/
+/doc/dev/_build/

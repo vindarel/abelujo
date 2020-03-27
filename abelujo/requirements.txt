@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+# bookshops dependencies.
+-e search/datasources/
+
 pip==9
 setuptools==39.2
 
@@ -23,6 +26,9 @@ pypugjs==5.9.1          # process pugjs/jade templates.
 bootstrap-admin==0.4.3  # bootstrap theme, nice search feature.
 pyyaml
 pytz			# timezone
+
+# Python2/3
+six
 
 ### Django extensions
 djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc

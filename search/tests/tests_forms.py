@@ -19,6 +19,7 @@
 """
 Test the forms.
 """
+from __future__ import unicode_literals
 
 from search import forms as viewforms
 

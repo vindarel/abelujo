@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import datetime
 import io  # write to file in utf8
 import json
@@ -115,14 +117,14 @@ def get_reverse_url(cleaned_data, url_name="search:card_search"):
     type cleaned_data: dict
     return: the complete url with query params
 
-    >>> get_reverse_url({"source": "chapitre", "q": u"emma goldman"})
+    >>> get_reverse_url({"source": "chapitre", "q": "emma goldman"})
     /search?q=emma+goldman&source=chapitre
 
     """
 
     qparam = {}
     qparam['source'] = cleaned_data.get("source")
-    if "q" in cleaned_data.keys():
+    if "q" in list(cleaned_data.keys()):
         qparam['q'] = cleaned_data["q"]
     # construct the query parameters of the form
     # q=query+param&source=discogs
@@ -192,7 +194,7 @@ def preferences_bookshop(request):
                     request, messages.SUCCESS, _("Preferences saved."))
                 return HttpResponseRedirect(reverse('search:preferences'))
             except Exception as e:
-                log.error(u'Error saving the bookshop form: {}\n{}'.
+                log.error('Error saving the bookshop form: {}\n{}'.
                           format(e, traceback.format_exc))
                 messages.add_message(
                     request, messages.ERROR, _("Preferences NOT saved."))
@@ -254,7 +256,7 @@ def card_create_manually(request):
             if not card:
                 log.warning("create card manually: card not created? {}, {}"
                             .format(card_dict, msgs))
-                messages.add_message(request, messages.SUCCESS, _(u'Warn: the card was not created.'))
+                messages.add_message(request, messages.SUCCESS, _('Warn: the card was not created.'))
 
         else:
             return render(request, template, {'form': card_form,
@@ -262,7 +264,7 @@ def card_create_manually(request):
 
         if card and add_places_form.is_valid():
             places_qties = add_places_form.cleaned_data
-            for name_id, qty in places_qties.iteritems():
+            for name_id, qty in places_qties.items():
                 if not qty:
                     continue
                 place_id = name_id.split('_')[1]
@@ -272,7 +274,7 @@ def card_create_manually(request):
                     place.add_copy(card, nb=qty)
                     log.info("Card added to place {} x{}".format(place_id, qty))
 
-            messages.add_message(request, messages.SUCCESS, _(u'The card was created successfully.'))
+            messages.add_message(request, messages.SUCCESS, _('The card was created successfully.'))
 
         else:
             return render(request, template, {'form': card_form,
@@ -327,7 +329,7 @@ def card_show(request, pk):
         "last_entry": last_entry,
         "total_sold": total_sold,
         "pending_commands": pending_commands,
-        "page_title": u"Abelujo - " + card.title[:50],
+        "page_title": "Abelujo - " + card.title[:50],
     })
 
 @login_required
@@ -388,7 +390,7 @@ def card_history(request, pk):
         "outs": outs,
         "pending_commands": pending_commands,
         "commands": commands,
-        "page_title": u"Abelujo - {} - {}".format(_("History"), card.title),
+        "page_title": "Abelujo - {} - {}".format(_("History"), card.title),
     })
 
 
@@ -469,7 +471,7 @@ def card_places_add(request, pk=None):
         if form.is_valid():
             # When the field name was an int (the place id),
             # the form was valid but cleaned_data had None values.
-            for (label_id, nb) in form.cleaned_data.iteritems():
+            for (label_id, nb) in form.cleaned_data.items():
                 if nb:
                     # the form field name is
                     # place_<id>
@@ -507,7 +509,7 @@ def card_move(request, pk=None):
                 except Exception as e:
                     log.error("couldn't move copies from {} to {}: {}".format(data['origin'], data['destination'], e))
 
-            for (basket, nb) in basketForm.cleaned_data.iteritems():
+            for (basket, nb) in basketForm.cleaned_data.items():
                 if nb:
                     basket_obj = Basket.objects.get(name=basket)
                     try:
@@ -515,7 +517,7 @@ def card_move(request, pk=None):
                     except Exception as e:
                         log.error("couldn't add copies to {}: {}".format(basket, e))
 
-            messages.add_message(request, messages.SUCCESS, _(u'The card "{}" was added successfully.'.format(card_obj.title)))
+            messages.add_message(request, messages.SUCCESS, _('The card "{}" was added successfully.'.format(card_obj.title)))
             # We can also retrieve the query parameters from the url:
             # url = request.META['HTTP_REFERER']
             # qparams = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
@@ -568,14 +570,14 @@ def cards_set_supplier(request, **kwargs):
         req = request.POST.copy()
 
         # The user chose an existing distributor.
-        if 'supplier' in req.keys():
+        if 'supplier' in list(req.keys()):
             form = viewforms.SetSupplierForm(req)
             if form.is_valid():
                 dist_id = form.cleaned_data['supplier']
                 dist_obj = Distributor.objects.get(id=dist_id)
 
         # Create distributor.
-        elif 'discount' in req.keys():
+        elif 'discount' in list(req.keys()):
             form = viewforms.NewSupplierForm(req)
             if form.is_valid():
                 data = form.cleaned_data
@@ -591,7 +593,7 @@ def cards_set_supplier(request, **kwargs):
                     dist_obj = Distributor(name=data['name'], discount=data['discount'])
                     dist_obj.save()
                 except Exception as e:
-                    log.error(u"Could not create new distributor: {}".format(e))
+                    log.error("Could not create new distributor: {}".format(e))
                     messages.add_message(request, messages.ERROR, _("An internal error occured, we have been notified."))
                     response_dict['messages'] = messages.get_messages(request)
                     return render(request, template, response_dict)
@@ -601,7 +603,7 @@ def cards_set_supplier(request, **kwargs):
                 return render(request, template, response_dict)
 
         else:
-            log.error(u"Error in the form setting the supplier for many cards. We didn't recognize any of the two forms.")
+            log.error("Error in the form setting the supplier for many cards. We didn't recognize any of the two forms.")
             return render(request, template, response_dict)
 
         # Set supplier for all cards.
@@ -611,7 +613,7 @@ def cards_set_supplier(request, **kwargs):
                 card.distributor = dist_obj
                 card.save()
             except Exception as e:
-                log.error(u"Error batch-setting the distributor: {}".format(e))
+                log.error("Error batch-setting the distributor: {}".format(e))
                 messages.add_message(request, messages.ERROR, _("Internal error :("))
                 response_dict['messages'] = messages.get_messages(request)
                 return render(request, template, response_dict)
@@ -695,11 +697,11 @@ def collection_export(request, **kwargs):
 
         # Build the response.
         response = HttpResponse(content, content_type=content_type)
-        filename = u"Abelujo stock search"
+        filename = "Abelujo stock search"
         if query:
             filename += " - {}".format(query)
 
-        response['Content-Disposition'] = u'attachment; filename="{}.{}"'.format(filename, formatt)
+        response['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(filename, formatt)
         return response
 
     else:
@@ -726,7 +728,7 @@ def collection_view_file_export(request, filename):
             content = f.read()
         content_type = filename_content_type(filename)
         response = HttpResponse(content, content_type=content_type)
-        response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
 @login_required
@@ -823,7 +825,7 @@ def deposits_create(request):
             except Exception as e:
                 log.error("Error when creating the deposit: %s" % e)
                 messages.add_message(request, messages.ERROR,
-                                     _(u"Error when adding the deposit"))
+                                     _("Error when adding the deposit"))
 
         else:
             return render(request, "search/deposits_create.pug", {
@@ -849,12 +851,12 @@ def deposits_add_card(request):
                 log.debug("deposits_add_card: the isbn is null. That should not happen !")
                 resp_status = 400
                 messages.add_message(request, messages.ERROR,
-                                     _(u"We could not add the card to the deposit: the given isbn is null."))
+                                     _("We could not add the card to the deposit: the given isbn is null."))
             else:
                 deposit_id = form.cleaned_data["deposit"]  # noqa: F841
                 # TODO: do the logic !
                 messages.add_message(request, messages.SUCCESS,
-                                     _(u'The card were successfully added to the deposit.'))
+                                     _('The card were successfully added to the deposit.'))
 
     retlist = request.session.get("collection_search")  # noqa: F841
     redirect_to = req.get('redirect_to')
@@ -871,7 +873,7 @@ def deposits_view(request, pk):
         cards_balance = deposit.checkout_balance()
 
     except Deposit.DoesNotExist as e:
-        messages.add_message(request, messages.ERROR, _(u"This deposit doesn't exist !"))
+        messages.add_message(request, messages.ERROR, _("This deposit doesn't exist !"))
         log.error("le depot demande (%s) n'existe pas: %s" % (pk, e))
         return HttpResponseRedirect(reverse('search:deposits'))
 
@@ -895,7 +897,7 @@ def deposits_checkout(request, pk):
     except Exception as e:
         log.error("Error while closing deposing state: {}".format(e))
         messages.add_message(request, messages.ERROR,
-                             _(u"Woops, there was an error :S we can't close this deposit state."))
+                             _("Woops, there was an error :S we can't close this deposit state."))
         return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
 
     return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
@@ -920,7 +922,7 @@ def deposit_add_copies(request, pk):
         if form.is_valid():
             data = form.cleaned_data
             dep = Deposit.objects.get(id=pk)
-            for id, qty in data.iteritems():
+            for id, qty in data.items():
                 dep.add_copies([id], quantities=[qty])
 
             return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
@@ -945,7 +947,7 @@ def basket_auto_command(request):
     copies_by_dist = toolz.groupby(lambda it: it.distributor_id, copies)
     dists = []
     no_dist = []
-    for (dist_id, copies) in copies_by_dist.items():
+    for (dist_id, copies) in list(copies_by_dist.items()):
         if dist_id is not None:
             dists.append((Distributor.objects.get(id=dist_id), len(copies)))
         else:
@@ -1008,7 +1010,7 @@ def basket_export(request, pk):
     try:
         basket = Basket.objects.get(id=pk)
     except Exception as e:
-        log.error(u"Error trying to export basket{}: {}".format(pk, e))
+        log.error("Error trying to export basket{}: {}".format(pk, e))
         return response
 
     # copies_set = basket.basketcopies_set.all()
@@ -1018,7 +1020,7 @@ def basket_export(request, pk):
     distributor_id = request.GET.get('distributor_id')
     # Export of all cards: distributor_id is None.
     # Export of cards with no distributor_id:
-    if distributor_id == 'undefined' or distributor_id in ["", u""]:
+    if distributor_id == 'undefined' or distributor_id in ["", ""]:
         distributor_id = -1
     elif distributor_id:
         distributor_id = int(distributor_id)
@@ -1072,7 +1074,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
             header = (_("Title"), _("Quantity sold"))
             diff = inv.diff()[0]  # that should be cached XXX. A json row in the db ?
             rows = []
-            for k in diff.itervalues():
+            for k in diff.values():
                 if k.get('diff', 0) < 0:
                     qtysold = - k.get('diff')
                 else:
@@ -1125,24 +1127,24 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     if format in ['csv']:
         pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-        content = writer.writerow("")
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
+        content = writer.writerow(b"")
 
         if report in ['bill']:
             rows = [(it[0].title, it[1]) for it in rows]
         if header:
             rows.insert(0, header)
         start = timezone.now()
-        content = "".join([writer.writerow(row) for row in rows])
+        content = b"".join([writer.writerow(row) for row in rows])
         end = timezone.now()
         print("writing rows to csv took {}".format(end - start))
 
         response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(name)
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(name)
 
     elif format in ['txt']:
         # 63 = MAX_CELL + 3 because of trailing "..."
-        rows = [u"{:63} {:20} {}".format(truncate(it.card.title),
+        rows = ["{:63} {:20} {}".format(truncate(it.card.title),
                                          it.card.pubs_repr,
                                          it.quantity) for it in copies_set]
         rows = sorted(rows)
@@ -1152,7 +1154,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
     elif format in ['pdf']:
         date = datetime.date.today()
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
+        response['Content-Disposition'] = 'attachment; filename="{}.pdf"'.format(name)
 
         template = get_template('pdftemplates/pdf-barcode.pug')
         if report == "listing":
@@ -1166,7 +1168,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
             cards_qties = rows
 
         if total is None:
-            total = sum(map(lambda it: it[1] * it[0].price if it[0].price else 0, cards_qties))
+            total = sum([it[1] * it[0].price if it[0].price else 0 for it in cards_qties])
         if total_with_discount is None:
             total_with_discount = -1  # unemplemented. Inventories should compute it before.
         total_qty = sum([it[1] for it in cards_qties])
@@ -1184,7 +1186,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
                             log.info("---- saving a base64 for ean {}".format(card.ean))
                             Barcode64(ean=card.ean, barcodebase64=eanbase64).save()
                     except Exception as e:
-                        log.error(u'Error saving barcode of ean {}: {}'.format(card.ean, e))
+                        log.error('Error saving barcode of ean {}: {}'.format(card.ean, e))
                 else:
                     eanbase64 = search[0].barcodebase64
 
@@ -1208,7 +1210,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         response = HttpResponse(outhtml, content_type='application/pdf')
         end = time.time()
         log.info("-------- generating barcodes for {} cards took {}".format(len(cards_qties), end - start))
-        response['Content-Disposition'] = u'attachment; filename="{}.pdf"'.format(name)
+        response['Content-Disposition'] = 'attachment; filename="{}.pdf"'.format(name)
 
     return response
 
@@ -1244,18 +1246,18 @@ def history_sells_month(request, date, **kwargs):
 
 def _csv_response_from_rows(rows, headers=None, filename=''):
     pseudo_buffer = Echo()
-    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-    content = writer.writerow("")
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
+    content = writer.writerow(b"")
 
     if headers:
         rows.insert(0, headers)
     start = timezone.now()
-    content = "".join([writer.writerow(row) for row in rows])
+    content = b"".join([writer.writerow(row) for row in rows])
     end = timezone.now()
     print("writing rows to csv took {}".format(end - start))
 
     response = StreamingHttpResponse(content, content_type="text/csv")
-    response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(filename)
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
     return response
 
 def _txt_response_from_rows(rows, filename=""):
@@ -1271,7 +1273,7 @@ def _txt_response_from_rows(rows, filename=""):
     #      sell.card.price_discounted, # 7
     #      sell.quantity)        # 8
 
-    format_str = u"{:63} {} {:23} {:20} {:5} {:5} {:3}"
+    format_str = "{:63} {} {:23} {:20} {:5} {:5} {:3}"
     rows = [format_str.
             format(truncate(it[0]),
                    it[1],
@@ -1284,7 +1286,7 @@ def _txt_response_from_rows(rows, filename=""):
     rows = sorted(rows)
     content = "\n".join(rows)
     response = HttpResponse(content, content_type="text/raw")
-    response['Content-Disposition'] = u'attachment; filename={}.txt'.format(filename)
+    response['Content-Disposition'] = 'attachment; filename={}.txt'.format(filename)
     return response
 
 def history_sells_month_export(request, date, **response_kwargs):
@@ -1358,7 +1360,7 @@ def history_sells_day(request, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
     except Exception as e:
-        log.error(u'History per days: could not parse {}: {}'.format(date, e))
+        log.error('History per days: could not parse {}: {}'.format(date, e))
         return HttpResponseRedirect(reverse('search:history_sells'))
 
     sells_data = Sell.search(day=day.day, month=day.month, year=day.year,
@@ -1412,7 +1414,7 @@ def history_sells_day(request, date, **kwargs):
             payments.append(get_payment_abbr(it.sell.payment))
             sell_transaction_markers.append(True)
 
-    data = zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids)
+    data = list(zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids))
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,
@@ -1435,7 +1437,7 @@ def history_entries_day(request, date, **kwargs):
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
     except Exception as e:
-        log.error(u'Entries history per day: could not parse {}: {}'.format(date, e))
+        log.error('Entries history per day: could not parse {}: {}'.format(date, e))
         return HttpResponseRedirect(reverse('search:history_entries_month'))
 
     data = history.Entry.history_day(year=day.year, month=day.month, day=day.day)
@@ -1451,12 +1453,12 @@ def history_entries_day(request, date, **kwargs):
 
     shelves = data['entries'].values_list('card__shelf__name', flat=True)
     # remove duplicates
-    shelves = filter(lambda it: it is not None, shelves)
+    shelves = [it for it in shelves if it is not None]
     shelves = list(set(shelves))
 
     publishers = data['entries'].values_list('card__publishers__name', flat=True)
     publishers = list(set(publishers))
-    publishers = filter(lambda it: it is not None, publishers)
+    publishers = [it for it in publishers if it is not None]
 
     return render(request, template, {'data': data,
                                       'shelves': shelves,
@@ -1486,7 +1488,7 @@ def history_sells_exports(request, **kwargs):
     month = params.get('month', timezone.now().month)
     year = params.get('year', timezone.now().year)
     distributor_id = params.get('distributor_id')
-    filename = _(u"Sells history")
+    filename = _("Sells history")
     if year:
         filename += " - {}".format(year)
     if month:
@@ -1502,8 +1504,8 @@ def history_sells_exports(request, **kwargs):
 
     if outformat in ['csv']:
         pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
-        content = writer.writerow("")
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
+        content = writer.writerow(b"")
 
         rows = [(it['created'],
                  it['price_sold'],
@@ -1517,13 +1519,13 @@ def history_sells_exports(request, **kwargs):
                   _("supplier"),
         )
         rows.insert(0, header)
-        content = "".join([writer.writerow(row) for row in rows])
+        content = b"".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")
-        response['Content-Disposition'] = u'attachment; filename="{}.csv"'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
 
     elif outformat in ['txt']:
-        rows = [u"{}-+-{}-+-{}-+-{}-+-{}".format(
+        rows = ["{}-+-{}-+-{}-+-{}-+-{}".format(
             _("date sold"),
             _("price sold"),
             _("title"),
@@ -1531,7 +1533,7 @@ def history_sells_exports(request, **kwargs):
         )]
         # format: {:min width.truncate}
         # https://pyformat.info/
-        rows += sorted([u"{:10.10} {} {:5} {:30} {}".format(
+        rows += sorted(["{:10.10} {} {:5} {:30} {}".format(
             it['created'],
             it.get('price_sold', 0),
             truncate(it['card']['title']),  # truncate long titles
@@ -1540,7 +1542,7 @@ def history_sells_exports(request, **kwargs):
                         for it in res])
         content = "\n".join(rows)
         response = HttpResponse(content, content_type="text/raw")
-        response['Content-Disposition'] = u'attachment; filename="{}.txt"'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}.txt"'.format(filename)
 
     return response
 
@@ -1686,7 +1688,7 @@ def inventory_export(request, pk):
     try:
         inv = Inventory.objects.get(id=pk)
     except Exception as e:
-        log.error(u"Error trying to export inventory of pk {}: {}".format(pk, e))
+        log.error("Error trying to export inventory of pk {}: {}".format(pk, e))
 
     copies_set = inv.inventorycopies_set.all()
 
@@ -1799,7 +1801,7 @@ def command_receive(request, pk):
     except ObjectDoesNotExist as e:
         log.warning(e)
         messages.add_message(request, messages.ERROR,
-                             u"Internal erorr: the command you requested does not exist.")
+                             "Internal erorr: the command you requested does not exist.")
         return HttpResponseRedirect(reverse('search:commands_view', args=(pk,)))
 
     if not cmd.inventory:

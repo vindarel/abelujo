@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import datetime
 import os
@@ -232,9 +233,9 @@ def check_online(client=None):
     res = zip(status, sorted_clients)
     for status, client in res:
         if status != 200:
-            print(termcolor.colored(u"- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port']))
+            print(termcolor.colored("- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port']))
         else:
-            print(u"- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("online", "green"))
+            print("- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("online", "green"))
 def _save_variables(name):
     """
     Another def for multiprocessing. Functions can only be pickled if they are at the toplevel.

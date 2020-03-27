@@ -14,6 +14,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
 
 import decimal
 import logging
@@ -22,6 +23,8 @@ import string
 
 import addict
 from tabulate import tabulate
+
+from django.utils import six
 
 from abelujo import settings
 from search.models.common import ALERT_ERROR
@@ -109,13 +112,13 @@ class Messages(object):
 
         Return: a status (str)
         """
-        if any(map(lambda it: it['level'] == ALERT_ERROR, self.msgs)):
+        if any([it['level'] == ALERT_ERROR for it in self.msgs]):
             return ALERT_ERROR
 
-        if any(map(lambda it: it['level'] == ALERT_WARNING, self.msgs)):
+        if any([it['level'] == ALERT_WARNING for it in self.msgs]):
             return ALERT_WARNING
 
-        if any(map(lambda it: it['level'] == ALERT_INFO, self.msgs)):
+        if any([it['level'] == ALERT_INFO for it in self.msgs]):
             return ALERT_INFO
 
         return ALERT_SUCCESS
@@ -157,7 +160,7 @@ def truncate(it, max_length=MAX_CELL):
 
     returns: a string
     """
-    if it and (isinstance(it, str) or isinstance(it, unicode))\
+    if it and (isinstance(it, six.text_type) or isinstance(it, six.string_types))\
        and len(it) >= max_length:
         return it[:max_length] + "..."
     return it
@@ -235,7 +238,7 @@ def ppcard(cards):
     ]
 
     # Truncate all attributes:
-    tab = map(lambda it: map(truncate, it), tab)
+    tab = list([list(map(truncate, it)) for it in tab])
     tablength = len(tab)
     total = total_quantity(cards)
     tab = tabulate(tab, headers=headers)
@@ -260,7 +263,7 @@ def split_query(string):
 
 def isbns_from_query(string):
     words = split_query(string)
-    return filter(is_isbn, words)
+    return list(filter(is_isbn, words))
 
 def is_isbn(it):
     """Return True is the given string is an ean or an isbn, i.e:
@@ -272,7 +275,7 @@ def is_isbn(it):
     ISBN_ALLOWED_LENGTHS = [13]
     res = False
     pattern = re.compile("[0-9]+")
-    if (isinstance(it, unicode) or isinstance(it, str)) and \
+    if (isinstance(it, six.text_type) or isinstance(it, six.string_types)) and \
        len(it) in ISBN_ALLOWED_LENGTHS and \
        pattern.match(it):
         res = it
@@ -325,7 +328,7 @@ def list_from_coma_separated_ints(s):
             return int(nb)
         except ValueError:
             nb = nb.replace(",", ".")
-            if nb in ["null", u"null", "undefined"]:
+            if nb in ["null", "undefined"]:
                 return None
             return float(nb) if nb else None
 
@@ -338,13 +341,13 @@ def list_from_coma_separated_ints(s):
 def ids_qties_to_pairs(string):
     pairs = []
     # [feb 19] old behaviour: string is like
-    # u'3037, 1;', u'3976, 1;', u'3064, 1;', u'3497, 1;'
+    # '3037, 1;', '3976, 1;', '3064, 1;', '3497, 1;'
     # For unknown reason, we now get a proper list straight in.
     # So we removed the ; and we don't need this method anymore.
     # But is that in all methods using it ? see command_receive_update
-    if string and (isinstance(string, str) or isinstance(string, unicode)) and ';' in string:
+    if string and (isinstance(string, six.string_types) or isinstance(string, six.text_type)) and ';' in string:
         together = string.split(';')
-        pairs = [filter(lambda x: x != "", it.split(',')) for it in together]
+        pairs = [[x for x in it.split(',') if x != ""] for it in together]
         return pairs
     return None
 
@@ -364,7 +367,7 @@ def _is_truthy(txt):
     # should be automatic !
     if txt is True:
         return True
-    if txt in ['true', 't', u'true', 'yes']:
+    if txt in ['true', 't', 'yes']:
         return True
     return False
 
@@ -372,7 +375,7 @@ def _is_truthy(txt):
 def is_invalid(txt):
     """When JS client sends "undefined" strings instead of nothing.
     """
-    return txt in ['undefined', u'undefined', 0, "0", u"0"]
+    return txt in ['undefined', 0, "0"]
 
 
 def page_start_index(page, size=PAGE_SIZE):
@@ -415,7 +418,7 @@ def price_fmt(price, currency):
 
     Exemple: 10 € or CHF 10
     """
-    if price is None or isinstance(price, str) or isinstance(price, unicode):
+    if price is None or isinstance(price, six.string_types) or isinstance(price, six.text_type):
         return ''
     try:
         if not currency:
@@ -426,5 +429,5 @@ def price_fmt(price, currency):
         else:
             return '{:.2f} €'.format(price)
     except Exception as e:
-        log.warning(u'Error for models.utils.price_fmt: {}'.format(e))
+        log.warning('Error for models.utils.price_fmt: {}'.format(e))
         return '{:.2f}'.format(price)

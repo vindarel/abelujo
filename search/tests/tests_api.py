@@ -15,6 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
 
 import datetime
 import httplib
@@ -127,21 +128,21 @@ class ApiTest(TestCase):
         self.assertEqual(resp_data["alerts"][0]["level"], ALERT_SUCCESS)
 
     def test_sell_cards(self):
-        self.params["to_sell"] = u"1,9.5,2"
-        self.params["date"] = "2015-04-17"
+        self.params["to_sell"] = "1,9.5,2"
+        self.params["date"] = "2015-04-17 00:00:00"
         resp = self.c.post("/api/sell", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)
 
     def test_sell_cards_nocards(self):
         log.setLevel(logging.ERROR)
-        self.params["to_sell"] = u""
+        self.params["to_sell"] = ""
         resp = self.c.post("/api/sell", self.params)
         # resp_data = json.loads(resp.content)
         self.assertEqual(resp.status_code, httplib.OK)
 
     def test_sell_cards_unicode(self):
-        self.params["to_sell"] = u"2,9.5,2"
+        self.params["to_sell"] = "2,9.5,2"
         resp = self.c.post("/api/sell", self.params)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp_data["status"], models.ALERT_SUCCESS)

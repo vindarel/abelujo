@@ -21,6 +21,7 @@ Test the models.
 
 Note: to compare two objects, don't use assertEqual but the == operator.
 """
+from __future__ import unicode_literals
 
 import datetime
 
@@ -128,13 +129,25 @@ class CardFactory(DjangoModelFactory):
     class Meta:
         model = Card
 
-    title = factory.Sequence(lambda n: u'card title é and ñ %d' % n)
+    title = factory.Sequence(lambda n: 'card title é and ñ %d' % n)
     isbn = factory.Sequence(lambda n: "%d" % n)
     card_type = None
     # distributor = factory.SubFactory(DistributorFactory)
     distributor = None
     price = 9.99
     isbn = ISBN
+
+class TestAuthors(TestCase):
+    def setUp(self):
+        self.author = AuthorFactory()
+        self.author2 = AuthorFactory()
+
+    def tearDown(self):
+        pass
+
+    def test_default(self):
+        res = Author.search('1')
+        self.assertEqual(1, len(res))
 
 class TestCards(TestCase):
     def setUp(self):
@@ -274,7 +287,7 @@ class TestCards(TestCase):
 
     def test_is_in_stock(self):
         card_dict = self.autobio.to_list()
-        # xxx: strange: card_dict['isbn'] is u"" but to_list()
+        # xxx: strange: card_dict['isbn'] is "" but to_list()
         # returns the right thing :S
         # Without this, this test passes in TestCards, but not in the
         # full test suite.

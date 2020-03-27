@@ -26,12 +26,19 @@ Here:
 ./manage.py fix_dilicom_info
 
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from search.models import Card
 from search.datasources.bookshops.frFR.dilicom import dilicomScraper
+
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 
 class Command(BaseCommand):
@@ -42,7 +49,7 @@ class Command(BaseCommand):
         cards = Card.objects.filter(created__gt=start).filter(data_source='dilicom')
 
         # Cards whose price has no decimal, hence are suspicious.
-        cards = filter(lambda card: card.price % 1 == 0, cards)
+        cards = list(filter(lambda card: card.price % 1 == 0, cards))
         self.stdout.write("Looking up {} cards on Dilicom.".format(len(cards)))
         self.stdout.write("(Not all will need an update)")
         confirmation = raw_input("Continue ? [Y/n]")
@@ -59,7 +66,7 @@ class Command(BaseCommand):
         cards_updated = []
         count_ok = 0
         for card in cards:
-            bk = filter(lambda it: it['isbn'] == card.isbn, bklist)
+            bk = list(filter(lambda it: it['isbn'] == card.isbn, bklist))
             if bk:
                 bk = bk[0]
 

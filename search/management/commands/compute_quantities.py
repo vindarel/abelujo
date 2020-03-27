@@ -24,10 +24,17 @@ Compute the quantities and save to a DB field.
 Takes around 3 minutes for a thousand objects.
 
 """
+from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 
 from search.models import Card
+
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 
 class Command(BaseCommand):

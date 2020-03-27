@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
@@ -45,8 +47,8 @@ class Contact(models.Model):
     website = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
     # Official numbers
-    company_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"The company's registered number (State's industry chamber)"))
-    bookshop_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"The bookshop's official number."))
+    company_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__("The company's registered number (State's industry chamber)"))
+    bookshop_number = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__("The bookshop's official number."))
 
     # Address
     address1 = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
@@ -56,14 +58,14 @@ class Contact(models.Model):
     state = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
     country = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH)
 
-    presentation_comment = models.TextField(blank=True, null=True, max_length=TEXT_LENGTH, verbose_name=__(u"A comment to add after the default presentation, which contains name, address, contact and official number. Can be useful when the bookshop is officially administrated by another entity. This appears on bills."))
+    presentation_comment = models.TextField(blank=True, null=True, max_length=TEXT_LENGTH, verbose_name=__("A comment to add after the default presentation, which contains name, address, contact and official number. Can be useful when the bookshop is officially administrated by another entity. This appears on bills."))
 
     # Bank/payment details
-    checks_order = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"Checks order (if different from name)"))
-    checks_address = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"Checks address (if different than address)"))
-    bank_IBAN = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"IBAN"))
-    bank_BIC = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__(u"BIC"))
-    is_vat_exonerated = models.BooleanField(default=False, verbose_name=__(u"Exonerated of VAT?"))
+    checks_order = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__("Checks order (if different from name)"))
+    checks_address = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__("Checks address (if different than address)"))
+    bank_IBAN = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__("IBAN"))
+    bank_BIC = models.CharField(blank=True, null=True, max_length=CHAR_LENGTH, verbose_name=__("BIC"))
+    is_vat_exonerated = models.BooleanField(default=False, verbose_name=__("Exonerated of VAT?"))
 
     comment = models.TextField(blank=True, null=True)
 
