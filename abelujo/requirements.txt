@@ -47,7 +47,6 @@ distance                # between two strings.
 tqdm                    # progress bar
 termcolor               # colorful terminal output
 isbnlib<4               # isbn utils
-unicodecsv<0.15         # at last unicode support to read and write csv files. Lacking in the standard library.
 cairocffi==0.6          # for weasyprint. Later version fails.
 WeasyPrint==0.34
 viivakoodi              # formerly pybarcode

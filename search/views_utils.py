@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 
 import os
-import unicodecsv
+import csv
 
 from django.utils.translation import ugettext as _
 
@@ -148,8 +148,8 @@ class Echo(object):
 
 def cards2csv(cards):
     pseudo_buffer = Echo()
-    writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
-    content = writer.writerow(b"")
+    writer = csv.writer(pseudo_buffer, delimiter=';')
+    content = writer.writerow("")
 
     rows = [(it['title'],
              it['authors_repr'],
@@ -168,5 +168,5 @@ def cards2csv(cards):
               _("isbn"),
     )
     rows.insert(0, header)
-    content = b"".join([writer.writerow(row) for row in rows])
+    content = "".join([writer.writerow(row) for row in rows])
     return content

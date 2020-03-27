@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+
 
 import datetime
 import io  # write to file in utf8
@@ -23,7 +23,7 @@ import json
 import os
 import time
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import pendulum
 import toolz
@@ -84,10 +84,10 @@ from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import price_fmt
 from search.models.utils import truncate
-from views_utils import Echo
-from views_utils import cards2csv
-from views_utils import dilicom_enabled
-from views_utils import update_from_dilicom
+from .views_utils import Echo
+from .views_utils import cards2csv
+from .views_utils import dilicom_enabled
+from .views_utils import update_from_dilicom
 
 log = get_logger()
 
@@ -128,7 +128,7 @@ def get_reverse_url(cleaned_data, url_name="search:card_search"):
         qparam['q'] = cleaned_data["q"]
     # construct the query parameters of the form
     # q=query+param&source=discogs
-    params = urllib.urlencode(qparam)
+    params = urllib.parse.urlencode(qparam)
     rev_url = reverse(url_name) + "?" + params
     return rev_url
 
@@ -264,7 +264,7 @@ def card_create_manually(request):
 
         if card and add_places_form.is_valid():
             places_qties = add_places_form.cleaned_data
-            for name_id, qty in places_qties.items():
+            for name_id, qty in list(places_qties.items()):
                 if not qty:
                     continue
                 place_id = name_id.split('_')[1]
@@ -354,7 +354,7 @@ def card_edit(request, pk, *args, **kwargs):
             if not card:
                 log.warning("create card manually: card not created? {}, {}"
                             .format(card_dict, msgs))
-                messages.add_message(request, messages.SUCCESS, _(u'Warn: the card was not created.'))
+                messages.add_message(request, messages.SUCCESS, _('Warn: the card was not created.'))
             return HttpResponseRedirect(reverse('search:card_show', args=(pk,)))
 
     return render(request, template, {'form': card_form})
@@ -472,7 +472,7 @@ def card_places_add(request, pk=None):
         if form.is_valid():
             # When the field name was an int (the place id),
             # the form was valid but cleaned_data had None values.
-            for (label_id, nb) in form.cleaned_data.items():
+            for (label_id, nb) in list(form.cleaned_data.items()):
                 if nb:
                     # the form field name is
                     # place_<id>
@@ -510,7 +510,7 @@ def card_move(request, pk=None):
                 except Exception as e:
                     log.error("couldn't move copies from {} to {}: {}".format(data['origin'], data['destination'], e))
 
-            for (basket, nb) in basketForm.cleaned_data.items():
+            for (basket, nb) in list(basketForm.cleaned_data.items()):
                 if nb:
                     basket_obj = Basket.objects.get(name=basket)
                     try:
@@ -527,7 +527,7 @@ def card_move(request, pk=None):
             if not back_to:
                 back_to = reverse('search:card_show', args=(pk,))
             # back_to += "?" + urlparse.urlsplit(url).query
-            back_to += "?" + urllib.urlencode(qparams)
+            back_to += "?" + urllib.parse.urlencode(qparams)
             # XXX back_to should be set more than once, per-search.
             if request.session.get("back_to"):
                 del request.session["back_to"]
@@ -923,7 +923,7 @@ def deposit_add_copies(request, pk):
         if form.is_valid():
             data = form.cleaned_data
             dep = Deposit.objects.get(id=pk)
-            for id, qty in data.items():
+            for id, qty in list(data.items()):
                 dep.add_copies([id], quantities=[qty])
 
             return HttpResponseRedirect(reverse('search:deposits_view', args=(pk,)))
@@ -1075,7 +1075,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
             header = (_("Title"), _("Quantity sold"))
             diff = inv.diff()[0]  # that should be cached XXX. A json row in the db ?
             rows = []
-            for k in diff.values():
+            for k in list(diff.values()):
                 if k.get('diff', 0) < 0:
                     qtysold = - k.get('diff')
                 else:
@@ -1128,17 +1128,17 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     if format in ['csv']:
         pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
-        content = writer.writerow(b"")
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        content = writer.writerow("")
 
         if report in ['bill']:
             rows = [(it[0].title, it[1]) for it in rows]
         if header:
             rows.insert(0, header)
         start = timezone.now()
-        content = b"".join([writer.writerow(row) for row in rows])
+        content = "".join([writer.writerow(row) for row in rows])
         end = timezone.now()
-        print("writing rows to csv took {}".format(end - start))
+        print(("writing rows to csv took {}".format(end - start)))
 
         response = StreamingHttpResponse(content, content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(name)
@@ -1247,15 +1247,15 @@ def history_sells_month(request, date, **kwargs):
 
 def _csv_response_from_rows(rows, headers=None, filename=''):
     pseudo_buffer = Echo()
-    writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
-    content = writer.writerow(b"")
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+    content = writer.writerow("")
 
     if headers:
         rows.insert(0, headers)
     start = timezone.now()
-    content = b"".join([writer.writerow(row) for row in rows])
+    content = "".join([writer.writerow(row) for row in rows])
     end = timezone.now()
-    print("writing rows to csv took {}".format(end - start))
+    print(("writing rows to csv took {}".format(end - start)))
 
     response = StreamingHttpResponse(content, content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
@@ -1505,8 +1505,8 @@ def history_sells_exports(request, **kwargs):
 
     if outformat in ['csv']:
         pseudo_buffer = Echo()
-        writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
-        content = writer.writerow(b"")
+        writer = unicodecsv.writer(pseudo_buffer, delimiter=';')
+        content = writer.writerow("")
 
         rows = [(it['created'],
                  it['price_sold'],
@@ -1520,7 +1520,7 @@ def history_sells_exports(request, **kwargs):
                   _("supplier"),
         )
         rows.insert(0, header)
-        content = b"".join([writer.writerow(row) for row in rows])
+        content = "".join([writer.writerow(row) for row in rows])
 
         response = StreamingHttpResponse(content, content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
