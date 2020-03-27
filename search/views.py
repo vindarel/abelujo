@@ -348,6 +348,7 @@ def card_edit(request, pk, *args, **kwargs):
         card_form = viewforms.CardCreateForm(request.POST)
         if card_form.is_valid():
             card_dict = card_form.cleaned_data
+            card_dict['id'] = pk
             card, msgs = viewforms.CardCreateForm.create_card(card_dict)
 
             if not card:
