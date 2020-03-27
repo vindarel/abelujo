@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-from __future__ import print_function
+
+
 
 import difflib
 import filecmp
@@ -38,13 +38,13 @@ def select_client_cfg(letters, quiet=False):
     cfg = addict.Dict(cfg)
 
     clients = cfg.clients
-    cl = filter(lambda it: it.name.startswith(letters), clients)
+    cl = [it for it in clients if it.name.startswith(letters)]
     if len(cl) > 1:
-        print("Found more than one possible clients, can't decide: {}".format([it.name for it in cl]))
+        print(("Found more than one possible clients, can't decide: {}".format([it.name for it in cl])))
         return []
     if not cl:
         if not quiet:
-            print("No client found with '{}'".format(sys.argv[1]))
+            print(("No client found with '{}'".format(sys.argv[1])))
             print("existing clients:")
             print([it.name for it in cfg.clients])
             exit(1)
@@ -55,7 +55,7 @@ def whose_port(number, cfg):
     """
     """
     clients = cfg.clients
-    clt = filter(lambda it: it.port == number, clients)
+    clt = [it for it in clients if it.port == number]
     if len(clt) > 1:
         print("Warning ! Many clients have the same port number")
     return clt
@@ -72,7 +72,7 @@ def _print_status(status):
     return status
 
 def print_client(client):
-    print(termcolor.colored("- {:15} ".format(client.name), "blue") + "\t {}".format(client.port) + "\t{}".format(_print_status(client.status)))
+    print((termcolor.colored("- {:15} ".format(client.name), "blue") + "\t {}".format(client.port) + "\t{}".format(_print_status(client.status))))
 
 def wd(client, cfg):
     """Get the working directory.
@@ -99,10 +99,10 @@ def bundle_needs_update():
 
     # The caches exist ?
     if not os.path.exists(package_cache):
-        print(termcolor.colored("package.json has no cache, so we don't know if it changed since last upload. Need rebuild.", "yellow"))
+        print((termcolor.colored("package.json has no cache, so we don't know if it changed since last upload. Need rebuild.", "yellow")))
         ret = True
     if not os.path.exists(bower_cache):
-        print(termcolor.colored("bower.json has no cache, so we don't know if it changed since last upload. Need rebuild.", "yellow"))
+        print((termcolor.colored("bower.json has no cache, so we don't know if it changed since last upload. Need rebuild.", "yellow")))
         ret = True
     if ret:
         return True
@@ -110,7 +110,7 @@ def bundle_needs_update():
     # Do the files look different ?
     ret = False
     if not filecmp.cmp(package_json, package_cache):
-        print(termcolor.colored("package.json seems to have changed", "yellow"))
+        print((termcolor.colored("package.json seems to have changed", "yellow")))
         package_lines = open(package_json, "r").readlines()
         package_cache_lines = open(package_cache, "r").readlines()
         diff = difflib.unified_diff(package_cache_lines, package_lines)
@@ -118,7 +118,7 @@ def bundle_needs_update():
         ret = True  # they don't seem equal, they need an update
 
     if not filecmp.cmp(bower_json, bower_cache):
-        print(termcolor.colored("bower.json seems to have changed", "yellow"))
+        print((termcolor.colored("bower.json seems to have changed", "yellow")))
         ret = True
 
         bower_lines = open(bower_json, "r").readlines()
@@ -134,9 +134,9 @@ def diff_print(generator):
     """
     for line in generator:
         if line.startswith("-"):
-            print(termcolor.colored(line, "red"))
+            print((termcolor.colored(line, "red")))
         elif line.startswith("+"):
-            print(termcolor.colored(line, "green"))
+            print((termcolor.colored(line, "green")))
         else:
             print(line)
 

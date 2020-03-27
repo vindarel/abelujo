@@ -22,7 +22,7 @@ You can produce a graph of the db with django_extension's
 
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
-from __future__ import unicode_literals
+
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import six
@@ -33,7 +33,7 @@ import locale
 import json
 import os
 import tempfile
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from datetime import date
 
 import barcode
@@ -631,7 +631,7 @@ class Card(TimeStampedModel):
         """
         if self.img and (not self.imgfile) and self.img != "":
             try:
-                tmp_path, httpmessages = urllib.urlretrieve(self.img)
+                tmp_path, httpmessages = urllib.request.urlretrieve(self.img)
                 self.imgfile.save(
                     os.path.basename(self.img),
                     File(open(tmp_path)))

@@ -49,4 +49,4 @@ def card_saved_callback(sender, **kwargs):
                 barcode = Barcode64(ean=card.ean, barcodebase64=base64)
                 barcode.save()
             except Exception as e:
-                log.error(u'Error while saving barcode base 64 of ean {}: {}'.format(card.ean, e))
+                log.error('Error while saving barcode base 64 of ean {}: {}'.format(card.ean, e))

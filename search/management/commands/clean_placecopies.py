@@ -23,7 +23,7 @@ with card_quantity records whose quantity is 0. These records should be deleted.
 Indeed, a card will appear in the search of cards of a place even if its quantity in it is 0.
 It is not a bug, it is not right.
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 

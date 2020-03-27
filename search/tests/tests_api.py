@@ -15,10 +15,10 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
+
 
 import datetime
-import httplib
+import http.client
 import json
 import logging
 import unittest
@@ -38,9 +38,9 @@ from search.models.common import (ALERT_SUCCESS,  # noqa: F401
                                   ALERT_INFO,
                                   ALERT_WARNING)
 from search.models.utils import get_logger
-from tests_models import SellsFactory
-from tests_models import PlaceFactory
-from tests_models import PreferencesFactory
+from .tests_models import SellsFactory
+from .tests_models import PlaceFactory
+from .tests_models import PreferencesFactory
 
 log = get_logger()
 
@@ -139,7 +139,7 @@ class ApiTest(TestCase):
         self.params["to_sell"] = ""
         resp = self.c.post("/api/sell", self.params)
         # resp_data = json.loads(resp.content)
-        self.assertEqual(resp.status_code, httplib.OK)
+        self.assertEqual(resp.status_code, http.client.OK)
 
     def test_sell_cards_unicode(self):
         self.params["to_sell"] = "2,9.5,2"
@@ -149,13 +149,13 @@ class ApiTest(TestCase):
 
     def test_history(self):
         resp = self.c.get(reverse("api_history_sells"))
-        self.assertEqual(resp.status_code, httplib.OK)
+        self.assertEqual(resp.status_code, http.client.OK)
 
     def test_alerts(self):
         alert = models.Alert(card=models.Card.objects.first())
         alert.save()
         resp = self.c.get(reverse("api_alerts"))
-        self.assertEqual(resp.status_code, httplib.OK)
+        self.assertEqual(resp.status_code, http.client.OK)
 
     def test_api_utils(self):
         self.assertEqual(list_from_coma_separated_ints(""), [])
@@ -216,14 +216,14 @@ class TestBasket(TestCase):
                                content_type='application/json')
 
         resp = do_post()
-        self.assertEqual(resp.status_code, httplib.OK)
+        self.assertEqual(resp.status_code, http.client.OK)
         self.assertTrue(self.to_command.copies.count())
         just_added = self.to_command.copies.first()
         self.assertTrue(just_added.distributor)
 
         # We try again: it should pass.
         resp = do_post()
-        self.assertEqual(resp.status_code, httplib.OK)
+        self.assertEqual(resp.status_code, http.client.OK)
 
         # We try to add with a wrong distributor.
         resp = do_post(dist_id=2)

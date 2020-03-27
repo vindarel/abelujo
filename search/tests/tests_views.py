@@ -15,7 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
+
 
 import mock
 from django.core.urlresolvers import reverse
@@ -33,9 +33,9 @@ from search.models import Publisher
 from search.models import Sell
 from search.views import get_reverse_url
 
-from tests_models import CardFactory
-from tests_models import DepositFactory
-from tests_models import PlaceFactory
+from .tests_models import CardFactory
+from .tests_models import DepositFactory
+from .tests_models import PlaceFactory
 from django.contrib import auth
 
 fixture_search_datasource = {

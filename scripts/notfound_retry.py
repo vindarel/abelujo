@@ -31,7 +31,7 @@ def missing(fn, source=None):
     cards = []
 
     for card in tqdm.tqdm(not_found):
-        scraper = source.Scraper(card.get(u'ISBN'))
+        scraper = source.Scraper(card.get('ISBN'))
         res, errors = scraper.search()
         cards += res
 
@@ -51,12 +51,12 @@ def run(*args):
     """
     cards = []
     for i, fil in enumerate(args):
-        print "---------------"
-        print "Importing file {}/{}: {}".format(i + 1, len(args), fil)
-        print "---------------"
+        print("---------------")
+        print("Importing file {}/{}: {}".format(i + 1, len(args), fil))
+        print("---------------")
         res = missing(fil, source=librairiedeparisScraper)
         cards += res
 
     # save the cards found
     save_to_file({'cards_found': cards})
-    print "All done."
+    print("All done.")

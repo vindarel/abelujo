@@ -22,7 +22,7 @@ Apply one or many inventories.
 ./manage.py apply_inventories --ids [id,id,id,id] [--all]
 
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 
@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
         self.stdout.write("Applying the following inventories:")
         self.stdout.write("\n".join([it.__unicode__() for it in invs]))
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = eval(input("Continue ? [Y/n]"))
         if confirmation == "n":
             exit(0)
 

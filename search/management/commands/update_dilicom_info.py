@@ -26,7 +26,7 @@ Here:
 ./manage.py fix_dilicom_info
 
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -45,14 +45,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Go...")
-        start = timezone.datetime(year=2020, month=01, day=01)
+        start = timezone.datetime(year=2020, month=0o1, day=0o1)
         cards = Card.objects.filter(created__gt=start).filter(data_source='dilicom')
 
         # Cards whose price has no decimal, hence are suspicious.
-        cards = list(filter(lambda card: card.price % 1 == 0, cards))
+        cards = list([card for card in cards if card.price % 1 == 0])
         self.stdout.write("Looking up {} cards on Dilicom.".format(len(cards)))
         self.stdout.write("(Not all will need an update)")
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = eval(input("Continue ? [Y/n]"))
         if confirmation == "n":
             exit(0)
 
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         cards_updated = []
         count_ok = 0
         for card in cards:
-            bk = list(filter(lambda it: it['isbn'] == card.isbn, bklist))
+            bk = list([it for it in bklist if it['isbn'] == card.isbn])
             if bk:
                 bk = bk[0]
 

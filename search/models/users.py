@@ -15,15 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 
-from common import CHAR_LENGTH
-from common import TEXT_LENGTH
-from common import TimeStampedModel
+from .common import CHAR_LENGTH
+from .common import TEXT_LENGTH
+from .common import TimeStampedModel
 from search.models.utils import get_logger
 
 log = get_logger()

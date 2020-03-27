@@ -19,8 +19,8 @@
 """
 Import a csv files with two columns: an isbn and a quantity.
 """
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from django.core.management.base import BaseCommand
 
@@ -128,7 +128,7 @@ class Command(BaseCommand):
         shelf = None
         if options.get('shelf_id'):
             shelf = Shelf.objects.filter(id=options.get('shelf_id')).first()
-            self.stdout.write(u"Found shelf: {}".format(shelf.name))
+            self.stdout.write("Found shelf: {}".format(shelf.name))
 
         default_place = Preferences.prefs().default_place
         if not default_place:

@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
+
 
 import json
 import os
@@ -75,7 +75,7 @@ def run(*args):
             msgs, status = Preferences.setprefs(vat_book=vat_book)
         except Exception as e:
             print("Error: {}".format(e))
-        if status.lower() in ["success", u"success"]:
+        if status.lower() in ["success", "success"]:
             print("==== ok ===")
         else:
             print("==== There might be a pb: {}".format(msgs))

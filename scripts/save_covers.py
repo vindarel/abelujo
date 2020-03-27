@@ -37,10 +37,10 @@ def run(*args):
         os.mkdir(covdir)
 
     l1 = len(os.listdir(covdir))
-    print "Covers in directory: {}".format(l1)
+    print("Covers in directory: {}".format(l1))
     for card in Card.objects.all():
-        print "Saving cover of card {}...".format(card.id)
+        print("Saving cover of card {}...".format(card.id))
         card.save_cover()
 
     l2 = len(os.listdir(covdir))
-    print "Covers in directory: {}.\n-----\n{} covers created".format(l2, l2 - l1)
+    print("Covers in directory: {}.\n-----\n{} covers created".format(l2, l2 - l1))

@@ -39,7 +39,7 @@ def getAllKeys(cards, key):
     for dic in cards:
         if dic.get(key) not in its:
             its.append(dic.get(key))
-    its = filter(lambda it: it is not None, its)
+    its = [it for it in its if it is not None]
     return its
 
 def import_file(srcfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
@@ -55,7 +55,7 @@ def import_file(srcfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
 
     """
     if not os.path.exists(os.path.expanduser(srcfile)):
-        print "Error: file '%s' doesn't exist. Give it as argument with srcfile=..." % (srcfile,)
+        print("Error: file '%s' doesn't exist. Give it as argument with srcfile=..." % (srcfile,))
         return 1
     datasource = "chapitre"
 
@@ -68,10 +68,10 @@ def import_file(srcfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
         with open(jsonfile, "r") as f:
             data = f.read()
         try:
-            print "Reading cards data from the saved json file…"
+            print("Reading cards data from the saved json file…")
             cards = json.loads(data)
         except Exception as e:
-            print "json error. Will read the ods file instead. {}".format(e)
+            print("json error. Will read the ods file instead. {}".format(e))
             cards = []
 
     ### Run: lookup cards from the ods.
@@ -79,7 +79,7 @@ def import_file(srcfile, ADD_NO_EAN=True, ADD_NOT_FOUND=True, ADD_EAN=True):
         cards = odslookup.run(srcfile, datasource)
 
     if cards['status'] == 1:
-        print "Error status. Aborting. ", cards['messages']
+        print("Error status. Aborting. ", cards['messages'])
 
     else:
         import_cards(cards, ADD_NOT_FOUND=ADD_NOT_FOUND, ADD_NO_EAN=ADD_NO_EAN, ADD_EAN=ADD_EAN)
@@ -94,12 +94,12 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     for val in cards['found']:
         if val.get('publishers') and val['publishers'][0] not in pubs:
             [pubs.append(it) for it in val.get('publishers')]
-    pubs = filter(lambda it: it is not None, pubs)
+    pubs = [it for it in pubs if it is not None]
 
-    print "Creating publishers..."
+    print("Creating publishers...")
     for pub in tqdm(pubs):
         _, _ = Publisher.objects.get_or_create(name=pub)
-    print "...done."
+    print("...done.")
 
     ### Get all distributors and their discount
     dists = []
@@ -112,23 +112,23 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
             seen.append(dist)
             dists.append((dist, discount))
 
-    print "Creating distributors..."
+    print("Creating distributors...")
     for tup in tqdm(dists):
         try:
             obj, _ = Distributor.objects.get_or_create(name=tup[0])
             obj.discount = tup[1]
             obj.save()
         except Exception as e:
-            print e
-    print "...done."
+            print(e)
+    print("...done.")
 
     ### Get and create all categories
-    print "Creating categories..."
+    print("Creating categories...")
     cats = []
     cats = getAllKeys(cards['found'], "shelf")
     for it in tqdm(cats):
         Shelf.objects.get_or_create(name=it)
-    print "...done."
+    print("...done.")
 
     ### Create a default place if needed.
     pref = Preferences.objects.first()
@@ -144,34 +144,34 @@ def import_cards(cards, ADD_NOT_FOUND=True, ADD_NO_EAN=True, ADD_EAN=True):
     ### Add cards
     # Add the cards with all info.
     if ADD_EAN:
-        print "Adding cards to the database..."
-        print "Adding cards with ean..."
+        print("Adding cards to the database...")
+        print("Adding cards with ean...")
         for card in tqdm(cards["found"]): # tqdm: progress bar
             qty = card.get('quantity')
             card_obj, msgs = Card.from_dict(card)
             place.add_copy(card_obj, nb=qty, add=False)
-        print "...done."
+        print("...done.")
 
     # Add all other cards (even with uncomplete info).
     if ADD_NO_EAN and cards.get('cards_no_isbn'):
-        print "Adding cards without ean..."
+        print("Adding cards without ean...")
         for card in tqdm(cards.get("cards_no_isbn")):
             #XXX the logs will thrash stdout.
             card_obj, msgs = Card.from_dict(card)
             if card.get('title'):
                 place.add_copy(card_obj, nb=qty, add=False)
-        print "...done."
+        print("...done.")
 
     if ADD_NOT_FOUND and cards.get('cards_not_found'):
-        print "Adding cards not found, without much info..."
+        print("Adding cards not found, without much info...")
         for card in tqdm(cards.get("cards_not_found")):
             try:
                 card_obj, msgs = Card.from_dict(card)
                 place.add_copy(card_obj, nb=qty)
             except Exception as e:
-                print "Error adding card {}: {}".format(card.get('title'), e)
+                print("Error adding card {}: {}".format(card.get('title'), e))
 
-    print "All done."
+    print("All done.")
 
 def run(*args):
     """This method is needed by the runscript command. We can pass
@@ -189,7 +189,7 @@ def run(*args):
 
     documentation of runscript: http://django-extensions.readthedocs.org/en/latest/runscript.html
     """
-    print "script args:", args
+    print("script args:", args)
     ADD_NOT_FOUND = True
     ADD_NO_EAN = True
     ADD_EAN = True
@@ -207,9 +207,9 @@ def run(*args):
         files = glob.glob('{}*csv'.format(args[0]))
 
     for i, afile in enumerate(files):
-        print "---------------"
-        print "Importing file {}/{}: {}".format(i + 1, len(files), afile)
-        print "---------------"
+        print("---------------")
+        print("Importing file {}/{}: {}".format(i + 1, len(files), afile))
+        print("---------------")
         import_file(afile, ADD_EAN=ADD_EAN, ADD_NO_EAN=ADD_NO_EAN, ADD_NOT_FOUND=ADD_NOT_FOUND)
 
-    print "All files imported."
+    print("All files imported.")

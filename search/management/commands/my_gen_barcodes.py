@@ -20,7 +20,7 @@
 Custom management command.
 
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 from tqdm import tqdm
@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("-------------------")
-        self.stdout.write(u"Generating and saving barcodes in db…")
+        self.stdout.write("Generating and saving barcodes in db…")
         for card in tqdm(Card.objects.all()):
             ean = card.ean or card.isbn
             if ean:

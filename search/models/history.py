@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+
 
 import pendulum
 import os
@@ -25,9 +25,9 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import six
 
-from common import DATE_FORMAT
-from common import PAYMENT_CHOICES
-from common import TimeStampedModel
+from .common import DATE_FORMAT
+from .common import PAYMENT_CHOICES
+from .common import TimeStampedModel
 from search.models.utils import get_logger
 
 log = get_logger()

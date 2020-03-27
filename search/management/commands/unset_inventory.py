@@ -22,7 +22,7 @@ Apply one or many inventories.
 ./manage.py apply_inventories --ids [id, id,id,id]
 
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 

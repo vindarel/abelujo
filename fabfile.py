@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import datetime
 import os
@@ -174,7 +174,7 @@ def check_uptodate(name=None):
 
     client = fabutils.select_client_cfg(name, CFG)
     if not client:
-        print("No client found with '{}'".format(name))
+        print(("No client found with '{}'".format(name)))
         return 1
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     # that's local so it conuts the unpushed commits. should be remote
@@ -184,24 +184,24 @@ def check_uptodate(name=None):
         res = run("git rev-parse HEAD")
         tag = run("git describe --tags")
         if res == git_head:
-            print(termcolor.colored("- {} is up to date".format(client.name), "green"))
+            print((termcolor.colored("- {} is up to date".format(client.name), "green")))
         else:
             last_commit_date = check_output(["git", "show", "-s", "--format=%ci", res])
             acceptable_trailing_by = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(acceptable_count)]).split("\n")
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
             index = git_last_commits.index(res)
             if res in acceptable_trailing_by:
-                print(termcolor.colored("- {}", 'blue').format(client.name) +
+                print((termcolor.colored("- {}", 'blue').format(client.name) +
                     " is " +
                     termcolor.colored("{}", "yellow").format(index) +
                       " commits behind. Head is at: {}, {} ({})".format(
-                          tag, last_commit_date, res))
+                          tag, last_commit_date, res)))
             else:
-                print(termcolor.colored("- {}", "blue").format(client.name) +
+                print((termcolor.colored("- {}", "blue").format(client.name) +
                     " is  " +
                     termcolor.colored("{}", "red").format(index) +
                       " commits behind. Head is at: {}, {} ({})".format(
-                          tag, last_commit_date, res))
+                          tag, last_commit_date, res)))
 
 def _request_call(url):
     status = 0
@@ -230,12 +230,12 @@ def check_online(client=None):
     pool = multiprocessing.Pool(8)
 
     status = pool.map(_request_call, urls)
-    res = zip(status, sorted_clients)
+    res = list(zip(status, sorted_clients))
     for status, client in res:
         if status != 200:
-            print(termcolor.colored("- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port']))
+            print((termcolor.colored("- {:{}} has a pb".format(client.name, COL_WIDTH), "red") + " on {}".format(client['port'])))
         else:
-            print("- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("online", "green"))
+            print(("- {:{}} ".format(client.name, COL_WIDTH) + termcolor.colored("online", "green")))
 def _save_variables(name):
     """
     Another def for multiprocessing. Functions can only be pickled if they are at the toplevel.
@@ -265,7 +265,7 @@ def save_variables(name=None):
         _save_variables(name)
 
     else:
-        yesno = raw_input("Set port and ip for all clients ? [Y/n]")
+        yesno = eval(input("Set port and ip for all clients ? [Y/n]"))
         if not yesno or fabutils.yes_answer(yesno):
             import multiprocessing
             pool = multiprocessing.Pool(8)
@@ -305,7 +305,7 @@ def updatelight(name=None):
     with cd(wd):
         make('update-code', client.name)
 
-    print("Client updated: {}".format(client))
+    print(("Client updated: {}".format(client)))
 
 def updateverylight(name=None):
     """
@@ -318,7 +318,7 @@ def updateverylight(name=None):
     wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
     with cd(wd):
         make('pull', client.name)
-        print("Client updated (pull): {}".format(client))
+        print(("Client updated (pull): {}".format(client)))
 
 def dbback(name=None):
     """Copy the db file locally (there), appendding a timestamp, and download it.
@@ -331,12 +331,12 @@ def dbback(name=None):
         clients = [fabutils.select_client_cfg(name)]
 
     # Only for prod:
-    clients = filter(lambda it: it.status == "prod", clients)
-    print(termcolor.colored(
+    clients = [it for it in clients if it.status == "prod"]
+    print((termcolor.colored(
         "Backup for {} users in prod: {}.".format(
             len(clients),
-            map(lambda it: it.name, clients)),
-        "yellow"))
+            [it.name for it in clients]),
+        "yellow")))
 
     for client in clients:
         with cd(fabutils.wd(client, CFG)):
@@ -355,7 +355,7 @@ def dbback(name=None):
                 db_backed=db_backed
             )
 
-            print("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue")))
+            print(("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue"))))
             print(cmd)
             os.system(cmd)
 
@@ -434,7 +434,7 @@ def ssh_to(client):
                          client.get('name'),
                          CFG.project_name),)
     print("todo: workon venv")
-    print("connecting to {}".format(cmd))
+    print(("connecting to {}".format(cmd)))
     os.system(cmd)
 
 def port_info(nb=0):
@@ -444,13 +444,13 @@ def port_info(nb=0):
         try:
             nb = int(nb)
         except Exception:
-            print("{} is a number ?".format(nb))
+            print(("{} is a number ?".format(nb)))
             return
 
         clt = fabutils.whose_port(nb, CFG)
         for cl in clt:
-            print(termcolor.colored(cl.name, "blue"),)
-            print("\t (venv: " + cl.venv + ")")
+            print((termcolor.colored(cl.name, "blue"),))
+            print(("\t (venv: " + cl.venv + ")"))
 
     else:
         for it in sorted(CFG.clients, key=lambda it: it.port):
@@ -462,10 +462,10 @@ def create(name=None):
     - name: name of the client (and of the venv).
     """
     if not name:
-        name = raw_input("Client name ? ")
+        name = eval(input("Client name ? "))
     exists = fabutils.select_client_cfg(name, quiet=True)
     if exists:
-        print("Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port']))
+        print(("Client {} already exists (venv {} and port {}). Abort.".format(name, exists['venv'], exists['port'])))
         exit(1)
 
     venv = name
@@ -474,9 +474,9 @@ def create(name=None):
     ports.append(8000)
     ports.append(8001)
     ports = sorted(ports)
-    possible_ports = range(8000, 8000 + len(CFG.clients) + 1)
+    possible_ports = list(range(8000, 8000 + len(CFG.clients) + 1))
     free_port = list(set(possible_ports) - set(ports))[0]
-    port = raw_input("Port ? [{}] ".format(free_port))
+    port = eval(input("Port ? [{}] ".format(free_port)))
     port = port or free_port
     if int(port) in ports:
         print("Error: this port is taken.")

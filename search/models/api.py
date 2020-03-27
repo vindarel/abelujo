@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 
-import httplib
+
+import http.client
 import json
 import locale
 import logging
@@ -37,23 +37,23 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 from django_q.tasks import async
 
-from drfserializers import PreferencesSerializer
-from models import Alert
-from models import Author
-from models import Basket
-from models import Card
-from models import CardType
-from models import Command
-from models import Deposit
-from models import Distributor
-from models import Inventory
-from models import Place
-from models import Preferences
-from models import Publisher
-from models import Restocking
-from models import Sell
-from models import Shelf
-from models import Stats
+from .drfserializers import PreferencesSerializer
+from .models import Alert
+from .models import Author
+from .models import Basket
+from .models import Card
+from .models import CardType
+from .models import Command
+from .models import Deposit
+from .models import Distributor
+from .models import Inventory
+from .models import Place
+from .models import Preferences
+from .models import Publisher
+from .models import Restocking
+from .models import Sell
+from .models import Shelf
+from .models import Stats
 from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
     reviews as frenchreviews
 from search.models import do_command_apply
@@ -323,7 +323,7 @@ def card_create(request, **response_kwargs):
     msgs = {}
     if request.method == "POST":
         params = request.POST.copy()  # either here or in request.body
-        status = httplib.OK
+        status = http.client.OK
         alerts = []
 
         isbn = params.get('isbn')
@@ -362,7 +362,7 @@ def card_create(request, **response_kwargs):
                 card_dict = params.get('card')
                 card_dict['has_isbn'] = True if card_dict.get('isbn') else False
             except Exception as e:
-                log.error(u'card_create/edit: could not request body as json. Ensure the client does not encode paramaters as url parameters (as before). {}'.format(e))
+                log.error('card_create/edit: could not request body as json. Ensure the client does not encode paramaters as url parameters (as before). {}'.format(e))
                 card_dict = {}
                 raise e
 
@@ -396,7 +396,7 @@ def card_add(request, **response_kwargs):
     """
     if request.method == "POST":
         params = request.POST.copy()
-        status = httplib.OK
+        status = http.client.OK
         # alerts = []
         # data = []
 
@@ -490,7 +490,7 @@ def cards_set_supplier(request, **response_kwargs):
     if request.method == 'GET':
         return JsonResponse({"msg": "not implemented"})
     elif request.method == 'POST':
-        status = httplib.OK
+        status = http.client.OK
 
         params = request.POST.copy()
         cards_ids = params.get('cards_ids')
@@ -619,7 +619,7 @@ def deposits(request, **response_kwargs):
 
         except Exception as e:
             log.error("api/deposit error: {}".format(e))
-            msgs["status"] = httplib.INTERNAL_SERVER_ERROR
+            msgs["status"] = http.client.INTERNAL_SERVER_ERROR
             msgs["messages"].append({"level": ALERT_ERROR,
                                      "message": "internal error, sorry !"})
 
@@ -637,7 +637,7 @@ def deposits(request, **response_kwargs):
         depos_list = [it.to_list() for it in depos]
         res = {"data": depos_list,
                "msgs": msgs.to_alerts(),
-               "status": httplib.OK,
+               "status": http.client.OK,
         }
         return JsonResponse(res)
 
@@ -1121,7 +1121,7 @@ def baskets(request, **kwargs):
         msgs = []
         nb_results = None
         meta = {}
-        status = httplib.OK
+        status = http.client.OK
         if kwargs.get('pk'):
             pk = kwargs.pop('pk')
             page = request.GET.get('page', 1)
@@ -1157,7 +1157,7 @@ def baskets(request, **kwargs):
                 data = Basket.objects.exclude(archived=True).all()
             except Exception as e:
                 log.error(e)
-                status = httplib.INTERNAL_SERVER_ERROR
+                status = http.client.INTERNAL_SERVER_ERROR
                 msgs.append({"level": "error",
                              "msg": "There was an error. We can not load the baskets, sorry."
                 })
@@ -1708,7 +1708,7 @@ def inventories_update(request, **kwargs):
                 # searching on the web: they don't have an id, except
                 # if they already existed in the stock.
                 # If that's not the case, create the card.
-                for _nop, card_dict in cards.iteritems():
+                for _nop, card_dict in list(cards.items()):
                     if not card_dict.get('id'):
                         try:
                             card_obj, _nop = Card.from_dict(card_dict)
@@ -1717,7 +1717,7 @@ def inventories_update(request, **kwargs):
                             log.error("Error creating the card {} to add to inventory {}: {}".
                                       format(card_dict['title'], inv.id, e))
 
-                pairs = [(card['id'], 1) for __, card in cards.items()]
+                pairs = [(card['id'], 1) for __, card in list(cards.items())]
 
             status, _msgs = inv.add_pairs(pairs)
             msgs.append(_msgs)

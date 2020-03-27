@@ -21,7 +21,7 @@ Custom management command.
 
 Set all cards' quantities to zero.
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("-------------------")
         self.stdout.write("You are going to RESET all quantities to ZERO:")
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = eval(input("Continue ? [Y/n]"))
         if confirmation == "n":
             exit(0)
         PlaceCopies.objects.all().update(nb=0)

@@ -28,8 +28,8 @@ def run(*args):
     """
 
     yes_answers = ["y", "Y", "o", "O", ""]
-    go_all_cards = raw_input("Go with all cards ? [Y/n]")
-    go_inventories = raw_input("Go with cards applied from inventories ? [Y/n]")
+    go_all_cards = input("Go with all cards ? [Y/n]")
+    go_inventories = input("Go with cards applied from inventories ? [Y/n]")
 
     if go_all_cards in yes_answers:
         print("Setting all cards to not in stock...")
@@ -40,7 +40,7 @@ def run(*args):
     if go_inventories in yes_answers:
         print("Registering cards applied from inventories...")
         for inv in tqdm(Inventory.objects.filter(applied=True)):
-            print("Going with inv {}".format(inv.name))
+            print(("Going with inv {}".format(inv.name)))
             for card_set in inv.inventorycopies_set.all():
                 card_set.card.in_stock = True
                 card_set.card.save()

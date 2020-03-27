@@ -24,7 +24,7 @@ Compute the quantities and save to a DB field.
 Takes around 3 minutes for a thousand objects.
 
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 
@@ -43,7 +43,7 @@ class Command(BaseCommand):
         self.stdout.write("Go...")
         cards = Card.objects.all()
         self.stdout.write("Computing the quantities of {} Card objects.".format(cards.count()))
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = eval(input("Continue ? [Y/n]"))
         if confirmation == "n":
             exit(0)
 

@@ -47,8 +47,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Abelujo'
-copyright = u'2014, vindarel'
+project = 'Abelujo'
+copyright = '2014, vindarel'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -200,8 +200,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Abelujo.tex', u'Abelujo Documentation',
-   u'vindarel', 'manual'),
+  ('index', 'Abelujo.tex', 'Abelujo Documentation',
+   'vindarel', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,8 +230,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'abelujo', u'Abelujo Documentation',
-     [u'vindarel'], 1)
+    ('index', 'abelujo', 'Abelujo Documentation',
+     ['vindarel'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,8 +244,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Abelujo', u'Abelujo Documentation',
-   u'vindarel', 'Abelujo', 'One line description of project.',
+  ('index', 'Abelujo', 'Abelujo Documentation',
+   'vindarel', 'Abelujo', 'One line description of project.',
    'Miscellaneous'),
 ]
 

@@ -26,7 +26,7 @@ Usage:
 
 python manage.py shelf2place --shelf <id> [--can_sell true/false]
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 
@@ -63,7 +63,7 @@ class Command(BaseCommand):
         self.stdout.write("Nb of cards to move: {}".format(shelf.cards_qty))
         self.stdout.write("The new place will be {}.".format("a selling place" if options.get('can_sell') else "a stocking place"))
 
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = eval(input("Continue ? [Y/n]"))
         if confirmation == 'n':
             exit(0)
 

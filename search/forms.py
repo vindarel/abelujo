@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+
 
 import json
 
@@ -24,7 +24,7 @@ from django.forms.widgets import TextInput
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 
-import models
+from . import models
 from search.models import Card
 from search.models import Preferences
 
@@ -322,6 +322,7 @@ class CardForm(forms.ModelForm):
     class Meta:
         model = Card
         fields = ['title',
+                  'id',
                   'card_type',
                   'has_isbn',
                   'isbn',
@@ -376,7 +377,7 @@ class CardCreateForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         instance = None
-        if kwargs.has_key('instance'):
+        if 'instance' in kwargs:
             instance = kwargs.pop('instance')
         super(self.__class__, self).__init__(*args, **kwargs)
         if instance:

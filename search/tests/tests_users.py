@@ -19,7 +19,7 @@
 """
 Test the user models.
 """
-from __future__ import unicode_literals
+
 
 import datetime
 
@@ -27,8 +27,8 @@ from django.test import TestCase
 
 from search.models import Bill
 
-from tests_models import CardFactory
-from tests_models import DistributorFactory
+from .tests_models import CardFactory
+from .tests_models import DistributorFactory
 
 class TestBill(TestCase):
 

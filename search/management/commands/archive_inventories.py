@@ -22,7 +22,7 @@ Archive (and close) a bunch of inventories.
 ./manage.py archive_inventories --all --exclude [id,id]
 
 """
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand
 
@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
         self.stdout.write("Archiving the following {} inventories:".format(len(invs)))
         self.stdout.write("\n".join([it.__unicode__() for it in invs]))
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = eval(input("Continue ? [Y/n]"))
         if confirmation not in ["", "Y", "y"]:
             exit(0)
 

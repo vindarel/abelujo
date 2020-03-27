@@ -15,17 +15,17 @@
 
 # You should have received a copy of the GNU General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
+
 
 from django.test import TestCase
 from search.models import Card
 from search.models import Entry
 from search.models import OutMovement
 
-from tests_models import BasketFactory
-from tests_models import CardFactory
-from tests_models import DistributorFactory
-from tests_models import PlaceFactory
+from .tests_models import BasketFactory
+from .tests_models import CardFactory
+from .tests_models import DistributorFactory
+from .tests_models import PlaceFactory
 
 class TestEntry(TestCase):
 
