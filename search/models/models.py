@@ -1074,14 +1074,15 @@ class Card(TimeStampedModel):
                place_id or shelf_id:
                 order_by = "title"
 
+            # this precaution shouldn't be necessary now (fixed).
             if not type(cards) == list:
-                # this precaution shouldn't be necessary now (fixed).
                 cards = cards.order_by(order_by)
 
             # We must re-sort by locale, to get downcased and
             # accented letters sorted properly. See comment below and issue #122.
             if order_by != "-created":
-                cards = sorted(cards, cmp=locale.strcoll, key=lambda it: it.title)
+                # PY3
+                cards = sorted(cards, key=lambda card: locale.strxfrm(card.title))
 
         if type(cards) == list:
             # shouldn't be necessary now (fixed).
