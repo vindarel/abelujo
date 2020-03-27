@@ -45,6 +45,7 @@ apipatterns = [
     url(r'^api/preferences?$', api.preferences, name="api_preferences"),
 
     # Card
+    url(r'^api/cards/create/?$', api.card_create, name="api_card_create"),
     url(r'^api/cards/?$', api.cards, name="api_cards"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', api.card_add,
         name="api_card_add"),
