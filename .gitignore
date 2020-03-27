@@ -15,3 +15,4 @@ node_modules/
 /public/
 /static/js/build/
 /doc/dev/_build/
+.tox/
