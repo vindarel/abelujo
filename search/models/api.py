@@ -403,7 +403,7 @@ def card_add(request, **response_kwargs):
         pk = response_kwargs.pop("pk")
         card_obj = Card.objects.get(id=pk)
 
-        if 'default_place' in request.body:
+        if b'default_place' in request.body:
             # Add one quantity. abelujo-js.js card_add_one_to_default_place
             default_place = Preferences.get_default_place()
             default_place.add_copy(card_obj)
