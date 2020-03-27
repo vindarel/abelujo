@@ -2396,7 +2396,7 @@ class Basket(models.Model):
         # I'm afraid we have to resort to Python here, even though there is an ICU SQLite extension.
         # So, sort with the locale. It also sorts correctly regarding the case:
         # E..É..d..F
-        copies_qties = sorted(copies_qties, cmp=locale.strcoll, key=lambda it: it.card.title)
+        copies_qties = sorted(copies_qties, key=lambda it: locale.strxfrm(it.card.title))
 
         return copies_qties
 

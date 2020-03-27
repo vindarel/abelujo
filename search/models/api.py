@@ -973,7 +973,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
         page_size = to_int(page_size)
         copies = basket.basketcopies_set.order_by("card__title").all()
         # We must re-sort to get downcase and accents right.
-        copies = sorted(copies, cmp=locale.strcoll, key=lambda it: it.card.title)
+        copies = sorted(copies, key=lambda it: locale.strxfrm(it.card.title))
         nb_results = len(copies)
         to_ret['data_length'] = nb_results
         num_pages = get_page_count(copies, size=page_size)  # better with Django's paginator

@@ -954,8 +954,7 @@ def basket_auto_command(request):
         else:
             no_dist = ((_("NO SUPPLIER"), len(copies)))
 
-    # bof
-    dists = sorted(dists, cmp=lambda it, that: it[0].name.lower() < that[0].name.lower())
+    dists = sorted(dists, key=lambda it: it[0].name.lower())
     if request.method == "GET":
         return render(request, template, {
             'dists': dists,
