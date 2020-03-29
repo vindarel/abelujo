@@ -20,7 +20,7 @@
 pip==9
 setuptools==39.2
 
-django==1.11
+django==2.0
 django-bootstrap3==11
 pypugjs==5.9.1          # process pugjs/jade templates.
 bootstrap-admin==0.4.3  # bootstrap theme, nice search feature.
@@ -31,7 +31,7 @@ pytz			# timezone
 six
 
 ### Django extensions
-djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc
+djangorestframework==3.11 # REST framework. Serve API, serialize models, explore schema, etc
 django_extensions==2.2.7 # more useful commands to manage.py (shell_plus).
 # django-brunch==1.0        # build Vue files.  # currently usage paused. 2020-02
 mod_wsgi==4.4             # apache server for development.
