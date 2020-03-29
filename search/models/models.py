@@ -44,7 +44,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import ExpressionWrapper
 from django.db.models import F

@@ -21,7 +21,7 @@ import pendulum
 import os
 import calendar
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.utils import six
 
