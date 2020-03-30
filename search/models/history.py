@@ -61,10 +61,13 @@ class InternalMovement(TimeStampedModel):
     """An internal movement
     For a single Card (or a Basket).
     """
-    origin = models.ForeignKey("search.Place", related_name="mvt_origin")
-    dest = models.ForeignKey("search.Place", related_name="mvt_dest")
-    card = models.ForeignKey("search.Card")
-    basket = models.ForeignKey("search.Basket", null=True, blank=True)
+    origin = models.ForeignKey("search.Place", related_name="mvt_origin",
+                               on_delete=models.CASCADE)
+    dest = models.ForeignKey("search.Place", related_name="mvt_dest",
+                             on_delete=models.CASCADE)
+    card = models.ForeignKey("search.Card", on_delete=models.CASCADE)
+    basket = models.ForeignKey("search.Basket", null=True, blank=True,
+                               on_delete=models.SET_NULL)
     nb = models.IntegerField()
 
     def __unicode__(self):
@@ -91,8 +94,8 @@ class OutMovementCopies(models.Model):
     cards' quantities at that time.
     """
     created = models.DateTimeField(auto_now_add=True)
-    card = models.ForeignKey("search.Card", db_index=True)
-    movement = models.ForeignKey("OutMovement")
+    card = models.ForeignKey("search.Card", db_index=True, on_delete=models.CASCADE)
+    movement = models.ForeignKey("OutMovement", on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1, blank=True, null=True)
 
 
@@ -121,13 +124,17 @@ class OutMovement(models.Model):
     comment = models.CharField(max_length=CHAR_MAX_LENGTH, blank=True, null=True)
 
     #: This movement can be for one card only:
-    card = models.ForeignKey("search.Card", blank=True, null=True)
+    #: On delete set null: we keep the movement in history.
+    card = models.ForeignKey("search.Card", blank=True, null=True,
+                             on_delete=models.CASCADE)
     #: in which case, it can be for more than one copies:
     nb = models.IntegerField(blank=True, null=True)
     #: Most of the time we should record the place of origin:
-    origin = models.ForeignKey("search.Place", blank=True, null=True)
+    origin = models.ForeignKey("search.Place", blank=True, null=True,
+                               on_delete=models.SET_NULL)
     #: This movement can also be for a whole basket:
-    basket = models.ForeignKey("search.Basket", null=True, blank=True)
+    basket = models.ForeignKey("search.Basket", null=True, blank=True,
+                               on_delete=models.CASCADE)
     #: in which case, we record the quantities of each card:
     copies = models.ManyToManyField("search.Card", blank=True,
                                     through="OutMovementCopies",
@@ -135,11 +142,14 @@ class OutMovement(models.Model):
     #: What's the destination ?
     #: In case of a sell: see other Sell class.
     #: In case of a return, the supplier, who is either a publisher either a distributor:
-    publisher = models.ForeignKey("search.Publisher", blank=True, null=True)
-    distributor = models.ForeignKey("search.Distributor", blank=True, null=True)
+    publisher = models.ForeignKey("search.Publisher", blank=True, null=True,
+                                  on_delete=models.SET_NULL)
+    distributor = models.ForeignKey("search.Distributor", blank=True, null=True,
+                                    on_delete=models.SET_NULL)
     #: In case of a loss, nothing.
     #: In case of a gift, the recipient:
-    recipient = models.ForeignKey("search.Client", blank=True, null=True)
+    recipient = models.ForeignKey("search.Client", blank=True, null=True,
+                                  on_delete=models.SET_NULL)
 
     # def __unicode__(self):
     # return "id {}, type {}".format(self.pk,
@@ -221,8 +231,8 @@ class OutMovement(models.Model):
 
 
 class EntryCopies(TimeStampedModel):
-    card = models.ForeignKey("search.Card", db_index=True)
-    entry = models.ForeignKey("Entry")
+    card = models.ForeignKey("search.Card", db_index=True, on_delete=models.CASCADE)
+    entry = models.ForeignKey("Entry", on_delete=models.CASCADE)
     #: we may want to remember the price of the card at this time.
     price_init = models.FloatField(null=True, blank=True, default=0.0)
 

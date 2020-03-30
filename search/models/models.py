@@ -23,6 +23,11 @@ You can produce a graph of the db with django_extension's
 and see it here: http://dev.abelujo.cc/graph-db.png
 """
 
+# on_delete strategy: a user is not supposed to be able to delete a
+# card, a sell or other DB objects. When he "deletes" one,
+# we actually hide it and don't delete the records.
+# We can properly delete from scripts.
+# So, keeping the CASCADE strategy in most cases seems OK.
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import six
@@ -280,7 +285,7 @@ class Collection (models.Model):
     ordered = models.IntegerField(null=True, blank=True, verbose_name=__("ordered"))
     #: Parent collection. A null field means this collection is not
     # the sub-collection of another one.
-    parent = models.ForeignKey("Collection", null=True, blank=True)
+    parent = models.ForeignKey("Collection", null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ("name",)
@@ -464,7 +469,8 @@ class Card(TimeStampedModel):
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
     #: type of the card, if specified (book, CD, tshirt, …)
-    card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=__("card type"))
+    card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=__("card type"),
+                                  on_delete=models.SET_NULL)
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
     has_isbn = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=__("has isbn"))
     #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
@@ -492,13 +498,17 @@ class Card(TimeStampedModel):
     publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=__("publishers"))
     year_published = models.DateField(blank=True, null=True, verbose_name=__("year published"))
     #: Distributor:
-    distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
+    distributor = models.ForeignKey("Distributor", blank=True, null=True,
+                                    verbose_name=__("distributor"),
+                                    on_delete=models.SET_NULL)
     #: Collection
-    collection = models.ForeignKey(Collection, blank=True, null=True, verbose_name=__("collection"))
-    #: Shelf (for now, only one shelf).
-    shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=__("shelf"))
-    # location = models.ForeignKey(Location, blank=True, null=True)
-    #    default='?', on_delete=models.SET_DEFAULT)
+    collection = models.ForeignKey(Collection, blank=True, null=True,
+                                   verbose_name=__("collection"),
+                                   on_delete=models.SET_NULL)
+    #: Shelf
+    shelf = models.ForeignKey("Shelf", blank=True, null=True,
+                              verbose_name=__("shelf"),
+                              on_delete=models.SET_NULL)
     #: the places were we can find this card (and how many).
     places = models.ManyToManyField("Place", through="PlaceCopies", blank=True, verbose_name=__("places"))
     #: when and how this card was sold: sells (see the Sell table).
@@ -1848,9 +1858,9 @@ class PlaceCopies (models.Model):
 
     # so than we can add custom fields to the join.
     #: The card
-    card = models.ForeignKey("Card")
+    card = models.ForeignKey("Card", on_delete=models.CASCADE)
     #: The place
-    place = models.ForeignKey("Place")
+    place = models.ForeignKey("Place", on_delete=models.CASCADE)
 
     #: Number of copies
     nb = models.IntegerField(default=0)
@@ -2138,7 +2148,9 @@ class Preferences(models.Model):
     asso_name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True,
                                  verbose_name=__("bookshop name"))  # XXX to use in preferences
     #: What place to add the cards by default ? (we register them, then move them)
-    default_place = models.OneToOneField(Place, verbose_name=__("default place"))
+    default_place = models.OneToOneField(Place, blank=True, null=True,
+                                         verbose_name=__("default place"),
+                                         on_delete=models.SET_NULL)
     #: VAT, the tax
     vat_book = models.FloatField(null=True, blank=True, verbose_name=__("book vat"))
     #: the default language: en, fr, es, de.
@@ -2288,8 +2300,8 @@ class Preferences(models.Model):
 class BasketCopies(models.Model):
     """Copies present in a basket (intermediate table).
     """
-    card = models.ForeignKey("Card")
-    basket = models.ForeignKey("Basket")
+    card = models.ForeignKey("Card", on_delete=models.CASCADE)
+    basket = models.ForeignKey("Basket", on_delete=models.CASCADE)
     nb = models.IntegerField(default=0)
 
     def __str__(self):
@@ -2324,7 +2336,9 @@ class Basket(models.Model):
     #: Name of the basket
     name = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("name"))
     #: Type of the basket (preparation of a command, a stand, other, etc)
-    basket_type = models.ForeignKey("BasketType", null=True, blank=True, verbose_name=__("basket type"))
+    basket_type = models.ForeignKey("BasketType", null=True, blank=True,
+                                    verbose_name=__("basket type"),
+                                    on_delete=models.SET_NULL)
     #: Copies in it:
     copies = models.ManyToManyField(Card, through="BasketCopies", blank=True)
     # Access the intermediate table with basketcopies_set.all(), basketcopies_set.get(card=card)
@@ -2332,7 +2346,9 @@ class Basket(models.Model):
     comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True, verbose_name=__("comment"))
     #: We can also choose a supplier for this basket.
     #: This will help when applying the basket to the stock, receiving a parcel, etc.
-    distributor = models.ForeignKey(Distributor, blank=True, null=True, verbose_name=__("distributor"))
+    distributor = models.ForeignKey(Distributor, blank=True, null=True,
+                                    verbose_name=__("distributor"),
+                                    on_delete=models.SET_NULL)
     archived = models.BooleanField(default=False, verbose_name=__("archived"))
     archived_date = models.DateField(blank=True, null=True, verbose_name=__("date archived"))
 
@@ -2661,8 +2677,8 @@ class RestockingCopies(models.Model):
     """
     Cards present in the restocking list with their quantities (intermediate table).
     """
-    card = models.ForeignKey("Card", blank=True, null=True)
-    restocking = models.ForeignKey("Restocking")
+    card = models.ForeignKey("Card", blank=True, null=True, on_delete=models.CASCADE)
+    restocking = models.ForeignKey("Restocking", on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
@@ -2855,8 +2871,8 @@ class DepositStateCopies(models.Model):
     - the number of cards,
     - its pourcentage,
     """
-    card = models.ForeignKey(Card)
-    deposit_state = models.ForeignKey("DepositState")
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    deposit_state = models.ForeignKey("DepositState", on_delete=models.CASCADE)
     #: Remember sells about this card.
     sells = models.ManyToManyField("Sell")
     #: the quantity of the card at this deposit state creation.
@@ -2908,7 +2924,7 @@ class DepositState(models.Model):
     more.
 
     """
-    deposit = models.ForeignKey("Deposit")
+    deposit = models.ForeignKey("Deposit", on_delete=models.CASCADE)
     # "created" could be inherited with TimeStampedModel but we want
     # it to be more precise (timezone.now())
     created = models.DateTimeField(blank=True, null=True)
@@ -3162,7 +3178,9 @@ class Deposit(TimeStampedModel):
     """
     name = models.CharField(unique=True, max_length=CHAR_LENGTH, verbose_name=__("name"))
     #: the distributor (or person) we have the copies from.
-    distributor = models.ForeignKey(Distributor, blank=True, null=True, verbose_name=__("distributor"))
+    distributor = models.ForeignKey(Distributor, blank=True, null=True,
+                                    verbose_name=__("distributor"),
+                                    on_delete=models.CASCADE)
 
     #: To include cards, use add_copy/ies.
 
@@ -3175,7 +3193,9 @@ class Deposit(TimeStampedModel):
 
     #: in case of a deposit for a publisher, the place (client?) who
     #: we send our cards to.
-    dest_place = models.ForeignKey(Place, blank=True, null=True, verbose_name=__("destination place"))
+    dest_place = models.ForeignKey(Place, blank=True, null=True,
+                                   verbose_name=__("destination place"),
+                                   on_delete=models.SET_NULL)
     #: due date for payment (optional)
     due_date = models.DateField(blank=True, null=True, verbose_name=__("due date"))
     #: minimal number of copies to have in stock. When not, do an action (raise an alert).
@@ -3565,8 +3585,8 @@ class Deposit(TimeStampedModel):
 
 @python_2_unicode_compatible
 class SoldCards(TimeStampedModel):
-    card = models.ForeignKey(Card)
-    sell = models.ForeignKey("Sell")
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    sell = models.ForeignKey("Sell", on_delete=models.CASCADE)
     #: Number of this card sold:
     quantity = models.IntegerField(default=0)
     #: Initial price
@@ -3663,9 +3683,14 @@ class Sell(models.Model):
                                blank=True, null=True,
                                verbose_name=__("payment"))
     #: We can choose to sell from a specific place.
-    place = models.ForeignKey("Place", blank=True, null=True, verbose_name=__("place"))
+    place = models.ForeignKey("Place", blank=True, null=True,
+                              verbose_name=__("place"),
+                              on_delete=models.SET_NULL)
+    # on_delete strategy:
     #: We can also choose to sell from a specific deposit.
-    deposit = models.ForeignKey("Deposit", blank=True, null=True, verbose_name=__("deposit"))
+    deposit = models.ForeignKey("Deposit", blank=True, null=True,
+                                verbose_name=__("deposit"),
+                                on_delete=models.SET_NULL)
     #: If True, this sell was already canceled. It can not be undone twice.
     canceled = models.BooleanField(default=False, blank=True, verbose_name=__("canceled"))
 
@@ -4251,7 +4276,7 @@ class Alert(models.Model):
     exemplary in (at least) one deposit AND it also has exemplaries
     not in deposits. We need to ask the user which exemplary to sell.
     """
-    card = models.ForeignKey("Card")
+    card = models.ForeignKey("Card", on_delete=models.CASCADE)
     deposits = models.ManyToManyField(Deposit, blank=True)
     date_creation = models.DateField(auto_now_add=True)
     date_resolution = models.DateField(null=True, blank=True)
@@ -4300,7 +4325,7 @@ class InventoryCopiesBase(models.Model):
     """The list of cards of an inventory, plus other information:
     - the quantity of them in this inventory.
     """
-    card = models.ForeignKey(Card)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
     #: How many copies of it did we find in our stock ?
     quantity = models.IntegerField(default=0)
 
@@ -4317,13 +4342,13 @@ class InventoryCopiesBase(models.Model):
 @python_2_unicode_compatible
 class InventoryCopies(InventoryCopiesBase):
     # we inherit card and quantity.
-    inventory = models.ForeignKey("Inventory")
+    inventory = models.ForeignKey("Inventory", on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Inventory %s: %s copies of card %s, id %s" % (self.inventory.id,
-                                                               self.quantity,
-                                                               self.card.title,
-                                                               self.card.id)
+        return "Inventory {}: {} copies of card {}, id {}".format(self.inventory.id,
+                                                                  self.quantity,
+                                                                  self.card.title,
+                                                                  self.card.id)
 
 
 class InventoryBase(TimeStampedModel):
@@ -4804,14 +4829,22 @@ class Inventory(InventoryBase):
     copies = models.ManyToManyField(Card, through="InventoryCopies", blank=True)
     #: We can do the inventory of a shelf.
     # XXX: use InventoryBase now that we have it.
-    shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=__("shelf"))
+    shelf = models.ForeignKey("Shelf", blank=True, null=True,
+                              verbose_name=__("shelf"),
+                              on_delete=models.CASCADE)
     #: we can also do the inventory of a whole place.
-    place = models.ForeignKey("Place", blank=True, null=True, verbose_name=__("place"))
+    place = models.ForeignKey("Place", blank=True, null=True,
+                              verbose_name=__("place"),
+                              on_delete=models.CASCADE)
     #: we can also do the inventory of publishers
-    publisher = models.ForeignKey("publisher", blank=True, null=True, verbose_name=__("publisher"))
+    publisher = models.ForeignKey("publisher", blank=True, null=True,
+                                  verbose_name=__("publisher"),
+                                  on_delete=models.CASCADE)
     #: At last, we can also do "inventories" of baskets, meaning we compare it
     # with a newly received command, or a pack of cards returned.
-    basket = models.ForeignKey("Basket", blank=True, null=True, verbose_name=__("basket"))
+    basket = models.ForeignKey("Basket", blank=True, null=True,
+                               verbose_name=__("basket"),
+                               on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = __("Inventory")
@@ -5104,8 +5137,8 @@ class CommandCopies(TimeStampedModel):
     """Intermediate table between a Command and its Cards. Records the
     number of exemplaries for each card.
     """
-    card = models.ForeignKey("Card")
-    command = models.ForeignKey("Command")
+    card = models.ForeignKey("Card", on_delete=models.CASCADE)
+    command = models.ForeignKey("Command", on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
@@ -5143,7 +5176,7 @@ class CommandCopies(TimeStampedModel):
 
 class InventoryCommandCopies(InventoryCopiesBase):
     # we inherit card and quantity.
-    inventory = models.ForeignKey("InventoryCommand")
+    inventory = models.ForeignKey("InventoryCommand", on_delete=models.CASCADE)
 
 
 class InventoryCommand(InventoryBase):
@@ -5201,8 +5234,12 @@ class Command(TimeStampedModel):
     #: Name
     name = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("name"))
     #: Command to supplier: a publisher or a distributor (see `supplier`).
-    publisher = models.ForeignKey("Publisher", blank=True, null=True, verbose_name=__("publisher"))
-    distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
+    publisher = models.ForeignKey("Publisher", blank=True, null=True,
+                                  verbose_name=__("publisher"),
+                                  on_delete=models.CASCADE)
+    distributor = models.ForeignKey("Distributor", blank=True, null=True,
+                                    verbose_name=__("distributor"),
+                                    on_delete=models.CASCADE)
     #: Copies in it:
     copies = models.ManyToManyField(Card, through="CommandCopies", blank=True)
     #: Date of reception. To check if the command was received, use the received property.
@@ -5218,7 +5255,8 @@ class Command(TimeStampedModel):
                                      verbose_name=__("date paid"))
     #: Inventory of the parcel we received, to check its content.
     inventory = models.OneToOneField('InventoryCommand', blank=True, null=True,
-                                     verbose_name=__("inventory"))
+                                     verbose_name=__("inventory"),
+                                     on_delete=models.SET_NULL)
     #: Short comment
     comment = models.TextField(blank=True, null=True, verbose_name=__("comment"))
 

@@ -83,13 +83,16 @@ class Coupon(TimeStampedModel):
     #: A name, may be useful to search for the coupon manually.
     name = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     #: Which amount is it?
-    generic = models.ForeignKey(CouponGeneric, null=True)
+    generic = models.ForeignKey(CouponGeneric, null=True, on_delete=models.SET_NULL)
+    # on_delete strategy: keep as much passed payment info in DB as possible.
     #: An un-fakable id, to accept, and trace, coupons.
     #: It would be used to generate and print a barcode.
     #: Usually, the seller will use a UI to find a client and his coupon.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     #: The beneficiary client
-    client = models.ForeignKey(users.Client)
+    # Can be null only because we could delete a client but we want
+    # to have this coupon's use in history.
+    client = models.ForeignKey(users.Client, null=True, on_delete=models.SET_NULL)
     #: The coupon is used usually in one, but possibly many, sells.
     # sells
     #: Was the coupon fully used? (not a cent available).
