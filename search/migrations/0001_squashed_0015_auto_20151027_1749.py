@@ -7,7 +7,8 @@ from django.utils import timezone
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'search', '0001_initial'), (b'search', '0002_auto_20150915_0738'), (b'search', '0003_auto_20150925_0747'), (b'search', '0004_auto_20151001_0659'), (b'search', '0005_auto_20151001_1018'), (b'search', '0006_internalmovement'), (b'search', '0007_entry_payment'), (b'search', '0008_entrycopies_price_init'), (b'search', '0009_auto_20151013_1205'), (b'search', '0010_bill_distributor'), (b'search', '0011_auto_20151013_1225'), (b'search', '0012_auto_20151013_1244'), (b'search', '0013_auto_20151013_1421'), (b'search', '0014_auto_20151013_1651'), (b'search', '0015_auto_20151027_1749')]
+    # delete this squashed migration so than we can squash all again.
+    # replaces = [(b'search', '0001_initial'), (b'search', '0002_auto_20150915_0738'), (b'search', '0003_auto_20150925_0747'), (b'search', '0004_auto_20151001_0659'), (b'search', '0005_auto_20151001_1018'), (b'search', '0006_internalmovement'), (b'search', '0007_entry_payment'), (b'search', '0008_entrycopies_price_init'), (b'search', '0009_auto_20151013_1205'), (b'search', '0010_bill_distributor'), (b'search', '0011_auto_20151013_1225'), (b'search', '0012_auto_20151013_1244'), (b'search', '0013_auto_20151013_1421'), (b'search', '0014_auto_20151013_1651'), (b'search', '0015_auto_20151027_1749')]
 
     dependencies = [
     ]
