@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='outmovement',
             name='recipient',
-            field=models.ForeignKey(blank=True, to='search.Client', null=True),
+            field=models.ForeignKey(blank=True, to='search.Client', null=True, on_delete=models.SET_NULL),
         ),
         migrations.DeleteModel(
             name='Contact',

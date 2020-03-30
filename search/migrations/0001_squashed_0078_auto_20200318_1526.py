@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('nb', models.IntegerField(default=0)),
-                ('basket', models.ForeignKey(to='search.Basket')),
+                ('basket', models.ForeignKey(to='search.Basket', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ('data_source', models.CharField(max_length=200, null=True, blank=True)),
                 ('details_url', models.URLField(null=True, blank=True)),
                 ('comment', models.TextField(blank=True)),
-                ('authors', models.ManyToManyField(to=b'search.Author')),
+                ('authors', models.ManyToManyField(to='search.Author')),
             ],
             options={
                 'ordering': ('sortkey', 'year_published', 'title'),
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=200)),
                 ('ordered', models.IntegerField(null=True, blank=True)),
-                ('parent', models.ForeignKey(blank=True, to='search.Collection', null=True)),
+                ('parent', models.ForeignKey(blank=True, to='search.Collection', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'ordering': ('name',),
@@ -169,8 +169,8 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('nb', models.IntegerField(default=0)),
                 ('threshold', models.IntegerField(default=1, null=True, blank=True)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('deposit', models.ForeignKey(to='search.Deposit')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('deposit', models.ForeignKey(to='search.Deposit', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -187,8 +187,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('nb_current', models.IntegerField(default=1)),
                 ('nb_to_return', models.IntegerField(default=1)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('deposit_state', models.ForeignKey(to='search.DepositState')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('deposit_state', models.ForeignKey(to='search.DepositState', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -218,8 +218,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=0)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('inventory', models.ForeignKey(to='search.Inventory')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('inventory', models.ForeignKey(to='search.Inventory', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -243,15 +243,15 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('nb', models.IntegerField(default=0)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('place', models.ForeignKey(to='search.Place')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('place', models.ForeignKey(to='search.Place', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='Preferences',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('default_place', models.OneToOneField(to='search.Place')),
+                ('default_place', models.OneToOneField(to='search.Place', on_delete=models.SET_NULL)),
             ],
         ),
         migrations.CreateModel(
@@ -281,105 +281,105 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=0)),
                 ('price_sold', models.FloatField(default=0)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('sell', models.ForeignKey(to='search.Sell')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.SET_NULL)),
+                ('sell', models.ForeignKey(to='search.Sell', on_delete=models.CASCADE)),
                 ('price_init', models.FloatField(default=0)),
             ],
         ),
         migrations.AddField(
             model_name='sell',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.SoldCards', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.SoldCards', blank=True),
         ),
         migrations.AddField(
             model_name='inventory',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.InventoryCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.InventoryCopies', blank=True),
         ),
         migrations.AddField(
             model_name='inventory',
             name='place',
-            field=models.ForeignKey(blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(blank=True, to='search.Place', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='depositstatecopies',
             name='sells',
-            field=models.ManyToManyField(to=b'search.Sell'),
+            field=models.ManyToManyField(to='search.Sell'),
         ),
         migrations.AddField(
             model_name='depositstate',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.DepositStateCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.DepositStateCopies', blank=True),
         ),
         migrations.AddField(
             model_name='depositstate',
             name='deposit',
-            field=models.ForeignKey(to='search.Deposit'),
+            field=models.ForeignKey(to='search.Deposit', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='deposit',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.DepositCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.DepositCopies', blank=True),
         ),
         migrations.AddField(
             model_name='deposit',
             name='distributor',
-            field=models.ForeignKey(blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(blank=True, to='search.Distributor', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='card',
             name='card_type',
-            field=models.ForeignKey(blank=True, to='search.CardType', null=True),
+            field=models.ForeignKey(blank=True, to='search.CardType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='card',
             name='collection',
-            field=models.ForeignKey(blank=True, to='search.Collection', null=True),
+            field=models.ForeignKey(blank=True, to='search.Collection', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='card',
             name='distributor',
-            field=models.ForeignKey(blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='card',
             name='places',
-            field=models.ManyToManyField(to=b'search.Place', null=True, through='search.PlaceCopies', blank=True),
+            field=models.ManyToManyField(to='search.Place', null=True, through='search.PlaceCopies', blank=True),
         ),
         migrations.AddField(
             model_name='card',
             name='publishers',
-            field=models.ManyToManyField(to=b'search.Publisher', null=True, blank=True),
+            field=models.ManyToManyField(to='search.Publisher', null=True, blank=True),
         ),
         migrations.AddField(
             model_name='basketcopies',
             name='card',
-            field=models.ForeignKey(to='search.Card'),
+            field=models.ForeignKey(to='search.Card', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='basket',
             name='basket_type',
-            field=models.ForeignKey(blank=True, to='search.BasketType', null=True),
+            field=models.ForeignKey(blank=True, to='search.BasketType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='basket',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.BasketCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.BasketCopies', blank=True),
         ),
         migrations.AddField(
             model_name='alert',
             name='card',
-            field=models.ForeignKey(to='search.Card'),
+            field=models.ForeignKey(to='search.Card', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='alert',
             name='deposits',
-            field=models.ManyToManyField(to=b'search.Deposit', null=True, blank=True),
+            field=models.ManyToManyField(to='search.Deposit', null=True, blank=True),
         ),
         migrations.AddField(
             model_name='deposit',
             name='dest_place',
-            field=models.ForeignKey(blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='deposit',
@@ -399,8 +399,8 @@ class Migration(migrations.Migration):
             name='EntryCopies',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('entry', models.ForeignKey(to='search.Entry')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.SET_NULL)),
+                ('entry', models.ForeignKey(to='search.Entry', on_delete=models.CASCADE)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('price_init', models.FloatField(null=True, blank=True)),
@@ -418,10 +418,10 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('nb', models.IntegerField()),
-                ('basket', models.ForeignKey(blank=True, to='search.Basket', null=True)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('dest', models.ForeignKey(related_name=b'mvt_dest', to='search.Place')),
-                ('origin', models.ForeignKey(related_name=b'mvt_origin', to='search.Place')),
+                ('basket', models.ForeignKey(blank=True, to='search.Basket', null=True, on_delete=models.SET_NULL)),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('dest', models.ForeignKey(related_name=b'mvt_dest', to='search.Place', on_delete=models.CASCADE)),
+                ('origin', models.ForeignKey(related_name=b'mvt_origin', to='search.Place', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
@@ -448,19 +448,19 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=0)),
-                ('bill', models.ForeignKey(to='search.Bill')),
-                ('card', models.ForeignKey(to='search.Card')),
+                ('bill', models.ForeignKey(to='search.Bill', on_delete=models.CASCADE)),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='bill',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', null=True, through='search.BillCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', null=True, through='search.BillCopies', blank=True),
         ),
         migrations.AddField(
             model_name='bill',
             name='distributor',
-            field=models.ForeignKey(to='search.Distributor', null=True),
+            field=models.ForeignKey(to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.RenameField(
             model_name='bill',
@@ -487,7 +487,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='card',
             name='category',
-            field=models.ForeignKey(blank=True, to='search.Category', null=True),
+            field=models.ForeignKey(blank=True, to='search.Category', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='depositstate',
@@ -566,7 +566,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='inventory',
             name='basket',
-            field=models.ForeignKey(blank=True, to='search.Basket', null=True),
+            field=models.ForeignKey(blank=True, to='search.Basket', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='card',
@@ -585,7 +585,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='inventory',
             name='shelf',
-            field=models.ForeignKey(blank=True, to='search.Shelf', null=True),
+            field=models.ForeignKey(blank=True, to='search.Shelf', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='soldcards',
@@ -607,27 +607,27 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='alert',
             name='deposits',
-            field=models.ManyToManyField(to=b'search.Deposit', blank=True),
+            field=models.ManyToManyField(to='search.Deposit', blank=True),
         ),
         migrations.AlterField(
             model_name='basket',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.BasketCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.BasketCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='bill',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.BillCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.BillCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='card',
             name='places',
-            field=models.ManyToManyField(to=b'search.Place', through='search.PlaceCopies', blank=True),
+            field=models.ManyToManyField(to='search.Place', through='search.PlaceCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='card',
             name='publishers',
-            field=models.ManyToManyField(to=b'search.Publisher', blank=True),
+            field=models.ManyToManyField(to='search.Publisher', blank=True),
         ),
         migrations.RemoveField(
             model_name='deposit',
@@ -641,22 +641,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='depositstate',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.DepositStateCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.DepositStateCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.InventoryCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.InventoryCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='sell',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.SoldCards', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.SoldCards', blank=True),
         ),
         migrations.AddField(
             model_name='inventory',
             name='publisher',
-            field=models.ForeignKey(blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(blank=True, to='search.Publisher', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='inventory',
@@ -725,8 +725,8 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('quantity', models.IntegerField(default=0)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('command', models.ForeignKey(to='search.Command')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('command', models.ForeignKey(to='search.Command', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -735,17 +735,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='command',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.CommandCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.CommandCopies', blank=True),
         ),
         migrations.AddField(
             model_name='command',
             name='distributor',
-            field=models.ForeignKey(blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='command',
             name='publisher',
-            field=models.ForeignKey(blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(blank=True, to='search.Publisher', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='preferences',
@@ -780,7 +780,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='command',
             name='inventory',
-            field=models.OneToOneField(null=True, blank=True, to='search.InventoryCommand'),
+            field=models.OneToOneField(null=True, blank=True, to='search.InventoryCommand', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='InventoryCommand',
@@ -800,8 +800,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=0)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('inventory', models.ForeignKey(to='search.InventoryCommand')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('inventory', models.ForeignKey(to='search.InventoryCommand', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -810,12 +810,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='inventorycommand',
             name='copies',
-            field=models.ManyToManyField(to=b'search.Card', through='search.InventoryCommandCopies', blank=True),
+            field=models.ManyToManyField(to='search.Card', through='search.InventoryCommandCopies', blank=True),
         ),
         migrations.AddField(
             model_name='card',
             name='imgfile',
-            field=models.ImageField(null=True, upload_to=b'covers', blank=True),
+            field=models.ImageField(null=True, upload_to='covers', blank=True),
         ),
         migrations.RenameField(
             model_name='card',
@@ -833,12 +833,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sell',
             name='deposit',
-            field=models.ForeignKey(blank=True, to='search.Deposit', null=True),
+            field=models.ForeignKey(blank=True, to='search.Deposit', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='sell',
             name='place',
-            field=models.ForeignKey(blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='entry',
@@ -863,7 +863,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='basket',
             name='distributor',
-            field=models.ForeignKey(blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.RemoveField(
             model_name='depositcopies',
@@ -888,8 +888,8 @@ class Migration(migrations.Migration):
                 ('typ', models.IntegerField(choices=[(1, b'sell'), (2, b'return'), (3, b'loss'), (4, b'gift')])),
                 ('reason', models.CharField(max_length=200, null=True, blank=True)),
                 ('nb', models.IntegerField()),
-                ('basket', models.ForeignKey(blank=True, to='search.Basket', null=True)),
-                ('card', models.ForeignKey(to='search.Card')),
+                ('basket', models.ForeignKey(blank=True, to='search.Basket', null=True, on_delete=models.SET_NULL)),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.SET_NULL)),
             ],
         ),
         migrations.CreateModel(
@@ -897,35 +897,35 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=1, null=True, blank=True)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('movement', models.ForeignKey(to='search.OutMovement')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.SET_NULL)),
+                ('movement', models.ForeignKey(to='search.OutMovement', on_delete=models.CASCADE)),
                 ('created', models.DateTimeField(default=datetime.datetime(2018, 12, 7, 21, 46, 7, 113295, tzinfo=utc), auto_now_add=True)),
             ],
         ),
         migrations.AddField(
             model_name='outmovement',
             name='copies',
-            field=models.ManyToManyField(related_name='copies', through='search.OutMovementCopies', to=b'search.Card', blank=True),
+            field=models.ManyToManyField(related_name='copies', through='search.OutMovementCopies', to='search.Card', blank=True),
         ),
         migrations.AddField(
             model_name='outmovement',
             name='distributor',
-            field=models.ForeignKey(blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='outmovement',
             name='origin',
-            field=models.ForeignKey(blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='outmovement',
             name='publisher',
-            field=models.ForeignKey(blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(blank=True, to='search.Publisher', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='outmovement',
             name='recipient',
-            field=models.ForeignKey(blank=True, to='search.Client', null=True),
+            field=models.ForeignKey(blank=True, to='search.Client', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='outmovement',
@@ -940,7 +940,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='outmovement',
             name='card',
-            field=models.ForeignKey(blank=True, to='search.Card', null=True),
+            field=models.ForeignKey(blank=True, to='search.Card', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='outmovement',
@@ -986,7 +986,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=200)),
                 ('firstname', models.CharField(max_length=200)),
-                ('contact', models.ForeignKey(blank=True, to='search.Contact', null=True)),
+                ('contact', models.ForeignKey(blank=True, to='search.Contact', null=True, on_delete=models.SET_NULL)),
             ],
         ),
         migrations.AddField(
@@ -1002,12 +1002,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='authors',
-            field=models.ManyToManyField(to=b'search.Author', null=True, blank=True),
+            field=models.ManyToManyField(to='search.Author', null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='card',
             name='authors',
-            field=models.ManyToManyField(to=b'search.Author', blank=True),
+            field=models.ManyToManyField(to='search.Author', blank=True),
         ),
         migrations.AddField(
             model_name='card',
@@ -1030,8 +1030,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=0)),
-                ('card', models.ForeignKey(blank=True, to='search.Card', null=True)),
-                ('restocking', models.ForeignKey(to='search.Restocking')),
+                ('card', models.ForeignKey(blank=True, to='search.Card', null=True, on_delete=models.SET_NULL)),
+                ('restocking', models.ForeignKey(to='search.Restocking', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
@@ -1123,7 +1123,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='basket',
             name='basket_type',
-            field=models.ForeignKey(verbose_name='basket type', blank=True, to='search.BasketType', null=True),
+            field=models.ForeignKey(verbose_name='basket type', blank=True, to='search.BasketType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='basket',
@@ -1133,7 +1133,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='basket',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='basket',
@@ -1143,17 +1143,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='authors',
-            field=models.ManyToManyField(to=b'search.Author', verbose_name='authors', blank=True),
+            field=models.ManyToManyField(to='search.Author', verbose_name='authors', blank=True),
         ),
         migrations.AlterField(
             model_name='card',
             name='card_type',
-            field=models.ForeignKey(verbose_name='card type', blank=True, to='search.CardType', null=True),
+            field=models.ForeignKey(verbose_name='card type', blank=True, to='search.CardType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
             name='collection',
-            field=models.ForeignKey(verbose_name='collection', blank=True, to='search.Collection', null=True),
+            field=models.ForeignKey(verbose_name='collection', blank=True, to='search.Collection', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
@@ -1183,7 +1183,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
@@ -1198,7 +1198,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='places',
-            field=models.ManyToManyField(to=b'search.Place', verbose_name='places', through='search.PlaceCopies', blank=True),
+            field=models.ManyToManyField(to='search.Place', verbose_name='places', through='search.PlaceCopies', blank=True),
         ),
         migrations.AlterField(
             model_name='card',
@@ -1212,7 +1212,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='publishers',
-            field=models.ManyToManyField(to=b'search.Publisher', verbose_name='publishers', blank=True),
+            field=models.ManyToManyField(to='search.Publisher', verbose_name='publishers', blank=True),
         ),
         migrations.AlterField(
             model_name='card',
@@ -1222,7 +1222,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='shelf',
-            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True),
+            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
@@ -1287,12 +1287,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='command',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='command',
             name='inventory',
-            field=models.OneToOneField(null=True, blank=True, to='search.InventoryCommand', verbose_name='inventory'),
+            field=models.OneToOneField(null=True, blank=True, to='search.InventoryCommand', verbose_name='inventory', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='command',
@@ -1302,7 +1302,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='command',
             name='publisher',
-            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='deposit',
@@ -1322,12 +1322,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deposit',
             name='dest_place',
-            field=models.ForeignKey(verbose_name='destination place', blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(verbose_name='destination place', blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='deposit',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='deposit',
@@ -1357,22 +1357,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='inventory',
             name='basket',
-            field=models.ForeignKey(verbose_name='basket', blank=True, to='search.Basket', null=True),
+            field=models.ForeignKey(verbose_name='basket', blank=True, to='search.Basket', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='place',
-            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='publisher',
-            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='shelf',
-            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True),
+            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='place',
@@ -1417,7 +1417,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='preferences',
             name='default_place',
-            field=models.OneToOneField(verbose_name='default place', to='search.Place'),
+            field=models.OneToOneField(verbose_name='default place', to='search.Place', on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='preferences',
@@ -1452,7 +1452,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sell',
             name='deposit',
-            field=models.ForeignKey(verbose_name='deposit', blank=True, to='search.Deposit', null=True),
+            field=models.ForeignKey(verbose_name='deposit', blank=True, to='search.Deposit', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='sell',
@@ -1462,7 +1462,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sell',
             name='place',
-            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='shelf',
@@ -1610,7 +1610,7 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
                 ('exhausted', models.BooleanField(default=False, editable=False)),
                 ('comment', models.CharField(max_length=200, null=True, blank=True)),
-                ('client', models.ForeignKey(to='search.Client')),
+                ('client', models.ForeignKey(to='search.Client', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -1633,7 +1633,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='coupon',
             name='generic',
-            field=models.ForeignKey(to='search.CouponGeneric', null=True),
+            field=models.ForeignKey(to='search.CouponGeneric', null=True, on_delete=models.SET_NULL),
         ),
         # migrations.RunPython(
             # code=search.migrations.0077_auto_20200304_1559.create_coupons,

@@ -3585,7 +3585,8 @@ class Deposit(TimeStampedModel):
 
 @python_2_unicode_compatible
 class SoldCards(TimeStampedModel):
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    # The card can be null if we delete it, but we want to keep its history.
+    card = models.ForeignKey(Card, null=True, on_delete=models.SET_NULL)
     sell = models.ForeignKey("Sell", on_delete=models.CASCADE)
     #: Number of this card sold:
     quantity = models.IntegerField(default=0)

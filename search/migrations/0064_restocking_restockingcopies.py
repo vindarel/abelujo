@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=0)),
-                ('card', models.ForeignKey(to='search.Card')),
-                ('restocking', models.ForeignKey(to='search.Restocking')),
+                ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
+                ('restocking', models.ForeignKey(to='search.Restocking', on_delete=models.CASCADE)),
             ],
         ),
     ]

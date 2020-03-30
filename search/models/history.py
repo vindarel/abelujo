@@ -126,7 +126,7 @@ class OutMovement(models.Model):
     #: This movement can be for one card only:
     #: On delete set null: we keep the movement in history.
     card = models.ForeignKey("search.Card", blank=True, null=True,
-                             on_delete=models.CASCADE)
+                             on_delete=models.SET_NULL)
     #: in which case, it can be for more than one copies:
     nb = models.IntegerField(blank=True, null=True)
     #: Most of the time we should record the place of origin:
@@ -134,7 +134,7 @@ class OutMovement(models.Model):
                                on_delete=models.SET_NULL)
     #: This movement can also be for a whole basket:
     basket = models.ForeignKey("search.Basket", null=True, blank=True,
-                               on_delete=models.CASCADE)
+                               on_delete=models.SET_NULL)
     #: in which case, we record the quantities of each card:
     copies = models.ManyToManyField("search.Card", blank=True,
                                     through="OutMovementCopies",
@@ -231,7 +231,7 @@ class OutMovement(models.Model):
 
 
 class EntryCopies(TimeStampedModel):
-    card = models.ForeignKey("search.Card", db_index=True, on_delete=models.CASCADE)
+    card = models.ForeignKey("search.Card", db_index=True, null=True, on_delete=models.SET_NULL)
     entry = models.ForeignKey("Entry", on_delete=models.CASCADE)
     #: we may want to remember the price of the card at this time.
     price_init = models.FloatField(null=True, blank=True, default=0.0)

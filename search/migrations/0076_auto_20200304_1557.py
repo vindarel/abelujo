@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
                 ('exhausted', models.BooleanField(default=False, editable=False)),
                 ('comment', models.CharField(max_length=200, null=True, blank=True)),
-                ('client', models.ForeignKey(to='search.Client')),
+                ('client', models.ForeignKey(to='search.Client', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -45,6 +45,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='coupon',
             name='generic',
-            field=models.ForeignKey(to='search.CouponGeneric', null=True),
+            field=models.ForeignKey(to='search.CouponGeneric', null=True, on_delete=models.SET_NULL),
         ),
     ]

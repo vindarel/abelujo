@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='restockingcopies',
             name='card',
-            field=models.ForeignKey(blank=True, to='search.Card', null=True),
+            field=models.ForeignKey(blank=True, to='search.Card', null=True, on_delete=models.CASCADE),
         ),
     ]

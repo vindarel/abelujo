@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='basket',
             name='basket_type',
-            field=models.ForeignKey(verbose_name='basket type', blank=True, to='search.BasketType', null=True),
+            field=models.ForeignKey(verbose_name='basket type', blank=True, to='search.BasketType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='basket',
@@ -95,7 +95,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='basket',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='basket',
@@ -110,12 +110,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='card_type',
-            field=models.ForeignKey(verbose_name='card type', blank=True, to='search.CardType', null=True),
+            field=models.ForeignKey(verbose_name='card type', blank=True, to='search.CardType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
             name='collection',
-            field=models.ForeignKey(verbose_name='collection', blank=True, to='search.Collection', null=True),
+            field=models.ForeignKey(verbose_name='collection', blank=True, to='search.Collection', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
@@ -145,7 +145,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
@@ -185,7 +185,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='shelf',
-            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True),
+            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='card',
@@ -250,12 +250,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='command',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='command',
             name='inventory',
-            field=models.OneToOneField(null=True, blank=True, to='search.InventoryCommand', verbose_name='inventory'),
+            field=models.OneToOneField(null=True, blank=True, to='search.InventoryCommand', verbose_name='inventory', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='command',
@@ -265,7 +265,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='command',
             name='publisher',
-            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='deposit',
@@ -285,12 +285,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deposit',
             name='dest_place',
-            field=models.ForeignKey(verbose_name='destination place', blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(verbose_name='destination place', blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='deposit',
             name='distributor',
-            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True),
+            field=models.ForeignKey(verbose_name='distributor', blank=True, to='search.Distributor', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='deposit',
@@ -320,22 +320,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='inventory',
             name='basket',
-            field=models.ForeignKey(verbose_name='basket', blank=True, to='search.Basket', null=True),
+            field=models.ForeignKey(verbose_name='basket', blank=True, to='search.Basket', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='place',
-            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='publisher',
-            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True),
+            field=models.ForeignKey(verbose_name='publisher', blank=True, to='search.Publisher', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='inventory',
             name='shelf',
-            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True),
+            field=models.ForeignKey(verbose_name='shelf', blank=True, to='search.Shelf', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='place',
@@ -380,7 +380,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='preferences',
             name='default_place',
-            field=models.OneToOneField(verbose_name='default place', to='search.Place'),
+            field=models.OneToOneField(verbose_name='default place', to='search.Place', on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='preferences',
@@ -415,7 +415,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sell',
             name='deposit',
-            field=models.ForeignKey(verbose_name='deposit', blank=True, to='search.Deposit', null=True),
+            field=models.ForeignKey(verbose_name='deposit', blank=True, to='search.Deposit', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='sell',
@@ -425,7 +425,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sell',
             name='place',
-            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True),
+            field=models.ForeignKey(verbose_name='place', blank=True, to='search.Place', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='shelf',
