@@ -20,7 +20,7 @@
 {% block content %}
 .col-lg-4
 .col-lg-4
-   form.form-signin(method="post", action="{% url 'django.contrib.auth.views.login' %}")
+   form.form-signin(method="post", action="{% url 'django.contrib.auth.views.LoginView().as_view' %}")
     {% csrf_token %}
     h2.form-signin-heading {% trans "Please sign in to Abelujo" %}
     table.table-condensed
