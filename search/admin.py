@@ -42,9 +42,14 @@ class MyAdmin(admin.AdminSite):
     site_header = 'Abelujo administration'
     site_title = 'Abelujo admin'
 
+
+class AuthorAdmin(admin.ModelAdmin):
+    ordering = ['name']
+    fields = ['name']
+    search_fields = ['name']
+
+
 class CardAdmin(admin.ModelAdmin):
-    class Meta:
-        model = Card
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "shelf":
@@ -54,6 +59,7 @@ class CardAdmin(admin.ModelAdmin):
 
         return super(CardAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+    autocomplete_fields = ["authors", "publishers", "shelf"]
     search_fields = ["title", "authors__name", "isbn"]
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
@@ -130,7 +136,7 @@ class SoldCardsAdmin(admin.ModelAdmin):
     list_display = ("card", "quantity", "price_sold", "created",)
 
 
-admin.site.register(Author)
+admin.site.register(Author, AuthorAdmin)
 admin.site.register(Basket)
 admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
@@ -150,7 +156,7 @@ admin.site.register(Sell)
 admin.site.register(SoldCards, SoldCardsAdmin)
 
 admin_site = MyAdmin(name='myadmin')
-admin_site.register(Author)
+admin_site.register(Author, AuthorAdmin)
 admin_site.register(Basket)
 admin_site.register(Card, CardAdmin)
 admin_site.register(Client, ClientAdmin)
