@@ -179,14 +179,14 @@ TEMPLATES = [
 # https://github.com/kakulukia/pypugjs/blob/master/docs/installation.rst
 enable_pug_translations()
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     # i18n in url patterns
     # (before CommonMiddleware for i18n urls withouth a trailing slash to redict correcly).
     # see https://stackoverflow.com/questions/8092695/404-on-requests-without-trailing-slash-to-i18n-urls
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # warning: csrf disabled.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
