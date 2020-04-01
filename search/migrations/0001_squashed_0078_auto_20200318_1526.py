@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
                 ('ean', models.CharField(max_length=99, null=True, blank=True)),
                 ('isbn', models.CharField(max_length=99, null=True, blank=True)),
                 ('has_isbn', models.NullBooleanField(default=True)),
-                ('sortkey', models.TextField(verbose_name=b'Authors', blank=True)),
+                ('sortkey', models.TextField(verbose_name='Authors', blank=True)),
                 ('price', models.FloatField(null=True, blank=True)),
                 ('price_sold', models.FloatField(null=True, blank=True)),
                 ('year_published', models.DateField(null=True, blank=True)),
@@ -152,10 +152,10 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('name', models.CharField(unique=True, max_length=200)),
-                ('deposit_type', models.CharField(default=(b'D\xc3\xa9p\xc3\xb4t de libraire', ((b'lib', b'd\xc3\xa9p\xc3\xb4t de libraire'), (b'fix', b'd\xc3\xa9p\xc3\xb4t fixe'))), max_length=200, choices=[(b'D\xc3\xa9p\xc3\xb4t de libraire', ((b'lib', b'd\xc3\xa9p\xc3\xb4t de libraire'), (b'fix', b'd\xc3\xa9p\xc3\xb4t fixe'))), (b'D\xc3\xa9p\xc3\xb4t de distributeur', ((b'dist', b'd\xc3\xa9p\xc3\xb4t de distributeur'),))])),
+                ('deposit_type', models.CharField(default=('D\xc3\xa9p\xc3\xb4t de libraire', (('lib', 'd\xc3\xa9p\xc3\xb4t de libraire'), ('fix', 'd\xc3\xa9p\xc3\xb4t fixe'))), max_length=200, choices=[('D\xc3\xa9p\xc3\xb4t de libraire', (('lib', 'd\xc3\xa9p\xc3\xb4t de libraire'), ('fix', 'd\xc3\xa9p\xc3\xb4t fixe'))), ('D\xc3\xa9p\xc3\xb4t de distributeur', (('dist', 'd\xc3\xa9p\xc3\xb4t de distributeur'),))])),
                 ('initial_nb_copies', models.IntegerField(default=0, null=True, verbose_name=b"Nombre initial d'exemplaires pour ce d\xc3\xa9p\xc3\xb4t:", blank=True)),
                 ('minimal_nb_copies', models.IntegerField(default=0, null=True, verbose_name=b"Nombre minimun d'exemplaires", blank=True)),
-                ('auto_command', models.BooleanField(default=True, verbose_name=b'Automatiquement marquer les fiches \xc3\xa0 commander')),
+                ('auto_command', models.BooleanField(default=True, verbose_name='Automatiquement marquer les fiches \xc3\xa0 commander')),
             ],
             options={
                 'ordering': ('name',),
@@ -272,7 +272,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField()),
-                ('payment', models.CharField(default=(0, b'cash'), max_length=200, null=True, blank=True, choices=[(0, b'cash'), (1, b'check'), (2, b'credit card'), (3, b'gift'), (4, b'other')])),
+                ('payment', models.CharField(default=(0, 'cash'), max_length=200, null=True, blank=True, choices=[(0, 'cash'), (1, 'check'), (2, 'credit card'), (3, 'gift'), (4, 'other')])),
             ],
         ),
         migrations.CreateModel(
@@ -409,7 +409,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='entry',
             name='typ',
-            field=models.IntegerField(default=1, choices=[(1, b'purchase'), (2, b'deposit'), (3, b'gift')]),
+            field=models.IntegerField(default=1, choices=[(1, 'purchase'), (2, 'deposit'), (3, 'gift')]),
         ),
         migrations.CreateModel(
             name='InternalMovement',
@@ -420,14 +420,14 @@ class Migration(migrations.Migration):
                 ('nb', models.IntegerField()),
                 ('basket', models.ForeignKey(blank=True, to='search.Basket', null=True, on_delete=models.SET_NULL)),
                 ('card', models.ForeignKey(to='search.Card', on_delete=models.CASCADE)),
-                ('dest', models.ForeignKey(related_name=b'mvt_dest', to='search.Place', on_delete=models.CASCADE)),
-                ('origin', models.ForeignKey(related_name=b'mvt_origin', to='search.Place', on_delete=models.CASCADE)),
+                ('dest', models.ForeignKey(related_name='mvt_dest', to='search.Place', on_delete=models.CASCADE)),
+                ('origin', models.ForeignKey(related_name='mvt_origin', to='search.Place', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='entry',
             name='payment',
-            field=models.CharField(blank=True, max_length=200, null=True, choices=[(0, b'cash'), (1, b'check'), (2, b'credit card'), (3, b'gift'), (4, b'other')]),
+            field=models.CharField(blank=True, max_length=200, null=True, choices=[(0, 'cash'), (1, 'check'), (2, 'credit card'), (3, 'gift'), (4, 'other')]),
         ),
         migrations.CreateModel(
             name='Bill',
@@ -531,7 +531,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='entry',
             name='typ',
-            field=models.IntegerField(default=1, choices=[(1, b'purchase'), (2, b'deposit'), (3, b'gift'), (4, b'sell canceled')]),
+            field=models.IntegerField(default=1, choices=[(1, 'purchase'), (2, 'deposit'), (3, 'gift'), (4, 'sell canceled')]),
         ),
         migrations.AddField(
             model_name='sell',
@@ -636,7 +636,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deposit',
             name='deposit_type',
-            field=models.CharField(default=b'fix', max_length=200, choices=[(b'D\xc3\xa9p\xc3\xb4t de libraire', ((b'lib', b'd\xc3\xa9p\xc3\xb4t de libraire'), (b'fix', b'd\xc3\xa9p\xc3\xb4t fixe'))), (b'D\xc3\xa9p\xc3\xb4t de distributeur', ((b'dist', b'd\xc3\xa9p\xc3\xb4t de distributeur'),))]),
+            field=models.CharField(default='fix', max_length=200, choices=[('D\xc3\xa9p\xc3\xb4t de libraire', (('lib', 'd\xc3\xa9p\xc3\xb4t de libraire'), ('fix', 'd\xc3\xa9p\xc3\xb4t fixe'))), ('D\xc3\xa9p\xc3\xb4t de distributeur', (('dist', 'd\xc3\xa9p\xc3\xb4t de distributeur'),))]),
         ),
         migrations.AlterField(
             model_name='depositstate',
@@ -885,7 +885,7 @@ class Migration(migrations.Migration):
             name='OutMovement',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('typ', models.IntegerField(choices=[(1, b'sell'), (2, b'return'), (3, b'loss'), (4, b'gift')])),
+                ('typ', models.IntegerField(choices=[(1, 'sell'), (2, 'return'), (3, 'loss'), (4, 'gift')])),
                 ('reason', models.CharField(max_length=200, null=True, blank=True)),
                 ('nb', models.IntegerField()),
                 ('basket', models.ForeignKey(blank=True, to='search.Basket', null=True, on_delete=models.SET_NULL)),
@@ -1317,7 +1317,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deposit',
             name='deposit_type',
-            field=models.CharField(default=b'fix', max_length=200, verbose_name='deposit type', choices=[(b'D\xc3\xa9p\xc3\xb4t de libraire', ((b'lib', b'd\xc3\xa9p\xc3\xb4t de libraire'), (b'fix', b'd\xc3\xa9p\xc3\xb4t fixe'))), (b'D\xc3\xa9p\xc3\xb4t de distributeur', ((b'dist', b'd\xc3\xa9p\xc3\xb4t de distributeur'),))]),
+            field=models.CharField(default='fix', max_length=200, verbose_name='deposit type', choices=[('D\xc3\xa9p\xc3\xb4t de libraire', (('lib', 'd\xc3\xa9p\xc3\xb4t de libraire'), ('fix', 'd\xc3\xa9p\xc3\xb4t fixe'))), ('D\xc3\xa9p\xc3\xb4t de distributeur', (('dist', 'd\xc3\xa9p\xc3\xb4t de distributeur'),))]),
         ),
         migrations.AlterField(
             model_name='deposit',
@@ -1502,7 +1502,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='card',
             name='currency',
-            field=models.CharField(blank=True, max_length=10, null=True, verbose_name='currency', choices=[(b'euro', b'\xe2\x82\xac'), (b'chf', b'CHF')]),
+            field=models.CharField(blank=True, max_length=10, null=True, verbose_name='currency', choices=[('euro', '\xe2\x82\xac'), ('chf', 'CHF')]),
         ),
         migrations.AlterField(
             model_name='card',

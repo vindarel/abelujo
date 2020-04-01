@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='card',
             name='currency',
-            field=models.CharField(blank=True, max_length=10, null=True, verbose_name='currency', choices=[(b'euro', b'\xe2\x82\xac'), (b'chf', b'CHF')]),
+            field=models.CharField(blank=True, max_length=10, null=True, verbose_name='currency', choices=[('euro', '\xe2\x82\xac'), ('chf', 'CHF')]),
         ),
         migrations.AlterField(
             model_name='card',

@@ -280,7 +280,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deposit',
             name='deposit_type',
-            field=models.CharField(default=b'fix', max_length=200, verbose_name='deposit type', choices=[(b'D\xc3\xa9p\xc3\xb4t de libraire', ((b'lib', b'd\xc3\xa9p\xc3\xb4t de libraire'), (b'fix', b'd\xc3\xa9p\xc3\xb4t fixe'))), (b'D\xc3\xa9p\xc3\xb4t de distributeur', ((b'dist', b'd\xc3\xa9p\xc3\xb4t de distributeur'),))]),
+            field=models.CharField(default='fix', max_length=200, verbose_name='deposit type', choices=[('D\xc3\xa9p\xc3\xb4t de libraire', (('li', 'd\xc3\xa9p\xc3\xb4t de libraire'), ('fix', 'd\xc3\xa9p\xc3\xb4t fixe'))), ('D\xc3\xa9p\xc3\xb4t de distributeur', (('dist', 'd\xc3\xa9p\xc3\xb4t de distributeur'),))]),
         ),
         migrations.AlterField(
             model_name='deposit',
