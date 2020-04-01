@@ -1392,7 +1392,7 @@ class Card(TimeStampedModel):
             if not isinstance(authors[0], models.base.Model):
                 log.warning("Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
             else:
-                card_obj.authors = authors
+                card_obj.authors.set(authors)
 
         if distributor:
             if isinstance(distributor, models.base.Model):
@@ -1402,7 +1402,7 @@ class Card(TimeStampedModel):
 
         if publishers:
             if isinstance(publishers[0], models.base.Model):
-                card_obj.publishers = publishers
+                card_obj.publishers.set(publishers)
             else:
                 log.warning("Card.update_from_dict: publishers should be a list of objects.")
 
@@ -1456,7 +1456,7 @@ class Card(TimeStampedModel):
 
         # Set the authors
         if authors:  # XXX: more tests !
-            card_obj.authors = authors
+            card_obj.authors.set(authors)
 
         # add the distributor
         if distributor:
@@ -1464,7 +1464,7 @@ class Card(TimeStampedModel):
 
         # add many publishers
         if publishers:
-            card_obj.publishers = publishers
+            card_obj.publishers.set(publishers)
 
         # add the collection
         collection = card_dict.get("collection")

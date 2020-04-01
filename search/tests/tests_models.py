@@ -497,7 +497,6 @@ class TestPlace(TestCase):
         pass
 
     def test_nominal(self):
-        self.assertTrue("place" in self.place.__unicode__())
         self.assertEqual('/en/databasesearch/place/1/', self.place.get_absolute_url())
 
     def test_add_copy(self):
