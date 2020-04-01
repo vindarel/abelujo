@@ -54,7 +54,7 @@ pillow==4.0             # needs libfreetype6-dev installed
 dateparser==0.5         # parser for human readable dates
 
 # deployment
-whitenoise==4.1         # serve static files. Easily, efficiently.
+whitenoise==5.0.1       # serve static files. Easily, efficiently.
 gunicorn==19.4          # wsgi server
 
 # async task runner
