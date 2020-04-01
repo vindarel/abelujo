@@ -1,10 +1,16 @@
-Abelujo - free software to manage independent book (and records) shops.
-=======================================================================
+Abelujo - free software for bookshops and publishers
+====================================================
 
-français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr.md "README en français")
+<p align="center">
+  <a href="http://abelujo.cc/"><b>Homepage</b></a> |
+  <a href="http://dev.abelujo.cc/"><b>Installation</b></a> |
+  <a href="https://framasphere.org/people/4ac5fae0bed90133a3ed2a0000053625"><b>Blog</b></a> |
+  <a href="https://framavox.org/g/V6oiDr8Y/abelujo"><b>Forum</b></a> |
+  <a href="https://liberapay.com/vindarel/donate"><b>Support</b></a> |
+  <a href="/README_fr.md">Français</a>
+</p>
 
-This project is used daily by individuals, associations, tea and wine
-shops, theaters, art centers and professional bookshops.
+Abelujo is used by professional bookshops, publishers, individuals, associations, tea and wine shops, theaters and art centers.
 
 Abelujo allows to:
 
@@ -12,9 +18,9 @@ Abelujo allows to:
 
     * french books:
       * through [Dilicom](https://dilicom-prod.centprod.com) (the profesional provider)
-      * or [librairiedeparis](http://www.librairie-de-paris.fr/)  ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=french_scraper)
-    * spanish books (through [casadellibro.com](http://www.casadellibro.com)) ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=spanish_scraper)
-    * german books(through [buchlentner.de](http://www.buchlentner.de)) ![](http://gitlab.com/vindarel/bookshops/badges/master/build.svg?job=german_scraper)
+      * or [librairiedeparis](http://www.librairie-de-paris.fr/)
+    * spanish books (through [casadellibro.com](http://www.casadellibro.com))
+    * german books(through [buchlentner.de](http://www.buchlentner.de))
     * *you want another one ? The sooner you tell us, the quicker you'll have it ;)*
 -   look up for **CDs** (via [discogs.com](http://www.discogs.com/))
 -   do **inventories** of your stock,
@@ -161,13 +167,7 @@ Development
 
 Django project, in python (2.7) and JavaScript (AngularJS).
 
-We also use:
-
-- [LiveScript](http://livescript.net)
-- [jade templates](http://jade-lang.com/), which compile to html,
-    and pyjade for the Django integration
-- [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
-- the [Django-q](https://django-q.readthedocs.org/) asynchronous task queue.
+### Documentation
 
 See the developer documentation: http://dev.abelujo.cc/ This is
 [our database graph](http://dev.abelujo.cc/graph-db.png) (`make
@@ -243,22 +243,6 @@ there.
 See a bit more in doc/dev/ci.rst.
 
 
-Load data
----------
-
-See the scripts in `scripts/` to load data (specially shelves
-names), in different languages.
-
-Troubleshooting
----------------
-
-If you get:
-
-    OperationalError: no such column: search_card.card_type_id
-
-it is probably because you pulled the sources and didn't update your
-DB. Use database migrations (`make migrate`).
-
 Uninstall
 ---------
 
@@ -266,9 +250,3 @@ To uninstall Javascript and Python libraries, see `make uninstall[-js, -pip]`.
 
 The most worth it is to uninstall JS libs from `node_modules`, that
 frees a couple MB up.
-
-
-Documentation
--------------
-
-We have developer documentation: http://dev.abelujo.cc/
