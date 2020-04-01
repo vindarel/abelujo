@@ -16,10 +16,10 @@
 
 
 from django.conf.urls import include
-from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.views import i18n
 from django.conf.urls.i18n import i18n_patterns
+from django.urls import re_path as url
 from django.views.generic import TemplateView
 # from django.views.generic.base import RedirectView
 from search import views
