@@ -165,7 +165,7 @@ The command is idempotent, it waits for confirmation and it prints a status.
 Development
 ===========
 
-Django project, in python (2.7) and JavaScript (AngularJS).
+Django project, in python (3.6) and JavaScript (AngularJS).
 
 ### Documentation
 
