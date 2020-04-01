@@ -31,6 +31,8 @@ class PreferencesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Preferences
         depth = 1  # include the place name and co
+        fields = '__all__'
+
 
 class CommandSerializer(serializers.ModelSerializer):
 
