@@ -45,6 +45,8 @@ Enjoy!
 Installation
 ============
 
+**Important note:** if you are getting started, use the `django20py3` branch: it uses Python 3.6 and one of the latest Django version (2.2).
+
 Instructions for Debian 9.
 
 [![build status](https://gitlab.com/vindarel/abelujo/badges/master/build.svg)](https://gitlab.com/vindarel/abelujo/commits/master)
