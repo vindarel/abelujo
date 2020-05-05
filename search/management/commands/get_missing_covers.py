@@ -107,4 +107,4 @@ class Command(BaseCommand):
         cards_updated, cards_missed = update_all(cards, source=source)
 
         self.stdout.write("Cards updated: {} / {}".format(len(cards_updated), cards.count()))
-        self.stdout.write("Cards missed: {} / {}".format(len(cards_missed), courds.count()))
+        self.stdout.write("Cards missed: {} / {}".format(len(cards_missed), cards.count()))
