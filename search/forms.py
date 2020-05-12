@@ -285,7 +285,7 @@ class CardPlacesAddForm(forms.Form):
             self.fields[place_id] = forms.IntegerField(required=False,
                                                        label=place.name,
                                                        initial=0,
-                                                       min_value=0,
+                                                       min_value=-10,
                                                        max_value=50)
 
 
