@@ -1321,8 +1321,7 @@ class Card(TimeStampedModel):
         if card_dict.get('isbn') or card_dict.get('ean'):
             isbn = card_dict.get('isbn', card_dict.get('ean'))
             clist = Card.objects.filter(isbn=isbn).first()
-            if clist:
-                return clist, msgs.msgs
+            return clist, msgs.msgs
 
         # Get the title.
         if not card_dict.get('title'):
