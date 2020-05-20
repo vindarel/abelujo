@@ -70,6 +70,7 @@ def bill(request, *args, **response_kwargs):
     template = 'pdftemplates/pdf-bill-main.html'
 
     # ids, prices, quantities
+    params = {}
     try:
         params = json.loads(request.body)
     except Exception as e:
