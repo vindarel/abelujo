@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-23 12:27+0000\n"
-"PO-Revision-Date: 2020-03-23 13:35+0100\n"
+"POT-Creation-Date: 2020-05-26 15:37+0000\n"
+"PO-Revision-Date: 2020-05-26 17:40+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -404,9 +404,9 @@ msgstr "Une erreur est arrivée en ajoutant des exemplaires"
 msgid "This basket has no distributor to return the cards to."
 msgstr "Cette liste n'a pas de fournisseur a qui retourner les titres."
 
-#: search/models/models.py:2610
-msgid "Return to {} succesfully created."
-msgstr "Le retour à {} a été créé avec succès."
+#: search/models/models.py:2645
+msgid "Return succesfully created."
+msgstr "Le retour a été créé avec succès."
 
 #: search/models/models.py:2965
 msgid "An error occured while adding a card to the deposit state."

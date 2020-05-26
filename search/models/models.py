@@ -2628,7 +2628,7 @@ class Basket(models.Model):
                                           "return the cards to."))
 
         out = history.OutMovement.return_from_basket(self)
-        msgs.add_success(_("Return to {} succesfully created.".format(self.distributor)))
+        msgs.add_success(_(u"Return succesfully created."))
         # Here, we return the msgs object, though earlier we return the
         # msgs.msgs list of messages. Inconsistent, but better…
         return out, msgs
