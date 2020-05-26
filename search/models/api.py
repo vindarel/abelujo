@@ -510,7 +510,8 @@ def authors(request, **response_kwargs):
     if request.method == "GET":
         params = request.GET.copy()
         response_kwargs["content_type"] = "application/json"
-        data = Author.search(params["query"])
+        query = params.get("query")
+        data = Author.search(query)
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
 

@@ -120,7 +120,10 @@ class Author(TimeStampedModel):
         """Search for names containing "query", return a python list.
         """
         try:
-            data = Author.objects.filter(name__icontains=query)
+            if query:
+                data = Author.objects.filter(name__icontains=query)
+            else:
+                data = Author.objects.all()
         except Exception as e:
             log.error("Author.search error: {}".format(e))
             data = [
