@@ -16,3 +16,7 @@ node_modules/
 /static/js/build/
 /doc/dev/_build/
 .tox/
+.tox/
+.pyre/
+.mypy_cache/
+.pytype/
