@@ -90,7 +90,7 @@ class Contact(models.Model):
         }
 
     def __repr__(self):
-        return "{} {} - {}".format(self.name, self.firstname, self.mobilephone)
+        return u"{} {} - {}".format(self.name, self.firstname, self.mobilephone)
 
 
 class Client(Contact):
@@ -98,10 +98,9 @@ class Client(Contact):
     A client of the bookshop.
     He can reserve books (not implemented), buy coupons, etc.
     """
-    pass
 
     def __repr__(self):
-        return "{} {}".format(self.name, self.firstname)
+        return u"{} {}".format(self.name, self.firstname)
 
     @staticmethod
     def search(query, to_dict=False):

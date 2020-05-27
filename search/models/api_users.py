@@ -49,8 +49,8 @@ def clients(request, **response_kwargs):
                 res = [it.to_dict() for it in Client.objects.all()]
             return JsonResponse({'data': res})
         except Exception as e:
-            log.error("error getting clients: {}".format(e))
-            return JsonResponse()
+            log.error(u"error getting clients: {}".format(e))
+            return JsonResponse({'data': None})
 
 def bill(request, *args, **response_kwargs):
     """
