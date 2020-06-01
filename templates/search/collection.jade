@@ -111,6 +111,22 @@ div(ng-cloak, ng-controller="collectionController")
             ng-options="elt.name group by elt.group for elt in price_choices"
           )
 
+    div
+        label.col-sm-4 {% trans "Creation date" %}
+        div.col-md-8
+          select.form-control(
+            ng-model="date_created_sort"
+            ng-options="elt.name group by elt.group for elt in date_created_sort_choices"
+          )
+
+        label.col-sm-4
+        div.col-md-8
+          input.form-control#default-input(
+            ng-model="date_created"
+            type="text"
+            placeholder='{% trans "exple: juin 2020" %}'
+          )
+
  .row
    .col-md-7(style="margin-top: 7px; margin-bottom: 7px")
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")

@@ -71,6 +71,15 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
           {name: gettext("> 20 #{$scope.meta.currency}"), id: ">20"}
         ]
 
+    $scope.date_created = null
+    $scope.date_created_sort = ""
+    $scope.date_created_sort_choices = [
+      {name: " ", id: "" }
+      {name: "<=", id: "<=" }
+      {name: "=", id: "=" }
+      {name: ">=", id: ">=" }
+    ]
+
     # pagination
     $scope.page = 1
     $scope.page_size = 25
@@ -170,6 +179,9 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             params.quantity_choice = $scope.quantity_choice.id
         if $scope.price_choice
             params.price_choice = $scope.price_choice.id
+        if $scope.date_created
+            params.date_created = $scope.date_created
+            params.date_created_sort = $scope.date_created_sort.id
         params.page = $scope.page
         params.page_size = $scope.page_size
 

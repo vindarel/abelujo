@@ -911,6 +911,8 @@ class Card(TimeStampedModel):
                with_quantity=True,
                quantity_choice=None,
                price_choice=None,
+               date_created=None,
+               date_created_sort=None,
                page=None,
                page_size=10):
         """Search a card (by title, authors' names, ean/isbn).
@@ -928,6 +930,13 @@ class Card(TimeStampedModel):
         - quantity_choice: string, one of QUANTITY_CHOICES (negative quantity, between 0 and 3, etc).
         - price_choice: string, one of PRICE_CHOICES.
 
+        - date_created: (datetime) filter the cards by the date they were created in the stock.
+
+        - date_created_sort: a string in "==", ">=" and "<=".
+
+        Note that the "==" sort order works with exact datetimes. We
+        currently can't search for cards that were created in a given month.
+
         - to_list: if True, we return a list of dicts, not Card objects.
 
 
@@ -940,6 +949,7 @@ class Card(TimeStampedModel):
         - a list of objects or a list of dicts if to_list is
         specified,
         - a dict: list of messages, pagination meta info.
+
         """
         isbns = []
         isbn_list_search_complete = None
@@ -966,6 +976,23 @@ class Card(TimeStampedModel):
 
         elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
+
+        if cards and date_created and date_created_sort:
+            if date_created_sort == "<=":
+                cards = cards.filter(created__lte=date_created)
+            elif date_created_sort == ">=":
+                cards = cards.filter(created__gte=date_created)
+            elif date_created_sort == "==":
+                # If the parsed date string didn't mention the day,
+                # it is the first day of the month by default.
+                # We can not make the difference if the user entered a day or not.
+                # Therefore the "==" search only works for days.
+                # For months, see the history.
+                cards = cards.filter(created__month=date_created.month) \
+                             .filter(created__year=date_created.year) \
+                             .filter(created__day=date_created.day)
+            else:
+                pass
 
         if bought and cards:
             cards = cards.filter(in_stock=True)

@@ -18,6 +18,7 @@
 
 from __future__ import unicode_literals
 
+import dateparser
 import httplib
 import json
 import locale
@@ -236,6 +237,18 @@ def cards(request, **response_kwargs):
     quantity_choice = request.GET.get("quantity_choice")
     price_choice = request.GET.get("price_choice")
 
+    # We can type a date literally: "juin 2020".
+    date_created_choice = request.GET.get("date_created", "")
+    date_created_choice_sort = request.GET.get("date_created_sort")
+    prefer_day_of_month = "first"
+    # Get a datetime.
+    # if date_created_choice_sort == ">=":
+        # When we type a month, get the last day of month.
+        # prefer_day_of_month = "last"
+    date_created_choice = dateparser.parse(
+        date_created_choice,
+        settings={'PREFER_DAY_OF_MONTH': prefer_day_of_month})
+
     # The quantity of a card is costly. It was a bottleneck. Avoid
     # this calculation if possible.
     with_quantity = request.GET.get("with_quantity", True)
@@ -264,6 +277,8 @@ def cards(request, **response_kwargs):
                              with_quantity=with_quantity,
                              quantity_choice=quantity_choice,
                              price_choice=price_choice,
+                             date_created=date_created_choice,
+                             date_created_sort=date_created_choice_sort,
                              page=page,
                              page_size=page_size)
     # XXX: :return the msgs.
