@@ -24,6 +24,7 @@ and see it here: http://dev.abelujo.cc/graph-db.png
 """
 from __future__ import unicode_literals
 
+# __unicode__ is now __str__
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import six
 
@@ -107,6 +108,7 @@ locale.setlocale(locale.LC_ALL, "")
 @python_2_unicode_compatible
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200, verbose_name=__("name"))
+    name_ascii = models.CharField(null=True, blank=True, max_length=200, verbose_name=__("name_ascii"))
 
     class Meta:
         ordering = ('name',)
@@ -466,6 +468,8 @@ class Card(TimeStampedModel):
     """
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
+    #: Internal representation without accents, used for search.
+    title_ascii = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title_ascii"), null=True, blank=True)
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=__("card type"))
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
