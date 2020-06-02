@@ -1,6 +1,24 @@
 Changelog starting from v0.5 (2018/09/18)
 
-# v0.x
+## 2020-06
+
+### New features
+
+- searching My Stock now correctly ignores accents: searching
+  "stromquist" also returns "strömquist".
+- My Stock: we can filter results by date of creation of the card in
+  our database. We choose an operator like "<=" and we write a date
+  indicator, like: "june, 2020", "1st may 2016", etc. For details: see the
+  `dateparser` library, and the online documentation.
+
+### Upgrade instructions
+
+- run `python manage.py gen_ascii_fields`.
+
+## 2019-XX
+
+TODO
+
 
 ## 2019-02
 

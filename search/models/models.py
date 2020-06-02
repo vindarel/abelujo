@@ -41,6 +41,8 @@ import barcode
 import dateparser
 import pendulum
 import pytz
+import unidecode
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.core.paginator import EmptyPage
@@ -77,6 +79,7 @@ from search.models.utils import isbn_cleanup
 from search.models.utils import card_currency
 from search.models.utils import price_fmt
 from search.models.utils import roundfloat
+from search.models.utils import to_ascii
 from search.models.utils import distributors_match
 
 PAGE_SIZE = 20
@@ -117,13 +120,29 @@ class Author(TimeStampedModel):
     def __str__(self):
         return "{}".format(self.name)
 
+    def save(self, *args, **kwargs):
+        """
+        Create name_ascii, with no accentuated letters.
+        """
+        res = to_ascii(self.name)
+        if res:
+            self.name_ascii = res
+
+        super(Author, self).save(*args, **kwargs)
+
     @staticmethod
     def search(query):
-        """Search for names containing "query", return a python list.
+        """
+        Search for names containing "query", return a queryset.
+
+        The search doesn't consider accentuated letters: searching
+        "éléphant" will return results with "éléphant" as well as
+        "elephant".
         """
         try:
             if query:
-                data = Author.objects.filter(name__icontains=query)
+                query_ascii = to_ascii(query)
+                data = Author.objects.filter(name_ascii__icontains=query_ascii)
             else:
                 data = Author.objects.all()
         except Exception as e:
@@ -626,6 +645,11 @@ class Card(TimeStampedModel):
         # Update quantity.
         self.quantity = self.quantity_compute()
 
+        # For a better search, create title_ascii, with no accentuated letters, lowercase.
+        res = to_ascii(self.title)
+        if res:
+            self.title_ascii = res
+
         super(Card, self).save(*args, **kwargs)
 
         # Save cover.
@@ -970,13 +994,19 @@ class Card(TimeStampedModel):
         if words:
             # Doesn't pass data validation of the view.
             head = words[0]
-            cards = Card.objects.filter(Q(title__icontains=head) |
-                                        Q(authors__name__icontains=head))
+            head_ascii = to_ascii(head)
+            cards = Card.objects.filter(Q(title_ascii__icontains=head_ascii) |
+                                        Q(title__contains=head) |
+                                        Q(authors__name__icontains=head) |
+                                        Q(authors__name_ascii__contains=head_ascii))
 
             if len(words) > 1:
                 for elt in words[1:]:
-                    cards = cards.filter(Q(title__icontains=elt) |
-                                         Q(authors__name__icontains=elt))
+                    elt_ascii = to_ascii(elt)
+                    cards = cards.filter(Q(title_ascii__contains=elt_ascii) |
+                                         Q(title__icontains=elt) |
+                                         Q(authors__name__icontains=elt) |
+                                         Q(authors__name_ascii__contains=elt_ascii))
 
         elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.

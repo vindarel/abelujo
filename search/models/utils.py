@@ -22,6 +22,7 @@ import re
 import string
 
 import addict
+import unidecode
 from tabulate import tabulate
 
 from django.utils import six
@@ -431,3 +432,20 @@ def price_fmt(price, currency):
     except Exception as e:
         log.warning('Error for models.utils.price_fmt: {}'.format(e))
         return '{:.2f}'.format(price)
+
+def to_ascii(string):
+    """
+    Replace accentuated letters by their ascii equivalent, return lowercase.
+
+    Éléphant => Elephant.
+    """
+    if not string:
+        return None
+
+    try:
+        res = unidecode.unidecode(string)
+        return res.lower()
+    except UnicodeDecodeError:
+        res = unidecode.unidecode(string)
+    except Exception as e:
+        log.debug(u"Could not create ascii equivalent for {}: {}".format(string, e))
