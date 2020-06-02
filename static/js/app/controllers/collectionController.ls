@@ -26,6 +26,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
     $scope.query = ""
     $scope.cards = []
+    $scope.first_page_load = true
     $scope.places = []
     $scope.place = null
     $scope.shelfs = []
@@ -142,22 +143,23 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             repr: ""
             id: 0
 
-    # Get cards in stock
-    params = do
-        order_by: "-created" # valid django
-        language: $scope.language
-        page_size: $scope.page_size
-        page: $scope.page
-    $http.get "/api/cards", do
-        params: params
-    .then (response) !->
-        $scope.cards = response.data.cards
-        $scope.meta = response.data.meta
-        for elt in $scope.cards
-            $scope.selected[elt.id] = false
-            elt.date_publication = Date.parse(elt.date_publication)
+    # Get the latest cards in stock when we land on the page.
+    # Disabled: slows down the app with no benefits.
+    ## params = do
+    ##     order_by: "-created" # valid django
+    ##     language: $scope.language
+    ##     page_size: $scope.page_size
+    ##     page: $scope.page
+    ## $http.get "/api/cards", do
+    ##     params: params
+    ## .then (response) !->
+    ##     $scope.cards = response.data.cards
+    ##     $scope.meta = response.data.meta
+    ##     for elt in $scope.cards
+    ##         $scope.selected[elt.id] = false
+    ##         elt.date_publication = Date.parse(elt.date_publication)
 
-        $scope.define_price_choices!
+    ##     $scope.define_price_choices!
 
     $scope.validate = !->
         params = do
@@ -193,6 +195,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             $scope.cards = response.data.cards
             $scope.meta = response.data.meta
             $window.document.getElementById("default-input").select()
+            $scope.first_page_load = false
 
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages
