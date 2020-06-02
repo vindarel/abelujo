@@ -59,11 +59,6 @@ dbback:
 	# back up the db, append a timestamp
 	bash -c "cp db.db{,.`date +%Y%m%d-%H%M%S`}"
 
-install-nodejs:
-	@echo "Installing nodejs from a new deb source..."
-	curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-	sudo apt-get install -y nodejs
-
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
 install:  debian pip pip-submodule db npm-system npm gulp translation-compile collectstatic

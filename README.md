@@ -75,17 +75,11 @@ Install the required dependencies for Debian (Ubuntu/LinuxMint/etc):
 
     make debian
     # a shortcut for
-    # sudo apt-get install python-pip nodejs nodejs-legacy
+    # sudo apt-get install python-pip nodejs npm
+    # Debian 8 users have to install nodejs-legacy to get the npm package, in the case the existing "node" command doesn't give you a javascript shell.
     # sudo pip install --upgrade pip
 	# sudo pip install virtualenvwrapper
-	# sudo yarn install gulp -g  # a JS build system. (warn: -g is deprecated)
-    # Debian users have to install nodejs-legacy if the node command doesn't give you a javascript shell.
-    # Unixes: install yarn (and not npm) with
-    # curl -o- -L https://yarnpkg.com/install.sh | bash
-
-Also install the Nodejs platform and the yarn package manager (instead of npm):
-
-     sudo make install-nodejs
+	# sudo npm install gulp -g
 
 Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,
