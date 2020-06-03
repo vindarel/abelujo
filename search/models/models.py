@@ -994,7 +994,9 @@ class Card(TimeStampedModel):
         if words:
             # Doesn't pass data validation of the view.
             head = words[0]
-            head_ascii = to_ascii(head)
+            # to_ascii can return None, and that's logic, but if the
+            # data migration was not run, searching "iconsains=None" would error out.
+            head_ascii = to_ascii(head) or head
             cards = Card.objects.filter(Q(title_ascii__icontains=head_ascii) |
                                         Q(title__contains=head) |
                                         Q(authors__name__icontains=head) |
@@ -1002,7 +1004,7 @@ class Card(TimeStampedModel):
 
             if len(words) > 1:
                 for elt in words[1:]:
-                    elt_ascii = to_ascii(elt)
+                    elt_ascii = to_ascii(elt) or elt
                     cards = cards.filter(Q(title_ascii__contains=elt_ascii) |
                                          Q(title__icontains=elt) |
                                          Q(authors__name__icontains=elt) |
