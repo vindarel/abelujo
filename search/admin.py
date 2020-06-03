@@ -80,6 +80,7 @@ class DistributorAdmin(admin.ModelAdmin):
     class Meta:
         model = Distributor
 
+    search_fields = ["name", "gln", "city", "country", "postal_code"]
     list_display = ("name", "discount", "stars", "email")
     list_editable = ("discount", "stars", "email")
 

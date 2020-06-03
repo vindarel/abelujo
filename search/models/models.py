@@ -164,7 +164,7 @@ class Distributor(TimeStampedModel):
     distributor with the same name.
     """
     # comment above: we have once considered that publishers can be distributors.
-    # They should not. Its complicates everything.
+    # They should not. It complicates everything.
 
     name = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("name"))
     #: GLN (official ID, given by Dilicom).
@@ -176,6 +176,20 @@ class Distributor(TimeStampedModel):
     stars = models.IntegerField(default=0, null=True, blank=True)
     #: Contact: email adress. To complete, create a Contact class.
     email = models.EmailField(null=True, blank=True)
+
+    #: City
+    city = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("City"))
+    #: Postal code
+    postal_code = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("Postal code"))
+    #: Country
+    country = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("Country"))
+    #: Number of titles into the FEL (as of june, 2020)
+    nb_titles_in_FEL = models.IntegerField(blank=True, null=True, verbose_name=__("Number of titles in FEL (june, 2020)"))
+    #: Comm. via Dilicom
+    # It is currently a boolean given with a character, let's suppose it could change to any
+    # other short string (like "NA", "DEL" or whatnot), so let's use a CharField.
+    comm_via_dilicom = models.CharField(max_length=4, blank=True, null=True, verbose_name=__("Comm. via Dilicom: yes or no?"))
+
 
     class Meta:
         ordering = ("name",)
