@@ -535,6 +535,10 @@ class Card(TimeStampedModel):
     distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
     #: Collection
     collection = models.ForeignKey(Collection, blank=True, null=True, verbose_name=__("collection"))
+    #: Official theme, following the CLIL classification, given by Dilicom. A code of 4 digits.
+    # Used as information and to guess our shelf.
+    # So, let's not create a special table.
+    theme = models.CharField(max_length=4, blank=True, null=True, verbose_name=__("Theme (Dilicom)"))
     #: Shelf (for now, only one shelf).
     shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=__("shelf"))
     # location = models.ForeignKey(Location, blank=True, null=True)
@@ -562,6 +566,14 @@ class Card(TimeStampedModel):
     fmt = models.TextField(null=True, blank=True,
                            editable=False,
                            verbose_name=__("Book format (pocket, etc)"))
+    #: Thickness (in millimeters)
+    thickness = models.IntegerField(blank=True, null=True, verbose_name=__("Thickness"))
+    #: Height (in millimeters)
+    height = models.IntegerField(blank=True, null=True, verbose_name=__("Height"))
+    #: Width (in millimeters)
+    width = models.IntegerField(blank=True, null=True, verbose_name=__("Width"))
+    #: Weight (in grams)
+    weight = models.IntegerField(blank=True, null=True, verbose_name=__("Weight"))
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
