@@ -1,6 +1,6 @@
 Changelog starting from v0.5 (2018/09/18)
 
-## 2020-06
+## 2020-06, 2020-05
 
 ### New features
 
@@ -10,10 +10,55 @@ Changelog starting from v0.5 (2018/09/18)
   our database. We choose an operator like "<=" and we write a date
   indicator, like: "june, 2020", "1st may 2016", etc. For details: see the
   `dateparser` library, and the online documentation.
+- we get more fields from Dilicom: the distributor GLN and the theme.
+- My Stock: we don't run a DB query to get the newest books at the
+  landing page anymore, we show nothing. The page loads quicker.
+
+Some **clients** features:
+
+- create clients
+- at the Sell point: choose a client and edit a bill, in PDF. Create a
+  client on the fly with the "+" button.
+
+more to come for clients.
+
+
+### Admin
+
+New admin scripts:
+
+- `import_dists`: import all known distributors of Dilicom, via our
+  CSV export of Dilicom data. The FEL à la demande only gives the
+  distributor GLN, we must get the name ourselves, hence the need of
+  an external CSV file.
+- `update_all_with_dilicom`: update ALL the cards with Dilicom
+  data. Update the publisher (to have one unique name across the
+  application), the theme, the distributor GLN, and all.
+- `remove_unused_publishers`, useful after the above script.
+- `list_publishers` and do nothing.
+
+## Upgrade instructions
+
+As usual (make update).
+
+If you use Dilicom, you'll certainly want to run a couple of scripts above.
+
 
 ### Upgrade instructions
 
 - run `python manage.py gen_ascii_fields`.
+
+
+## 2020-01…04
+
+### New features
+
+- we handle a Swiss books datasource.
+- hence, we handle different currencies (euro "10€", swiss franc "CHF 10")
+- in baskets: new action "add to shelf…" that empties the basket so
+  than we can do it again for another shelf. Useful when receiving
+  books.
+- TODO
 
 ## 2019-XX
 
