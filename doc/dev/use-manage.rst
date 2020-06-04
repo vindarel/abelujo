@@ -1,5 +1,5 @@
 Administration, custom management commands
-==================================================
+==========================================
 
 In addition to using the fabfile commands, an Abelujo administrator
 may need to work manually on websites. Here some tips and pointers.
@@ -92,6 +92,58 @@ If an ISBN is not found, the script carries on and prints all the ones not found
 **update january, 2020**: the script was not indempotent but is now. You can run it twice in a row, it will not add up the quantities, only set them.
 
 If you need more features, get in touch.
+
+
+
+Import all distributors known by Dilicom
+----------------------------------------
+
+Dilicom provides a list of all the distributors it knows. It is around
+5.000 distributors of 52 countries. Run::
+
+   ./manage.py import_dists
+
+This will read the included CSV file and populate the database with:
+
+- name
+- GLN
+- address (city, country, postal code)
+- the number of titles in Dilicom's catalogue at the time of the export (june, 2020)
+- comm. via Dilicom (yes or no)
+
+
+Update all the books with Dilicom
+---------------------------------
+
+You need this if you used Abelujo before subscribing to Dilicom.
+
+You must have Dilicom credentials.
+
+You can update all the books data:
+
+- distributor
+- publisher
+- thickness, height, width, weight
+- parution date
+- theme
+- etc
+
+Run::
+
+  ./manage.py update_all_with_dilicom
+
+
+
+
+Delete unused publishers
+------------------------
+
+This can happen specially after the full update from Dilicom. Run::
+
+  ./manage.py remove_unused_publishers
+
+There is a confirmation prompt.
+
 
 Other management commands
 -------------------------
