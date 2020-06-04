@@ -44,10 +44,12 @@ div#abelujo
       a.btn.btn-default(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
       a.btn.btn-default(href="{% url 'card_places_add' object.pk %}", title="{% trans 'Add to places' %}") {% trans "Add..." %}
       a.btn.btn-default(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
-      a.btn.btn-default(href="#", title='{% trans "Add 1 copy to the default place" %}', onclick="card_add_one_to_default_place({{ object.pk }})")
-        i.glyphicon.glyphicon-plus 1
 
   .col-lg-7
+    a.btn.btn-default(href="#", title='{% trans "Add 1 copy to the default place" %}', onclick="card_add_one_to_default_place({{ object.pk }})")
+      i.glyphicon.glyphicon-plus 1
+    a.btn.btn-default(href="#", title='{% trans "Remove 1 copy to the default place" %}', onclick="card_remove_one_from_default_place({{ object.pk }})")
+      i.glyphicon.glyphicon-plus -1
     h3 {{ object.title }}
 
 .row

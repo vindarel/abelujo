@@ -414,9 +414,13 @@ def card_add(request, **response_kwargs):
         card_obj = Card.objects.get(id=pk)
 
         if 'default_place' in request.body:
-            # Add one quantity. abelujo-js.js card_add_one_to_default_place
+            # Add or remove one quantity.
+            # Only used by abelujo-js.js so far, for only +1 or -1.
             default_place = Preferences.get_default_place()
-            default_place.add_copy(card_obj)
+            quantity = 1
+            if "-1" in request.body:
+                quantity = -1
+            default_place.add_copy(card_obj, nb=quantity)
             return JsonResponse({'status': status,
                                  'quantity': default_place.quantity_of(card_obj),
                                  },
