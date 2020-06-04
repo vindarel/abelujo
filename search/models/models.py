@@ -1533,7 +1533,8 @@ class Card(TimeStampedModel):
             card_obj.threshold = card_dict.get('threshold')
 
         for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
-                      'details_url', 'currency', 'thickness', 'height', 'width', 'weight']:
+                      'details_url', 'currency', 'thickness', 'height', 'width', 'weight',
+                      'theme']:
             if card_dict.get(field) not in [None, '', '']:
                 setattr(card_obj, field, card_dict.get(field))
 
