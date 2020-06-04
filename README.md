@@ -268,3 +268,8 @@ Documentation
 -------------
 
 We have developer documentation: http://dev.abelujo.cc/
+
+Licence
+-------
+
+AGPL-3.0
