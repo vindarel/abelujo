@@ -1456,10 +1456,13 @@ class Card(TimeStampedModel):
                          card_dict=None,
                          authors=[],
                          distributor=None,
-                         publishers=[]):
+                         distributor_gln="",
+                         publishers=[],
+                         publisher_name=None):
         """
         - card_obj: Card object.
         - card_dict: dict of fields.
+        - publisher_name: name of one publisher (string). We check if the card object has the same, if not we assign it to it, by creating a new publisher if required.
         - other params: objects.
 
         Return: the new object, saved.
@@ -1480,17 +1483,57 @@ class Card(TimeStampedModel):
             else:
                 log.warning("Card.update_from_dict: distributor should be an object.")
 
+        if distributor_gln:
+            dist = None
+            dist = Distributor.objects.filter(gln=distributor_gln).first()
+            if dist:
+                card_obj.distributor = dist
+                # print("--- existing dist GLN {}".format(distributor_gln))
+            else:
+                # name is required.
+                # Normally, we have run the script that registers all known
+                # distributors with their GLN.
+                # If we reach here, we may have not run it.
+                # Reminder: Dilicom doesn't give the name in the FEL, only its GLN.
+                # We cat set the correct name with a script.
+                dist = Distributor(gln=distributor_gln, name=distributor_gln)
+                dist.save()
+                card_obj.distributor = dist
+                print("--- new distributor created with GLN {}".format(distributor_gln))
+
         if publishers:
             if isinstance(publishers[0], models.base.Model):
                 card_obj.publishers = publishers
             else:
                 log.warning("Card.update_from_dict: publishers should be a list of objects.")
 
+        #
+        elif publisher_name:
+            pub_name = publisher_name.lower().strip()
+            # Does the card already have this publisher?
+            card_pubs = [it.name.lower().strip() for it in card_obj.publishers.all()]
+            # if pub_name in card_pubs:
+                # print("-- Already the right publisher.")
+            if pub_name not in card_pubs:
+                # OK, we have to bind it.
+                # Does a publisher of the same name exist?
+                existing_pub = Publisher.objects.filter(name__iexact=pub_name).first()
+                # Yes: bind it.
+                if existing_pub:
+                    log.debug("Replace the publisher: {} -> {}".format(card_obj.pubs_repr, existing_pub.name))
+                    card_obj.publishers = [existing_pub]
+                # No: create the publisher.
+                else:
+                    pub = Publisher(name=publisher_name)
+                    pub.save()
+                    card_obj.publishers = [pub]
+                    log.debug("Created a new publisher: {}".format(pub))
+
         if card_dict.get('threshold') is not None:
             card_obj.threshold = card_dict.get('threshold')
 
         for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
-                      'details_url', 'currency']:
+                      'details_url', 'currency', 'thickness', 'height', 'width', 'weight']:
             if card_dict.get(field) not in [None, '', '']:
                 setattr(card_obj, field, card_dict.get(field))
 
