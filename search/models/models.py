@@ -1548,6 +1548,9 @@ class Card(TimeStampedModel):
                                 authors=[],
                                 publishers=[],
                                 distributor=None):
+        """
+        Create a new card from a dict.
+        """
         assert isinstance(card_dict, dict)
         # Create the card with its simple fields.
         # Add the relationships afterwards.
@@ -1561,7 +1564,7 @@ class Card(TimeStampedModel):
         #     **card_dict
         # )
 
-        card_obj, created = Card.objects.get_or_create(
+        card_obj = Card(
             title=card_dict.get('title'),
             price = card_dict.get('price', 0),
             currency = card_dict.get('currency'),
@@ -1573,7 +1576,13 @@ class Card(TimeStampedModel):
             date_publication = card_dict.get('date_publication') if card_dict.get('date_publication') else None,
             data_source = card_dict.get('data_source'),
             summary = card_dict.get('summary'),
+            thickness = card_dict.get('thickness'),
+            height = card_dict.get('height'),
+            width = card_dict.get('width'),
+            weight = card_dict.get('weight'),
             threshold = card_dict.get('threshold', THRESHOLD_DEFAULT))
+
+        card_obj.save()
 
         # We can also update every field for the existing card.
 
