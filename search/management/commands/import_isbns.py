@@ -18,6 +18,14 @@
 
 """
 Import a csv files with two columns: an isbn and a quantity.
+
+The quantity is the right one: we set it, we don't add it, like an inventory.
+
+We can choose what shelf to add them in.
+
+Usage:
+
+./manage.py import_isbns -i path/to.csv [-s shelf_id]
 """
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -31,6 +39,11 @@ from search.models.api import to_int
 from search.models.utils import is_isbn
 from search.views_utils import search_on_data_source
 
+# py2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 def find_separator(line, default=None):
     if ";" in line:
@@ -97,7 +110,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write("All ISBNs were found")
 
-    def handle(self, *args, **options):
+    def run(self, *args, **options):
         """
         Import cards and set their quantity.
 
@@ -108,6 +121,10 @@ class Command(BaseCommand):
         """
         WARN_MSG = "***** This script was changed in 2020/01. It is now indempotent: it sets the quantities instead of adding them. *****"
         print(WARN_MSG)
+        yes = input("Continue ? [Y/n]")
+        if yes not in ["", "Y"]:
+            print("quit.")
+            exit(1)
 
         csvfile = options.get('input')
         if not csvfile.endswith('csv'):
@@ -139,6 +156,9 @@ class Command(BaseCommand):
         # TODO: should count success & errors.
         try:
             for i, line in enumerate(lines):
+                line = line.strip()
+                if not line:
+                    continue
                 isbn, quantity = line.split(separator)
                 isbn = isbn.strip()
                 if not is_isbn(isbn):
@@ -166,3 +186,9 @@ class Command(BaseCommand):
 
         except KeyboardInterrupt:
             self.print_status(msg="Abort.")
+
+    def handle(self, *args, **options):
+        try:
+            self.run()
+        except KeyboardInterrupt:
+            self.stdout.write("User abort.")
