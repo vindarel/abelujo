@@ -363,3 +363,33 @@ if TESTING:
             return "notmigrations"
 
     MIGRATION_MODULES = DisableMigrations()
+
+###################################################
+# Load all available distributors from Dilicom data.
+###################################################
+
+# GLN -> name, address
+DILICOM_DISTRIBUTORS = {}
+csvfile = "documents/annuaire_distributeurs.csv"
+if os.path.exists(csvfile):
+    lines = []
+    with open(csvfile, 'r') as f:
+        lines = f.readlines()
+
+    try:
+        for line in lines:
+            gln, name, postal_code, city, country, nb_titles, via_dilicom = line.split(";")
+            DILICOM_DISTRIBUTORS[gln] = {
+                'name': name,
+                'postal_code': postal_code,
+                'city': city,
+                'country': country,
+                'nb_titles': nb_titles,
+                'via_dilicom': via_dilicom,
+            }
+        print("INFO: loaded {} distributors into settings.DILICOM_DISTRIBUTORS".format(len(lines)))
+    except Exception as e:
+        print("WARN: could not load this distributor line: {}".format(line))
+
+else:
+    print('INFO: did not find the CSV with all distributors. File {} does not exist'.format(csvfile))

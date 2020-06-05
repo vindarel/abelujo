@@ -94,24 +94,6 @@ If an ISBN is not found, the script carries on and prints all the ones not found
 If you need more features, get in touch.
 
 
-
-Import all distributors known by Dilicom
-----------------------------------------
-
-Dilicom provides a list of all the distributors it knows. It is around
-5.000 distributors of 52 countries. Run::
-
-   ./manage.py import_dists
-
-This will read the included CSV file and populate the database with:
-
-- name
-- GLN
-- address (city, country, postal code)
-- the number of titles in Dilicom's catalogue at the time of the export (june, 2020)
-- comm. via Dilicom (yes or no)
-
-
 Update all the books with Dilicom
 ---------------------------------
 
