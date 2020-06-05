@@ -393,3 +393,29 @@ if os.path.exists(csvfile):
 
 else:
     print('INFO: did not find the CSV with all distributors. File {} does not exist'.format(csvfile))
+
+###################################################
+# Load all available THEMES
+###################################################
+
+# code -> name
+CLIL_THEMES = {}
+csvfile = "documents/theme-names.csv"
+if os.path.exists(csvfile):
+    lines = []
+    with open(csvfile, 'r') as f:
+        lines = f.readlines()
+
+    try:
+        for line in lines:
+            # split and assigment fails with accents in code, not in ipdb.
+            # shitty Python or shitty me?
+            line = line.decode('utf8')
+            code, name = line.split(";")
+            CLIL_THEMES[code] = name.strip()
+        print("INFO: loaded {} themes into settings.CLIL_THEMES".format(len(lines)))
+    except Exception as e:
+        print("WARN: could not load this theme line: {}".format(line))
+
+else:
+    print('INFO: did not find the CSV with all themes. File {} does not exist'.format(csvfile))
