@@ -13,9 +13,8 @@ venv_activate () {
 }
 
 run_and_open () {
-    (make run &
-    make gulp
-    sleep 3 && xdg-open $LOCALHOST)
+    make gulp && \
+        make run
 }
 
 help_sudo_password () {
@@ -41,6 +40,7 @@ ensure_cloned_sources () {
       cd abelujo
       virtualenv ./ && \
       venv_activate && \
+      make update && \
       run_and_open
 
   else
