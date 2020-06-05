@@ -70,12 +70,12 @@ install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev 
 
 # Install npm packages
 npm-system:
-	@echo "Installing gulp and brunch globally... (needs root)"
-	@sudo npm install -g gulp@3 brunch
+	@echo "Installing gulp globally... (needs root)"
+	@sudo npm install -g gulp@3
 
 npm-system-nosudo:
-	@echo "Installing gulp and brunch globally... (needs root)"
-	npm global install gulp brunch
+	@echo "Installing gulp globally... (needs root)"
+	npm global install gulp
 
 npm:
 	@echo "Installing Node packages..."
@@ -128,9 +128,6 @@ migrate:
 	python manage.py migrate --noinput
 
 collectstatic:
-	# Brunch is only used for Vue.js, which isn't used in production yet.
-	# This line failed on deployes, comment out.
-	# ./node_modules/brunch/bin/brunch build  # --production. Create public/ dir.
 	python manage.py collectstatic --noinput
 
 # Run the tests of the UI in a browser.
@@ -148,15 +145,10 @@ gulp:
 
 # Run the dev server
 run:
-	# python manage.py runserver 8000
+	python manage.py runserver 8000
+
+run_plus:
 	python manage.py runserver_plus 8000
-
-watch:
-	# limitation: does not stop on breakpoints.
-	python manage.py runserver 8000  # to use brunch's livereload, not on runserver_plus.
-
-brunch:
-	brunch watch
 
 run-wsgi:
 	# Run a development server using Apache and mod_wsgi, like in production.

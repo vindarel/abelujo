@@ -183,10 +183,6 @@ and npm packages to run end to end tests:
 
 Additional management commands start with `my_`.
 
-To livereload Django and Vue assets using Brunch and Django's runserver:
-
-    make watch
-
 
 ## Configure services
 
