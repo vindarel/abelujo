@@ -13,14 +13,10 @@ python-dev
 python-lxml
 libxml2-dev
 libxslt1-dev
-apache2
-apache2-dev
 postgresql-contrib
 libpq-dev
 # for Pillow / xhtml2pdf
 libjpeg-dev
-
-redis-server
 
 # for Weasyprint
 python-cffi
