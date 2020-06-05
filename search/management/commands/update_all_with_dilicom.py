@@ -63,7 +63,8 @@ class Command(BaseCommand):
         cards = Card.objects.filter(isbn__isnull=False)
         self.stdout.write("Updating {} cards.".format(cards.count()))
 
-        confirmation = raw_input("Continue ? [Y/n]")
+        confirmation = True
+        # confirmation = raw_input("Continue ? [Y/n]")
         if confirmation == "n":
             exit(0)
 
@@ -104,13 +105,15 @@ class Command(BaseCommand):
 
             print("* {} - updating {}".format(i, card.isbn))
 
-            Card.update_from_dict(card, bk,
-                                  distributor_gln=bk.get('distributor_gln'),
-                                  publisher_name=pub_name)
-            card.save()
+            try:
+                Card.update_from_dict(card, bk,
+                                      distributor_gln=bk.get('distributor_gln'),
+                                      publisher_name=pub_name)
 
-            cards_updated.append(card)
-            count_ok += 1
+                cards_updated.append(card)
+                count_ok += 1
+            except Exception as e:
+                self.stdout.write(" ! failed for {}: {}".format(bk.get('isbn'), e)) 
 
             # Updating 4.000 cards is resource heavy.
             if i % 100 == 0:
