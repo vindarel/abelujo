@@ -5,7 +5,7 @@
 # Supposed to be in a directory that does not already contain an Abelujo/ folder.
 
 LOCALHOST=http://localhost:8000
-VENV=abelujo
+VENV=abelujo-venv
 
 
 venv_activate () {
@@ -29,32 +29,32 @@ help_sudo_password () {
 }
 
 install_git () {
-    type git || help_sudo_password && sudo apt-get install -qy git-core
+    type git || ( help_sudo_password && sudo apt-get install -qy git-core )
 }
 
 
-if [[ -d abelujo ]] ; then
-    echo "Running current Abelujo version. You may want to update (cd abelujo ; make update)."
-    pwd
-    ls abelujo
-    cd abelujo
-    virtualenv ./ && \
-    venv_activate && \
-    run_and_open
+ensure_cloned_sources () {
+  if [[ -d abelujo ]] ; then
+      echo "Running current Abelujo version. You may want to update (cd abelujo ; make update)."
+      pwd
+      ls abelujo
+      cd abelujo
+      virtualenv ./ && \
+      venv_activate && \
+      run_and_open
 
-else
-    echo "********* Installing Abelujo...                                       *********"
-    echo "********* (if you cloned this repository, no need to use this script.)*********"
-    install_git
-    git clone --recursive http://gitlab.com/vindarel/abelujo/ || (echo "The installation failed. Feel free to email us the results." ; exit 1)
+  else
+      echo "********* Installing Abelujo...                                       *********"
+      echo "********* (if you cloned this repository, no need to use this script.)*********"
+      install_git
+      git clone --recursive http://gitlab.com/vindarel/abelujo/
+  fi
+}
 
-    cd abelujo
-fi
-
-    sudo apt install -yq make
-    help_sudo_password
-
-    sudo make install-yarn
+ensure_cloned_sources && \
+    cd abelujo && \
+    help_sudo_password && \
+    sudo apt install -yq make && \
     make debian && \
     virtualenv ./ && \
     source bin/activate && \
@@ -62,6 +62,3 @@ fi
     sudo pip install --upgrade pip && \
     make install && \
     run_and_open
-
-
-read  # let the terminal waiting, so open, in case of error.
