@@ -13,7 +13,6 @@ python-dev
 python-lxml
 libxml2-dev
 libxslt1-dev
-postgresql-contrib
 libpq-dev
 # for Pillow / xhtml2pdf
 libjpeg-dev
