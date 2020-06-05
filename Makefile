@@ -18,11 +18,10 @@ debian-nosudo:
 
 debian:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
-	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs sudo apt-get install -y
 	@sudo pip install virtualenvwrapper
 
 pull:
-	git stash save "autostash from make rebase"
+	git stash save "autostash from make publl"
 	git pull --rebase
 	git submodule update --remote
 # Rebase main repo and submodules
