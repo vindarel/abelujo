@@ -850,6 +850,13 @@ class Card(TimeStampedModel):
         return ""
 
     @property
+    def theme_name(self):
+        "From the theme code in DB, get its name."
+        if self.theme:
+            return settings.CLIL_THEMES.get(self.theme)
+        return ""
+
+    @property
     def distributor_repr(self):
         if self.distributor:
             return self.distributor.to_list()['name']
@@ -894,6 +901,9 @@ class Card(TimeStampedModel):
 
         currency = self.get_currency()
 
+        theme_code = self.theme
+        theme_name = self.theme_name
+
         res = {
             "id": self.id,
             "authors": auth,
@@ -934,6 +944,8 @@ class Card(TimeStampedModel):
             "shelf": self.shelf.name if self.shelf else "",
             "title": self.title,
             "threshold": self.threshold,
+            "theme_name": theme_name,
+            "theme_code": theme_code,
         }
 
         if in_deposits:

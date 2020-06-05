@@ -113,6 +113,12 @@ div#abelujo
               td
                 if object.shelf
                   {{ object.shelf }}
+          if object.theme
+            tr
+                td {% trans "Theme" %}: 
+                td(title="CLIL code: {{ object.theme }}")
+                  if object.theme
+                    {{ object.theme_name }}
 
           tr(class="{% if object.quantity > 0 %} active {% elif object.quantity < 0 %} danger {% endif %}")
             td {% trans "In stock" %}
