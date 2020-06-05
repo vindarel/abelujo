@@ -134,32 +134,19 @@ We may enjoy some initial data to start working with Abelujo: typical
 book categories, default places and basket(s), etc. They will be
 different depending on the user's needs and language.
 
-We wrote a command to help define these in the most simple text file,
+This command is required::
+
+  make db
+
+Furthermore, we wrote a command to help define data in the most simple text file,
 and create them in the database. The usage is::
 
     ./manage.py runscript add_objects --script-args=scripts/categories_fr.yaml
 
+(this command is not required)
+
 This tool isn't considered finished, you are fully in your right to ask for a simpler command.
 For more info, ask and see the sources !
 
-Import the list of distributors
--------------------------------
 
-Dilicom provides a list of distributors in CSV format. It defines more
-than 5.000 distributors in 52 countries.
-
-Each line contains:
-
-* its GLN
-* its name, city, postal code, country
-* the number of titles distributed by Dilicom
-* wether it is communicated within the FEL (yes or no)
-
-To import all the data, run::
-
-
-    ./manage.py import_dists
-
-This will take a couple of minutes.
-
-You probably don't need this if you don't use the FEL.
+In the next topic, see the available management commands.

@@ -94,6 +94,29 @@ If an ISBN is not found, the script carries on and prints all the ones not found
 If you need more features, get in touch.
 
 
+Import the list of distributors known by Dilicom
+------------------------------------------------
+
+Dilicom provides a list of distributors in CSV format. It defines more
+than 5.000 distributors in 52 countries.
+
+Each line contains:
+
+* its GLN
+* its name, city, postal code, country
+* the number of titles distributed by Dilicom
+* wether it is communicated within the FEL (yes or no)
+
+To import all the data, run::
+
+
+    ./manage.py import_dists
+
+This will take a couple of minutes.
+
+You probably don't need this if you don't use the FEL.
+
+
 Update all the books with Dilicom
 ---------------------------------
 
@@ -112,9 +135,7 @@ You can update all the books data:
 
 Run::
 
-  ./manage.py update_all_with_dilicom
-
-
+  DILICOM_USER=foo DILICOM_PASSWORD=bar ./manage.py update_all_with_dilicom
 
 
 Delete unused publishers
