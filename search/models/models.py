@@ -61,6 +61,7 @@ from toolz.dicttoolz import update_in
 from toolz.dicttoolz import valmap
 from toolz.itertoolz import groupby
 
+from abelujo import settings
 from search.models import history
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
@@ -209,6 +210,36 @@ class Distributor(TimeStampedModel):
 
     def repr(self):
         return self.__repr__()
+
+    @staticmethod
+    def get_or_create(gln=""):
+        if not gln:
+            return
+
+        dist = Distributor.objects.filter(gln=gln).first()
+        # yes
+        if dist:
+            return dist
+        # no dist in DB. It certainly has been loaded at startup.
+        else:
+            # All the distributors known by Dilicom are loaded into
+            # settings.DILICOM_DISTRIBUTORS at startup.
+            # Reminder: Dilicom doesn't give the name in the FEL, only its GLN.
+            dist_data = settings.DILICOM_DISTRIBUTORS.get(gln)
+            if dist_data:
+                dist = Distributor(gln=gln,
+                                   name=dist_data.get('name'),
+                                   city=dist_data.get('city'),
+                                   postal_code=dist_data.get('postal_code'),
+                                   country=dist_data.get('country'),
+                                   nb_titles_in_FEL=dist_data.get('nb_titles'),
+                                   comm_via_dilicom=dist_data.get('via_dilicom'))
+                dist.save()
+                log.debug("--- new distributor {} created with GLN {}".format(
+                    dist.name,
+                    gln))
+                return dist
+
 
     def to_list(self):
         return {
@@ -1485,21 +1516,10 @@ class Card(TimeStampedModel):
 
         if distributor_gln:
             dist = None
-            dist = Distributor.objects.filter(gln=distributor_gln).first()
+            # Get an existing dist by GLN or create it.
+            dist = Distributor.get_or_create(gln=distributor_gln)
             if dist:
                 card_obj.distributor = dist
-                # print("--- existing dist GLN {}".format(distributor_gln))
-            else:
-                # name is required.
-                # Normally, we have run the script that registers all known
-                # distributors with their GLN.
-                # If we reach here, we may have not run it.
-                # Reminder: Dilicom doesn't give the name in the FEL, only its GLN.
-                # We cat set the correct name with a script.
-                dist = Distributor(gln=distributor_gln, name=distributor_gln)
-                dist.save()
-                card_obj.distributor = dist
-                print("--- new distributor created with GLN {}".format(distributor_gln))
 
         if publishers:
             if isinstance(publishers[0], models.base.Model):

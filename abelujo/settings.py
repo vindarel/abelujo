@@ -380,12 +380,12 @@ if os.path.exists(csvfile):
         for line in lines:
             gln, name, postal_code, city, country, nb_titles, via_dilicom = line.split(";")
             DILICOM_DISTRIBUTORS[gln] = {
-                'name': name,
-                'postal_code': postal_code,
-                'city': city,
-                'country': country,
-                'nb_titles': nb_titles,
-                'via_dilicom': via_dilicom,
+                'name': name.strip(),
+                'postal_code': postal_code.strip(),
+                'city': city.strip(),
+                'country': country.strip(),
+                'nb_titles': nb_titles.strip(),
+                'via_dilicom': via_dilicom.strip(),
             }
         print("INFO: loaded {} distributors into settings.DILICOM_DISTRIBUTORS".format(len(lines)))
     except Exception as e:

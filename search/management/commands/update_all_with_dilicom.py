@@ -70,13 +70,13 @@ class Command(BaseCommand):
 
         isbns = cards.values_list("isbn", flat=True)  # [it.isbn for it in cards]
 
-        # isbns = isbns[:10]  # TODO:
+        # isbns = isbns[50:500]  # TODO:
         # isbns = isbns[430:500]  # TODO:
         dilicom_query = dilicomScraper.Scraper(*isbns)
         self.stdout.write("Searching all on Dilicom...")
         bklist, errors = dilicom_query.search()
 
-        if len(bklist) != len(cards):
+        if len(bklist) != len(isbns):
             self.stdout.write("--- beware: the search results have not the same length that our query: {} vs {}".format(len(bklist), len(isbns)))
             # exit(1)
 
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                 cards_updated.append(card)
                 count_ok += 1
             except Exception as e:
-                self.stdout.write(" ! failed for {}: {}".format(bk.get('isbn'), e)) 
+                self.stdout.write(" ! failed for {}: {}".format(bk.get('isbn'), e))
 
             # Updating 4.000 cards is resource heavy.
             if i % 100 == 0:
