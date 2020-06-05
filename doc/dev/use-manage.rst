@@ -140,7 +140,7 @@ Delete unused publishers
 
 This can happen specially after the full update from Dilicom. Run::
 
-  ./manage.py remove_unused_publishers
+  ./manage.py delete_unused_publishers
 
 There is a confirmation prompt.
 
