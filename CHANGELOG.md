@@ -25,8 +25,12 @@ more to come for clients.
 
 ### Admin
 
-New admin scripts:
+New admin scripts (all to be run with `./manage.py <script>`):
 
+- `gen_ascii_fields`: command to run in order for the search to work
+  regardless of accents. This creates new database fields, the title
+  and authors names in ascii, without accentuated letters, which are
+  also used during the search.
 - `import_dists`: import all known distributors of Dilicom, via our
   CSV export of Dilicom data. The FEL à la demande only gives the
   distributor GLN, we must get the name ourselves, hence the need of
@@ -41,12 +45,9 @@ New admin scripts:
 
 As usual (make update).
 
+Run the `gen_ascii_fields` script.
+
 If you use Dilicom, you'll certainly want to run a couple of scripts above.
-
-
-### Upgrade instructions
-
-- run `python manage.py gen_ascii_fields`.
 
 
 ## 2020-01…04
