@@ -31,10 +31,6 @@ New admin scripts (all to be run with `./manage.py <script>`):
   regardless of accents. This creates new database fields, the title
   and authors names in ascii, without accentuated letters, which are
   also used during the search.
-- `import_dists`: import all known distributors of Dilicom, via our
-  CSV export of Dilicom data. The FEL à la demande only gives the
-  distributor GLN, we must get the name ourselves, hence the need of
-  an external CSV file.
 - `update_all_with_dilicom`: update ALL the cards with Dilicom
   data. Update the publisher (to have one unique name across the
   application), the theme, the distributor GLN, and all.
