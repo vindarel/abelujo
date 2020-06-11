@@ -94,19 +94,21 @@ set-prod:
 stash:
 	git stash save "update (probably stashing npm lock)"
 
+update-apt:
+	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
+
 update: stash
 	make set-prod
 	make pip
 	make pip-submodule
 	make rebase
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
-	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 	make npm
 	gulp
 	make collectstatic
 	make translation-compile 	# gunicorn needs a restart
 	# echo "it's good to do an apt-get update once in a while"  # prevents unreachable sources, sometimes.
-	@echo "For development, don't forget make pip-dev"
+	@echo "For development, don't forget make pip-dev. To update Debian dependencies, use make update-apt."
 
 update-code: stash
 	make set-prod
