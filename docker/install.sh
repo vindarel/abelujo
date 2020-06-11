@@ -12,7 +12,7 @@ venv_activate () {
     source bin/activate
 }
 
-run_and_open () {
+buildjs_and_run () {
     make gulp && \
         make run
 }
@@ -41,7 +41,7 @@ ensure_cloned_sources () {
       virtualenv ./ && \
       venv_activate && \
       make update && \
-      run_and_open
+      buildjs_and_run
 
   else
       echo "********* Installing Abelujo...                                       *********"
@@ -58,6 +58,5 @@ ensure_cloned_sources && \
     make debian && \
     virtualenv ./ && \
     source bin/activate && \
-    sudo pip install --upgrade pip && \
     make install && \
-    run_and_open
+    buildjs_and_run
