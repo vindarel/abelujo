@@ -31,7 +31,6 @@ rebase: pull
 # Install in current directory
 pip: pip-submodule
 	@pip install -U pip
-	@pip uninstall bookshops  # around v0.9, an installed "bookshops" lib will hide newer code.
 	@pip install -r abelujo/requirements.txt     # install python libraries locally
 
 pip-nosudo: pip-submodule
@@ -49,6 +48,11 @@ pip-submodule:
 
 pip-submodule-dev:
 	cd search/datasources && pip install -r requirements-dev.txt
+
+# deprecated when all clients are above bookshops v0.9. Should be in late 2020.
+pip-uninstall-previous-libs:
+	@pip uninstall -y bookshops  # around v0.9, an installed "bookshops" lib will hide newer code.
+
 
 db:
 	@python manage.py syncdb --noinput           # populate the db for django
