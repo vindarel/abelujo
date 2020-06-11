@@ -58,7 +58,6 @@ ensure_cloned_sources && \
     make debian && \
     virtualenv ./ && \
     source bin/activate && \
-    sudo make install-nodejs && \
     sudo pip install --upgrade pip && \
     make install && \
     run_and_open

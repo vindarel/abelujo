@@ -82,8 +82,6 @@ npm:
 	npm install --production # don't install devDependencies
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
-	@echo "Note for Debian users: if you get an error because of name clashes (node, nodejs), then install nodejs-legacy:"
-	@echo "sudo apt-get install nodejs-legacy"
 
 npm-dev:
 	npm install # not in production, install also devDependencies
@@ -93,9 +91,6 @@ set-prod:
 
 stash:
 	git stash save "update (probably stashing npm lock)"
-
-update-apt:
-	@grep -v "^#" abelujo/apt-requirements.txt | xargs sudo apt-get install -y
 
 update: stash
 	make set-prod
@@ -279,7 +274,7 @@ uninstall-js:
 	rm -rf node_modules/
 	@echo "  done."
 	@echo "##### Uninstalling nodejs..."
-	sudo apt-get remove nodejs
+	sudo apt-get remove nodejs npm
 
 uninstall-pip:
 	@echo "This depends on how you created the python virtual env."
