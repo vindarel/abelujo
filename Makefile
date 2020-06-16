@@ -84,6 +84,7 @@ npm:
 	@echo "Installing Node packages..."
 	mkdir -p public
 	npm install --production # don't install devDependencies
+	./node_modules/bower/bin/bower install --allow-root
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
 
