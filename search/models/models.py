@@ -901,6 +901,30 @@ class Card(TimeStampedModel):
         return ""
 
     @property
+    def parent_theme_name(self):
+        """
+        Get the first parent theme name.
+        3781 (action et aventure) => Bande dessinée"""
+        if not self.theme:
+            return ""
+        theme = self.theme
+        try:
+            parents_list = settings.CLIL_THEME_HIERARCHIES.get(theme)
+            parents_list = [it.strip() for it in parents_list]
+            parent = None
+            if parents_list[1] == theme:
+                parent = theme
+            elif parents_list[2] == theme:
+                parent = parents_list[1]
+            elif parents_list[3] == theme:
+                parent = parents_list[2]
+            elif parents_list[4] == theme:
+                parent = parents_list[3]
+            return settings.CLIL_THEMES.get(parent)
+        except Exception as e:
+            log.warning(u"Could not get the parent theme of {}: {}".format(self.theme, e))
+
+    @property
     def distributor_repr(self):
         if self.distributor:
             return self.distributor.to_list()['name']

@@ -394,7 +394,10 @@ else:
 
 # code -> name
 CLIL_THEMES = {}
+CLIL_THEME_HIERARCHIES = {}
 csvfile = "documents/theme-names.csv"
+csv_theme_hierarchies = "documents/theme-hierarchies.csv"
+
 if os.path.exists(csvfile):
     lines = []
     with open(csvfile, 'r') as f:
@@ -410,6 +413,22 @@ if os.path.exists(csvfile):
         print("INFO: loaded {} themes into settings.CLIL_THEMES".format(len(lines)))
     except Exception as e:
         print("WARN: could not load this theme line: {}".format(line))
+
+    lines = []
+    if os.path.exists(csv_theme_hierarchies):
+        with open(csv_theme_hierarchies, 'r') as f:
+            lines = f.readlines()
+    else:
+        print('DEBUG: theme file {} does not exist.'.format(csv_theme_hierarchies))
+
+    for line in lines:
+        try:
+            line = line.decode('utf8')
+            # original code, parent codes, until finish by the same code.
+            code, c1, c2, c3, c4 = line.split(";")
+            CLIL_THEME_HIERARCHIES[code] = [c1, c2, c3, c4]
+        except Exception as e:
+            print("WARN: loading theme-hierarchies: could not load this line: {}\n{}".format(line, e))
 
 else:
     print('INFO: did not find the CSV with all themes. File {} does not exist'.format(csvfile))
