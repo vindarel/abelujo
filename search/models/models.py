@@ -106,6 +106,41 @@ MSG_INTERNAL_ERROR = _("An internal error occured, we have been notified.")
 
 BAD_IDS = [None, 0, '0', '0', '-1', '-1']
 
+PRESMAG = {
+    "01": "Posé en linéaire",
+    "02": "Sur broche",
+    "03": "Présentoir",
+    "05": "En palette présentoir",
+}
+
+PRESEDIT = {
+	"R": "Relié",
+	"B": "Broché",
+	"P": "Poche",
+	"J": "Jeu",
+	"D": "Disque vinyle",
+	"DC": "Disque compact",
+	"DV": "Disque vidéo, DVD",
+	"CD": "Cédérom",
+	"LD": "Livre disque",
+	"K": "Cassette",
+        "KA": "Cassette audio",
+	"KV": "Cassette vidéo",
+	"LK": "Livre cassette",
+	"C": "Cuir",
+	"E": "Etui",
+	"L": "Luxe",
+	"X": "Journal, revue",
+	"SM": "Support magnétique",
+	"DI": "Diapositives",
+	"PC": "Publicité",
+	"AL": "Album",
+	"CR": "Cartes routières",
+	"PO": "Posters",
+        "CA": "Calendriers",
+	"O": "Objet",
+	"N": "Contenu numérique",
+}
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
 
@@ -619,6 +654,10 @@ class Card(TimeStampedModel):
     width = models.IntegerField(blank=True, null=True, verbose_name=__("Width"))
     #: Weight (in grams)
     weight = models.IntegerField(blank=True, null=True, verbose_name=__("Weight"))
+    #: Publisher presentation (relié, broché, poche, jeu, disque etc)
+    presedit = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True,
+                                editable=False,
+                                verbose_name=__("Présentation éditeur"))
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
@@ -923,6 +962,10 @@ class Card(TimeStampedModel):
             return settings.CLIL_THEMES.get(parent)
         except Exception as e:
             log.warning(u"Could not get the parent theme of {}: {}".format(self.theme, e))
+
+    @property
+    def presedit_name(self):
+        return PRESEDIT.get(self.presedit) or ""
 
     @property
     def distributor_repr(self):
@@ -1640,7 +1683,7 @@ class Card(TimeStampedModel):
 
         for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
                       'details_url', 'currency', 'thickness', 'height', 'width', 'weight',
-                      'theme']:
+                      'theme', 'presedit']:
             if card_dict.get(field) not in [None, '', '']:
                 setattr(card_obj, field, card_dict.get(field))
 
