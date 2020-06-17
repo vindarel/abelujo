@@ -189,6 +189,7 @@ class Distributor(TimeStampedModel):
     #: Comm. via Dilicom
     # It is currently a boolean given with a character, let's suppose it could change to any
     # other short string (like "NA", "DEL" or whatnot), so let's use a CharField.
+    # note: currently unused in favor of settings.DILICOM_DISTRIBUTORS loaded at startup.
     comm_via_dilicom = models.CharField(max_length=4, blank=True, null=True, verbose_name=__("Comm. via Dilicom: yes or no?"))
 
 
@@ -240,6 +241,19 @@ class Distributor(TimeStampedModel):
                     gln))
                 return dist
 
+
+    def dilicom_enabled(self):
+        # copied from view_utils...
+        return os.getenv('DILICOM_PASSWORD') is not None \
+            and os.getenv('DILICOM_USER') is not None
+
+    def is_comm_via_dilicom(self):
+        dist_dict = settings.DILICOM_DISTRIBUTORS.get(self.gln)
+        if dist_dict:
+            if dist_dict.get('via_dilicom') in ['o', 'O']:
+                return "Oui"
+            return "Non"
+        return "?"
 
     def to_list(self):
         return {

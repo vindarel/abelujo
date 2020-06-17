@@ -108,6 +108,10 @@ div#abelujo
             td
               for dist in object.get_distributor
                   div: a(href="{{dist.get_absolute_url}}", target="_blank") {{ dist.repr }}
+          if object.get_distributor and object.distributor.dilicom_enabled
+            tr
+              td {% trans "Commande via Dilicom ?" %}
+              td {{ object.distributor.is_comm_via_dilicom }}
           tr
               td {% trans "Shelf" %}: 
               td
