@@ -676,11 +676,28 @@ class Card(TimeStampedModel):
 
         return: a float
         """
-        tax = Preferences.get_vat_book()
+        if hasattr(self, 'price_excl_vat_fmt'):  # only from Dilicom update.
+            return self.price_excl_vat_fmt
+
+        if hasattr(self, 'vat1'):  # only from Dilicom update.
+            # (not saved in DB)
+            tax = self.vat1
+        else:
+            tax = Preferences.get_vat_book()
         if tax and self.price is not None:
             return roundfloat(self.price - self.price * tax / 100)
 
         return self.price
+
+    def check_vat(self):
+        """
+        I have observed that a price excluding taxes from Dilicom doesn't equal
+        the price minus the VAT: 22.00€ with 5.50% equals 20.79€,
+        yet Dilicom returns 20.85€.
+
+        Let's check it.
+        """
+        pass
 
     def price_fmt(self):
         """

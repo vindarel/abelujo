@@ -63,6 +63,8 @@ div#abelujo
       .row(style="margin-left: 1px;")
 
         h4 {{ object.price_fmt }}
+          if object.vat1
+            span &nbsp; ({{ object.price_excl_vat }}, {{ object.vat1 }}%)
         table.table.table-condensed.table-bordered
           tbody
             tr

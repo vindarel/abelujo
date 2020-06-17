@@ -104,7 +104,7 @@ def dilicom_enabled():
 
 def update_from_dilicom(card):
     """
-    Update "critical" data: price, availability, distributor.
+    Update "critical" data: price, price excl vat, vat, availability, distributor.
     - card: card object.
 
     Return:
@@ -124,10 +124,20 @@ def update_from_dilicom(card):
             card.price = res['price']
             to_save = True
 
+
+        # # "price_excl_vat" is already a model property.
+        # # We'll use the "fmt" one.
+        # if card.price_excl_vat != res.get('price_excl_vat'):
+        #     card.price_excl_vat = res.get('price_excl_vat')
+        #     to_save = True
+
         if to_save:
             card.save()
 
         # trick: add object fields, not saved to the DB, only for display.
+        card.vat1 = res.get('vat1')
+        card.price_excl_vat_fmt = res.get('price_excl_vat_fmt')
+
         card.availability = res['availability']
         card.availability_fmt = res['availability_fmt']
 
