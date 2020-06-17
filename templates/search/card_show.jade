@@ -82,15 +82,17 @@ div#abelujo
               td
                 | {# Translators: format like pocket or big (livre de poche) #}
                 | {% trans "format" %}
-              td {{ object.fmt }}
-            tr
-              td {% trans "Présentation éditeur" %}
-              td {{ object.presedit_name }}
+              td {{ object.fmt }} ({{ object.width }} x {{ object.height }} x {{ object.thickness }})
 
             if object.weight
               tr
                 td {% trans "Weight" %}
                 td {{ object.get_weight_repr }}
+
+            tr
+              td {% trans "Présentation éditeur" %}
+              td {{ object.presedit_name }}
+
             tr
               td {% trans "source" %}: 
               td
