@@ -129,6 +129,13 @@ div#abelujo
             tr
               td {% trans "Commande via Dilicom ?" %}
               td {{ object.distributor.is_comm_via_dilicom }}
+
+          tr
+              td {% trans "Collection" %}
+              td
+                if object.collection
+                  {{ object.collection }}
+
           tr
               td {% trans "Shelf" %}: 
               td

@@ -385,29 +385,6 @@ class Publisher (models.Model):
         return data
 
 @python_2_unicode_compatible
-class Collection (models.Model):
-    """A collection (or sub-collection) of books.
-
-    A collection is a set of cards gathered under a common title,
-    chosen by the publisher.
-    """
-
-    #: Name of the collection
-    name = models.CharField(max_length=200, verbose_name=__("name"))
-    #: Is it an ordered collection ?
-    ordered = models.IntegerField(null=True, blank=True, verbose_name=__("ordered"))
-    #: Parent collection. A null field means this collection is not
-    # the sub-collection of another one.
-    parent = models.ForeignKey("Collection", null=True, blank=True)
-
-    class Meta:
-        ordering = ("name",)
-        verbose_name = __("collection")
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-@python_2_unicode_compatible
 class Shelf(models.Model):
     """Shelves are categories for cards, but they have a physical location
     in the bookstore.
@@ -614,7 +591,7 @@ class Card(TimeStampedModel):
     #: Distributor:
     distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
     #: Collection
-    collection = models.ForeignKey(Collection, blank=True, null=True, verbose_name=__("collection"))
+    collection = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("collection"))
     #: Official theme, following the CLIL classification, given by Dilicom. A code of 4 digits.
     # Used as information and to guess our shelf.
     # So, let's not create a special table.
@@ -1682,8 +1659,9 @@ class Card(TimeStampedModel):
             card_obj.threshold = card_dict.get('threshold')
 
         for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
-                      'details_url', 'currency', 'thickness', 'height', 'width', 'weight',
-                      'theme', 'presedit']:
+                      'details_url', 'currency',
+                      'thickness', 'height', 'width', 'weight',
+                      'theme', 'presedit', 'collection']:
             if card_dict.get(field) not in [None, '', '']:
                 setattr(card_obj, field, card_dict.get(field))
 
