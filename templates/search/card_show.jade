@@ -74,6 +74,10 @@ div#abelujo
               tr
                 td Disponibilité
                 td {{ object.availability_fmt }}
+            if object.date_publication
+              tr
+                td {% trans "Publication date" %}
+                td {{ object.date_publication }}
             tr
               td
                 | {# Translators: format like pocket or big (livre de poche) #}
