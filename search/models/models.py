@@ -996,6 +996,12 @@ class Card(TimeStampedModel):
             return 'CHF'
         return '€'
 
+    def get_weight_repr(self):
+        "Return the weight + its unit: 400g"
+        if self.weight:
+            return "{} g".format(self.weight)
+        return "--"
+
     @staticmethod
     def obj_to_list(cards, in_deposits=False, with_quantity=True):
         """Transform a list of Card objects to a python list.

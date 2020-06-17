@@ -79,6 +79,10 @@ div#abelujo
                 | {# Translators: format like pocket or big (livre de poche) #}
                 | {% trans "format" %}
               td {{ object.fmt }}
+            if object.weight
+              tr
+                td {% trans "Weight" %}
+                td {{ object.get_weight_repr }}
             tr
               td {% trans "source" %}: 
               td
