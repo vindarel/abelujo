@@ -137,6 +137,7 @@ def update_from_dilicom(card):
         # trick: add object fields, not saved to the DB, only for display.
         card.vat1 = res.get('vat1')
         card.price_excl_vat_fmt = res.get('price_excl_vat_fmt')
+        card.dilicom_price_excl_vat = res.get('dilicom_price_excl_vat')
 
         card.availability = res['availability']
         card.availability_fmt = res['availability_fmt']

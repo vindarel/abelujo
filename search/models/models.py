@@ -697,7 +697,20 @@ class Card(TimeStampedModel):
 
         Let's check it.
         """
-        pass
+        if not self.price:
+            return None, None
+        if hasattr(self, 'dilicom_price_excl_vat'):  # from Dilicom update.
+            price_excl_vat = self.dilicom_price_excl_vat
+        else:
+            return None, None
+        if hasattr(self, 'vat1'):
+            vat = self.vat1
+        else:
+            return None, None
+
+        calculated_price = self.price - (self.price * vat / 100)
+        real_vat = - (price_excl_vat - self.price) / self.price * 100
+        return calculated_price, real_vat
 
     def price_fmt(self):
         """
