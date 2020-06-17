@@ -126,7 +126,10 @@ div#abelujo
 
           tr
             td {% trans "Presente in" %}
-            td
+            if not object.quantity
+              td ---
+            else
+             td
               table.table.table-condensed
                 for name_qty in places_quantities
                   tr
