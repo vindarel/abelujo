@@ -929,7 +929,7 @@ class Card(TimeStampedModel):
             parents_list = [it.strip() for it in parents_list]
             parent = None
             if parents_list[1] == theme:
-                parent = theme
+                return ""
             elif parents_list[2] == theme:
                 parent = parents_list[1]
             elif parents_list[3] == theme:

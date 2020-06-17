@@ -145,8 +145,10 @@ div#abelujo
             tr
                 td {% trans "Theme" %}: 
                 td(title="CLIL code: {{ object.theme }}")
+                  if object.parent_theme_name
+                    {{ object.parent_theme_name }} /
                   if object.theme
-                    {{ object.parent_theme_name }} / {{ object.theme_name }}
+                    {{ object.theme_name }}
 
           tr(class="{% if object.quantity > 0 %} active {% elif object.quantity < 0 %} danger {% endif %}")
             td {% trans "In stock" %}
