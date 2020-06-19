@@ -928,14 +928,17 @@ class Card(TimeStampedModel):
             parents_list = settings.CLIL_THEME_HIERARCHIES.get(theme)
             parents_list = [it.strip() for it in parents_list]
             parent = None
-            if parents_list[1] == theme:
+            # element 0 is the first parent. List of 4 elements. The list ends with
+            # the theme code (same as the key):
+            # code => grand-parent, parent, code, blank string.
+            if parents_list[0] == theme:
                 return ""
+            elif parents_list[1] == theme:
+                return parents_list[0]
             elif parents_list[2] == theme:
                 parent = parents_list[1]
             elif parents_list[3] == theme:
                 parent = parents_list[2]
-            elif parents_list[4] == theme:
-                parent = parents_list[3]
             return settings.CLIL_THEMES.get(parent)
         except Exception as e:
             log.warning(u"Could not get the parent theme of {}: {}".format(self.theme, e))
