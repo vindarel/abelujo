@@ -17,7 +17,6 @@ from django.contrib import admin
 
 from search.models import Author
 from search.models import Basket
-from search.models import BasketCopies
 from search.models import Bill
 from search.models import Card
 from search.models import CouponGeneric
@@ -29,7 +28,6 @@ from search.models import Distributor
 from search.models import Deposit
 from search.models import Inventory
 from search.models import Place
-from search.models import PlaceCopies
 from search.models import Publisher
 from search.models import RestockingCopies
 from search.models import Sell
@@ -124,16 +122,8 @@ class ShelfAdmin(admin.ModelAdmin):
     search_fields = ["name"]
 
 
-class SoldCardsAdmin(admin.ModelAdmin):
-    class Meta:
-        model = SoldCards
-
-    list_display = ("card", "quantity", "price_sold", "created",)
-
-
 admin.site.register(Author)
 admin.site.register(Basket)
-admin.site.register(BasketCopies)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Client, ClientAdmin)
@@ -145,11 +135,9 @@ admin.site.register(Deposit, DepositAdmin)
 admin.site.register(Distributor, DistributorAdmin)
 admin.site.register(Inventory, InventoryAdmin)
 admin.site.register(Place)
-admin.site.register(PlaceCopies)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(RestockingCopies)
 admin.site.register(Sell)
-admin.site.register(SoldCards, SoldCardsAdmin)
 
 admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author)
@@ -160,7 +148,6 @@ admin_site.register(Command, CommandAdmin)
 admin_site.register(Distributor)
 admin_site.register(Deposit, DepositAdmin)
 admin_site.register(Place)
-# admin_site.register(PlaceCopies)
 admin_site.register(Publisher, PublisherAdmin)
 admin_site.register(Sell)
 admin_site.register(Shelf, ShelfAdmin)
