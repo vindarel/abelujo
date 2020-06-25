@@ -37,6 +37,7 @@ from search.models import ALERT_SUCCESS
 from search.models import ALERT_WARNING
 from search.models import Author
 from search.models import Basket
+from search.models import ReturnBasket
 from search.models import Card
 from search.models import CardType
 from search.models import Command
@@ -594,6 +595,67 @@ class TestBaskets(TestCase):
         # add a Distributor
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
         self.assertFalse(msgs)
+
+class TestReturnBaskets(TestCase):
+
+    def setUp(self):
+        # Create a Card, a ReturnBasket and the "auto_command" Basket.
+        self.returnbasket = ReturnBasket(name="test return basket")
+        self.returnbasket.save()
+        self.basket_commands, created = Basket.objects.get_or_create(name="auto_command")
+        self.basket_commands.save()
+        self.card = Card(title="test card")
+        self.card.save()
+        self.nb_copies = 9
+
+        # a Distributor
+        self.distributor = DistributorFactory()
+        self.distributor.save()
+
+        # Preferences
+        self.place = PlaceFactory.create()
+        self.preferences = Preferences(default_place=self.place).save()
+
+    def tearDown(self):
+        log.setLevel(logging.DEBUG)
+
+    def test_add_copy(self):
+        self.assertTrue(self.returnbasket)
+        # Add a card in the stock.
+        self.place.add_copy(self.card, nb=self.nb_copies)
+        self.assertEqual(self.card.quantity, self.nb_copies)
+
+        # Add the card to the return basket.
+        ret = self.returnbasket.add_copy(self.card)
+        self.assertTrue(ret)
+
+        # The card should be decremented from the stock.
+        self.assertEqual(self.card.quantity, self.nb_copies - 1)
+
+        # Same, with a custom quantity.
+        ret = self.returnbasket.add_copy(self.card, nb=3)
+        self.assertEqual(self.card.quantity, self.nb_copies - 1 - 3)
+
+    def test_add_copies(self):
+        # Add a second card in the stock.
+        card2 = Card(title="second card")
+        card2.save()
+        self.place.add_copy(self.card, nb=self.nb_copies)
+        self.place.add_copy(card2, nb=1)
+        self.assertEqual(card2.quantity, 1)
+
+        # Add the two cards to the return basket.
+        ret = self.returnbasket.add_copies([self.card.id, card2.id])
+        self.assertTrue(ret)
+
+        # The cards should have been decremented from the stock.
+        # XXX: .quantity only is out of sync, even though card.save is called
+        # and its quantity re-computed.
+        self.assertEqual(card2.quantity_compute(), 1 - 1)
+        # Or, re-get the card:
+        obj2 = Card.objects.get(id=card2.id)
+        self.assertEqual(obj2.quantity, 1 - 1)
+        self.assertEqual(self.card.quantity_compute(), self.nb_copies - 1)
 
 
 class TestDeposits(TransactionTestCase):

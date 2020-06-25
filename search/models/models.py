@@ -2924,6 +2924,51 @@ class BasketType (models.Model):
 
 
 @python_2_unicode_compatible
+class ReturnBasket(Basket):
+    """
+    A ReturnBasket is a set of copies that will be returned to their supplier.
+
+    When a card is added to it, that means the bookseller puts it aside his stock, so
+    the card is removed from the stock. This is the difference with a regular basket.
+    """
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+    def add_copy(self, card, nb=1):
+        """
+        Contrary to a regular basket, remove the card from the stock.
+        """
+        # This is the only method to override from Basket.
+        # add_copies and add_cards call this method, which removes the card(s) from
+        # the default place.
+        try:
+            basket_copy, created = self.basketcopies_set.get_or_create(card=card)
+            basket_copy.nb += nb
+            basket_copy.save()
+
+            # remove from the stock.
+            place = Preferences.get_default_place()
+            place.remove(card, quantity=nb)
+            return True
+
+        except Exception as e:
+            log.error("Error while adding a card to basket %s: %s" % (self.name, e))
+
+    def remove_copy(self, card_id):
+        """
+        Remove from the basket and replace back the card in stock.
+        """
+        import ipdb; ipdb.set_trace()
+
+    def remove_copies(self, card_ids):
+        """
+        Remove from the basket and replace back the cards in stock.
+        """
+        import ipdb; ipdb.set_trace()
+
+
+@python_2_unicode_compatible
 class RestockingCopies(models.Model):
     """
     Cards present in the restocking list with their quantities (intermediate table).
