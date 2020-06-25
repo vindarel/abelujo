@@ -39,7 +39,6 @@ from search.models import Author
 from search.models import Basket
 from search.models import Card
 from search.models import CardType
-from search.models import Collection
 from search.models import Command
 from search.models import Deposit
 from search.models import Distributor
@@ -272,8 +271,6 @@ class TestCards(TestCase):
         self.assertFalse(no_pubs_no_authors)
         self.assertTrue(msgs)
 
-        # TODO: and collection
-
     def test_cards_in_stock(self):
         res = Card.cards_in_stock()
         self.assertEqual(1, len(res))
@@ -452,37 +449,6 @@ class TestPublisher(TestCase):
         self.assertEqual(pub.lower(), obj.publishers.all()[0].name.lower())
         publishers = Publisher.objects.all()
         self.assertEqual(2, len(publishers))
-
-class TestCollection(TestCase):
-    """Testing the addition of a collection to a card.
-    """
-
-    def setUp(self):
-        # create a Card
-        self.autobio = Card(title="Living my Life", isbn="987")
-        self.autobio.save()
-        # mandatory: unknown card type
-        typ = CardType(name="unknown")
-        typ.save()
-        # create a collection
-        self.collection_name = "livre de poche"
-        self.collection = Collection(name=self.collection_name)
-        self.collection.save()
-
-    def test_collection_existing(self):
-        obj, msgs = Card.from_dict({"title": "living", "collection": self.collection_name})
-        self.assertEqual(self.collection_name.lower(), obj.collection.name)
-
-    def test_collection_non_existing(self):
-        collection = "new collection"
-        obj, msgs = Card.from_dict({"title": "living", "collection": collection})
-        self.assertEqual(collection.lower(), obj.collection.name)
-        collections = Collection.objects.all()
-        self.assertEqual(2, len(collections))
-        self.assertTrue(collection.lower() in [p.name for p in collections])
-
-    def test_parent_collection(self):
-        pass
 
 
 class TestPlace(TestCase):
