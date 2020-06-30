@@ -73,7 +73,7 @@ span
             span {{ it.date_obj | date:'l' }} 
         td
           a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
-        td.text-right {{ it.total_price_sold }} {% trans "€" %}
+        td.text-right {{ it.total_price_sold_fmt }}
       {% endfor %}
 
 {% endblock content %}

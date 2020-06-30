@@ -4221,7 +4221,9 @@ class Sell(models.Model):
                                   'date_obj': date_obj,
                                   'weekday': date_obj.weekday(),
                                   'nb_cards_sold': cards_sold,
-                                  'total_price_sold': total})
+                                  'total_price_sold': total,
+                                  'total_price_sold_fmt': price_fmt(total, default_currency),
+            })
             total_price_sold += total
 
         sell_mean = 0
