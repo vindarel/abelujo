@@ -442,4 +442,7 @@ else:
 # Load user settings.
 #########################################################
 if os.path.exists(os.path.join(BASE_DIR, "config.py")):
-    import config
+    try:
+        import config
+    except Exception as e:
+        log.warning("Could not load user config.py: {}".format(e))

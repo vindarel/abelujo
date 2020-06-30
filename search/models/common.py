@@ -36,11 +36,7 @@ ALERT_ERROR = "danger"
 ALERT_WARNING = "warning"
 ALERT_INFO = "info"
 
-# warning: keep ids in sync with the UI in sellController.
-if settings.config.PAYMENT_CHOICES:
-    PAYMENT_CHOICES = settings.config.PAYMENT_CHOICES
-else:
-    PAYMENT_CHOICES = [
+DEFAULT_PAYMENT_CHOICES = [
     (1, _("cash")),
     (2, _("check")),
     (3, _("credit card")),
@@ -48,6 +44,14 @@ else:
     (5, _("transfer")),
     (6, _("other")),
 ]
+
+try:
+    if settings.config.PAYMENT_CHOICES:
+        PAYMENT_CHOICES = settings.config.PAYMENT_CHOICES
+    else:
+        PAYMENT_CHOICES = DEFAULT_PAYMENT_CHOICES
+except Exception:
+    PAYMENT_CHOICES = DEFAULT_PAYMENT_CHOICES
 
 PAYMENT_ABBR = [
      # Translators: abbreviation of the "cash" payment method.
