@@ -22,6 +22,9 @@ Avoid circular imports.
 from django.db import models
 from django.utils.translation import ugettext as _
 
+from abelujo import settings
+
+
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 CHAR_LENGTH = 200
@@ -34,7 +37,10 @@ ALERT_WARNING = "warning"
 ALERT_INFO = "info"
 
 # warning: keep ids in sync with the UI in sellController.
-PAYMENT_CHOICES = [
+if settings.config.PAYMENT_CHOICES:
+    PAYMENT_CHOICES = settings.config.PAYMENT_CHOICES
+else:
+    PAYMENT_CHOICES = [
     (1, _("cash")),
     (2, _("check")),
     (3, _("credit card")),
@@ -62,6 +68,12 @@ CURRENCY_CHOICES = [
 ]
 
 
+def get_payment_name(id):
+    res = filter(lambda payment: payment[0] == id, PAYMENT_CHOICES)
+    if res:
+        return res[0][1]
+    return ""
+
 def get_payment_abbr(id):
     if id is not None:
         id = int(id)
@@ -69,7 +81,8 @@ def get_payment_abbr(id):
             if id == it[0]:
                 return it[1]
 
-    return ""
+    return get_payment_name(id)
+
 
 class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)

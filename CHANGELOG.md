@@ -13,6 +13,8 @@ Changelog starting from v0.5 (2018/09/18)
 - we get more fields from Dilicom: the distributor GLN and the theme.
 - My Stock: we don't run a DB query to get the newest books at the
   landing page anymore, we show nothing. The page loads quicker.
+- we can now easily configure payment methods in a configuration
+  file. See the developper documentation, "installation" page.
 
 Some **clients** features:
 

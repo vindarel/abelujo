@@ -150,3 +150,31 @@ For more info, ask and see the sources !
 
 
 In the next topic, see the available management commands.
+
+
+Post-installation: set personal settings
+----------------------------------------
+
+Create a file ``config.py`` at the project root.
+
+Make it start with the following line::
+
+  # -*- coding: utf-8 -*-
+
+Abelujo will read the following variables at startup:
+
+* PAYMENT_CHOICES, for the sell page. For example::
+
+  PAYMENT_CHOICES = [
+    (1, "ESPÈCES"),
+    (7, "MAESTRO"),
+    (10, "MASTERCARD"),
+    (11, "VISA"),
+    (12, "interne"),
+    (13, "en attente"),
+    (6, "autre"),
+  ]
+
+(see ``models/common.py`` for the default ones)
+
+Each entry must have a distinct id.

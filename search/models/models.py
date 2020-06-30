@@ -3967,7 +3967,7 @@ class Sell(models.Model):
     """
     created = models.DateTimeField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True)
-    payment = models.CharField(choices=PAYMENT_CHOICES,  # XXX: table
+    payment = models.CharField(choices=PAYMENT_CHOICES,  # for easy customization: no need of a DB table.
                                default=PAYMENT_CHOICES[0],
                                max_length=CHAR_LENGTH,
                                blank=True, null=True,

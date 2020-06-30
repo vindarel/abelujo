@@ -37,6 +37,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       ];
       $scope.payment = $scope.payment_means[0];
 
+      $http.get("/api/config/payment_choices")
+        .then(function(response) {
+            $scope.payment_means = response.data.data;
+            $scope.payment = $scope.payment_means[0];
+      });
+
     $scope.discounts = {choices: [],
                         global_discount: null};
     // and store the selected discount in this object.

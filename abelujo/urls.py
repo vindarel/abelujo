@@ -135,6 +135,9 @@ apipatterns = patterns("",
     # Bills
     url(r'^api/bill/?', 'search.models.api_users.bill', name='api_bill'),
 
+    # User config / settings
+    url(r'^api/config/payment_choices?', 'search.models.api_config.api_payment_choices', name='api_payment_choices'),
+
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

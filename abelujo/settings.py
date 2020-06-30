@@ -23,7 +23,12 @@ import warnings
 
 import ruamel.yaml
 
-# Django settings for abelujo project.
+"""
+Django settings for abelujo project.
+
+Load custom settings from config.py at the end.
+
+"""
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # see:
@@ -432,3 +437,9 @@ if os.path.exists(csvfile):
 
 else:
     print('INFO: did not find the CSV with all themes. File {} does not exist'.format(csvfile))
+
+#########################################################
+# Load user settings.
+#########################################################
+if os.path.exists(os.path.join(BASE_DIR, "config.py")):
+    import config
