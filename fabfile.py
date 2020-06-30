@@ -470,7 +470,7 @@ def create(name=None):
 
     venv = name
     # Get the first available port
-    ports = [it.port for it in CFG.clients]
+    ports = [it.port for it in CFG.clients if it.port]
     ports.append(8000)
     ports.append(8001)
     ports = sorted(ports)
