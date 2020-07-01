@@ -999,7 +999,7 @@ class Card(TimeStampedModel):
             "id": self.id,
             "authors": auth,
             "authors_repr": authors_repr,
-            "collection": self.collection.name.capitalize() if self.collection else None,
+            "collection": self.collection.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
             "data_source": self.data_source,
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
