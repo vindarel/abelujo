@@ -57,6 +57,8 @@ To **apply** an inventory from the command line, use ``apply_inventories --ids [
 
 Its argument is either one id or a coma-separated list of ids (no spaces in between).
 
+To **appy all open inventories**, use ``--all``.
+
 
 To **archive** a bunch of inventories in a row (archive and close), use ``archive_inventories --all --ids``.
 
