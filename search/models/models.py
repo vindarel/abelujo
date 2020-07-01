@@ -2957,13 +2957,37 @@ class ReturnBasket(Basket):
         """
         Remove from the basket and replace back the card in stock.
         """
-        import ipdb; ipdb.set_trace()
+        # mostly copy-pasted :/
+        # because we should return the removed quantity, but this is a breaking change...
+        status = True
+        msgs = Messages()
+        quantity = None
+        try:
+            inter_table = self.basketcopies_set.filter(card__id=card_id)
+            if inter_table:
+                inter_table = inter_table.first()
 
-    def remove_copies(self, card_ids):
-        """
-        Remove from the basket and replace back the cards in stock.
-        """
-        import ipdb; ipdb.set_trace()
+                # Re-putthe card in stock.
+                quantity = inter_table.nb
+                card = inter_table.card
+                place = Preferences.get_default_place()
+                place.add_copy(card, nb=quantity)
+
+                inter_table.delete()
+                msgs.add_success(_("The card was successfully removed from the basket"))
+            else:
+                log.warn("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
+
+        except ObjectDoesNotExist as e:
+            log.error("Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
+            status = False
+            msgs.add_error(_("Card not found"))
+        except Exception as e:
+            log.error("Error while trying to remove card {} from basket {}: {}".format(card_id, self.id, e))
+            status = False
+            msgs.add_error(_("Could not remove the card from the command basket. This is an internal error."))
+
+        return status, msgs.msgs
 
 
 @python_2_unicode_compatible

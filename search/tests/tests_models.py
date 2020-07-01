@@ -657,6 +657,49 @@ class TestReturnBaskets(TestCase):
         self.assertEqual(obj2.quantity, 1 - 1)
         self.assertEqual(self.card.quantity_compute(), self.nb_copies - 1)
 
+    def test_remove_copy(self):
+        # Add a second card in the stock.
+        card2 = Card(title="second card")
+        card2.save()
+        self.place.add_copy(self.card, nb=self.nb_copies)
+        self.place.add_copy(card2, nb=3)  # 3
+        self.assertEqual(card2.quantity, 3)
+
+        # Add the two cards to the return basket.
+        ret = self.returnbasket.add_copy(self.card, nb=1)
+        ret = self.returnbasket.add_copy(card2, nb=3)
+        self.assertTrue(ret)
+
+        # Remove a card from the return basket: it should be back in stock.
+        self.returnbasket.remove_copy(self.card.id)
+        self.assertEqual(self.card.quantity_compute(), self.nb_copies)
+        # again: the card isn't in the basket anymore, so no effect.
+        self.returnbasket.remove_copy(self.card.id)
+        self.assertEqual(self.card.quantity_compute(), self.nb_copies)
+
+        # Re-put card2
+        self.assertEqual(card2.quantity_compute(), 0)
+        self.returnbasket.remove_copy(card2.id)
+        self.assertEqual(card2.quantity_compute(), 3)
+
+    def test_remove_copies(self):
+        # Add a second card in the stock.
+        card2 = Card(title="second card")
+        card2.save()
+        self.place.add_copy(self.card, nb=self.nb_copies)
+        self.place.add_copy(card2, nb=1)
+        self.assertEqual(card2.quantity, 1)
+
+        # Add the two cards to the return basket.
+        ret = self.returnbasket.add_copies([self.card.id, card2.id])
+        self.assertTrue(ret)
+
+        # Re-put them in stock:
+        self.assertEqual(self.card.quantity_compute(), self.nb_copies - 1)
+        self.returnbasket.remove_copies([self.card.id, card2.id])
+        self.assertEqual(self.card.quantity_compute(), self.nb_copies)
+        self.assertEqual(card2.quantity_compute(), 1)
+
 
 class TestDeposits(TransactionTestCase):
     # Run those in a TransactionTestCase, or we get pb with an atomic block, only during testing.
