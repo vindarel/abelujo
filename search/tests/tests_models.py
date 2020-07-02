@@ -1569,6 +1569,8 @@ class TestCommands(TestCase):
         # A Command:
         self.com = Command(publisher=self.publisher)
         self.com.save()
+        # the auto_command basket
+        self.basket_commands, created = Basket.objects.get_or_create(name="auto_command")
 
         # Preferences and default Place.
         self.place = PlaceFactory.create()
@@ -1587,6 +1589,19 @@ class TestCommands(TestCase):
         self.assertFalse(com.bill_received)
         self.assertFalse(com.payment_sent)
         self.assertFalse(com.received)
+
+    def test_new_command(self):
+        dist = DistributorFactory()
+        cards = []
+        n = 10
+        for i in range(n):
+            card = CardFactory()
+            cards.append(card)
+
+        self.basket_commands.add_cards(cards)
+        cmd, msgs = Command.new_command(ids_qties=[(id, 1) for id in range(n)],
+                                        distributor_id=dist.id)
+
 
     def test_nb_ongoing(self):
         self.assertTrue(Command.nb_ongoing())

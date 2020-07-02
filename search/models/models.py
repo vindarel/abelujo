@@ -5753,24 +5753,17 @@ class Command(TimeStampedModel):
             msgs.add_error("Adding a copy to a command without giving a card. Abort.")
             return msgs.status, msgs.msgs
 
-        if card_id:
-            try:
-                card_obj = Card.objects.get(id=card_id)
-            except ObjectDoesNotExist:
-                log.warning('The card of id {} to add to the command {} does not exist'.format(
-                    card_id,
-                    self.id))
-                msgs.add_error("The card of id {} does not exist".format(card_id))
-                return None, msgs
+        if card_obj and not card_id:
+            card_id = card_obj.id
 
         try:
-            cmdcopy, created = self.commandcopies_set.get_or_create(card=card_obj)
+            cmdcopy, created = self.commandcopies_set.get_or_create(card_id=card_id)
             cmdcopy.quantity += nb
             cmdcopy.save()
         except Exception as e:
-            log.error('Error while adding card {} to command {}: {}'.format(card_obj.id,
-                                                                             self.id,
-                                                                             e))
+            log.error('Error while adding card {} to command {}: {}'.format(card_id,
+                                                                            self.id,
+                                                                            e))
             msgs.add_error("An error occured while adding the card {} to the command.".format(card_id))
             return False, msgs
 
@@ -5803,10 +5796,12 @@ class Command(TimeStampedModel):
             msgs.add_error("Creating a command with no card ids. Abort.")
             return None, msgs
 
-        for id, nb in ids_qties:
-            nb = int(nb)
-            __, messages = cmd.add_copy(None, card_id=id, nb=nb)
-            msgs.merge(messages)
+        # Here we create a new one: we can bulk_create it.
+        CommandCopies.objects.bulk_create([
+            CommandCopies(card_id=it[0],
+                          command_id=cmd.id,
+                          quantity=it[1])
+            for it in ids_qties])
 
         # Register the (optional) supplier.
         if dist_obj:
@@ -5814,9 +5809,11 @@ class Command(TimeStampedModel):
             cmd.save()
 
         # Remove the given cards from the AutoCommand basket.
-        tocmd = Basket.objects.get(id=1)  # XXX: don't hardcode the id.
+        tocmd = Basket.objects.get(name="auto_command")
         ids = [it[0] for it in ids_qties]
-        tocmd.remove_copies(ids)
+        BasketCopies.objects.filter(basket__name="auto_command")\
+                            .filter(card_id__in=ids)\
+                            .delete()
 
         return cmd, msgs
 

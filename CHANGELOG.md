@@ -16,6 +16,7 @@ Changelog starting from v0.5 (2018/09/18)
 - we can now easily configure payment methods in a configuration
   file. See the developper documentation, "installation" page.
 
+
 Some **clients** features:
 
 - create clients
@@ -23,6 +24,11 @@ Some **clients** features:
   client on the fly with the "+" button.
 
 more to come for clients.
+
+### Other enhancements
+
+- creating a command (with the OK button) was dramatically sped up
+  (from a few seconds to a fraction of a second).
 
 
 ### Admin
