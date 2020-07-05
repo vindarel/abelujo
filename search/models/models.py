@@ -1734,8 +1734,10 @@ class Card(TimeStampedModel):
         if collection:
             collection = collection.lower()
             try:
-                collection_obj, created = Collection.objects.get_or_create(name=collection)
-                card_obj.collection = collection_obj
+                # collection_obj, created = Collection.objects.get_or_create(name=collection)
+                # card_obj.collection = collection_obj
+                # Collection is not a table anymore. quickfix ensure ok
+                card_obj.collection = collection
             except Exception as e:
                 log.error("--- error while adding the collection: %s" % (e,))
 
