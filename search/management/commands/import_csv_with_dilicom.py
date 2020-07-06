@@ -122,7 +122,7 @@ class Command(BaseCommand):
         if len(bklist) != len(isbns):
             self.stdout.write("--- beware: the search results have not the same length that our query: {} vs {}".format(len(bklist), len(isbns)))
             found_isbns = [it.get('isbn') for it in bklist]
-            self.stdout.write("--- isbns not found: {}".format(list(set(isbns) - found_isbns)))
+            self.stdout.write("--- isbns not found: {}".format(list(set(isbns) - set(found_isbns))))
 
         default_place = Preferences.prefs().default_place
         if not default_place:
