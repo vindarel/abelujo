@@ -189,6 +189,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            self.run()
+            self.run(*args, **options)
         except KeyboardInterrupt:
             self.stdout.write("User abort.")
