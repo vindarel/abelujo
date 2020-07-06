@@ -119,6 +119,7 @@ class Command(BaseCommand):
         self.stdout.write("Searching all on Dilicom...")
         bklist, errors = dilicom_query.search()
 
+        found_isbns = []
         if len(bklist) != len(isbns):
             self.stdout.write("--- beware: the search results have not the same length that our query: {} vs {}".format(len(bklist), len(isbns)))
             found_isbns = [it.get('isbn') for it in bklist]
@@ -168,6 +169,7 @@ class Command(BaseCommand):
         self.stdout.write("-------------------")
         self.stdout.write("Cards OK: {}.".format(count_ok))
         self.stdout.write("Cards updated:{}".format(len(cards_updated)))
+        self.stdout.write("isbns not found: {}".format(list(set(isbns) - set(found_isbns))))
         self.stdout.write("Done.")
 
     def handle(self, *args, **options):
