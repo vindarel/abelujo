@@ -169,7 +169,8 @@ class Command(BaseCommand):
         self.stdout.write("-------------------")
         self.stdout.write("Cards OK: {}.".format(count_ok))
         self.stdout.write("Cards updated:{}".format(len(cards_updated)))
-        self.stdout.write("isbns not found: {}".format(list(set(isbns) - set(found_isbns))))
+        if len(bklist) != len(isbns):
+            self.stdout.write("isbns not found: {}".format(list(set(isbns) - set(found_isbns))))
         self.stdout.write("Done.")
 
     def handle(self, *args, **options):
