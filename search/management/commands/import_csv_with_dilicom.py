@@ -88,6 +88,11 @@ class Command(BaseCommand):
             print("quit.")
             exit(1)
 
+        shelf = None
+        if options.get('shelf_id'):
+            shelf = Shelf.objects.filter(id=options.get('shelf_id')).first()
+            self.stdout.write(u"Found shelf: {}".format(shelf.name))
+
         csvfile = options.get('input')
         if not csvfile.endswith('csv'):
             self.stdout.write("Please give a .csv file as argument.")
@@ -97,11 +102,6 @@ class Command(BaseCommand):
             lines = f.readlines()
 
         lines = [it.strip() for it in lines]
-
-        shelf = None
-        if options.get('shelf_id'):
-            shelf = Shelf.objects.filter(id=options.get('shelf_id')).first()
-            self.stdout.write(u"Found shelf: {}".format(shelf.name))
 
         default_place = Preferences.prefs().default_place
         if not default_place:
