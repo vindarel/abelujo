@@ -162,7 +162,8 @@ class Command(BaseCommand):
                 # XXX: our add_copy wants a Card object.
                 # card = Card.objects.filter(isbn=bk.get('isbn')).first()
                 print("\t setting x{} to {}...".format(quantity, default_place), end="")
-                default_place.add_copy(card, to_int(quantity), add=False)
+                # default_place.add_copy(card, to_int(quantity), add=False)
+                default_place.add_copy(card, to_int(quantity), add=True)
             except Exception as e:
                 self.stdout.write("could not add to default place: {}".format(e))
 
