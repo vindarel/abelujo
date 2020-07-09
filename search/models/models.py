@@ -4406,13 +4406,7 @@ class Sell(models.Model):
         # Here, check if a deposit was given as argument.
         # Check the deposit of each card a bit later.
         if not deposit_obj and deposit_id and deposit_id not in [0, "0"]:
-            # id 0 is the default client side but doesn't exist.
-            try:
-                deposit_obj = Deposit.objects.get(id=deposit_id)
-            except ObjectDoesNotExist:
-                log.error("Couldn't get deposit of id {}.".format(deposit_id))
-            except Exception as e:
-                log.error("Error while getting deposit of id {}: {}".format(deposit_id, e))
+            log.warning("the use of deposit and deposit_id arguments to sell was deprecated. We guess it smartly now.")
 
         # Get the place we sell from (optional).
         place_obj = place
@@ -4428,8 +4422,7 @@ class Sell(models.Model):
         try:
             sell = Sell(created=date,
                         payment=payment,
-                        place=place_obj,
-                        deposit=deposit_obj)
+                        place=place_obj)
             sell.save()
         except Exception as e:
             status = ALERT_ERROR
@@ -4448,11 +4441,14 @@ class Sell(models.Model):
             card = Card.objects.get(id=id)
             cards_obj.append(card)
 
+            # Check each card if it is in a deposit.
+            deposit_obj = None
+
             try:
                 # Either sell from a deposit.
                 # Check if the card is registered in a deposit.
                 # However, if it is also in stock, sell the one in stock.
-                if (not deposit_obj) and (not card.quantity > 0) and card.deposits:
+                if (not card.quantity > 0) and card.deposits:
                     deposit_obj = card.get_first_deposit()
 
                 if deposit_obj:
