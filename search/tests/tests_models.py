@@ -1372,44 +1372,6 @@ class TestSellSearch(TestCase):
         sells = Sell.search(date_min=timezone.now() - timezone.timedelta(days=7))
         self.assertEqual(len(sells['data']), 1)
 
-    def test_search_sells_deposit_id(self):
-        # Create two deposits.
-        self.deposit = DepositFactory()
-        self.deposit2 = DepositFactory()
-        # We add the cards that are also in the default place.
-        self.deposit.add_copies([self.autobio])
-        # Two sells:
-        # 1 is for the default place (by default)
-        Sell.sell_card(self.autobio)
-        # 1 is explicitely for the deposit.
-        Sell.sell_card(self.autobio, deposit_id=self.deposit.id)
-        # So there are 2 sells in total
-        all_sells = Sell.search()
-        self.assertEqual(all_sells['nb_sells'], 2)
-        # there is one linked to deposit 1
-        deposit_sells = Sell.search(deposit_id=self.deposit.id)
-        # self.assertEqual(deposit_sells['nb_sells'], 2)
-        self.assertEqual(deposit_sells['nb_sells'], 1)
-        # and deposit 2 sees no sell.
-        sells = Sell.search(deposit_id=self.deposit2.id)
-        self.assertEqual(sells['nb_sells'], 0)
-        # => the Sell UI should warn that a card is both in a place and in a deposit.
-
-
-# class TestHistory(TestCase):
-
-#     def setUp(self):
-#         self.card = CardFactory.create()
-#         self.sell = SellsFactory.create()
-#         Sell.sell_cards([{"id": "1", "price_sold": 1, "quantity": 1}])
-
-#         # Preferences and default Place.
-#         self.place = PlaceFactory.create()
-#         self.preferences = Preferences(default_place=self.place).save()
-
-#     def tearDown(self):
-#         pass
-
 
 class TestInventory(TestCase):
 
