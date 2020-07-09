@@ -42,9 +42,10 @@ angular.module "abelujo" .controller 'dashboardController', ['$http', '$scope', 
     .then (response) !->
         $scope.sells_month = response.data
 
-    $http.get "/api/deposits/due_dates/"
-    .then (response) !->
-        $scope.deposits = response.data
+    # xxx: deposits' due dates
+    ## $http.get "/api/deposits/due_dates/"
+    ## .then (response) !->
+        ## $scope.deposits = response.data
 
     ######################################################
     # Month picker for the monthly revenue
