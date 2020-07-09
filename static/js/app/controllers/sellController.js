@@ -15,9 +15,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.places = [];
     $scope.place = undefined;
 
-    // List of deposits.
-    $scope.deposits = [];
-    $scope.deposit = undefined;
 
       $scope.distributor = undefined;
       $scope.copy_selected = undefined;
@@ -115,20 +112,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             $scope.places = $scope.places.concat(response.data);
         });
 
-    $http.get("/api/deposits")
-        .then(function(response) {
-            $scope.deposits = [{"name": "", "id": 0}];
-            $scope.deposits = $scope.deposits.concat(response.data.data);
-        });
-
       // Fetch cards for the autocomplete.
       // Livescript version: see basketsController.ls
       $scope.getCards = function(val){
 
-          var deposit_id = 0;
-          if ($scope.deposit) {
-              deposit_id = $scope.deposit.id;
-          }
           var place_id = 0;
           if ($scope.place) {
               place_id = $scope.place.id;
@@ -139,7 +126,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   "query": val,
                   "lang": $scope.language,
                   "language": $scope.language,
-                  "deposit_id": deposit_id,
                   "place_id": place_id
               }})
 
@@ -287,10 +273,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             place_id = $scope.place.id;
         }
         $log.info($scope.place);
-        var deposit_id = 0;
-        if ($scope.deposit) {
-            deposit_id = $scope.deposit.id;
-        }
         var payment_id;
         if ($scope.payment) {
             payment_id = $scope.payment.id;
@@ -301,7 +283,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             "date": $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
             "language": $scope.language,
             "place_id": place_id,
-            "deposit_id": deposit_id,
             "payment_id": payment_id
         };
 

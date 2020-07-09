@@ -4360,7 +4360,7 @@ class Sell(models.Model):
     @staticmethod
     def sell_cards(ids_prices_nb, date=None, payment=None, cards=[],
                    place_id=None, place=None,
-                   deposit_id=None, deposit=None,
+                   deposit_id=None, deposit=None,  # XXX: deprecated since 2020-07-09
                    silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 

@@ -81,14 +81,6 @@ div.ng-cloak(ng-controller="sellController")
                 ng-model="place"
                 ng-options="it.name for it in places"
           )
-        .col-md-3
-          form
-            label {% trans "Deposit" %}
-            select.form-control(
-              ng-model="deposit"
-              ng-options="it.name for it in deposits"
-          )
-
 
       .row
         .col-md-12

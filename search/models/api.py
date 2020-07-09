@@ -687,26 +687,14 @@ def sell(request, **response_kwargs):
         to_sell = list_from_coma_separated_ints(params.get("to_sell"))
         to_sell = getSellDict(to_sell)
         date = params.get("date")
-        deposit_id = int(params.get("deposit_id", 0))
         place_id = int(params.get("place_id", 0))
         payment_id = int(params.get("payment_id", 0))
-
-        # Sell from a deposit, then normal sell.
-        if deposit_id and deposit_id not in [0, "0"]:
-            # 0 is the default client side but doesn't exist.
-            try:
-                deposit_obj = Deposit.objects.get(id=deposit_id)  # noqa: F841
-            except ObjectDoesNotExist:
-                log.error("Couldn't get deposit of id {}.".format(deposit_id))
-            except Exception as e:
-                log.error("Error while getting deposit of id {}: {}".format(deposit_id, e))
 
         # Sell from a place.
         try:
             sell, status, alerts = Sell.sell_cards(to_sell, date=date,
                                                    place_id=place_id,
-                                                   payment=payment_id,
-                                                   deposit_id=deposit_id)
+                                                   payment=payment_id)
 
         except Exception as e:
             log.error("api/sell error: {}".format(e))
