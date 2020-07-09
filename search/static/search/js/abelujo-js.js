@@ -47,15 +47,15 @@ function card_add_one_to_default_place(card_id) {
                 console.log("-- success. New quantity: ", myJson.quantity);;
                 // beware when default_place changes of name :S
                 let elt = document.getElementById('default_place_quantity');
+                let in_stock = document.getElementById('in_stock');
+                let quantity_in_stock = in_stock.innerText;
+                console.log("quantity_in_stock: ", quantity_in_stock);
+                quantity_in_stock = parseInt(quantity_in_stock);
+                in_stock.innerText = quantity_in_stock + 1;
                 if (elt) {
                     elt.innerText = myJson.quantity;
-                    let in_stock = document.getElementById('in_stock');
-                    let quantity_in_stock = in_stock.innerText;
-                    quantity_in_stock = parseInt(quantity_in_stock);
-                    in_stock.innerText = quantity_in_stock + 1;
-
-                    Notiflix.Notify.Success('+1');
                 }
+                Notiflix.Notify.Success('+1');
             }
             else {
                 console.log("status is not success: ", myJson.status);
@@ -86,15 +86,14 @@ function card_remove_one_from_default_place(card_id) {
                 console.log("-- success. New quantity: ", myJson.quantity);;
                 // beware when default_place changes of name :S
                 let elt = document.getElementById('default_place_quantity');
+                let in_stock = document.getElementById('in_stock');
+                let quantity_in_stock = in_stock.innerText;
+                quantity_in_stock = parseInt(quantity_in_stock);
+                in_stock.innerText = quantity_in_stock - 1;
                 if (elt) {
                     elt.innerText = myJson.quantity;
-                    let in_stock = document.getElementById('in_stock');
-                    let quantity_in_stock = in_stock.innerText;
-                    quantity_in_stock = parseInt(quantity_in_stock);
-                    in_stock.innerText = quantity_in_stock - 1;
-
-                    Notiflix.Notify.Success('-1');
                 }
+                Notiflix.Notify.Success('-1');
             }
             else {
                 console.log("status is not success: ", myJson.status);
