@@ -29,7 +29,10 @@ more to come for clients.
 
 - creating a command (with the OK button) was dramatically sped up
   (from a few seconds to a fraction of a second).
-
+- selling a card that is in a deposit automatically sells it from the
+  deposit. Previously, we had to be explicit in the sell UI.
+- the default timezone was set to Paris (UTC+1/+2), preventing some
+  date inconsistencies.
 
 ### Admin
 
@@ -42,6 +45,8 @@ New admin scripts (all to be run with `./manage.py <script>`):
 - `update_all_with_dilicom`: update ALL the cards with Dilicom
   data. Update the publisher (to have one unique name across the
   application), the theme, the distributor GLN, and all.
+- `import_csv_with_dilicom`: batch-import a CSV (ISBN;quantity) with
+  Dilicom.
 - `remove_unused_publishers`, useful after the above script.
 - `list_publishers` and do nothing.
 
