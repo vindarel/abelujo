@@ -425,11 +425,12 @@ def rebase(name=None):
 
 def ssh_to(client):
     client = fabutils.select_client_cfg(client, CFG)
-    cmd = "ssh -Y {}@{}".format(CFG.get('user'),
-                                   client.get('url', CFG.get('url')))
+    ip = client.get('ip') or CFG.get('ip')
+    user = client.get('user') or CFG.get('user')
+    cmd = "ssh -Y {}@{}".format(user, ip)
     if CFG.get('dir') or client.get('dir'):
         cmd += " -t 'cd {}; zsh --login;'".format(
-            os.path.join(CFG.get('home'),
+            os.path.join("/home/{}".format(user),
                          CFG.get('dir', client.get('dir')),
                          client.get('name'),
                          CFG.project_name),)
