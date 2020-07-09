@@ -16,6 +16,7 @@ from fabric.api import env
 from fabric.api import prefix
 from fabric.api import put
 from fabric.api import run
+from fabric.api import settings
 from fabric.contrib.files import exists
 
 import fabutils
@@ -330,8 +331,9 @@ def dbback(name=None):
     else:
         clients = [fabutils.select_client_cfg(name)]
 
-    # Only for prod:
-    clients = filter(lambda it: it.status == "prod", clients)
+    if not name:
+        # Only for prod:
+        clients = filter(lambda it: it.status == "prod", clients)
     print(termcolor.colored(
         "Backup for {} users in prod: {}.".format(
             len(clients),
@@ -339,25 +341,30 @@ def dbback(name=None):
         "yellow"))
 
     for client in clients:
-        with cd(fabutils.wd(client, CFG)):
-            # Copy locally. Append a timestamp.
-            run("cp db.db{,.`date +%Y%m%d-%H%M%S`}")
+        ip = client.ip or CFG.ip
+        user = client.user or CFG.user
+        env.user = user
+        with settings(host_string=ip):
+            with cd(fabutils.wd(client, CFG)):
+                # Copy locally. Append a timestamp.
+                run("cp db.db{,.`date +%Y%m%d-%H%M%S`}")
 
-            # Download
-            db_backed = "backup/db-{}-{}.sqlite".format(client.name, datetime.datetime.now().strftime(DATE_FORMAT))
-            cmd = "rsync -av {user}@{url}:/home/{user}/{dir}/{client_name}/{project_name}/{db_name} ./{db_backed}".format(
-                user=CFG.user,
-                url=CFG.url,
-                dir=CFG.dir.strip("/"),
-                client_name=client.name,
-                project_name=CFG.project_name,
-                db_name=CFG.db_name,
-                db_backed=db_backed
-            )
+                # Download
+                db_backed = "backup/db-{}-{}.sqlite".format(client.name, datetime.datetime.now().strftime(DATE_FORMAT))
+                ip = client.ip or CFG.ip
+                cmd = "rsync -av {user}@{url}:/home/{user}/{dir}/{client_name}/{project_name}/{db_name} ./{db_backed}".format(
+                    user=client.user or CFG.user,
+                    url=ip,
+                    dir=CFG.dir.strip("/"),
+                    client_name=client.name,
+                    project_name=CFG.project_name,
+                    db_name=CFG.db_name,
+                    db_backed=db_backed
+                )
 
-            print("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue")))
-            print(cmd)
-            os.system(cmd)
+                print("Downloading db of user {}".format(termcolor.colored("{}".format(client.name), "blue")))
+                print(cmd)
+                os.system(cmd)
 
 def bundles_upload():
     """Update, but don't run npm or bower, get the copies of their
