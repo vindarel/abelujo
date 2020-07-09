@@ -467,7 +467,7 @@ class Shelf(models.Model):
         for copy in basket_copies:
             place.add_copy(copy.card, nb=copy.nb)
 
-        # Archive the basket.
+        # Empty the basket.
         basket.empty()
 
         return True
@@ -2064,6 +2064,11 @@ class Card(TimeStampedModel):
         ideal_quantity = 1 - self.quantity_selling_places()
         res = min(max(0, ideal_quantity), self.quantity_reserve())
         return res
+
+    def get_first_deposit(self):
+        names_ids = self.deposits
+        if names_ids:
+            return Deposit.objects.get(id=names_ids[0][1])
 
     @property
     def deposits(self):
@@ -4398,6 +4403,8 @@ class Sell(models.Model):
 
         # Get the deposit we sell from (optional).
         deposit_obj = deposit
+        # Here, check if a deposit was given as argument.
+        # Check the deposit of each card a bit later.
         if not deposit_obj and deposit_id and deposit_id not in [0, "0"]:
             # id 0 is the default client side but doesn't exist.
             try:
@@ -4442,8 +4449,14 @@ class Sell(models.Model):
             cards_obj.append(card)
 
             try:
-                # Either sell from a deposit,
+                # Either sell from a deposit.
+                # Check if the card is registered in a deposit.
+                # However, if it is also in stock, sell the one in stock.
+                if (not deposit_obj) and (not card.quantity > 0) and card.deposits:
+                    deposit_obj = card.get_first_deposit()
+
                 if deposit_obj:
+                    log.info("we sell {} from deposit {}".format(id, deposit_obj))
                     status, alerts = deposit_obj.sell_card(card_id=id,
                                                            sell=sell,
                                                            nb=quantity)
