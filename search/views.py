@@ -605,7 +605,7 @@ def collection_export(request, **kwargs):
     - select: all, selection.
     """
 
-    now = datetime.date.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M')
+    now = datetime.date.strftime(timezone.now(), '%Y-%m-%d %H:%M')
 
     if request.method == 'GET':
         formatt = request.GET.get('format')

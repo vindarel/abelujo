@@ -9,6 +9,7 @@ import sys
 from subprocess import check_output
 
 import addict
+import pendulum
 import requests
 import termcolor
 from fabric.api import cd
@@ -350,7 +351,7 @@ def dbback(name=None):
                 run("cp db.db{,.`date +%Y%m%d-%H%M%S`}")
 
                 # Download
-                db_backed = "backup/db-{}-{}.sqlite".format(client.name, datetime.datetime.now().strftime(DATE_FORMAT))
+                db_backed = "backup/db-{}-{}.sqlite".format(client.name, pendulum.datetime.now().strftime(DATE_FORMAT))
                 ip = client.ip or CFG.ip
                 cmd = "rsync -av {user}@{url}:/home/{user}/{dir}/{client_name}/{project_name}/{db_name} ./{db_backed}".format(
                     user=client.user or CFG.user,

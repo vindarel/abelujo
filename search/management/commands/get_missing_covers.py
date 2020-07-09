@@ -17,7 +17,7 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Import a csv files with two columns: an isbn and a quantity.
+Get the cover URLs of cards that miss it.
 """
 from __future__ import print_function
 from __future__ import unicode_literals

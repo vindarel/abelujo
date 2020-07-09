@@ -1289,7 +1289,7 @@ class TestSells(TestCase):
         # We sell the three:
         Sell.sell_cards(None, cards=[self.autobio, self.secondcard, thirdcard])
         # We get our history for distributors and publishers:
-        now = datetime.datetime.now()
+        now = timezone.now()
         history = Sell.history_suppliers(year=now.year, month=now.month)
 
         # The first card was counted for the distributors and NOT for the publishers,
