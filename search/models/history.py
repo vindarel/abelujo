@@ -253,7 +253,7 @@ class Entry(TimeStampedModel):
 
     An entry can be:
     - a new card saved in the DB
-    - a card added in a place (new entry -> add)
+    - a card added in a place (new entry -> add) or in a deposit
     - a card received in a command
     - a sell, canceled
     - ...
@@ -332,18 +332,20 @@ class Entry(TimeStampedModel):
         return True
 
     @staticmethod
-    def new(copies, payment=None, reason=None):
+    def new(copies, payment=None, reason=None, typ=None):
         """Create a new record for the given list of copies.
 
         - copies: list
         - payment: int
+        - typ: int (purchase, deposit… see choices)
+        - reason: xxx
 
         return: a tuple Entry object, boolean
         """
         try:
             if isinstance(payment, six.text_type) or isinstance(payment, six.string_types):
                 payment = int(payment)
-            en = Entry(payment=payment, reason=reason)
+            en = Entry(payment=payment, reason=reason, typ=typ)
             en.save()
             en.add_copies(copies)
 

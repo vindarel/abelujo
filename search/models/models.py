@@ -3711,6 +3711,10 @@ class Deposit(TimeStampedModel):
         checkout = self.ongoing_depostate
         status, msgs = checkout.add_copies(copies, nb=nb, quantities=quantities)
 
+        # Add a log to the Entry history.
+        typ_deposit = 2
+        history.Entry.new(copies, typ=typ_deposit)
+
         return status, msgs
 
     def add_copy(self, card_obj, nb=1, add=True):
