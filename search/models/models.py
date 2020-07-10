@@ -3919,6 +3919,9 @@ class SoldCards(TimeStampedModel):
     price_init = models.FloatField(default=DEFAULT_PRICE)
     #: Price sold:
     price_sold = models.FloatField(default=DEFAULT_PRICE)
+    #: The decision to sell from the stock or the card's deposit is made for each card,
+    # not each sell (that includes other cards).
+    deposit = models.ForeignKey("Deposit", blank=True, null=True, verbose_name=__("deposit"))
     #: Sometimes we want to register the sell action, but not count it in the total revenue.
     ignore_for_revenue = models.BooleanField(default=False, blank=True, verbose_name=__("ignore when counting the revenue?"))
 
@@ -3988,6 +3991,13 @@ class SoldCards(TimeStampedModel):
 
         msgs.add_success(_("Operation successful"))
         return status, msgs.msgs
+
+def can_sell_from_deposit(card):
+    """
+    If the card is in stock, sell it. Otherwise, sell from its deposit.
+    """
+    return (not card.quantity > 0) and card.deposits
+
 
 @python_2_unicode_compatible
 class Sell(models.Model):
@@ -4454,8 +4464,9 @@ class Sell(models.Model):
                 # Either sell from a deposit.
                 # Check if the card is registered in a deposit.
                 # However, if it is also in stock, sell the one in stock.
-                if (not card.quantity > 0) and card.deposits:
+                if can_sell_from_deposit(card):
                     deposit_obj = card.get_first_deposit()
+                    card.deposit_obj = deposit_obj
 
                 if deposit_obj:
                     log.info("we sell {} from deposit {}".format(id, deposit_obj))
@@ -4494,6 +4505,7 @@ class Sell(models.Model):
                 continue
             quantity = ids_prices_nb[i].get("quantity", 1)
 
+
             try:
                 if not card.price:
                     # This can happen with a broken parser.
@@ -4507,7 +4519,8 @@ class Sell(models.Model):
                                                  price_sold=price_sold,
                                                  price_init=card.price,
                                                  quantity=quantity,
-                                                 ignore_for_revenue=ignore_for_revenue)
+                                                 ignore_for_revenue=ignore_for_revenue,
+                                                 deposit=getattr(card, 'deposit_obj', None))
                 sold.created = date
                 sold.save()
             except Exception as e:
@@ -4564,8 +4577,9 @@ class Sell(models.Model):
             cards.append(card_obj)
             qty = soldcard.quantity
             try:
-                if self.deposit:
-                    status, _msgs = self.deposit.sell_undo(card=card_obj, quantity=qty)
+                # undo for deposit
+                if soldcard.deposit:
+                    status, _msgs = soldcard.deposit.sell_undo(card=card_obj, quantity=qty)
                 else:
                     status, _msgs = card_obj.sell_undo(quantity=qty, place=self.place)
                 msgs.append(_msgs)
