@@ -71,6 +71,7 @@ from search.models.common import CURRENCY_CHOICES
 from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TEXT_LENGTH
+from search.models.common import ignore_payment_for_revenue
 from search.models.common import TimeStampedModel
 from search.models.utils import Messages
 from search.models.utils import get_logger
@@ -3918,6 +3919,8 @@ class SoldCards(TimeStampedModel):
     price_init = models.FloatField(default=DEFAULT_PRICE)
     #: Price sold:
     price_sold = models.FloatField(default=DEFAULT_PRICE)
+    #: Sometimes we want to register the sell action, but not count it in the total revenue.
+    ignore_for_revenue = models.BooleanField(default=False, blank=True, verbose_name=__("ignore when counting the revenue?"))
 
     def __str__(self):
         ret = "card sold id {}, {} sold at price {}".format(self.card.id, self.quantity, self.price_sold)
@@ -4143,10 +4146,13 @@ class Sell(models.Model):
         # nb_cards_sold = sum([it.quantity for it in sells])
         nb_cards_sold = sum(sells.values_list('quantity', flat=True))
         total_sells = sum(sells.values_list('quantity', flat=True))
+
         total_price_sold = None
         sell_mean = None
         if with_total_price_sold:
-            total_price_sold = sum([it[0] * it[1] for it in sells.values_list('quantity', 'price_sold')])
+            # Ignore coupons, gifts, and others in the total revenue.
+            sells_for_revenue = sells.exclude(ignore_for_revenue=True)
+            total_price_sold = sum([it[0] * it[1] for it in sells_for_revenue.values_list('quantity', 'price_sold')])
             if total_price_sold:
                 sell_mean = total_price_sold / nb_sells
 
@@ -4219,10 +4225,10 @@ class Sell(models.Model):
         assert month
         assert isinstance(month, int)
         default_currency = Preferences.get_default_currency()
-        sells = SoldCards.objects.exclude(sell__canceled=True)
-        sells = sells.filter(created__year=year).filter(created__month=month)
-        sells.order_by("created")
-        nb_sells = sells.values('sell_id').distinct().count()
+        soldcards = SoldCards.objects.exclude(sell__canceled=True)
+        soldcards = soldcards.filter(created__year=year).filter(created__month=month)
+        soldcards.order_by("created")
+        nb_sells = soldcards.values('sell_id').distinct().count()
         now = timezone.now()
         last_day = 31
         if now.month == month:
@@ -4240,10 +4246,13 @@ class Sell(models.Model):
                                      format(month, TWO_DIGITS_SPEC),
                                      format(day, TWO_DIGITS_SPEC))
             date_obj = datetime.datetime.strptime(date, YMD)
-            sells_this_day = sells.filter(created__day=day)
+            sells_this_day = soldcards.filter(created__day=day)
             cards_sold = sum(sells_this_day.values_list('quantity', flat=True))
             total_cards_sold += cards_sold
-            values = sells_this_day.values_list('price_sold', 'quantity')
+
+            # Ignore coupons, gifts, and others in the total revenue.
+            sells_for_revenue = sells_this_day.exclude(ignore_for_revenue=True)
+            values = sells_for_revenue.values_list('price_sold', 'quantity')
             total = sum([it[0] * it[1] for it in values])
             sells_per_day.append({'date': date,
                                   'date_obj': date_obj,
@@ -4490,10 +4499,15 @@ class Sell(models.Model):
                     # This can happen with a broken parser.
                     log.warning("The card {} has no price and this shouldn't happen. Setting it to 0 to be able to sell it.".format(card.id))
                     card.price = 0
+
+                # If it's a coupon or a gift, don't count it for the total revenue.
+                ignore_for_revenue = ignore_payment_for_revenue(payment)
+
                 sold = sell.soldcards_set.create(card=card,
                                                  price_sold=price_sold,
                                                  price_init=card.price,
-                                                 quantity=quantity)
+                                                 quantity=quantity,
+                                                 ignore_for_revenue=ignore_for_revenue)
                 sold.created = date
                 sold.save()
             except Exception as e:

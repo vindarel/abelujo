@@ -37,11 +37,14 @@ ALERT_WARNING = "warning"
 ALERT_INFO = "info"
 
 DEFAULT_PAYMENT_CHOICES = [
+    # ids larger or equal than 100 are not counted for the total revenue.
+    # For example, coupons were bought before.
     (1, _("cash")),
     (2, _("check")),
     (3, _("credit card")),
-    (4, _("gift")),
+    (104, _("gift")),
     (5, _("transfer")),
+    (100, _("coupon")),
     (6, _("other")),
 ]
 
@@ -86,6 +89,16 @@ def get_payment_abbr(id):
                 return it[1]
 
     return get_payment_name(id)
+
+def ignore_payment_for_revenue(id):
+    """
+    Register gifts and coupons in the history, but don't count them as revenue.
+    """
+    if id is None:
+        return False
+    # these payments must have an id larger than 100.
+    res = (id / 100) >= 1
+    return res
 
 
 class TimeStampedModel(models.Model):
