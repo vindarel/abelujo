@@ -40,29 +40,6 @@ a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
      i.glyphicon.glyphicon-question-sign
 
 
-if  depo_pubtype
-  h3 {% trans "External deposits" %}
-  table.table.table-striped.table-hover
-    thead
-      tr
-        th {% trans "Deposit name" %}
-        th {% trans "Supplier" %}
-        th {% trans "Last checkout" %}
-        th {% trans "Initial qty" %}
-        th {% trans "Total price" %}
-
-    tbody
-     for dep in depo_pubtype
-      tr
-        td.col-md-3
-            a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
-        td {{ dep.distributor.name }}
-        td {{ dep.last_checkout_date }}
-        td.text-right {{ dep.initial_nb_copies }}
-        td.text-right {{ dep.total_init_price| floatformat:2 | intcomma  }} {% trans "€" %}
-
-else
-  h4 {% trans "No deposit of supplier's type" %}
 
 if depo_fix
   h3 {% trans "Deposits of the bookstore" %}
@@ -104,4 +81,27 @@ if depo_fix
 else
   h4 {% trans "No deposit of bookshop type" %}
 
+if  depo_pubtype
+  h3 {% trans "External deposits" %}
+  table.table.table-striped.table-hover
+    thead
+      tr
+        th {% trans "Deposit name" %}
+        th {% trans "Supplier" %}
+        th {% trans "Last checkout" %}
+        th {% trans "Initial qty" %}
+        th {% trans "Total price" %}
+
+    tbody
+     for dep in depo_pubtype
+      tr
+        td.col-md-3
+            a(href="{{ dep.get_absolute_url }}") {{ dep.name }}
+        td {{ dep.distributor.name }}
+        td {{ dep.last_checkout_date }}
+        td.text-right {{ dep.initial_nb_copies }}
+        td.text-right {{ dep.total_init_price| floatformat:2 | intcomma  }} {% trans "€" %}
+
+else
+  h4 {% trans "No deposit of supplier's type" %}
 {% endblock content %}
