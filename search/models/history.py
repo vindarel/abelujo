@@ -345,6 +345,8 @@ class Entry(TimeStampedModel):
         try:
             if isinstance(payment, six.text_type) or isinstance(payment, six.string_types):
                 payment = int(payment)
+            if typ is None:
+                typ = EntryTypes.purchase
             en = Entry(payment=payment, reason=reason, typ=typ)
             en.save()
             en.add_copies(copies)
