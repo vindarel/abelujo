@@ -3993,12 +3993,6 @@ class Sell(models.Model):
     - under the same payment,
     - where the price sold can be different from the card's original price,
     - to one client.
-
-    The fact to sell a card can raise an alert, like if we have a copy
-    in a deposit and another not, we'll have to choose which copy to
-    sell. This can be done later on.
-
-    See "alerts": http://abelujo.cc/specs/#alerte
     """
     created = models.DateTimeField()
     copies = models.ManyToManyField(Card, through="SoldCards", blank=True)
@@ -4014,7 +4008,6 @@ class Sell(models.Model):
     #: If True, this sell was already canceled. It can not be undone twice.
     canceled = models.BooleanField(default=False, blank=True, verbose_name=__("canceled"))
 
-    # alerts
     # client
 
     class Meta:
