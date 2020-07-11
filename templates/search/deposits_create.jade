@@ -33,6 +33,12 @@ div(ng-controller="DepositCreateController")
    .col-sm-1
    .col-lg-9
     h3 {% trans "New deposit" %}
+      a.btn.btn-default(role="button"
+                          href="http://abelujo.cc/docs/deposits/"
+                          target="_blank",
+                          style="margin-left: 3em",
+                          title='{% trans "Read the documentation" %}')
+          i.glyphicon.glyphicon-question-sign
     form(method='post', name="depositForm")
       .row
         b: div {% trans "Name of the deposit" %}
@@ -42,7 +48,7 @@ div(ng-controller="DepositCreateController")
           ng-required='true')
 
         b: div {% trans "Type" %}
-        select.form-control(ng-model="deposit_type", ng-options="elt.name group by elt.target for elt in deposit_types", required)
+        select.form-control(ng-model="deposit_type", ng-options="elt.name for elt in deposit_types", required)
 
         div(ng-show="{% verbatim %} isDistributorDeposit(deposit_type.name) {% endverbatim %}")
           b {% trans "Destination place" %}

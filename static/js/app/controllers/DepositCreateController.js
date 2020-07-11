@@ -27,13 +27,11 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
 
     $scope.deposit_types = [
         {
-            name: gettext("fix deposit"),
-            target: gettext("deposit of bookshops"),
+            name: gettext("deposit of bookshops"),
             type: "fix"
         },
         {
-            name: gettext("external deposit (for publisher)"),
-            target: gettext("publisher deposit"),
+            name: gettext("publisher deposit"),
             type: "publisher"
         }
     ];
