@@ -178,6 +178,9 @@ div#abelujo
             td
                 for dep_tup in object.deposits
                   div: a(href="/deposits/{{ dep_tup.1 }}") {{ dep_tup.0 }}
+                if not object.deposits and not object.quantity
+                  span --- &nbsp;
+                    a(href="{% url 'deposits_new' %}") ({% trans "Create" %})
 
    .row
           if object.summary
