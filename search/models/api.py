@@ -636,6 +636,9 @@ def deposits(request, **response_kwargs):
             'status': msgs.status,
             'alerts': msgs.to_alerts(),
             'messages': msgs.messages,
+            'data': {
+                'deposit_id': depo.id if depo else "",
+            }
         }
         return JsonResponse(to_ret)
 

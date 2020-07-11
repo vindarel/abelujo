@@ -143,7 +143,7 @@ angular.module('abelujo').controller('DepositCreateController', ['$http', '$scop
                 $scope.messages = response.data.messages;
                 if (response.data.status == "success") {
                     $scope.cancelCurrentData();
-                    $window.location.href = "/deposits/";
+                    $window.location.href = "/deposits/" + response.data.data.deposit_id;
                 }
                 return response.data;
             });

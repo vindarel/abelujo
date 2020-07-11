@@ -25,8 +25,10 @@ Some **clients** features:
 
 Some **deposits** features:
 
-- when creating a new deposit the distributor is now optional
-- we display a missing message to the user when a deposit of that name already exists.
+- added: we display a missing message to the user when a deposit of that name already exists.
+- added a "create" button on a deposit page.
+- changed: when creating a new deposit the distributor is now optional
+- changed: go to the deposit's page after creation success, not the list of deposits.
 
 more to come for clients.
 
