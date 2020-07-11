@@ -643,6 +643,7 @@ def deposits(request, **response_kwargs):
         to_ret = {
             'status': msgs.status,
             'alerts': msgs.to_alerts(),
+            'messages': msgs.messages,
         }
         return JsonResponse(to_ret)
 
