@@ -23,6 +23,11 @@ Some **clients** features:
 - at the Sell point: choose a client and edit a bill, in PDF. Create a
   client on the fly with the "+" button.
 
+Some **deposits** features:
+
+- when creating a new deposit the distributor is now optional
+- we display a missing message to the user when a deposit of that name already exists.
+
 more to come for clients.
 
 ### Other enhancements

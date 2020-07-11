@@ -608,15 +608,7 @@ def deposits(request, **response_kwargs):
 
             distributor_obj = None
             if not params.get('deposit_type') == 'publisher':
-                distributor_obj = Distributor.objects.filter(name=params.get("distributor"))
-
-                if not distributor_obj:
-                    return HttpResponse(json.dumps({
-                        "data": {},
-                        "messages": [{'level': ALERT_WARNING,
-                                      'message': _('Please provide a supplier'), }]
-                    }))
-                distributor_obj = distributor_obj[0]
+                distributor_obj = Distributor.objects.filter(name=params.get("distributor")).first()
 
             deposit_dict = {
                 "name": params.get("name"),
