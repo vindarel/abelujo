@@ -30,6 +30,7 @@
 {% load humanize %}
 
 .row
+  a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
   .col-md-12
     h4 {% trans "Deposit" %}  {{ deposit.name | upper }}
 
