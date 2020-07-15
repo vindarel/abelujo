@@ -766,8 +766,7 @@ class DepositsListView(ListView):
         context["depo_pubtype"] = pubtype
         fixtype = Deposit.objects.filter(deposit_type="fix").all()
         context["depo_fix"] = fixtype
-        # context["total_price_fix"] = sum([it.total_init_price for it in fixtype])
-        context["total_price_fix"] = -1
+        context["total_price_fix"] = sum([it.total_init_price if it.total_init_price else 0 for it in fixtype])
         context["page_title"] = "Abelujo - " + _("Deposits")
         return context
 
