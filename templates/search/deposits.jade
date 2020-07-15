@@ -43,6 +43,23 @@ a.btn.btn-primary(href="{% url 'deposits_new' %}") {% trans "New deposit" %}
 
 if depo_fix
   h3 {% trans "Deposits of the bookstore" %}
+  .btn-group
+    span.text-right(aria-label="page navigation")
+       ul.pagination()
+         li.page-item
+           a.page-link(href="?page=1") &laquo;
+         if depo_fix.has_previous
+           li.page-item
+             a.page-link(href="?page={{ depo_fix.previous_page_number }}") <
+         li.page-item
+           a.page-link Page {{ meta.page }} / {{ meta.num_pages }} ({{ meta.nb_results }})
+         if depo_fix.has_next
+           li.page-item
+             a.page-link(href="?page={{ depo_fix.next_page_number }}") >
+         li.page-item
+             a.page-link(href="?page={{ meta.num_pages }}") &raquo;
+
+
   table.table.table-striped.table-hover
    thead
     tr

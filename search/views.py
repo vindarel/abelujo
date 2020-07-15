@@ -32,6 +32,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
@@ -753,28 +754,33 @@ def restocking(request):
         })
 
 
-class DepositsListView(ListView):
-    model = Deposit
-    template_name = "search/deposits.jade"
-    context_object_name = "deposits"
+def deposits(request):
+    PAGE_SIZE = 50
+    fixtype = Deposit.objects.filter(deposit_type="fix")
+    paginator = Paginator(fixtype, PAGE_SIZE)
+    page = request.GET.get('page', 1)
+    num_pages = paginator.num_pages,
+    if page > num_pages or page < 1:
+        return redirect("deposits")
+    deposit_page = paginator.page(page)
+    pubtype = Deposit.objects.filter(deposit_type="publisher").all()
+    deposits = Deposit.objects.all()
+    total_price_fix = sum([it.total_init_price if it.total_init_price else 0 for it in fixtype])
 
-    def get_context_data(self, **kwargs):
-        """Give more context objects to the template.
-        """
-        context = super(DepositsListView, self).get_context_data(**kwargs)
-        pubtype = Deposit.objects.filter(deposit_type="publisher").all()
-        context["depo_pubtype"] = pubtype
-        fixtype = Deposit.objects.filter(deposit_type="fix").all()
-        context["depo_fix"] = fixtype
-        context["total_price_fix"] = sum([it.total_init_price if it.total_init_price else 0 for it in fixtype])
-        context["page_title"] = "Abelujo - " + _("Deposits")
-        return context
+    nb_results = fixtype.count()
+    meta = {
+        'nb_results': nb_results,
+        'page': page,
+        'page_size': PAGE_SIZE,
+        'num_pages': paginator.num_pages,
+    }
 
-#  # for a comparison:
-# def deposits(request):
-    # deposits = Deposit.objects.all()
-    # return render(request, "search/deposits.jade", {
-        # "deposits": deposits})
+    return render(request, "search/deposits.jade", {
+        'depo_fix': deposit_page,
+        'depo_pubtype': pubtype,
+        'total_price_fix': total_price_fix,
+        'meta': meta,
+    })
 
 @login_required
 def deposits_new(request):
