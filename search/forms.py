@@ -182,6 +182,11 @@ def get_suppliers_choices():
     res = [(it.id, it.__repr__()) for it in res]
     return res
 
+def get_shelf_choices():
+    res = Shelf.objects.order_by("name").all()
+    res = [(it.id, it.name) for it in res]
+    return res
+
 class DepositForm(forms.ModelForm):
     """Create a new deposit.
     """
@@ -306,11 +311,18 @@ class SetSupplierForm(forms.Form):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['supplier'] = forms.ChoiceField(choices=get_suppliers_choices())
 
+class SetShelfForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['shelf'] = forms.ChoiceField(choices=get_shelf_choices())
 
 class NewSupplierForm(forms.Form):
     name = forms.CharField()
     discount = forms.IntegerField(label=_("discount"))
 
+class NewShelfForm(forms.Form):
+    name = forms.CharField()
 
 class CardForm(forms.ModelForm):
     """

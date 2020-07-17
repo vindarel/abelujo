@@ -1,0 +1,54 @@
+// Copyright 2014 - 2020 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+{% if messages %}
+ul.messages
+  {% for msg in messages %}
+  uib-alert {{ msg }}
+  {% endfor %}
+{% endif %}
+
+.row
+  form.col-lg-5(method='post', action="{% url 'cards_set_shelf' %}")
+    {% csrf_token %}
+    h4 {% trans "Choose the new shelf" %}
+    div {% trans "cards impacted: " %} {{ nb_cards }}
+    {% bootstrap_form form %}
+
+    input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
+
+.row
+  h4 {% trans "Or create a new one" %}
+  form.col-lg-4(method='post', action="{% url 'cards_set_shelf' %}")
+    {% csrf_token %}
+    h4 {% trans "New shelf" %}
+
+    // xxx: missing form errors.
+    {% bootstrap_form newshelf_form %}
+
+    input.btn.btn-primary(type='submit', value='{% trans "Validate" %}')
+
+{% endblock content %}

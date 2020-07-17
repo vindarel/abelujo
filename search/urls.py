@@ -73,6 +73,8 @@ urlpatterns = patterns('',
         name="card_buy"),
     url(r'^stock/set_supplier/', 'search.views.cards_set_supplier',
         name="cards_set_supplier"),
+    url(r'^stock/set_shelf/', 'search.views.cards_set_shelf',
+        name="cards_set_shelf"),
 
     url(r'^sell/$', 'search.views.sell',
         name="card_sell"),

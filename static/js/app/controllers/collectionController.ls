@@ -83,7 +83,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
     # pagination
     $scope.page = 1
-    $scope.page_size = 25
+    $scope.page_size = 50
     $scope.page_sizes = [25, 50, 100, 200]
     $scope.page_max = 1
 
@@ -288,6 +288,26 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         params = do
             cards_ids: join ",", cards_ids
         $http.post "/api/cards/set_supplier", params
+        .then (response) !->
+            $log.info "--- done"
+            card_id = response.data.card_id
+            $log.info $window.location.pathname
+            $log.info response.data.url
+            $window.location.pathname = $scope.language + response.data.url
+
+        , (response) ->
+            $log.info "--- error ", response.status, response.statusText
+
+    $scope.set_shelf = (card) !->
+        cards_ids = get_selected!
+
+        if not cards_ids.length
+            alert "Please select some cards."
+            return
+
+        params = do
+            cards_ids: join ",", cards_ids
+        $http.post "/api/cards/set_shelf", params
         .then (response) !->
             $log.info "--- done"
             card_id = response.data.card_id

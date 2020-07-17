@@ -74,6 +74,7 @@ from search.models import Preferences
 from search.models import Publisher
 from search.models import Restocking
 from search.models import Sell
+from search.models import Shelf
 from search.models import Stats
 from search.models import history
 from search.models import users
@@ -594,6 +595,73 @@ def cards_set_supplier(request, **kwargs):
                 return render(request, template, response_dict)
 
         messages.add_message(request, messages.SUCCESS, _("The supplier was correctly set for those {} cards.".format(len(cards_ids))))
+
+        return HttpResponseRedirect(reverse('card_collection'))
+
+@login_required
+def cards_set_shelf(request, **kwargs):
+    template = 'search/set_shelf.jade'
+    form = viewforms.SetShelfForm()
+    newshelf_form = viewforms.NewShelfForm()
+    cards_ids = request.session.get('set_shelf_cards_ids')
+    if not cards_ids:
+        return HttpResponseRedirect(reverse('card_collection'))
+    cards_ids = cards_ids.split(',')
+    response_dict = {
+        'form': form,
+        'newshelf_form': newshelf_form,
+        'nb_cards': len(cards_ids),
+    }
+
+    if request.method == 'GET':
+        return render(request, template, response_dict)
+
+    elif request.method == 'POST':
+        new_id = None
+        new_obj = None
+        req = request.POST.copy()
+
+        # The user chose an existing shelf.
+        if 'shelf' in list(req.keys()):
+            form = viewforms.SetShelfForm(req)
+            if form.is_valid():
+                new_id = form.cleaned_data['shelf']
+                new_obj = Shelf.objects.get(id=new_id)
+
+        # Create new shelf.
+        elif 'name' in list(req.keys()):
+            form = viewforms.NewShelfForm(req)
+            if form.is_valid():
+                data = form.cleaned_data
+
+                # Check existing name.
+                existing = Shelf.objects.filter(name=data['name'])
+                if existing:
+                    messages.add_message(request, messages.ERROR, _("A shelf with the same name already exists."))
+                    response_dict['messages'] = messages.get_messages(request)
+                    return render(request, template, response_dict)
+
+                try:
+                    new_obj = Shelf(name=data['name'])
+                    new_obj.save()
+                except Exception as e:
+                    log.error("Could not create new shelf: {}".format(e))
+                    messages.add_message(request, messages.ERROR, _("An internal error occured, we have been notified."))
+                    response_dict['messages'] = messages.get_messages(request)
+                    return render(request, template, response_dict)
+
+            else:
+                messages.add_message(request, messages.ERROR, _("The form is invalid."))
+                return render(request, template, response_dict)
+
+        else:
+            log.error("Error in the form setting the shelf for many cards. We didn't recognize any of the two forms.")
+            return render(request, template, response_dict)
+
+        # Set shelf for all cards.
+        cards = Card.objects.filter(id__in=cards_ids)
+        cards.update(shelf=new_obj)
+        messages.add_message(request, messages.SUCCESS, _("The shelf was correctly set for those {} cards.".format(len(cards_ids))))
 
         return HttpResponseRedirect(reverse('card_collection'))
 

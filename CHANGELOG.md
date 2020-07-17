@@ -13,8 +13,17 @@ Changelog starting from v0.5 (2018/09/18)
 - we get more fields from Dilicom: the distributor GLN and the theme.
 - My Stock: we don't run a DB query to get the newest books at the
   landing page anymore, we show nothing. The page loads quicker.
+- My Stock: we can select books and assign them to another shelf.
+- The admin page for shelves shows how many books each shelf contains.
 - we can now easily configure payment methods in a configuration
   file. See the developper documentation, "installation" page.
+
+Some **payment** features:
+
+- new "coupon" payment method. The sell appears in the history but is
+  not counted in the day's revenue. Indeed, the coupon was sold before
+  and we must not count the sell twice. More about coupons and sell
+  options are coming.
 
 
 Some **clients** features:

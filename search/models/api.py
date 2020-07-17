@@ -514,6 +514,25 @@ def cards_set_supplier(request, **response_kwargs):
             'url': "/stock/set_supplier/",
         })
 
+def cards_set_shelf(request, **response_kwargs):
+    """
+    Set the shelf of many cards.
+
+    - params: cards_ids: list of ids.
+    """
+    if request.method == 'GET':
+        return JsonResponse({"msg": "not implemented"})
+    elif request.method == 'POST':
+        status = httplib.OK
+
+        params = request.POST.copy()
+        cards_ids = params.get('cards_ids')
+        request.session['set_shelf_cards_ids'] = cards_ids  # coma-separated ids
+        return JsonResponse({
+            'status': status,
+            'url': "/stock/set_shelf/",
+        })
+
 def shelfs(request, **response_kwargs):
     # Note: for easier search, replace and auto-generation, we choose
     # to pluralize wrongly.
