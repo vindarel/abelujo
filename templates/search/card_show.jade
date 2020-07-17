@@ -22,6 +22,7 @@
 {% block content %}
 
 {% load i18n %}
+{% load staticfiles %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -138,9 +139,14 @@ div#abelujo
 
           tr
               td {% trans "Shelf" %}: 
-              td
+              td(id="shelf-name", style="display: none")
                 if object.shelf
                   {{ object.shelf }}
+              td(id="shelf-select-td")
+                select(id="shelf-select", name="shelves")
+                  //- for shelf in shelves
+                    option(value="{{ shelf.name }}" {% if shelf == object.shelf %} selected="selected" {% endif %})
+
           if object.theme
             tr
                 td {% trans "Theme" %}: 
@@ -233,5 +239,7 @@ div#abelujo
                       | <a href="{{ cmd.command.get_absolute_url }}">{{ cmd.command.title }}</a> -
                       | {{ cmd.command.created }}
 
+
+script(type='text/javascript', src="{% static 'search/js/card.js' %}")
 
 {% endblock content %}

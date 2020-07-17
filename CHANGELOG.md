@@ -17,6 +17,7 @@ Changelog starting from v0.5 (2018/09/18)
 - The admin page for shelves shows how many books each shelf contains.
 - we can now easily configure payment methods in a configuration
   file. See the developper documentation, "installation" page.
+- on a card page, we can change the shelf quickly (a select field is present).
 
 Some **payment** features:
 

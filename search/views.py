@@ -327,6 +327,7 @@ def card_show(request, pk):
     return render(request, template, {
         "object": card,
         "sells": sells,
+        # "shelves": Shelf.objects.order_by("name").all(),
         "places_quantities": places_quantities,
         "last_entry": last_entry,
         "total_sold": total_sold,

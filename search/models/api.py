@@ -396,6 +396,43 @@ def card_create(request, **response_kwargs):
     else:
         log.error("creating a card should be done with POST.")
 
+def card_update(request, **response_kwargs):
+    """
+    Update a card.
+
+    In request.body, in JSON:
+    - card_id
+    - shelf_id
+    """
+    alerts = []
+    msgs = {}
+    status = httplib.OK
+    if request.method == 'POST':
+        try:
+            params = json.loads(request.body)
+            card_id = params.get('card_id')
+            shelf_id = params.get('shelf_id')
+            card_obj = Card.objects.filter(id=card_id).first()
+
+            shelf_obj = None
+            if shelf_id:
+                shelf_obj = Shelf.objects.filter(id=shelf_id).first()
+                if shelf_obj:
+                    card_obj.shelf = shelf_obj
+                    card_obj.save()
+
+            alerts.append({"level": ALERT_SUCCESS})
+
+            msgs = {"status": status, "alerts": alerts, "card_id": card_obj.id}
+
+        except Exception as e:
+            tb = traceback.format_exc()
+            log.error("Error updating a card: {}\n{}".format(e, tb))
+            alerts.append({"level": ALERT_ERROR,
+                           "message": _("Woops, we can not update this card. This is a bug.")})
+
+        return JsonResponse(msgs)
+
 def card_add(request, **response_kwargs):
     """Add the given card to places (=buy it), deposits and baskets.
 
