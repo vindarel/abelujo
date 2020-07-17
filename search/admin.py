@@ -113,11 +113,15 @@ class PublisherAdmin(admin.ModelAdmin):
     list_editable = ("name",)
     search_fields = ["name"]
 
+
 class ShelfAdmin(admin.ModelAdmin):
     class Meta:
         model = Shelf
 
-    list_display = ("name",)
+    def in_shelf(shelf):
+        return shelf.cards_qty
+
+    list_display = ("name", in_shelf)
     list_editable = ("name",)
     search_fields = ["name"]
 
