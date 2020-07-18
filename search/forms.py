@@ -30,6 +30,7 @@ from search.models import Preferences
 
 from search.models import Author
 from search.models import Bill
+from search.models import CardType
 from search.models import Deposit
 from search.models import Distributor
 from search.models import Place
@@ -187,6 +188,9 @@ def get_shelf_choices():
     res = [(it.id, it.name) for it in res]
     return res
 
+def get_card_types_choices():
+    return [(it.id, it.name) for it in CardType.objects.all()]
+
 class DepositForm(forms.ModelForm):
     """Create a new deposit.
     """
@@ -330,6 +334,8 @@ class CardForm(forms.ModelForm):
 
     Pre-set the currency given the default one.
     """
+    # The default is Book (and not the empty choice).
+    card_type = forms.ChoiceField(choices=get_card_types_choices, required=False)
 
     class Meta:
         model = Card

@@ -45,11 +45,20 @@
      "fields": {"name": "vinyl"}
     },
     {"pk": 9,
+     "model": "search.cardtype",
+     "fields": {"name": "game"}
+    },
+    {"pk": 10,
+     "model":
+     "search.cardtype",
+     "fields": {"name": "notebook"}
+    },
+    {"pk": 11,
      "model":
      "search.cardtype",
      "fields": {"name": "other"}
     },
-    {"pk": 10,
+    {"pk": 12,
      "model":
      "search.cardtype",
      "fields": {"name": "unknown"}
