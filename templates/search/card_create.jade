@@ -18,13 +18,14 @@
 {% block content %}
 
 {% load i18n %}
+{% load staticfiles %}
 {% load bootstrap3 %}
 {% bootstrap_css %}
 
 if messages
   ul.messages
     for msg in messages
-      li  {{ msg }}
+      uib-alert(type="{{ msg.tags }}")  {{ msg }}
 
 h1 {% trans "Create a card" %}
 
@@ -41,5 +42,7 @@ form(action="{% url 'card_create_manually' %}", method="post")
     {% csrf_token %}
     {% bootstrap_form add_places_form layout='horizontal' %}
     input.btn.btn-primary(type="submit", value="{% trans 'Validate' %}")
+
+script(type='text/javascript', src="{% static 'search/js/card_create.js' %}")
 
 {% endblock content %}
