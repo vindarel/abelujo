@@ -160,6 +160,9 @@ div(ng-cloak, ng-controller="collectionController")
                           target="_blank",
                           title='{% trans "Read the documentation" %}')
           i.glyphicon.glyphicon-question-sign
+       span &nbsp;
+            a(href="{% url 'card_create_manually' %}") {% trans "Add a card manually" %}
+
 
   .col-md-7
       .btn-group
