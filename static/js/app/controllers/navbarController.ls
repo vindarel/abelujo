@@ -38,6 +38,8 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
             $scope.cards_fetched = res
             if utils.is_isbn(query) and res.length == 1
                $scope.go_to_card res[0]
+            if utils.is_isbn(query) and res.length == 0
+               $window.location.href = "/" + $scope.language + "/stock/card/create"
             return res
 
     $scope.go_to_card = (item) !->
