@@ -349,6 +349,7 @@ class CardForm(forms.ModelForm):
                   'card_type',
                   'vat',
                   'currency',
+                  'auto_update',
                   'shelf',
                   'authors',
                   'publishers',

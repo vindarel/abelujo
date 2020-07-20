@@ -37,6 +37,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
     $scope.distributor_list = []
     $scope.distributor_selected = undefined
     $scope.has_isbn = false
+    $scope.auto_update = true
     $scope.isbn = ""
     $scope.year_published = undefined
     $scope.details_url = undefined
@@ -67,6 +68,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             $scope.authors_selected = $scope.card.authors
             $scope.distributor = $scope.card.distributor
             $scope.isbn = $scope.card.isbn
+            $scope.auto_update = $scope.card.auto_update
             $scope.details_url = $scope.card.details_url
             $scope.pubs_selected = $scope.card.publishers
             $scope.shelf = $scope.shelfs
@@ -133,7 +135,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
         if card_id
             params.card_id = card_id
 
-        for it in ["title", "year_published", "has_isbn", "price", "isbn", "details_url"]
+        for it in ["title", "year_published", "has_isbn", "price", "isbn", "details_url", "auto_update"]
             if $scope[it]
                 params[it] = $scope[it]
 

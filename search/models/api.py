@@ -354,6 +354,7 @@ def card_create(request, **response_kwargs):
                 "authors": [Author.objects.get(id=it) for it in list_from_coma_separated_ints(params.get('authors'))],
                 "isbn": isbn,
                 "has_isbn": True if params.get("has_isbn") == "true" else False,
+                "auto_update": True if params.get("auto_update") == "true" else False,
                 "details_url": params.get("details_url"),
                 "year": params.get("year_published"),
             }

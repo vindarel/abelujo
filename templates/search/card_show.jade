@@ -99,6 +99,9 @@ div#abelujo
               td
                 a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
             tr
+              td {% trans "Auto update" %}
+              td {{ object.auto_update_repr }}
+            tr
               td
                 span: a(target="_blank", href="https://duckduckgo.com/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
                     span.glyphicon.glyphicon-share-alt(style="padding-left: 3px;")

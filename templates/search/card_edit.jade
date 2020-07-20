@@ -39,6 +39,9 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
   .row
     .col-lg-12
         div.form-group
+            div
+              label {% trans "Auto update?" %}
+              input(type="checkbox", ng-model="auto_update")
             label {% trans "Title" %}:
             input.form-control(type="text", ng-model="title", required="", id="input-title", name="title")
             div.form-control(ng-show="form.$submitted || form.title.$touched")
