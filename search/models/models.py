@@ -561,16 +561,18 @@ class Card(TimeStampedModel):
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
     #: Internal representation without accents, used for search.
     title_ascii = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title_ascii"), null=True, blank=True)
+
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=__("card type"))
-    #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
-    has_isbn = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=__("has isbn"))
-    #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
-    isbn = models.CharField(max_length=99, null=True, blank=True)
+    #: VAT (tax. French: TVA)
+    vat = models.FloatField(null=True, blank=True, verbose_name=__("VAT tax"))
     sortkey = models.TextField('Authors', blank=True)
     authors = models.ManyToManyField(Author, blank=True, verbose_name=__("authors"))
     #: The public price.
     price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=__("price"))
+    #: The price it was bought (alternative or complement to a supplier and its discount).
+    # (don't default to 0. Zero means we bought it 0€)
+    price_bought = models.FloatField(null=True, blank=True, verbose_name=__("price bought (leave blank if you use a supplier and its discount)"))
     #: Currency: euro, CHF, other?
     currency = models.CharField(max_length=10,
                                 choices=CURRENCY_CHOICES,
@@ -578,6 +580,11 @@ class Card(TimeStampedModel):
                                 # Python has no late bindings.
                                 # default='euro',
                                 null=True, blank=True, verbose_name=__("currency"))
+
+    #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
+    has_isbn = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=__("has isbn"))
+    #: ean/isbn (mandatory). For db queries, use isbn, otherwise "ean" points to the isbn.
+    isbn = models.CharField(max_length=99, null=True, blank=True)
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))

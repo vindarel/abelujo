@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
 
 import models
+from search.models.common import DEFAULT_VAT_CHOICES
 from search.models import Card
 from search.models import Preferences
 
@@ -336,24 +337,27 @@ class CardForm(forms.ModelForm):
     """
     # The default is Book (and not the empty choice).
     card_type = forms.ChoiceField(choices=get_card_types_choices, required=False)
+    vat = forms.ChoiceField(choices=DEFAULT_VAT_CHOICES, required=False)
 
     class Meta:
         model = Card
         fields = ['title',
-                  'card_type',
                   'has_isbn',
                   'isbn',
                   'price',
+                  'price_bought',
+                  'card_type',
+                  'vat',
                   'currency',
-                  'threshold',
+                  'shelf',
                   'authors',
                   'publishers',
-                  'year_published',
                   'distributor',
                   'collection',
-                  'shelf',
                   'cover',
-                  'date_publication',
+                  # 'year_published',
+                  # 'date_publication',
+                  'threshold',
                   'summary',
                   'comment',
         ]

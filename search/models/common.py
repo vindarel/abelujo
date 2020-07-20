@@ -69,6 +69,20 @@ PAYMENT_ABBR = [
     (5, _("TR")),
 ]
 
+DEFAULT_VAT_CHOICES = [
+    # "2.1"  # in French DOM-TOM
+    (1, "5.5"),
+    (2, "20"),
+]
+try:
+    if settings.config.VAT_CHOICES:
+        VAT_CHOICES = settings.config.VAT_CHOICES
+    else:
+        VAT_CHOICES = DEFAULT_VAT_CHOICES
+except Exception:
+    VAT_CHOICES = DEFAULT_VAT_CHOICES
+
+
 CURRENCY_CHOICES = [
     ('euro', '€'),
     ('chf', 'CHF'),
