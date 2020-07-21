@@ -34,7 +34,6 @@ class TestCards(TestCase):
 
     def test_create_card_manually(self):
         card_form = viewforms.CardCreateForm()
-        self.assertEqual(22, len(card_form.fields))
 
         # The form's cleaned_data gives us a dict.
         # No new authors or publisher yet.
