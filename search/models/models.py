@@ -580,8 +580,6 @@ class Card(TimeStampedModel):
                                 # Python has no late bindings.
                                 # default='euro',
                                 null=True, blank=True, verbose_name=__("currency"))
-    #: Automatic update ? (such as with Dilicom) Default is True.
-    auto_update = models.BooleanField(default=True, verbose_name=__("Automatic update?"))
 
     #: Maybe this card doesn't have an isbn. It's good to know it isn't missing.
     has_isbn = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=__("has isbn"))
@@ -963,10 +961,6 @@ class Card(TimeStampedModel):
             return self.distributor.to_list()['name']
         return ""
 
-    @property
-    def auto_update_repr(self):
-        return _("yes") if self.auto_update else _("no")
-
     def to_dict(self):
         return self.to_list()
 
@@ -1013,8 +1007,6 @@ class Card(TimeStampedModel):
             "id": self.id,
             "authors": auth,
             "authors_repr": authors_repr,
-            "auto_update": self.auto_update,
-            "auto_update_repr": self.auto_update_repr,
             "collection": self.collection.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
             "data_source": self.data_source,
@@ -1678,7 +1670,7 @@ class Card(TimeStampedModel):
             card_obj.threshold = card_dict.get('threshold')
 
         for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
-                      'auto_update', 'details_url', 'currency',
+                      'details_url', 'currency',
                       'thickness', 'height', 'width', 'weight',
                       'theme', 'presedit', 'collection']:
             if card_dict.get(field) not in [None, '', '']:
