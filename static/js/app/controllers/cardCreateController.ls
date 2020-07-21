@@ -64,6 +64,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
             $scope.card = response.data.data
             $scope.title = $scope.card.title
             $scope.price = $scope.card.price
+            $scope.selling_price = $scope.card.selling_price
             $scope.authors_selected = $scope.card.authors
             $scope.distributor = $scope.card.distributor
             $scope.isbn = $scope.card.isbn
@@ -133,7 +134,7 @@ angular.module "abelujo" .controller 'cardCreateController', ['$http', '$scope',
         if card_id
             params.card_id = card_id
 
-        for it in ["title", "year_published", "has_isbn", "price", "isbn", "details_url"]
+        for it in ["title", "year_published", "has_isbn", "price", "selling_price", "isbn", "details_url"]
             if $scope[it]
                 params[it] = $scope[it]
 

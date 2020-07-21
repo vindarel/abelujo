@@ -345,6 +345,7 @@ class CardForm(forms.ModelForm):
                   'has_isbn',
                   'isbn',
                   'price',
+                  'selling_price',
                   'price_bought',
                   'card_type',
                   'vat',

@@ -350,6 +350,7 @@ def card_create(request, **response_kwargs):
                 "id": params.get('card_id'),  # create... or edit.
                 "title": params.get('title'),
                 "price": params.get('price'),
+                "selling_price": params.get('selling_price'),
                 "card_type": params.get('type'),
                 "authors": [Author.objects.get(id=it) for it in list_from_coma_separated_ints(params.get('authors'))],
                 "isbn": isbn,

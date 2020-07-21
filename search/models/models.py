@@ -570,6 +570,11 @@ class Card(TimeStampedModel):
     authors = models.ManyToManyField(Author, blank=True, verbose_name=__("authors"))
     #: The public price.
     price = models.FloatField(null=True, blank=True, default=0.0, verbose_name=__("price"))
+    #: An optional custom selling price, if different than the public price.
+    selling_price = models.FloatField(null=True, blank=True,
+                                      verbose_name="{} {}".format(
+                                          __("Selling price"),
+                                          __("(leave blank if it's the same than the public price)")))
     #: The price it was bought (alternative or complement to a supplier and its discount).
     # (don't default to 0. Zero means we bought it 0€)
     price_bought = models.FloatField(null=True, blank=True, verbose_name=__("price bought (leave blank if you use a supplier and its discount)"))
@@ -1027,7 +1032,9 @@ class Card(TimeStampedModel):
             "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
-            "price_sold": self.price,  # used for Sell form, when the price sold can change.
+            "selling_price": self.selling_price,
+            # used for Sell form, when the price sold can change:
+            "price_sold": self.selling_price if self.selling_price is not None else self.price,
             'price_fmt': price_fmt(self.price, currency),
             "price_discounted": self.price_discounted,
             "price_discounted_fmt": price_fmt(self.price_discounted, currency),
@@ -1669,7 +1676,9 @@ class Card(TimeStampedModel):
         if card_dict.get('threshold') is not None:
             card_obj.threshold = card_dict.get('threshold')
 
-        for field in ['title', 'price', 'year_published', 'date_publication', 'has_isbn',
+        for field in ['title',
+                      'price', 'price_bought', 'selling_price',
+                      'year_published', 'date_publication', 'has_isbn',
                       'details_url', 'currency',
                       'thickness', 'height', 'width', 'weight',
                       'theme', 'presedit', 'collection']:
@@ -2008,6 +2017,10 @@ class Card(TimeStampedModel):
 
         if card.get('price') is not None:
             card_obj.price = float(card.get('price'))
+        if card.get('price_bought') is not None:
+            card_obj.price_bought = float(card.get('price_bought'))
+        if card.get('selling_price') is not None:
+            card_obj.selling_price = float(card.get('selling_price'))
 
         card_obj.save()
 
