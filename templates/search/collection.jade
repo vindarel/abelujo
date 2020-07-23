@@ -127,6 +127,8 @@ div(ng-cloak, ng-controller="collectionController")
             placeholder='{% trans "exple: juin 2020" %}'
           )
 
+    input(type="submit", hidden="true", onsubmit="validate()")
+
  .row
    .col-md-7(style="margin-top: 7px; margin-bottom: 7px")
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")
