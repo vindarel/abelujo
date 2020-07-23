@@ -39,7 +39,12 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
             if utils.is_isbn(query) and res.length == 1
                $scope.go_to_card res[0]
             if utils.is_isbn(query) and res.length == 0
-               $window.location.href = "/" + $scope.language + "/stock/card/create"
+               Notiflix.Notify.Merge({
+                 timeout: 20000,
+               })
+               Notiflix.Notify.Warning(gettext('ISBN not found.'))
+               Notiflix.Notify.Info gettext('You can still create a card manually.')
+               $window.document.getElementById("navbar-input").value = "";
             return res
 
     $scope.go_to_card = (item) !->
