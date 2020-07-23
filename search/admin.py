@@ -64,6 +64,7 @@ class ClientAdmin(admin.ModelAdmin):
 
     search_fields = ["name", "firstname", "mobilephone", "address1", "city", "country", "zip_code"]
     list_display = ["name", "firstname", "mobilephone"]
+    ordering = ["name", "firstname"]
 
 
 class CommandAdmin(admin.ModelAdmin):
@@ -81,6 +82,7 @@ class DistributorAdmin(admin.ModelAdmin):
     search_fields = ["name", "gln", "city", "country", "postal_code"]
     list_display = ("name", "discount", "stars", "email")
     list_editable = ("discount", "stars", "email")
+    ordering = ("name",)
 
 class BillAdmin(admin.ModelAdmin):
     class Meta:
@@ -93,6 +95,7 @@ class DepositAdmin(admin.ModelAdmin):
         model = Deposit
 
     list_display = ("name", "distributor", "dest_place", "due_date", "auto_command")
+    ordering = ("name",)
 
 class InventoryAdmin(admin.ModelAdmin):
     class Meta:
@@ -112,6 +115,7 @@ class PublisherAdmin(admin.ModelAdmin):
     list_display = ("name",)
     list_editable = ("name",)
     search_fields = ["name"]
+    ordering = ("name",)
 
 
 class ShelfAdmin(admin.ModelAdmin):
@@ -124,6 +128,7 @@ class ShelfAdmin(admin.ModelAdmin):
     list_display = ("name", in_shelf)
     list_editable = ("name",)
     search_fields = ["name"]
+    ordering = ("name",)
 
 
 admin.site.register(Author)
