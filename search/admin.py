@@ -88,7 +88,7 @@ class BillAdmin(admin.ModelAdmin):
     class Meta:
         model = Bill
 
-    list_display = ("name", "ref", "distributor", "total")
+    list_display = ("name", "ref", "total")
 
 class DepositAdmin(admin.ModelAdmin):
     class Meta:

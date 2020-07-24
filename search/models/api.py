@@ -742,12 +742,17 @@ def sell(request, **response_kwargs):
         date = params.get("date")
         place_id = int(params.get("place_id", 0))
         payment_id = int(params.get("payment_id", 0))
+        client_id = int(params.get("client_id", -1))
 
         # Sell from a place.
         try:
-            sell, status, alerts = Sell.sell_cards(to_sell, date=date,
-                                                   place_id=place_id,
-                                                   payment=payment_id)
+            sell, status, alerts = Sell.sell_cards(
+                to_sell,
+                date=date,
+                place_id=place_id,
+                payment=payment_id,
+                client_id=client_id,
+            )
 
         except Exception as e:
             log.error("api/sell error: {}".format(e))

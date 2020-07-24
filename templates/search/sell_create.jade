@@ -58,7 +58,7 @@ div.ng-cloak(ng-controller="sellController")
          form
             label {% trans "Client" %}
             p.input-group
-             input.nullable.form-control(
+             input.nullable.form-control#client-input(
               type='text'
               //- typeahead-loading="loadingCards"
               ng-model='client_selected'

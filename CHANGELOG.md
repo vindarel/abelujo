@@ -4,46 +4,48 @@ Changelog starting from v0.5 (2018/09/18)
 
 ### New features
 
-- searching My Stock now correctly ignores accents: searching
+New **bibliographic and stock** features:
+
+- **searching the stock** now correctly ignores accents: searching
   "stromquist" also returns "strömquist".
-- My Stock: we can filter results by date of creation of the card in
+- My Stock: we can **filter results by date of creation** of the card in
   our database. We choose an operator like "<=" and we write a date
   indicator, like: "june, 2020", "1st may 2016", etc. For details: see the
   `dateparser` library, and the online documentation.
-- we get more fields from Dilicom: the distributor GLN and the theme.
-- My Stock: we don't run a DB query to get the newest books at the
-  landing page anymore, we show nothing. The page loads quicker.
+- we get more fields from Dilicom: the **distributor GLN and the theme**.
 - My Stock: we can select books and assign them to another shelf.
-- The admin page for shelves shows how many books each shelf contains.
-- we can now easily configure payment methods in a configuration
-  file. See the developper documentation, "installation" page.
-- on a card page, we can change the shelf quickly (a select field is present).
+- on a card page, we can **change the shelf quickly** (a select field is present).
 
-Some **payment** features:
+New **payment** features:
 
 - new "coupon" payment method. The sell appears in the history but is
   not counted in the day's revenue. Indeed, the coupon was sold before
   and we must not count the sell twice. More about coupons and sell
   options are coming.
 
-
-Some **clients** features:
+New **clients** features:
 
 - create clients
-- at the Sell point: choose a client and edit a bill, in PDF. Create a
-  client on the fly with the "+" button.
+- during a sell: choose a client or create one on the fly with the "+" button.
+  - generate a bill of this sell for this client, in PDF.
+  - on validation, the client is registered for this sell. On the
+    history, we view the clients.
 
-Some **deposits** features:
+New **deposits** features:
 
 - added: we display a missing message to the user when a deposit of that name already exists.
 - added a "create" button on a deposit page.
 - changed: when creating a new deposit the distributor is now optional
 - changed: go to the deposit's page after creation success, not the list of deposits.
 
-more to come for clients.
 
 ### Other enhancements
 
+- The admin page for shelves shows how many books each shelf contains.
+- we can now easily configure payment methods in a configuration
+  file. See the developper documentation, "installation" page.
+- faster loading My Stock page: we don't run a DB query to get the newest books at the
+  landing page anymore, we show nothing.
 - creating a command (with the OK button) was dramatically sped up
   (from a few seconds to a fraction of a second).
 - selling a card that is in a deposit automatically sells it from the

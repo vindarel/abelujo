@@ -286,6 +286,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             "payment_id": payment_id
         };
 
+        if ($scope.client) {
+            params['client_id'] = $scope.client.id;
+        }
+
           // This is needed for Django to process the params to its
           // request.POST dictionnary:
           $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -312,6 +316,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                   $window.removeEventListener('beforeunload', unloadlistener);
 
                   $scope.payment = $scope.payment_means[0];
+                  $window.document.getElementById('client-input').value = "";
+                  $scope.client = null;
 
                   $scope.date = new Date();
 

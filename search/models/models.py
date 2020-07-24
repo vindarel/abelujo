@@ -63,6 +63,7 @@ from toolz.itertoolz import groupby
 
 from abelujo import settings
 from search.models import history
+from search.models.users import Client
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
@@ -4041,7 +4042,8 @@ class Sell(models.Model):
     #: If True, this sell was already canceled. It can not be undone twice.
     canceled = models.BooleanField(default=False, blank=True, verbose_name=__("canceled"))
 
-    # client
+    #: The client who bought those books (optional).
+    client = models.ForeignKey("Client", blank=True, null=True, verbose_name=__("client"))
 
     class Meta:
         verbose_name = __("sell")
@@ -4397,6 +4399,7 @@ class Sell(models.Model):
     def sell_cards(ids_prices_nb, date=None, payment=None, cards=[],
                    place_id=None, place=None,
                    deposit_id=None, deposit=None,  # XXX: deprecated since 2020-07-09
+                   client=None, client_id=None,
                    silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
@@ -4454,12 +4457,18 @@ class Sell(models.Model):
         elif not place_obj:
             place_obj = Preferences.get_default_place()
 
+        # Register the client (optional).
+        if client_id:
+            client = Client.objects.filter(id=client_id).first()
+
         # Create the Sell object.
         try:
             sell = Sell(created=date,
                         payment=payment,
-                        place=place_obj)
+                        place=place_obj,
+                        client=client)
             sell.save()
+
         except Exception as e:
             status = ALERT_ERROR
             alerts.append({"message": "Ooops, we couldn't sell anything :S",
@@ -4512,7 +4521,9 @@ class Sell(models.Model):
                 sell.delete()
                 return None, status, msg
 
+        #
         # Add the cards and their attributes in the Sell.
+        #
         for i, card in enumerate(cards_obj):
             price_sold = ids_prices_nb[i].get("price_sold", card.price)
             if not price_sold:

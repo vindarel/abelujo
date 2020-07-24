@@ -64,8 +64,20 @@ h1 {{ day | date:'l d F Y' | title }}
 
 table.table
   // better: iterate over sells, and iterate over soldcards.
+  thead
+    th {% trans "Transaction" %}
+    th
+    th {% trans "Title" %}
+    th {% trans "Publisher" %}
+    th {% trans "Price sold" %}
+    th
+    th.text-right {% trans "Total" %}
+    th {% trans "Payment" %}
+    th {% trans "Client" %}
+    th
   for it, bg_color, payment, new_sell, sell_id in data
    tr(style="background-color: {{ bg_color }}", id="sell{{ sell_id }}")
+    td {{ it.pk }}
     td {{ it.created | date:'H:i' }} 
     td &nbsp;
       a(href="{{ it.card.get_absolute_url }}") {{ it.card.title }}
@@ -78,6 +90,9 @@ table.table
       if new_sell
         span {{ it.sell.total_price_sold_fmt }}
     td {{ payment }}
+    td
+      if it.sell.client
+        div(href="#", title="{{ it.sell.client.name }}, {{ it.sell.client.firstname }}") {{ it.sell.client.name | truncatechars:9 }}
     td
       if new_sell
         div.mouse-pointer.glyphicon.glyphicon-remove(onclick="sellUndo({{ sell_id }})", title='{% trans "Cancel a sell" %}')

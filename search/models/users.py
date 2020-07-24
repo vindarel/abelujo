@@ -144,7 +144,7 @@ class Bill(TimeStampedModel):
     # created and modified fields
     ref = models.CharField(max_length=CHAR_LENGTH)
     name = models.CharField(max_length=CHAR_LENGTH)
-    distributor = models.ForeignKey("search.distributor", null=True)
+    # distributor = models.ForeignKey("search.distributor", null=True)
     #: we must pay the bill at some time (even if the received card is
     #: not sold, this isn't a deposit!)
     due_date = models.DateField()
