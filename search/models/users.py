@@ -98,9 +98,25 @@ class Client(Contact):
     A client of the bookshop.
     He can reserve books (not implemented), buy coupons, etc.
     """
+    #: A client is linked to sells.
+    #
+    #: When we register a new client on this software, we might want
+    # to port data from our previous system.
+    #: One data is the number of sells he currently has.
+    # So, his fidelity card is not reset to 0.
+    initial_sells_quantity = models.IntegerField(default=0, verbose_name=__("The number of registered sells the client has on the previous system."))
 
     def __repr__(self):
         return u"{} {}".format(self.name, self.firstname)
+
+    @property
+    def sells_quantity(self):
+        """
+        Find and return the current number of books sold to this client.
+
+        Return: int.
+        """
+        import ipdb; ipdb.set_trace()
 
     @staticmethod
     def search(query, to_dict=False):
