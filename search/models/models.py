@@ -1629,7 +1629,8 @@ class Card(TimeStampedModel):
         if authors:
             # assert isinstance(authors[0], models.base.Model)
             if not isinstance(authors[0], models.base.Model):
-                log.warning("Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
+                # log.warning("Card.update_from_dict: authors should be authors objects, we got: {}".format(authors))
+                pass
             else:
                 card_obj.authors = authors
 
