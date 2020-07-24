@@ -4211,6 +4211,15 @@ class Sell(models.Model):
                 "sell_mean_fmt": price_fmt(sell_mean, default_currency),
                 }
 
+    @staticmethod
+    def count_client_soldcards(client):
+        """
+        Return the number of cards sold to this client.
+        """
+        # this method in the users.py file would
+        assert isinstance(client, models.base.Model)
+        return SoldCards.objects.filter(sell__client=client).count()
+
     def to_list(self):
         """Return this object as a python list, ready to be serialized or
         json-ified."""

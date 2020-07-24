@@ -106,17 +106,14 @@ class Client(Contact):
     # So, his fidelity card is not reset to 0.
     initial_sells_quantity = models.IntegerField(default=0, verbose_name=__("The number of registered sells the client has on the previous system."))
 
+    # Other noticeable methods:
+    # Sell.count_client_soldcards(client)
+
     def __repr__(self):
         return u"{} {}".format(self.name, self.firstname)
 
-    @property
-    def sells_quantity(self):
-        """
-        Find and return the current number of books sold to this client.
-
-        Return: int.
-        """
-        import ipdb; ipdb.set_trace()
+    def __unicode__(self):
+        return "{} {}".format(self.name, self.firstname)
 
     @staticmethod
     def search(query, to_dict=False):
