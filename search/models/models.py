@@ -4177,14 +4177,15 @@ class Sell(models.Model):
         # nb_sells = sells.count()  # = nb of articles sold, != nb sells (passages en caisse).
         nb_sells = sells.values('sell_id').distinct().count()
         # nb_cards_sold = sum([it.quantity for it in sells])
-        nb_cards_sold = sum(sells.values_list('quantity', flat=True))
+        nb_cards_sold = sum(sells.filter(quantity__gt=0).values_list('quantity', flat=True))
+        nb_cards_returned = sum(sells.filter(quantity__lt=0).values_list('quantity', flat=True))
         total_sells = sum(sells.values_list('quantity', flat=True))
 
         total_price_sold = None
         sell_mean = None
         if with_total_price_sold:
             # Ignore coupons, gifts, and others in the total revenue.
-            sells_for_revenue = sells.exclude(ignore_for_revenue=True)
+            sells_for_revenue = sells.filter(quantity__gt=0).exclude(ignore_for_revenue=True)
             total_price_sold = sum([it[0] * it[1] for it in sells_for_revenue.values_list('quantity', 'price_sold')])
             if total_price_sold:
                 sell_mean = total_price_sold / nb_sells
@@ -4204,6 +4205,7 @@ class Sell(models.Model):
         return {"data": sells,
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
+                "nb_cards_returned": - nb_cards_returned,
                 "total_sells": total_sells,  # total
                 "total_sells_fmt": price_fmt(total_sells, default_currency),  # total
                 "total_price_sold": total_price_sold,
@@ -4487,6 +4489,7 @@ class Sell(models.Model):
             return None, status, "Error registering the sell"
 
         # Decrement cards quantities from their place or deposit.
+        # A quantity < 0 is a return (or reimboursement).
         for it in ids_prices_nb:
             # "sell" a card.
             id = it.get("id")
@@ -4514,6 +4517,7 @@ class Sell(models.Model):
                                                            nb=quantity)
 
                 # either sell from a place or the default (selling) place.
+                # A quantity < 0 gets added back.
                 else:
                     status, alerts = Card.sell(id=id, quantity=quantity, place=place_obj)
 

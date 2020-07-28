@@ -52,7 +52,10 @@ h1 {{ day | date:'l d F Y' | title }}
 
 .col-md-3.panel.panel-info
   div.panel-heading {% trans "Articles sold" %}
-  div.panel-body {{ sells_data.nb_cards_sold }}
+  div.panel-body
+    span {{ sells_data.nb_cards_sold }}
+    if sells_data.nb_cards_returned
+      span &nbsp; {% trans "Articles returned" %}: {{ sells_data.nb_cards_returned }}
 
 .col-md-3.panel.panel-info
   div.panel-heading {% trans "Cash register movements" %}
@@ -85,7 +88,10 @@ table.table
     td.text-right {{ it.price_sold_fmt }}
     td
       if it.quantity != 1
-        span x {{ it.quantity }}
+        span(
+            if it.quantity < 0
+              style="background-color: yellow")
+            &nbsp;x {{ it.quantity }}
     td
       if new_sell
         span {{ it.sell.total_price_sold_fmt }}

@@ -168,7 +168,7 @@ div.ng-cloak(ng-controller="sellController")
                 label.sr-only {% trans "Quantity" %}
                 span.input-group-addon X
                 input.form-control(
-                  type="number", min=0, max=99
+                  type="number", min=-9, max=99
                   ng-model="{% verbatim %} card.quantity_sell {% endverbatim %}"
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )

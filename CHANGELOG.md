@@ -16,12 +16,13 @@ New **bibliographic and stock** features:
 - My Stock: we can select books and assign them to another shelf.
 - on a card page, we can **change the shelf quickly** (a select field is present).
 
-New **payment** features:
+New **sell** features:
 
 - new "coupon" payment method. The sell appears in the history but is
   not counted in the day's revenue. Indeed, the coupon was sold before
   and we must not count the sell twice. More about coupons and sell
   options are coming.
+- new possibility to return a book during the sell, by inputting "-1" in the quantity field.
 
 New **clients** features:
 

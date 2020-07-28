@@ -212,7 +212,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.getTotalCopies = function(){
         return _.reduce($scope.cards_selected,
                         function(memo, it){
-                            return memo + it.quantity_sell;},
+                            return memo + Math.abs(it.quantity_sell);
+                        },
                         0);
     };
 
