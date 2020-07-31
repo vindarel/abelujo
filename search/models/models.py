@@ -4185,10 +4185,15 @@ class Sell(models.Model):
         sell_mean = None
         if with_total_price_sold:
             # Ignore coupons, gifts, and others in the total revenue.
-            sells_for_revenue = sells.filter(quantity__gt=0).exclude(ignore_for_revenue=True)
+            # Total for the cash register: count sells and returns.
+            sells_for_revenue = sells.exclude(ignore_for_revenue=True)
+            # Total for mean sell: count sells only, not returns.
+            # We consider that a return or an exchange should not lower the mean sell.
+            sells_for_mean = sells.filter(quantity__gt=0).exclude(ignore_for_revenue=True)
             total_price_sold = sum([it[0] * it[1] for it in sells_for_revenue.values_list('quantity', 'price_sold')])
-            if total_price_sold:
-                sell_mean = total_price_sold / nb_sells
+            total_sells_for_mean = sum([it[0] * it[1] for it in sells_for_mean.values_list('quantity', 'price_sold')])
+            if total_sells_for_mean:
+                sell_mean = total_sells_for_mean / nb_cards_sold
 
         # Pagination.
         if page is not None and page_size is not None:
