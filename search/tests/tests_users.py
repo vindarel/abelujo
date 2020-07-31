@@ -34,7 +34,6 @@ class TestBill(TestCase):
 
     def setUp(self):
         self.bill = Bill(ref="987",
-                         distributor=DistributorFactory.create(),
                          name="bill test",
                          due_date=datetime.date.today(),
                          total=100,
@@ -47,7 +46,6 @@ class TestBill(TestCase):
     def test_create(self):
         bill = Bill(ref="987",
                     name="test bill",
-                    distributor=DistributorFactory.create(),
                     due_date=datetime.date.today(),
                     total=100,
                     )
