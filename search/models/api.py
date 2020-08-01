@@ -257,7 +257,7 @@ def cards(request, **response_kwargs):
     # pagination
     page = request.GET.get("page", 1)
     page = to_int(page)
-    page_size = request.GET.get("page_size", PAGE_SIZE)
+    page_size = request.GET.get("page_size", 10)
     page_size = to_int(page_size)
 
     # Set the language (for url prefix, error messages, etc)

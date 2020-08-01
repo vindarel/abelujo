@@ -45,14 +45,19 @@ New **deposits** features:
 - The admin page for shelves shows how many books each shelf contains.
 - we can now easily configure payment methods in a configuration
   file. See the developper documentation, "installation" page.
-- faster loading My Stock page: we don't run a DB query to get the newest books at the
-  landing page anymore, we show nothing.
 - creating a command (with the OK button) was dramatically sped up
   (from a few seconds to a fraction of a second).
 - selling a card that is in a deposit automatically sells it from the
   deposit. Previously, we had to be explicit in the sell UI.
 - the default timezone was set to Paris (UTC+1/+2), preventing some
   date inconsistencies.
+
+**Speed ups**:
+
+- faster loading My Stock page: we don't display the newest books at the
+  landing page anymore.
+- searching cards by keywords is nearly 2 times faster.
+
 
 ### Admin
 
