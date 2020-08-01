@@ -970,18 +970,14 @@ class Card(TimeStampedModel):
     def to_dict(self):
         return self.to_list()
 
-    def to_list(self, in_deposits=False, with_quantity=True):
+    def to_list(self, in_deposits=False, with_quantity=True, with_authors=True,
+                with_publishers=True):
         """
         Return a *dict* of this card's fields.
+
+        The with_xxx parameters allow to gain some SQL queries and some speed up.
         """
-        authors = self.authors.all()
-        # comply to JS format (needs harmonization!)
-        auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
         authors_repr = self.authors_repr
-        publishers = self.publishers.all()
-        # Still a bit used client side.
-        pubs = [{'fields': {'name': it.name,
-                            "id": it.id}} for it in publishers]
         pubs_repr = self.pubs_repr
 
         isbn = ""
@@ -1011,7 +1007,6 @@ class Card(TimeStampedModel):
 
         res = {
             "id": self.id,
-            "authors": auth,
             "authors_repr": authors_repr,
             "collection": self.collection.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
@@ -1045,8 +1040,6 @@ class Card(TimeStampedModel):
             "price_excl_vat": self.price_excl_vat,
             "price_excl_vat_fmt": price_fmt(self.price_excl_vat, currency),
             "currency": currency,
-            # "publishers": ", ".join([p.name.capitalize() for p in self.publishers.all()]),
-            "publishers": pubs,
             "pubs_repr": pubs_repr,
             "shelf": self.shelf.name if self.shelf else "",
             "title": self.title,
@@ -1057,6 +1050,19 @@ class Card(TimeStampedModel):
 
         if in_deposits:
             res['qty_deposits'] = self.quantity_deposits()
+
+        if with_authors:
+            authors = self.authors.all()
+            # comply to JS format (needs harmonization!)
+            auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
+            res['authors'] = auth
+
+        if with_publishers:
+            publishers = self.publishers.all()
+            # Still a bit used client side.
+            pubs = [{'fields': {'name': it.name,
+                                "id": it.id}} for it in publishers]
+            res['publishers'] = publishers
 
         if with_quantity:
             res['quantity'] = self.quantity
@@ -1079,19 +1085,22 @@ class Card(TimeStampedModel):
         return "--"
 
     @staticmethod
-    def obj_to_list(cards, in_deposits=False, with_quantity=True):
+    def obj_to_list(cards, in_deposits=False, with_quantity=True,
+                    with_authors=True, with_publishers=True):
         """Transform a list of Card objects to a python list.
 
         Used to save a search result in the session, which needs a
         serializable object, and for the api to encode to json.
-        TODO: https://docs.djangoproject.com/en/1.6/topics/serialization/
 
         - in_deposits: bool. If true, also include the quantity of the card in deposits.
 
         Return: list of dicts.
         """
 
-        return [card.to_list(in_deposits=in_deposits, with_quantity=with_quantity)
+        return [card.to_list(in_deposits=in_deposits,
+                             with_quantity=with_quantity,
+                             with_authors=with_authors,
+                             with_publishers=with_publishers)
                 for card in cards]
 
     @staticmethod
@@ -1350,8 +1359,13 @@ class Card(TimeStampedModel):
             cards = paginator.object_list
 
         if to_list:
-            cards = Card.obj_to_list(cards, in_deposits=in_deposits,
-                                     with_quantity=with_quantity)
+            cards = Card.obj_to_list(
+                cards,
+                in_deposits=in_deposits,
+                with_quantity=with_quantity,
+                with_authors=False,
+                with_publishers=False,
+                )
 
         meta = {
             'msgs': msgs.msgs,
