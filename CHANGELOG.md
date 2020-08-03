@@ -23,6 +23,7 @@ New **sell** features:
   and we must not count the sell twice. More about coupons and sell
   options are coming.
 - new possibility to return a book during the sell, by inputting "-1" in the quantity field.
+- if an ISBN is scanned but not found (in the stock or on Dilicom), warn the user with a yellow message, and allow to scan other books.
 
 New **clients** features:
 

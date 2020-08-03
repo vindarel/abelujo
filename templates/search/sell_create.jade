@@ -133,6 +133,11 @@ div.ng-cloak(ng-controller="sellController")
               ng-model="discounts.global_discount"
               ng-change="discount_global()")
 
+      .row(ng-show="isbns_not_found", ng-repeat="isbn in isbns_not_found")
+        h4.col-md-4(style="background-color: yellow") {{ 'isbn' | ng }} {% trans "was NOT FOUND" %}.
+          a(target="_blank", href="/{{ 'language' | ng }}/stock/card/create") &nbsp;{% trans "Click to create." %}
+        h4.col-md-1
+            i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_isbn_not_found($index)", style="float: right;")
 
       .row(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4.col-md-4

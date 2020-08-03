@@ -24,6 +24,9 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
 
+    // Show the ISBNs not found, and propose to create a new card.
+    $scope.isbns_not_found = [];
+
       // Respect the backend ids.
       $scope.payment_means = [
           {name: gettext("ESPECES"), id:1},
@@ -150,6 +153,12 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                       return [];
                   }
 
+                  if (utils.is_isbn(val) && resp.length == 0) {
+                      Notiflix.Notify.Warning("ISBN not found: " + val);
+                      $scope.isbns_not_found.push(val);
+                      $window.document.getElementById('default-input').value = "";
+                  }
+
                   return resp;
               });
       };
@@ -188,6 +197,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           if ($scope.cards_selected.length == 0) {
               $window.removeEventListener('beforeunload', unloadlistener);
           }
+      };
+
+      $scope.remove_isbn_not_found = function(index) {
+          $scope.isbns_not_found.splice(index, 1);
       };
 
       $scope.reset_card_list_following_dist = function(dist_name){
