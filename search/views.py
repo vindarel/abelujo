@@ -1403,7 +1403,7 @@ def history_sells_day(request, date, **kwargs):
 
     - date: string (format %Y-%M-%d)
     """
-    template = 'search/history_sells_day.jade'
+    template = 'search/history_sells_day.html'
     # XXX: view called twice?? as well as history_sells
     try:
         day = pendulum.datetime.strptime(date, PENDULUM_YMD)
