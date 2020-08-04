@@ -19,7 +19,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
 
     $scope.baskets = []
-    $scope.copies = []
+    $scope.copies = []  # The ones to display.
     $scope.alerts = []
     $scope.show_buttons = {}
     $scope.new_name = null
@@ -100,6 +100,16 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
             # Set focus.
             angular.element('#default-input').trigger('focus')
+
+    $scope.empty_basket = !->
+        sure = confirm(gettext("Are you sure to empty this list {}?")replace "{}", $scope.cur_basket.name)
+        if sure
+            $http.post "/api/baskets/#{$scope.cur_basket.id}/empty"
+            .then (response) !->
+                index = find-index (.id == $scope.cur_basket.id), $scope.baskets
+                $scope.baskets[index].copies = []
+                $scope.baskets[index].length = 0
+                $scope.copies = []
 
     $scope.archive_basket =  !->
         sure = confirm(gettext("Are you sure to archive this list {}?")replace "{}", $scope.cur_basket.name)

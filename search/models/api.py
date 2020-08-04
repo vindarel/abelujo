@@ -42,6 +42,7 @@ from drfserializers import PreferencesSerializer
 from models import Alert
 from models import Author
 from models import Basket
+from models import BasketCopies
 from models import Card
 from models import CardType
 from models import Command
@@ -1439,6 +1440,32 @@ def baskets_add_to_shelf(request, pk, **kw):
 
         msgs.add_success('The card were successfully added to the shelf.')
         to_ret['alerts'] = msgs.msgs
+        return JsonResponse(to_ret)
+
+def baskets_empty(request, pk, **kw):
+    """
+    Empty this basket (remove all the cards).
+    """
+    if request.method == 'POST':
+        msg = {'status': ALERT_SUCCESS,
+               "message": _("Basket emptied succesfully.")}
+        try:
+            basketcopies = BasketCopies.objects.filter(basket_id=pk)
+        except Exception as e:
+            log.error("Basket empty: {}".format(e))
+            return JsonResponse({'status': ALERT_ERROR,
+                                 'message': "We could not archive the basket n° {}.".format(pk)})
+
+        try:
+            basketcopies.delete()
+        except Exception as e:
+            log.error("Basket {} could not be emptied: {}".format(b_obj.id, e))
+            msg = {'status': ALERT_ERROR,
+                    'message': _("The basket could not be emptied")}
+        to_ret = {
+            "status": ALERT_SUCCESS,
+            "alerts": [msg],
+        }
         return JsonResponse(to_ret)
 
 def baskets_archive(request, pk, **kw):

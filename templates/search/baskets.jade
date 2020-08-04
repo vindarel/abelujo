@@ -75,6 +75,7 @@ div(ng-cloak, ng-controller="basketsController")
            li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
            li: a(href="#", ng-click="return_to_supplier()", title='{% trans "Return the cards to the distributor of this basket." %}') {% trans "Return to supplier" %}…
            li.divider(role="separator")
+           li: a(href="#", ng-click="empty_basket()", title='{% trans "Empty this list." %}') {% trans "Empty this list" %}
            li: a(href="#", ng-click="archive_basket()", title='{% trans "Archive this list." %}') {% trans "Archive this list" %}
            li: a(href="#", ng-click="delete_basket()", title='{% trans "Delete this list. This can not be undone" %}') {% trans "Delete this list" %}
 
