@@ -1062,7 +1062,7 @@ class Card(TimeStampedModel):
             # Still a bit used client side.
             pubs = [{'fields': {'name': it.name,
                                 "id": it.id}} for it in publishers]
-            res['publishers'] = publishers
+            res['publishers'] = pubs
 
         if with_quantity:
             res['quantity'] = self.quantity
