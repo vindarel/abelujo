@@ -272,6 +272,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
 
         modalInstance.result.then (alerts) !->
             $scope.alerts = alerts
+            $scope.selected = {}
         , !->
               $log.info "modal dismissed"
 
