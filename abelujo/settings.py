@@ -208,7 +208,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     # Custom:
-    'mod_wsgi.server',
     'django_q',
     'rest_framework',
 
