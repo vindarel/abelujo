@@ -25,7 +25,6 @@ django-bootstrap3==6.2.2
 pyjade                  # process jade templates.
 bootstrap-admin==0.3.6  # bootstrap theme, nice search feature.
 pyyaml
-psycopg2                # postgresql database engine.
 pytz			# timezone
 
 # Python2/3
