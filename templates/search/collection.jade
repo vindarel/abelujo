@@ -64,8 +64,8 @@ div(ng-cloak, ng-controller="collectionController")
             ng-options="elt.name for elt in places")
 
   .row
-   .col-md-6
-    form
+   form
+    .col-md-6
      div
         label.col-sm-4 {% trans "Type of card" %}
         div.col-md-8
@@ -74,60 +74,60 @@ div(ng-cloak, ng-controller="collectionController")
             ng-options="elt.name group by elt.group for elt in card_types"
           )
 
-    div
-      label.col-sm-4 {% trans "Publisher" %}
-      div.col-md-8
-        select.form-control(
-          ng-model="publisher"
-          ng-options="elt.fields.name for elt in publishers")
-
-    div
-      label.col-sm-4 {% trans "Supplier" %}
-      div.col-md-8
-        select.form-control(
-          ng-model="distributor"
-          ng-options="elt.repr for elt in distributors")
-
-   .col-md-6
-    div.form-group
-      label.col-sm-4 {% trans "Shelf" %}
-      div.col-md-8
-        select.form-control(
-          ng-model="shelf"
-          ng-options="elt.fields.name for elt in shelfs")
-
-    div.form-group
-      label.col-sm-4 {% trans "Quantity" %}
-      div.col-md-8
-        select.form-control(
-          ng-model="quantity_choice"
-          ng-options="elt.name for elt in quantity_choices")
-
-    div
-        label.col-sm-4 {% trans "Price" %}
+     div
+        label.col-sm-4 {% trans "Publisher" %}
         div.col-md-8
           select.form-control(
-            ng-model="price_choice"
-            ng-options="elt.name group by elt.group for elt in price_choices"
-          )
+            ng-model="publisher"
+            ng-options="elt.fields.name for elt in publishers")
 
-    div
-        label.col-sm-4 {% trans "Creation date" %}
+     div
+        label.col-sm-4 {% trans "Supplier" %}
         div.col-md-8
           select.form-control(
-            ng-model="date_created_sort"
-            ng-options="elt.name group by elt.group for elt in date_created_sort_choices"
-          )
+            ng-model="distributor"
+            ng-options="elt.repr for elt in distributors")
 
-        label.col-sm-4
+    .col-md-6
+      div.form-group
+        label.col-sm-4 {% trans "Shelf" %}
         div.col-md-8
-          input.form-control#default-input(
-            ng-model="date_created"
-            type="text"
-            placeholder='{% trans "exple: juin 2020" %}'
-          )
+          select.form-control(
+            ng-model="shelf"
+            ng-options="elt.fields.name for elt in shelfs")
 
-    input(type="submit", hidden="true", onsubmit="validate()")
+      div.form-group
+        label.col-sm-4 {% trans "Quantity" %}
+        div.col-md-8
+          select.form-control(
+            ng-model="quantity_choice"
+            ng-options="elt.name for elt in quantity_choices")
+
+      div
+          label.col-sm-4 {% trans "Price" %}
+          div.col-md-8
+            select.form-control(
+              ng-model="price_choice"
+              ng-options="elt.name group by elt.group for elt in price_choices"
+            )
+
+      div
+          label.col-sm-4 {% trans "Creation date" %}
+          div.col-md-8
+            select.form-control(
+              ng-model="date_created_sort"
+              ng-options="elt.name group by elt.group for elt in date_created_sort_choices"
+            )
+
+          label.col-sm-4
+          div.col-md-8
+            input.form-control#default-input(
+              ng-model="date_created"
+              type="text"
+              placeholder='{% trans "exple: juin 2020" %}'
+            )
+
+      input(type="submit", hidden="true", onsubmit="validate()")
 
  .row
    .col-md-7(style="margin-top: 7px; margin-bottom: 7px")
