@@ -191,13 +191,20 @@ def check_uptodate(name=None):
             last_commit_date = check_output(["git", "show", "-s", "--format=%ci", res])
             acceptable_trailing_by = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(acceptable_count)]).split("\n")
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
-            index = git_last_commits.index(res)
+            try:
+                index = git_last_commits.index(res)
+            except Exception as e:
+                # Very, very much behind.
+                print(termcolor.colored("- {}", 'blue').format(client.name) +
+                      " is " + " more than 1000 commits behind (or remote in not on master).")
+            # Behind by not much.
             if res in acceptable_trailing_by:
                 print(termcolor.colored("- {}", 'blue').format(client.name) +
                     " is " +
                     termcolor.colored("{}", "yellow").format(index) +
                       " commits behind. Head is at: {}, {} ({})".format(
                           tag, last_commit_date, res))
+            # Very much behind.
             else:
                 print(termcolor.colored("- {}", "blue").format(client.name) +
                     " is  " +
