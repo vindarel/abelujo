@@ -359,7 +359,7 @@ class Publisher (models.Model):
         verbose_name = __("publisher")
 
     def __str__(self):
-        return "{}, {}".format(self.id, self.name)
+        return "{}".format(self.name)
 
     def get_absolute_url(self):
         return "/admin/search/publisher/{}".format(self.id)
