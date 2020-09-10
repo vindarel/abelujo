@@ -77,6 +77,9 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // messages for ui feedback: list of couple level/message
       $scope.alerts = undefined;
 
+      // Other variables.
+      $scope.all_digits_re = /^\d+$/;
+
 
       $http.get("/api/preferences")
         .then(function(response) {
@@ -118,6 +121,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Fetch cards for the autocomplete.
       // Livescript version: see basketsController.ls
       $scope.getCards = function(val){
+
+          if ($scope.all_digits_re.test(val)) {
+              if (val.length < 13) {
+                  console.log("--- dismissing ", val);
+                  return;
+              }
+          };
 
           var place_id = 0;
           if ($scope.place) {
