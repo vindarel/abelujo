@@ -63,7 +63,7 @@
     });
 
     function update_shelf(shelf_id) {
-        let card_id = url_id(window.location.href);
+        let card_id = url_id(window.location.pathname);
         let url = "/api/cards/update";
         let json_body = '{"card_id": ' + card_id + ', ' +
             '"shelf_id": ' + shelf_id +
