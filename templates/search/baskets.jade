@@ -94,6 +94,9 @@ div(ng-cloak, ng-controller="basketsController")
          li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing&barcodes=true") {% trans "List, with barcodes" %} - pdf
 
          li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing&barcodes=false&covers=true") {% trans "List, with covers" %} - pdf
+         li.divider(role="separator")
+         li: a(href="#", ng-click="choose_client(cur_basket.id)", title='{% trans "Create a bill for a client" %}') {% trans "Bill to client…" %}
+
 
      .btn-group
        button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
@@ -253,6 +256,19 @@ div(ng-cloak, ng-controller="basketsController")
          select.form-control(
            ng-model="selected_shelf",
            ng-options="it.fields.name for it in shelves")
+
+      button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
+      button.btn(ng-click="cancel()") {% trans "Cancel" %}
+
+ script(type="text/ng-template", id="chooseClientModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Choose a client" %}
+
+    div.modal-body
+      span
+         select.form-control(
+           ng-model="selected_client",
+           ng-options="it.__repr__ for it in clients")
 
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}

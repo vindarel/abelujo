@@ -28,6 +28,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.copy_selected = undefined
     $scope.show_images = false
 
+    $scope.selected_client = null  # in a modale.
+
     COMMAND_BASKET_ID = 1
 
     $scope.language = utils.url_language($window.location.pathname)
@@ -362,6 +364,28 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
         $log.info $scope.copies
 
+    #############################
+    # Choose a client for billing
+    # ###########################
+    $scope.choose_client = (cur_basket_id) !->
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'chooseClientModal.html'
+            controller: 'ChooseClientModalControllerInstance'
+            ## backdrop: 'static'
+            ## size: size,
+            cur_basket_id: cur_basket_id,
+            resolve: do
+                utils: ->
+                    utils
+
+        modalInstance.result.then (basket) !->
+            $log.info "modal ok, param: ", basket
+            $window.localStorage.setItem('client_selected', basket)
+
+        , !->
+            $log.info "modal dismissed"
+
     ##############################
     # Keyboard shortcuts (hotkeys)
     # ############################
@@ -462,4 +486,54 @@ angular.module "abelujo" .controller "ChooseShelfModalControllerInstance", ($htt
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')
-        $scope.alerts = response.data.alerts
+        ## $scope.alerts = response.data.alerts
+
+###############################
+# Choose a client (for billing)
+# #############################
+angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils) !->
+
+    utils.set_focus!
+    $scope.shelves = []
+
+    $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
+    $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
+
+    $http.get "/api/clients"
+    .then (response) ->
+        $log.info "response: ", response
+        $scope.clients = response.data.data
+        $log.info "clients: ", $scope.clients
+
+    $scope.ok = !->
+        if typeof ($scope.selected_client) == "undefined" || $scope.selected_client == ""
+            $uibModalInstance.dismiss('cancel')
+            return
+
+        $log.info "selected client: ", $scope.selected_client
+        $log.info " TODO here generate PDF."
+
+        params = do
+            client_id: $scope.selected_client.id
+            basket_id: $scope.cur_basket_id
+            language: utils.url_language($window.location.pathname)
+
+        $http.post "/api/bill", params
+        .then (response) !->
+            $scope.alerts = response.data.alerts
+            $uibModalInstance.close()
+            $scope.alerts = response.data.alerts
+            $log.info(response)
+            if (response.status == 200)
+                    element = document.createElement('a')
+                    element.setAttribute('href', response.data.fileurl)
+                    element.setAttribute('download', response.data.filename)
+                    element.style.display = 'none'
+                    document.body.appendChild(element)
+                    element.click()
+                    document.body.removeChild(element)
+
+
+    $scope.cancel = !->
+        $uibModalInstance.dismiss('cancel')
+        ## $scope.alerts = response.data.alerts

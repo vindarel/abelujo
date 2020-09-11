@@ -26,6 +26,7 @@ from django.utils.translation import ugettext as _
 from weasyprint import HTML
 
 from abelujo import settings
+from search.models import Basket
 from search.models import Card
 from search.models import Preferences
 from search.models import users
@@ -52,17 +53,20 @@ def clients(request, **response_kwargs):
             log.error(u"error getting clients: {}".format(e))
             return JsonResponse({'data': None})
 
+def bill_from_basket():
+    pass
+
 def bill(request, *args, **response_kwargs):
     """
     Create a bill, as a PDF file.
 
-    Either:
-    - with the given products (list of ids)
+    From either:
+    - the given products (list of ids)
       - each has an optional discount.
-    - for the given client.
+      - for the given client.
+    - an existing bill id.
+    - or a given basket id.
 
-    or:
-    - from an existing bill id.
     """
     if request.method == 'GET':
         return
@@ -74,7 +78,8 @@ def bill(request, *args, **response_kwargs):
     try:
         params = json.loads(request.body)
     except Exception as e:
-        log.error('Sell bill: could not decode json body: {}\n{}'.format(e, request.body))
+        log.error('Sell bill: could not decode json body: {}\n{}. Referer: {}'.format(
+            e, request.body, request.META.get('HTTP_REFERER')))
 
     language = params.get('language')
     if language:
@@ -98,20 +103,43 @@ def bill(request, *args, **response_kwargs):
     due_date_fmt = due_date.strftime(DATE_FMT)
 
     # payment_id = params.get('payment_id')
-    ids = params.get('ids')
-    prices = params.get('prices')
-    prices_sold = params.get('prices_sold')
-    quantities = params.get('quantities')
+    ids = params.get('ids', [])
+    prices = params.get('prices', [])
+    prices_sold = params.get('prices_sold', [])
+    quantities = params.get('quantities', [])
     discount = params.get('discount', {})
-    discount_fmt = discount['name'] if discount else ''
+    discount_fmt = discount['name'] if discount else '0%'
+    basket_id = int(params.get('basket_id', -1))
+    language = params.get('language')
 
-    # Cards
-    cards = Card.objects.filter(pk__in=ids)
-    # sort as in ids and quantities:
-    sorted_cards = sorted(cards, cmp=lambda x, y: -1 if ids.index(x.pk) <= ids.index(y.pk) else 1)
-    cards_data = list(zip(sorted_cards, quantities))
+    if language:
+        translation.activate(language)
 
-    # Identity.
+    cards = []
+    sorted_cards = []
+    cards_data = []
+    if ids:
+        # Cards
+        cards = Card.objects.filter(pk__in=ids)
+        # sort as in ids and quantities:
+        sorted_cards = sorted(cards, cmp=lambda x, y: -1 if ids.index(x.pk) <= ids.index(y.pk) else 1)
+        cards_data = list(zip(sorted_cards, quantities))
+
+    elif basket_id:
+        try:
+            basket = Basket.objects.filter(id=basket_id).first()
+            basket_copies = basket.basketcopies_set.order_by('card__title').all()
+            cards = [it.card for it in basket_copies]
+            sorted_cards = cards
+            ids = basket_copies.values_list('card__pk', flat=True)
+            prices = basket_copies.values_list('card__price', flat=True)
+            # prices_sold = cards.values_list('price_sold', flat=True)  # Not Available
+            quantities = basket_copies.values_list('nb', flat=True)
+            cards_data = list(zip(sorted_cards, quantities))
+        except Exception as e:
+            log.error(e)
+
+    # The bookshop identity.
     bookshop = users.Bookshop.objects.first()
 
     # Client
@@ -136,13 +164,17 @@ def bill(request, *args, **response_kwargs):
     # Totals
     total = 0
     total_discounted = 0
-    if not (len(ids) == len(prices_sold) == len(prices) == len(quantities)):
+    if not (len(ids) == len(prices) == len(quantities)):  # prices_sold: not for basket(?)
         log.error("Bill: post params are malformed. ids, prices, prices_sold and quantities should be of same length.")
         return
     for i, price in enumerate(prices):
         # XXX: check price type and value
         total += price * quantities[i]
-        total_discounted += prices_sold[i] * quantities[i]
+        if prices_sold:
+            total_discounted += prices_sold[i] * quantities[i]
+
+    if not prices_sold:
+        total_discounted = total
 
     default_currency = Preferences.get_default_currency()
     total_fmt = price_fmt(total, default_currency)
