@@ -436,6 +436,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
         if ($scope.client !== undefined) {
             params['client_id'] = $scope.client.id;
+            params['language'] = utils.url_language($window.location.pathname);
         }
 
         $http.post("/api/bill", params)
