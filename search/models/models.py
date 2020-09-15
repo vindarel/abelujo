@@ -1191,7 +1191,8 @@ class Card(TimeStampedModel):
             cards = Card.objects.filter(Q(title_ascii__icontains=head_ascii) |
                                         Q(title__contains=head) |
                                         Q(authors__name__icontains=head) |
-                                        Q(authors__name_ascii__contains=head_ascii))
+                                        Q(authors__name_ascii__contains=head_ascii))\
+                                .distinct()
 
             if len(words) > 1:
                 for elt in words[1:]:
@@ -1199,7 +1200,8 @@ class Card(TimeStampedModel):
                     cards = cards.filter(Q(title_ascii__contains=elt_ascii) |
                                          Q(title__icontains=elt) |
                                          Q(authors__name__icontains=elt) |
-                                         Q(authors__name_ascii__contains=elt_ascii))
+                                         Q(authors__name_ascii__contains=elt_ascii))\
+                                 .distinct()
 
         elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
