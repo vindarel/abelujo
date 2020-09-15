@@ -155,6 +155,15 @@ In the next topic, see the available management commands.
 Post-installation: set personal settings
 ----------------------------------------
 
+Set the default datasource: if you want to search on the Swiss source
+by default, use a shell variable::
+
+  export DEFAULT_DATASOURCE='lelivre'
+
+and then start Abelujo.
+
+Set other variables in a configuration file.
+
 Create a file ``config.py`` at the project root.
 
 Make it start with the following line::
