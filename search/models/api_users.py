@@ -150,15 +150,15 @@ def bill(request, *args, **response_kwargs):
         if qs:
             client = qs.first()
 
-    # Title, filename
+    # Name, filename
     bill_label = _("Bill")
     bookshop_name = bookshop.name if bookshop else ""
-    title = "{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
-    filename = title + '.pdf'
+    name = "{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
+    filename = name + '.pdf'
 
     # File 2, with books list.
-    # details_title = "{} {} - {} - list".format(bill_label, bookshop_name, creation_date_fmt)
-    # details_filename = title + '.pdf'
+    # details_name = "{} {} - {} - list".format(bill_label, bookshop_name, creation_date_fmt)
+    # details_filename = name + '.pdf'
     # details_template = "pdftemplates/pdf-bill-details.html"
 
     # Totals
@@ -184,11 +184,14 @@ def bill(request, *args, **response_kwargs):
     card = Card.objects.first()
     copies_set = card.placecopies_set.all()
     cards_qties = [(it.card, it.nb) for it in copies_set]
+    document_title = "{} {}".format(_("Bill"),
+                                    pendulum.now().strftime('%Y%m%d'))
 
     # Totals
 
     sourceHtml = template.render({'cards_qties': cards_qties,
-                                  'name': title,
+                                  'name': name,
+                                  'document_title': document_title,
                                   'total_label': _("Total before discount"),
                                   'total_fmt': total_fmt,
                                   'total_discounted_fmt': total_discounted_fmt,

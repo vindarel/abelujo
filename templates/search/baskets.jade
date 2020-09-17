@@ -95,7 +95,7 @@ div(ng-cloak, ng-controller="basketsController")
 
          li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing&barcodes=false&covers=true") {% trans "List, with covers" %} - pdf
          li.divider(role="separator")
-         li: a(href="#", ng-click="choose_client(cur_basket.id)", title='{% trans "Create a bill for a client" %}') {% trans "Bill to client…" %}
+         li: a(href="#", ng-click="choose_client(cur_basket.id)", title='{% trans "Create a bill for a client" %}') {% trans "Bill" %}…
 
 
      .btn-group
