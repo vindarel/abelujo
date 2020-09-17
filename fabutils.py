@@ -79,7 +79,14 @@ def wd(client, cfg):
     """
     cfg = get_yaml_cfg(CLIENTS)
     cfg = addict.Dict(cfg)
-    home = '/home/{}'.format(client.user or cfg.user)
+    if client.wd:
+        return client.wd
+
+    home = "/home/root/"
+    if client.home:
+        home = client.home
+    else:
+        home = '/home/{}'.format(client.user or cfg.user)
     path = os.path.join(home, cfg.dir, client.name, cfg.project_name)
     return path
 
