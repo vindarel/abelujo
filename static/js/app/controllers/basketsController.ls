@@ -318,10 +318,11 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                     utils
 
         modalInstance.result.then (basket) !->
-            $scope.baskets.push basket
+            $scope.baskets.unshift basket
             $log.info "new basket: ", basket
             $log.info "all baskets: ", $scope.baskets
-            ## $scope.showBasket basket.id  # doesn't work :(
+            $scope.showBasket 1
+            $scope.cur_basket = basket
         , !->
             $log.info "modal dismissed"
 
