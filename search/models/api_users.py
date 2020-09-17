@@ -58,7 +58,7 @@ def bill_from_basket():
 
 def bill(request, *args, **response_kwargs):
     """
-    Create a bill, as a PDF file.
+    Create a bill or an estimate, as a PDF file.
 
     From either:
     - the given products (list of ids)
@@ -66,6 +66,7 @@ def bill(request, *args, **response_kwargs):
       - for the given client.
     - an existing bill id.
     - or a given basket id.
+    - bill_or_estimate: 1 is bill, 2 is estimate.
 
     """
     if request.method == 'GET':
@@ -84,6 +85,8 @@ def bill(request, *args, **response_kwargs):
     language = params.get('language')
     if language:
         translation.activate(language)
+
+    bill_or_estimate = params.get('bill_or_estimate', 1)  # bill
 
     # Creation date, due date.
     DATE_FMT = '%d-%m-%Y'
@@ -184,7 +187,16 @@ def bill(request, *args, **response_kwargs):
     card = Card.objects.first()
     copies_set = card.placecopies_set.all()
     cards_qties = [(it.card, it.nb) for it in copies_set]
-    document_title = "{} {}".format(_("Bill"),
+
+    # Document title.
+    if bill_or_estimate in [1, "1"]:
+        document_type = _("Bill")
+    elif bill_or_estimate in [2, "2"]:
+        document_type = _("Estimate")
+    else:
+        document_type = _("Bill")
+
+    document_title = "{} {}".format(document_type,
                                     pendulum.now().strftime('%Y%m%d'))
 
     # Totals

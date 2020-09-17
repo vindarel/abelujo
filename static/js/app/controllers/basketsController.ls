@@ -368,7 +368,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     #############################
     # Choose a client for billing
     # ###########################
-    $scope.choose_client = (cur_basket_id) !->
+    $scope.choose_client_for_bill = (cur_basket_id, bill_or_estimate) !->
+        "1: bill, 2: estimate"
         modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
             templateUrl: 'chooseClientModal.html'
@@ -376,13 +377,16 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             ## backdrop: 'static'
             ## size: size,
             cur_basket_id: cur_basket_id,
+            bill_or_estimate: bill_or_estimate,
             resolve: do
                 utils: ->
                     utils
 
-        modalInstance.result.then (basket) !->
-            $log.info "modal ok, param: ", basket
-            $window.localStorage.setItem('client_selected', basket)
+        modalInstance.result.then (response) !->
+            ## $log.info "modal ok, param: ", basket
+            $log.info "modal ok, bill_or_estimate: ", bill_or_estimate
+            ## $window.localStorage.setItem('client_selected', basket) #XXX: ?
+            $window.localStorage.setItem('bill_or_estimate', bill_or_estimate)
 
         , !->
             $log.info "modal dismissed"
@@ -518,6 +522,7 @@ angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($ht
             client_id: $scope.selected_client.id
             basket_id: $scope.cur_basket_id
             language: utils.url_language($window.location.pathname)
+            bill_or_estimate: $window.localStorage.getItem('bill_or_estimate')
 
         $http.post "/api/bill", params
         .then (response) !->
