@@ -2596,7 +2596,7 @@ class Preferences(models.Model):
 
 
 @python_2_unicode_compatible
-class BasketCopies(models.Model):
+class BasketCopies(TimeStampedModel):
     """Copies present in a basket (intermediate table).
     """
     card = models.ForeignKey("Card")
