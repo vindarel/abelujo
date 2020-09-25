@@ -168,12 +168,27 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         |> find (.repr == card.repr)
         tmpcard = tmpcard.item
         # $scope.copies.push tmpcard
-        # Insert at the right sorted place
-        index = 0
-        index = find-index ( -> tmpcard.title < it.title), $scope.copies
-        if not index
-            index = $scope.copies.length
-        $scope.copies.splice index, 0, tmpcard
+        ## # Insert at the right sorted place
+        ## index = 0
+        ## index = find-index ( -> tmpcard.title < it.title), $scope.copies
+        ## if not index
+        ##     index = $scope.copies.length
+        ## $scope.copies.splice index, 0, tmpcard
+        # Get possibly existing card and move to the top of the list.
+        $log.info "-- tmpcard: ", tmpcard
+        existing = $scope.copies
+        |> find (.id == tmpcard.id)
+        if existing
+           $log.info "--- existing! ", existing, " vs tmp: ", tmpcard
+           existing.basket_qty += 1  # and move to top
+           index = find-index ( -> existing.id == it.id ), $scope.copies
+           if index
+               # remove existing from list
+               $scope.copies.splice index, 1
+               # and move to top.
+               $scope.copies.unshift existing
+        else
+           $scope.copies.unshift tmpcard
         $scope.copy_selected = undefined
         # TODO: save
         $scope.save_card_to_basket tmpcard.id, $scope.cur_basket.id

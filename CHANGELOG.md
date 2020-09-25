@@ -1,5 +1,12 @@
 Changelog starting from v0.5 (2018/09/18)
 
+## v0.14 (2020-09, ...)
+
+### Enhancements
+
+- adding a book in a **list** always moves it at the top of the list. Before, there were cases where an existing book would not move, so we could not see its new quantity easily.
+
+
 ## v0.13 (2020-07, 2020-06, 2020-05)
 
 ### New features
