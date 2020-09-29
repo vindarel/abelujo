@@ -1159,7 +1159,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         header = None
         rows = copies_set
         # List of ISBN / quantity to command (BasketCopy.nb)
-        rows = copies_set.values_list('card__isbn', 'quantity')
+        rows = copies_set.values_list('card__isbn', 'nb')
         # rows = [
         # (ic.card.isbn,
         # ic.quantity)
