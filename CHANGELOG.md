@@ -6,6 +6,10 @@ Changelog starting from v0.5 (2018/09/18)
 
 - adding a book in a **list** always moves it at the top of the list. Before, there were cases where an existing book would not move, so we could not see its new quantity easily.
 
+### Fixes
+
+- baskets: there was an issue in the rendered HTML that prevented from sorting the table by title and publisher. It is now fixed.
+
 
 ## v0.13 (2020-07, 2020-06, 2020-05)
 
