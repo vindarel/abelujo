@@ -164,6 +164,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         """ Add the card selected from the autocomplete to the current list's copies.
         Save it.
         """
+        now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
+        $log.info "--- now is ", now
         tmpcard = $scope.cards_fetched
         |> find (.repr == card.repr)
         tmpcard = tmpcard.item
@@ -179,8 +181,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         existing = $scope.copies
         |> find (.id == tmpcard.id)
         if existing
-           $log.info "--- existing! ", existing, " vs tmp: ", tmpcard
            existing.basket_qty += 1  # and move to top
+           existing.modified = now
            index = find-index ( -> existing.id == it.id ), $scope.copies
            if index
                # remove existing from list
@@ -188,6 +190,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                # and move to top.
                $scope.copies.unshift existing
         else
+           tmpcard.modified = now
            $scope.copies.unshift tmpcard
         $scope.copy_selected = undefined
         # TODO: save
@@ -210,7 +213,9 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         """
         # XXX see save_card_to_basket above
         card = $scope.copies[index]
+        now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
         utils.save_quantity card, $scope.cur_basket.id
+        card.modified = now  # there is no success check
 
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.

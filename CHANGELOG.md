@@ -5,6 +5,7 @@ Changelog starting from v0.5 (2018/09/18)
 ### Enhancements
 
 - adding a book in a **list** always moves it at the top of the list. Before, there were cases where an existing book would not move, so we could not see its new quantity easily.
+- lists: sort books by last modified date. This allows to see the last books we added to a list.
 
 ### Fixes
 

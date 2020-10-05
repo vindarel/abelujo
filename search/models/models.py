@@ -1010,6 +1010,7 @@ class Card(TimeStampedModel):
             "authors_repr": authors_repr,
             "collection": self.collection.capitalize() if self.collection else None,
             "created": self.created.strftime(DATE_FORMAT),  # YYYY-mm-dd
+            "modified": self.modified.strftime(DATE_FORMAT),  # YYYY-mm-dd
             "data_source": self.data_source,
             "date_publication": self.date_publication.strftime(DATE_FORMAT) if self.date_publication else None,
 
@@ -2615,6 +2616,7 @@ class BasketCopies(TimeStampedModel):
         try:
             card = self.card.to_dict()
             card['basket_qty'] = self.nb
+            card['modified'] = self.modified.strftime(DATE_FORMAT)
         except Exception as e:
             log.error(e)
 
@@ -2785,6 +2787,8 @@ class Basket(models.Model):
         try:
             basket_copy, created = self.basketcopies_set.get_or_create(card=card)
             basket_copy.nb = nb
+            now = pendulum.now()
+            basket_copy.modified = now
             basket_copy.save()
         except Exception as e:
             log.error('Error while setting the cards {} quantity: {}'.format(card.id, e))

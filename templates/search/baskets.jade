@@ -167,16 +167,19 @@ div(ng-cloak, ng-controller="basketsController")
        th.mouse-pointer(ng-show="show_images")
        th.mouse-pointer(ng-click="sort_by('title')") {% trans "Title" %}
          span.caret
-       th.mouse-pointer(ng-click="sort_by('pubs_repr')") {% trans "Publisher" %}
+       th.mouse-pointer(ng-click="sort_by('pubs_repr')", onclick="sort_by('title')", title="click to sort") {% trans "Publisher" %}
+         span.caret(ng-click="sort_by('pubs_repr')")
+       th.mouse-pointer(ng-click="sort_by('distributor')", title="click to sort") {% trans "Supplier" %}
          span.caret
-       th.mouse-pointer(ng-click="sort_by('distributor')") {% trans "Supplier" %}
+       th.mouse-pointer(ng-click="sort_by('created')") {% trans "Created" %}
          span.caret
-       th {% trans "Created" %}
-       th.mouse-pointer(ng-click="sort_by('quantity')") {% trans "In stock" %}
+       th.mouse-pointer(ng-click="sort_by('modified')") {% trans "Modified" %}
          span.caret
-       th.mouse-pointer.text-right(ng-click="sort_by('price')") {% trans "Price" %}
+       th.mouse-pointer(ng-click="sort_by('quantity')", title="click to sort") {% trans "In stock" %}
          span.caret
-       th.mouse-pointer(ng-click="sort_by('basket_qty')")
+       th.mouse-pointer.text-right(ng-click="sort_by('price')", title="click to sort") {% trans "Price" %}
+         span.caret
+       th.mouse-pointer(ng-click="sort_by('basket_qty')", title="click to sort")
          span.caret
 
      tbody
@@ -185,6 +188,7 @@ div(ng-cloak, ng-controller="basketsController")
             .col-md-6
 
          td {% trans "Total" %}
+         td
          td
          td
          td
@@ -209,6 +213,7 @@ div(ng-cloak, ng-controller="basketsController")
          td {{ 'it.dist_repr' | ng }}
 
          td {{ 'it.created' | ng }}
+         td {{ 'it.modified' | ng }}
          td.text-right {{ 'it.quantity' | ng}}
          td.text-right {{ 'it.price_fmt' | ng }}
          td
