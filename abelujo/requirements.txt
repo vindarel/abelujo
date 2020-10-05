@@ -32,19 +32,19 @@ six
 
 ### Django extensions
 djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc
-django_extensions==1.7    # more useful commands to manage.py (shell_plus).
+django_extensions==1.7  # more useful commands to manage.py (shell_plus).
 django-redis-cache==1.7.1
-Werkzeug                  # runserver_plus: richer tracebacks and inline console.
+Werkzeug==0.15.2        # runserver_plus: richer tracebacks and inline console.
 
 ### utils
-toolz                   # pure, lazy, composable functional programming.
-tabulate                # pretty print tabular data.
-addict                  # dotted notation to dict attributes and more.
-unidecode               # ASCII transliteration of unicode text.
+toolz==0.9.0            # pure, lazy, composable functional programming.
+tabulate==0.8.3         # pretty print tabular data.
+addict==2.2.0           # dotted notation to dict attributes and more.
+unidecode==1.0.23       # ASCII transliteration of unicode text.
 distance                # between two strings.
 clize==3                # build command line arguments
-tqdm                    # progress bar
-termcolor               # colorful terminal output
+tqdm==4.31              # progress bar
+termcolor==1.1.0        # colorful terminal output
 isbnlib<4               # isbn utils
 unicodecsv<0.15         # at last unicode support to read and write csv files. Lacking in the standard library.
 cairocffi==0.6          # for weasyprint. Later version fails.
