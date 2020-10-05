@@ -45,6 +45,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
           id: "lelivre"
         * name: "Casa del libro - es"
           id: "casadellibro"
+        * name: "Belgique - be"
+          id: "filigranes"
         ## * name: "Buchlentner - de"
         ##   id: "buchlentner"
         * name: "DVDs"
