@@ -50,7 +50,7 @@ from abelujo import settings
 from search import forms as viewforms
 #
 # The datasources imports must have the name as their self.SOURCE_NAME
-# Also add the search engine in the client side controller.
+# Also add the search engine in the client side controller (searchResultsController).
 #
 from search.datasources.bookshops.all.discogs import discogsScraper as discogs  # noqa: F401
 from search.datasources.bookshops.all.momox import momox  # noqa: F401
@@ -58,6 +58,7 @@ from search.datasources.bookshops.deDE.buchlentner import buchlentnerScraper as 
 from search.datasources.bookshops.esES.casadellibro import casadellibroScraper as casadellibro  # noqa: F401
 from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre  # noqa: F401
 from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis  # noqa: F401
+from search.datasources.bookshops.frFR.filigranes import filigranesScraper as filigranes  # noqa: F401
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill

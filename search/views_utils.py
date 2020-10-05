@@ -35,6 +35,8 @@ from search.datasources.bookshops.frFR.dilicom import \
     dilicomScraper as dilicom  # noqa: F401
 from search.datasources.bookshops.frFR.lelivre import \
     lelivreScraper as lelivre  # noqa: F401
+from search.datasources.bookshops.frFR.filigranes import \
+    filigranesScraper as filigranes  # noqa: F401
 from search.models import Card
 
 #: Default datasource to be used when searching isbn, if source not supplied.
