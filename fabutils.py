@@ -41,7 +41,8 @@ def select_client_cfg(letters, quiet=False):
     cl = filter(lambda it: it.name.startswith(letters), clients)
     if len(cl) > 1:
         print("Found more than one possible clients, can't decide: {}".format([it.name for it in cl]))
-        return []
+        # return []
+        exit(1)
     if not cl:
         if not quiet:
             print("No client found with '{}'".format(sys.argv[1]))

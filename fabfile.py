@@ -178,7 +178,12 @@ def check_uptodate(name=None):
     if not client:
         print("No client found with '{}'".format(name))
         return 1
-    wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
+    home = "/home/"
+    if client.home:
+        home = client.home
+    else:
+        home = "/home/{}".format(client.user or CFG.user)
+    wd = os.path.join(home, CFG.dir, client.name, CFG.project_name)
     # that's local so it conuts the unpushed commits. should be remote
     git_head = check_output(["git", "rev-parse", "HEAD"]).strip()
 
@@ -445,10 +450,7 @@ def ssh_to(client):
     cmd = "ssh -Y {}@{}".format(user, ip)
     if CFG.get('dir') or client.get('dir'):
         cmd += " -t 'cd {}; zsh --login;'".format(
-            os.path.join("/home/{}".format(user),
-                         CFG.get('dir', client.get('dir')),
-                         client.get('name'),
-                         CFG.project_name),)
+            os.path.join(fabutils.wd(client, CFG)))
     print("todo: workon venv")
     print("connecting to {}".format(cmd))
     os.system(cmd)
