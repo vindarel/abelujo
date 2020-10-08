@@ -109,7 +109,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           input(type="checkbox", ng-model="card.selected")
         td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
-              img.myImg(ng-show="card.img", src="{{ 'card.img' | ng}}", alt="cover image")
+              img.myImg(ng-show="card.img", ng-src="{{ 'card.img' | ng}}", alt="cover image")
         td
               span.label.label-as-badge.label-default(
                 ng-class="{'label-success': card.in_stock > 0, 'label-danger': card.in_stock < 0}"

@@ -204,7 +204,7 @@ div(ng-cloak, ng-controller="basketsController")
 
          td(ng-show="show_images")
             .col-md-6(ng-show="show_images")
-              img.myImg(ng-show="it.cover", src="{{ 'it.cover' | ng }}")
+              img.myImg(ng-show="it.cover", ng-src="{{ 'it.cover' | ng }}")
          td
            .col-md-12
             a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
