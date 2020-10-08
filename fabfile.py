@@ -365,12 +365,11 @@ def dbback(name=None):
                 # Download
                 db_backed = "backup/db-{}-{}.sqlite".format(client.name, pendulum.datetime.now().strftime(DATE_FORMAT))
                 ip = client.ip or CFG.ip
-                cmd = "rsync -av {user}@{url}:/home/{user}/{dir}/{client_name}/{project_name}/{db_name} ./{db_backed}".format(
+                wd = fabutils.wd(client, CFG)
+                cmd = "rsync -av {user}@{url}:{wd}/{db_name} ./{db_backed}".format(
+                    wd=wd,
                     user=client.user or CFG.user,
                     url=ip,
-                    dir=CFG.dir.strip("/"),
-                    client_name=client.name,
-                    project_name=CFG.project_name,
                     db_name=CFG.db_name,
                     db_backed=db_backed
                 )
