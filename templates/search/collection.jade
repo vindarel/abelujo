@@ -216,10 +216,11 @@ div(ng-cloak, ng-controller="collectionController")
               h6(ng-show="show_images")
                 a(ng-show="card.details_url", href="{{ 'card.details_url' | ng }}", target="_blank") {% trans "See on" %} {{ 'card.data_source' |ng}}
               .row(ng-show="show_images")
-               .col-md-6
+               .col-md-10
                 b isbn: 
                 span {{ 'card.isbn' |ng}}
-                div {{ 'card.date_publication | date: "mediumDate"' | ng }}
+                div {% trans "Publication date" %}: {{ 'card.date_publication | date: "mediumDate"' | ng }}
+                div(title='{% trans "Date de dernière modification, par exemple la date du dernier ajout en stock." %}') {% trans "Dernière modification" %}: {{ 'card.modified | date: "mediumDate"' | ng }}
                 div(ng-show="show_images && card.fmt") {{ 'card.fmt' | ng }}
 
         td
