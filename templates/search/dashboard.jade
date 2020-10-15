@@ -43,7 +43,7 @@ div(ng-controller="dashboardController", ng-cloak="stats")
           tr
             td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %}
             td: h4 {{'stats.total_cost.value_fmt'|ng }}
-          tr
+          //- tr
             td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %} {% trans "excl. tax" %}
             td: h4 {{'stats.total_cost_excl_tax.value_fmt'|ng }}
 

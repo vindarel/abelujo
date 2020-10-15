@@ -5356,7 +5356,7 @@ class Stats(object):
         - how many titles (copies)
         - how many books (cards)
         - value of the stock
-        - value of the stock, excl. vat
+        # - value of the stock, excl. vat
         - idem for stock in deposits
 
         return: a dict by default, a json if to_json is set to True.
@@ -5427,12 +5427,13 @@ class Stats(object):
                                  'value_fmt': price_fmt(roundfloat(total_cost), default_currency),
             }
             # The same, excluding vat.
+            # XXX: to redo.
             # xxx: all Cards will not be books.
-            total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
-            res['total_cost_excl_tax'] = {'label': _("Total cost of the stock, excl. tax"),
-                                          'value': total_cost_excl_tax,
-                                          'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
-            }
+            # total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
+            # res['total_cost_excl_tax'] = {'label': _("Total cost of the stock, excl. tax"),
+                                          # 'value': total_cost_excl_tax,
+                                          # 'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
+            # }
 
         except Exception as e:
             log.error("Error with total_cost: {}".format(e))
