@@ -13,7 +13,6 @@ clone:
 # System dependencies to install as root on Debian (Ubuntu/LinuxMint):
 debian-nosudo:
 	@grep -v "^#" abelujo/apt-requirements.txt | xargs apt-get install -y
-	@grep -v "^#" abelujo/apt-requirements-dev.txt | xargs apt-get install -y
 	pip install virtualenvwrapper
 
 debian:
