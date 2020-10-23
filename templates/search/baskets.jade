@@ -277,10 +277,12 @@ div(ng-cloak, ng-controller="basketsController")
            ng-model="selected_client",
            ng-options="it.__repr__ for it in clients")
 
-      div check {{ 'checkboxsell' | ng }} bill? {{ 'bill_or_estimate' | ng }}
-      div(ng-hide="bill_or_estimate==2")
-        label(for="checkboxsell") {% trans "Sell the books" %}
-        input(type="checkbox", name="checkboxsell", ng-model="checkboxsell", ng-checked="checkboxsell")
+      // the fucking checkbox goes false after TWO clicks.
+      //- div check {{ 'checkboxsell' | ng }} bill? {{ 'bill_or_estimate' | ng }}
+      //- div(ng-hide="bill_or_estimate==2")
+        //- label(for="checkboxsell") {% trans "Sell the books" %}
+        //- input(type="checkbox", name="checkboxsell", ng-model="checkboxsell", ng-checked="checkboxsell")
+      div {% trans "Attention: établir une facture enregistre une vente" %}
 
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}
