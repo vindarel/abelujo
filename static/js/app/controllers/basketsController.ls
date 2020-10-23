@@ -391,6 +391,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     # ###########################
     $scope.choose_client_for_bill = (cur_basket_id, bill_or_estimate) !->
         "1: bill, 2: estimate"
+        # pass this value to the modal controller:
+        $window.localStorage.setItem('checkboxsell', true)
         modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
             templateUrl: 'chooseClientModal.html'
@@ -407,8 +409,33 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             ## $log.info "modal ok, param: ", basket
             $log.info "modal ok, bill_or_estimate: ", bill_or_estimate
             ## $window.localStorage.setItem('client_selected', basket) #XXX: ?
+            ## 1 = bill, 2 = estimate
             $window.localStorage.setItem('bill_or_estimate', bill_or_estimate)
 
+        , !->
+            $log.info "modal dismissed"
+
+    ################################
+    # Choose a client for an estimate (no sell)
+    # ##############################
+    $scope.choose_client_for_estimate = (cur_basket_id) !->
+        "1: bill, 2: estimate"
+        # pass this value to the modal controller:
+        $window.localStorage.setItem('checkboxsell', false)
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'chooseClientForEstimateModal.html'
+            controller: 'ChooseClientModalControllerInstance'
+            ## backdrop: 'static'
+            ## size: size,
+            cur_basket_id: cur_basket_id,
+            resolve: do
+                utils: ->
+                    utils
+
+        modalInstance.result.then (response) !->
+            ## $log.info "modal ok, param: ", basket
+            $window.localStorage.setItem('bill_or_estimate', "2")  # 2 = estimate
         , !->
             $log.info "modal dismissed"
 
@@ -521,6 +548,7 @@ angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($ht
 
     utils.set_focus!
     $scope.shelves = []
+    $scope.checkboxsell = $window.localStorage.getItem("checkboxsell")    # if we ask a bill in a basket, we probably want to sell the books.
 
     $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
     $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
@@ -534,16 +562,24 @@ angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($ht
     $scope.ok = !->
         if typeof ($scope.selected_client) == "undefined" || $scope.selected_client == ""
             $uibModalInstance.dismiss('cancel')
+            Notiflix.Notify.Info gettext "You didn't select a client."
             return
 
         $log.info "selected client: ", $scope.selected_client
+        $log.info "checkbox: ", $scope.checkboxsell
         $log.info " TODO here generate PDF."
+
+        checkboxsell = $scope.checkboxsell
+        bill_or_estimate = $window.localStorage.getItem('bill_or_estimate')
+        if bill_or_estimate == 1
+          checkboxsell = false
 
         params = do
             client_id: $scope.selected_client.id
             basket_id: $scope.cur_basket_id
             language: utils.url_language($window.location.pathname)
-            bill_or_estimate: $window.localStorage.getItem('bill_or_estimate')
+            bill_or_estimate: bill_or_estimate
+            checkboxsell: checkboxsell
 
         $http.post "/api/bill", params
         .then (response) !->

@@ -365,13 +365,13 @@ def _is_truthy(txt):
     """
     - txt: string
     """
-    # should be automatic !
-    if txt is True:
-        return True
-    if txt in ['true', 't', 'yes']:
+    if txt in [True, 'true', 't', 'yes', '1', 1]:
         return True
     return False
 
+
+def is_truthy(txt):
+    return _is_truthy(txt)
 
 def is_invalid(txt):
     """When JS client sends "undefined" strings instead of nothing.

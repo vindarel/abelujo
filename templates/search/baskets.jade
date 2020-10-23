@@ -95,8 +95,8 @@ div(ng-cloak, ng-controller="basketsController")
 
          li: a(href="/baskets/{{ 'cur_basket.id' | ng}}/export?format=pdf&report=listing&barcodes=false&covers=true") {% trans "List, with covers" %} - pdf
          li.divider(role="separator")
-         //- li: a(href="#", ng-click="choose_client_for_bill(cur_basket.id, 1)", title='{% trans "Create a bill for a client" %}') {% trans "Bill" %}…
-         //- li: a(href="#", ng-click="choose_client_for_bill(cur_basket.id, 2)", title='{% trans "Create an estimate for a client" %}') {% trans "Estimate" %}…
+         li: a(href="#", ng-click="choose_client_for_bill(cur_basket.id, 1)", title='{% trans "Create a bill for a client" %}') {% trans "Bill" %}…
+         li: a(href="#", ng-click="choose_client_for_estimate(cur_basket.id)", title='{% trans "Create an estimate for a client" %}') {% trans "Estimate" %}…
 
 
      .btn-group
@@ -269,7 +269,7 @@ div(ng-cloak, ng-controller="basketsController")
 
  script(type="text/ng-template", id="chooseClientModal.html")
     div.modal-header
-      h3.modal-title {% trans "Choose a client" %}
+      h3.modal-title {% trans "Choisissez un client" %}
 
     div.modal-body
       span
@@ -277,7 +277,26 @@ div(ng-cloak, ng-controller="basketsController")
            ng-model="selected_client",
            ng-options="it.__repr__ for it in clients")
 
+      div check {{ 'checkboxsell' | ng }} bill? {{ 'bill_or_estimate' | ng }}
+      div(ng-hide="bill_or_estimate==2")
+        label(for="checkboxsell") {% trans "Sell the books" %}
+        input(type="checkbox", name="checkboxsell", ng-model="checkboxsell", ng-checked="checkboxsell")
+
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}
 
+ script(type="text/ng-template", id="chooseClientForEstimateModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Choisissez un client" %}
+
+    div.modal-body
+      span
+         select.form-control(
+           ng-model="selected_client",
+           ng-options="it.__repr__ for it in clients")
+
+      input(hidden, type="checkbox", name="checkboxsell", ng-model="checkboxsell")
+
+      button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
+      button.btn(ng-click="cancel()") {% trans "Cancel" %}
 {% endblock content %}

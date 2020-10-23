@@ -23,7 +23,7 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 
-from search.models.utils import Messages, is_isbn, split_query, isbns_from_query
+from search.models.utils import Messages, is_isbn, split_query, isbns_from_query, is_truthy
 
 class TestMessages(TestCase):
 
@@ -80,3 +80,14 @@ class TestUtils(TestCase):
 
         self.assertEqual(2, len(isbns_from_query("9782918059363 9782918059363 978_RST")))
         self.assertEqual(2, len(isbns_from_query("9782918059363, 9782918059363, 978_RST")))
+
+    def test_is_truthy(self):
+        self.assertFalse(is_truthy("false"))
+        self.assertFalse(is_truthy("0"))
+        self.assertFalse(is_truthy("undefined"))
+        self.assertFalse(is_truthy(False))
+        self.assertFalse(is_truthy(None))
+
+        self.assertTrue(is_truthy("true"))
+        self.assertTrue(is_truthy("1"))
+        self.assertTrue(is_truthy("yes"))

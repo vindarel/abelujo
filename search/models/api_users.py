@@ -21,6 +21,7 @@ import os
 import pendulum
 from django.http import JsonResponse
 from django.template.loader import get_template
+from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
 from weasyprint import HTML
@@ -29,9 +30,11 @@ from abelujo import settings
 from search.models import Basket
 from search.models import Card
 from search.models import Preferences
+from search.models import Sell
 from search.models import users
 from search.models.users import Client
 from search.models.utils import get_logger
+from search.models.utils import is_truthy
 from search.models.utils import price_fmt
 
 log = get_logger()
@@ -87,6 +90,8 @@ def bill(request, *args, **response_kwargs):
         translation.activate(language)
 
     bill_or_estimate = params.get('bill_or_estimate', 1)  # bill
+    sellbooks = params.get('checkboxsell')  # a confirmation that we sell the books (from baskets).
+    sellbooks = is_truthy(sellbooks)
 
     # Creation date, due date.
     DATE_FMT = '%d-%m-%Y'
@@ -114,6 +119,7 @@ def bill(request, *args, **response_kwargs):
     discount_fmt = discount['name'] if discount else '0%'
     basket_id = int(params.get('basket_id', -1))
     language = params.get('language')
+    client_id = params.get('client_id')
 
     if language:
         translation.activate(language)
@@ -139,8 +145,34 @@ def bill(request, *args, **response_kwargs):
             # prices_sold = cards.values_list('price_sold', flat=True)  # Not Available
             quantities = basket_copies.values_list('nb', flat=True)
             cards_data = list(zip(sorted_cards, quantities))
+            if client_id:
+                client_id = int(client_id)
+            # sell the books?
+            if sellbooks:
+                ids_prices_quantities = []
+                try:
+                    for i, card in enumerate(cards):
+                        ids_prices_quantities.append({
+                            'id': card.id,
+                            'price_sold': prices[i],
+                            'quantity': quantities[i],
+                        })
+                    now = timezone.now()
+                    sell, status, alerts = Sell.sell_cards(
+                        ids_prices_quantities,
+                        date=now,
+                        client_id=client_id,
+                    )
+                except Exception as e:
+                    to_ret = {'status': 500,
+                              'messages': ['An error occured trying to sell the books.']}
+                    log.error("Error selling cards for a bill: {}".format(e))
+                    return JsonResponse(to_ret)
         except Exception as e:
-            log.error(e)
+            to_ret = {'status': 500,
+                      'messages': ['An error occured generating the bill.']}
+            log.error("Error generating bill from basket: {}".format(e))
+            return JsonResponse(to_ret)
 
     # The bookshop identity.
     bookshop = users.Bookshop.objects.first()

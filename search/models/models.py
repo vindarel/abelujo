@@ -4445,7 +4445,7 @@ class Sell(models.Model):
         not to happen, to be checked before calling this method).
 
         - cards: can be used as a shortcut to write tests. Price and quantity will be default.
-        - date: a str (from javascript) which complies to the DATE_FORMAT,
+        - date: a timezone or a str (from javascript) which complies to the DATE_FORMAT,
           or a timezone.datetime object.
         - place_id: int
 
