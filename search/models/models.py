@@ -4146,6 +4146,7 @@ class Sell(models.Model):
                 year = int(year)
             else:
                 year = timezone.now().year
+            sells = sells.filter(created__year=year)
 
             if month:
                 month = int(month)
