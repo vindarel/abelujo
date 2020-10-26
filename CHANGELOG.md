@@ -6,6 +6,9 @@ Changelog starting from v0.5 (2018/09/18)
 
 - adding a book in a **list** always moves it at the top of the list. Before, there were cases where an existing book would not move, so we could not see its new quantity easily.
 - lists: sort books by last modified date. This allows to see the last books we added to a list.
+- we can **sell a list**,
+- we can **generate a bill for a list**
+- **automatic commands**: when a book is added to the list of books to command, its quantity to command is not set to 1 (or more) anymore, but 0. That way, the booksellers will /select/ what books to command and how much, instead of /un-selecting/ them.
 
 ### Fixes
 
