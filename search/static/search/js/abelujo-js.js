@@ -103,3 +103,34 @@ function card_remove_one_from_default_place(card_id) {
             console.error('There has been a problem with your fetch operation:', error);
         });
 }
+
+function card_command(card_id) {
+    // Called from: card_show.jade.
+    console.log("-- command 1 ", card_id);
+    let places_ids_qties = "";
+
+    let url = "/api/card/" + card_id + "/command";
+    console.log("-- POSTing to ", url);
+    fetch(url, {
+        method: 'POST'
+    })
+        .then((response) => {
+            console.log("response is ", response);
+            return response.json();
+        })
+        .then((myJson) => {
+            if (myJson.status == 200 || myJson.status == "success") {
+                console.log("-- success.");;
+                Notiflix.Notify.Success('OK');
+            }
+            else {
+                console.log("status is not success: ", myJson.status);
+                Notiflix.Notify.Warning("OK ou pas ?");
+            }
+        })
+        .catch((error) => {
+            console.error('There has been a problem with your fetch operation:', error);
+            Notiflix.Notify.Warning("An error occured, sorry. We have been notified.");
+        });
+
+}

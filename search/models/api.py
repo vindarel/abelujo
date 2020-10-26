@@ -517,6 +517,19 @@ def card_add(request, **response_kwargs):
 
         return JsonResponse(status, safe=False)
 
+def card_command(request, pk, **kw):
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+    }
+    try:
+        Basket.add_to_auto_command(pk)
+    except Exception as e:
+        log.error(u'Error adding to the auto_command: {}'.format(e))
+        status = ALERT_WARNING
+
+    return JsonResponse(to_ret)
+
 def cardtype(request, **response_kwargs):
     if request.method == "GET":
         query = request.GET.get("query")

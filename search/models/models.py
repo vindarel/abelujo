@@ -2916,13 +2916,17 @@ class Basket(models.Model):
         changed, oct. 2020: the command quantity is 0, not 1. The bookseller chooses
         what books to command, instead of de-selecting ones.
         """
+        if isinstance(card, int) or isinstance(card, str):
+            card = Card.objects.filter(id=card).first()
         try:
             Basket.objects.get(name="auto_command").set_copy(card=card, nb=0)
         except ObjectDoesNotExist:
-            # that's ok, specially in tests.
+            # that's ok here, specially in tests.
             pass
         except Exception as e:
             log.error("Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
+            return
+        return True
 
     def to_deposit(self, distributor=None, name=""):
         """Transform this basket to a deposit.

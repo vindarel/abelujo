@@ -8,6 +8,7 @@ Changelog starting from v0.5 (2018/09/18)
 - lists: sort books by last modified date. This allows to see the last books we added to a list.
 - we can **sell a list**,
 - we can **generate a bill for a list**
+- we added a button on the card page to quickly **add this book to the command list**. Previously, books were added to the command list when they were sold and their quantity got below a given treshold. There was no manual way, this is now fixed.
 - **automatic commands**: when a book is added to the list of books to command, its quantity to command is not set to 1 (or more) anymore, but 0. That way, the booksellers will /select/ what books to command and how much, instead of /un-selecting/ them.
 
 ### Fixes

@@ -29,6 +29,10 @@
 {% load ngfilter %}
 {% load humanize %}
 
+//
+// No Angular nor Vue, uses abelujo-js.js
+//
+
 div#abelujo
   hello(title="hello vue !")
 
@@ -51,6 +55,10 @@ div#abelujo
       i.glyphicon.glyphicon-plus 1
     a.btn.btn-default(href="#", title='{% trans "Remove 1 copy to the default place" %}', onclick="card_remove_one_from_default_place({{ object.pk }})")
       i.glyphicon.glyphicon-minus 1
+
+    a.btn.btn-default(href="#", title='{% trans "Remember to command this card. Add it to the list for later." %}', onclick="card_command({{ object.pk }})")
+      i.glyphicon.glyphicon-shopping-cart
+
     h3 {{ object.title }}
 
 .row
