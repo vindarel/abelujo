@@ -415,6 +415,29 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         , !->
             $log.info "modal dismissed"
 
+    #############################
+    # Choose a client to sell
+    # ###########################
+    $scope.choose_client_to_sell = (cur_basket_id) !->
+        # pass this value to the modal controller:
+        modalInstance = $uibModal.open do
+            animation: $scope.animationsEnabled
+            templateUrl: 'chooseClientToSellModal.html'
+            controller: 'ChooseClientToSellModalControllerInstance'
+            ## backdrop: 'static'
+            ## size: size,
+            cur_basket_id: cur_basket_id,
+            resolve: do
+                utils: ->
+                    utils
+
+        modalInstance.result.then (response) !->
+            ## $log.info "modal ok, param: ", basket
+            ## $window.localStorage.setItem('client_selected', basket) #XXX: ?
+
+        , !->
+            $log.info "modal dismissed"
+
     ################################
     # Choose a client for an estimate (no sell)
     # ##############################
@@ -596,6 +619,53 @@ angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($ht
                     element.click()
                     document.body.removeChild(element)
 
+
+    $scope.cancel = !->
+        $uibModalInstance.dismiss('cancel')
+        ## $scope.alerts = response.data.alerts
+
+###############################
+# Choose a client (to Sell)
+# #############################
+angular.module "abelujo" .controller "ChooseClientToSellModalControllerInstance", ($http, $scope, $uibModalInstance, $window, $log, utils) !->
+
+    {Obj, join, reject, sum, map, filter, find, lines, sort-by, find-index, reverse} = require 'prelude-ls'
+
+    utils.set_focus!
+    $scope.shelves = []
+
+    $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
+    $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
+
+    $http.get "/api/clients"
+    .then (response) ->
+        $log.info "response: ", response
+        $scope.clients = response.data.data
+        $log.info "clients: ", $scope.clients
+
+    $scope.ok = !->
+        if typeof ($scope.selected_client) == "undefined" || $scope.selected_client == ""
+            $uibModalInstance.dismiss('cancel')
+            Notiflix.Notify.Info gettext "You didn't select a client."
+            return
+
+        $log.info "selected client: ", $scope.selected_client
+
+        copies = $scope.cur_basket_id
+        params = do
+            client_id: $scope.selected_client.id
+            language: utils.url_language($window.location.pathname)
+
+        $http.post "/api/baskets/#{$scope.cur_basket_id}/sell", params
+        .then (response) !->
+            $scope.alerts = response.data.alerts
+            $uibModalInstance.close()
+            $scope.alerts = response.data.alerts
+            $log.info(response)
+            if (response.status !== 200)
+               Notiflix.Notify.Info("The sell got an error. We have bee notified.")
+            if (response.status == 200)
+               Notiflix.Notify.Success "OK"
 
     $scope.cancel = !->
         $uibModalInstance.dismiss('cancel')

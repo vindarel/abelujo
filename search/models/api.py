@@ -61,6 +61,7 @@ from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper 
 from search.models import do_command_apply
 from search.models import do_inventory_apply
 from search.models import history
+from search.models.users import Client
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
@@ -716,7 +717,7 @@ def sell(request, **response_kwargs):
       - query args: date_min, date_min, distributor_id, card_id
 
     - POST: create a new sell.
-    requested data: a list of dictionnaries with "id", "price_sold",
+       - requested data: a list of dictionnaries with "id", "price_sold",
     "quantity". See models.Sell.
 
     messages: we need, for the client, a list of dictionnaries:
@@ -1414,6 +1415,39 @@ def baskets_return(request, pk, **kw):
             to_ret['alerts'] = msgs.msgs
             to_ret['status'] = msgs.status
             return JsonResponse(to_ret)
+
+
+def basket_sell(request, pk, **wk):
+    """
+    Sell this basket.
+    """
+    if request.method == "POST":
+        to_ret = {
+            'status': ALERT_SUCCESS,
+            'alerts': []
+        }
+        msgs = Messages()
+
+        try:
+            basket = Basket.objects.get(id=pk)
+        except Exception as e:
+            log.error("sell basket {}: {}".format(pk, e))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'].append("Error: the basket {} doesn't exist.".format(pk))
+            return JsonResponse(to_ret)
+
+        params = json.loads(request.body)
+        client_id = params.get('client_id')
+
+        try:
+            # XXX: a return operation is not idempotent :S
+            status, msgs = basket.sell_basket(client_id=client_id)
+        except Exception as e:
+            log.error(u'Error selling basket {}: {}'.format(pk, e))
+
+        to_ret['status'] = status
+        to_ret['alerts'] = msgs
+        return JsonResponse(to_ret)
 
 def baskets_add_to_shelf(request, pk, **kw):
     """

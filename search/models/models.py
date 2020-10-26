@@ -2860,6 +2860,38 @@ class Basket(models.Model):
         self.basketcopies_set.all().delete()
         return True
 
+    def sell_basket(self, client_id=None):
+        """
+        Sell this basket's cards.
+
+        - client_id
+
+        Return: a tuple status, list of messages (dicts).
+        """
+        msgs = Messages()
+        ids_prices_quantities = []
+        try:
+            copies = self.basketcopies_set.all()
+            # not optimum Sell API.
+            prices = copies.values_list('card__price', flat=True)
+            quantities = copies.values_list('nb', flat=True)
+            for i, copy in enumerate(copies):
+                ids_prices_quantities.append({
+                    'id': copy.card.id,
+                    'price_sold': prices[i],
+                    'quantity': quantities[i],
+                })
+            now = timezone.now()
+            sell, status, alerts = Sell.sell_cards(
+                ids_prices_quantities,
+                date=now,
+                client_id=client_id,
+            )
+        except Exception as e:
+            msgs.add_error(u'An error occured trying to sell the books from this basket.')
+            log.error("Error selling basket {}: {}".format(self.pk, e))
+        return msgs.status, msgs.msgs
+
     def quantity(self, card=None, card_id=None):
         """Return the total quantity of copies in it, or the quantity of the given card.
 

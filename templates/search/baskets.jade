@@ -70,10 +70,13 @@ div(ng-cloak, ng-controller="basketsController")
            li: a(href="/databasesearch/basket/{{ 'cur_basket.id'|ng }}/", target="_blank") {% trans "Set the supplier" %}
 
            li.divider(role="separator")
+
            li: a(href="#", ng-click="add_to_shelf(cur_basket.id)", title='{% trans "Add all the cards to a shelf." %}') {% trans "Add to shelf…" %}
            li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
            li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
            li: a(href="#", ng-click="return_to_supplier()", title='{% trans "Return the cards to the distributor of this basket." %}') {% trans "Return to supplier" %}…
+           li: a(href="#", ng-click="choose_client_to_sell()", title='{% trans "Sell" %}. {% trans "Choose a client." %}') {% trans "Sell" %}…
+
            li.divider(role="separator")
            li: a(href="#", ng-click="empty_basket()", title='{% trans "Empty this list." %}') {% trans "Empty this list" %}
            li: a(href="#", ng-click="archive_basket()", title='{% trans "Archive this list." %}') {% trans "Archive this list" %}
@@ -303,4 +306,18 @@ div(ng-cloak, ng-controller="basketsController")
 
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}
+
+script(type="text/ng-template", id="chooseClientToSellModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Choisissez un client" %}
+
+    div.modal-body
+      span
+         select.form-control(
+           ng-model="selected_client",
+           ng-options="it.__repr__ for it in clients")
+
+      button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
+      button.btn(ng-click="cancel()") {% trans "Cancel" %}
+
 {% endblock content %}
