@@ -2910,10 +2910,14 @@ class Basket(models.Model):
 
     @staticmethod
     def add_to_auto_command(card):
-        """Add the given Card object to the basket for auto commands.
+        """
+        Add the given Card object to the basket for auto commands.
+
+        changed, oct. 2020: the command quantity is 0, not 1. The bookseller chooses
+        what books to command, instead of de-selecting ones.
         """
         try:
-            Basket.objects.get(name="auto_command").add_copy(card)
+            Basket.objects.get(name="auto_command").set_copy(card=card, nb=0)
         except ObjectDoesNotExist:
             # that's ok, specially in tests.
             pass
