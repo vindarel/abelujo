@@ -90,8 +90,8 @@ def bill(request, *args, **response_kwargs):
         translation.activate(language)
 
     bill_or_estimate = params.get('bill_or_estimate', 1)  # bill
-    sellbooks = params.get('checkboxsell')  # a confirmation that we sell the books (from baskets).
-    sellbooks = is_truthy(sellbooks)
+    # sellbooks = params.get('checkboxsell')  # a confirmation that we sell the books (from baskets).
+    # sellbooks = is_truthy(sellbooks)
 
     # Creation date, due date.
     DATE_FMT = '%d-%m-%Y'
@@ -148,26 +148,26 @@ def bill(request, *args, **response_kwargs):
             if client_id:
                 client_id = int(client_id)
             # sell the books?
-            if sellbooks:
-                ids_prices_quantities = []
-                try:
-                    for i, card in enumerate(cards):
-                        ids_prices_quantities.append({
-                            'id': card.id,
-                            'price_sold': prices[i],
-                            'quantity': quantities[i],
-                        })
-                    now = timezone.now()
-                    sell, status, alerts = Sell.sell_cards(
-                        ids_prices_quantities,
-                        date=now,
-                        client_id=client_id,
-                    )
-                except Exception as e:
-                    to_ret = {'status': 500,
-                              'messages': ['An error occured trying to sell the books.']}
-                    log.error("Error selling cards for a bill: {}".format(e))
-                    return JsonResponse(to_ret)
+            # if sellbooks:
+            #     ids_prices_quantities = []
+            #     try:
+            #         for i, card in enumerate(cards):
+            #             ids_prices_quantities.append({
+            #                 'id': card.id,
+            #                 'price_sold': prices[i],
+            #                 'quantity': quantities[i],
+            #             })
+            #         now = timezone.now()
+            #         sell, status, alerts = Sell.sell_cards(
+            #             ids_prices_quantities,
+            #             date=now,
+            #             client_id=client_id,
+            #         )
+            #     except Exception as e:
+            #         to_ret = {'status': 500,
+            #                   'messages': ['An error occured trying to sell the books.']}
+            #         log.error("Error selling cards for a bill: {}".format(e))
+            #         return JsonResponse(to_ret)
         except Exception as e:
             to_ret = {'status': 500,
                       'messages': ['An error occured generating the bill.']}

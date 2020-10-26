@@ -282,7 +282,9 @@ div(ng-cloak, ng-controller="basketsController")
       //- div(ng-hide="bill_or_estimate==2")
         //- label(for="checkboxsell") {% trans "Sell the books" %}
         //- input(type="checkbox", name="checkboxsell", ng-model="checkboxsell", ng-checked="checkboxsell")
-      div {% trans "Attention: établir une facture enregistre une vente" %}
+
+      //- div {% trans "Attention: établir une facture enregistre une vente" %}
+      div {% trans "Remarque: établir une facture n'enregistre pas la vente automatiquement." %}
 
       button.btn.btn-primary(ng-click="ok()") {% trans "OK" %}
       button.btn(ng-click="cancel()") {% trans "Cancel" %}
