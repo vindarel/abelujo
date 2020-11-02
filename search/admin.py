@@ -19,6 +19,7 @@ from search.models import Author
 from search.models import Basket
 from search.models import Bill
 from search.models import Card
+from search.models import CardType
 from search.models import CouponGeneric
 from search.models import Coupon
 from search.models import Client
@@ -56,6 +57,11 @@ class CardAdmin(admin.ModelAdmin):
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
     filter_horizontal = ("authors", "publishers",)
+
+
+class CardTypeAdmin(admin.ModelAdmin):
+    class Meta:
+        model = CardType
 
 
 class ClientAdmin(admin.ModelAdmin):
@@ -135,6 +141,7 @@ admin.site.register(Author)
 admin.site.register(Basket)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
+admin.site.register(CardType, CardTypeAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(CouponGeneric)
 admin.site.register(Coupon)
