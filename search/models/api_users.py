@@ -188,7 +188,7 @@ def bill(request, *args, **response_kwargs):
     # Name, filename
     bill_label = _("Bill")
     bookshop_name = bookshop.name if bookshop else ""
-    name = "{} {} - {}".format(bill_label, bookshop_name, creation_date_fmt)
+    name = "{}-{}-{}".format(bill_label, bookshop_name, creation_date_fmt)
     filename = name + '.pdf'
 
     # File 2, with books list.
