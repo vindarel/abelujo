@@ -2053,6 +2053,48 @@ class Card(TimeStampedModel):
         # The current user language is given from the UI and set in the api point.
         return reverse("card_show", args=(self.id,))
 
+    def remove_card(self, place=None, movement=None):
+        """
+        Remove this card from a place.
+
+        Find what's the place to remove it from, and call the method on this place.
+        """
+        try:
+            if not place:
+                place = self.places.first() or Preferences.get_default_place()
+        except Exception as e:
+            log.error(u"Error taking the first place of {}: {}".format(self.pk, e))
+            place = Preferences.get_default_place()
+
+        place.add_copy(self, nb=-1)
+        # self.quantity -= 1
+        # self.save()
+        return True
+
+    @staticmethod
+    def remove_card_id(id):
+        card = Card.objects.filter(id=id).first()
+        return card.remove_card()
+
+    def add_card(self, place=None, movement=None):
+        """
+        Add this card to a place.
+        """
+        try:
+            if not place:
+                place = self.places.first() or Preferences.get_default_place()
+        except Exception as e:
+            log.error(u"Error taking the first place of {}: {}".format(self.pk, e))
+            place = Preferences.get_default_place()
+
+        place.add_copy(self, is_box=True)
+        return True
+
+    @staticmethod
+    def add_card_id(id):
+        card = Card.objects.filter(id=id).first()
+        return card.add_card()
+
     def display_year_published(self):
         "We only care about the year"
         return self.year_published.strftime('%Y')
@@ -2296,7 +2338,7 @@ class Place (models.Model):
         cards_qties = self.placecopies_set.all()
         return [it.card for it in cards_qties]
 
-    def add_copy(self, card, nb=1, add=True):
+    def add_copy(self, card, nb=1, add=True, is_box=False):
         """Adds the given number of copies (1 by default) of the given
         card to this place.
 
@@ -2307,14 +2349,18 @@ class Place (models.Model):
 
         If arg "add" is False, set the quantity instead of summing it.
 
-        - card: a card object
+        - card: a card object or an id (int)
         - nb: the number of copies to add (optional).
 
         returns:
         - nothing
 
         """
+        if isinstance(card, int) or isinstance(card, six.text_type) or isinstance(card, six.string_types):
+            card = Card.objects.filter(id=card).first()
+
         assert isinstance(card, Card)
+
         if not isinstance(nb, int):
             # log.warning("nb '{}' is not an int: the quantity was malformed".format(nb))
             nb = 1
@@ -2333,6 +2379,8 @@ class Place (models.Model):
             # (basket). Now it's bought at least once.
             # Saving the card also updates the quantity field (computed from the places).
             card.in_stock = True
+            if is_box:
+                card.quantity += nb
             card.save()
 
         except Exception as e:
@@ -2342,7 +2390,10 @@ class Place (models.Model):
 
         # Add a log to the Entry history
         try:
-            history.Entry.new([card])
+            if nb > 0:
+                history.Entry.new([card])
+            elif nb < 0:
+                history.OutMovement.new([card], reason=_(u"Moved to box"), typ="box")
         except Exception as e:
             log.error("Error while adding an Entry to the history for card {}:{}".format(card.id, e))
 
@@ -2649,6 +2700,10 @@ class Basket(models.Model):
     archived = models.BooleanField(default=False, verbose_name=__("archived"))
     archived_date = models.DateField(blank=True, null=True, verbose_name=__("date archived"))
 
+    #: Box: adding a book removes it from the stock.
+    # Specially used for commands to school libraries etc.
+    is_box = models.BooleanField(default=False, verbose_name=__("Behave like a box? Adding a book removes it from the stock."))
+
     class Meta:
         ordering = ("name",)
         verbose_name = __("Basket")
@@ -2714,10 +2769,11 @@ class Basket(models.Model):
         return copies_qties
 
     @staticmethod
-    def new(name=None):
+    def new(name=None, box=False):
         """Create a new basket.
 
         - name: name (str)
+        - box: if True, this basket is a box.
 
         - Return: a 3-tuple with the new basket object (None if a pb occurs), along with the status and messages.
         """
@@ -2728,7 +2784,7 @@ class Basket(models.Model):
             return None, status, msgs.msgs
 
         try:
-            b_obj = Basket.objects.create(name=name)
+            b_obj = Basket.objects.create(name=name, is_box=box)
             b_obj.save()
             # msg = {'level': ALERT_SUCCESS,
             # 'message': _("New basket created")}
@@ -2738,6 +2794,10 @@ class Basket(models.Model):
             return None, False, msgs.msgs
 
         return b_obj, status, msgs.msgs
+
+    @staticmethod
+    def boxes():
+        return Basket.objects.exclude(archived=True).filter(is_box=True)
 
     @staticmethod
     def search(pk, distributor_id=None):
@@ -2762,16 +2822,25 @@ class Basket(models.Model):
         return True
 
     def add_copy(self, card, nb=1):
-        """Adds the given card to the basket.
+        """
+        Adds the given card to the basket.
+
+        If the basket is a box, remove 1 quantity from the stock.
 
         If no relation already exist with the card, create one.
 
-        nb: nb to add (1 by default)
+        - nb: nb to add (1 by default)
         """
         try:
             basket_copy, created = self.basketcopies_set.get_or_create(card=card)
             basket_copy.nb += nb
             basket_copy.save()
+
+            # box? Remove from the stock.
+            if basket_copy.basket.is_box:
+                card.remove_card()
+                # TODO: create movement
+
         except Exception as e:
             log.error("Error while adding a card to basket %s: %s" % (self.name, e))
 
@@ -2786,10 +2855,28 @@ class Basket(models.Model):
 
         try:
             basket_copy, created = self.basketcopies_set.get_or_create(card=card)
+            previous_nb = basket_copy.nb
+            difference = previous_nb - nb
+
             basket_copy.nb = nb
             now = pendulum.now()
             basket_copy.modified = now
             basket_copy.save()
+
+            # Box? Remove from the stock.
+            # Because on the client side we don't distinguish a click on the upper
+            # or the down arrow,
+            # we don't know if this is an addition or a removal.
+            # We have to check ourselves.
+            # In case of a "box" list, add or remove the quantity and register a movement.
+            if basket_copy.basket.is_box:
+                if difference > 0:
+                    card.add_card()
+                elif difference < 0:
+                    card.remove_card()
+
+                # TODO: movement
+
         except Exception as e:
             log.error('Error while setting the cards {} quantity: {}'.format(card.id, e))
 
@@ -2821,20 +2908,30 @@ class Basket(models.Model):
 
         return {'level': ALERT_SUCCESS, 'message': _("The cards were successfully added to the basket '{}'".format(self.name))}
 
-    def remove_copy(self, card_id):
+    def remove_copy(self, card_id, is_box=False):
         """
         Remove the given card (id) from the basket.
+
+        If the basket was a box, put the copies back in the stock.
         """
         status = True
         msgs = Messages()
+        nb = 0
         try:
             inter_table = self.basketcopies_set.filter(card__id=card_id)
             if inter_table:
                 inter_table = inter_table.first()
+                nb = inter_table.nb
                 inter_table.delete()
                 msgs.add_success(_("The card was successfully removed from the basket"))
             else:
                 log.warn("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
+
+
+            if is_box and nb:
+                place = Preferences.get_default_place()
+                place.add_copy(card_id, nb=nb, is_box=True)  # by saving the card, sets the quantity.
+                # TODO: movement
 
         except ObjectDoesNotExist as e:
             log.error("Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))

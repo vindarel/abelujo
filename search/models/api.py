@@ -1150,7 +1150,8 @@ def basket(request, pk, action="", card_id="", **kwargs):
 
         # Remove a card
         elif action and action == "remove" and card_id:
-            status, msgs = basket.remove_copy(card_id)
+            params = json.loads(request.body)
+            status, msgs = basket.remove_copy(card_id, is_box=params.get('is_box'))
 
         # Update one card
         elif action and action == "update" and req.get('id_qty'):
@@ -1229,8 +1230,13 @@ def baskets(request, **kwargs):
             }
 
         else:
+            params = request.GET.copy()
+            data = []
             try:
-                data = Basket.objects.exclude(archived=True).all()
+                if not params.get('boxes'):
+                    data = Basket.objects.exclude(archived=True).exclude(is_box=True).all()
+                else:
+                    data = Basket.boxes().all()
             except Exception as e:
                 log.error(e)
                 status = httplib.INTERNAL_SERVER_ERROR
@@ -1244,6 +1250,13 @@ def baskets(request, **kwargs):
                   "alerts": msgs,
                   "data": data,
                   "meta": meta, }
+        return JsonResponse(to_ret)
+
+def boxes(request, **kw):
+    if request.method == "POST":
+        to_ret = {'status': ALERT_SUCCESS}
+        boxes = Basket.boxes()
+        to_ret['data'] = boxes.to_list()
         return JsonResponse(to_ret)
 
 def baskets_create(request, **response_kwargs):
@@ -1260,7 +1273,8 @@ def baskets_create(request, **response_kwargs):
         # Otherwise they get in the request body.
         params = json.loads(request.body)
         name = params.get('name')
-        b_obj, status, msgs = Basket.new(name=name)
+        box = params.get('box', False)
+        b_obj, status, msgs = Basket.new(name=name, box=box)
         to_ret = {"data": b_obj.to_dict() if b_obj else {},
                   "alerts": msgs,
                   "status": status}

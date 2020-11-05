@@ -2,6 +2,10 @@ Changelog starting from v0.5 (2018/09/18)
 
 ## v0.14 (2020-09, ...)
 
+### New features
+
+- new **boxes** menu. It's like the lists, except that adding a book in a "box" removes it from our stock. This is particularly useful when working with commands. We take a book from the shelf, put it in the parcel, and the quantity in stock reflects the reality. Before, we had to validate the list.
+
 ### Enhancements
 
 - adding a book in a **list** always moves it at the top of the list. Before, there were cases where an existing book would not move, so we could not see its new quantity easily.

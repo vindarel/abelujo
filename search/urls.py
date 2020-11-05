@@ -126,6 +126,7 @@ urlpatterns = patterns('',
     # Endpoints for vue, to replace the previous ones.
     # Simple presentation:
     url(r'^lists/?$', 'search.views.basket_list', name="basket_list"),
+    url(r'^boxes/?$', 'search.views.boxes', name="boxes"),
     # Vue app
     url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="basket_view"),
 

@@ -1034,6 +1034,12 @@ def basket_list(request):
             'baskets': baskets,
         })
 
+def boxes(request):
+    template = "search/baskets.jade"
+    if request.method == "GET":
+        return render(request, template, {
+        })
+
 @login_required
 def basket_view(request, pk):
     template = 'search/basket_view.html'

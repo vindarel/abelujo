@@ -34,6 +34,15 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.language = utils.url_language($window.location.pathname)
 
+    # Are we on the /boxes page?
+    url_match = $window.location.pathname.match("\/boxes")
+    if url_match and url_match is not null
+      $scope.boxes_page = true
+      $log.info "-- boxes url"
+    else
+      $scope.boxes_page = false
+      $log.info "-- baskets url"
+
     $scope.showing_notes = false
     $scope.last_sort = "title"
 
@@ -49,7 +58,11 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     if page_size != null
         $scope.page_size = parseInt(page_size)
 
-    $http.get "/api/baskets"
+    params = {}
+    if $scope.boxes_page
+       params['boxes'] = true  # beware, we can have a list with 'false'
+    $http.get "/api/baskets", do
+      params: params
     .then (response) ->
         """Get the baskets, do not show the "to command" one, of id=1.
         """
@@ -209,12 +222,11 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             ... # error
 
     $scope.save_quantity = (index) !->
-        """Save the item quantity.
-        """
+        """Save the item quantity."""
         # XXX see save_card_to_basket above
         card = $scope.copies[index]
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
-        utils.save_quantity card, $scope.cur_basket.id
+        utils.save_quantity card, $scope.cur_basket.id, is_box = $scope.boxes_page
         card.modified = now  # there is no success check
 
     $scope.command = !->
@@ -246,7 +258,10 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.remove_from_selection = (index_to_rm) !->
         "Remove the card from the list. Server call to the api."
         card_id = $scope.copies[index_to_rm].id
-        $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/",
+        params = {}
+        if $scope.boxes_page
+           params['is_box'] = true
+        $http.post "/api/baskets/#{$scope.cur_basket.id}/remove/#{card_id}/", params
         .then (response) !->
             $scope.copies.splice(index_to_rm, 1)
             # $scope.alerts = response.data.msgs # useless
@@ -504,8 +519,14 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
             $uibModalInstance.dismiss('cancel')
             return
 
+        $log.info "-- hello modal in OK"
         params = do
             name: $scope.new_name
+
+        if $window.location.pathname.match "\/boxes"
+          params['boxes'] = true
+
+        $log.info "-- params:", params
 
         $http.post "/api/baskets/create", params
         .then (response) !->

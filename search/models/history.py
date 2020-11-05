@@ -101,6 +101,7 @@ class OutMovementTypes:
     returned_supplier = 2
     loss = 3
     gift = 4
+    box = 5
 
 
 class OutMovement(models.Model):
@@ -151,6 +152,48 @@ class OutMovement(models.Model):
     @property
     def supplier(self):
         return self.publisher or self.distributor
+
+    @staticmethod
+    def new(copies, reason=None, typ=None):
+        """Create a new record for the given list of copies.
+
+        - copies: list
+        - typ: int (box... see choices)
+        - reason: (comment)
+
+        return: a tuple OutMovement object, boolean
+        """
+        try:
+            if typ is None or typ == "box":
+                typ = OutMovementTypes.box
+            en = OutMovement(typ=typ, comment=reason)
+            en.save()
+            en.add_copies(copies)
+
+            return en, True
+
+        except Exception as e:
+            log.error(e)
+
+            return None, False
+
+    def add_copies(self, copies):
+        """Add the given list of copies to this OutMovement.
+
+        copies: list
+
+        return:
+        """
+        try:
+            for card in copies:
+                hist_set = OutMovementCopies(movement=self, card=card)
+                hist_set.save()
+
+        except Exception as e:
+            log.error(e)
+            return False
+
+        return True
 
     @staticmethod
     def _create_return(publisher=None, distributor=None,
