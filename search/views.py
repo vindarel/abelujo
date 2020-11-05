@@ -1108,6 +1108,7 @@ def basket_export(request, pk):
     return response
 
 def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None,
+                     discount=0,
                      covers=False,
                      barcodes=False,
                      total=None,
@@ -1224,6 +1225,8 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
         if total is None:
             total = sum([it[1] * it[0].price if it[0].price else 0 for it in cards_qties])
+        if discount:
+            total = total - total / 100 * discount
         if total_with_discount is None:
             total_with_discount = -1  # unemplemented. Inventories should compute it before.
         total_qty = sum([it[1] for it in cards_qties])
