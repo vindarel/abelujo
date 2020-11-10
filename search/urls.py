@@ -121,12 +121,17 @@ urlpatterns = patterns('',
     url(r'^baskets/(?P<pk>\d+)/export/$', 'search.views.basket_export', name="basket_export"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',
         login_required(TemplateView.as_view(template_name="search/inventory_view.jade"))),
-    url(r'^baskets/$', 'search.views.baskets',
-        name="baskets"),
+    url(r'^baskets/$', 'search.views.baskets', name="baskets"),
+    url(r'^baskets/(?P<pk>\d+)/$',
+        login_required(TemplateView.as_view(template_name="search/baskets.jade")),
+        name="basket_view"),
+    url(r'^boxes/?$', 'search.views.boxes', name="boxes"),
+    url(r'^boxes/(?P<pk>\d+)/$',
+        login_required(TemplateView.as_view(template_name="search/baskets.jade")),
+        name="box_view"),
     # Endpoints for vue, to replace the previous ones.
     # Simple presentation:
     url(r'^lists/?$', 'search.views.basket_list', name="basket_list"),
-    url(r'^boxes/?$', 'search.views.boxes', name="boxes"),
     # Vue app
     url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="basket_view"),
 

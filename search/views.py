@@ -320,6 +320,9 @@ def card_show(request, pk):
                                       place.name.replace(" ", "_").lower(),  # html id.
             ))
 
+        # Quantity per box.
+        quantity_boxes = card.quantity_boxes()
+
         # Sells since the last entry
         if last_entry:
             res = Sell.search(card.id, date_min=last_entry.created)
@@ -330,6 +333,7 @@ def card_show(request, pk):
         "sells": sells,
         # "shelves": Shelf.objects.order_by("name").all(),
         "places_quantities": places_quantities,
+        "quantity_boxes": quantity_boxes,
         "last_entry": last_entry,
         "total_sold": total_sold,
         "pending_commands": pending_commands,

@@ -184,6 +184,19 @@ div#abelujo
                     td(id="{{ name_qty.2}}_quantity")  {{ name_qty.1 }}
 
           tr
+            td {% trans "Boxes" %}
+            if not quantity_boxes
+              td ---
+            else
+              td
+                table.table.table-condensed
+                  for tup in quantity_boxes
+                    tr
+                      td
+                        a(href="{% url 'box_view' tup.1 %}") {{ tup.2 }}
+                      td {{ tup.0 }}
+
+          tr
               td {% trans "Minimal qty" %}
               td {{ object.threshold }}
 

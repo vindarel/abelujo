@@ -2129,6 +2129,17 @@ class Card(TimeStampedModel):
         in the shelves, not in the stock).
         """
         return sum(self.placecopies_set.filter(place__can_sell=True).values_list('nb', flat=True))
+    def quantity_boxes(self):
+        """
+        Get to know the boxes this card is in.
+
+        Return: a tuple (nb, box id, box name).
+        """
+        res = None
+        basket_copies = self.basketcopies_set.filter(basket__is_box=True)
+        if basket_copies:
+            res = basket_copies.values_list('nb', 'basket__id', 'basket__name')
+        return res
 
     def quantity_reserve(self):
         """
