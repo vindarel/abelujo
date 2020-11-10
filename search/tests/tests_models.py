@@ -596,6 +596,22 @@ class TestBaskets(TestCase):
         dep, msgs = self.basket.to_deposit(self.distributor, name="depo test")
         self.assertFalse(msgs)
 
+
+class TestBoxes(TestCase):
+
+    def setUp(self):
+        self.basket = Basket.new(name="test")
+
+    def tearDown(self):
+        pass
+
+    def test_box_nominal(self):
+        box = Basket.new(name="box", box=True)
+        test = Basket.new(name="test", box=True)
+        self.assertTrue(box)
+        self.assertTrue(test)
+
+
 class TestReturnBaskets(TestCase):
 
     def setUp(self):

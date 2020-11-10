@@ -524,7 +524,7 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
             name: $scope.new_name
 
         if $window.location.pathname.match "\/boxes"
-          params['boxes'] = true
+          params['box'] = true
 
         $log.info "-- params:", params
 
