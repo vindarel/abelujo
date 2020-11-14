@@ -50,7 +50,11 @@
 <!-- div plus gros panier (?)-->
 <div class="col-md-3 panel panel-info">
   <div class="panel-heading">{% trans "Cash register" %}</div>
-  <div class="panel-body">{{ sells_data.total_price_sold_fmt }}</div>
+  <div class="panel-body">
+    <h3> {{ sells_data.total_price_sold_fmt }} </h3>
+    <div> {% trans "Books" %}: {{ sells_data.total_price_sold_books_fmt }}</div>
+    <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div>
+  </div>
 </div>
 
 <div class="col-md-3 panel panel-info">

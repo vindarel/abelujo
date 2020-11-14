@@ -5,6 +5,7 @@ Changelog starting from v0.5 (2018/09/18)
 ### New features
 
 - new **boxes** menu. It's like the lists, except that adding a book in a "box" removes it from our stock. This is particularly useful when working with commands. We take a book from the shelf, put it in the parcel, and the quantity in stock reflects the reality. Before, we had to validate the list.
+- in the **history**: we now differentiate the revenue from books and other products, that have a different VAT. Necessary for accounting.
 
 ### Enhancements
 

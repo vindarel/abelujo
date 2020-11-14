@@ -4350,7 +4350,11 @@ class Sell(models.Model):
         nb_cards_returned = sum(sells.filter(quantity__lt=0).values_list('quantity', flat=True))
         total_sells = sum(sells.values_list('quantity', flat=True))
 
+        type_book = CardType.objects.filter(name="book").first()
+
         total_price_sold = None
+        total_price_sold_books = None
+        total_price_sold_not_books = None
         sell_mean = None
         if with_total_price_sold:
             # Ignore coupons, gifts, and others in the total revenue.
@@ -4359,7 +4363,17 @@ class Sell(models.Model):
             # Total for mean sell: count sells only, not returns.
             # We consider that a return or an exchange should not lower the mean sell.
             sells_for_mean = sells.filter(quantity__gt=0).exclude(ignore_for_revenue=True)
-            total_price_sold = sum([it[0] * it[1] for it in sells_for_revenue.values_list('quantity', 'price_sold')])
+            # total_price_sold = sum([it[0] * it[1] for it in sells_for_revenue.values_list('quantity', 'price_sold')])
+
+            # Count VATs separately.
+            sells_for_revenue_values = sells_for_revenue.values_list('quantity', 'price_sold', 'card__card_type', 'card__isbn')
+            # Filter books.
+            # Normally, they are of type "book", but I observe it is not always the case. Why?
+            total_price_sold_books = sum([it[0] * it[1] for it in sells_for_revenue_values if it[2] == type_book.pk or it[3].startswith('97')])
+            total_price_sold_not_books = sum([it[0] * it[1]
+                                              for it in sells_for_revenue_values
+                                              if it[2] != type_book.pk and not it[3].startswith('97')])
+            total_price_sold = total_price_sold_books + total_price_sold_not_books
             total_sells_for_mean = sum([it[0] * it[1] for it in sells_for_mean.values_list('quantity', 'price_sold')])
             if total_sells_for_mean:
                 sell_mean = total_sells_for_mean / nb_cards_sold
@@ -4383,6 +4397,10 @@ class Sell(models.Model):
                 "total_sells": total_sells,  # total
                 "total_sells_fmt": price_fmt(total_sells, default_currency),  # total
                 "total_price_sold": total_price_sold,
+                "total_price_sold_books": total_price_sold_books,
+                "total_price_sold_books_fmt": price_fmt(total_price_sold_books, default_currency),
+                "total_price_sold_not_books": total_price_sold_not_books,
+                "total_price_sold_not_books_fmt": price_fmt(total_price_sold_not_books, default_currency),
                 "total_price_sold_fmt": price_fmt(total_price_sold, default_currency),
                 "sell_mean": sell_mean,
                 "sell_mean_fmt": price_fmt(sell_mean, default_currency),
