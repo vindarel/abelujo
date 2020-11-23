@@ -6,13 +6,14 @@ Changelog starting from v0.5 (2018/09/18)
 
 - new **boxes** menu. It's like the lists, except that adding a book in a "box" removes it from our stock. This is particularly useful when working with commands. We take a book from the shelf, put it in the parcel, and the quantity in stock reflects the reality. Before, we had to validate the list.
 - in the **history**: we now differentiate the revenue from books and other products, that have a different VAT. Necessary for accounting.
+- we can **generate a bill for a list** and **generate a bill during a sell**.
+  If the client has a default discount, apply it.
+- we can **sell a list**.
 
 ### Enhancements
 
 - adding a book in a **list** always moves it at the top of the list. Before, there were cases where an existing book would not move, so we could not see its new quantity easily.
 - lists: sort books by last modified date. This allows to see the last books we added to a list.
-- we can **sell a list**,
-- we can **generate a bill for a list**
 - we added a button on the card page to quickly **add this book to the command list**. Previously, books were added to the command list when they were sold and their quantity got below a given treshold. There was no manual way, this is now fixed.
 - **automatic commands**: when a book is added to the list of books to command, its quantity to command is not set to 1 (or more) anymore, but 0. That way, the booksellers will /select/ what books to command and how much, instead of /un-selecting/ them.
 

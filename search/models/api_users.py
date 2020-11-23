@@ -115,11 +115,25 @@ def bill(request, *args, **response_kwargs):
     prices = params.get('prices', [])
     prices_sold = params.get('prices_sold', [])
     quantities = params.get('quantities', [])
+
+    # Client
+    client_id = params.get('client_id')
+    client = None
+    if client_id:
+        qs = Client.objects.filter(pk=client_id)
+        if qs:
+            client = qs.first()
+
     discount = params.get('discount', {})
-    discount_fmt = discount['name'] if discount else '0%'
+    if discount:
+        discount_fmt = discount['name']
+    elif client and client.discount:
+        discount_fmt = "{} %".format(client.discount)
+    else:
+        discount_fmt = '0%'
+
     basket_id = int(params.get('basket_id', -1))
     language = params.get('language')
-    client_id = params.get('client_id')
 
     if language:
         translation.activate(language)
@@ -147,6 +161,7 @@ def bill(request, *args, **response_kwargs):
             cards_data = list(zip(sorted_cards, quantities))
             if client_id:
                 client_id = int(client_id)
+                client_discount = 0
             # sell the books?
             # if sellbooks:
             #     ids_prices_quantities = []
@@ -177,14 +192,6 @@ def bill(request, *args, **response_kwargs):
     # The bookshop identity.
     bookshop = users.Bookshop.objects.first()
 
-    # Client
-    client_id = params.get('client_id')
-    client = None
-    if client_id:
-        qs = Client.objects.filter(pk=client_id)
-        if qs:
-            client = qs.first()
-
     # Name, filename
     bill_label = _("Bill")
     bookshop_name = bookshop.name if bookshop else ""
@@ -198,7 +205,8 @@ def bill(request, *args, **response_kwargs):
 
     # Totals
     total = 0
-    total_discounted = 0
+    total_discounted = 0  # when a discount is applied at the sell page.
+    total_with_client_discount = total
     if not (len(ids) == len(prices) == len(quantities)):  # prices_sold: not for basket(?)
         log.error("Bill: post params are malformed. ids, prices, prices_sold and quantities should be of same length.")
         return
@@ -208,11 +216,14 @@ def bill(request, *args, **response_kwargs):
         if prices_sold:
             total_discounted += prices_sold[i] * quantities[i]
 
-    if not prices_sold:
-        total_discounted = total
-
     default_currency = Preferences.get_default_currency()
     total_fmt = price_fmt(total, default_currency)
+    if client and client.discount:
+        total_with_client_discount = total - total * client.discount / 100
+
+    if not prices_sold:
+        total_discounted = total_with_client_discount
+
     total_discounted_fmt = price_fmt(total_discounted, default_currency)
 
     template = get_template(template)
@@ -239,6 +250,8 @@ def bill(request, *args, **response_kwargs):
                                   'total_label': _("Total before discount"),
                                   'total_fmt': total_fmt,
                                   'total_discounted_fmt': total_discounted_fmt,
+                                  'total_with_client_discount': total_with_client_discount,
+                                  'total_with_client_discount_fmt': price_fmt(total_with_client_discount, default_currency),
                                   'total_qty': 8,
                                   'quantity_header': 18,
                                   'creation_date_label': creation_date_label,
