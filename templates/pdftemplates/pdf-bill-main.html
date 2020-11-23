@@ -222,6 +222,7 @@
       <table>
         <thead>
           <tr>
+            <th> {% trans "EAN13" %} </th>
             <th>
               {% trans "Title" %}
             </th>
@@ -240,8 +241,11 @@
         <tbody>
           {% for card_qty in cards_data %}
           <tr>
+            <td style="text-align: right">
+              {{ card_qty.0.isbn }}
+            </td>
             <td style="text-align: left">
-              {{ card_qty.0.title }}
+               {{ card_qty.0.title }}
             </td>
             <td style="text-align: left">
               {{ card_qty.0.pubs_repr }}
