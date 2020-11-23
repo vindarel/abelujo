@@ -18,6 +18,7 @@ from django.contrib import admin
 from search.models import Author
 from search.models import Basket
 from search.models import Bill
+from search.models.users import Bookshop
 from search.models import Card
 from search.models import CardType
 from search.models import CouponGeneric
@@ -139,6 +140,7 @@ class ShelfAdmin(admin.ModelAdmin):
 
 admin.site.register(Author)
 admin.site.register(Basket)
+admin.site.register(Bookshop)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
 admin.site.register(CardType, CardTypeAdmin)
