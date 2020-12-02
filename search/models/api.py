@@ -1150,8 +1150,12 @@ def basket(request, pk, action="", card_id="", **kwargs):
 
         # Remove a card
         elif action and action == "remove" and card_id:
-            params = json.loads(request.body)
-            status, msgs = basket.remove_copy(card_id, is_box=params.get('is_box'))
+            is_box = False
+            params = {}
+            if request.body:
+                params = json.loads(request.body)
+                is_box = params.get('is_box')
+            status, msgs = basket.remove_copy(card_id, is_box=is_box)
 
         # Update one card
         elif action and action == "update" and req.get('id_qty'):
