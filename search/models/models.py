@@ -74,6 +74,7 @@ from search.models.common import PAYMENT_CHOICES
 from search.models.common import TEXT_LENGTH
 from search.models.common import ignore_payment_for_revenue
 from search.models.common import TimeStampedModel
+from search.models import utils
 from search.models.utils import Messages
 from search.models.utils import get_logger
 from search.models.utils import is_invalid
@@ -927,7 +928,7 @@ class Card(TimeStampedModel):
     def theme_name(self):
         "From the theme code in DB, get its name."
         if self.theme:
-            return settings.CLIL_THEMES.get(self.theme)
+            return utils.theme_name(self.theme)
         return ""
 
     @property
@@ -937,25 +938,13 @@ class Card(TimeStampedModel):
         3781 (action et aventure) => Bande dessinée"""
         if not self.theme:
             return ""
-        theme = self.theme
-        try:
-            parents_list = settings.CLIL_THEME_HIERARCHIES.get(theme)
-            parents_list = [it.strip() for it in parents_list]
-            parent = None
-            # element 0 is the first parent. List of 4 elements. The list ends with
-            # the theme code (same as the key):
-            # code => grand-parent, parent, code, blank string.
-            if parents_list[0] == theme:
-                return ""
-            elif parents_list[1] == theme:
-                return parents_list[0]
-            elif parents_list[2] == theme:
-                parent = parents_list[1]
-            elif parents_list[3] == theme:
-                parent = parents_list[2]
-            return settings.CLIL_THEMES.get(parent)
-        except Exception as e:
-            log.warning(u"Could not get the parent theme of {}: {}".format(self.theme, e))
+        return utils.parent_theme_name(self.theme)
+
+    @property
+    def theme_composed_name(self):
+        if self.theme:
+            return utils.theme_composed_name(self.theme)
+        return ""
 
     @property
     def presedit_name(self):
@@ -1005,6 +994,11 @@ class Card(TimeStampedModel):
         theme_code = self.theme
         theme_name = self.theme_name
 
+        shelf_name = self.shelf.name if self.shelf else ""
+        if hasattr(settings.config, 'USE_THEMES_FOR_SHELVES') and settings.config.USE_THEMES_FOR_SHELVES:
+            # shelf_name = theme_name
+            shelf_name = self.theme_composed_name
+
         res = {
             "id": self.id,
             "authors_repr": authors_repr,
@@ -1042,7 +1036,8 @@ class Card(TimeStampedModel):
             "price_excl_vat_fmt": price_fmt(self.price_excl_vat, currency),
             "currency": currency,
             "pubs_repr": pubs_repr,
-            "shelf": self.shelf.name if self.shelf else "",
+            # "shelf": self.shelf.name if self.shelf else "",
+            "shelf": shelf_name,
             "title": self.title,
             "threshold": self.threshold,
             "theme_name": theme_name,

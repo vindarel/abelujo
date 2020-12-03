@@ -440,6 +440,11 @@ else:
 #########################################################
 # Load user settings.
 #########################################################
+
+## Default settings:
+# If True, don't bother user custom shelf names, use Dilicom's CLIL themes.
+USE_THEMES_FOR_SHELVES = False
+
 if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     try:
         import config

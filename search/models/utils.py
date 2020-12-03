@@ -449,3 +449,48 @@ def to_ascii(string):
         res = unidecode.unidecode(string)
     except Exception as e:
         log.debug(u"Could not create ascii equivalent for {}: {}".format(string, e))
+
+def theme_name(code):
+    "From the theme code in DB, get its name."
+    try:
+        return settings.CLIL_THEMES.get(code)
+    except Exception as e:
+        return ""
+
+def parent_theme_name(code):
+    """
+    Get the first parent theme name.
+    3781 (action et aventure) => Bande dessinée"""
+    if not code:
+        return ""
+    try:
+        parents_list = settings.CLIL_THEME_HIERARCHIES.get(code)
+        parents_list = [it.strip() for it in parents_list]
+        parent = None
+        # element 0 is the first parent. List of 4 elements. The list ends with
+        # the theme code (same as the key):
+        # code => grand-parent, parent, code, blank string.
+        if parents_list[0] == code:
+            return ""
+        elif parents_list[1] == code:
+            return parents_list[0]
+        elif parents_list[2] == code:
+            parent = parents_list[1]
+        elif parents_list[3] == code:
+            parent = parents_list[2]
+        return settings.CLIL_THEMES.get(parent)
+    except Exception as e:
+        log.warning(u"Could not get the parent theme of {}: {}".format(code, e))
+        return ""
+
+def theme_composed_name(code):
+    """
+    From the code, return the name composed of 3 parents (max).
+    """
+    code = code.strip()
+    hierarchie = settings.CLIL_THEME_HIERARCHIES.get(code)
+    try:
+        return " / ".join([it for it in [theme_name(code) for code in hierarchie] if it ])
+    except Exception as e:
+        log.warning(u"Could not join theme names for {}: {}".format(code, e))
+        return str(code)
