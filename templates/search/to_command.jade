@@ -80,6 +80,12 @@ div(ng-cloak, ng-controller="basketToCommandController")
                 i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'distributor.name' | ng}} {% trans ' with your desktop mail client' %}")
 
                div.btn-group
+                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+                   span.caret
+                 ul.dropdown-menu
+                   li: a(ng-click="empty()") {% trans "Remove all" %}
+
+               div.btn-group
                 button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Export the list to the required format' %}") {% trans "Export" %}
                    span.caret
                  ul.dropdown-menu
