@@ -212,6 +212,7 @@ div(ng-cloak, ng-controller="basketsController")
            .col-md-12
             a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
             div(ng-show="show_images") {{'it.authors_repr'|ng}}
+            div(class="badge badge-secondary", ng-show="show_images") {{'it.shelf'|ng}}
          td {{ 'it.pubs_repr' | ng }}
          td {{ 'it.dist_repr' | ng }}
 

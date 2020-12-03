@@ -169,7 +169,7 @@ div#abelujo
 
           tr(class="{% if object.quantity > 0 %} active {% elif object.quantity < 0 %} danger {% endif %}")
             td {% trans "In stock" %}
-            td(id="in_stock") {{ object.quantity }}
+            td(id="in_stock") {{ object.quantity_compute }}
 
           tr
             td {% trans "Presente in" %}
