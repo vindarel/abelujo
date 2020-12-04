@@ -71,6 +71,7 @@ div(ng-cloak, ng-controller="basketsController")
 
            li.divider(role="separator")
 
+           li: a(href="#", ng-click="add_to_stock(cur_basket.id)", title='{% trans "Add all the cards to the stock." %}') {% trans "Add to stock…" %}
            li: a(href="#", ng-click="add_to_shelf(cur_basket.id)", title='{% trans "Add all the cards to a shelf." %}') {% trans "Add to shelf…" %}
            li: a(href="#", ng-click="command()", title='{% trans "Mark all the cards to command" %}') {% trans "Command…" %}
            li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…

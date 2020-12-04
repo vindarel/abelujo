@@ -106,6 +106,7 @@ AUTO_COMMAND_ID = 1
 
 PAGE_SIZE = 25
 
+MSG_INTERNAL_ERROR = _("An internal error occured, we have been notified.")
 
 def get_user_info(request, **response_kwargs):
     """
@@ -1504,6 +1505,29 @@ def baskets_add_to_shelf(request, pk, **kw):
             raise e
 
         msgs.add_success('The card were successfully added to the shelf.')
+        to_ret['alerts'] = msgs.msgs
+        return JsonResponse(to_ret)
+
+def baskets_add_to_stock(request, pk, **kw):
+    """
+    Add the cards of the given basket to the stock, and empty the basket.
+    """
+    to_ret = {}
+    msgs = Messages()
+    if request.method == 'POST':
+        basket = Basket.objects.filter(id=pk).first()
+        place = Preferences.get_default_place()
+        try:
+            res = place.add_copies(basket.copies.all())
+        except Exception as e:
+            log.error("Error adding basket {} to stock: {}".format(pk, e))
+            msgs.add_error(MSG_INTERNAL_ERROR)
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'] = msgs.msgs
+            return JsonResponse(to_ret)
+
+        msgs.add_success('The cards were successfully added to the stock.')
+        to_ret['status'] = ALERT_SUCCESS
         to_ret['alerts'] = msgs.msgs
         return JsonResponse(to_ret)
 

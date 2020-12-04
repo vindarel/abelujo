@@ -387,6 +387,32 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         , !->
             $log.info "modal dismissed"
 
+    ##################################################################
+    # Add all cards to the stock, straight, without choosing the shelf.
+    ###################################################################
+    $scope.add_to_stock = (cur_basket_id) !->
+        params = do
+            shelf_id: cur_basket_id
+
+        sure = confirm gettext "Do you want to add all the cards to your stock?"
+        if sure
+            $http.post "/api/baskets/#{cur_basket_id}/add_to_stock/", params
+            .then (response) !->
+                $log.info response
+                if response.data.status == "success"
+                   ## Notiflix.Notify.Success "OK"
+                   $scope.alerts = response.data.alerts
+
+                   # Remove basket from UI.
+                   index = find-index (.id == cur_basket_id), $scope.baskets
+                   $scope.baskets.splice index, 1
+                   if index >= $scope.baskets.length
+                       index -= 1
+                   $scope.showBasket index
+
+                else
+                   Notiflix.Notify.Info "Warning: it seems that an error occured."
+
     $scope.toggle_images = !->
         $scope.show_images = not $scope.show_images
 

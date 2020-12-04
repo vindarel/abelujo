@@ -2405,6 +2405,19 @@ class Place (models.Model):
 
         return place_copy.nb
 
+    def add_copies(self, cards):
+        """Adds the given list of cards objects. A simple and uncomplete
+        wrapper to "add_copy" for consistency. Use the latter instead.
+
+        """
+        # with transaction.atomic() ?
+        start = timezone.now()
+        for it in cards:
+            self.add_copy(it)
+        end = timezone.now()
+        print("ADD_COPIES for {} cards TOOK {}".format(len(cards), end - start))
+        return True
+
     def remove_card(self, card):
         """Remove this card from this place.
         If all went well, return True."""
@@ -2489,15 +2502,6 @@ class Place (models.Model):
         except Exception as e:
             log.error("Error getting cost of place {}: {}".format(self.name, e))
             return 0
-
-    def add_copies(self, cards):
-        """Adds the given list of cards objects. A simple and uncomplete
-        wrapper to "add_copy" for consistency. Use the latter instead.
-
-        """
-        # with transaction.atomic() ?
-        for it in cards:
-            self.add_copy(it)
 
 
 @python_2_unicode_compatible

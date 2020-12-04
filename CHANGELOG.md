@@ -1,6 +1,17 @@
 Changelog starting from v0.5 (2018/09/18)
 
-## v0.14 (2020-09, ...)
+## v0.14 (2020-12, ...)
+
+### New features
+
+- Baskets: added an action to add all the cards to the stock, without having to choose a shelf. This greatly **speeds up the registration of new books**.
+- We added a global parameter to **use CLIL themes for the shelf** name,
+  in order to speed up the registration of new books (this removes the
+  only required manual step until now). We can use the new action
+  above, and still have shelves for our books.
+
+
+## v0.13.3 (2020-09, 2020-11)
 
 ### New features
 
