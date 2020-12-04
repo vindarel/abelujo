@@ -19,8 +19,11 @@
 """
 Update cards' information after a Dilicom lookup.
 
+SEE UPDATE_ALL_WITH_DILICOM !
+
 Here:
 - their price,
+- their theme,
 - for all cards added with Dilicom since january, 1st.
 
 ./manage.py fix_dilicom_info
@@ -46,10 +49,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("Go...")
         start = timezone.datetime(year=2020, month=01, day=01)
-        cards = Card.objects.filter(created__gt=start).filter(data_source='dilicom')
+
+        # Only the ones from Dilicom ? Bad idea.
+        # cards = Card.objects.filter(created__gt=start).filter(data_source='dilicom')
+
+        # All cards.
+        cards = Card.objects.filter(created__gt=start)
 
         # Cards whose price has no decimal, hence are suspicious.
-        cards = list(filter(lambda card: card.price % 1 == 0, cards))
+
+        # If needed, to filter some prices:
+        # cards = list(filter(lambda card: card.price % 1 == 0, cards))
+
         self.stdout.write("Looking up {} cards on Dilicom.".format(len(cards)))
         self.stdout.write("(Not all will need an update)")
         confirmation = raw_input("Continue ? [Y/n]")
@@ -67,6 +78,7 @@ class Command(BaseCommand):
         count_ok = 0
         for card in cards:
             bk = list(filter(lambda it: it['isbn'] == card.isbn, bklist))
+            to_save = False
             if bk:
                 bk = bk[0]
 
@@ -77,10 +89,22 @@ class Command(BaseCommand):
             if bk['price'] != card.price:
                 self.stdout.write("{}: {} => {}".format(card.title, card.price, bk['price']))
                 card.price = bk['price']
-                card.save()
-                cards_updated.append(card)
+                to_save = True
             else:
                 count_ok += 1
+
+            if bk['theme'] and bk['theme'] != card.theme:
+                self.stdout.write("theme of {}: {} => {}".format(card.id, card.theme, bk['theme']))
+                card.theme = bk['theme']
+                to_save = True
+
+            if card.data_source != "dilicom":
+                card.data_source = "dilicom"
+                to_save = True
+
+            if to_save:
+                card.save()
+                cards_updated.append(card)
 
         self.stdout.write("-------------------")
         self.stdout.write("Cards OK: {}.".format(count_ok))

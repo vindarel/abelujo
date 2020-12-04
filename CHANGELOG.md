@@ -10,6 +10,10 @@ Changelog starting from v0.5 (2018/09/18)
   only required manual step until now). We can use the new action
   above, and still have shelves for our books.
 
+### Upgrade instructions
+
+- Nothing special, but it is recommend to run the `update_all_with_dilicom` script.
+
 
 ## v0.13.3 (2020-09, 2020-11)
 
