@@ -126,6 +126,9 @@ def update_from_dilicom(card):
             card.price = res['price']
             to_save = True
 
+        if res['theme'] and card.theme != res['theme']:
+            card.theme = res['theme']
+            to_save = True
 
         # # "price_excl_vat" is already a model property.
         # # We'll use the "fmt" one.
