@@ -995,7 +995,7 @@ class Card(TimeStampedModel):
         theme_name = self.theme_name
 
         shelf_name = self.shelf.name if self.shelf else ""
-        if hasattr(settings.config, 'USE_THEMES_FOR_SHELVES') and settings.config.USE_THEMES_FOR_SHELVES:
+        if hasattr(settings, "config") and hasattr(settings.config, 'USE_THEMES_FOR_SHELVES') and settings.config.USE_THEMES_FOR_SHELVES:
             # shelf_name = theme_name
             shelf_name = self.theme_composed_name
 
