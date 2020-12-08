@@ -1518,7 +1518,9 @@ def baskets_add_to_stock(request, pk, **kw):
         basket = Basket.objects.filter(id=pk).first()
         place = Preferences.get_default_place()
         try:
-            res = place.add_copies(basket.copies.all())
+            copies = basket.basketcopies_set.all()
+            for copy in copies:
+                place.add_copy(copy.card, nb=copy.nb)
         except Exception as e:
             log.error("Error adding basket {} to stock: {}".format(pk, e))
             msgs.add_error(MSG_INTERNAL_ERROR)
