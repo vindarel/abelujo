@@ -319,6 +319,15 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
         , (response) ->
             $log.info "--- error ", response.status, response.statusText
 
+    $scope.do_card_command = (id) !->
+        url = "/api/card/#{id}/command"
+        $http.post url
+        .then (response) !->
+            $log.info response
+            if response.data.status == "success"
+               Notiflix.Notify.Success "OK"
+            else
+                Notiflix.Notify.Warning "Warning"
 
     ##############################
     # Keyboard shortcuts (hotkeys)

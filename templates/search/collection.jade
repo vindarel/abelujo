@@ -202,6 +202,7 @@ div(ng-cloak, ng-controller="collectionController")
       th {% trans "Quantity" %}
       th {% trans "In deposits" %}
       th {% trans "Places" %}
+      th
 
     tbody
       tr(ng-repeat="card in cards")
@@ -231,11 +232,16 @@ div(ng-cloak, ng-controller="collectionController")
             div {{ 'author.fields.name' |ng}}
         td {{ 'card.pubs_repr' | ng }}
         td {{ 'card.distributor_repr' | ng }}
-        td(class="badge badge-secondary") {{ 'card.shelf' | ng }}
+        td
+          div(class="badge badge-secondary") {{ 'card.shelf' | ng }}
         td.text-right {{ 'card.quantity' | ng }}
         td.text-right {{ 'card.qty_deposits' | ng }}
+          div id? {{ 'card.id' | ng }}
         td
-          div(ng-show="card.places") {{ 'card.places' | ng}}
+          div(ng-show="card.places") {{ 'card.places' | ng }}
+        td
+          a.btn.btn-default(href="#", title='{% trans "Remember to command this card. Add it to the list for later." %}', ng-click="do_card_command(card.id)")
+            i.glyphicon.glyphicon-shopping-cart
 
  .col-md-7
       .btn-group
