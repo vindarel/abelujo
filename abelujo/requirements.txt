@@ -37,6 +37,7 @@ django-redis-cache==1.7.1
 Werkzeug==0.15.2        # runserver_plus: richer tracebacks and inline console.
 
 ### utils
+cachetools==2.1         # cache expensive function calls with TTL.
 toolz==0.9.0            # pure, lazy, composable functional programming.
 tabulate==0.8.3         # pretty print tabular data.
 addict==2.2.0           # dotted notation to dict attributes and more.

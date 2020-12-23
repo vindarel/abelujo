@@ -78,7 +78,9 @@
     },
     {
         "fields": {
-            "default_place": 1
+            "default_place": 1,
+            "vat_other_product": 20.0,
+            "vat_book": 5.50
         },
         "model": "search.preferences",
         "pk": 1

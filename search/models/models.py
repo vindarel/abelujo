@@ -35,6 +35,7 @@ import json
 import os
 import tempfile
 import urllib
+from cachetools import cached, TTLCache
 from datetime import date
 
 import barcode
@@ -2489,20 +2490,58 @@ class Place (models.Model):
             log.error("Error getting quantity_of for card {} on place {}: {}".format(card, self, e))
             raise e
 
+    @cached(cache=TTLCache(maxsize=1024, ttl=7200))  # 2 hours
     def cost(self):
         """
         Total cost of this place: nb of cards * their price.
         """
         try:
             res = self.placecopies_set.filter(card__price__isnull=False).\
-                  annotate(cost=ExpressionWrapper(F('nb') * F('card__price'),
-                                                  output_field=FloatField()))
+                filter(nb__gte=1).\
+                annotate(cost=ExpressionWrapper(F('nb') * F('card__price'),
+                                                output_field=FloatField()))
             cost = sum([it.cost for it in res])
             return cost
         except Exception as e:
             log.error("Error getting cost of place {}: {}".format(self.name, e))
             return 0
 
+    @cached(cache=TTLCache(maxsize=1024, ttl=7200))  # 2 hours
+    def cost_excl_taxes(self):
+        """
+        Total cost of this place excluding taxes: nb of cards * their price
+        excl taxes, which depends if the card is a book or not.
+        """
+        type_book = CardType.objects.filter(name="book").first()
+        book_vat = Preferences.get_vat_book() / 100
+        other_vat = Preferences.get_vat_other_product() / 100
+
+        def is_book(tup):
+            return tup[2] == type_book.pk or tup[1].startswith('97')
+
+        copies = self.placecopies_set.filter(card__price__isnull=False).\
+            values_list('card_id',
+                        'card__isbn',
+                        'card__card_type',
+                        'card__price',
+                        'nb')
+        # start = timezone.now()
+        res = 0
+        books = [it for it in copies if is_book(it)]
+        # print("--- nb of books: {}".format(len(books)))
+        # print("--- nb of non- books: {}".format(len(copies) - len(books)))
+        for it in copies:
+            price = it[-2]
+            nb = it[-1]
+            if price and nb > 0:
+                if is_book(it):
+                    res += nb * (price - price * book_vat)
+                else:
+                    res += nb * (price - price * other_vat)
+        # print("--- summing: {}".format(res))
+        # end = timezone.now()
+        # print(" --- took: {}".format(end - start))
+        return res
 
 @python_2_unicode_compatible
 class Preferences(models.Model):
@@ -2514,8 +2553,10 @@ class Preferences(models.Model):
                                  verbose_name=__("bookshop name"))  # XXX to use in preferences
     #: What place to add the cards by default ? (we register them, then move them)
     default_place = models.OneToOneField(Place, verbose_name=__("default place"))
-    #: VAT, the tax
-    vat_book = models.FloatField(null=True, blank=True, verbose_name=__("book vat"))
+    #: VAT, the tax, for books.
+    vat_book = models.FloatField(null=True, blank=True, default=5.50, verbose_name=__("book vat"))
+    #: VAT, the tax, for other products (non books).
+    vat_other_product = models.FloatField(null=True, blank=True, default=20.0, verbose_name=__("other products VAT"))
     #: the default language: en, fr, es, de.
     #: Useful for non-rest views that must set the language on the url or for UI messages.
     language = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("language"))
@@ -2629,14 +2670,37 @@ class Preferences(models.Model):
 
     @staticmethod
     def get_vat_book():
-        """Return the vat on books, as set in the preferences.
         """
+        Return the vat on books, as set in the preferences.
+        - return: percent (float, between 0 and 100).
+        """
+        vat_book = 5.50
         try:
             vat = Preferences.objects.first().vat_book
         except Exception:
-            vat = None
+            vat = vat_book
 
-        return vat
+        if vat is not None:
+            return vat
+        else:
+            return vat_book
+
+    @staticmethod
+    def get_vat_other_product():
+        """
+        Return the vat for everything else (in France, non books are taxed at 20%).
+        - return: percent (float, 0 < 100)
+        """
+        vat_other_product = 20.0
+        try:
+            vat = Preferences.objects.first().vat_other_product
+        except Exception as e:
+            vat = vat_other_product
+
+        if vat is not None:
+            return vat
+        else:
+            return vat_other_product
 
     @staticmethod
     def get_default_currency():
@@ -5596,11 +5660,11 @@ class Stats(object):
             # The same, excluding vat.
             # XXX: to redo.
             # xxx: all Cards will not be books.
-            # total_cost_excl_tax = Preferences.price_excl_tax(total_cost)
-            # res['total_cost_excl_tax'] = {'label': _("Total cost of the stock, excl. tax"),
-                                          # 'value': total_cost_excl_tax,
-                                          # 'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
-            # }
+            total_cost_excl_tax = sum([it.cost_excl_taxes() for it in places])
+            res['total_cost_excl_tax'] = {'label': _("Total cost of the stock, excl. tax"),
+                                          'value': total_cost_excl_tax,
+                                          'value_fmt': price_fmt(total_cost_excl_tax, default_currency),
+            }
 
         except Exception as e:
             log.error("Error with total_cost: {}".format(e))
