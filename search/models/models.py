@@ -2259,7 +2259,7 @@ class Place (models.Model):
     def card_to_default_place(card_obj, nb=1):
         # Add the card to the default place (to the intermediate table).
         try:
-            default_place = Preferences.objects.all()[0].default_place
+            default_place = Preferences.get_default_place()
             place_copy, created = PlaceCopies.objects.get_or_create(card=card_obj, place=default_place)
             place_copy.nb += nb
             place_copy.save()
