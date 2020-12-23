@@ -758,8 +758,9 @@ def sell(request, **response_kwargs):
 
         except Exception as e:
             log.error("api/sell error: {}".format(e))
-            alerts.append({"level": "error",
-                           "message": e})
+            # XXX: I don't trust alerts returned by sell_cards...
+            alerts = [{"level": "error",
+                       "message": e}]
             return JsonResponse(alerts, safe=False)
 
         if not alerts:
