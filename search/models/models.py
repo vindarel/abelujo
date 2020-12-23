@@ -2662,11 +2662,27 @@ class Preferences(models.Model):
 
     @staticmethod
     def get_default_place():
-        """Return the default place object.
         """
-        if Preferences.objects.count():
-            return Preferences.objects.first().default_place
-        return Place.objects.first()
+        Return the default place object, or the first place of the DB
+        (the one that should be created at the installation).
+        - return: a place object.
+        """
+        try:
+            if Preferences.objects.count():
+                place = Preferences.objects.first().default_place
+                if place is not None:
+                    return place
+                else:
+                    place = Place.objects.first()
+                    prefs = Preferences.objects.first()
+                    prefs.default_place = place
+                    prefs.save()
+                    return place
+            else:
+                return Place.objects.first()
+        except Exception as e:
+            log.warn("Could not get the default place: {}".format(e))
+            return Place.objects.first()
 
     @staticmethod
     def get_vat_book():
