@@ -32,7 +32,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
@@ -43,7 +43,6 @@ from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView
-from django.views.generic import ListView
 from weasyprint import HTML
 
 from abelujo import settings
@@ -838,7 +837,7 @@ def deposits(request):
         return redirect("deposits")
     deposit_page = paginator.page(page)
     pubtype = Deposit.objects.filter(deposit_type="publisher").all()
-    deposits = Deposit.objects.all()
+    # deposits = Deposit.objects.all()
     total_price_fix = sum([it.total_init_price if it.total_init_price else 0 for it in fixtype])
 
     nb_results = fixtype.count()

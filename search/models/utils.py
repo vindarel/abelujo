@@ -454,7 +454,7 @@ def theme_name(code):
     "From the theme code in DB, get its name."
     try:
         return settings.CLIL_THEMES.get(code)
-    except Exception as e:
+    except Exception:
         return ""
 
 def parent_theme_name(code):
@@ -490,7 +490,7 @@ def theme_composed_name(code):
     code = code.strip()
     hierarchie = settings.CLIL_THEME_HIERARCHIES.get(code)
     try:
-        return " / ".join([it for it in [theme_name(code) for code in hierarchie] if it ])
+        return " / ".join([it for it in [theme_name(themecode) for themecode in hierarchie] if it])
     except Exception as e:
         log.warning(u"Could not join theme names for {}: {}".format(code, e))
         return str(code)

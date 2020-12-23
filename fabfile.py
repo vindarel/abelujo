@@ -3,7 +3,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import datetime
 import os
 import sys
 from subprocess import check_output
@@ -198,7 +197,7 @@ def check_uptodate(name=None):
             git_last_commits = check_output(["git", "rev-list", "HEAD", "--max-count={}".format(max_count)]).split("\n")
             try:
                 index = git_last_commits.index(res)
-            except Exception as e:
+            except Exception:
                 # Very, very much behind.
                 print(termcolor.colored("- {}", 'blue').format(client.name) +
                       " is " + " more than 1000 commits behind (or remote in not on master).")

@@ -35,12 +35,9 @@ from django.core.management.base import BaseCommand
 from search.datasources.bookshops.frFR.dilicom import dilicomScraper
 from search.models import Card
 from search.models import Deposit
-from search.models import Preferences
 from search.models import Shelf
 from search.models import Publisher
 from search.models.api import to_int
-from search.models.utils import is_isbn
-from search.views_utils import search_on_data_source
 
 # py2/3
 try:
@@ -119,7 +116,6 @@ class Command(BaseCommand):
             self.stdout.write("--- beware: the search results have not the same length that our query: {} vs {}".format(len(bklist), len(isbns)))
             found_isbns = [it.get('isbn') for it in bklist]
             self.stdout.write("--- isbns not found: {}".format(list(set(isbns) - set(found_isbns))))
-
 
         cards_updated = []
         count_ok = 0

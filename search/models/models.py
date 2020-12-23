@@ -42,7 +42,6 @@ import barcode
 import dateparser
 import pendulum
 import pytz
-import unidecode
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
@@ -118,32 +117,32 @@ PRESMAG = {
 }
 
 PRESEDIT = {
-	"R": "Relié",
-	"B": "Broché",
-	"P": "Poche",
-	"J": "Jeu",
-	"D": "Disque vinyle",
-	"DC": "Disque compact",
-	"DV": "Disque vidéo, DVD",
-	"CD": "Cédérom",
-	"LD": "Livre disque",
-	"K": "Cassette",
-        "KA": "Cassette audio",
-	"KV": "Cassette vidéo",
-	"LK": "Livre cassette",
-	"C": "Cuir",
-	"E": "Etui",
-	"L": "Luxe",
-	"X": "Journal, revue",
-	"SM": "Support magnétique",
-	"DI": "Diapositives",
-	"PC": "Publicité",
-	"AL": "Album",
-	"CR": "Cartes routières",
-	"PO": "Posters",
-        "CA": "Calendriers",
-	"O": "Objet",
-	"N": "Contenu numérique",
+    "R": "Relié",
+    "B": "Broché",
+    "P": "Poche",
+    "J": "Jeu",
+    "D": "Disque vinyle",
+    "DC": "Disque compact",
+    "DV": "Disque vidéo, DVD",
+    "CD": "Cédérom",
+    "LD": "Livre disque",
+    "K": "Cassette",
+    "KA": "Cassette audio",
+    "KV": "Cassette vidéo",
+    "LK": "Livre cassette",
+    "C": "Cuir",
+    "E": "Etui",
+    "L": "Luxe",
+    "X": "Journal, revue",
+    "SM": "Support magnétique",
+    "DI": "Diapositives",
+    "PC": "Publicité",
+    "AL": "Album",
+    "CR": "Cartes routières",
+    "PO": "Posters",
+    "CA": "Calendriers",
+    "O": "Objet",
+    "N": "Contenu numérique",
 }
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
@@ -231,7 +230,6 @@ class Distributor(TimeStampedModel):
     # note: currently unused in favor of settings.DILICOM_DISTRIBUTORS loaded at startup.
     comm_via_dilicom = models.CharField(max_length=4, blank=True, null=True, verbose_name=__("Comm. via Dilicom: yes or no?"))
 
-
     class Meta:
         ordering = ("name",)
         verbose_name = __("distributor")
@@ -279,7 +277,6 @@ class Distributor(TimeStampedModel):
                     dist.name,
                     gln))
                 return dist
-
 
     def dilicom_enabled(self):
         # copied from view_utils...
@@ -1364,7 +1361,7 @@ class Card(TimeStampedModel):
                 with_quantity=with_quantity,
                 with_authors=False,
                 with_publishers=False,
-                )
+            )
 
         meta = {
             'msgs': msgs.msgs,
@@ -1672,7 +1669,7 @@ class Card(TimeStampedModel):
             # Does the card already have this publisher?
             card_pubs = [it.name.lower().strip() for it in card_obj.publishers.all()]
             # if pub_name in card_pubs:
-                # print("-- Already the right publisher.")
+            #     print("-- Already the right publisher.")
             if pub_name not in card_pubs:
                 # OK, we have to bind it.
                 # Does a publisher of the same name exist?
@@ -2125,6 +2122,7 @@ class Card(TimeStampedModel):
         in the shelves, not in the stock).
         """
         return sum(self.placecopies_set.filter(place__can_sell=True).values_list('nb', flat=True))
+
     def quantity_boxes(self):
         """
         Get to know the boxes this card is in.
@@ -2527,7 +2525,7 @@ class Place (models.Model):
                         'nb')
         # start = timezone.now()
         res = 0
-        books = [it for it in copies if is_book(it)]
+        # books = [it for it in copies if is_book(it)]
         # print("--- nb of books: {}".format(len(books)))
         # print("--- nb of non- books: {}".format(len(copies) - len(books)))
         for it in copies:
@@ -2710,7 +2708,7 @@ class Preferences(models.Model):
         vat_other_product = 20.0
         try:
             vat = Preferences.objects.first().vat_other_product
-        except Exception as e:
+        except Exception:
             vat = vat_other_product
 
         if vat is not None:
@@ -3016,7 +3014,6 @@ class Basket(models.Model):
                 msgs.add_success(_("The card was successfully removed from the basket"))
             else:
                 log.warn("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
-
 
             if is_box and nb:
                 place = Preferences.get_default_place()
@@ -4736,7 +4733,7 @@ class Sell(models.Model):
         if not place_obj and place_id and place_id:
             try:
                 place_obj = Place.objects.get(id=place_id)
-            except ObjectDoesNotExist:
+            except ObjectDoesNotExist as e:
                 log.error("Registering a Sell, couldn't get place of id {}.".format(place_id, e))
         elif not place_obj:
             place_obj = Preferences.get_default_place()
@@ -4821,7 +4818,6 @@ class Sell(models.Model):
                 status = ALERT_WARNING
                 continue
             quantity = ids_prices_nb[i].get("quantity", 1)
-
 
             try:
                 if not card.price:
@@ -6163,7 +6159,7 @@ class Command(TimeStampedModel):
             cmd.save()
 
         # Remove the given cards from the AutoCommand basket.
-        tocmd = Basket.objects.get(name="auto_command")
+        # tocmd = Basket.objects.get(name="auto_command")
         ids = [it[0] for it in ids_qties]
         BasketCopies.objects.filter(basket__name="auto_command")\
                             .filter(card_id__in=ids)\

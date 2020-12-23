@@ -18,14 +18,20 @@
 
 from __future__ import unicode_literals
 
+import logging
+
 from django.http import JsonResponse
 
 from search.models.common import ALERT_ERROR
-from search.models.common import ALERT_INFO
+# from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
-from search.models.common import ALERT_WARNING
+# from search.models.common import ALERT_WARNING
 
 from search.models.common import PAYMENT_CHOICES
+from search.models.utils import get_logger
+
+logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.WARN)
+log = get_logger()
 
 
 def api_payment_choices(request, **kwargs):

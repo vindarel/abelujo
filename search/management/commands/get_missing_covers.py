@@ -25,10 +25,6 @@ from __future__ import unicode_literals
 from django.core.management.base import BaseCommand
 
 from search.models import Card
-from search.models import Preferences
-from search.models import Shelf
-from search.models.api import to_int
-from search.models.utils import is_isbn
 from search.views_utils import search_on_data_source
 
 

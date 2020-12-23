@@ -447,6 +447,6 @@ USE_THEMES_FOR_SHELVES = False
 
 if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     try:
-        import config
+        import config  # noqa: F401
     except Exception as e:
-        log.warning("Could not load user config.py: {}".format(e))
+        print("Could not load user config.py: {}".format(e))

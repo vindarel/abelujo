@@ -33,7 +33,7 @@ class TestCards(TestCase):
         pass
 
     def test_create_card_manually(self):
-        card_form = viewforms.CardCreateForm()
+        # card_form = viewforms.CardCreateForm()
 
         # The form's cleaned_data gives us a dict.
         # No new authors or publisher yet.

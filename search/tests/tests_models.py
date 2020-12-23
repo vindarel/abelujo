@@ -1589,7 +1589,6 @@ class TestCommands(TestCase):
         cmd, msgs = Command.new_command(ids_qties=[(id, 1) for id in range(n)],
                                         distributor_id=dist.id)
 
-
     def test_nb_ongoing(self):
         self.assertTrue(Command.nb_ongoing())
 

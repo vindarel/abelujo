@@ -39,8 +39,6 @@ from search.models import Preferences
 from search.models import Shelf
 from search.models import Publisher
 from search.models.api import to_int
-from search.models.utils import is_isbn
-from search.views_utils import search_on_data_source
 
 # py2/3
 try:

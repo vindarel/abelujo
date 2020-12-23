@@ -21,7 +21,6 @@ import os
 import pendulum
 from django.http import JsonResponse
 from django.template.loader import get_template
-from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
 from weasyprint import HTML
@@ -30,11 +29,9 @@ from abelujo import settings
 from search.models import Basket
 from search.models import Card
 from search.models import Preferences
-from search.models import Sell
 from search.models import users
 from search.models.users import Client
 from search.models.utils import get_logger
-from search.models.utils import is_truthy
 from search.models.utils import price_fmt
 
 log = get_logger()
@@ -161,7 +158,7 @@ def bill(request, *args, **response_kwargs):
             cards_data = list(zip(sorted_cards, quantities))
             if client_id:
                 client_id = int(client_id)
-                client_discount = 0
+                # client_discount = 0
             # sell the books?
             # if sellbooks:
             #     ids_prices_quantities = []

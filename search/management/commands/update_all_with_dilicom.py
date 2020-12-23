@@ -36,7 +36,6 @@ from __future__ import unicode_literals
 import time
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from search.datasources.bookshops.frFR.dilicom import dilicomScraper
 from search.models import Card
@@ -128,8 +127,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Go...")
-        start = timezone.datetime(year=2020, month=01, day=01)
-
         try:
             self.update_all()
         except KeyboardInterrupt:

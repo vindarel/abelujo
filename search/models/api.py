@@ -32,7 +32,6 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
@@ -59,7 +58,6 @@ from models import Stats
 from search.models import do_command_apply
 from search.models import do_inventory_apply
 from search.models import history
-from search.models.users import Client
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
@@ -244,8 +242,8 @@ def cards(request, **response_kwargs):
     prefer_day_of_month = "first"
     # Get a datetime.
     # if date_created_choice_sort == ">=":
-        # When we type a month, get the last day of month.
-        # prefer_day_of_month = "last"
+    #     # When we type a month, get the last day of month.
+    #     prefer_day_of_month = "last"
     date_created_choice = dateparser.parse(
         date_created_choice,
         settings={'PREFER_DAY_OF_MONTH': prefer_day_of_month})
@@ -526,6 +524,7 @@ def card_command(request, pk, **kw):
     except Exception as e:
         log.error(u'Error adding to the auto_command: {}'.format(e))
         status = ALERT_WARNING
+        to_ret['status'] = status
 
     return JsonResponse(to_ret)
 
@@ -1537,7 +1536,7 @@ def baskets_empty(request, pk, **kw):
         try:
             basketcopies.delete()
         except Exception as e:
-            log.error("Basket {} could not be emptied: {}".format(b_obj.id, e))
+            log.error("Basket {} could not be emptied: {}".format(pk, e))
             msg = {'status': ALERT_ERROR,
                     'message': _("The basket could not be emptied")}
         to_ret = {

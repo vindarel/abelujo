@@ -33,7 +33,6 @@ from search.models import Place
 from search.models import Publisher
 from search.models import RestockingCopies
 from search.models import Sell
-from search.models import SoldCards
 
 # Custom admin for the client admin:
 # show less things than the default admin,

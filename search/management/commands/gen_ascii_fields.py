@@ -27,18 +27,14 @@ from tqdm import tqdm
 from django.core.management.base import BaseCommand
 
 from search.models import Card
-from search.models import Preferences
-from search.models import Shelf
-from search.models.api import to_int
 from search.models.utils import to_ascii
-from search.views_utils import search_on_data_source
 
 import logging
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.WARNING)
 
 def update_author(author):
     if not author.name_ascii:
-        res = to_ascii(author.name_ascii)
+        to_ascii(author.name_ascii)
         author.save()
         return True
 
