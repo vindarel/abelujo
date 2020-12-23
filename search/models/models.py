@@ -2615,7 +2615,12 @@ class Preferences(models.Model):
         prefs = Preferences.objects.first()
         # One should be created at Abelujo creation.
         if not prefs:
-            prefs = Preferences.objects.create(default_place=Place.objects.first())
+            place = Place.objects.first()
+            if place is None:
+                log.warn("We have no place in DB, but we should have one and keep one.")
+                place = Place.objects.create(name="default place")
+                place.save()
+            prefs = Preferences.objects.create(default_place=place)
             prefs.save()
 
         return prefs
