@@ -183,6 +183,9 @@ and npm packages to run end to end tests:
 
 Additional management commands start with `my_`.
 
+### Vagrant and Ansible role
+
+You can install and try everything in a Vagrant virtual machine, thanks to a nice contribution: https://gitlab.com/anarchistcat/abelujo-ansible
 
 ## Configure services
 
