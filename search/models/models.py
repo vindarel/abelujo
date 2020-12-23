@@ -2673,8 +2673,10 @@ class Preferences(models.Model):
                 else:
                     place = Place.objects.first()
                     prefs = Preferences.objects.first()
-                    prefs.default_place = place
-                    prefs.save()
+                    assert place is not None
+                    if place:
+                        prefs.default_place = place
+                        prefs.save()
                     return place
             else:
                 return Place.objects.first()
