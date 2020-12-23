@@ -56,8 +56,6 @@ from models import Restocking
 from models import Sell
 from models import Shelf
 from models import Stats
-from search.datasources.bookshops.frFR.librairiedeparis.librairiedeparisScraper import \
-    reviews as frenchreviews
 from search.models import do_command_apply
 from search.models import do_inventory_apply
 from search.models import history
@@ -537,17 +535,6 @@ def cardtype(request, **response_kwargs):
         data = CardType.search(query)
         data = serializers.serialize("json", data)
         return HttpResponse(data, **response_kwargs)
-
-def card_reviews(request, pk, **response_kwargs):
-    """Get some reviews on other websites.
-    """
-    if request.method == 'GET':
-        if pk:
-            # if a french card
-            card_obj = get_object_or_404(Card, id=pk)
-            card = card_obj.to_list()
-            revs = frenchreviews(card)
-            return JsonResponse(revs, safe=False)
 
 def cards_set_supplier(request, **response_kwargs):
     """

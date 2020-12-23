@@ -48,8 +48,6 @@ apipatterns = patterns("",
     url(r'^api/cards/?$', 'search.models.api.cards', name="api_cards"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', 'search.models.api.card_add', name="api_card_add"),
     url(r'^api/card/(?P<pk>\d+)/command/?$', 'search.models.api.card_command', name="api_card_command"),
-    url(r'^api/card/(?P<pk>\d+)/reviews/?$', 'search.models.api.card_reviews',
-        name="api_card_reviews"),
     url(r'^api/card/(?P<pk>\d+)', 'search.models.api.card', name="api_card"),
     url(r'^api/cardtype$', 'search.models.api.cardtype', name="api_cardtype"),
     # Bulk manipulation.
