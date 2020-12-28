@@ -4561,18 +4561,23 @@ class Sell(models.Model):
         total_cards_sold = 0
         TWO_DIGITS_SPEC = '0>2'
         YMD = '%Y-%m-%d'
+        all_sells_days = soldcards.values_list('quantity', 'price_sold',
+                                               'ignore_for_revenue',  # => bool
+                                               'created')  # => datetime
         for day in range(1, last_day + 1):
             date = "{}-{}-{}".format(year,
                                      format(month, TWO_DIGITS_SPEC),
                                      format(day, TWO_DIGITS_SPEC))
             date_obj = datetime.datetime.strptime(date, YMD)
-            sells_this_day = soldcards.filter(created__day=day)
-            cards_sold = sum(sells_this_day.values_list('quantity', flat=True))
+            # sells_this_day = soldcards.filter(created__day=day)
+            sells_this_day = [it for it in all_sells_days if it[-1].day == day]
+            # cards_sold = sum(sells_this_day.values_list('quantity', flat=True))
+            cards_sold = sum([it[0] for it in sells_this_day])
             total_cards_sold += cards_sold
 
             # Ignore coupons, gifts, and others in the total revenue.
-            sells_for_revenue = sells_this_day.exclude(ignore_for_revenue=True)
-            values = sells_for_revenue.values_list('price_sold', 'quantity')
+            sells_for_revenue = [it for it in sells_this_day if it[2] is not True]
+            values = [(it[0], it[1]) for it in sells_for_revenue]
             total = sum([it[0] * it[1] for it in values])
             sells_per_day.append({'date': date,
                                   'date_obj': date_obj,

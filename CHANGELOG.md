@@ -10,6 +10,10 @@ Changelog starting from v0.5 (2018/09/18)
   only required manual step until now). We can use the new action
   above, and still have shelves for our books.
 
+### Other enhancements
+
+- **speed up** improvements for the history display (more than 10x).
+
 ### Upgrade instructions
 
 - Nothing special, but it is recommend to run the `update_all_with_dilicom` script.
