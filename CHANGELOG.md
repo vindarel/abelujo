@@ -13,6 +13,7 @@ Changelog starting from v0.5 (2018/09/18)
 ### Other enhancements
 
 - **speed up** improvements for the history display (more than 10x).
+- **speed up** improvements to the CSV and TXT download of history logs (30%).
 
 ### Upgrade instructions
 

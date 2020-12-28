@@ -4470,6 +4470,10 @@ class Sell(models.Model):
                 log.info("Sells pagination: index error.")
                 sells = []
 
+        # select_related: pre-populate data to save later DB queries.
+        # Especially for history download to CSV.
+        sells = sells.select_related()  # cache all 1-1 1-n relationships.
+
         if to_list:
             sells = [it.to_list() for it in sells]
 
