@@ -17,7 +17,7 @@
 # bookshops dependencies.
 -e search/datasources/
 
-pip==9
+pip==19
 setuptools==39.2
 
 django==1.8
