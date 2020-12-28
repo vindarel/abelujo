@@ -23,9 +23,6 @@ pull:
 	git stash save "autostash from make publl"
 	git pull --rebase
 	git submodule update --remote
-# Rebase main repo and submodules
-rebase: pull
-	python manage.py migrate
 
 # Install in current directory
 pip: pip-submodule
@@ -97,10 +94,11 @@ stash:
 	git stash save "update (probably stashing npm lock)"
 
 update: stash
+	make pull
 	make set-prod
 	make pip
 	make pip-submodule
-	make rebase
+	make migrate
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
 	make npm
 	gulp
@@ -111,6 +109,7 @@ update: stash
 
 update-code: stash
 	make set-prod
+	make pull
 	make rebase
 	gulp
 	make collectstatic
