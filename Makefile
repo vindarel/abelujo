@@ -110,7 +110,7 @@ update: stash
 update-code: stash
 	make set-prod
 	make pull
-	make rebase
+	make migrate
 	gulp
 	make collectstatic
 	make translation-compile
