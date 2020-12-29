@@ -159,7 +159,7 @@ def preferences(request):
         form = viewforms.PrefsForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            prefs = Preferences.objects.first()
+            prefs = Preferences.prefs()
             discounts = viewforms.validate_and_get_discounts(data['sell_discounts'])
             data['sell_discounts'] = discounts
             prefs.others = json.dumps(data)

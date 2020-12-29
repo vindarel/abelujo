@@ -113,7 +113,7 @@ class PrefsForm(forms.Form):
         super(self.__class__, self).__init__(*args, **kwargs)
         # Not on form validation.
         if not args:
-            prefs = Preferences.objects.first()
+            prefs = Preferences.prefs()
             currency = 'euro'
             try:
                 currency = json.loads(prefs.others)['default_currency']
@@ -171,7 +171,7 @@ class AddForm(forms.Form):
 
 def get_places_choices():
     not_stands = Place.objects.filter(is_stand=False)
-    preferences = Preferences.objects.first()
+    preferences = Preferences.prefs()
     ret = []
     if preferences:
         default_place = preferences.default_place
@@ -366,7 +366,7 @@ class CardForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         currency = forms.ChoiceField(choices=CURRENCY_CHOICES, required=False)
-        prefs = Preferences.objects.first()
+        prefs = Preferences.prefs()
         currency = 'euro'
         try:
             default_currency = json.loads(prefs.others)['default_currency']

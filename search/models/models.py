@@ -2634,7 +2634,7 @@ class Preferences(models.Model):
         """
         # status = ALERT_SUCCESS
         msgs = Messages()
-        prefs = Preferences.objects.first()
+        prefs = Preferences.prefs()
         if not prefs:
             msgs.add_info(_("There is no preferences"))
             return msgs.status, msgs.msgs
@@ -2672,12 +2672,12 @@ class Preferences(models.Model):
         """
         try:
             if Preferences.objects.count():
-                place = Preferences.objects.first().default_place
+                place = Preferences.prefs().default_place
                 if place is not None:
                     return place
                 else:
                     place = Place.objects.first()
-                    prefs = Preferences.objects.first()
+                    prefs = Preferences.prefs()
                     assert place is not None
                     if place:
                         prefs.default_place = place
@@ -2697,7 +2697,7 @@ class Preferences(models.Model):
         """
         vat_book = 5.50
         try:
-            vat = Preferences.objects.first().vat_book
+            vat = Preferences.prefs().vat_book
         except Exception:
             vat = vat_book
 
@@ -2714,7 +2714,7 @@ class Preferences(models.Model):
         """
         vat_other_product = 20.0
         try:
-            vat = Preferences.objects.first().vat_other_product
+            vat = Preferences.prefs().vat_other_product
         except Exception:
             vat = vat_other_product
 
