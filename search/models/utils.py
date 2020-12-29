@@ -318,20 +318,32 @@ def list_to_pairs(ll):
             res.append((ll[i], ll[i + 1]))
     return res
 
+def toIntOrFloat(nb):
+    try:
+        return int(nb)
+    except ValueError:
+        nb = nb.replace(",", ".")
+        if nb in ["null", "undefined"]:
+            return None
+
+        try:
+            return float(nb) if nb else None  # can None happen? Coming from JS, certainly.
+        except ValueError:
+            log.warning("utils.toIntOrFloat: the number {} could not be coerced to an int nor a float. We'll try to extract a float, but this should not happen.".format(nb))
+
+            extraction = re.findall(r"[-+]?\d*\.\d+|\d+", nb)
+            if extraction:
+                log.warning("utils.toIntOrFloat: the price {} is malformed and we extracted {}. There might be a slight price error :S".format(nb, extraction[0]))
+                return float(extraction[0])
+            raise Exception("utils.toIntOrFloat: the number {} is neither an int, a float or a string from which we extract a float. What is it??".format(nb))
+
+
 def list_from_coma_separated_ints(s):
     """Gets a string with coma-separated numbers (ints or floats), like
     "1,2.2,3", returns a list with each number. Because on url
     parameters we can get a list of ids like this.
 
     """
-    def toIntOrFloat(nb):
-        try:
-            return int(nb)
-        except ValueError:
-            nb = nb.replace(",", ".")
-            if nb in ["null", "undefined"]:
-                return None
-            return float(nb) if nb else None
 
     # Data validation: should check that we only have ints and comas...
     if s:

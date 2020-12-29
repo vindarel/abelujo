@@ -23,7 +23,7 @@ from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 
-from search.models.utils import Messages, is_isbn, split_query, isbns_from_query, is_truthy
+from search.models.utils import Messages, is_isbn, split_query, isbns_from_query, is_truthy, toIntOrFloat
 
 class TestMessages(TestCase):
 
@@ -91,3 +91,8 @@ class TestUtils(TestCase):
         self.assertTrue(is_truthy("true"))
         self.assertTrue(is_truthy("1"))
         self.assertTrue(is_truthy("yes"))
+
+    def test_toIntOrFloat(self):
+        self.assertEqual(1, toIntOrFloat("1"))
+        self.assertEqual(1.10, toIntOrFloat("1.10"))
+        self.assertEqual(4.0, toIntOrFloat("4.[Filtered]"))
