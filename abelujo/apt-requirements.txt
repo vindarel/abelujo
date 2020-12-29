@@ -5,6 +5,7 @@ git-core
 python-pip
 virtualenvwrapper
 python-dev
+gettext
 # for lxml:
 # but let's try with debian's lxml:
 python-lxml
