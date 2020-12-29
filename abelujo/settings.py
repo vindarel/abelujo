@@ -450,3 +450,5 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
         import config  # noqa: F401
     except Exception as e:
         print("Could not load user config.py: {}".format(e))
+
+print "INFO: Abelujo running on {}".format(os.getcwd())
