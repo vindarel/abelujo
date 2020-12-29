@@ -4454,13 +4454,13 @@ class Sell(models.Model):
             # Filter books.
             # Normally, they are of type "book", but I observe it is not always the case. Why?
             total_price_sold_books = sum([it[0] * it[1] for it in sells_for_revenue_values
-                                          if (it[2] and it[2] == type_book.pk)
-                                          or (it[3] and it[3].startswith('97'))])
+                                          if (it[2] and it[2] == type_book.pk) or
+                                          (it[3] and it[3].startswith('97'))])
             # values_not_books = [it for it in sells_for_revenue_values if it[2] != type_book.pk and not it[3].startswith('97')]
             total_price_sold_not_books = sum([it[0] * it[1]
                                               for it in sells_for_revenue_values
-                                              if (it[2] and it[2] != type_book.pk)
-                                              and (it[3] and not it[3].startswith('97'))])
+                                              if (it[2] and it[2] != type_book.pk) and
+                                              (it[3] and not it[3].startswith('97'))])
             total_price_sold = total_price_sold_books + total_price_sold_not_books
             total_sells_for_mean = sum([it[0] * it[1] for it in sells_for_mean.values_list('quantity', 'price_sold')])
             if total_sells_for_mean:
