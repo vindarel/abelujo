@@ -238,6 +238,16 @@ def search(request):
     template = "search/searchresults.jade"
     return render(request, template)
 
+def cards_without_eans(request):
+    """
+    Show all cards without INBS, or where it is "".
+    """
+    template = "search/cards_without_eans.jade"
+    cards = Card.cards_without_eans()
+    return render(request, template, {
+        "cards": cards,
+    })
+
 @login_required
 def card_create_manually(request):
     template = 'search/card_create.jade'

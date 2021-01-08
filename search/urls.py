@@ -45,6 +45,8 @@ urlpatterns = patterns('',
 
     url(r'^stats/', 'search.views.dashboard', name="stats"),
 
+    url(r'^cards-without-eans/', 'search.views.cards_without_eans', name="cards_without_eans"),
+
     # view exported files:
     url(r'^stock/exports/download/(?P<filename>.+)', 'search.views.collection_view_file_export', name="collection_view_file_export"),
     url(r'^stock/exports/?', 'search.views.collection_exports', name="collection_exports"),

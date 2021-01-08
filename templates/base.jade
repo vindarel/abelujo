@@ -72,6 +72,9 @@ html(ng-app="abelujo")
                 li.divider(role="separator")
                 li(href="#")
                     a(href='/{{ LANGUAGE_CODE }}/database') {% trans "All" %}
+                li.divider(role="separator")
+                li(href="#")
+                    a(href='/{{ LANGUAGE_CODE }}/cards-without-eans') {% trans "Cards without EANs" %}
 
         form.navbar-form.navbar-left
           .form-group

@@ -828,6 +828,10 @@ class Card(TimeStampedModel):
         except Exception as e:
             log.error("Error while getting the total quantities of all cards: {}".format(e))
 
+    @staticmethod
+    def cards_without_eans():
+        return Card.objects.filter(has_isbn=True).filter(isbn="")
+
     def get_return_place(self):
         """
         Return the place suitable to apply a return to the supplier.
