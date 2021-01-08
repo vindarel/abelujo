@@ -47,31 +47,34 @@
 
 <h1>{{ day | date:'l d F Y' | title }}</h1>
 
-<!-- div plus gros panier (?)-->
-<div class="col-md-3 panel panel-info">
-  <div class="panel-heading">{% trans "Cash register" %}</div>
-  <div class="panel-body">
-    <h3> {{ sells_data.total_price_sold_fmt }} </h3>
-    <div> {% trans "Books" %}: {{ sells_data.total_price_sold_books_fmt }}</div>
-    <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div>
+<div  class="row">
+  <!-- div plus gros panier (?)-->
+  <div class="col-md-3 panel panel-info">
+    <div class="panel-heading">{% trans "Cash register" %}</div>
+    <div class="panel-body">
+      <h3> {{ sells_data.total_price_sold_fmt }} </h3>
+      <div> {% trans "Books" %}: {{ sells_data.total_price_sold_books_fmt }}</div>
+      <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-3 panel panel-info">
+    <div class="panel-heading">{% trans "Articles sold" %}</div>
+    <div class="panel-body"><span>{{ sells_data.nb_cards_sold }}</span>{% if  sells_data.nb_cards_returned %}<span>&nbsp; {% trans "Articles returned" %}: {{ sells_data.nb_cards_returned }}</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="col-md-3 panel panel-info">
+    <div class="panel-heading">{% trans "Cash register movements" %}</div>
+    <div class="panel-body">{{ sells_data.nb_sells }}</div>
+  </div>
+
+  <div class="col-md-3 panel panel-info">
+    <div class="panel-heading">{% trans "Average basket" %}</div>
+    <div class="panel-body">{{ sells_data.sell_mean_fmt }}</div>
   </div>
 </div>
 
-<div class="col-md-3 panel panel-info">
-  <div class="panel-heading">{% trans "Articles sold" %}</div>
-  <div class="panel-body"><span>{{ sells_data.nb_cards_sold }}</span>{% if  sells_data.nb_cards_returned %}<span>&nbsp; {% trans "Articles returned" %}: {{ sells_data.nb_cards_returned }}</span>{% endif %}
-  </div>
-</div>
-
-<div class="col-md-3 panel panel-info">
-  <div class="panel-heading">{% trans "Cash register movements" %}</div>
-  <div class="panel-body">{{ sells_data.nb_sells }}</div>
-</div>
-
-<div class="col-md-3 panel panel-info">
-  <div class="panel-heading">{% trans "Average basket" %}</div>
-  <div class="panel-body">{{ sells_data.sell_mean_fmt }}</div>
-</div>
 
 <table class="table">
   <!-- better: iterate over sells, and iterate over soldcards.-->
