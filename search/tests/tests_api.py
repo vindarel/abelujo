@@ -107,18 +107,6 @@ class ApiTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp_data["status"], ALERT_WARNING)
 
-    def test_deposits_add_pubtype(self):
-        due_date = datetime.date.today()
-        self.params["due_date"] = due_date.isoformat()
-        self.params["dest_place"] = 1
-        resp = self.c.post("/api/deposits", self.params)
-        resp_data = json.loads(resp.content)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp_data["status"], ALERT_WARNING)
-        dep = models.Deposit.objects.order_by("created").first()
-        self.assertEqual(dep.due_date, due_date)
-        self.assertEqual(dep.dest_place.name, models.Place.objects.get(id=1).name)
-
     def test_deposits_no_card(self):
         """Yes it is possible to create one without cards.
         """

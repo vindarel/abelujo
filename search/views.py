@@ -828,6 +828,10 @@ def restocking(request):
 
 
 def deposits(request):
+    """
+    Return the deposits accepted by the bookshop (brought there by someone).
+    """
+    # We currently (2020/01) don't return anymore the deposits that are sent by us to someone else (pubtype in old code).
     PAGE_SIZE = 50
     fixtype = Deposit.objects.filter(deposit_type="fix")
     paginator = Paginator(fixtype, PAGE_SIZE)
@@ -836,8 +840,6 @@ def deposits(request):
     if page > num_pages or page < 1:
         return redirect("deposits")
     deposit_page = paginator.page(page)
-    pubtype = Deposit.objects.filter(deposit_type="publisher").all()
-    # deposits = Deposit.objects.all()
     total_price_fix = sum([it.total_init_price if it.total_init_price else 0 for it in fixtype])
 
     nb_results = fixtype.count()
@@ -850,7 +852,6 @@ def deposits(request):
 
     return render(request, "search/deposits.jade", {
         'depo_fix': deposit_page,
-        'depo_pubtype': pubtype,
         'total_price_fix': total_price_fix,
         'meta': meta,
     })
