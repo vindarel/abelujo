@@ -1115,7 +1115,11 @@ class Card(TimeStampedModel):
         """Return all cards in stock (will not return ones that are only in
         deposits or in lists).
         """
-        return Card.objects.filter(in_stock=True).order_by('id').all()
+        return Card.objects.filter(in_stock=True)\
+                           .filter(quantity__gt=0)\
+                           .order_by('id')\
+                           .select_related()\
+                           .all()
 
     @staticmethod
     def search(words, card_type_id=None, distributor=None, distributor_id=None,
