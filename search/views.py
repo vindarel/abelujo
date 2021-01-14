@@ -719,7 +719,7 @@ def collection_export(request, **kwargs):
                                     shelf_id=shelf_id,
                                     quantity_choice=quantity_choice,
                                     order_by=order_by,
-                                    in_deposits=False)
+                                    in_deposits=True)
 
         elif select == "all":
             # res = Card.objects.filter(in_stock=True).all()
