@@ -17,7 +17,6 @@
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import datetime
 import httplib
 import json
 import logging
