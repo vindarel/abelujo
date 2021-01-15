@@ -4446,6 +4446,7 @@ class Sell(models.Model):
         total_price_sold_books = None
         total_price_sold_not_books = None
         sell_mean = None
+        not_books = []
         if with_total_price_sold:
             # Ignore coupons, gifts, and others in the total revenue.
             # Total for the cash register: count sells and returns.
@@ -4456,17 +4457,23 @@ class Sell(models.Model):
             # total_price_sold = sum([it[0] * it[1] for it in sells_for_revenue.values_list('quantity', 'price_sold')])
 
             # Count VATs separately.
-            sells_for_revenue_values = sells_for_revenue.values_list('quantity', 'price_sold', 'card__card_type', 'card__isbn')
+            sells_for_revenue_values = sells_for_revenue.values_list('quantity', 'price_sold', 'card__card_type', 'card__isbn', 'card__card_type__name')
             # Filter books.
             # Normally, they are of type "book", but I observe it is not always the case. Why?
             total_price_sold_books = sum([it[0] * it[1] for it in sells_for_revenue_values
                                           if (it[2] and it[2] == type_book.pk) or
                                           (it[3] and it[3].startswith('97'))])
             # values_not_books = [it for it in sells_for_revenue_values if it[2] != type_book.pk and not it[3].startswith('97')]
-            total_price_sold_not_books = sum([it[0] * it[1]
-                                              for it in sells_for_revenue_values
-                                              if (it[2] and it[2] != type_book.pk) and
-                                              (it[3] and not it[3].startswith('97'))])
+            # XXX: 2021/01/15: shipped new management script to clean up types and
+            # fixed the datasources to return the correct type.
+            # This should allow to rely on card_type.
+            not_books = [it for it in sells_for_revenue_values
+                         if (it[2] and it[2] != type_book.pk) and
+                         (not it[3] or
+                          (it[3] and not it[3].startswith('97')))]
+            not_books += [it for it in sells_for_revenue_values
+                          if it[2] is None]
+            total_price_sold_not_books = sum([it[0] * it[1] for it in not_books])
             total_price_sold = total_price_sold_books + total_price_sold_not_books
             total_sells_for_mean = sum([it[0] * it[1] for it in sells_for_mean.values_list('quantity', 'price_sold')])
             if total_sells_for_mean:
@@ -4489,6 +4496,7 @@ class Sell(models.Model):
 
         default_currency = Preferences.get_default_currency()
         return {"data": sells,
+                "not_books": not_books,
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
                 "nb_cards_returned": - nb_cards_returned,

@@ -9,6 +9,7 @@ Changelog starting from v0.5 (2018/09/18)
   in order to speed up the registration of new books (this removes the
   only required manual step until now). We can use the new action
   above, and still have shelves for our books.
+- History: the history gets more **breakdown**: it shows totals for each type of product (book, CD, beverage…)
 
 ### Other enhancements
 
@@ -19,7 +20,7 @@ Changelog starting from v0.5 (2018/09/18)
 ### Upgrade instructions
 
 - Nothing special, but it is recommend to run the `update_all_with_dilicom` script.
-
+- optional: clean up cards' types with `fix_types` (set their type correctly to "book" if they have a book ISBN).
 
 ## v0.13.3 (2020-09, 2020-11)
 

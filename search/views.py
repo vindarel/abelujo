@@ -1439,6 +1439,30 @@ def history_sells_day(request, date, **kwargs):
                              with_total_price_sold=True,
                              sortorder=1)  # ascending
 
+    # Stats by card_type
+    # grouped_sells = toolz.groupby(lambda (it): it.card.card_type, sells_data['data'])
+    grouped_sells = toolz.groupby(lambda (it): it[2], sells_data['not_books'])
+    # data for the template.
+    data_grouped_sells = []
+    # import ipdb; ipdb.set_trace()
+    for card_type, soldcards in grouped_sells.iteritems():
+        # solcards: tuple quantity, price_sold, card_type.pk, isbn, type name
+        if card_type is None:
+            type_name = _("undefined")
+        else:
+            if soldcards:
+                type_name = soldcards[0][4]
+            else:
+                type_name = ""
+        datadict = [type_name, {}]
+        datadict[1]['data'] = soldcards
+        datadict[1]['total_sells'] = sum([it[0] for it in soldcards])
+        datadict[1]['nb_sells'] = len(soldcards)
+        totalsold = sum([it[0] * it[1] for it in soldcards])
+        datadict[1]['total_sold'] = totalsold
+        datadict[1]['sell_mean'] = totalsold / len(soldcards) if soldcards else 0
+        data_grouped_sells.append(datadict)
+
     now = pendulum.datetime.today()
     previous_day = day.subtract(days=1)  # yes, not subStract.
     previous_day_fmt = previous_day.strftime(PENDULUM_YMD)
@@ -1490,6 +1514,7 @@ def history_sells_day(request, date, **kwargs):
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,
+                                      'data_grouped_sells': data_grouped_sells,
                                       'previous_day': previous_day,
                                       'previous_day_fmt': previous_day_fmt,
                                       'next_day': next_day,

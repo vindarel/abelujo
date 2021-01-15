@@ -18,6 +18,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% load i18n %}
+{% load currencyfilter %}
 
 <span>
   <a href="{% url 'history_sells_day' previous_day_fmt %}">&larr; {% trans "Previous" %}</a><span>&nbsp;</span>
@@ -52,29 +53,75 @@
   <div class="col-md-3 panel panel-info">
     <div class="panel-heading">{% trans "Cash register" %}</div>
     <div class="panel-body">
-      <h3> {{ sells_data.total_price_sold_fmt }} </h3>
+      <h4> {{ sells_data.total_price_sold_fmt }} </h4>
       <div> {% trans "Books" %}: {{ sells_data.total_price_sold_books_fmt }}</div>
-      <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div>
+      <!-- <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div> -->
+      {% for it in data_grouped_sells %}
+      {% if it.0 != 'book' %}
+      <div>
+        {{ it.0 }} : {{ it.1.total_sold | currency }}
+      </div>
+      {% endif %}
+      {% endfor %}
+
     </div>
   </div>
 
   <div class="col-md-3 panel panel-info">
     <div class="panel-heading">{% trans "Articles sold" %}</div>
-    <div class="panel-body"><span>{{ sells_data.nb_cards_sold }}</span>{% if  sells_data.nb_cards_returned %}<span>&nbsp; {% trans "Articles returned" %}: {{ sells_data.nb_cards_returned }}</span>{% endif %}
+    <div class="panel-body">
+      <h4>
+        <span>{{ sells_data.nb_cards_sold }}</span>
+        {% if  sells_data.nb_cards_returned %}<span>&nbsp; {% trans "Articles returned" %}: {{ sells_data.nb_cards_returned }}</span>{% endif %}
+      </h4>
+
+      <!-- <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div> -->
+
+      {% for it in data_grouped_sells %}
+      {% if it.0 != 'book' %}
+      <div>
+        {{ it.0 }}: {{ it.1.total_sells }}
+      </div>
+      {% endif %}
+      {% endfor %}
     </div>
   </div>
 
   <div class="col-md-3 panel panel-info">
     <div class="panel-heading">{% trans "Cash register movements" %}</div>
-    <div class="panel-body">{{ sells_data.nb_sells }}</div>
+    <div class="panel-body">
+      <h4>{{ sells_data.nb_sells }} </h4>
+      <!-- <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div> -->
+
+      {% for it in data_grouped_sells %}
+      {% if it.0 != 'book' %}
+      <div>
+        {{ it.0 }}: {{ it.1.nb_sells }}
+      </div>
+      {% endif %}
+      {% endfor %}
+
+    </div>
   </div>
 
   <div class="col-md-3 panel panel-info">
     <div class="panel-heading">{% trans "Average basket" %}</div>
-    <div class="panel-body">{{ sells_data.sell_mean_fmt }}</div>
+    <div class="panel-body">
+      <h4>
+        {{ sells_data.sell_mean_fmt }}
+      </h4>
+      <!-- <div> {% trans "Other products" %}: {{ sells_data.total_price_sold_not_books_fmt }}</div> -->
+      {% for it in data_grouped_sells %}
+      {% if it.0 != 'book' %}
+      <div>
+        {{ it.0 }}: {{ it.1.sell_mean }}
+      </div>
+      {% endif %}
+      {% endfor %}
+
+    </div>
   </div>
 </div>
-
 
 <table class="table">
   <!-- better: iterate over sells, and iterate over soldcards.-->
@@ -96,6 +143,11 @@
     <td>{{ it.pk }}</td>
     <td>{{ it.created | date:'H:i' }} </td>
     <td>&nbsp;<a href="{{ it.card.get_absolute_url }}">{{ it.card.title }}</a>
+
+      {% if it.card.card_type.name != 'book' %}
+      ({{ it.card.card_type }})
+      {% endif %}
+
     </td>
     <td>{{ it.card.pubs_repr }}</td>
     <td class="text-right">{{ it.price_sold_fmt }}</td>
