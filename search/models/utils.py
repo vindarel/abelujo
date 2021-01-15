@@ -344,7 +344,6 @@ def list_from_coma_separated_ints(s):
     parameters we can get a list of ids like this.
 
     """
-
     # Data validation: should check that we only have ints and comas...
     if s:
         return [toIntOrFloat(it) for it in s.strip(",").split(",")]
@@ -428,6 +427,8 @@ def card_currency(card):
 def price_fmt(price, currency):
     """
     Return: a string, with the price formatted correctly with its currency symbol.
+
+    ANN: See also the 'currency' template filter (new in January, 2021).
 
     Exemple: 10 € or CHF 10
     """

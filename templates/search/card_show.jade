@@ -94,7 +94,13 @@ div#abelujo
               td
                 | {# Translators: format like pocket or big (livre de poche) #}
                 | {% trans "format" %}
-              td {{ object.fmt }} ({{ object.width }} x {{ object.height }} x {{ object.thickness }})
+              td
+                if object.fmt
+                  span {{ object.fmt }}
+                if object.width
+                  span ({{ object.width }} x {{ object.height }}
+                if object.thickness
+                  span x {{ object.thickness }})
 
             if object.weight
               tr
@@ -108,7 +114,8 @@ div#abelujo
             tr
               td {% trans "source" %}: 
               td
-                a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
+                if object.data_source
+                  a(target="_blank", href="{{ object.details_url }}") {{ object.data_source }}
             tr
               td
                 span: a(target="_blank", href="https://duckduckgo.com/?q={{object.title}}+{{object.display_authors}}") {% trans "Web search" %}
