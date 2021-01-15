@@ -4436,7 +4436,9 @@ class Sell(models.Model):
 
         # Totals.
         # nb_sells = sells.count()  # = nb of articles sold, != nb sells (passages en caisse).
+        book_type = CardType.objects.filter(name='book').first()
         nb_sells = sells.values('sell_id').distinct().count()
+        nb_books_sells = sells.filter(card__card_type=book_type).values('sell_id').distinct().count()
         # nb_cards_sold = sum([it.quantity for it in sells])
         nb_cards_sold = sum(sells.filter(quantity__gt=0).values_list('quantity', flat=True))
         nb_cards_returned = sum(sells.filter(quantity__lt=0).values_list('quantity', flat=True))
@@ -4448,6 +4450,9 @@ class Sell(models.Model):
         total_price_sold_books = None
         total_price_sold_not_books = None
         sell_mean = None
+        books_sell_mean = 0
+        sold_books = []
+        nb_books_sold = 0   # nb of copies
         not_books = []
         if with_total_price_sold:
             # Ignore coupons, gifts, and others in the total revenue.
@@ -4462,9 +4467,11 @@ class Sell(models.Model):
             sells_for_revenue_values = sells_for_revenue.values_list('quantity', 'price_sold', 'card__card_type', 'card__isbn', 'card__card_type__name')
             # Filter books.
             # Normally, they are of type "book", but I observe it is not always the case. Why?
-            total_price_sold_books = sum([it[0] * it[1] for it in sells_for_revenue_values
-                                          if (it[2] and it[2] == type_book.pk) or
-                                          (it[3] and it[3].startswith('97'))])
+            sold_books = [it for it in sells_for_revenue_values
+                          if (it[2] and it[2] == type_book.pk) or
+                          (it[3] and it[3].startswith('97'))]
+            nb_books_sold = len(sold_books)
+            total_price_sold_books = sum([it[0] * it[1] for it in sold_books])
             # values_not_books = [it for it in sells_for_revenue_values if it[2] != type_book.pk and not it[3].startswith('97')]
             # XXX: 2021/01/15: shipped new management script to clean up types and
             # fixed the datasources to return the correct type.
@@ -4480,6 +4487,9 @@ class Sell(models.Model):
             total_sells_for_mean = sum([it[0] * it[1] for it in sells_for_mean.values_list('quantity', 'price_sold')])
             if total_sells_for_mean:
                 sell_mean = total_sells_for_mean / nb_cards_sold
+            books_sell_mean = 0
+            if sold_books:
+                books_sell_mean = total_price_sold_books / nb_books_sold
 
         # Pagination.
         if page is not None and page_size is not None:
@@ -4501,6 +4511,8 @@ class Sell(models.Model):
                 "not_books": not_books,
                 "nb_sells": nb_sells,  # within search criteria
                 "nb_cards_sold": nb_cards_sold,
+                "nb_books_sold": nb_books_sold,
+                "nb_books_sells": nb_books_sells,
                 "nb_cards_returned": - nb_cards_returned,
                 "total_sells": total_sells,  # total
                 "total_sells_fmt": price_fmt(total_sells, default_currency),  # total
@@ -4512,6 +4524,7 @@ class Sell(models.Model):
                 "total_price_sold_fmt": price_fmt(total_price_sold, default_currency),
                 "sell_mean": sell_mean,
                 "sell_mean_fmt": price_fmt(sell_mean, default_currency),
+                "books_sell_mean": books_sell_mean,
                 }
 
     @staticmethod

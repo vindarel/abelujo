@@ -81,10 +81,14 @@
         {% if  sells_data.nb_cards_returned %}<span>&nbsp; {% trans "Articles returned" %}: {{ sells_data.nb_cards_returned }}</span>{% endif %}
       </h4>
 
+      <span> {% trans "books" %} </span>
+      <span> {{ sells_data.nb_books_sold }} </span>
+
       {% for it in data_grouped_sells %}
       {% if it.0 != 'book' %}
       <div>
-        {{ it.0 }}: {{ it.1.total_sells }}
+        <span> {{ it.0 }} </span>
+        <span> {{ it.1.total_sells }} </span>
       </div>
       {% endif %}
       {% endfor %}
@@ -96,10 +100,12 @@
     <div class="panel-body">
       <h4>{{ sells_data.nb_sells }} </h4>
 
+      {% trans "books" %} {{ sells_data.nb_books_sells }}
+
       {% for it in data_grouped_sells %}
       {% if it.0 != 'book' %}
       <div>
-        {{ it.0 }}: {{ it.1.nb_sells }}
+        {{ it.0 }} {{ it.1.nb_sells }}
       </div>
       {% endif %}
       {% endfor %}
@@ -113,6 +119,9 @@
       <h4>
         {{ sells_data.sell_mean_fmt }}
       </h4>
+      <span> {% trans "books" %} </span>
+      <span> {{ sells_data.books_sell_mean | currency }} </span>
+
       {% for it in data_grouped_sells %}
       {% if it.0 != 'book' %}
       <div>
