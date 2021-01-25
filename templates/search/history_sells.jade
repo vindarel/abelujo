@@ -37,7 +37,7 @@ if day.year < now.year or day.month < now.month
       li(role="presentation"): a(href="{% url 'history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
 
 span
-  span(style="font-size: 36pt; font-size: 500; margin-right: 1em;") {{ day | date:'F o' | title }}
+  span(style="font-size: 36pt; font-size: 500; margin-right: 1em;") {{ day | date:'F Y' | title }}
   span
     .btn-group
       .dropdown
