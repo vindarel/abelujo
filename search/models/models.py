@@ -1394,8 +1394,6 @@ class Card(TimeStampedModel):
         else:
             nb_results = cards.count()
 
-        cards = cards.select_related()
-
         # Pagination
         paginator = Paginator(cards, page_size)
         if page is not None:
