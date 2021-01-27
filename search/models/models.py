@@ -2567,7 +2567,7 @@ class Place (models.Model):
         other_vat = Preferences.get_vat_other_product() / 100
 
         def is_book(tup):
-            return tup[2] == type_book.pk or tup[1].startswith('97')
+            return tup[2] == type_book.pk or (tup[1] and tup[1].startswith('97'))
 
         copies = self.placecopies_set.filter(card__price__isnull=False).\
             values_list('card_id',
