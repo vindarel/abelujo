@@ -26,15 +26,9 @@ from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 
+from search.models import Sell
 from search.models.utils import list_from_coma_separated_ints
 from search.models.api import getSellDict
-
-
-# py2/3
-try:
-    input = raw_input
-except NameError:
-    pass
 
 
 class Command(BaseCommand):

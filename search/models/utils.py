@@ -507,3 +507,11 @@ def theme_composed_name(code):
     except Exception as e:
         log.warning(u"Could not join theme names for {}: {}".format(code, e))
         return str(code)
+
+def is_book(card):
+    # assert isinstance(card, xxx)
+    if card.card_type_id == 1:  # XXX: CardType
+        return True
+    if card.isbn.startswith('97'):
+        return True
+    return False
