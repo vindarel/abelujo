@@ -58,6 +58,8 @@ from search.datasources.bookshops.esES.casadellibro import casadellibroScraper a
 from search.datasources.bookshops.frFR.lelivre import lelivreScraper as lelivre  # noqa: F401
 from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisScraper as librairiedeparis  # noqa: F401
 from search.datasources.bookshops.frFR.filigranes import filigranesScraper as filigranes  # noqa: F401
+
+from search import models
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -1439,12 +1441,14 @@ def history_sells_day(request, date, **kwargs):
                              with_total_price_sold=True,
                              sortorder=1)  # ascending
 
+    # Best sells per card type.
+    best_sells = models.get_best_sells(sells_data['data'])
+
     # Stats by card_type
     # grouped_sells = toolz.groupby(lambda (it): it.card.card_type, sells_data['data'])
     grouped_sells = toolz.groupby(lambda (it): it[2], sells_data['not_books'])
     # data for the template.
     data_grouped_sells = []
-    # import ipdb; ipdb.set_trace()
     for card_type, soldcards in grouped_sells.iteritems():
         # solcards: tuple quantity, price_sold, card_type.pk, isbn, type name
         if card_type is None:
@@ -1514,6 +1518,7 @@ def history_sells_day(request, date, **kwargs):
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,
+                                      'best_sells': best_sells,
                                       'data_grouped_sells': data_grouped_sells,
                                       'previous_day': previous_day,
                                       'previous_day_fmt': previous_day_fmt,

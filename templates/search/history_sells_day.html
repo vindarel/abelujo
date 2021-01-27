@@ -50,7 +50,7 @@
 
 <div  class="row">
   <!-- div plus gros panier (?)-->
-  <div class="col-md-3 panel panel-info">
+  <div class="col-md-4 panel panel-info">
     <div class="panel-heading">{% trans "Cash register" %}</div>
     <div class="panel-body">
       <h4> {{ sells_data.total_price_sold_fmt }} </h4>
@@ -73,7 +73,7 @@
     </div>
   </div>
 
-  <div class="col-md-3 panel panel-info">
+  <div class="col-md-2 panel panel-info">
     <div class="panel-heading">{% trans "Articles sold" %}</div>
     <div class="panel-body">
       <h4>
@@ -95,7 +95,7 @@
     </div>
   </div>
 
-  <div class="col-md-3 panel panel-info">
+  <div class="col-md-2 panel panel-info">
     <div class="panel-heading">{% trans "Cash register movements" %}</div>
     <div class="panel-body">
       <h4>{{ sells_data.nb_sells }} </h4>
@@ -113,7 +113,7 @@
     </div>
   </div>
 
-  <div class="col-md-3 panel panel-info">
+  <div class="col-md-2 panel panel-info">
     <div class="panel-heading">{% trans "Average basket" %}</div>
     <div class="panel-body">
       <h4>
@@ -133,7 +133,18 @@
 
     </div>
   </div>
+
+  <div class="col-md-2 panel panel-info">
+    <div class="panel-heading">{% trans "Best sells" %}</div>
+    <div class="panel-body">
+      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+        {% trans "Best sells" %}
+      </button>
+    </div>
+  </div>
 </div>
+
+
 
 <table class="table">
   <!-- better: iterate over sells, and iterate over soldcards.-->
@@ -186,5 +197,59 @@
   </tr>
   {% endfor %}
 </table>
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title"> {% trans "Best sells" %} </h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <h4>  </h4>
+        <h5> {% trans "Books" %} </h5>
+        <table class="table">
+        {% for it in best_sells.book %}
+        <tr>
+          <td>
+            <a href="{{it.0.get_absolute_url}}")> {{ it.0.title }} </a>
+          </td>
+          <td> {{ it.1 }} </td>
+        </tr>
+        {% endfor %}
+        </table>
+
+        {% for other in best_sells.items %}
+        {% if other.0 != 'book' %}
+        {% if other.1 %}
+        <h5> {{ other.0 }} </h5>
+        <table class="table">
+        {% for it in other.1 %}
+          <tr>
+            <td>
+              <a href="{{it.0.get_absolute_url}}")> {{ it.0.title }} </a>
+            </td>
+            <td> {{ it.1 }} </td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+          {% endif %}
+          {% endfor %}
+        </table>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 {% endblock content %}
