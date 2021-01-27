@@ -33,6 +33,7 @@ six
 ### Django extensions
 djangorestframework==3.4 # REST framework. Serve API, serialize models, explore schema, etc
 django_extensions==1.7  # more useful commands to manage.py (shell_plus).
+django-picklefield==1.1 # required to pin.
 django-redis-cache==1.7.1
 Werkzeug==0.15.2        # runserver_plus: richer tracebacks and inline console.
 
