@@ -4625,6 +4625,42 @@ class Sell(models.Model):
             })
             total_price_sold += total
 
+        best_sells = {'book': {}}  # pk => quantity
+        # There is no "group by" in Django ORM and annotations don't do. Screw it.
+        # Get best sells by type.
+        try:
+            card_types = CardType.objects.all()
+            for soldcard in soldcards:
+                card_type = soldcard.card.card_type
+                if card_type and card_type.id == 1:
+                    card_type = 'book'
+                elif card_type:
+                    card_type = CardType.objects.filter(name=card_type).first()
+                    if card_type:
+                        best_sells[card_type] = {}
+                    else:
+                        continue
+                else:
+                    continue
+
+                # Increment best sells.
+                if soldcard.card not in best_sells['book']:
+                    best_sells[card_type][soldcard.card] = soldcard.quantity
+                else:
+                    if soldcard.quantity > 0:
+                        best_sells[card_type][soldcard.card] += soldcard.quantity
+
+        except Exception as e:
+            log.warning(e)
+        finally:
+            # sort best sells.
+            limit = 10
+            for card_type in best_sells.keys():
+                res = best_sells[card_type].items()
+                res = sorted(res, key=lambda it: it[1])
+                res.reverse()
+                best_sells[card_type] = res[:limit]
+
         sell_mean = 0
         if total_cards_sold:
             sell_mean = total_price_sold / total_cards_sold
@@ -4634,6 +4670,7 @@ class Sell(models.Model):
                 'sell_mean': sell_mean,
                 'sell_mean_fmt': price_fmt(sell_mean, default_currency),
                 'nb_sells': nb_sells,
+                'best_sells': best_sells,
                 'data': sells_per_day}
 
     @staticmethod

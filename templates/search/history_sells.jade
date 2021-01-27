@@ -62,18 +62,45 @@ span
     div.panel-heading {% trans "Cash register movements" %}
     div.panel-body {{ sells_data.nb_sells }}
 
-.col-md-4
-  table.table.table-striped
-      {% for it in sells_data.data reversed %}
+.row
+  .col-md-4
+    table.table.table-striped
+        {% for it in sells_data.data reversed %}
+        tr
+          td
+            if it.weekday == 6
+              span(style="color: grey;") {{ it.date_obj | date:'l' }} 
+            else
+              span {{ it.date_obj | date:'l' }} 
+          td
+            a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
+          td.text-right {{ it.total_price_sold_fmt }}
+        {% endfor %}
+
+  .col-md-4
+    h4 {% trans "Best sells" %}
+    h5 {% trans "Books" %}
+    table.table
+      {% for it in sells_data.best_sells.book %}
       tr
         td
-          if it.weekday == 6
-            span(style="color: grey;") {{ it.date_obj | date:'l' }} 
-          else
-            span {{ it.date_obj | date:'l' }} 
-        td
-          a(href="{% url 'history_sells_day' it.date %}") {{ it.date }}
-        td.text-right {{ it.total_price_sold_fmt }}
+          a(href="{{it.0.get_absolute_url}}") {{ it.0.title }}
+        td {{ it.1 }}
       {% endfor %}
+
+    {% for other in sells_data.best_sells.items %}
+    {% if other.0 != 'book' %}
+    {% if other.1 %}
+    h5 {{ other.0 }}
+    table.table
+      {% for it in other.1 %}
+      tr
+        td
+          a(href="{{it.0.get_absolute_url}}") {{ it.0.title }}
+        td {{ it.1 }}
+      {% endfor %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
 
 {% endblock content %}
