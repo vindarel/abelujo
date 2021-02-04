@@ -72,7 +72,9 @@ div#abelujo
       .row(style="margin-left: 1px;")
 
         h4 {{ object.price_fmt }}
+          {% if object.selling_price %}
           div {% trans "Selling price" %}: {{ object.selling_price }}
+          {% endif %}
           if object.vat1
             span(title="{{ object.vat1 }}% of {{ object.price }} is {{ object.check_vat.0 }}. Actual tax is {{ object.check_vat.1 }}%") &nbsp; ({{ object.price_excl_vat }}, {{ object.vat1 }}%)
           if object.vat
