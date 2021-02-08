@@ -39,7 +39,6 @@ div.ng-cloak(ng-controller="sellController")
       .row
         .col-md-3
           form
-            label {% trans "Date" %}
             p.input-group
               input.form-control(
                 type='text'
@@ -56,7 +55,6 @@ div.ng-cloak(ng-controller="sellController")
 
         .col-md-3
          form
-            label {% trans "Client" %}
             p.input-group
              input.nullable.form-control#client-input(
               type='text'
@@ -73,6 +71,25 @@ div.ng-cloak(ng-controller="sellController")
              span.input-group-btn
                a.btn.btn-default(type='button', href='/databasesearch/client/add/', title='{% trans "Create" %} {% trans "client" %}', target='_blank')
                  i.glyphicon.glyphicon-plus
+               a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
+                    i.glyphicon.glyphicon-file
+
+        .col-md-3
+         .btn-group
+           button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}
+             span.caret
+           ul.dropdown-menu
+             li: a(href="#", ng-click="export_csv()") csv
+
+
+          input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
+         .btn-group
+                a.btn.btn-default(role="button"
+                                href="http://abelujo.cc/docs/sell/"
+                                target="_blank",
+                                title='{% trans "Read the documentation" %}')
+                  i.glyphicon.glyphicon-question-sign
+
 
         //- .col-md-3
           form
@@ -103,24 +120,6 @@ div.ng-cloak(ng-controller="sellController")
       .row
           span(ng-repeat="payment in payment_means")
             input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
-
-          a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
-            i.glyphicon.glyphicon-file
-
-          .btn-group
-           button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}
-             span.caret
-           ul.dropdown-menu
-             li: a(href="#", ng-click="export_csv()") csv
-
-          input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
-
-          .btn-group
-             a.btn.btn-default(role="button"
-                               href="http://abelujo.cc/docs/sell/"
-                               target="_blank",
-                               title='{% trans "Read the documentation" %}')
-               i.glyphicon.glyphicon-question-sign
 
 
       .row(ng-show="cards_selected.length > 0")
