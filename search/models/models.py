@@ -4351,6 +4351,10 @@ class Sell(models.Model):
     total_payment_1 = models.FloatField(blank=True, null=True)
     total_payment_2 = models.FloatField(blank=True, null=True)
 
+    #: The total for revenue does not count coupons and the like.
+    #: It only counts the books that were effectively paid.
+    total_for_revenue = models.FloatField(default=0)
+
     #: We can choose to sell from a specific place.
     place = models.ForeignKey("Place", blank=True, null=True, verbose_name=__("place"))
     #: We can also choose to sell from a specific deposit.
@@ -4855,6 +4859,14 @@ class Sell(models.Model):
         if client_id:
             client = Client.objects.filter(id=client_id).first()
 
+        # The revenue of the sell does not count coupons, it only counts
+        # effective payments.
+        total_for_revenue = 0
+        if not ignore_payment_for_revenue(payment):
+            total_for_revenue += total_payment_1
+        if not ignore_payment_for_revenue(payment_2):
+            total_for_revenue += total_payment_2
+
         # Create the Sell object.
         try:
             sell = Sell(created=date,
@@ -4862,6 +4874,7 @@ class Sell(models.Model):
                         payment_2=payment_2,
                         total_payment_1=total_payment_1,
                         total_payment_2=total_payment_2,
+                        total_for_revenue=total_for_revenue,
                         place=place_obj,
                         client=client)
             sell.save()
