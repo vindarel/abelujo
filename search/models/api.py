@@ -744,6 +744,11 @@ def sell(request, **response_kwargs):
         date = params.get("date")
         place_id = int(params.get("place_id", 0))
         payment_id = int(params.get("payment_id", 0))
+        payment_2_id = params.get("payment_2_id")
+        if payment_2_id:
+            payment_2_id = int(payment_2_id)
+        total_payment_1 = float(params.get("total_payment_1", 0))
+        total_payment_2 = float(params.get("total_payment_2", 0))
         client_id = int(params.get("client_id", -1))
 
         # Sell from a place.
@@ -753,6 +758,9 @@ def sell(request, **response_kwargs):
                 date=date,
                 place_id=place_id,
                 payment=payment_id,
+                total_payment_1=total_payment_1,
+                payment_2=payment_2_id,
+                total_payment_2=total_payment_2,
                 client_id=client_id,
             )
 

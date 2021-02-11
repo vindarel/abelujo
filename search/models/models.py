@@ -4340,6 +4340,17 @@ class Sell(models.Model):
                                max_length=CHAR_LENGTH,
                                blank=True, null=True,
                                verbose_name=__("payment"))
+    #: Second payment method (optional).
+    payment_2 = models.CharField(choices=PAYMENT_CHOICES,
+                               default=PAYMENT_CHOICES[0],
+                               max_length=CHAR_LENGTH,
+                               blank=True, null=True,
+                               verbose_name=__("payment"))
+
+    #: In case of several payment methods, say how much for each of them.
+    total_payment_1 = models.FloatField(blank=True, null=True)
+    total_payment_2 = models.FloatField(blank=True, null=True)
+
     #: We can choose to sell from a specific place.
     place = models.ForeignKey("Place", blank=True, null=True, verbose_name=__("place"))
     #: We can also choose to sell from a specific deposit.
@@ -4772,16 +4783,23 @@ class Sell(models.Model):
         return Sell.sell_cards(None, cards=[card], **kwargs)
 
     @staticmethod
-    def sell_cards(ids_prices_nb, date=None, payment=None, cards=[],
+    def sell_cards(ids_prices_nb, date=None,
+                   payment=None,
+                   payment_2=None,
+                   cards=[],
                    place_id=None, place=None,
                    deposit_id=None, deposit=None,  # XXX: deprecated since 2020-07-09
                    client=None, client_id=None,
+                   total_payment_1=None,
+                   total_payment_2=None,
                    silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
         The default of "price_sold" is the card's price, the default
         quantity is 1. No error is returned, only a log (it's supposed
         not to happen, to be checked before calling this method).
+
+        We accept 2 payment methods.
 
         - cards: can be used as a shortcut to write tests. Price and quantity will be default.
         - date: a timezone or a str (from javascript) which complies to the DATE_FORMAT,
@@ -4841,6 +4859,9 @@ class Sell(models.Model):
         try:
             sell = Sell(created=date,
                         payment=payment,
+                        payment_2=payment_2,
+                        total_payment_1=total_payment_1,
+                        total_payment_2=total_payment_2,
                         place=place_obj,
                         client=client)
             sell.save()
@@ -4922,6 +4943,8 @@ class Sell(models.Model):
 
                 # If it's a coupon or a gift, don't count it for the total revenue.
                 ignore_for_revenue = ignore_payment_for_revenue(payment)
+                if payment_2 is not None:
+                    ignore_for_revenue = ignore_for_revenue and ignore_payment_for_revenue(payment_2)
 
                 sold = sell.soldcards_set.create(card=card,
                                                  price_sold=price_sold,

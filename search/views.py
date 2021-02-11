@@ -1500,21 +1500,24 @@ def history_sells_day(request, date, **kwargs):
 
     # Show payments (abbreviated).
     payments = []
+    payments_2 = []
     for it in sells_data['data']:
         sells_ids.append("{}".format(it.sell_id))
         if it.sell_id == previous_sell_id:
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
             payments.append("")
+            payments_2.append("")
             sell_transaction_markers.append(False)
         else:
             cur_color = flip_color(cur_color)
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
             payments.append(get_payment_abbr(it.sell.payment))
+            payments_2.append(get_payment_abbr(it.sell.payment_2) or "")
             sell_transaction_markers.append(True)
 
-    data = list(zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids))
+    data = list(zip(sells_data['data'], bg_colors, payments, payments_2, sell_transaction_markers, sells_ids))
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,

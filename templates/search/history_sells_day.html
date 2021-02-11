@@ -161,7 +161,7 @@
     <th></th>
   </thead>
 
-  {% for it,bg_color,payment,new_sell,sell_id in data %}
+  {% for it,bg_color,payment,payment_2,new_sell,sell_id in data %}
   <tr style="background-color: {{ bg_color }}" id="sell{{ sell_id }}">
     <td>{{ it.pk }}</td>
     <td>{{ it.created | date:'H:i' }} </td>
@@ -183,7 +183,12 @@
     </td>
     <td>{% if  new_sell %}<span>{{ it.sell.total_price_sold_fmt }}</span>{% endif %}
     </td>
-    <td>{{ payment }}</td>
+    <td>
+      {{ payment }}
+      {% if payment_2 %}
+      {{ payment_2 }}
+      {% endif %}
+    </td>
     <td>
       {% if  it.sell.client %}
       <div href="#" title="{{ it.sell.client.name }}, {{ it.sell.client.firstname }}">{{ it.sell.client.name | truncatechars:9 }}</div>

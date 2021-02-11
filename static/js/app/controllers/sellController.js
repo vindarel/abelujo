@@ -36,6 +36,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
            {name: gettext("autre"), id:6},
       ];
       $scope.payment = $scope.payment_means[0];
+      $scope.payment_2 = 0;
 
       $http.get("/api/config/payment_choices")
         .then(function(response) {
@@ -73,6 +74,9 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       $scope.tmpcard = [];
       $scope.selected_ids = [];
       $scope.total_price = 0;
+      $scope.total_payment_1 = 0;
+      $scope.show_payment_2 = false;
+      $scope.total_payment_2 = 0;
 
       // messages for ui feedback: list of couple level/message
       $scope.alerts = undefined;
@@ -230,6 +234,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                                           return memo + (it.price_sold * it.quantity_sell);},
                                       0);
         $scope.total_price = $scope.total_price.toFixed(2); // round the float
+        $scope.total_payment_1 = parseFloat($scope.total_price);
+        console.log("total_payment_1: ", $scope.total_payment_1, "type: ", typeof($scope.total_payment_1));
     };
 
     $scope.getTotalCopies = function(){
@@ -268,13 +274,46 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           $scope.cards_selected = [];
       });
 
+    $scope.sumPrices = function(p1, p2) {
+        // Summing decimals has rounding errors. Need to multiply to sum integers.
+        return (p1 * 100 + p2 * 100) / 100;
+    };
+
     $scope.sellCardsWith = function(payment) {
+        "Register this payment method. When ready, validate the sell."
         console.log("Sell with ", payment);
-        $scope.payment = payment;
-        $scope.sellCards();
+        let do_sell = false;
+        if (! $scope.show_payment_2) {
+            // Register first payment method.
+            $scope.payment = payment;
+            // Check all totals are OK before validating the sell.
+            if ($scope.total_payment_1 != $scope.total_price) {
+                console.log("Payment is not complete.");
+                $scope.show_payment_2 = true;
+                // In JS, 10 - 9.9 = 0.099999999964
+                $scope.total_payment_2 = ($scope.total_price * 100 - $scope.total_payment_1 * 100) / 100;
+            } else {
+                console.log("payment 1 OK");
+                do_sell = true;
+            }
+        } else {
+            // Register second payment method.
+            $scope.payment_2 = payment;
+            // Check the two payments sum correctly.
+            if (($scope.sumPrices($scope.total_payment_1, $scope.total_payment_2)) != $scope.total_price) {
+                alert("La somme des paiements ne correspond pas. Vous pouvez utiliser jusqu'à 2 moyens de paiement différents.");
+            } else {
+                console.log("-- payments sum OK");
+                do_sell = true;
+            }
+        }
+        if (do_sell) {
+            $scope.sellCards();
+        }
     };
 
     $scope.sellCards = function() {
+        "Validate the Sell. API call."
         var ids = [];
         var prices = [];
         var quantities = [];
@@ -301,13 +340,20 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         if ($scope.payment) {
             payment_id = $scope.payment.id;
         }
+        var payment_2_id = 0;
+        if ($scope.payment_2) {
+            payment_2_id = $scope.payment_2.id;
+        }
 
         var params = {
             "to_sell": [ids, prices, quantities],
             "date": $filter('date')($scope.date, $scope.format, 'UTC') .toString($scope.format),
             "language": $scope.language,
             "place_id": place_id,
-            "payment_id": payment_id
+            "payment_id": payment_id,
+            "payment_2_id": payment_2_id,
+            "total_payment_1": $scope.total_payment_1,
+            "total_payment_2": $scope.total_payment_2
         };
 
         if ($scope.client) {
@@ -351,9 +397,19 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
     $scope.cancelCurrentData = function() {
         $scope.total_price = null;
+        $scope.total_payment_1 = null;
+        $scope.total_payment_2 = 0;
+        $scope.show_payment_2 = false;
         $scope.selected_ids = [];
         $scope.cards_selected = [];
         $scope.cards_fetched = [];
+    };
+
+    $scope.remove_payment_2 = function() {
+        $scope.show_payment_2 = false;
+        $scope.total_payment_2 = 0;
+        $scope.total_payment_1 = $scope.total_price * 100 / 100;
+        console.log("-- total_payment_1:", $scope.total_payment_1);
     };
 
     $scope.export_csv = function () {

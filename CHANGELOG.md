@@ -11,6 +11,7 @@ Changelog starting from v0.5 (2018/09/18)
   above, and still have shelves for our books.
 - History: the history gets more **breakdown**: it shows totals for each type of product (book, CD, beverage…)
 - History: the history page of the month and the day show the **best sells** for each kind of product: books, but not only.
+- Sell page: we can pay with **two payment methods**.
 
 ### Other enhancements
 
