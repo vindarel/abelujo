@@ -1566,7 +1566,7 @@ class Card(TimeStampedModel):
 
         remaining_quantity = card.quantity
         if remaining_quantity <= card.threshold:
-            Basket.add_to_auto_command(card)
+            Basket.add_to_auto_command(card, nb=0)
 
         # Possibly add to the restocking list.
         if card.quantity_to_restock() > 0:
@@ -2203,6 +2203,12 @@ class Card(TimeStampedModel):
         ideal_quantity = 1 - self.quantity_selling_places()
         res = min(max(0, ideal_quantity), self.quantity_reserve())
         return res
+
+    def quantity_to_command(self):
+        """
+        Quantity in the to_command list.
+        """
+        return Basket.auto_command_quantity_of(self)
 
     def get_first_deposit(self):
         names_ids = self.deposits
@@ -2882,6 +2888,18 @@ class Basket(models.Model):
             return 0
 
     @staticmethod
+    def auto_command_quantity_of(card):
+        """
+
+        """
+        basket = Basket.objects.get(name="auto_command")
+        basket_copy = basket.basketcopies_set.filter(card=card).first()
+        if basket_copy:
+            return basket_copy.nb
+        else:
+            return 0
+
+    @staticmethod
     def auto_command_copies(dist_id=None, unicodesort=True):
         """
         Return a list of basket copies (also with their quantity in the
@@ -3001,8 +3019,9 @@ class Basket(models.Model):
         """
         try:
             basket_copy, created = self.basketcopies_set.get_or_create(card=card)
-            basket_copy.nb += nb
-            basket_copy.save()
+            if nb != 0:
+                basket_copy.nb += nb
+                basket_copy.save()
 
             # box? Remove from the stock.
             if basket_copy.basket.is_box:
@@ -3013,7 +3032,8 @@ class Basket(models.Model):
             log.error("Error while adding a card to basket %s: %s" % (self.name, e))
 
     def set_copy(self, card=None, nb=1, card_id=None):
-        """Set the given card's quantity.
+        """
+        Set the given card's quantity.
         """
         if not card and card_id:
             try:
@@ -3173,25 +3193,29 @@ class Basket(models.Model):
         return -1
 
     @staticmethod
-    def add_to_auto_command(card):
+    def add_to_auto_command(card, nb=1):
         """
         Add the given Card object to the basket for auto commands.
 
-        changed, oct. 2020: the command quantity is 0, not 1. The bookseller chooses
-        what books to command, instead of de-selecting ones.
+        This function is called both automatically after a sell and manually from the Card page, "add to command" button.
         """
         if isinstance(card, int) or isinstance(card, six.string_types) or isinstance(card, six.text_type):
             card = Card.objects.filter(id=card).first()
         try:
             assert isinstance(card, Card)
-            Basket.objects.get(name="auto_command").set_copy(card=card, nb=0)
+            basket = Basket.objects.filter(name="auto_command").first()
+            basket.add_copy(card, nb=nb)
         except ObjectDoesNotExist:
             # that's ok here, specially in tests.
             pass
         except Exception as e:
             log.error("Error while adding the card {} to the auto_command basket: {}.".format(card.id, e))
             raise e
-        return True
+        try:
+            res = card.quantity_to_command()
+        except Exception as e:
+            res = -99
+        return res
 
     def to_deposit(self, distributor=None, name=""):
         """Transform this basket to a deposit.

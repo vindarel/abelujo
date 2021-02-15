@@ -122,6 +122,10 @@ function card_command(card_id) {
             if (myJson.status == 200 || myJson.status == "success") {
                 console.log("-- success.");;
                 Notiflix.Notify.Success('OK');
+
+                // Update quantity.
+                let elt = document.getElementById('nb_to_command');
+                elt.innerText = myJson.data.nb;
             }
             else {
                 console.log("status is not success: ", myJson.status);

@@ -519,13 +519,15 @@ def card_command(request, pk, **kw):
         'data': {},
         'status': ALERT_SUCCESS,
     }
+    nb = "?"
     try:
-        Basket.add_to_auto_command(pk)
+        nb = Basket.add_to_auto_command(pk, nb=1)
     except Exception as e:
         log.error(u'Error adding to the auto_command: {}'.format(e))
         status = ALERT_WARNING
         to_ret['status'] = status
 
+    to_ret['data']['nb'] = nb
     return JsonResponse(to_ret)
 
 def cardtype(request, **response_kwargs):
