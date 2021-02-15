@@ -72,7 +72,7 @@ div(ng-cloak, ng-controller="basketToCommandController")
 
 
     div
-     .col-md-6
+     .col-md-7
             .row
              a.my-black-link(href="")
               h4.col-md-6.myanchor(id="")
@@ -102,10 +102,10 @@ div(ng-cloak, ng-controller="basketToCommandController")
                  a(href="http://abelujo.cc/docs/commands/", target="_blank"): button.btn.btn-default(title='{% trans "Read the documentation" %}')
                     i.glyphicon.glyphicon-question-sign
 
-                 button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
+                 a(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}'): button.btn.btn-default
                    i.glyphicon.glyphicon-th-list
 
-     .col-md-6
+     .col-md-5
        form
         .col-md-12
           p.input-group
