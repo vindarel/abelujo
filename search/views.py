@@ -1091,12 +1091,15 @@ def basket_export(request, pk):
     distributor_id = request.GET.get('distributor_id')
     # Export of all cards: distributor_id is None.
     # Export of cards with no distributor_id:
-    if distributor_id == 'undefined' or distributor_id in ["", ""]:
+    if distributor_id == 'undefined' or distributor_id in [""]:
         distributor_id = -1
+    elif distributor_id in ["all", u"all"]:
+        pass
     elif distributor_id:
         distributor_id = int(distributor_id)
         # TODO: filter the copies by distributor, or absence thereof.
 
+    # see also auto_command_copies (that returns a list instead of a QS)
     copies_set = Basket.search(pk, distributor_id=distributor_id)
 
     barcodes = _is_truthy(request.GET.get('barcodes'))

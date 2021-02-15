@@ -35,8 +35,15 @@ ul.nav.nav-tabs.nav-justified
     li(role="presentation")
       a(href="/databasesearch/command/", target="_blank") {% trans "Historique" %}
 
+h4 {% trans "All cards" %}:
+table.table.table-condensed.table-striped
+  tbody
+    tr
+      td
+        a(href="/commands/supplier/all") {% trans "All cards" %}
+      td {{ total_copies }}
 
-div {% trans "Cards with no supplier" %}:
+h4 {% trans "Cards with no supplier" %}:
 table.table.table-condensed.table-striped
   tbody
     tr
@@ -46,7 +53,7 @@ table.table.table-condensed.table-striped
 
 table.table.table-condensed.table-striped
   thead
-    th {% trans "Name" %}
+    th {% trans "Supplier" %}
     th {% trans "Quantity" %}
   tbody
     for it in dists

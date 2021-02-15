@@ -2036,20 +2036,27 @@ def commands_supplier(request, pk):
 
     If pk == 0, get the list of cards to command that don't have a supplier.
 
+    If pk is "all", get all the cards to command.
+
     (actually return basket_copy objects, with the basket_qty)
     """
-    dist_id = int(pk)
+    if pk not in ["all", u"all"]:
+        dist_id = int(pk)
+    else:
+        dist_id = pk
     # pagination.
     page = int(request.GET.get('page', 1))
     page_size = int(request.GET.get('page_size', 100))
 
-    # Get all cards from the commands list... (and sort after, with a smaller list)
-    basket_copies = Basket.auto_command_copies(dist_id=dist_id)
+    # Get all cards from the commands list...
+    # Not sorting would be visibly faster.
+    basket_copies = Basket.auto_command_copies(dist_id=dist_id, unicodesort=True)
     copies_from_dist = []
 
     # ... and filter the ones with the distributor required.
-
     if dist_id == 0:
+        copies_from_dist = basket_copies
+    elif dist_id in ["all", u"all"]:
         copies_from_dist = basket_copies
     else:
         for it in basket_copies:

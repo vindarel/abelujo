@@ -2886,8 +2886,15 @@ class Basket(models.Model):
         """
         Return a list of basket copies (also with their quantity in the
         basket) from the autocommand list.
+
+        dist_id can be:
+          - an id: filter by this distrubutor id.
+          - 0: get all cards that don't have a distributor.
+          - "all": get all cards to command.
+
+        Return: a queryset of BasketCopies.
         """
-        if dist_id is not None:
+        if dist_id is not None and dist_id not in ["all", u"all"]:
             dist_id = int(dist_id)
         try:
             basket = Basket.objects.get(name="auto_command")
@@ -2895,6 +2902,8 @@ class Basket(models.Model):
                 copies_qties = basket.basketcopies_set.\
                                filter(card__distributor_id__isnull=True)\
                                .order_by('card__title')
+            elif dist_id in ["all", u"all"]:
+                copies_qties = basket.basketcopies_set.all()
             elif dist_id:
                 copies_qties = basket.basketcopies_set\
                                      .filter(card__distributor_id=dist_id)\
@@ -2961,10 +2970,15 @@ class Basket(models.Model):
 
         Parameters:
         - distributor_id
+
+        Return: a queryset (without all()).
         """
         copies = BasketCopies.objects.filter(basket_id=pk)
         if distributor_id in [0, '0', '0', -1, '-1', '-1']:
             copies = copies.filter(card__distributor__isnull=True)
+        elif distributor_id in ["all", u"all"]:
+            # take all.
+            pass
         elif distributor_id is not None:
             copies = copies.filter(card__distributor_id=distributor_id)
         return copies

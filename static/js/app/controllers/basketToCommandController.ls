@@ -49,20 +49,30 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.show_images = false
 
     $scope.distributor_id = utils.url_id $window.location.pathname
+    if not $scope.distributor_id
+       if $window.location.pathname.endsWith("all")
+           $scope.distributor_id = "all"
     $log.info $scope.distributor_id
 
     # Get the distributor.
-    if $scope.distributor_id != "0"
+    if $scope.distributor_id not in ["0", "all"]
         $http.get "/api/distributors/#{$scope.distributor_id}"
         .then (response) !->
             $scope.distributor = response.data.data
             $log.info "-- dist: ", response.data.data
     else
-        $scope.distributor = do
-            name: "No supplier"
-            id: 0
-            repr: "No supplier"
-            get_absolute_url: ""
+        if $scope.distributor_id == "0"
+            $scope.distributor = do
+                name: "No supplier"
+                id: 0
+                repr: "No supplier"
+                get_absolute_url: ""
+        else if $scope.distributor_id == "all"
+            $scope.distributor = do
+                name: "All cards"
+                id: "all"
+                repr: "All cards"
+                get_absolute_url: ""
 
     # Get the cards to command of this supplier.
     # supplier = distributor. If you want to use a publisher, set it as a distributor.

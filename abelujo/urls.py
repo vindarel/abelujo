@@ -94,7 +94,7 @@ apipatterns = patterns("",
     url(r'^api/commands/nb_ongoing/?$', 'search.models.api.nb_commands_ongoing', name="api_commands_nb_ongoing"),
     url(r'^api/commands/create', 'search.models.api.commands_create', name="api_commands_create"),
     url(r'^api/commands/(?P<pk>\d+)/update/?$', 'search.models.api.commands_update', name="api_commands_update"),
-    url(r'^api/commands/supplier/(?P<pk>\d+)/copies/?$', 'search.models.api.commands_supplier', name="api_commands_supplier"),
+    url(r'^api/commands/supplier/(?P<pk>\d+|all)/copies/?$', 'search.models.api.commands_supplier', name="api_commands_supplier"),
     # A command inventory (receive a parcel)
     url(r'^api/commands/(?P<pk>\d+)/receive/?$', 'search.models.api.command_receive', name="api_command_receive"),
     url(r'^api/commands/(?P<pk>\d+)/receive/remove/?$', 'search.models.api.command_receive_remove', name="api_command_receive_remove"),
