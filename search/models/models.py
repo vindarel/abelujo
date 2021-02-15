@@ -4359,7 +4359,7 @@ class Sell(models.Model):
 
     #: The total for revenue does not count coupons and the like.
     #: It only counts the books that were effectively paid.
-    total_for_revenue = models.FloatField(default=0)
+    total_for_revenue = models.FloatField(default=0, blank=True, null=True)
 
     #: We can choose to sell from a specific place.
     place = models.ForeignKey("Place", blank=True, null=True, verbose_name=__("place"))
