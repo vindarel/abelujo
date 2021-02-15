@@ -107,7 +107,8 @@ urlpatterns = patterns('',
 
     # Commands:
     url(r'^commands/ongoing/?',
-            login_required(TemplateView.as_view(template_name="search/commands_ongoing.jade"))),
+        login_required(TemplateView.as_view(template_name="search/commands_ongoing.jade")),
+        name='commands_ongoing'),
     url(r'^commands/(?P<pk>\d+)/receive/terminate/export/?$', views.command_receive_export, name="commands_receive_export"),
     url(r'^commands/(?P<pk>\d+)/receive/terminate/?$', views.command_receive_terminate, name="commands_receive_terminate"),
     url(r'^commands/(?P<pk>\d+)/receive?$', views.command_receive, name="commands_receive"),

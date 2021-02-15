@@ -30,7 +30,7 @@ ul.nav.nav-tabs.nav-justified
       a(href="#") {% trans "To command" %}
         span.badge.ng-cloak(title="")   {{ total_copies }}
     li#ongoing(role="presentation")
-      a(href="/commands/ongoing") {% trans "Commands ongoing" %}  
+      a(href="{% url 'commands_ongoing' %}") {% trans "Commands ongoing" %}  
         span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}')   {{ "ongoing_commands_nb" | ng }}
     li(role="presentation")
       a(href="/databasesearch/command/", target="_blank") {% trans "Historique" %}
@@ -40,7 +40,7 @@ table.table.table-condensed.table-striped
   tbody
     tr
       td
-        a(href="/commands/supplier/all") {% trans "All cards" %}
+        a(href="{% url 'command_supplier' 'all' %}") {% trans "All cards" %}
       td {{ total_copies }}
 
 h4 {% trans "Cards with no supplier" %}:
@@ -48,7 +48,7 @@ table.table.table-condensed.table-striped
   tbody
     tr
       td
-        a(href="/commands/supplier/0") {{ no_dist.0 }}
+        a(href="{% url 'command_supplier' '0' %}") {{ no_dist.0 }}
       td {{ no_dist.1 }}
 
 h4 {% trans "Grouped by supplier" %}:
@@ -60,7 +60,7 @@ table.table.table-condensed.table-striped
     for it in dists
       tr
         td
-          a(href="/commands/supplier/{{ it.0.id }}") {{ it.0.name }}
+          a(href="{% url 'command_supplier' it.0.id %}") {{ it.0.name }}
         td {{ it.1 }}
 
 
