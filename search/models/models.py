@@ -2882,7 +2882,7 @@ class Basket(models.Model):
             return 0
 
     @staticmethod
-    def auto_command_copies(dist_id=None, page=1, page_size=100):
+    def auto_command_copies(dist_id=None, unicodesort=True):
         """
         Return a list of basket copies (also with their quantity in the
         basket) from the autocommand list.
@@ -2906,18 +2906,19 @@ class Basket(models.Model):
             log.error(e)
             return []
 
-        # pagination.
-        if page:
-            pagination_beg = (page - 1) * page_size
-            pagination_end = page * page_size
-            copies_qties = copies_qties[pagination_beg:pagination_end]
+        # speed up sorting by title.
+        copies_qties = copies_qties.select_related()
 
         # Here accented letters are not sorted correctly:
         # e ... z ... é
         # I'm afraid we have to resort to Python here, even though there is an ICU SQLite extension.
         # So, sort with the locale. It also sorts correctly regarding the case:
         # E..É..d..F
-        copies_qties = sorted(copies_qties, cmp=locale.strcoll, key=lambda it: it.card.title)
+        start = timezone.now()
+        if unicodesort:
+            copies_qties = sorted(copies_qties, cmp=locale.strcoll, key=lambda it: it.card.title)
+        end = timezone.now()
+        print("-- sorting took {}".format(end - start))
 
         return copies_qties
 

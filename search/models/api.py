@@ -2043,8 +2043,8 @@ def commands_supplier(request, pk):
     page = int(request.GET.get('page', 1))
     page_size = int(request.GET.get('page_size', 100))
 
-    # Get all cards from the commands list...
-    basket_copies = Basket.auto_command_copies(dist_id=dist_id, page=page, page_size=page_size)
+    # Get all cards from the commands list... (and sort after, with a smaller list)
+    basket_copies = Basket.auto_command_copies(dist_id=dist_id)
     copies_from_dist = []
 
     # ... and filter the ones with the distributor required.
