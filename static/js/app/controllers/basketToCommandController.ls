@@ -40,7 +40,7 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     # $scope.page_size = 25  # fixed
     $scope.nb_results = 0
     $scope.page_max = 1
-    $scope.page_size = 400  # also used in template.
+    $scope.page_size = 200  # also used in template.
     $scope.meta = do
         num_pages: null
         nb_results: null

@@ -2882,7 +2882,7 @@ class Basket(models.Model):
             return 0
 
     @staticmethod
-    def auto_command_copies(dist_id=None):
+    def auto_command_copies(dist_id=None, page=1, page_size=100):
         """
         Return a list of basket copies (also with their quantity in the
         basket) from the autocommand list.
@@ -2905,6 +2905,12 @@ class Basket(models.Model):
         except Exception as e:
             log.error(e)
             return []
+
+        # pagination.
+        if page:
+            pagination_beg = (page - 1) * page_size
+            pagination_end = page * page_size
+            copies_qties = copies_qties[pagination_beg:pagination_end]
 
         # Here accented letters are not sorted correctly:
         # e ... z ... é

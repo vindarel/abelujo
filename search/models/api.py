@@ -2039,12 +2039,15 @@ def commands_supplier(request, pk):
     (actually return basket_copy objects, with the basket_qty)
     """
     dist_id = int(pk)
-    # Get all cards from the commands list...
-    basket_copies = Basket.auto_command_copies(dist_id=dist_id)
-    copies_from_dist = []
-    # ... and filter the ones with the distributor required.
+    # pagination.
     page = int(request.GET.get('page', 1))
     page_size = int(request.GET.get('page_size', 100))
+
+    # Get all cards from the commands list...
+    basket_copies = Basket.auto_command_copies(dist_id=dist_id, page=page, page_size=page_size)
+    copies_from_dist = []
+
+    # ... and filter the ones with the distributor required.
 
     if dist_id == 0:
         copies_from_dist = basket_copies
