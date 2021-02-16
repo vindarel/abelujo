@@ -4839,8 +4839,8 @@ class Sell(models.Model):
                    place_id=None, place=None,
                    deposit_id=None, deposit=None,  # XXX: deprecated since 2020-07-09
                    client=None, client_id=None,
-                   total_payment_1=None,
-                   total_payment_2=None,
+                   total_payment_1=0,
+                   total_payment_2=0,
                    silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
