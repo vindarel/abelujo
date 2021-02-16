@@ -996,14 +996,11 @@ def deposit_add_copies(request, pk):
     })
 
 
-#: id of the basket of automatic commands.
-AUTO_COMMAND_ID = 1
-
 @login_required
 def basket_auto_command(request):
     template = "search/to_command_index.jade"
 
-    basket = Basket.objects.get(id=AUTO_COMMAND_ID)
+    basket = Basket.auto_command_basket()
     # We get all cards, and group them by distributor.
     copies = basket.copies.all()
     total_copies = len(copies)
