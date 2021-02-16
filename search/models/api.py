@@ -526,6 +526,7 @@ def card_command(request, pk, **kw):
         log.error(u'Error adding to the auto_command: {}'.format(e))
         status = ALERT_WARNING
         to_ret['status'] = status
+        to_ret['alerts'] = [e,]
 
     to_ret['data']['nb'] = nb
     return JsonResponse(to_ret)

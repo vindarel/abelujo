@@ -35,6 +35,14 @@ ul.nav.nav-tabs.nav-justified
     li(role="presentation")
       a(href="/databasesearch/command/", target="_blank") {% trans "Historique" %}
 
+.row
+  .col-lg-3
+    .btn-group
+      form.form-inline(method="POST", action="{% url 'basket_auto_command_empty' %}")
+        button.btn.btn-default(onclick="return confirm('Are you sure?')", title="{% trans 'Empty the command list.' %}", type="submit") {% trans "Empty…" %}
+        a.btn.btn-default(href="http://abelujo.cc/docs/commands/", target="_blank", title='{% trans "Read the documentation" %}')
+         i.glyphicon.glyphicon-question-sign
+
 h4 {% trans "All cards" %}:
 table.table.table-condensed.table-striped
   tbody

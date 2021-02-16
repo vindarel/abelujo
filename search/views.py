@@ -1028,6 +1028,15 @@ def basket_auto_command(request):
         })
 
 @login_required
+def basket_auto_command_empty(request):
+    if request.method == "POST":
+        basket = Basket.auto_command_basket()
+        basket.basketcopies_set.all().delete()
+        # messages.add_message(request, messages.SUCCESS, _("List of commands emptied successfully."))
+        return HttpResponseRedirect(reverse('basket_auto_command'))
+    return HttpResponseRedirect(reverse('basket_auto_command'))
+
+@login_required
 def command_supplier(request, pk):
     template = "search/to_command.jade"
     return render(request, template)

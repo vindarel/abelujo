@@ -2877,6 +2877,19 @@ class Basket(models.Model):
         }
 
     @staticmethod
+    def auto_command_basket():
+        """
+        Return the basket used as the list of commands.
+        Check its existence.
+        """
+        try:
+            basket, created = Basket.objects.get_or_create(name="auto_command")
+            return basket
+        except Exception as e:
+            log.error(u"Error getting or creating the basket of commands: {}".format(e))
+            return None
+
+    @staticmethod
     def auto_command_nb():
         """Return the number of cards in the auto_command basket, if any.
 
@@ -2890,7 +2903,7 @@ class Basket(models.Model):
     @staticmethod
     def auto_command_quantity_of(card):
         """
-
+        Return the quantity to command of this card.
         """
         basket = Basket.objects.get(name="auto_command")
         basket_copy = basket.basketcopies_set.filter(card=card).first()
@@ -3203,7 +3216,7 @@ class Basket(models.Model):
             card = Card.objects.filter(id=card).first()
         try:
             assert isinstance(card, Card)
-            basket = Basket.objects.filter(name="auto_command").first()
+            basket = Basket.auto_command_basket()
             basket.add_copy(card, nb=nb)
         except ObjectDoesNotExist:
             # that's ok here, specially in tests.
