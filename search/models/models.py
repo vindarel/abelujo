@@ -534,7 +534,6 @@ class CardType(models.Model):
         if not query:
             query = ""
         if query == "":
-            log.info("CardType: we return everything")
             return CardType.objects.all()
 
         try:
@@ -1506,6 +1505,7 @@ class Card(TimeStampedModel):
 
         """
         msgs = Messages()
+        prefs = Preferences.prefs()
         try:
             card = Card.objects.get(id=id)
 
@@ -1518,7 +1518,7 @@ class Card(TimeStampedModel):
                         place_obj = Place.objects.get(id=place_id)
                     except ObjectDoesNotExist as e:
                         if not silence:
-                            log.info('In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
+                            log.warning('In Card.sell, can not get place of id {}: {}. Will sell on the default place.'.format(place_id, e))
                         # xxx: test here
                         place_obj = Preferences.get_default_place()
                     except Exception as e:
@@ -1544,7 +1544,7 @@ class Card(TimeStampedModel):
                     place_copy = card.placecopies_set.filter(place__can_sell=True).first()
                     place_obj = place_copy.place
                 else:
-                    place_obj = Preferences.get_default_place()
+                    place_obj = prefs.get_default_place()
                     place_copy, created = place_obj.placecopies_set.get_or_create(card=card)
                     if created:
                         place_copy.nb = 0
@@ -1564,9 +1564,11 @@ class Card(TimeStampedModel):
             # Didn't return an error message, returned OK !
             return (None, _("Internal error, sorry."))
 
-        remaining_quantity = card.quantity
-        if remaining_quantity <= card.threshold:
-            Basket.add_to_auto_command(card, nb=0)
+        # Add to the auto_command list? Depends on preferences.
+        if prefs.auto_command_after_sell:
+            remaining_quantity = card.quantity
+            if remaining_quantity <= card.threshold:
+                Basket.add_to_auto_command(card, nb=0)
 
         # Possibly add to the restocking list.
         if card.quantity_to_restock() > 0:
@@ -1977,8 +1979,7 @@ class Card(TimeStampedModel):
             try:
                 card_shelf = Shelf.objects.get(id=card.get('shelf_id'))
             except Exception as e:
-                log.info("Creating/editing card: couldn't get shelf of id {}. We won't register a shelf for this card.".
-                         format(card.get('shelf_id')))
+                log.warning("Creating/editing card: couldn't get shelf of id {}. We won't register a shelf for this card.".format(card.get('shelf_id')))
 
         # Get the publishers:
         card_publishers = card.pop('publishers', [])
@@ -2630,6 +2631,9 @@ class Preferences(models.Model):
                                               'discount': it,
                                               'id': i})
 
+    auto_command_after_sell = models.BooleanField(blank=True, default=False, verbose_name=__("Automatically command? After a sell, if the quantity of the book gets below its minimal quantity, add the book to the list of commands."))
+
+
     class Meta:
         verbose_name = __("Preferences")
 
@@ -2675,7 +2679,7 @@ class Preferences(models.Model):
         if not prefs:
             place = Place.objects.first()
             if place is None:
-                log.warn("We have no place in DB, but we should have one and keep one.")
+                log.warning("We have no place in DB, but we should have one and keep one.")
                 place = Place.objects.create(name="default place")
                 place.save()
             prefs = Preferences.objects.create(default_place=place)
@@ -2744,7 +2748,7 @@ class Preferences(models.Model):
             else:
                 return Place.objects.first()
         except Exception as e:
-            log.warn("Could not get the default place: {}".format(e))
+            log.warning("Could not get the default place: {}".format(e))
             return Place.objects.first()
 
     @staticmethod
@@ -3126,7 +3130,7 @@ class Basket(models.Model):
                 inter_table.delete()
                 msgs.add_success(_("The card was successfully removed from the basket"))
             else:
-                log.warn("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
+                log.warning("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
 
             if is_box and nb:
                 place = Preferences.get_default_place()
@@ -3368,7 +3372,7 @@ class ReturnBasket(Basket):
                 inter_table.delete()
                 msgs.add_success(_("The card was successfully removed from the basket"))
             else:
-                log.warn("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
+                log.warning("Card not found in the intermediate table when removing card {} from basket{} (this is now a warning only).".format(card_id, self.id))
 
         except ObjectDoesNotExist as e:
             log.error("Card not found when removing card {} from basket{}: {}".format(card_id, self.id, e))
@@ -4611,7 +4615,7 @@ class Sell(models.Model):
             try:
                 sells = sells[page_size * (page - 1):page_size * page]
             except IndexError:
-                log.info("Sells pagination: index error.")
+                log.warning("Sells pagination: index error.")
                 sells = []
 
         # select_related: pre-populate data to save later DB queries.
@@ -4967,7 +4971,6 @@ class Sell(models.Model):
                     card.deposit_obj = deposit_obj
 
                 if deposit_obj:
-                    log.info("we sell {} from deposit {}".format(id, deposit_obj))
                     status, alerts = deposit_obj.sell_card(card_id=id,
                                                            sell=sell,
                                                            nb=quantity)
@@ -5740,7 +5743,6 @@ class Inventory(InventoryBase):
         return inv.apply()
 
 def do_inventory_apply(pk):
-    log.info("do_inventory_apply for {}".format(pk))
     Inventory.apply_inventory(pk)
 
 

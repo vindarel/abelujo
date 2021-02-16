@@ -165,14 +165,12 @@ def preferences(request):
             discounts = viewforms.validate_and_get_discounts(data['sell_discounts'])
             data['sell_discounts'] = discounts
             prefs.others = json.dumps(data)
+            prefs.auto_command_after_sell = data['auto_command_after_sell']
             prefs.save()
             messages.add_message(
                 request, messages.SUCCESS, _("Preferences saved."))
             form = viewforms.PrefsForm()
-            return render(request, template, {
-                'form': form,
-                'bookshopform': bookshopform,
-            })
+            return HttpResponseRedirect(reverse('preferences'))
 
         return render(request, template, {
             'form': form,

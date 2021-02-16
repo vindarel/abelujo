@@ -98,6 +98,11 @@ class PrefsForm(forms.Form):
         ('euro', '€'),
         ('chf', 'CHF'),
     ]
+
+    #: Automatically add a title to the command list when it is sold and
+    #: its quantity lowers its treshold?
+    auto_command_after_sell = forms.BooleanField(required=False, label=__("Automatically command? After a sell, if the quantity of the book gets below its minimal quantity, add the book to the list of commands."))
+
     default_currency = forms.ChoiceField(choices=CURRENCY_CHOICES, required=False)
     #: Discounts we are allowed to apply for a sell.
     #: Char field, percentages separated by ;
@@ -114,6 +119,9 @@ class PrefsForm(forms.Form):
         # Not on form validation.
         if not args:
             prefs = Preferences.prefs()
+
+            self.fields['auto_command_after_sell'] = forms.BooleanField(initial=prefs.auto_command_after_sell, label=self.fields['auto_command_after_sell'].label)
+
             currency = 'euro'
             try:
                 currency = json.loads(prefs.others)['default_currency']

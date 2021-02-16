@@ -18,6 +18,8 @@ Changelog starting from v0.5 (2018/09/18)
 
 - on a card page, the cart button to add a card to the command list was fixed to add 1 copy at each click (instead of adding the book, but not updating the quantity to command).
   - in addition, the button also shows the quantity in the command list.
+- new **Preference setting**: choose wether or not to automatically add a card to the list of commands after a sell (if its quantity in stock gets lower its minimal treshold).
+  - **changed**: this features is now disabled by default.
 - **speed up** improvements for the history display (more than 10x).
 - **speed up** improvements to the CSV and TXT download of history logs (30%).
 - deposits: we don't mention anymore the type of deposits that are sent by us to the exterior world.
@@ -26,6 +28,7 @@ Changelog starting from v0.5 (2018/09/18)
 ### Upgrade instructions
 
 - Nothing special, but it is recommend to run the `update_all_with_dilicom` script.
+- see the preferences page and check "auto_command_after_sell" to get the old behaviour.
 - optional: clean up cards' types with `fix_types` (set their type correctly to "book" if they have a book ISBN).
 
 ## v0.13.3 (2020-09, 2020-11)
