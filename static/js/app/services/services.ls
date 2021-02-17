@@ -3,7 +3,7 @@
 angular.module 'abelujo.services', [] .value 'version', '0.1'
 
 utils = angular.module 'abelujo.services', []
-utils.factory 'utils', ['$http', '$log', ($http, $log) ->
+utils.factory 'utils', ['$http', '$window', '$log', ($http, $window, $log) ->
 
     {Obj, join, reject, sum, map, filter, find, lines, sort-by, reverse, take, unique-by, mean, id, each} = require 'prelude-ls'
 
@@ -150,4 +150,17 @@ utils.factory 'utils', ['$http', '$log', ($http, $log) ->
             reg = /^[0-9]{10,13}/g
             text.match reg
 
-]
+        card_command: (id) !->
+            url = "/api/card/#{id}/command"
+            $http.post url
+            .then (response) !->
+                $log.info response
+                if response.data.status == "success"
+                   Notiflix.Notify.Success "OK"
+                   elt = $window.document.getElementById('command'+id)
+                   elt.innerText = response.data.data.nb
+                else
+                    Notiflix.Notify.Warning "Warning"
+
+
+    ]

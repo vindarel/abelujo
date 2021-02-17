@@ -320,16 +320,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             $log.info "--- error ", response.status, response.statusText
 
     $scope.do_card_command = (id) !->
-        url = "/api/card/#{id}/command"
-        $http.post url
-        .then (response) !->
-            $log.info response
-            if response.data.status == "success"
-               Notiflix.Notify.Success "OK"
-               elt = $window.document.getElementById('command'+id)
-               elt.innerText = response.data.data.nb
-            else
-                Notiflix.Notify.Warning "Warning"
+        utils.card_command id
 
     ##############################
     # Keyboard shortcuts (hotkeys)

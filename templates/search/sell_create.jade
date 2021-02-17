@@ -191,7 +191,12 @@ div.ng-cloak(ng-controller="sellController")
                 )
 
         .col-md-2
-          div stock: {{ 'card.quantity' | ng }} => {{ 'card.quantity - card.quantity_sell' | ng }}
+          span stock: {{ 'card.quantity' | ng }} => {{ 'card.quantity - card.quantity_sell' | ng }}
+          span &nbsp;
+            a.btn.btn-default(title='{% trans "Remember to command this card. Add it to the list for later." %}', href="#", ng-click="do_card_command(card.id)")
+              i.glyphicon.glyphicon-shopping-cart
+              span &nbsp; x
+                span(id="command{{ 'card.id' | ng }}") {{ 'card.quantity_in_command' | ng }}
 
         .col-md-1
             i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")

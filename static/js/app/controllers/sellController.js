@@ -560,4 +560,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         event.returnValue = '';
     };
 
+    $scope.do_card_command = function(id) {
+        utils.card_command(id);
+    };
+
   }]);
