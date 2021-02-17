@@ -4404,7 +4404,7 @@ class Sell(models.Model):
                                verbose_name=__("payment"))
     #: Second payment method (optional).
     payment_2 = models.CharField(choices=PAYMENT_CHOICES,
-                               default=PAYMENT_CHOICES[0],
+                               default="0",
                                max_length=CHAR_LENGTH,
                                blank=True, null=True,
                                verbose_name=__("payment"))
