@@ -326,6 +326,8 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             $log.info response
             if response.data.status == "success"
                Notiflix.Notify.Success "OK"
+               elt = $window.document.getElementById('command'+id)
+               elt.innerText = response.data.data.nb
             else
                 Notiflix.Notify.Warning "Warning"
 

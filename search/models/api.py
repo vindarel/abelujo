@@ -250,6 +250,7 @@ def cards(request, **response_kwargs):
 
     # The quantity of a card is costly. It was a bottleneck. Avoid
     # this calculation if possible.
+    # update: it *was* costly, the field is now denormalized.
     with_quantity = request.GET.get("with_quantity", True)
     with_quantity = _is_truthy(with_quantity)
 
@@ -283,6 +284,22 @@ def cards(request, **response_kwargs):
     # XXX: :return the msgs.
     # msgs = Messages()
     # msgs = meta.get('msgs')
+
+    # Enrich result with quantity in the command list.
+    auto_command = Basket.auto_command_basket()
+    ids = [it['id'] for it in data]
+    basket_copies = auto_command.basketcopies_set.filter(card__id__in=ids).select_related()
+    for card in data:
+        card['quantity_in_command'] = 0
+    def find_id_in_data(pk):
+        for it in data:
+            if it['id'] == pk:
+                return it
+        return {}
+    for bc in basket_copies:
+        card_dict = find_id_in_data(bc.card.id)
+        if card_dict and bc.nb:
+            card_dict['quantity_in_command'] = bc.nb
 
     lang = request.GET.get("lang")
     # Search our stock on a keyword search, but search also the web on an isbn search,
