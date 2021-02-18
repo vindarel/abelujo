@@ -1054,6 +1054,7 @@ def basket_list(request):
             'baskets': baskets,
         })
 
+@login_required
 def boxes(request):
     template = "search/baskets.jade"
     if request.method == "GET":
