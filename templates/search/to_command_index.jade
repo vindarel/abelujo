@@ -43,33 +43,51 @@ ul.nav.nav-tabs.nav-justified
         a.btn.btn-default(href="http://abelujo.cc/docs/commands/", target="_blank", title='{% trans "Read the documentation" %}')
          i.glyphicon.glyphicon-question-sign
 
-h4 {% trans "All cards" %}:
-table.table.table-condensed.table-striped
-  tbody
-    tr
-      td
-        a(href="{% url 'command_supplier' 'all' %}") {% trans "All cards" %}
-      td {{ total_copies }}
+.row
+ .col-md-6
+   .panel.panel-default
+    .panel-heading {% trans "All cards" %}
+    .panel-body
+      table.table.table-condensed.table-striped
+        tbody
+          tr
+            td
+              a(href="{% url 'command_supplier' 'all' %}") {% trans "All cards" %}
+            td {{ total_copies }}
 
-h4 {% trans "Cards with no supplier" %}:
-table.table.table-condensed.table-striped
-  tbody
-    tr
-      td
-        a(href="{% url 'command_supplier' '0' %}") {{ no_dist.0 }}
-      td {{ no_dist.1 }}
+.row
+ .col-md-6
+  .panel.panel-default
+   .panel-heading {% trans "Cards with no supplier" %}
+   .panel-body
+     if no_dist
+       table.table.table-condensed.table-striped
+        tbody
+          tr
+            td
+              a(href="{% url 'command_supplier' '0' %}") {{ no_dist.0 }}
+            td {{ no_dist.1 }}
+     else
+        {% trans "no data" %}
 
-h4 {% trans "Grouped by supplier" %}:
-table.table.table-condensed.table-striped
-  thead
-    th {% trans "Supplier" %}
-    th {% trans "Quantity" %}
-  tbody
-    for it in dists
-      tr
-        td
-          a(href="{% url 'command_supplier' it.0.id %}") {{ it.0.name }}
-        td {{ it.1 }}
+.row
+ .col-md-12
+  .panel.panel-default
+    .panel-heading {% trans "Grouped by supplier" %}
+    .panel-body
+      if dists
+        table.table.table-condensed.table-striped
+          thead
+            th {% trans "Supplier" %}
+            th {% trans "Quantity" %}
+          tbody
+            for it in dists
+              tr
+                td
+                  a(href="{% url 'command_supplier' it.0.id %}") {{ it.0.name }}
+                td {{ it.1 }}
 
+      else
+        {% trans "no data" %}
 
 {% endblock %}
