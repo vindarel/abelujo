@@ -107,7 +107,7 @@ THRESHOLD_DEFAULT = 0
 
 MSG_INTERNAL_ERROR = _("An internal error occured, we have been notified.")
 
-BAD_IDS = [None, 0, '0', '0', '-1', '-1']
+BAD_IDS = [None, 0, '0', '0', '-1', '-1', 'all', u'all']
 
 PRESMAG = {
     "01": "Posé en linéaire",
@@ -6350,11 +6350,9 @@ class Command(TimeStampedModel):
             cmd.save()
 
         # Remove the given cards from the AutoCommand basket.
-        # tocmd = Basket.objects.get(name="auto_command")
         ids = [it[0] for it in ids_qties]
-        BasketCopies.objects.filter(basket__name="auto_command")\
-                            .filter(card_id__in=ids)\
-                            .delete()
+        tocmd = Basket.auto_command_basket()
+        tocmd.basketcopies_set.filter(card_id__in=ids).delete()
 
         return cmd, msgs
 
