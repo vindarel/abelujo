@@ -30,10 +30,10 @@
 {% load humanize %}
 
 //
-// No Angular nor Vue, uses abelujo-js.js
+// No Angular nor Vue, uses card.js
 //
 
-div#abelujo
+//div#abelujo
   hello(title="hello vue !")
 
 .row
@@ -165,9 +165,8 @@ div#abelujo
                 if object.shelf
                   {{ object.shelf }}
               td(id="shelf-select-td")
+                // on-change: event listener in card.js
                 select(id="shelf-select", name="shelves")
-                  //- for shelf in shelves
-                    option(value="{{ shelf.name }}" {% if shelf == object.shelf %} selected="selected" {% endif %})
 
           if object.theme
             tr

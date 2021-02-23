@@ -1083,6 +1083,7 @@ class Card(TimeStampedModel):
             "pubs_repr": pubs_repr,
             # "shelf": self.shelf.name if self.shelf else "",
             "shelf": shelf_name,
+            "shelf_id": self.shelf.pk if self.shelf else None,
             "title": self.title,
             "threshold": self.threshold,
             "theme_name": theme_name,
@@ -3384,6 +3385,82 @@ class ReturnBasket(Basket):
             msgs.add_error(_("Could not remove the card from the command basket. This is an internal error."))
 
         return status, msgs.msgs
+
+
+@python_2_unicode_compatible
+class Reception(Basket):
+
+    def __str__(self):
+        return "Reception {}".format(self.name)
+
+    @staticmethod
+    def ongoing():
+        """
+        Get or create the ongoing reception.
+        """
+        res = Reception.objects.filter(archived=False).first()
+        if not res:
+            res = Reception.create()
+        return res
+
+    @staticmethod
+    def copies(to_list=False):
+        """
+        Get the copies/quantities of the ongoing Reception.
+        """
+        reception = Reception.ongoing()
+        copies = reception.basketcopies_set.all()
+        if to_list:
+            return [it.to_dict() for it in copies]
+        return copies
+
+    def add_copy(self, card_id, shelf_id=None, nb=1):
+        """
+        Adds the given card to the reception list AND to the stock, from its id.
+
+        - nb: nb to add (1 by default)
+
+        Return: a tuple status, Messages object.
+        """
+        MSG_NO_SHELF = _("Veuillez choisir le rayon de cette notice.")
+        MSG_DIFFERENT_SHELF = _("Attention cette notice avait déjà un rayon.")
+        msgs = Messages()
+        try:
+            reception = Reception.ongoing()
+            basket_copy, created = self.basketcopies_set.get_or_create(basket=reception,
+                                                                       card_id=card_id)
+            if nb != 0:
+                basket_copy.nb += nb
+                basket_copy.save()
+
+            if not shelf_id and not basket_copy.card.shelf_id:
+                msgs.add_info(MSG_NO_SHELF)
+            elif shelf_id and not basket_copy.card.shelf_id:
+                shelf_obj = Shelf.objects.filter(pk=shelf_id).first()
+                if shelf_obj:
+                    basket_copy.card.shelf = shelf_obj
+                    basket_copy.card.save()
+                else:
+                    log.warning("reception.add_copy: the shelf id {} does not exist.".format(shelf_id))
+                    msgs.add_error("Something went wrong")
+            elif shelf_id and basket_copy.card.shelf_id and shelf_id != basket_copy.card.shelf_id:
+                # shelves are different, choose.
+                # msgs.add_info(MSG_DIFFERENT_SHELF)
+                pass
+
+        except Exception as e:
+            log.error("Error while adding a card to the reception list %s: %s" % (self.pk, e))
+            msgs.add_error("Error while adding a card to the reception list.")
+            return False, msgs
+
+        try:
+            place = Preferences.get_default_place()
+            place.add_copy(card_id)
+        except Exception as e:
+            log.error("Error while adding a card to the stock, from the reception %s: %s" % (self.pk, e))
+            return
+
+        return True, msgs
 
 
 @python_2_unicode_compatible

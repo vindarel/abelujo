@@ -88,6 +88,11 @@ apipatterns = patterns("",
     url(r'^api/publishers/?$', 'search.models.api.publishers', name="api_publishers"),
     url(r'^api/deposits/?$', 'search.models.api.deposits', name="api_deposits"),
 
+    # Reception
+    url(r'^api/reception/shelfs?$', 'search.models.api.reception_shelfs', name="api_reception_shelfs"),
+    url(r'^api/reception/add/?$', 'search.models.api.reception_add_card', name="api_reception_add_card"),
+    url(r'^api/reception/?$', 'search.models.api.reception_cards', name="api_reception_cards"),
+
     # Commands
     url(r'^api/commands/ongoing/?$', 'search.models.api.commands_ongoing', name="api_commands_ongoing"),
     url(r'^api/commands/ongoing', 'search.models.api.commands_ongoing', name="api_commands_ongoing"),

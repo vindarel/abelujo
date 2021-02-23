@@ -51,6 +51,7 @@ from models import Inventory
 from models import Place
 from models import Preferences
 from models import Publisher
+from models import Reception
 from models import Restocking
 from models import Sell
 from models import Shelf
@@ -1669,6 +1670,60 @@ def baskets_inventory_get_or_create(request, **response_kwargs):
                   "data": data,
                   "msgs": msgs}
         return JsonResponse(to_ret)
+
+def reception_cards(request, **response_kwargs):
+    """
+    Get the copies of the ongoing reception.
+    """
+    to_ret = {"status": ALERT_SUCCESS,
+              "data": [],
+              "msgs": []}
+    if request.method == 'GET':
+        to_ret['data'] = Reception.copies(to_list=True)
+        return JsonResponse(to_ret)
+    return JsonResponse(to_ret)
+
+def reception_shelfs(request, **response_kwargs):
+    """
+    Find how many books there are in each shelf for the current reception.
+    """
+    to_ret = {"status": ALERT_SUCCESS,
+              "data": [],
+              "msgs": []}
+    reception = Reception.ongoing()
+    basket_copies = BasketCopies.objects.filter(basket=reception)
+    shelfs = Shelf.objects.all()
+    shelf_length = {}
+    for shelf in shelfs:
+        shelf_length[shelf.pk] = basket_copies.filter(card__shelf__pk=shelf.pk).count()
+    to_ret['data'] = shelf_length
+    return JsonResponse(to_ret)
+
+def reception_add_card(request, **response_kwargs):
+    """
+    Register a card with the given shelf.
+    If it was already in stock with a shelf: raise an alert, the user will have to choose.
+    If no shelf is given and the card doesn't have one, raise an alert.
+    # XXX: Nice to have: suggest the most likely shelf given the CLIL theme.
+    """
+    to_ret = {"status": ALERT_SUCCESS,
+              "data": [],
+              "alerts": []}
+    reception = Reception.ongoing()
+    try:
+        params = json.loads(request.body)
+        card_id = params.get('card_id')
+        shelf_id = params.get('shelf_id')
+        print(shelf_id)
+        # import ipdb; ipdb.set_trace()
+        status, msgs = reception.add_copy(card_id, shelf_id=shelf_id)
+        to_ret['status'] = status
+        to_ret['alerts'] = msgs.to_alerts()
+    except Exception as e:
+        log.error("Could not receive card: {}".format(e))
+        to_ret['status'] = ALERT_ERROR
+
+    return JsonResponse(to_ret)
 
 def alerts(request, **response_kwargs):
     msgs = []

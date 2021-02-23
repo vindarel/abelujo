@@ -206,7 +206,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
            tmpcard.modified = now
            $scope.copies.unshift tmpcard
         $scope.copy_selected = undefined
-        # TODO: save
+        # TODO: save and handle errors.
         $scope.save_card_to_basket tmpcard.id, $scope.cur_basket.id
 
     $scope.save_card_to_basket = (card_id, basket_id) !->
@@ -219,6 +219,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             $log.info "added cards to basket"
             # $scope.alerts = response.data.msgs # the confirmation alert should be less intrusive
         , (response) !->
+            Notiflix.Notify.Warning "Something went wrong."
             ... # error
 
     $scope.save_quantity = (index) !->

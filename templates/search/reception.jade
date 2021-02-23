@@ -1,0 +1,220 @@
+// Copyright 2014 - 2020 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% load ngfilter %}
+
+div(ng-cloak, ng-controller="receptionController")
+ .row
+    uib-alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
+ .row
+  .col-md-3
+
+   ul.list-group
+     li.list-group-item.mouse-pointer(
+          ng-class="{active: cur_basket.id == 0}"
+          ng-click="showBasket(0)"
+     ) {% trans "All cards" %}
+
+     div(ng-repeat="it in shelves")
+        li.list-group-item.mouse-pointer(
+          style="padding: 1px"
+          ng-class="{active: cur_basket.pk == it.pk}"
+          ng-click="showBasket($index)") {{ " it.fields.name " | ng }}
+            span.badge(ng-show="shelves_length[it.pk]") {{ "shelves_length[it.pk]" | ng }}
+
+  .col-md-9
+   .row
+    .col-md-6
+
+     .btn-group
+      .dropdown
+
+         button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+           span.caret
+
+         ul.dropdown-menu
+           li: a(href="/databasesearch/basket/{{ 'cur_basket.id'|ng }}/", target="_blank") {% trans "Set the supplier" %}
+
+           li.divider(role="separator")
+
+           li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
+
+           li.divider(role="separator")
+           li: a(href="#", ng-click="empty_basket()", title='{% trans "Empty this list." %}') {% trans "Empty this list" %}
+           li: a(href="#", ng-click="archive_basket()", title='{% trans "Archive this list." %}') {% trans "Archive this list" %}
+           li: a(href="#", ng-click="delete_basket()", title='{% trans "Delete this list. This can not be undone" %}') {% trans "Delete this list" %}
+
+
+     .btn-group
+       button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
+         i.glyphicon.glyphicon-th-list
+
+       a.btn.btn-default(href="http://abelujo.cc/docs/lists/", target="_blank", title='{% trans "Read the documentation" %}')
+         i.glyphicon.glyphicon-question-sign
+
+    .col-md-2
+
+    .col-md-6
+       form
+          p.input-group
+            input.nullable.form-control#default-input(
+              type='text'
+              typeahead-loading="loadingCards"
+              ng-model='copy_selected'
+              uib-typeahead='copy.repr for copy in getCards($viewValue)'
+              typeahead-min-length="3"
+              typeahead-on-select="add_selected_card($item)"
+              title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
+              id="default-input"
+              autocomplete="off"
+              placeholder='{% trans "Search any isbn, search by keywords in your stock" %}'
+            )
+
+            span.input-group-btn
+              button.btn.btn-default(type='button')
+                i.glyphicon.glyphicon-search
+
+   ul#supplier(ng-show="cur_basket.dist_repr")
+     li {% trans "supplier" %}:  {{ 'cur_basket.dist_repr' | ng }}
+
+   div.middle(ng-hide="copies.length", style="height: 30%; width: 30%")
+     em {% trans "This list has no books inside… yet." %}
+
+   div.middle(ng-hide="copies.length", style="height: 80%; width: 30%")
+     img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
+
+   .col-md-7(ng-show="copies.length > page_size")
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="copies.length")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="copies.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
+   h4 {{ 'cur_basket.fields.name' | ng }}
+
+   table.table.table-condensed.table-striped(ng-cloak, ng-show="copies.length")
+     thead
+       th.mouse-pointer(ng-show="show_images")
+       th.mouse-pointer(ng-click="sort_by('title')") {% trans "Title" %}
+         span.caret
+       th.mouse-pointer(ng-click="sort_by('shelf')") {% trans "Shelf" %}
+         span.caret
+       th.mouse-pointer(ng-click="sort_by('pubs_repr')", onclick="sort_by('title')", title="click to sort") {% trans "Publisher" %}
+         span.caret(ng-click="sort_by('pubs_repr')")
+       th.mouse-pointer(ng-click="sort_by('distributor')", title="click to sort") {% trans "Supplier" %}
+         span.caret
+       th.mouse-pointer(ng-click="sort_by('created')") {% trans "Created" %}
+         span.caret
+       th.mouse-pointer(ng-click="sort_by('quantity')", title="click to sort") {% trans "In stock" %}
+         span.caret
+       th.mouse-pointer.text-right(ng-click="sort_by('price')", title="click to sort") {% trans "Price" %}
+         span.caret
+       th.mouse-pointer(ng-click="sort_by('basket_qty')", title="click to sort")
+         span.caret
+
+     tbody
+       tr
+         td(ng-show="show_images")
+            .col-md-6
+
+         td {% trans "Total" %}
+         td
+         td
+         td
+         td
+         td
+         td {{ 'get_total_price()'|ng}} {{ 'meta.default_currency' | ng }}
+         td {{ 'get_total_copies()'|ng}}
+         td
+
+       tr.my-animated-item(
+          ng-repeat="it in copies"
+          id="card{{ 'it.id' | ng }}"
+          ng-mouseenter="show_buttons[$index] = true"
+          ng-mouseleave="show_buttons[$index] = false")
+
+         td(ng-show="show_images")
+            .col-md-6(ng-show="show_images")
+              img.myImg(ng-show="it.cover", ng-src="{{ 'it.cover' | ng }}")
+         td
+           .col-md-12
+            a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
+            div(ng-show="show_images") {{'it.authors_repr'|ng}}
+         td
+           div.badge.badge-secondary.mouse-pointer(style="padding: 3px", ng-click="showShelfById(it.shelf_id)") {{ 'it.shelf' | ng }}
+           div(ng-repeat="alert in it.alerts")
+             div(style="background-color: red") {{ 'alert.message' | ng }}
+             div(id="shelf-select-td")
+               select(id="shelf-select", name="shelves", ng-model="new_shelf", ng-options="shelf.fields.name for shelf in shelves track by shelf.pk", ng-change="update_card_shelf(it, new_shelf)")
+
+         td {{ 'it.pubs_repr' | ng }}
+         td {{ 'it.dist_repr' | ng }}
+
+         td {{ 'it.created' | ng }}
+         td.text-right {{ 'it.quantity' | ng}}
+         td.text-right {{ 'it.price_fmt' | ng }}
+         td
+          input.my-number-input(type="number", min=0, max=99,
+            ng-model="it.basket_qty"
+            ng-change="save_quantity($index)")
+
+   .col-md-7(ng-show="copies.length > page_size")
+      .btn-group
+        span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="copies.length")
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+      .btn-group
+        select.form-control(ng-show="copies.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
+
+
+{% endblock content %}
