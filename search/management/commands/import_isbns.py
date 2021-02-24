@@ -127,9 +127,6 @@ class Command(BaseCommand):
             exit(1)
 
         csvfile = options.get('input')
-        if not csvfile.endswith('csv'):
-            self.stdout.write("Please give a .csv file as argument.")
-            exit(1)
 
         with open(csvfile, "r") as f:
             lines = f.readlines()
@@ -159,11 +156,16 @@ class Command(BaseCommand):
                 line = line.strip()
                 if not line:
                     continue
-                isbn, quantity = line.split(separator)
+                if separator in line:
+                    isbn, quantity = line.split(separator)
+                else:
+                    isbn = line.strip()
+                    quantity = 1
                 isbn = isbn.strip()
                 if not is_isbn(isbn):
                     self.stdout.write("It seems that {} is not a valid isbn or one that we know around here. Please check and try again.".format(isbn))
-                    exit(1)
+                    self.not_found.append(isbn)
+                    continue
 
                 card = Card.objects.filter(isbn=isbn).first()
                 if not card:
