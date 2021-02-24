@@ -2634,7 +2634,6 @@ class Preferences(models.Model):
 
     auto_command_after_sell = models.BooleanField(blank=True, default=False, verbose_name=__("Automatically command? After a sell, if the quantity of the book gets below its minimal quantity, add the book to the list of commands."))
 
-
     class Meta:
         verbose_name = __("Preferences")
 
@@ -3423,7 +3422,7 @@ class Reception(Basket):
         Return: a tuple status, Messages object.
         """
         MSG_NO_SHELF = _("Veuillez choisir le rayon de cette notice.")
-        MSG_DIFFERENT_SHELF = _("Attention cette notice avait déjà un rayon.")
+        # MSG_DIFFERENT_SHELF = _("Attention cette notice avait déjà un rayon.")
         msgs = Messages()
         try:
             reception = Reception.ongoing()

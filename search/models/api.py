@@ -292,11 +292,13 @@ def cards(request, **response_kwargs):
     basket_copies = auto_command.basketcopies_set.filter(card__id__in=ids).select_related()
     for card in data:
         card['quantity_in_command'] = 0
+
     def find_id_in_data(pk):
         for it in data:
             if it['id'] == pk:
                 return it
         return {}
+
     for bc in basket_copies:
         card_dict = find_id_in_data(bc.card.id)
         if card_dict and bc.nb:
@@ -544,7 +546,7 @@ def card_command(request, pk, **kw):
         log.error(u'Error adding to the auto_command: {}'.format(e))
         status = ALERT_WARNING
         to_ret['status'] = status
-        to_ret['alerts'] = [e,]
+        to_ret['alerts'] = [e]
 
     to_ret['data']['nb'] = nb
     return JsonResponse(to_ret)
