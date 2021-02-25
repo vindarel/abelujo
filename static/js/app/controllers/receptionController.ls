@@ -85,7 +85,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
               if not copy.shelf
                  copy.alerts = []
                  copy.alerts.push do
-                   message: "no shelf"
+                   message: "Pas de rayon"
 
     # Get the shelves' "length" (how many cards in each).
     $http.get "/api/reception/shelfs"

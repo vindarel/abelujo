@@ -3473,16 +3473,17 @@ class Reception(Basket):
         try:
             # On client side, a click on +1 or -1 (default number input widget)
             # doesn't make a difference. Do we add or substract from the stock?
+            place = Preferences.get_default_place()
             if set_quantity:
                 nb_difference = basket_copy.nb - origin_qty
-                place = Preferences.get_default_place()
                 place.add_copy(card_id, nb=nb_difference)
             else:
                 place.add_copy(card_id)
 
         except Exception as e:
             log.error("Error while adding a card to the stock, from the reception %s: %s" % (self.pk, e))
-            return
+            msgs.add_error(_("Something went wrong."))
+            return False, msgs
 
         return True, msgs
 
