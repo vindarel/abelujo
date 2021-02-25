@@ -130,6 +130,8 @@ div(ng-cloak, ng-controller="receptionController")
 
    h4 {{ 'cur_basket.fields.name' | ng }}
 
+   div {% trans "Total cards" %}: {{ 'total_basket_quantity' | ng }}
+
    table.table.table-condensed.table-striped(ng-cloak, ng-show="copies.length")
      thead
        th.mouse-pointer(ng-show="show_images")

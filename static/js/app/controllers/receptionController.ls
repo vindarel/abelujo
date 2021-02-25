@@ -171,6 +171,9 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
                 $log.info "PAS DE CARD !"
             Notiflix.Notify.Success "Card received!"
 
+            # update total count
+            $scope.get_basket_quantity!
+
         , (response) !->
             Notiflix.Notify.Warning "Something went wrong."
             elt = $window.document.getElementById "card#{tmpcard.id}"
@@ -253,6 +256,11 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
         card.modified = now  # there is no success check
 
+    $scope.get_basket_quantity = !->
+        $scope.total_basket_quantity = $scope.all_copies
+        |> map ( -> it.basket_qty )
+        |> sum
+        $log.info "-- quantity: ", $scope.total_basket_quantity
 
     # Validate and archive.
     $scope.validate_reception = !->
