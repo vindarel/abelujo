@@ -91,6 +91,7 @@ apipatterns = patterns("",
     # Reception
     url(r'^api/reception/shelfs?$', 'search.models.api.reception_shelfs', name="api_reception_shelfs"),
     url(r'^api/reception/add/?$', 'search.models.api.reception_add_card', name="api_reception_add_card"),
+    url(r'^api/reception/validate/?$', 'search.models.api.reception_validate', name="api_reception_validate"),
     url(r'^api/reception/?$', 'search.models.api.reception_cards', name="api_reception_cards"),
 
     # Commands

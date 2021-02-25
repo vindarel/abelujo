@@ -3399,8 +3399,18 @@ class Reception(Basket):
         """
         res = Reception.objects.filter(archived=False).first()
         if not res:
-            res = Reception.create()
+            res = Reception.objects.create()
         return res
+
+    @staticmethod
+    def validate():
+        msgs = Messages()
+        reception = Reception.ongoing()
+        try:
+            reception.archive()
+        except Exception as e:
+            raise e
+        return True, msgs
 
     @staticmethod
     def copies(to_list=False):
@@ -3413,23 +3423,31 @@ class Reception(Basket):
             return [it.to_dict() for it in copies]
         return copies
 
-    def add_copy(self, card_id, shelf_id=None, nb=1):
+    def add_copy(self, card_id, shelf_id=None, nb=1, set_quantity=False):
         """
         Adds the given card to the reception list AND to the stock, from its id.
 
         - nb: nb to add (1 by default)
+        - if set_quantity is True, set it instead of adding.
 
         Return: a tuple status, Messages object.
         """
         MSG_NO_SHELF = _("Veuillez choisir le rayon de cette notice.")
         # MSG_DIFFERENT_SHELF = _("Attention cette notice avait déjà un rayon.")
         msgs = Messages()
+        origin_qty = None  # decide if we must add or substract from the stock.
         try:
             reception = Reception.ongoing()
             basket_copy, created = self.basketcopies_set.get_or_create(basket=reception,
                                                                        card_id=card_id)
-            if nb != 0:
+            if not set_quantity and nb != 0:
+                # add
                 basket_copy.nb += nb
+                basket_copy.save()
+            elif set_quantity and nb:
+                # set
+                origin_qty = basket_copy.nb
+                basket_copy.nb = nb
                 basket_copy.save()
 
             if not shelf_id and not basket_copy.card.shelf_id:
@@ -3453,8 +3471,15 @@ class Reception(Basket):
             return False, msgs
 
         try:
-            place = Preferences.get_default_place()
-            place.add_copy(card_id)
+            # On client side, a click on +1 or -1 (default number input widget)
+            # doesn't make a difference. Do we add or substract from the stock?
+            if set_quantity:
+                nb_difference = basket_copy.nb - origin_qty
+                place = Preferences.get_default_place()
+                place.add_copy(card_id, nb=nb_difference)
+            else:
+                place.add_copy(card_id)
+
         except Exception as e:
             log.error("Error while adding a card to the stock, from the reception %s: %s" % (self.pk, e))
             return

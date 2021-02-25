@@ -1716,15 +1716,29 @@ def reception_add_card(request, **response_kwargs):
         params = json.loads(request.body)
         card_id = params.get('card_id')
         shelf_id = params.get('shelf_id')
-        print(shelf_id)
-        # import ipdb; ipdb.set_trace()
-        status, msgs = reception.add_copy(card_id, shelf_id=shelf_id)
+        quantity = params.get('quantity')
+        # if quantity is given (not None), we *set* it. Otherwise, add 1.
+        if quantity is None:
+            status, msgs = reception.add_copy(card_id, shelf_id=shelf_id)
+        else:
+            status, msgs = reception.add_copy(card_id, shelf_id=shelf_id, nb=quantity, set_quantity=True)
         to_ret['status'] = status
         to_ret['alerts'] = msgs.to_alerts()
     except Exception as e:
         log.error("Could not receive card: {}".format(e))
         to_ret['status'] = ALERT_ERROR
 
+    return JsonResponse(to_ret)
+
+def reception_validate(request, **response_kwargs):
+    """
+    Validate and archive.
+    """
+    to_ret = {"status": ALERT_SUCCESS,
+              "data": [],
+              "alerts": []}
+    res, msgs = Reception.validate()
+    to_ret['alerts'] = msgs.to_alerts()
     return JsonResponse(to_ret)
 
 def alerts(request, **response_kwargs):

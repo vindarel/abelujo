@@ -144,18 +144,20 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
         # If we add a book from a shelf menu but the book already has a different shelf,
         # show a message.
-        if $scope.cur_basket.fields and existing.shelf_id and $scope.cur_basket.pk != existing.shelf_id
+        if $scope.cur_basket.id != 0 and existing.shelf_id and $scope.cur_basket.pk != existing.shelf_id
             title = Str.take 20 existing.title
             Notiflix.Notify.Info("Attention vous êtes dans le menu '#{$scope.cur_basket.fields.name}' et le livre '#{title}' a déjà un rayon ('#{existing.shelf}').")
 
         # Now, we want to register the card in the reception list.
         $scope.save_card_to_reception tmpcard.id
 
-    # Save the card with its shelf.
-    $scope.save_card_to_reception = (card_id) !->
+    # Save the card with its shelf, aka add one exemplary.
+    $scope.save_card_to_reception = (card_id, quantity = null) !->
         params = do
             card_id: card_id
             shelf_id: $scope.cur_basket.pk
+        if quantity
+            params['quantity'] = quantity
         $http.post "/api/reception/add/", params
         .then (response) !->
             $log.info "added cards to reception"
@@ -191,6 +193,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
             $scope.cur_basket_index = 0
             $scope.cur_basket = do
               id: 0
+              fields: {name: ""}
             return
 
         # Filter by shelf.
@@ -243,11 +246,36 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
     $scope.save_quantity = (index) !->
         """Save the item quantity after click."""
-        #TODO:
+        #TEST:
         card = $scope.copies[index]
+        $log.info "save quantity: ", card.basket_qty
+        $scope.save_card_to_reception card.id, quantity = card.basket_qty
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
-        utils.save_quantity card, $scope.cur_basket.id, is_box = $scope.boxes_page
         card.modified = now  # there is no success check
+
+
+    # Validate and archive.
+    $scope.validate_reception = !->
+        """
+        Validate the reception, start anew.
+        """
+        if confirm gettext "Do you want to validate this reception ?"
+            params = do
+                foo: 1
+            $http.post "/api/reception/validate/", params
+            .then (response) !->
+                $log.info response.data
+                if response.data.status == 'success'
+                    $log.info "success !"
+                    $window.location.href = "/#{$scope.language}/reception/"
+                    $scope.all_copies = []
+
+                else
+                    Notiflix.Notify.Warning "Something went wrong."
+
+            , (response) !->
+                Notiflix.Notify.Warning "Something went wrong."
+
 
     ##############################
     # Keyboard shortcuts (hotkeys)

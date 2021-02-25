@@ -61,16 +61,15 @@ div(ng-cloak, ng-controller="receptionController")
            span.caret
 
          ul.dropdown-menu
-           li: a(href="/databasesearch/basket/{{ 'cur_basket.id'|ng }}/", target="_blank") {% trans "Set the supplier" %}
+           //li: a(href="/databasesearch/basket/{{ 'cur_basket.id'|ng }}/", target="_blank") {% trans "Set the supplier" %}
 
-           li.divider(role="separator")
+           //li.divider(role="separator")
 
-           li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
+           //li: a(href="#", ng-click="receive_command()", title='{% trans "Receive a command and check you received all the books" %}') {% trans "Receive a command" %}…
 
-           li.divider(role="separator")
-           li: a(href="#", ng-click="empty_basket()", title='{% trans "Empty this list." %}') {% trans "Empty this list" %}
-           li: a(href="#", ng-click="archive_basket()", title='{% trans "Archive this list." %}') {% trans "Archive this list" %}
-           li: a(href="#", ng-click="delete_basket()", title='{% trans "Delete this list. This can not be undone" %}') {% trans "Delete this list" %}
+           //li.divider(role="separator")
+           li: a(href="#", ng-click="validate_reception()", title='{% trans "Empty this list." %}') {% trans "Validate" %}
+           //li: a(href="#", ng-click="archive_basket()", title='{% trans "Archive this list." %}') {% trans "Archive this list" %}
 
 
      .btn-group
