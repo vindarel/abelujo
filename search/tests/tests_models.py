@@ -49,6 +49,7 @@ from search.models import Place
 from search.models import PlaceCopies
 from search.models import Preferences
 from search.models import Publisher
+from search.models import Reception
 from search.models import Restocking
 from search.models import Sell
 from search.models import Shelf
@@ -1688,6 +1689,40 @@ class TestCommandsReceive(TestCase):
         self.assertEqual(self.deposit.quantity_of(self.card), 0)
         self.inv.apply(deposit_obj=self.deposit)
         self.assertEqual(self.deposit.quantity_of(self.card), 1)
+
+
+class TestReception(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory()
+        self.shelf = ShelfFactory()
+        # A default place in Preferences
+        self.preferences = PreferencesFactory()
+        self.preferences.default_place = PlaceFactory()
+        self.preferences.save()
+
+    def tearDown(self):
+        pass
+
+    def test_initial(self):
+        self.assertTrue(Reception.ongoing())
+        self.assertTrue(Reception.validate())
+        self.assertTrue(Reception.ongoing())
+        self.assertEqual(0, len(Reception.copies()))
+
+        reception = Reception.ongoing()
+        # Add
+        status, msgs = reception.add_copy(1, shelf_id=self.shelf.id, nb=1)
+        self.assertTrue(status)
+        self.assertEqual(1, len(Reception.copies()))
+        self.assertEqual(1, self.preferences.default_place.quantity_of(self.card))
+        self.assertEqual(1, len(Reception.copies(to_list=True)))
+        # Set.
+        status, msgs = reception.add_copy(1, shelf_id=self.shelf.id, nb=3, set_quantity=True)
+        self.assertTrue(status)
+        self.assertEqual(1, len(Reception.copies()))
+        self.assertEqual(3, self.preferences.default_place.quantity_of(self.card))
+        self.assertEqual(1, len(Reception.copies(to_list=True)))
 
 
 class TestStats(TestCase):

@@ -3481,7 +3481,7 @@ class Reception(Basket):
                 place.add_copy(card_id)
 
         except Exception as e:
-            log.error("Error while adding a card to the stock, from the reception %s: %s" % (self.pk, e))
+            log.error("Error while adding a card to the stock place, from the reception %s: %s" % (self.pk, e))
             msgs.add_error(_("Something went wrong."))
             return False, msgs
 
