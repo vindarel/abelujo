@@ -800,7 +800,13 @@ def collection(request):
 
 @login_required
 def sell(request):
-    return render(request, "search/sell_create.jade")
+    show_selling_places = False
+    if Place.objects.count() > 1:
+        show_selling_places = True
+    return render(request, "search/sell_create.jade",
+                  {
+                      "show_selling_places": show_selling_places
+                  })
 
 @login_required
 def sell_details(request, pk):
