@@ -179,7 +179,7 @@ def get_best_sells(soldcards):
                     best_sells[card_type][soldcard.card] += soldcard.quantity
 
     except Exception as e:
-        log.warning(e)
+        log.warning("get_best_sells: {}".format(e))
     finally:
         # sort best sells.
         limit = 10

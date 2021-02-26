@@ -35,6 +35,7 @@ from factory.django import DjangoModelFactory
 from search.models import ALERT_ERROR
 from search.models import ALERT_SUCCESS
 from search.models import ALERT_WARNING
+from search.models import get_best_sells
 from search.models import Author
 from search.models import Basket
 from search.models import ReturnBasket
@@ -1323,6 +1324,13 @@ class TestSells(TestCase):
         self.assertEqual(1, history['distributors_data'][0]['nb_cards_sold'])
         self.assertEqual(1, history['publishers_data'][0]['nb_cards_sold'])
         # The thirdcard does not appear here.
+
+    def test_best_sells(self):
+        Sell.sell_card(self.autobio)
+        res = get_best_sells(SoldCards.objects.all())
+        self.assertTrue(res)
+        self.assertEqual(1, len(res['book']))
+
 
 class TestSellSearch(TestCase):
 
