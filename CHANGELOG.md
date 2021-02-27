@@ -20,7 +20,8 @@ Changelog starting from v0.5 (2018/09/18)
   - in addition, the button also shows the quantity in the command list.
 - new **Preference setting**: choose wether or not to automatically add a card to the list of commands after a sell (if its quantity in stock gets lower its minimal treshold).
   - **changed**: this features is now disabled by default.
-- when we have more than one places in the database, allow to choose where we sell books from in the sell page (this was removed seven months ago, it is back but hidden by default).
+- when we have more than one places in the database, allow to choose where we sell books from in the **sell page** (this was removed seven months ago, it is back but hidden by default).
+- during a sell, we warn the user if a price of a book that is being sold was updated (it can be updated asynchronously, just after it was added to the sell).
 - **speed up** improvements for the history display (more than 10x).
 - **speed up** improvements to the CSV and TXT download of history logs (30%).
 - deposits: we don't mention anymore the type of deposits that are sent by us to the exterior world.

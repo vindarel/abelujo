@@ -18,7 +18,6 @@
 
 from __future__ import unicode_literals
 
-import dateparser
 import httplib
 import json
 import locale
@@ -26,6 +25,7 @@ import logging
 import os
 import traceback
 
+import dateparser
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage
@@ -70,6 +70,8 @@ from search.models.utils import page_start_index
 from search.models.utils import price_fmt
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
+from search.views_utils import dilicom_enabled
+from search.views_utils import update_from_dilicom
 
 from .utils import _is_truthy
 from .utils import ids_qties_to_pairs
@@ -420,6 +422,9 @@ def card_update(request, **response_kwargs):
     """
     Update a card.
 
+    POST: update with given data.
+    GET: check for update on datasources (price, at sell).
+
     In request.body, in JSON:
     - card_id
     - shelf_id
@@ -452,6 +457,40 @@ def card_update(request, **response_kwargs):
                            "message": _("Woops, we can not update this card. This is a bug.")})
 
         return JsonResponse(msgs)
+
+    elif request.method == 'GET':
+        # Check for a price update.
+        price_alert = {}
+        card_id = request.GET.get('card_id', 0)
+        card = Card.objects.filter(id=card_id).first()
+        try:
+            old_price = card.price
+            price_was_checked = False
+            if dilicom_enabled():
+                card, messages = update_from_dilicom(card)
+                price_was_checked = True
+            updated_price = card.price
+            price_changed = False
+            if old_price != updated_price:
+                price_changed = True
+            price_alert = {'status': ALERT_SUCCESS,
+                           'price_was_checked': price_was_checked,
+                           'price_changed': price_changed,
+                           'old_price': old_price,
+                           'updated_price': updated_price,
+                           'card_id': card_id,
+                           }
+            msgs['price_alert'] = price_alert
+            return JsonResponse(msgs)
+
+        except Exception as e:  # for ConnectionError
+            log.error(e)
+            raise e
+            msgs = {'status': ALERT_ERROR,
+                    'message': 'Something wrong happened',
+                    }
+
+    return JsonResponse(msgs)
 
 def card_add(request, **response_kwargs):
     """Add the given card to places (=buy it), deposits and baskets.

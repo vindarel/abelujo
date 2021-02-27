@@ -198,9 +198,35 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           $scope.updateTotalPrice();
           $scope.alerts = [];
 
+          $scope.update_from_datasource($scope.tmpcard);
+
           // Prevent from quitting the page when sells are entered but not confirmed.
           $window.addEventListener('beforeunload', unloadlistener);
       };
+
+    $scope.update_from_datasource = function(card) {
+        // Check if the public price changed.
+        return $http.get("/api/cards/update", {
+            params: {
+                "lang": $scope.language,
+                "language": $scope.language,
+                "card_id": card.id,
+            }})
+            .then(function(response){
+                let price_alert = response.data.price_alert;
+                var existing = _.find($scope.cards_selected, function(it) {
+                    return it.id === card.id;
+                });
+                existing.price_alert = price_alert;
+                if (price_alert.price_was_checked) {
+                    if (price_alert.price_changed) {
+                        existing.price = price_alert.updated_price;
+                        existing.price_sold = price_alert.updated_price;
+                        Notiflix.Notify.Success('Prix mis à jour pour ' + existing.title);
+                    }
+                }
+            });
+    };
 
       $scope.remove_from_selection = function(index_to_rm){
           $scope.selected_ids.splice(index_to_rm, 1);
