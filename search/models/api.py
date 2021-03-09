@@ -1296,9 +1296,10 @@ def baskets(request, **kwargs):
             data = []
             try:
                 if not params.get('boxes'):
+                    # on demo we get a basket for the Reception O_o
                     data = Basket.objects.exclude(archived=True).exclude(is_box=True)\
                         .exclude(name="auto_command")\
-                        .exclude(name="")\  # on demo we get a basket for the Reception O_o
+                        .exclude(name="")\
                         .all()
                 else:
                     data = Basket.boxes().all()
