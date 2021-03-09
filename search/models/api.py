@@ -1296,7 +1296,9 @@ def baskets(request, **kwargs):
             data = []
             try:
                 if not params.get('boxes'):
-                    data = Basket.objects.exclude(archived=True).exclude(is_box=True).all()
+                    data = Basket.objects.exclude(archived=True).exclude(is_box=True)\
+                        .exclude(name="auto_command")\
+                        .all()
                 else:
                     data = Basket.boxes().all()
             except Exception as e:
