@@ -20,10 +20,22 @@
 Avoid circular imports.
 """
 from django.db import models
+import logging
 from django.utils.translation import ugettext as _
 
 from abelujo import settings
 
+def get_logger():
+    # normally imported from utils, but circular import
+    """Get the appropriate logger for PROD or DEBUG mode. On local
+    development, don't use the sentry_logger (throws errors).
+    """
+    if settings.DEBUG:
+        return logging.getLogger('debug_logger')
+    else:
+        return logging.getLogger('sentry_logger')
+
+log = get_logger()
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -55,6 +67,17 @@ try:
         PAYMENT_CHOICES = DEFAULT_PAYMENT_CHOICES
 except Exception:
     PAYMENT_CHOICES = DEFAULT_PAYMENT_CHOICES
+
+def check_payment_choices():
+    """Check all ids are unique."""
+    seen = set()
+    all_unique = not any(it[0] in seen or seen.add(it[0]) for it in PAYMENT_CHOICES)
+    if not all_unique:
+        log.warning("**** Some payment choices have the same id! ****")
+    return all_unique
+
+check_payment_choices()
+
 
 PAYMENT_ABBR = [
      # Translators: abbreviation of the "cash" payment method.
