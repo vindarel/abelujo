@@ -4809,7 +4809,7 @@ class Sell(models.Model):
         nb_sells = soldcards.values('sell_id').distinct().count()
         now = timezone.now()
         last_day = 31
-        if now.month == month:
+        if now.month == month and now.year == year:
             last_day = now.day
         else:
             _, last_day = calendar.monthrange(year, month)
