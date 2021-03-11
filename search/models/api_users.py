@@ -214,6 +214,7 @@ def bill(request, *args, **response_kwargs):
             total_discounted += prices_sold[i] * quantities[i]
 
     default_currency = Preferences.get_default_currency()
+    vat_book = Preferences.get_vat_book()
     total_fmt = price_fmt(total, default_currency)
     if client and client.discount:
         total_with_client_discount = total - total * client.discount / 100
@@ -224,9 +225,11 @@ def bill(request, *args, **response_kwargs):
     total_discounted_fmt = price_fmt(total_discounted, default_currency)
 
     template = get_template(template)
-    card = Card.objects.first()
-    copies_set = card.placecopies_set.all()
-    cards_qties = [(it.card, it.nb) for it in copies_set]
+    total_vat = 0
+    for card_qty in cards_data:
+        card = card_qty[0]
+        total_vat += card.get_price_vat()
+    total_vat_fmt = price_fmt(total_vat, default_currency)
 
     # Document title.
     if bill_or_estimate in [1, "1"]:
@@ -241,9 +244,11 @@ def bill(request, *args, **response_kwargs):
 
     # Totals
 
-    sourceHtml = template.render({'cards_qties': cards_qties,
-                                  'name': name,
+    sourceHtml = template.render({'name': name,
                                   'document_title': document_title,
+                                  'vat_book': vat_book,
+                                  'total_vat': total_vat,
+                                  'total_vat_fmt': total_vat_fmt,
                                   'total_label': _("Total before discount"),
                                   'total_fmt': total_fmt,
                                   'total_discounted_fmt': total_discounted_fmt,

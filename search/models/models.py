@@ -531,6 +531,10 @@ class CardType(models.Model):
         return "{}".format(self.name)
 
     @staticmethod
+    def get_book_type():
+        return CardType.objects.filter(name='book').first()  # XXX: the name can change
+
+    @staticmethod
     def search(query):
         if not query:
             query = ""
@@ -734,11 +738,32 @@ class Card(TimeStampedModel):
         """
         """
         # helper function(s) to help client side. More robust here.
-        tax = Preferences.get_vat_book()
+        tax = self.get_vat()
         try:
             return roundfloat(self.price_discounted - self.price_discounted * tax / 100)
         except Exception:
             return self.price_discounted
+
+    def get_vat(self):
+        """
+        If this card is a book, get the current VAT of books.
+        Otherwise return the VAT of other products.
+
+        Return: float.
+        """
+        type_book = CardType.get_book_type()
+        if self.card_type == type_book:
+            tax = Preferences.get_vat_book()
+        else:
+            tax = Preferences.get_vat_other_product()
+        return tax
+
+    def get_price_vat(self):
+        """
+        Return the value of the VAT for this card's price.
+        """
+        tax = self.get_vat()
+        return roundfloat(self.price * tax / 100)
 
     @property
     def price_excl_vat(self):
@@ -756,7 +781,7 @@ class Card(TimeStampedModel):
             # (not saved in DB)
             tax = self.vat1
         else:
-            tax = Preferences.get_vat_book()
+            tax = self.get_vat()
         if tax and self.price is not None:
             return roundfloat(self.price - self.price * tax / 100)
 
@@ -2797,8 +2822,10 @@ class Preferences(models.Model):
 
     @staticmethod
     def price_excl_tax(price):
-        """Given a price (float), return it minus the current tax.
         """
+        Given a price (float), return it minus the current tax.
+        """
+        # XXX: this gets the vat of books. What if other type of product?
         tax = Preferences.get_vat_book()
         if tax:
             return roundfloat(price - price * tax / 100)
