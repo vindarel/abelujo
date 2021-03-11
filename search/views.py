@@ -1390,21 +1390,23 @@ def history_sells_month_export(request, date, **response_kwargs):
     filename = _("Sells_{}-{}".format(day.year, day.month))
 
     headers = (_("Title"), "ISBN", _("Authors"), _("Publishers"), _("Supplier"),
-              _("Shelf"),
-              _("Price"),
-              _("with discount"),
-              _("Quantity"))
+               _("Shelf"),
+               _("Price"),
+               _("with discount"),
+               _("Payment"),
+               _("Quantity"))
     rows = [
-        (sell.card.title,
-         sell.card.isbn,
-         sell.card.authors_repr,
-         sell.card.pubs_repr,
-         sell.card.distributor_repr,
-         sell.card.shelf.name if sell.card.shelf else "",
-         sell.card.price,
-         sell.card.price_discounted,
-         sell.quantity)
-        for sell in data['data']]
+        (soldcard.card.title,
+         soldcard.card.isbn,
+         soldcard.card.authors_repr,
+         soldcard.card.pubs_repr,
+         soldcard.card.distributor_repr,
+         soldcard.card.shelf.name if soldcard.card.shelf else "",
+         soldcard.card.price,
+         soldcard.card.price_discounted,
+         soldcard.sell.payments_repr(),
+         soldcard.quantity)
+        for soldcard in data['data']]
     rows = sorted(rows)
 
     if fileformat in ['csv']:

@@ -73,6 +73,7 @@ from search.models.common import DATE_FORMAT
 from search.models.common import PAYMENT_CHOICES
 from search.models.common import TEXT_LENGTH
 from search.models.common import ignore_payment_for_revenue
+from search.models.common import get_payment_abbr
 from search.models.common import TimeStampedModel
 from search.models import utils
 from search.models.utils import Messages
@@ -4536,6 +4537,13 @@ class Sell(models.Model):
         return "Sell {} of {} copies at {}.".format(self.id,
                                                      self.soldcards_set.count(),
                                                      self.created)
+
+    def payments_repr(self):
+        """Print payment means humanly (string)"""
+        res = "{}".format(get_payment_abbr(self.payment))
+        if self.payment_2 and self.payment_2 not in [0, "0"]:
+            res += ",{}".format(get_payment_abbr(self.payment_2))
+        return res
 
     @property
     def total_price_sold(self):

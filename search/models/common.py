@@ -35,6 +35,7 @@ def get_logger():
     else:
         return logging.getLogger('sentry_logger')
 
+
 log = get_logger()
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -76,8 +77,8 @@ def check_payment_choices():
         log.warning("**** Some payment choices have the same id! ****")
     return all_unique
 
-check_payment_choices()
 
+check_payment_choices()
 
 PAYMENT_ABBR = [
      # Translators: abbreviation of the "cash" payment method.
