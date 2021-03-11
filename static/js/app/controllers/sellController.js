@@ -516,12 +516,18 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             client_id: 0,
         };
 
+        var headers = {
+            headers: {
+                'Content-Type': "application/json",
+            }
+        };
+
         if ($scope.client !== undefined) {
             params['client_id'] = $scope.client.id;
             params['language'] = utils.url_language($window.location.pathname);
         }
 
-        $http.post("/api/bill", params)
+        $http.post("/api/bill", params, headers)
             .then(function(response){
                 if (response.status == 200) {
                     $log.info(response);
