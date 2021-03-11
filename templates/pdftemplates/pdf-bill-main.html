@@ -16,7 +16,7 @@
          font-size: 14px;
          color: #555;
          @bottom-center {
-             content: "Chèques à l'ordre de {% if bookshop.checks_order %} {{ bookshop.checks_order }} {% else %} {{ bookshop.name }} {% endif %}. {% if bookshop.bank_IBAN %} IBAN: {{ bookshop.bank_IBAN }} {% endif %} {% if bookshop.bank_BIC %} Code BIC: {{ bookshop.bank_BIC}} {% endif %}"
+             content: "{% if bookshop.checks_order %} Chèques à l'ordre de {{ bookshop.checks_order }} {% else %} {{ bookshop.name }} {% endif %}. {% if bookshop.bank_IBAN %} IBAN: {{ bookshop.bank_IBAN }} {% endif %} {% if bookshop.bank_BIC %} Code BIC: {{ bookshop.bank_BIC}} {% endif %}"
          }
      }
 
