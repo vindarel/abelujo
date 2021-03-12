@@ -29,6 +29,15 @@ from search.models.utils import get_logger
 log = get_logger()
 
 
+class Reservation(models.Model):
+
+    class Meta:
+        pass
+
+    client = models.ForeignKey("search.Client")
+    card = models.ManyToManyField("search.Card")
+
+
 class Contact(models.Model):
     """
     A contact information (client or supplier), with payment information, etc.
@@ -82,11 +91,13 @@ class Contact(models.Model):
         super(Contact, self).save(*args, **kwargs)
 
     def to_dict(self):
+        rep = self.__repr__()
         return {'id': self.id,
                 'name': self.name.upper(),
                 'firstname': self.firstname.capitalize(),
                 'mobilephone': self.mobilephone,
-                '__repr__': self.__repr__(),
+                '__repr__': rep,
+                'repr': rep,  # in templates, can't use __repr__
         }
 
     def __repr__(self):
@@ -127,6 +138,11 @@ class Client(Contact):
 
         return res
 
+    def reserve(card_id):
+        """
+        Reserve this card.
+        """
+        import ipdb; ipdb.set_trace()
 
 class Bookshop(Contact):
     """

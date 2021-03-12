@@ -43,6 +43,7 @@ from models import Author
 from models import Basket
 from models import BasketCopies
 from models import Card
+from models import Client
 from models import CardType
 from models import Command
 from models import Deposit
@@ -589,6 +590,31 @@ def card_command(request, pk, **kw):
 
     to_ret['data']['nb'] = nb
     return JsonResponse(to_ret)
+
+def card_reserve(request, pk, **kw):
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+        'alerts': [],
+    }
+    if request.method == 'POST':
+        import ipdb; ipdb.set_trace()
+        params = kw.copy()
+        client_id = params.get('client_id')
+        try:
+            # card = Card.objects.get(id=pk)
+            client = Client.objects.filter(id=client_id).first()
+        except Exception as e:
+            logging.error(u"error reserving card {}: {}".format(pk, e))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'] += "Something went wrong."
+
+        if not client:
+            logging.warning("Could not reserve card, client {} actually doesn't exist.".format(client_id))
+        else:
+            client.reserve(pk)
+
+    import ipdb; ipdb.set_trace()
 
 def cardtype(request, **response_kwargs):
     if request.method == "GET":

@@ -45,10 +45,11 @@ apipatterns = patterns("",
     # Card
     url(r'^api/cards/create$', 'search.models.api.card_create', name="api_card_create"),
     url(r'^api/cards/update$', 'search.models.api.card_update', name="api_card_update"),
-    url(r'^api/cards/?$', 'search.models.api.cards', name="api_cards"),
+    url(r'^api/card/(?P<pk>\d+)/reserve/(?P<client_id>\d+)/?', 'search.models.api.card_reserve', name="api_card_reserve"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', 'search.models.api.card_add', name="api_card_add"),
     url(r'^api/card/(?P<pk>\d+)/command/?$', 'search.models.api.card_command', name="api_card_command"),
     url(r'^api/card/(?P<pk>\d+)', 'search.models.api.card', name="api_card"),
+    url(r'^api/cards/?$', 'search.models.api.cards', name="api_cards"),
     url(r'^api/cardtype$', 'search.models.api.cardtype', name="api_cardtype"),
     # Bulk manipulation.
     url(r'^api/cards/set_supplier$', 'search.models.api.cards_set_supplier', name="api_cards_set_supplier"),

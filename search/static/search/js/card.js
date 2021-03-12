@@ -3,21 +3,31 @@
 // Save the new shelf value.
 //
 
+function url_id (url) {
+    // extract an id
+    let re = /\/(\d+)/;
+    let res = url.match(re);
+    if (res && res.length == 2) {
+        return res[1];
+    }
+    return null;
+};
+
 (function() {
     console.log("hello card");
 
     let shelves = [];
     let shelf_select = document.getElementById('shelf-select');
 
-    function url_id (url) {
-        // extract an id
-        let re = /\/(\d+)/;
-        let res = url.match(re);
-        if (res && res.length == 2) {
-            return res[1];
-        }
-        return null;
-    };
+    // function url_id (url) {
+    //     // extract an id
+    //     let re = /\/(\d+)/;
+    //     let res = url.match(re);
+    //     if (res && res.length == 2) {
+    //         return res[1];
+    //     }
+    //     return null;
+    // };
 
     function get_shelves() {
         // Create a select with all shelves.
@@ -93,3 +103,44 @@
 
 }
 )();
+
+function validate_reservation() {
+    let elt = document.getElementById('clients-select');
+    let name = elt.value;
+    console.log("-- client name ? ", name);
+    let client_id = undefined;
+    // get id
+    for (var i = 0; i < elt.options.length; i++) {
+        if (elt.options[i].value == name) {
+            client_id = elt.options[i].id;
+        }
+    }
+
+    console.log("-- client id: ", client_id);
+    if (client_id != undefined) {
+        let card_id = url_id(window.location.pathname);
+        let url = "/api/card/" + card_id + "/reserve/" + client_id;
+        console.log("url: ", url);
+        fetch(url, {
+            method: 'POST',
+            headers: {'X-CSRFToken': getCSRFToken()}
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((myJson) => {
+                console.log("response: ", myJson);
+                if (myJson.status == 200) {
+                    Notiflix.Notify.Success('OK');
+                }
+                else {
+                    console.log("status is not success: ", myJson.status);
+                }
+            })
+            .catch((error) => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+
+    }
+
+};

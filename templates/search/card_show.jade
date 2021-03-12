@@ -61,6 +61,11 @@
       span &nbsp; x
         span(id="nb_to_command") {{ object.quantity_to_command }}
 
+    // ONGOING hide button
+    //button(type="button", class="btn btn-default", data-toggle="modal", data-target="#myModal")
+
+      i.glyphicon.glyphicon-user
+
     h3 {{ object.title }}
 
 .row
@@ -269,6 +274,35 @@
                       | x{{ cmd.qty }} -
                       | <a href="{{ cmd.command.get_absolute_url }}">{{ cmd.command.title }}</a> -
                       | {{ cmd.command.created }}
+
+
+// we'll use the modal shortly !
+script(type="text/ng-template", id="commandModal.html")
+    div.modal-header
+      h3.modal-title {% trans "Command" %}
+      div {% trans "The cards are grouped by supplier. Please check the list and confirm." %}
+
+    div.modal-body
+      div(ng-repeat="card in cards")
+        h4 {% trans "Supplier" %}: {{ 'distributor.name' | ng }}
+        div(ng-repeat="card in cards")
+          div {{'card.title'|ng}}
+
+div.modal(id="myModal")
+  div.modal-dialog
+    div.modal-content
+
+      div.modal-header
+        h4.modal-title Réserver
+        button(type="button", class="close", data-dismiss="modal")
+
+      div.modal-body
+        h5 {% trans "Clients" %}
+        select#clients-select
+          for client in clients
+            option(id="{{ client.id }}") {{ client.repr }}
+
+        button.btn.btn-success(type="button", onclick="validate_reservation()") OK
 
 
 script(type='text/javascript', src="{% static 'search/js/card.js' %}")

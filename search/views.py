@@ -64,6 +64,7 @@ from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
 from search.models import Card
+from search.models import Client
 from search.models import Command
 from search.models import Deposit
 from search.models import Distributor
@@ -337,9 +338,14 @@ def card_show(request, pk):
             res = Sell.search(card.id, date_min=last_entry.created)
             total_sold = res['nb_cards_sold']
 
+        # List of clients (for modale)
+        clients = [it.to_dict() for it in Client.objects.order_by("name").all()]
+
+
     return render(request, template, {
         "object": card,
         "sells": sells,
+        "clients": clients,
         # "shelves": Shelf.objects.order_by("name").all(),
         "places_quantities": places_quantities,
         "quantity_boxes": quantity_boxes,
