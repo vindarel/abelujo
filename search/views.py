@@ -1375,7 +1375,7 @@ def _txt_response_from_rows(rows, filename=""):
                    it[4],
                    it[6],
                    it[7],
-                   it[8],
+                   it[8].decode('utf8'),
             ) for it in rows]
     rows = sorted(rows)
     content = "\n".join(rows)

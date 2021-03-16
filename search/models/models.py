@@ -4567,9 +4567,11 @@ class Sell(models.Model):
 
     def payments_repr(self):
         """Print payment means humanly (string)"""
-        res = "{}".format(get_payment_abbr(self.payment))
+        res = get_payment_abbr(self.payment)
+        res = res.encode('utf8')
         if self.payment_2 and self.payment_2 not in [0, "0"]:
-            res += ",{}".format(get_payment_abbr(self.payment_2))
+            res += get_payment_abbr(self.payment_2)
+            res = res.encode('utf8')
         return res
 
     @property
