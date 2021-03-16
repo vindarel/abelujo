@@ -443,6 +443,9 @@ def rebase(name=None):
 
 def ssh_to(client):
     client = fabutils.select_client_cfg(client, CFG)
+    if not client:
+        print("Oups, personne de trouvé.")
+        return
     ip = client.get('ip') or CFG.get('ip')
     user = client.get('user') or CFG.get('user')
     cmd = "ssh -Y {}@{}".format(user, ip)
