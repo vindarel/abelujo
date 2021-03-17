@@ -38,10 +38,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     url_match = $window.location.pathname.match("\/boxes")
     if url_match and url_match is not null
       $scope.boxes_page = true
-      $log.info "-- boxes url"
     else
       $scope.boxes_page = false
-      $log.info "-- baskets url"
 
     $scope.showing_notes = false
     $scope.last_sort = "title"
@@ -75,7 +73,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             index = 0
 
         $scope.cur_basket_index = index
-        $log.info "index: ", index
         $scope.showBasket index
 
     $scope.save_basket = !->
@@ -140,7 +137,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
     $scope.delete_basket =  !->
         sure = confirm(gettext("You are going to delete the list {}. This can not be undone. Are you sure ?")replace "{}", $scope.cur_basket.name)
-        $log.info sure
         if sure
             $http.post "/api/baskets/#{$scope.cur_basket.id}/delete"
             .then (response) !->
@@ -178,7 +174,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         Save it.
         """
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
-        $log.info "--- now is ", now
         tmpcard = $scope.cards_fetched
         |> find (.repr == card.repr)
         tmpcard = tmpcard.item
@@ -190,7 +185,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         ##     index = $scope.copies.length
         ## $scope.copies.splice index, 0, tmpcard
         # Get possibly existing card and move to the top of the list.
-        $log.info "-- tmpcard: ", tmpcard
         existing = $scope.copies
         |> find (.id == tmpcard.id)
         if existing
@@ -236,8 +230,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         if not confirm gettext "You didn't set a supplier for this list (menu -> set a supplier). Do you want to carry on ?"
            return
 
-        $log.info "cur_basket: ", $scope.cur_basket
-        $log.info "copies: ", $scope.copies
         if not $scope.copies.length
             alert gettext "This basket has no copies to command !"
             return
@@ -307,7 +299,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         if sure
             $http.post "/api/baskets/#{$scope.cur_basket.id}/return"
             .then (response) !->
-                $log.info response
                 $scope.alerts = response.data.alerts
                 # if response.data.status == "success" …
 
@@ -321,7 +312,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages
             $scope.page += 1
-            $log.info "-- cur_basket_index: ", $scope.cur_basket_index
             $scope.getCopies $scope.cur_basket_index
 
     $scope.lastPage = !->
@@ -356,7 +346,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         modalInstance.result.then (basket) !->
             $scope.baskets.unshift basket
             $log.info "new basket: ", basket
-            $log.info "all baskets: ", $scope.baskets
             $scope.showBasket 1
             $scope.cur_basket = basket
         , !->
@@ -367,7 +356,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     # ###########################
     ## $scope.add_to_shelf = (size) !->
     $scope.add_to_shelf = (cur_basket_id) !->
-        $log.info "add_to_shelf got basket id", cur_basket_id
         modalInstance = $uibModal.open do
             animation: $scope.animationsEnabled
             templateUrl: 'chooseShelfModal.html'
@@ -384,7 +372,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             basket = $scope.baskets[cur_basket_id]
             basket.copies = []
             $scope.copies = []
-            $log.info "modal ok"
         , !->
             $log.info "modal dismissed"
 
@@ -399,7 +386,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         if sure
             $http.post "/api/baskets/#{cur_basket_id}/add_to_stock/", params
             .then (response) !->
-                $log.info response
                 if response.data.status == "success"
                    ## Notiflix.Notify.Success "OK"
                    $scope.alerts = response.data.alerts
@@ -448,8 +434,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                     utils
 
         modalInstance.result.then (response) !->
-            ## $log.info "modal ok, param: ", basket
-            $log.info "modal ok, bill_or_estimate: ", bill_or_estimate
             ## $window.localStorage.setItem('client_selected', basket) #XXX: ?
             ## 1 = bill, 2 = estimate
             $window.localStorage.setItem('bill_or_estimate', bill_or_estimate)
@@ -499,7 +483,6 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                     utils
 
         modalInstance.result.then (response) !->
-            ## $log.info "modal ok, param: ", basket
             $window.localStorage.setItem('bill_or_estimate', "2")  # 2 = estimate
         , !->
             $log.info "modal dismissed"
@@ -546,14 +529,11 @@ angular.module "abelujo" .controller "BasketModalControllerInstance", ($http, $s
             $uibModalInstance.dismiss('cancel')
             return
 
-        $log.info "-- hello modal in OK"
         params = do
             name: $scope.new_name
 
         if $window.location.pathname.match "\/boxes"
           params['box'] = true
-
-        $log.info "-- params:", params
 
         $http.post "/api/baskets/create", params
         .then (response) !->
@@ -573,21 +553,16 @@ angular.module "abelujo" .controller "ChooseShelfModalControllerInstance", ($htt
     $scope.shelves = []
     $scope.selected_shelf = null
 
-    $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
     $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
 
     $http.get "/api/shelfs"
     .then (response) ->
-        $log.info "response: ", response
         $scope.shelves = response.data
-        $log.info "shelves: ", $scope.shelves
 
     $scope.ok = !->
         if typeof ($scope.selected_shelf) == "undefined" || $scope.selected_shelf == ""
             $uibModalInstance.dismiss('cancel')
             return
-
-        $log.info "selected shelf: ", $scope.selected_shelf
 
         #  This is needed for Django to process the params to its
         #  request.POST dictionnary:
@@ -621,24 +596,17 @@ angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($ht
     $scope.shelves = []
     $scope.checkboxsell = $window.localStorage.getItem("checkboxsell")    # if we ask a bill in a basket, we probably want to sell the books.
 
-    $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
     $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
 
     $http.get "/api/clients"
     .then (response) ->
-        $log.info "response: ", response
         $scope.clients = response.data.data
-        $log.info "clients: ", $scope.clients
 
     $scope.ok = !->
         if typeof ($scope.selected_client) == "undefined" || $scope.selected_client == ""
             $uibModalInstance.dismiss('cancel')
             Notiflix.Notify.Info gettext "You didn't select a client."
             return
-
-        $log.info "selected client: ", $scope.selected_client
-        $log.info "checkbox: ", $scope.checkboxsell
-        $log.info " TODO here generate PDF."
 
         checkboxsell = $scope.checkboxsell
         bill_or_estimate = $window.localStorage.getItem('bill_or_estimate')
@@ -657,7 +625,6 @@ angular.module "abelujo" .controller "ChooseClientModalControllerInstance", ($ht
             $scope.alerts = response.data.alerts
             $uibModalInstance.close()
             $scope.alerts = response.data.alerts
-            $log.info(response)
             if (response.status == 200)
                     element = document.createElement('a')
                     element.setAttribute('href', response.data.fileurl)
@@ -682,22 +649,17 @@ angular.module "abelujo" .controller "ChooseClientToSellModalControllerInstance"
     utils.set_focus!
     $scope.shelves = []
 
-    $log.info "cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id')
     $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id')
 
     $http.get "/api/clients"
     .then (response) ->
-        $log.info "response: ", response
         $scope.clients = response.data.data
-        $log.info "clients: ", $scope.clients
 
     $scope.ok = !->
         if typeof ($scope.selected_client) == "undefined" || $scope.selected_client == ""
             $uibModalInstance.dismiss('cancel')
             Notiflix.Notify.Info gettext "You didn't select a client."
             return
-
-        $log.info "selected client: ", $scope.selected_client
 
         copies = $scope.cur_basket_id
         params = do
@@ -709,7 +671,6 @@ angular.module "abelujo" .controller "ChooseClientToSellModalControllerInstance"
             $scope.alerts = response.data.alerts
             $uibModalInstance.close()
             $scope.alerts = response.data.alerts
-            $log.info(response)
             if (response.status !== 200)
                Notiflix.Notify.Info("The sell got an error. We have bee notified.")
             if (response.status == 200)
