@@ -40,10 +40,6 @@ var vendorJsFiles = [
     'node_modules/angular-datatables/dist/angular-datatables.min.js',
     'node_modules/angular-loading-bar/build/loading-bar.min.js',
     'node_modules/angular-hotkeys/build/hotkeys.min.js',
-
-    // the browser stuff is installed and included by bower.
-    'static/bower_components/datejs/build/production/date.min.js',
-
 ];
 
 var appFiles = [

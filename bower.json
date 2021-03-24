@@ -22,6 +22,5 @@
     "tests"
   ],
   "dependencies": {
-    "datejs": "latest"
   }
 }

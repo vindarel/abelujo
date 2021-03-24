@@ -1,2 +1,3 @@
 documents/*.csv linguist-generated
 search/static/prelude-browser-min.js linguist-vendored
+search/static/date-fr-FR.js linguist-vendored
