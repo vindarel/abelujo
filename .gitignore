@@ -11,7 +11,7 @@ node_modules/
 /collectedstatic.tar.gz
 /htmlcov/
 /public/
-/static/js/build/
+/static/js/build/livescript/
 /doc/dev/_build/
 .tox/
 .tox/
