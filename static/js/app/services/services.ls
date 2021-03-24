@@ -152,13 +152,18 @@ utils.factory 'utils', ['$http', '$window', '$log', ($http, $window, $log) ->
 
         card_command: (id) !->
             url = "/api/card/#{id}/command"
-            $http.post url
+            position = $window.scrollY
+            $http.post url, {}, do
+              # Is it the progress bar that makes the window scroll to top?
+              ignoreLoadingBar: true  # looks it helps, we still scroll.
             .then (response) !->
                 $log.info response
                 if response.data.status == "success"
                    Notiflix.Notify.Success "OK"
                    elt = $window.document.getElementById('command'+id)
                    elt.innerText = response.data.data.nb
+                   # Coming back is not the best, it gives a flickering effect.
+                   $window.scrollTo(0, position)  # x, y
                 else
                     Notiflix.Notify.Warning "Warning"
 
