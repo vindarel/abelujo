@@ -4,14 +4,12 @@
 *~
 *#
 *sqlite
-static/bower_components/
 db.db*
 node_modules/
 *.back
 /collectedstatic/
 /collectedstatic.tar.gz
 /htmlcov/
-/static/bower_components/
 /public/
 /static/js/build/
 /doc/dev/_build/
