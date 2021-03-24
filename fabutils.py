@@ -92,7 +92,7 @@ def wd(client, cfg):
     return path
 
 def bundle_needs_update():
-    """Were the package.json and bower.json modified since last time we
+    """Was package.json modified since last time we
     uploaded our bundled js dependencies ?
 
     Simply check if these files changed, against a cached version.
@@ -103,16 +103,11 @@ def bundle_needs_update():
     """
     ret = False
     package_json = "package.json"
-    bower_json = "bower.json"
     package_cache = "package.json.bundlecache"
-    bower_cache = "bower.json.bundlecache"
 
     # The caches exist ?
     if not os.path.exists(package_cache):
         print(termcolor.colored("package.json has no cache, so we don't know if it changed since last upload. Need rebuild.", "yellow"))
-        ret = True
-    if not os.path.exists(bower_cache):
-        print(termcolor.colored("bower.json has no cache, so we don't know if it changed since last upload. Need rebuild.", "yellow"))
         ret = True
     if ret:
         return True
@@ -126,15 +121,6 @@ def bundle_needs_update():
         diff = difflib.unified_diff(package_cache_lines, package_lines)
         diff_print(diff)
         ret = True  # they don't seem equal, they need an update
-
-    if not filecmp.cmp(bower_json, bower_cache):
-        print(termcolor.colored("bower.json seems to have changed", "yellow"))
-        ret = True
-
-        bower_lines = open(bower_json, "r").readlines()
-        bower_cache_lines = open(bower_cache, "r").readlines()
-        diff = difflib.unified_diff(bower_cache_lines, bower_lines)
-        diff_print(diff)
 
     return ret
 

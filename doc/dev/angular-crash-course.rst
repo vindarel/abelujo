@@ -119,13 +119,12 @@ How to add a javascript package to the project
 ----------------------------------------------
 
 There are a lot of javascript packages out there, on `npm <
-https://www.npmjs.com >`_ or `bower < https://libraries.io/bower/ >`_,
+https://www.npmjs.com >`_
 and also `a lot for AngularJS modules < http://ngmodules.org/ >`_.
 
 To install a package check those steps:
 
-* add the package dependency in package.json for npm or bower.json for
-  bower,
+* add the package dependency in package.json for npm,
 * add the needed js file(s) into our ``gulpfile.js`` (see vendor
   sources),
 * add the (optional) needed css file(s) in the header of our

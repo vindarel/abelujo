@@ -15,16 +15,15 @@
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 
 {% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 {% load staticfiles %}
 !!!5
 
 html
   head
     link(rel='stylesheet', type='text/css', href='{% static "search/style.css" %}')
-
-    link(rel='stylesheet', type='text/css', href='{% static "bower_components/bootstrap/dist/css/bootstrap.css" %}')
-
-    script(type='text/javascript', src="{% static 'bower_components/jquery/jquery.js' %}") // load jquery before django_bootstrap.
     script(type='text/javascript', src="{% static 'js/build/vendor.js' %}")
     //- script(type='text/javascript', src="{% static 'js/build/abelujo.js' %}")
     script(type='text/javascript', src='{% url "django.views.i18n.javascript_catalog" %}')

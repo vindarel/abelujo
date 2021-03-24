@@ -102,11 +102,6 @@ COL_WIDTH = 10
 #: Date format (appending to backed up files)
 DATE_FORMAT = "%Y%m%d-%H:%M:%S"
 
-BOWER_COMPONENTS_TAR = "bower_components.tar.gz"
-BOWER_COMPONENTS_DIR = "static/bower_components"
-BOWER_COMPONENTS_REMOTE_DIR = "/tmp/bower_components"
-BOWER_COMPONENTS_REMOTE = "/tmp/bower_components.tar.gz"
-
 # Use ssh_config for passwords and cie
 # env.use_ssh_config = True
 
@@ -377,48 +372,6 @@ def dbback(name=None):
                 print(cmd)
                 os.system(cmd)
 
-def bundles_upload():
-    """Update, but don't run npm or bower, get the copies of their
-    directories (node_modules and bower_components).
-
-    Goal: win a few minutes, don't depend on npmjs, and *don't be
-    surprised by new mismatches*.
-
-    Beware, Work In Progress.
-    Still to do:
-    - check if our npm/bower dependencies changed, compared to what is currently uploaded
-    """
-
-    if not exists(BOWER_COMPONENTS_REMOTE_DIR):
-        run("mkdir {}".format(BOWER_COMPONENTS_REMOTE_DIR))
-
-    # The remote destination will be the same as our local source.
-    needs_bundle = fabutils.bundle_needs_update()
-    if needs_bundle:
-        cmd = "rsync -av --delete {dir} {user}@{url}:/tmp/".format(
-            user=CFG.user,
-            url=CFG.url,
-            dir=BOWER_COMPONENTS_DIR,
-        )
-        os.system(cmd)
-
-def bundles_deploy(name):
-    """After bundle_up, we have them in /tmp/.
-    Now, simply copy them into our client's static/bower_components or node_modules.
-    """
-    client = fabutils.select_client_cfg(name)
-    fabutils.wd(client, CFG)
-
-    if not exists(BOWER_COMPONENTS_REMOTE_DIR):
-        print("Error: we can't find the bower components directory in remote /tmp.")
-        return
-
-    client_dir = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name, "static")
-    if not exists(client_dir):
-        run("mkdir -p {}".format(client_dir))
-
-    run("cp -r {} {}".format(BOWER_COMPONENTS_REMOTE_DIR, client_dir))
-
 def rebase(name=None):
     """Only run git rebase. That may be enough for light updates.
     (but be careful nothing breaks !)
@@ -541,12 +494,8 @@ def install(name):
     if not exists(wd):
         run("mkdir {}".format(wd, wd))
 
-    # Copy bower_components (experimental)
-    bundles_upload()
-
     with cd(wd):
         run("test -d {} || git clone --recursive {}".format(CFG.project_name, CFG.project_git_url))
-        bundles_deploy(client.name)
         # save the port
         save_variables(client.name)
         with cd(CFG.project_name):
@@ -625,28 +574,3 @@ def script(script, name=None):
     # client = fabutils.select_client_cfg(name)
     com = "python manage.py runscript {}".format(script)
     cmd(com, name)
-
-
-def bower_package_version(package, names=None):
-    """What's the installed packages version ?
-
-    - package: bower package name
-    - names: list of client names (or only beginning of name, as usual).
-    """
-    # usage = "Usage: fab bower_package_version:package,client"
-
-    #: With --json, we could parse it and get rid off the sub-deps
-    BOWER_PACKAGE_VERSION = './node_modules/bower/bin/bower list --offline'
-
-    if not names:
-        clients = CFG.clients
-
-    else:
-        name = names[0]
-        clients = [fabutils.select_client_cfg(name)]
-
-    for client in clients:
-        wd = os.path.join(CFG.home, CFG.dir, client.name, CFG.project_name)
-        print(wd)
-        with cd(wd):
-            run(BOWER_PACKAGE_VERSION)

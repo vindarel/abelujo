@@ -62,14 +62,13 @@ Available commands so far:
 - create a new client
 - install a new Abelujo instance
 - update a specific project (fully, or a light update without calling
-  apt, npm nor bower)
+  apt nor npm)
 - start, stop, restart a website
 - check the status of one or all projects
 - check how the projects are up to date with the main branch (how many
   commits behind)
 - upload a file to the server
 - run any make command in a specific project
-- check a bower package version
 - ...
 
 Setup Sentry (Raven)
