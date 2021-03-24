@@ -28,11 +28,34 @@ angular.module('abelujo', [
 
 // Tell the dynamic locale provider where to find translation files.
 // (a bit later: for bootstrap datepicker I guess).
-angular.module('abelujo').config(function (tmhDynamicLocaleProvider) {
-    tmhDynamicLocaleProvider.localeLocationPattern('/static/bower_components/angular-i18n/angular-locale_{{locale}}.js');
-    tmhDynamicLocaleProvider.defaultLocale('fr'); // default locale
-    tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
-});
+// angular.module('abelujo').config(function (tmhDynamicLocaleProvider) {
+//     tmhDynamicLocaleProvider.localeLocationPattern('/static/bower_components/angular-i18n/angular-locale_{{locale}}.js');
+//     tmhDynamicLocaleProvider.defaultLocale('fr'); // default locale
+//     tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
+// });
+
+'use strict';
+
+/* Directives */
+
+
+angular.module('abelujo.directives', []).
+  directive('appVersion', ['version', function(version) {
+    return function(scope, elm, attrs) {
+      elm.text(version);
+    };
+  }]);
+
+'use strict';
+
+/* Filters */
+
+angular.module('abelujo.filters', []).
+  filter('interpolate', ['version', function(version) {
+    return function(text) {
+      return String(text).replace(/\%VERSION\%/mg, version);
+    };
+  }]);
 
 // Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
@@ -871,29 +894,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         utils.card_command(id);
     };
 
-  }]);
-
-'use strict';
-
-/* Filters */
-
-angular.module('abelujo.filters', []).
-  filter('interpolate', ['version', function(version) {
-    return function(text) {
-      return String(text).replace(/\%VERSION\%/mg, version);
-    };
-  }]);
-
-'use strict';
-
-/* Directives */
-
-
-angular.module('abelujo.directives', []).
-  directive('appVersion', ['version', function(version) {
-    return function(scope, elm, attrs) {
-      elm.text(version);
-    };
   }]);
 
 var utils;
