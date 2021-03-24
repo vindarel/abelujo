@@ -16,7 +16,7 @@ Write JavaScript in Livescript
 
 .. note::
 
-   We used LiveScript but we're now switching to Vue.js with plain Javascript. https://vuejs.org
+   We used LiveScript but we're now switching to plain Javascript.
 
 Our current Angularjs controllers are written in Livescript::
 
@@ -87,3 +87,13 @@ Our CSS layout and widgets come from Bootstrap3 and Angular-UI:
 - https://angular-ui.github.io/bootstrap/versioned-docs/0.14.3/ .
 
 
+How to develop
+~~~~~~~~~~~~~~
+
+Install the npm dependencies::
+
+  make npm
+
+and at each change, build them::
+
+  make gulp

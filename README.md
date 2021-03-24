@@ -75,11 +75,8 @@ Install the required dependencies for Debian (Ubuntu/LinuxMint/etc):
 
     make debian
     # a shortcut for
-    # sudo apt-get install python-pip nodejs npm
-    # Debian 8 users have to install nodejs-legacy to get the npm package, in the case the existing "node" command doesn't give you a javascript shell.
-    # sudo pip install --upgrade pip
+    # sudo apt-get install python-pip
 	# sudo pip install virtualenvwrapper
-	# sudo npm install gulp -g
 
 Create and activate a virtual environment (so than we can install python
 libraries locally, not globally to your system). Do as you are used to,
@@ -87,7 +84,6 @@ or do the following:
 
     source venv_create.sh # [venvname] (optional argument)
     workon abelujo
-    pip install --upgrade pip  # v9 or above is recommended.
 
 now your shell prompt should show you are in the `abelujo`
 virtualenv. To quit the virutal env, type `deactivate`. To enter it,
@@ -131,7 +127,7 @@ In the virtual env, run:
     make update
     # git pull --rebase
     # git submodule update --remote
-    # install pip, migrate, gulp, collecstatic, compile transalation files
+    # install pip, migrate, compile transalation files.
 
 Actions required for updates
 ----------------------------
@@ -140,34 +136,23 @@ Actions required for updates
 update`, and start the new task queue with `make taskqueue`. You don't
 need Redis anymore.
 
-- october 2019, 31st (commit 7a3ac86bfde821f546e6c66cd352a7038278fc3b):
-  after the update, you need to run a management command:
-
-  ./manage.py compute_quantities
-
-This creates and populates the denormalized field `Card.quantity`. We
-can compute the quantity (given its stock in different places) with
-`card.quantity_compute()`.
-
-The command is idempotent, it waits for confirmation and it prints a status.
-
-
 Development
 ===========
 
 Django project, in python (2.7) and JavaScript (AngularJS).
 
-We also use:
+We use:
 
 - [LiveScript](http://livescript.net)
 - [jade templates](http://jade-lang.com/), which compile to html,
     and pyjade for the Django integration
-- [Bootstrap's CSS](http://getbootstrap.com) and django-bootstrap3
+- [Bootstrap's CSS](http://getbootstrap.com) with django-bootstrap3
 - the [Django-q](https://django-q.readthedocs.org/) asynchronous task queue.
 
-See the developer documentation: http://dev.abelujo.cc/ This is
-[our database graph](http://dev.abelujo.cc/graph-db.png) (`make
-graphdb`).
+See the developer documentation: http://dev.abelujo.cc/.
+
+This is [our database graph](http://dev.abelujo.cc/graph-db.png)
+(`make graphdb`).
 
 ### Dev installation ###
 
@@ -177,11 +162,21 @@ requirements file::
 
     make pip-dev
 
-and npm packages to run end to end tests:
+and npm packages
+
+    make npm
+    # this installs node dependencies
+
+Then, to build the JS and CSS:
+
+    make gulp
+
+and commit the result.
+
+Also install npm packages to run end to end tests:
 
     make npm-dev  # packages listed in devDependencies of packages.json
 
-Additional management commands start with `my_`.
 
 ### Vagrant and Ansible role
 

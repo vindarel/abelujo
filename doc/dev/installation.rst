@@ -11,11 +11,13 @@ Run the development server (local)
 
 `make run` and open your browser on `localhost:8000`.
 
-The default username is ``admin`` and the password ``admin`` (see
-management commands to create and delete superusers in the next section).
+You must create a user (see management commands to create and delete
+superusers in the next section).
 
 This command is only to be run on a local machine. If you run it on a
-server, you won't be able to access Abelujo from the internet.
+server, you won't be able to access Abelujo from the internet. But you could do::
+
+  ./manage.py runserver PORT:IP
 
 
 Run in production (server)
@@ -38,9 +40,6 @@ Some tasks need to run asynchronously (applying an inventory,…). Start
  the asyncronous task runner with::
 
     make taskqueue
-
-Since Abelujo > 0.7 it became a pure Django solution, without Redis
-anymore.
 
 
 deployment and website management
@@ -71,8 +70,8 @@ Available commands so far:
 - run any make command in a specific project
 - ...
 
-Setup Sentry (Raven)
---------------------
+Setup Sentry (issues monitoring)
+--------------------------------
 
 Sentry helps immensely in being notified of runtime errors.
 
@@ -93,6 +92,8 @@ This is installed with `make debian`::
 
 Use the Postgresql database
 ---------------------------
+
+(but you can stay with SQLite)
 
 Abelujo uses by default an SQLite database, you don't *have* to
 configure a Postgresql one.
