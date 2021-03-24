@@ -22,11 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-i18n": "^1.6.4",
     "bootstrap": "^3.3.7",
     "datejs": "latest"
-  },
-  "resolutions": {
-    "angular-i18n": "1.3"
   }
 }
