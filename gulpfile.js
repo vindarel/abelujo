@@ -50,7 +50,7 @@ var vendorCSSFiles = [
     // warning: also set headers in base.jade !
     'node_modules/angular-ui-select/select.min.css',
     'node_modules/c3/c3.min.css',
-    // 'node_modules/bootstrap/dist/css/bootstrap.min.css', // => CDN import in base.jade
+    // 'node_modules/bootstrap/dist/css/bootstrap.min.css', // => django-bootstrap
     // 'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
     'node_modules/datatables/media/css/jquery.dataTables.min.css',
     'node_modules/angular-loading-bar/build/loading-bar.min.css',
@@ -73,6 +73,12 @@ gulp.task('css', function() {
     return gulp.src(vendorCSSFiles)
         .pipe(minifyCss())
         .pipe(gulp.dest('static/css/'));
+});
+// Concatenate CSS vendor files
+gulp.task('concatcss:vendor', function () {
+  return gulp.src(vendorCSSFiles)
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('static/css/build'));
 });
 
 // Compile the Less files
@@ -138,7 +144,7 @@ gulp.task('karma:watch', function () {
 });
 
 // Concatenations
-gulp.task('concat', ['concatjs:app', 'concatjs:vendor']);
+gulp.task('concat', ['concatjs:app', 'concatjs:vendor', 'concatcss:vendor']);
 
 // Tests
 gulp.task('test', ['karma']);

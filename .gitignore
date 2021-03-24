@@ -12,6 +12,7 @@ node_modules/
 /htmlcov/
 /public/
 /static/js/build/livescript/
+/static/css/
 /doc/dev/_build/
 .tox/
 .tox/
