@@ -75,7 +75,6 @@ npm:
 	@echo "Installing Node packages..."
 	mkdir -p public
 	npm install --production # don't install devDependencies
-	./node_modules/bower/bin/bower install --allow-root
 	# Saving dev ip for gunicorn
 	echo "localhost" > IP.txt
 
@@ -250,7 +249,7 @@ translation-files:
 	# Same for js files (djangojs flag) (compile .ls files before):
 	# (we may want to translate js in admin/)
 	# check the --ignore flags...
-	django-admin.py makemessages -d djangojs --ignore="doc/dev/_build/*" --ignore="static/js/build/vendor.js" --ignore="static/lib/*" --ignore="./static/bower_components/" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
+	django-admin.py makemessages -d djangojs --ignore="doc/dev/_build/*" --ignore="static/js/build/vendor.js" --ignore="static/lib/*" --ignore="node_modules/*" --ignore="bootstrap/*" --ignore="admin/js/*" --ignore="collectedstatic/*" -a
 
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart

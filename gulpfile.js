@@ -13,7 +13,6 @@ var jshint = require('gulp-jshint');
 var bg = require("gulp-bg");
 
 var vendorJsFiles = [
-  // 'static/bower_components/jquery/jquery.min.js', // load separately and first (needed by django_bootstrap).
     // jquery: for bootstrap and datatables.
     // to load before bootstrap.
     // jquery must come before angular and datatables.
