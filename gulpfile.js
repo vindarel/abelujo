@@ -19,7 +19,7 @@ var vendorJsFiles = [
     'node_modules/jquery/jquery.min.js',
     'node_modules/datatables/media/js/jquery.dataTables.min.js',
   'node_modules/angular/angular.min.js',
-  'node_modules/bootstrap/dist/js/bootstrap.min.js',
+  // 'node_modules/bootstrap/dist/js/bootstrap.min.js', // => CDN
   'node_modules/angular-ui-bootstrap/ui-bootstrap.min.js',
   'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
   'node_modules/angular-resource/angular-resource.min.js',
@@ -32,7 +32,7 @@ var vendorJsFiles = [
   'node_modules/angular-ui-select/select.js',
   'node_modules/underscore/underscore-min.js',
   'node_modules/underscore/underscore-min.js',
-    'node_modules/bootstrap/js/*.js', // needed despite of settings.py
+    // 'node_modules/bootstrap/js/*.js', // needed despite of settings.py
     'node_modules/c3/c3.min.js',
     'node_modules/d3/d3.min.js',
     'node_modules/angular-smart-table/dist/smart-table.min.js',
@@ -50,8 +50,8 @@ var vendorCSSFiles = [
     // warning: also set headers in base.jade !
     'node_modules/angular-ui-select/select.min.css',
     'node_modules/c3/c3.min.css',
-    'node_modules/bootstrap/dist/css/bootstrap.min.css',
-    'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
+    // 'node_modules/bootstrap/dist/css/bootstrap.min.css', // => CDN import in base.jade
+    // 'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
     'node_modules/datatables/media/css/jquery.dataTables.min.css',
     'node_modules/angular-loading-bar/build/loading-bar.min.css',
     'node_modules/angular-hotkeys/build/hotkeys.min.css',
