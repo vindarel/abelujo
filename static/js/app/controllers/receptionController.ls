@@ -22,7 +22,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
     $scope.shelves_length = {}
     $scope.new_shelf = null
     $scope.cur_basket = do
-      id: 0
+      id: -1
       fields: {name: "Tous les titres"}
 
     $scope.cur_basket_index = 0
@@ -191,11 +191,11 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         "Show the copies of the shelf (by its index in the shelves list)."
         # Show all.
         $log.info "showBasket index in list ", index
-        if index == 0
+        if index == -1
             $scope.copies = $scope.all_copies
-            $scope.cur_basket_index = 0
+            $scope.cur_basket_index = -1
             $scope.cur_basket = do
-              id: 0
+              id: -1
               fields: {name: ""}
             return
 
