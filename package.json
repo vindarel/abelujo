@@ -22,7 +22,7 @@
         "babel-plugin-transform-runtime": "^6.23.0",
         "babel-preset-es2015": "^6.24.1",
         "bootstrap": "^3.3.7",
-        "bower": "latest",
+        "bower": "^1.8.8",
         "c3": "latest",
         "datatables": "1.10",
         "gulp": "^3",
