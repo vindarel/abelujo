@@ -1,6 +1,6 @@
 Changelog starting from v0.5 (2018/09/18)
 
-## v0.14 (2020-12, ...)
+## v0.16 (2020-12, ...)
 
 ### New features
 
@@ -13,6 +13,7 @@ Changelog starting from v0.5 (2018/09/18)
 - History: the history page of the month and the day show the **best sells** for each kind of product: books, but not only.
 - Sell page: we can pay with **two payment methods**.
 - the Commands page shows **all cards to command**, in addition to them grouped by supplier. This makes it easier to download a CSV and send it to a supplier.
+- added a button to collapse the left menu. We can now work in "full screen". Especially useful for the Raspberry Pis and views with a lot of information (Reception, lists…).
 
 ### Other enhancements
 

@@ -43,6 +43,12 @@ html(ng-app="abelujo")
       div.navbar-collapse
         ul.nav.navbar-nav
           li
+            button(href="#menu-toggle", class="slidebar-toggle", id="menu-toggle", onclick="toggleMenu()", title="Cacher le menu", style="margin-top: 9px")
+              // XXX: menu toggle not working on Chrome 87
+              i.glyphicon.glyphicon-menu-hamburger
+
+        ul.nav.navbar-nav
+          li
             a Abelujo
           li.push-right#dashboard(href="#")
             a(href='{% url "stats" %}') {% trans "Statistics" %} 
@@ -73,7 +79,6 @@ html(ng-app="abelujo")
                 li.divider(role="separator")
                 li(href="#")
                     a(href='/{{ LANGUAGE_CODE }}/cards-without-eans') {% trans "Cards without EANs" %}
-
         form.navbar-form.navbar-left
           .form-group
             input.form-control#navbar-input(

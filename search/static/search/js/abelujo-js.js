@@ -161,3 +161,30 @@ function getCookie(name) {
 function getCSRFToken(){
     return getCookie('csrftoken');
 };
+
+/* Hide and show the menu. */
+// Doesn't work on Chrome 87 ? O_o Functions not loaded (on time).
+function collapseMenu() {
+    var menu  = document.getElementById('sidebar-wrapper');
+    var wrapper = document.getElementById('wrapper');
+    menu.style.width = 0;
+    wrapper.style.paddingLeft = 0;
+};
+
+function showMenu() {
+    var menu  = document.getElementById('sidebar-wrapper');
+    var wrapper = document.getElementById('wrapper');
+    menu.style.width = "250px";
+    wrapper.style.paddingLeft = "250px";
+};
+
+function toggleMenu() {
+    var menu  = document.getElementById('sidebar-wrapper');
+    if (menu.getAttribute('data-menu-collapsed') == "true") {
+        showMenu();
+        menu.setAttribute('data-menu-collapsed', false);
+    } else {
+        collapseMenu();
+        menu.setAttribute('data-menu-collapsed', true);
+    }
+};
