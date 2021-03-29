@@ -55,10 +55,10 @@ dbback:
 
 # Install everything: Django requirements, the DB, node packages, and
 # build the app.
-install:  debian pip pip-submodule db npm-system npm gulp translation-compile collectstatic
+install:  debian pip pip-submodule db translation-compile collectstatic
 
 # xxx: there must be a better way (to do the same task with and without sudo)
-install-nosudo:  debian-nosudo pip-nosudo db npm-system-nosudo npm gulp collectstatic translation-compile
+install-nosudo:  debian-nosudo pip-nosudo db collectstatic translation-compile
 
 install-dev:  debian pip pip-dev pip-submodule pip-submodule-dev db npm npm-dev gulp translation-compile
 
@@ -94,8 +94,6 @@ update: stash
 	make pip-submodule
 	make migrate
 	# Get code, install new packages, run DB migrations, compile JS and translation files.
-	make npm
-	gulp
 	make collectstatic
 	make translation-compile 	# gunicorn needs a restart
 	# echo "it's good to do an apt-get update once in a while"  # prevents unreachable sources, sometimes.
@@ -105,12 +103,11 @@ update-code: stash
 	make set-prod
 	make pull
 	make migrate
-	gulp
 	make collectstatic
 	make translation-compile
 	make gunicorn-restart
 
-update-dev: update pip-dev pip-submodule-dev
+update-dev: update pip-dev pip-submodule-dev npm-dev
 
 # Create migrations and commit them.
 migrations:

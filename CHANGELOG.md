@@ -30,6 +30,7 @@ Changelog starting from v0.5 (2018/09/18)
 
 ### Upgrade instructions
 
+- Abelujo doesn't need npm or Node packages any more for its installation, making the installation and updates much easier.
 - Nothing special, but it is recommend to run the `update_all_with_dilicom` script.
 - see the preferences page and check "auto_command_after_sell" to get the old behaviour.
 - optional: clean up cards' types with `fix_types` (set their type correctly to "book" if they have a book ISBN).
