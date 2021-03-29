@@ -120,7 +120,7 @@ div.ng-cloak(ng-controller="sellController")
             )
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
-      .row
+  .row(style="margin-left: 1em")
           h3 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected. Total:" %} {{ 'total_price ' | ng }} {{ 'cards_selected[0].currency' | ng }}
           span Payer
             input(type="number", step="0.01", ng-model="total_payment_1")
@@ -129,7 +129,7 @@ div.ng-cloak(ng-controller="sellController")
           span(ng-repeat="payment in payment_means")
             input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
 
-      .row(ng-show="show_payment_2")
+  .row(ng-show="show_payment_2")
           span Payer
             input(type="number", step="0.01", ng-model="total_payment_2")
             span &nbsp; en
@@ -138,7 +138,7 @@ div.ng-cloak(ng-controller="sellController")
             input.btn.btn-success(id="payment_2", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }} &nbsp;
           i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_payment_2()")
 
-      .row(ng-show="cards_selected.length > 0")
+  .row(ng-show="cards_selected.length > 0")
           .col-md-5
           .col-md-1
           .col-md-1
