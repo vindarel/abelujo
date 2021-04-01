@@ -144,7 +144,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
         # If we add a book from a shelf menu but the book already has a different shelf,
         # show a message.
-        if $scope.cur_basket.id != 0 and existing.shelf_id and $scope.cur_basket.pk != existing.shelf_id
+        if $scope.cur_basket.id != -1 and existing.shelf_id and $scope.cur_basket.pk != existing.shelf_id
             title = Str.take 20 existing.title
             Notiflix.Notify.Info("Attention vous êtes dans le menu '#{$scope.cur_basket.fields.name}' et le livre '#{title}' a déjà un rayon ('#{existing.shelf}').")
 
@@ -193,7 +193,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         $log.info "showBasket index in list ", index
         if index == -1
             $scope.copies = $scope.all_copies
-            $scope.cur_basket_index = -1
+            $scope.cur_basket_index = 0
             $scope.cur_basket = do
               id: -1
               fields: {name: ""}
