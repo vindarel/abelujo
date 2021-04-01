@@ -118,6 +118,7 @@ migrate:
 	python manage.py migrate --noinput
 
 collectstatic:
+	mkdir -p public
 	python manage.py collectstatic --noinput
 
 # Run the tests of the UI in a browser.
