@@ -67,7 +67,7 @@ script(type='text/javascript', src="{% static 'search/js/card.js' %}")
 
     .btn-group(style="margin-left: 1em")
       if object.is_catalogue_selection
-        a.btn.btn-default#heart(href="#", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})", style="background-color: pink")
+        a.btn.btn-default(id="heart-{{ object.pk }}", href="#", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})", style="background-color: pink")
           i.glyphicon.glyphicon-heart
       else
         a.btn.btn-default#heart(href="#", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})")

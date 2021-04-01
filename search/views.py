@@ -1983,3 +1983,15 @@ def command_card(request, pk):
             pass
         if card:
             return render(request, template)
+
+@login_required
+def catalogue_selection(request):
+    """
+    Show the selected cards for the online catalogue (ABStock in our case, for those who installed it side by side with Abelujo).
+    """
+    template = "search/catalogue_selection.html"
+    if request.method == 'GET':
+        cards = Card.objects.filter(is_catalogue_selection=True)
+        return render(request, template, {
+            'cards': cards,
+        })

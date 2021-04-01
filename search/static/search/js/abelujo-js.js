@@ -159,7 +159,8 @@ function card_catalogue_select(card_id) {
                 Notiflix.Notify.Success('OK');
 
                 // Update and toggle the heart colour.
-                let elt = document.getElementById('heart');
+                var heart_selector = "heart-" + card_id;
+                let elt = document.getElementById(heart_selector);
                 if (myJson.data.is_catalogue_selection) {
                     elt.style = "background-color: pink";
                 } else {

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
@@ -169,8 +170,7 @@ urlpatterns = patterns('',
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),
 
-    url(r'^inventories/$', 'search.views.inventories',
-        name="inventories"),
+    url(r'^inventories/$', 'search.views.inventories', name="inventories"),
     url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.jade")),
         name="inventory_new"),
     url(r'^inventories/(?P<pk>\d+)/?$', 'search.views.inventory',
@@ -183,4 +183,7 @@ urlpatterns = patterns('',
         name="inventory_terminate"),
     url(r'^inventories/(?P<pk>\d+)/export', 'search.views.inventory_export',
         name="inventory_export"),
+
+    # Catalogue's sélection du libraire
+    url(r'^catalogue-selection/$', 'search.views.catalogue_selection', name="catalogue_selection"),
 )
