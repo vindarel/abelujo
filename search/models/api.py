@@ -591,6 +591,25 @@ def card_command(request, pk, **kw):
     to_ret['data']['nb'] = nb
     return JsonResponse(to_ret)
 
+def card_select_catalogue(request, pk, **kw):
+    """
+    Toggle the catalogue selection.
+    """
+    to_ret = {
+        'data': {'is_catalogue_selection': None},
+        'status': ALERT_SUCCESS,
+    }
+    try:
+        res = Card.toggle_select_for_catalogue(pk)
+    except Exception as e:
+        log.error(u'Error adding to the auto_command: {}'.format(e))
+        status = ALERT_WARNING
+        to_ret['status'] = status
+        to_ret['alerts'] = [e]
+
+    to_ret['data']['is_catalogue_selection'] = res
+    return JsonResponse(to_ret)
+
 def card_reserve(request, pk, **kw):
     to_ret = {
         'data': {},

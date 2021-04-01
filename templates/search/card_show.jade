@@ -29,8 +29,10 @@
 {% load ngfilter %}
 {% load humanize %}
 
+script(type='text/javascript', src="{% static 'search/js/card.js' %}")
+
 //
-// No Angular nor Vue, uses card.js
+// No Angular nor Vue, uses card.js and abelujo-js.js
 //
 
 //div#abelujo
@@ -62,6 +64,14 @@
         i.glyphicon.glyphicon-shopping-cart
         span &nbsp; x
           span(id="nb_to_command") {{ object.quantity_to_command }}
+
+    .btn-group(style="margin-left: 1em")
+      if object.is_catalogue_selection
+        a.btn.btn-default#heart(href="#", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})", style="background-color: pink")
+          i.glyphicon.glyphicon-heart
+      else
+        a.btn.btn-default#heart(href="#", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})")
+          i.glyphicon.glyphicon-heart
 
     // ONGOING hide button
     //button(type="button", class="btn btn-default", data-toggle="modal", data-target="#myModal")
@@ -306,7 +316,5 @@ div.modal(id="myModal")
 
         button.btn.btn-success(type="button", onclick="validate_reservation()") OK
 
-
-script(type='text/javascript', src="{% static 'search/js/card.js' %}")
 
 {% endblock content %}

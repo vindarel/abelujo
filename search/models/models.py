@@ -696,6 +696,11 @@ class Card(TimeStampedModel):
     presedit = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True,
                                 editable=False,
                                 verbose_name=__("Présentation éditeur"))
+
+    #: Is it selected to appear on the front page of the online catalogue?
+    # This works with ABStock.
+    is_catalogue_selection = models.BooleanField(default=False, blank=True, verbose_name=__("Sélection du libraire pour le catalogue en ligne"))
+
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
@@ -2167,6 +2172,21 @@ class Card(TimeStampedModel):
     def add_card_id(id):
         card = Card.objects.filter(id=id).first()
         return card.add_card()
+
+    @staticmethod
+    def toggle_select_for_catalogue(pk):
+        """
+        Mark this card as selected for the online catalogue (ABStock) .
+        """
+        card = Card.objects.filter(pk=pk).first()
+        if not card:
+            return None
+        if card.is_catalogue_selection:
+            card.is_catalogue_selection = False
+        else:
+            card.is_catalogue_selection = True
+        card.save()
+        return card.is_catalogue_selection
 
     def display_year_published(self):
         "We only care about the year"

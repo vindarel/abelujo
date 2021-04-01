@@ -139,6 +139,45 @@ function card_command(card_id) {
 
 }
 
+function card_catalogue_select(card_id) {
+    // Called from: card_show.jade.
+    console.log("-- select for catalogue ", card_id);
+    let places_ids_qties = "";
+
+    let url = "/api/card/" + card_id + "/select_catalogue";
+    console.log("-- POSTing to ", url);
+    fetch(url, {
+        method: 'POST'
+    })
+        .then((response) => {
+            console.log("response is ", response);
+            return response.json();
+        })
+        .then((myJson) => {
+            if (myJson.status == 200 || myJson.status == "success") {
+                console.log("-- success.");;
+                Notiflix.Notify.Success('OK');
+
+                // Update and toggle the heart colour.
+                let elt = document.getElementById('heart');
+                if (myJson.data.is_catalogue_selection) {
+                    elt.style = "background-color: pink";
+                } else {
+                    elt.style = "";
+                }
+            }
+            else {
+                console.log("status is not success: ", myJson.status);
+                Notiflix.Notify.Warning("OK ou pas ?");
+            }
+        })
+        .catch((error) => {
+            console.error('There has been a problem with your fetch operation:', error);
+            Notiflix.Notify.Warning("An error occured, sorry. We have been notified.");
+        });
+
+}
+
 function getCookie(name) {
     // Used to get Django's CSRF token.
     // source: Django documentation.
