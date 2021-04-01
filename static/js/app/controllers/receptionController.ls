@@ -197,6 +197,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
             $scope.cur_basket = do
               id: -1
               fields: {name: ""}
+            $scope.set_focus!
             return
 
         # Filter by shelf.
