@@ -665,8 +665,15 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             payment_id = $scope.payment.id;
         }
         var payment_2_id = 0;
+        console.log($scope.payment_2);
         if ($scope.payment_2) {
+            console.log($scope.payment_2);
             payment_2_id = $scope.payment_2.id;
+        }
+        if (!$scope.total_payment_2) {
+            // check against null, when user erases the price manually instead of
+            // using the X button.
+            $scope.remove_payment_2();
         }
 
         var params = {
@@ -675,10 +682,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             "language": $scope.language,
             "place_id": place_id,
             "payment_id": payment_id,
-            "payment_2_id": payment_2_id,
             "total_payment_1": $scope.total_payment_1,
-            "total_payment_2": $scope.total_payment_2
         };
+
+        if (payment_2_id && $scope.total_payment_2 != 0) {
+            params['payment_2_id'] = payment_2_id;
+            params['total_payment_2'] = $scope.total_payment_2;
+        }
 
         if ($scope.client) {
             params['client_id'] = $scope.client.id;
@@ -896,6 +906,19 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
   }]);
 
+var api;
+angular.module('abelujo.services', []).value('version', '0.1');
+"Simple wrapper around the api to have hardcoded urls in one place.\n\nTo get the results, we still need to get the result of the promise with .then:\n\n```\napi.distributors!\n.then (response) ->\n    $scope.distributors = response.data\n```";
+api = angular.module('abelujo.services', []);
+api.factory('api', function($http){
+  var ref$, Obj, join, reject, sum, map, filter, find, lines;
+  ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines;
+  return {
+    distributors: function(){
+      return $http.get("/api/distributors");
+    }
+  };
+});
 var utils;
 angular.module('abelujo.services', []).value('version', '0.1');
 utils = angular.module('abelujo.services', []);
@@ -1088,6 +1111,54 @@ utils.factory('utils', [
     };
   }
 ]);
+angular.module("abelujo").controller("DistributorCreateModalController", function($http, $scope, $modal, $log, utils){
+  $scope.animationsEnabled = true;
+  $scope.open = function(size){
+    var distributorCreateModalInstanceCtrl;
+    distributorCreateModalInstanceCtrl = $modal.open({
+      animation: $scope.animationsEnabled,
+      templateUrl: 'modalContent.html',
+      controller: 'DistributorCreateModalInstanceCtrl',
+      size: size,
+      resolve: {
+        utils: function(){
+          return utils;
+        }
+      }
+    });
+    distributorCreateModalInstanceCtrl.result.then(function(selectedItem){
+      $scope.selected = selectedItem;
+    }, function(){
+      $log.info("modal dismissed");
+    });
+  };
+});
+angular.module("abelujo").controller("DistributorCreateModalInstanceCtrl", function($http, $scope, $distributorCreateModalInstanceCtrl, $window, $log, utils){
+  $scope.ok = function(){
+    var config, params;
+    $distributorCreateModalInstanceCtrl.close();
+    $log.info("post new distributor !");
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+    $http.defaults.transformRequest = utils.transformRequestAsFormPost;
+    config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      }
+    };
+    params = {
+      "place_id": $scope.place.id
+    };
+    return $http.post("/api/inventories/create", params).then(function(response){
+      $scope.distributor = response.data.data.distributor_id;
+      if ($scope.distributor) {
+        $window.location.href = "/en/inventories/" + $scope.distributor + "/";
+      }
+    });
+  };
+  $scope.cancel = function(){
+    $distributorCreateModalInstanceCtrl.dismiss('cancel');
+  };
+});
 angular.module("abelujo").controller("InventoryModalController", function($http, $scope, $uibModal, $log, utils){
   var ref$, sum, map, filter, lines, sort, sortBy;
   ref$ = require('prelude-ls'), sum = ref$.sum, map = ref$.map, filter = ref$.filter, lines = ref$.lines, sort = ref$.sort, sortBy = ref$.sortBy;
@@ -2449,6 +2520,26 @@ angular.module("abelujo").controller('cardCreateController', [
     $window.document.title = "Abelujo - " + gettext("new card");
   }
 ]);
+angular.module("abelujo").controller('cardReviewsController', [
+  '$http', '$scope', '$timeout', '$filter', '$window', '$log', 'utils', '$location', 'hotkeys', function($http, $scope, $timeout, $filter, $window, $log, utils, $location, hotkeys){
+    var ref$, Obj, join, reject, sum, map, filter, find, lines, params;
+    ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines;
+    $scope.language = utils.url_language($window.location.pathname);
+    $scope.reviews = [];
+    $scope.card_id = utils.url_id($window.location.pathname);
+    $log.info($scope.card_id);
+    if ($scope.card_id) {
+      params = {
+        language: $scope.language
+      };
+      $http.get("/api/card/" + $scope.card_id + "/reviews", {
+        ignoreLoadingBar: true
+      }).then(function(response){
+        $scope.reviews = response.data;
+      });
+    }
+  }
+]);
 angular.module("abelujo.controllers", []).controller('collectionController', [
   '$http', '$scope', '$timeout', 'utils', '$filter', '$window', '$cookies', '$uibModal', '$log', 'hotkeys', function($http, $scope, $timeout, utils, $filter, $window, $cookies, $uibModal, $log, hotkeys){
     var ref$, Obj, join, sum, map, filter, lines, show_images, page_size, config, get_selected;
@@ -2872,6 +2963,44 @@ angular.module("abelujo").controller("CollectionModalControllerInstance", functi
     $uibModalInstance.dismiss('cancel');
   };
 });
+angular.module("abelujo").controller('CommandReceiveController', [
+  '$http', '$scope', '$timeout', 'utils', '$filter', '$window', 'hotkeys', '$log', function($http, $scope, $timeout, utils, $filter, $window, hotkeys, $log){
+    var ref$, sum, map, filter, lines, reverse, join, reject, round, existing_card;
+    ref$ = require('prelude-ls'), sum = ref$.sum, map = ref$.map, filter = ref$.filter, lines = ref$.lines, reverse = ref$.reverse, join = ref$.join, reject = ref$.reject, round = ref$.round;
+    $scope.cards_fetched = [];
+    $scope.copy_selected = undefined;
+    $scope.history = [];
+    $scope.cards_selected = [];
+    $scope.all = [];
+    $scope.showAll = false;
+    $scope.cards_to_show = [];
+    $scope.total_value = 0;
+    $scope.nb_cards = 0;
+    $scope.nb_copies = 0;
+    $scope.tmpcard = undefined;
+    $scope.selected_ids = [];
+    existing_card = undefined;
+    $scope.inv_id = utils.url_id($window.location.pathname);
+    $scope.cur_inv = "the parcel of a command !";
+    $scope.progress_current = 0;
+    $scope.language = utils.url_language($window.location.pathname);
+    hotkeys.bindTo($scope).add({
+      combo: "a",
+      description: gettext("show all cards inventoried"),
+      callback: function(){
+        $scope.toggleCardsToShow();
+      }
+    }).add({
+      combo: "s",
+      description: gettext("go to the search box"),
+      callback: function(){
+        utils.set_focus();
+      }
+    });
+    utils.set_focus();
+    $window.document.title = "Abelujo - " + gettext("Inventory");
+  }
+]);
 angular.module("abelujo").controller('CommandsOngoingController', [
   '$http', '$scope', '$window', 'utils', '$log', function($http, $scope, $window, utils, $log){
     var ref$, Obj, join, reject, sum, map, filter, lines, findIndex;
@@ -3023,6 +3152,252 @@ angular.module("abelujo").controller('dashboardController', [
       });
     };
     $window.document.title = "Abelujo" + " - " + gettext("dashboard");
+  }
+]);
+angular.module("abelujo").controller('historyController', [
+  '$http', '$scope', '$timeout', '$filter', '$window', 'utils', '$log', 'hotkeys', '$resource', 'tmhDynamicLocale', function($http, $scope, $timeout, $filter, $window, utils, $log, hotkeys, $resource, tmhDynamicLocale){
+    var ref$, Obj, join, reject, sum, map, filter, find, lines, sortBy, findIndex, reverse, take, groupBy, uniqueBy, Distributors, getDistributors, DistSells;
+    ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines, sortBy = ref$.sortBy, findIndex = ref$.findIndex, reverse = ref$.reverse, take = ref$.take, groupBy = ref$.groupBy, uniqueBy = ref$.uniqueBy;
+    $scope.history = [];
+    $scope.sells_month = 0.0;
+    $scope.total_sells_month_excl_tax = 0.0;
+    $scope.back = [];
+    $scope.filterModel = 'All';
+    $scope.alerts = [];
+    $scope.show_details = false;
+    $scope.show_unique = false;
+    $scope.show_tab = 'sells';
+    $scope.last_sort = "created";
+    $scope.distributors = [];
+    $scope.distributor = {};
+    $scope.today = function(){
+      return $scope.user_date = new Date();
+    };
+    $scope.user_date = $scope.today();
+    $scope.page = 1;
+    $scope.page_size = 15;
+    $scope.page_max = 1;
+    $scope.sortorder = 0;
+    $scope.sortby = "";
+    Distributors = $resource('/api/distributors/:id');
+    getDistributors = function(){
+      Distributors.query(function(res){
+        $scope.distributors = res;
+      });
+    };
+    getDistributors();
+    $scope.get_history = function(){
+      var params;
+      params = {
+        month: $scope.user_date.getMonth() + 1,
+        year: $scope.user_date.getFullYear(),
+        page: $scope.page,
+        page_size: $scope.page_size,
+        sortby: $scope.sortby,
+        sortorder: $scope.sortorder
+      };
+      $http.get("/api/history/sells", {
+        params: params
+      }).then(function(response){
+        $scope.sells = [];
+        $scope.sells_month = 0;
+        $scope.total_sells_month_excl_tax = 0;
+        $scope.nb_sells = response.data.data.nb_sells;
+        $scope.nb_cards_sold = response.data.data.nb_cards_sold;
+        $scope.get_page_max(response.data.data.total);
+        return response.data.data.data.map(function(item){
+          var repr, created;
+          repr = "sell n° " + item.id;
+          created = Date.parse(item.created);
+          created = created.toString("d-MMM-yyyy");
+          item.created = created;
+          item.repr = repr;
+          item.show_row = false;
+          item.show_covers = false;
+          $scope.sells.push(item);
+          $scope.sells_month += item.price_sold;
+          $scope.total_sells_month_excl_tax += item.price_sold_excl_tax;
+          return {
+            repr: repr,
+            id: item.id
+          };
+        });
+      });
+    };
+    $scope.get_history();
+    $scope.get_page_max = function(){
+      var add_one_page;
+      add_one_page = function(total, page_size){
+        if (total % page_size === 0) {
+          return 0;
+        }
+        return 1;
+      };
+      $scope.page_max = Math.floor($scope.nb_sells / this.page_size) + add_one_page($scope.nb_sells, $scope.page_size);
+    };
+    $scope.nextPage = function(){
+      if ($scope.page < $scope.page_max) {
+        $scope.page += 1;
+        $scope.get_history();
+      }
+    };
+    $scope.previousPage = function(){
+      if ($scope.page > 1) {
+        $scope.page -= 1;
+        $scope.get_history();
+      }
+    };
+    $scope.firstPage = function(){
+      $scope.page = 1;
+      $scope.get_history();
+    };
+    $scope.lastPage = function(){
+      $scope.page = $scope.page_max;
+      $scope.get_history();
+    };
+    $scope.get_stats = function(){
+      var stats_params;
+      stats_params = {
+        year: $scope.user_date.getFullYear(),
+        month: $scope.user_date.getMonth() + 1
+      };
+      $http.get("/api/stats/sells/month", {
+        params: stats_params
+      }).then(function(response){
+        $scope.stats_month = response.data;
+      });
+    };
+    $scope.get_stats();
+    $scope.history_entries = function(){
+      $http.get("/api/history/entries").then(function(response){
+        $scope.show_tab = 'entries';
+        $scope.entries = map(function(it){
+          it.created = Date.parse(it.created).toString("d-MMM-yyyy");
+          return it;
+        })(
+        response.data.data);
+        $log.info(response.data);
+      });
+      $http.get("/api/stats/entries/month").then(function(response){
+        $scope.entries_month = response.data;
+      });
+    };
+    $scope.select_tab = function(model){
+      $scope.show_tab = model;
+    };
+    $scope.sellUndo = function(index){
+      var sell, sure, params;
+      sell = $scope.sells[index];
+      $log.info("undo sell " + sell.id);
+      sure = confirm(gettext("Are you sure to undo this sell ?"));
+      if (sure) {
+        params = {
+          soldcard_id: sell.soldcard_id
+        };
+        $http.get("/api/sell/" + sell.sell_id + "/undo", {
+          params: params
+        }).then(function(response){
+          $scope.alerts = response.data.alerts;
+        });
+      }
+    };
+    $scope.closeAlert = function(index){
+      $scope.alerts.splice(index, 1);
+    };
+    $scope.toggle_details = function(){
+      $scope.show_details = !$scope.show_details;
+    };
+    $scope.sort_by = function(key){
+      "Custom sort function. Smart-table is buggy and\nunder-documented. Didn't find a good table for angular.";
+      $scope.sortby = key;
+      $scope.sortorder = ($scope.sortorder + 1) % 2;
+      return $scope.get_history();
+    };
+    $scope.refreshDistributors = function(search, select){
+      "For ui-select";
+      getDistributors();
+      select.refreshItems();
+    };
+    DistSells = $resource('/api/sell/');
+    $scope.distChanged = function(){
+      $scope.sells = DistSells.get({
+        distributor_id: $scope.distributor.selected ? $scope.distributor.selected.id : void 8,
+        month: $scope.user_date.getMonth() + 1,
+        year: $scope.user_date.getFullYear(),
+        page: $scope.page,
+        page_size: $scope.page_size,
+        sortby: $scope.sortby,
+        sortorder: $scope.sortorder
+      }, function(resp){
+        var sells;
+        $scope.sells = [];
+        $scope.nb_sells = resp.data.data.length;
+        $scope.sells_month = 0;
+        $scope.total_sells_month_excl_tax = 0;
+        sells = resp.data.data;
+        sells.map(function(item){
+          var repr, created;
+          repr = "sell n° " + item.id;
+          created = Date.parse(item.created);
+          created = created.toString("d-MMM-yyyy");
+          item.created = created;
+          item.repr = repr;
+          item.show_row = false;
+          item.show_covers = false;
+          $scope.sells.push(item);
+          $scope.sells_month += item.price_sold;
+          $scope.total_sells_month_excl_tax += item.price_sold_excl_tax;
+          return {
+            repr: repr,
+            id: item.id
+          };
+        });
+        if ($scope.show_unique) {
+          $scope.filter_unique();
+        }
+      });
+    };
+    $scope.distErased = function(){
+      $scope.distributor.selected = undefined;
+      $scope.distChanged();
+    };
+    hotkeys.bindTo($scope).add({
+      combo: "d",
+      description: gettext("show or hide the book details in tables."),
+      callback: function(){
+        $scope.toggle_details();
+      }
+    }).add({
+      combo: "f",
+      description: gettext("filter one title per line"),
+      callback: function(){
+        $scope.show_unique = !$scope.show_unique;
+        $scope.filter_unique();
+      }
+    });
+    $scope.getMonth = function(){
+      if ($scope.user_date) {
+        return $scope.user_date.getMonth() + 1;
+      }
+    };
+    $scope.user_popup_status = {
+      opened: false
+    };
+    $scope.user_open_datepicker = function(event){
+      return $scope.user_popup_status.opened = true;
+    };
+    $scope.datepicker_user_options = {
+      minMode: "month",
+      formatYear: 'yyyy',
+      formatMonth: 'MMMM',
+      startingDay: 1
+    };
+    $scope.user_date_format = "MMMM";
+    $scope.user_change_month = function(){
+      $scope.get_history();
+      $scope.get_stats();
+    };
+    $window.document.title = "Abelujo - " + gettext("History");
   }
 ]);
 angular.module("abelujo").controller('inventoriesController', [
@@ -3518,6 +3893,7 @@ angular.module("abelujo").controller('inventoryTerminateController', [
     $window.document.title = "Abelujo - " + gettext("Terminate inventory") + "-" + $scope.name;
   }
 ]);
+angular.module("abelujo").controller('loginController', ['$http', '$scope', '$timeout', '$log', function($http, $scope, $timeout, $log){}]);
 angular.module("abelujo").controller('navbarController', [
   '$http', '$scope', '$log', 'utils', '$window', function($http, $scope, $log, utils, $window){
     var ref$, sum, map, filter, find;
@@ -3563,6 +3939,57 @@ angular.module("abelujo").controller('navbarController', [
       card = card.item;
       $log.info(card);
       $window.location.href = card.get_absolute_url;
+    };
+  }
+]);
+angular.module("abelujo").controller('preferencesController', [
+  '$http', '$scope', '$log', 'utils', '$resource', 'hotkeys', function($http, $scope, $log, utils, $resource, hotkeys){
+    var ref$, sum, map, filter, find, Places;
+    ref$ = require('prelude-ls'), sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find;
+    $scope.preferences = {};
+    $scope.username = undefined;
+    $scope.places = [];
+    $scope.place = undefined;
+    $scope.vat_book = undefined;
+    Places = $resource("/api/places/:id");
+    Places.query(function(places){
+      $scope.places = places;
+      $http.get("/api/preferences").then(function(response){
+        $scope.preferences = response.data.data;
+        $scope.place = find(function(it){
+          return it.id === $scope.preferences.default_place.id;
+        })(
+        $scope.places);
+        $scope.place_orig = $scope.place;
+        $scope.vat_book = $scope.preferences.vat_book;
+      });
+    });
+    $scope.save = function(userForm){
+      var params;
+      if (userForm.$valid) {
+        params = {
+          place_id: $scope.place.id,
+          vat_book: $scope.vat_book
+        };
+        $http.post("/api/preferences", params).then(function(response){
+          if (response.data.status === "success") {
+            $scope.alerts = [{
+              'level': 'success',
+              'message': gettext("Preferences updated")
+            }];
+          } else {
+            $scope.alerts = [{
+              'level': 'warning',
+              'message': gettext("There seems to be a problem to save preferences.")
+            }];
+          }
+        });
+      } else {
+        $log.info("form is not valid");
+      }
+    };
+    $scope.closeAlert = function(index){
+      return $scope.alerts.splice(index, 1);
     };
   }
 ]);
@@ -3964,6 +4391,417 @@ angular.module("abelujo").controller('restockingController', [
     $window.document.title = "Abelujo - " + gettext("Restocking");
   }
 ]);
+angular.module("abelujo").controller('returnsController', [
+  '$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', 'hotkeys', function($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location, hotkeys){
+    var ref$, Obj, join, reject, sum, map, filter, find, lines, sortBy, findIndex, reverse, COMMAND_BASKET_ID, page_size;
+    ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines, sortBy = ref$.sortBy, findIndex = ref$.findIndex, reverse = ref$.reverse;
+    $scope.baskets = [];
+    $scope.copies = [];
+    $scope.alerts = [];
+    $scope.show_buttons = {};
+    $scope.new_name = null;
+    $scope.cur_basket = undefined;
+    $scope.cards_fetched = [];
+    $scope.copy_selected = undefined;
+    $scope.show_images = false;
+    COMMAND_BASKET_ID = 1;
+    $scope.language = utils.url_language($window.location.pathname);
+    $scope.showing_notes = false;
+    $scope.last_sort = "title";
+    $scope.page = 1;
+    $scope.page_size = 25;
+    $scope.page_sizes = [25, 50, 100, 200];
+    $scope.page_max = 1;
+    $scope.meta = {
+      num_pages: null,
+      nb_results: null
+    };
+    page_size = $window.localStorage.getItem("baskets_page_size");
+    if (page_size !== null) {
+      $scope.page_size = parseInt(page_size);
+    }
+    $http.get("/api/returns").then(function(response){
+      "Get the returnBaskets, do not show the \"to command\" one, of id=1.";
+      var hash_basket_id, index;
+      hash_basket_id = parseInt($location.hash(), 10);
+      index = findIndex(function(it){
+        return hash_basket_id === it.id;
+      }, $scope.baskets);
+      if (!index) {
+        index = 0;
+      }
+      $scope.cur_basket_index = index;
+      $log.info("index: ", index);
+      return $scope.showBasket(index);
+    });
+    $scope.save_basket = function(){
+      var params;
+      params = {
+        comment: $scope.cur_basket.comment
+      };
+      $log.info("updating basket " + $scope.cur_basket.id + "…");
+      $http.post("/api/baskets/" + $scope.cur_basket.id + "/update/", params).then(function(response){
+        var resp;
+        return resp = response.data;
+      });
+    };
+    $scope.getCopies = function(index){
+      var params;
+      if ($scope.cur_basket) {
+        params = {
+          page_size: $scope.page_size,
+          page: $scope.page
+        };
+        $http.get("/api/returns/" + $scope.cur_basket.id + "/copies", {
+          params: params
+        }).then(function(response){
+          $scope.baskets[index].copies = response.data.data;
+          $scope.meta = response.data.meta;
+          $scope.copies = response.data.data;
+        });
+      }
+    };
+    $scope.showBasket = function(index){
+      "Show the copies of the given basket.";
+      $scope.cur_basket = $scope.baskets[index];
+      if ($scope.cur_basket) {
+        $location.hash($scope.cur_basket.id);
+        $window.document.title = "Abelujo - " + gettext("Returns") + ", " + $scope.cur_basket.name;
+        $window.localStorage.setItem('cur_basket_id', $scope.cur_basket.id);
+        if (!$scope.cur_basket.copies) {
+          $scope.getCopies(index);
+        } else {
+          $scope.copies = $scope.cur_basket.copies;
+        }
+        angular.element('#default-input').trigger('focus');
+      }
+    };
+    $scope.archive_basket = function(){
+      var sure;
+      sure = confirm(gettext("Are you sure to archive this list {}?").replace("{}", $scope.cur_basket.name));
+      if (sure) {
+        $http.post("/api/baskets/" + $scope.cur_basket.id + "/archive").then(function(response){
+          var index;
+          index = findIndex(function(it){
+            return it.id === $scope.cur_basket.id;
+          }, $scope.baskets);
+          $scope.baskets.splice(index, 1);
+          if (index >= $scope.baskets.length) {
+            index -= 1;
+          }
+          $scope.showBasket(index);
+        });
+      }
+    };
+    $scope.delete_basket = function(){
+      var sure;
+      sure = confirm(gettext("You are going to delete the list {}. This can not be undone. Are you sure ?").replace("{}", $scope.cur_basket.name));
+      $log.info(sure);
+      if (sure) {
+        $http.post("/api/baskets/" + $scope.cur_basket.id + "/delete").then(function(response){
+          var index;
+          index = findIndex(function(it){
+            return it.id === $scope.cur_basket.id;
+          }, $scope.baskets);
+          $scope.baskets.splice(index, 1);
+          if (index >= $scope.baskets.length) {
+            index -= 1;
+          }
+          $scope.showBasket(index);
+        });
+      }
+    };
+    $window.document.title = "Abelujo - " + gettext("Baskets");
+    $scope.closeAlert = function(index){
+      return $scope.alerts.splice(index, 1);
+    };
+    $scope.getCards = function(query){
+      var args, promise;
+      args = {
+        query: query,
+        language: $scope.language,
+        lang: $scope.language
+      };
+      promise = utils.getCards(args);
+      return promise.then(function(res){
+        $scope.cards_fetched = res;
+        if (utils.is_isbn(query) && res.length === 1) {
+          setTimeout(function(){
+            $window.document.getElementById("default-input").value = "";
+            return $scope.add_selected_card(res[0]);
+          }, 700);
+          return;
+        }
+        return res;
+      });
+    };
+    $scope.add_selected_card = function(card){
+      " Add the card selected from the autocomplete to the current list's copies.\nSave it.";
+      var tmpcard, index;
+      tmpcard = find(function(it){
+        return it.repr === card.repr;
+      })(
+      $scope.cards_fetched);
+      tmpcard = tmpcard.item;
+      index = 0;
+      index = findIndex(function(it){
+        return tmpcard.title < it.title;
+      }, $scope.copies);
+      if (!index) {
+        index = $scope.copies.length;
+      }
+      $scope.copies.splice(index, 0, tmpcard);
+      $scope.copy_selected = undefined;
+      $scope.save_card_to_basket(tmpcard.id, $scope.cur_basket.id);
+    };
+    $scope.save_card_to_basket = function(card_id, basket_id){
+      var coma_sep, params;
+      coma_sep = card_id + "";
+      params = {
+        card_ids: coma_sep
+      };
+      $http.post("/api/baskets/" + basket_id + "/add/", params).then(function(response){
+        $log.info("added cards to basket");
+      }, function(response){
+        throw Error('unimplemented');
+      });
+    };
+    $scope.save_quantity = function(index){
+      "Save the item quantity.";
+      var card;
+      card = $scope.copies[index];
+      utils.save_quantity(card, $scope.cur_basket.id);
+    };
+    $scope.command = function(){
+      "Add the copies of the current basket to the Command basket. Api call.";
+      var text, sure, params;
+      if (!confirm(gettext("You didn't set a supplier for this list (menu -> set a supplier). Do you want to carry on ?"))) {
+        return;
+      }
+      $log.info("cur_basket: ", $scope.cur_basket);
+      $log.info("copies: ", $scope.copies);
+      if (!$scope.copies.length) {
+        alert(gettext("This basket has no copies to command !"));
+        return;
+      }
+      text = gettext("Do you want to mark all the cards of this list to command ?");
+      if ($scope.cur_basket.distributor) {
+        text += gettext(" They will be associated with the supplier " + $scope.cur_basket.distributor + ".");
+      }
+      sure = confirm(text);
+      if (sure) {
+        params = {
+          basket_id: $scope.cur_basket.id
+        };
+        $http.post("/api/baskets/" + COMMAND_BASKET_ID + "/add/", params).then(function(response){
+          $scope.alerts = response.data.alerts;
+        });
+      }
+    };
+    $scope.remove_from_selection = function(index_to_rm){
+      "Remove the card from the list. Server call to the api.";
+      var card_id;
+      card_id = $scope.copies[index_to_rm].id;
+      $http.post("/api/baskets/" + $scope.cur_basket.id + "/remove/" + card_id + "/").then(function(response){
+        $scope.copies.splice(index_to_rm, 1);
+      })['catch'](function(resp){
+        $log.info("Error when trying to remove the card " + card_id);
+      });
+    };
+    $scope.get_data = function(){
+      return join(",")(
+      map(function(it){
+        return it.id;
+      })(
+      $scope.cur_basket.copies));
+    };
+    $scope.get_total_price = function(){
+      return utils.total_price($scope.copies);
+    };
+    $scope.get_total_copies = function(){
+      return utils.total_copies($scope.copies);
+    };
+    $scope.receive_command = function(){
+      var sure;
+      if (!$scope.cur_basket.distributor) {
+        alert("You didn't set a distributor for this basket. Please see the menu Action -> set the supplier.");
+        return;
+      }
+      sure = confirm(gettext("Do you want to receive a command for the supplier '" + $scope.cur_basket.distributor + "' ?"));
+      if (sure) {
+        $http.get("/api/baskets/" + $scope.cur_basket.id + "/inventories/").then(function(response){
+          var inv_id;
+          inv_id = response.data.data.inv_id;
+          $window.location.href = "/" + $scope.language + "/inventories/" + inv_id + "/";
+        });
+      }
+    };
+    $scope.return_to_supplier = function(){
+      var sure;
+      if (!$scope.cur_basket.distributor) {
+        alert("You didn't set a distributor for this basket. Please see the menu Action -> set the supplier.");
+        return;
+      }
+      sure = confirm(gettext("Do you want to return this basket to " + $scope.cur_basket.distributor + " ? This will remove the given quantities from your stock."));
+      if (sure) {
+        $http.post("/api/baskets/" + $scope.cur_basket.id + "/return").then(function(response){
+          $log.info(response);
+          $scope.alerts = response.data.alerts;
+        });
+      }
+    };
+    $scope.$watch("page_size", function(){
+      $window.localStorage.baskets_page_size = $scope.page_size;
+      $scope.getCopies($scope.cur_basket_index);
+    });
+    $scope.nextPage = function(){
+      if ($scope.page < $scope.meta.num_pages) {
+        $scope.page += 1;
+        $log.info("-- cur_basket_index: ", $scope.cur_basket_index);
+        $scope.getCopies($scope.cur_basket_index);
+      }
+    };
+    $scope.lastPage = function(){
+      $scope.page = $scope.meta.num_pages;
+      $scope.getCopies($scope.cur_basket_index);
+    };
+    $scope.previousPage = function(){
+      if ($scope.page > 1) {
+        $scope.page -= 1;
+        $scope.getCopies($scope.cur_basket_index);
+      }
+    };
+    $scope.firstPage = function(){
+      $scope.page = 1;
+      $scope.getCopies($scope.cur_basket_index);
+    };
+    $scope.open_new_basket = function(size){
+      var modalInstance;
+      modalInstance = $uibModal.open({
+        animation: $scope.animationsEnabled,
+        templateUrl: 'basketModal.html',
+        controller: 'BasketModalControllerInstance',
+        size: size,
+        resolve: {
+          utils: function(){
+            return utils;
+          }
+        }
+      });
+      modalInstance.result.then(function(basket){
+        $scope.baskets.push(basket);
+        $log.info("new basket: ", basket);
+        $log.info("all baskets: ", $scope.baskets);
+      }, function(){
+        $log.info("modal dismissed");
+      });
+    };
+    $scope.add_to_shelf = function(cur_basket_id){
+      var modalInstance;
+      $log.info("add_to_shelf got basket id", cur_basket_id);
+      modalInstance = $uibModal.open({
+        animation: $scope.animationsEnabled,
+        templateUrl: 'chooseShelfModal.html',
+        controller: 'ChooseShelfModalControllerInstance',
+        cur_basket_id: cur_basket_id,
+        resolve: {
+          utils: function(){
+            return utils;
+          }
+        }
+      });
+      modalInstance.result.then(function(basket){
+        basket = $scope.baskets[cur_basket_id];
+        basket.copies = [];
+        $scope.copies = [];
+        $log.info("modal ok");
+      }, function(){
+        $log.info("modal dismissed");
+      });
+    };
+    $scope.toggle_images = function(){
+      $scope.show_images = !$scope.show_images;
+    };
+    $scope.sort_by = function(key){
+      if ($scope.last_sort === key) {
+        $scope.copies = reverse(
+        $scope.copies);
+      } else {
+        $scope.copies = sortBy(function(it){
+          return it[key];
+        })(
+        $scope.copies);
+        $scope.last_sort = key;
+      }
+      $log.info($scope.copies);
+    };
+    hotkeys.bindTo($scope).add({
+      combo: "d",
+      description: gettext("show or hide the book details in tables."),
+      callback: function(){
+        $scope.toggle_images();
+      }
+    }).add({
+      combo: "s",
+      description: gettext("go to the search box"),
+      callback: function(){
+        utils.set_focus();
+      }
+    }).add({
+      combo: "n",
+      description: gettext("hide or show your notes"),
+      callback: function(){
+        $scope.showing_notes = !$scope.showing_notes;
+      }
+    }).add({
+      combo: "C",
+      description: gettext("Create a new list"),
+      callback: function(){
+        $scope.open();
+      }
+    });
+  }
+]);
+angular.module("abelujo").controller("ChooseShelfModalControllerInstance", function($http, $scope, $uibModalInstance, $window, $log, utils){
+  utils.set_focus();
+  $scope.shelves = [];
+  $scope.selected_shelf = null;
+  $log.info("cur_basket_id storage: ", $window.localStorage.getItem('cur_basket_id'));
+  $scope.cur_basket_id = $window.localStorage.getItem('cur_basket_id');
+  $http.get("/api/shelfs").then(function(response){
+    $log.info("response: ", response);
+    $scope.shelves = response.data;
+    return $log.info("shelves: ", $scope.shelves);
+  });
+  $scope.ok = function(){
+    var config, params;
+    if (typeof $scope.selected_shelf === "undefined" || $scope.selected_shelf === "") {
+      $uibModalInstance.dismiss('cancel');
+      return;
+    }
+    $log.info("selected shelf: ", $scope.selected_shelf);
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+    $http.defaults.transformRequest = utils.transformRequestAsFormPost;
+    config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      }
+    };
+    params = {
+      shelf_id: $scope.selected_shelf.pk
+    };
+    $http.post("/api/baskets/" + $scope.cur_basket_id + "/add_to_shelf/", params).then(function(response){
+      $scope.alerts = response.data.alerts;
+      $uibModalInstance.close();
+      $scope.alerts = response.data.alerts;
+    });
+  };
+  $scope.cancel = function(){
+    $uibModalInstance.dismiss('cancel');
+    $scope.alerts = response.data.alerts;
+  };
+});
+
 angular.module("abelujo").controller('searchResultsController', [
   '$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', 'hotkeys', function($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location, hotkeys){
     var ref$, Obj, join, reject, sum, map, filter, find, lines, search_obj, previous_query, source_id, datasource_id;
