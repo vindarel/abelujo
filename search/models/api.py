@@ -617,7 +617,6 @@ def card_reserve(request, pk, **kw):
         'alerts': [],
     }
     if request.method == 'POST':
-        import ipdb; ipdb.set_trace()
         params = kw.copy()
         client_id = params.get('client_id')
         try:
@@ -633,7 +632,6 @@ def card_reserve(request, pk, **kw):
         else:
             client.reserve(pk)
 
-    import ipdb; ipdb.set_trace()
 
 def cardtype(request, **response_kwargs):
     if request.method == "GET":
@@ -852,10 +850,12 @@ def sell(request, **response_kwargs):
         place_id = int(params.get("place_id", 0))
         payment_id = int(params.get("payment_id", 0))
         payment_2_id = params.get("payment_2_id")
-        if payment_2_id:
+        if payment_2_id and payment_2_id not in ['null', 'undefined']:
             payment_2_id = int(payment_2_id)
         total_payment_1 = float(params.get("total_payment_1", 0))
-        total_payment_2 = float(params.get("total_payment_2", 0))
+        total_payment_2 = params.get("total_payment_2", 0)
+        if total_payment_2 and payment_2_id not in ['null', 'undefined']:
+            total_payment_2 = float(total_payment_2)
         client_id = int(params.get("client_id", -1))
 
         # Sell from a place.

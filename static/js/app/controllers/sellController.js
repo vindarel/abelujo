@@ -128,7 +128,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
           if ($scope.all_digits_re.test(val)) {
               if (val.length < 13) {
-                  console.log("--- dismissing ", val);
                   return;
               }
           };
@@ -370,6 +369,11 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         if ($scope.payment_2) {
             payment_2_id = $scope.payment_2.id;
         }
+        if (!$scope.total_payment_2) {
+            // check against null, when user erases the price manually instead of
+            // using the X button.
+            $scope.remove_payment_2();
+        }
 
         var params = {
             "to_sell": [ids, prices, quantities],
@@ -377,10 +381,13 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             "language": $scope.language,
             "place_id": place_id,
             "payment_id": payment_id,
-            "payment_2_id": payment_2_id,
             "total_payment_1": $scope.total_payment_1,
-            "total_payment_2": $scope.total_payment_2
         };
+
+        if (payment_2_id && $scope.total_payment_2 != 0) {
+            params['payment_2_id'] = payment_2_id;
+            params['total_payment_2'] = $scope.total_payment_2;
+        }
 
         if ($scope.client) {
             params['client_id'] = $scope.client.id;
@@ -435,7 +442,6 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.show_payment_2 = false;
         $scope.total_payment_2 = 0;
         $scope.total_payment_1 = $scope.total_price * 100 / 100;
-        console.log("-- total_payment_1:", $scope.total_payment_1);
     };
 
     $scope.export_csv = function () {
