@@ -155,16 +155,19 @@ function card_catalogue_select(card_id) {
         })
         .then((myJson) => {
             if (myJson.status == 200 || myJson.status == "success") {
-                console.log("-- success.");;
-                Notiflix.Notify.Success('OK');
-
                 // Update and toggle the heart colour.
                 var heart_selector = "heart-" + card_id;
                 let elt = document.getElementById(heart_selector);
-                if (myJson.data.is_catalogue_selection) {
-                    elt.style = "background-color: pink";
-                } else {
-                    elt.style = "";
+                if (elt != null && elt != undefined) {
+                    if (myJson.data.is_catalogue_selection) {
+                        elt.style = "background-color: pink";
+                    } else {
+                        elt.style = "";
+                    }
+                    Notiflix.Notify.Success('OK');
+                }
+                else {
+                    console.warn("warn: we did not find ", heart_selector);
                 }
             }
             else {
