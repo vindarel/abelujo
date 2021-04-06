@@ -14,8 +14,6 @@ function url_id (url) {
 };
 
 (function() {
-    console.log("hello card");
-
     let shelves = [];
     let shelf_select = document.getElementById('shelf-select');
 

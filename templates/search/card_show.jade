@@ -29,7 +29,6 @@
 {% load ngfilter %}
 {% load humanize %}
 
-script(type='text/javascript', src="{% static 'search/js/card.js' %}")
 
 //
 // No Angular nor Vue, uses card.js and abelujo-js.js
@@ -316,5 +315,7 @@ div.modal(id="myModal")
 
         button.btn.btn-success(type="button", onclick="validate_reservation()") OK
 
+// important to run this last, so CSS selectors select something.
+script(type='text/javascript', src="{% static 'search/js/card.js' %}")
 
 {% endblock content %}
