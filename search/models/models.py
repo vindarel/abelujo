@@ -4586,12 +4586,18 @@ class Sell(models.Model):
                                                      self.created)
 
     def payments_repr(self):
-        """Print payment means humanly (string)"""
+        """
+        Print payment means humanly (string).
+        Avoid accents in config.py PAYMENT_CHOICES and all will be good.
+        """
         res = get_payment_abbr(self.payment)
         res = res.encode('utf8')
         if self.payment_2 and self.payment_2 not in [0, "0"]:
-            res += get_payment_abbr(self.payment_2)
-            res = res.encode('utf8')
+            try:
+                res += ",{}".format(get_payment_abbr(self.payment_2).encode('utf8'))
+            except UnicodeDecodeError as e:
+                res = res.decode('utf8')
+                res += self.payment_2
         return res
 
     @property
