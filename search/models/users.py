@@ -142,7 +142,8 @@ class Client(Contact):
         """
         Reserve this card.
         """
-        import ipdb; ipdb.set_trace()
+        raise NotImplementedError
+
 
 class Bookshop(Contact):
     """
