@@ -1,8 +1,6 @@
 # https://docs.gitlab.com/ce/ci/yaml/README.html
 
-# We try a ready image with nodejs and python, instead of the python:2.7
-# Easier, but we don't test nodejs installation.
-image: beevelop/nodejs-python
+image: debian:buster
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
