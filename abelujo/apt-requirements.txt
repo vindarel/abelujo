@@ -1,7 +1,8 @@
 # Careful: write comments only at beg of line
 # (see Makefile's update)
 
-git-core
+git
+make
 python-pip
 virtualenvwrapper
 python-dev
@@ -24,7 +25,3 @@ libgdk-pixbuf2.0-0
 shared-mime-info
 # and for pybarcode and pillow
 libfreetype6-dev
-
-# node
-nodejs
-npm
