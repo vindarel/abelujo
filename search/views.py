@@ -341,7 +341,6 @@ def card_show(request, pk):
         # List of clients (for modale)
         clients = [it.to_dict() for it in Client.objects.order_by("name").all()]
 
-
     return render(request, template, {
         "object": card,
         "sells": sells,

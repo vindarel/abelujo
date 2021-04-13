@@ -4595,7 +4595,7 @@ class Sell(models.Model):
         if self.payment_2 and self.payment_2 not in [0, "0"]:
             try:
                 res += ",{}".format(get_payment_abbr(self.payment_2).encode('utf8'))
-            except UnicodeDecodeError as e:
+            except UnicodeDecodeError:
                 res = res.decode('utf8')
                 res += self.payment_2
         return res
