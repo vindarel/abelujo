@@ -21,6 +21,7 @@ cache:
   # note: we can't have a before_script here and one above.
   before_script:
     - apt-get update -qy
+    - apt-get install -qy make git
     - make debian-nosudo
     # - virtualenv .
     # - source bin/activate
