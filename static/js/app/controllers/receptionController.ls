@@ -54,6 +54,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
     Notiflix.Notify.Init do
         timeout: 7000
         messageMaxLength: 220
+        position: "center-top"
 
     $http.get "/api/shelfs"
     .then (response) ->
@@ -90,7 +91,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
     # Get the shelves' "length" (how many cards in each).
     $http.get "/api/reception/shelfs"
     .then (response) ->
-          $log.info response
           $scope.shelves_length = response.data.data
 
     $scope.getCards = (query) ->
@@ -169,7 +169,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
                 $log.info "card alerts: ", card.alerts, "response: ", response.data
             else
                 $log.info "PAS DE CARD !"
-            Notiflix.Notify.Success "Card received!"
+            Notiflix.Notify.Success "OK!"
 
             # update total count
             $scope.get_basket_quantity!
