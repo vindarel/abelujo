@@ -62,20 +62,10 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         Get the shelves.
         """
         $scope.shelves = response.data
-        $log.info response.data
-        ## hash_basket_id = parseInt $location.hash(), 10
-        ## index = find-index ( -> hash_basket_id == it.id), $scope.baskets
-        ## if not index
-            ## index = 0
-
-        ## $scope.cur_basket_index = index
-        ## $log.info "index: ", index
-        ## $scope.showBasket index
 
     # Get the cards of the current reception (ongoing one, not closed).
     $http.get "/api/reception/"
     .then (response) ->
-          $log.info response
           $scope.all_copies = response.data.data
           $scope.copies = response.data.data
 
@@ -116,14 +106,22 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         And then, save it. If there is an error at this phase, show it asynchronously.
         """
         # We got a card from the autocomplete, we first want to display it.
-        $log.info "adding ", card
+        cards_fetched = $scope.cards_fetched  # let's hope
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
-        tmpcard = $scope.cards_fetched
+        tmpcard = cards_fetched
         |> find (.repr == card.repr)
+        # If the user types in the autocomplete, a search is fired for each key press,
+        # but they are received in any order, so by the time we see some results and select
+        # a card cards_fetched can change under us, and tmpcard be null O_o
+        if not tmpcard
+           $log.warn "we were expecting an existing tmpcard amongst cards_fetched ", cards_fetched
+           Notiflix.Notify.Warning "Le serveur n'est pas prêt ! Veuillez attendre un instant et ré-essayer, merci."
+           $scope.copy_selected = undefined
+           return
+
         tmpcard = tmpcard.item  # object
         existing = $scope.all_copies
         |> find (.id == tmpcard.id)
-        $log.info "exsting: ", existing  # array
         if existing
            existing.basket_qty += 1  # and move to top
            existing.modified = now
@@ -160,13 +158,11 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
             params['quantity'] = quantity
         $http.post "/api/reception/add/", params
         .then (response) !->
-            $log.info "added cards to reception"
             # $scope.alerts = response.data.msgs # the confirmation alert should be less intrusive
             card = $scope.all_copies
             |> find (.id == card_id)
             if card
                 card.alerts = response.data.alerts
-                $log.info "card alerts: ", card.alerts, "response: ", response.data
             else
                 $log.info "PAS DE CARD !"
             Notiflix.Notify.Success "OK!"
@@ -180,17 +176,14 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
 
     $scope.getCopies = (id) !->
-        $log.info "getCopies ", id
         res = $scope.all_copies
         |> filter (.shelf_id == id)
-        $log.info "filtering all_copies: ", res
         $scope.copies = res
         return res
 
     $scope.showBasket = (index) !->
         "Show the copies of the shelf (by its index in the shelves list)."
         # Show all.
-        $log.info "showBasket index in list ", index
         if index == -1
             $scope.copies = $scope.all_copies
             $scope.cur_basket_index = 0
@@ -202,7 +195,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
         # Filter by shelf.
         $scope.cur_basket = $scope.shelves[index]
-        $log.info "found shelf: ", $scope.cur_basket, "pk: ", $scope.cur_basket.pk
         if $scope.cur_basket
             $location.hash($scope.cur_basket.id)
             ## if not $scope.cur_basket.copies
@@ -219,14 +211,12 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         shelf = $scope.shelves
         |> find (.pk == pk)
         if shelf
-           $log.info shelf
            ## $scope.showBasket shelf.pk
            $scope.cur_basket = shelf
            $scope.getCopies shelf.pk
            $scope.set_focus!
 
     $scope.update_card_shelf = (card, shelf) !->
-        $log.info "got card: ", card, "new shelF: ", $scope.new_shelf, "arg: ", shelf
         params = do
             card_id: card.id
             shelf_id: shelf.pk
@@ -234,7 +224,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         .then (response) !->
             copy = $scope.all_copies
             |> find (.id == card.id)
-            $log.info "updated card"
             copy.shelf = shelf.fields.name
             copy.shelf_id = shelf.pk
             copy.alerts = []
@@ -252,7 +241,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         """Save the item quantity after click."""
         #TEST:
         card = $scope.copies[index]
-        $log.info "save quantity: ", card.basket_qty
         $scope.save_card_to_reception card.id, quantity = card.basket_qty
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
         card.modified = now  # there is no success check
@@ -261,7 +249,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         $scope.total_basket_quantity = $scope.all_copies
         |> map ( -> it.basket_qty )
         |> sum
-        $log.info "-- quantity: ", $scope.total_basket_quantity
 
     # Validate and archive.
     $scope.validate_reception = !->
@@ -273,9 +260,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
                 foo: 1
             $http.post "/api/reception/validate/", params
             .then (response) !->
-                $log.info response.data
                 if response.data.status == 'success'
-                    $log.info "success !"
                     $window.location.href = "/#{$scope.language}/reception/"
                     $scope.all_copies = []
 
@@ -306,7 +291,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages
             $scope.page += 1
-            $log.info "-- cur_basket_index: ", $scope.cur_basket_index
             $scope.getCopies $scope.cur_basket_index
 
     $scope.lastPage = !->
