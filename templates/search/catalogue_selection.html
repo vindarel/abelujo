@@ -35,7 +35,9 @@
   </div>
 
   <div class="col-md-4">
-    <h4> {{ card.title }} </h4>
+    <a href="{{ card.get_absolute_url }}">
+      <h4> {{ card.title }} </h4>
+    </a>
     <div style="color: grey"> {{ card.isbn }} </div>
     <div> {{ card.price_fmt }} </div>
   </div>
