@@ -3942,9 +3942,13 @@ angular.module("abelujo").controller('navbarController', [
         return it.id === item.id;
       })(
       $scope.cards_fetched);
-      card = card.item;
-      $log.info(card);
-      $window.location.href = card.get_absolute_url;
+      if (card) {
+        card = card.item;
+        $log.info(card);
+        $window.location.href = card.get_absolute_url;
+      } else {
+        $log.warn("card is undefined");
+      }
     };
   }
 ]);

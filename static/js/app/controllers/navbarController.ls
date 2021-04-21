@@ -52,8 +52,12 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
         $log.info item
         card = $scope.cards_fetched
         |> find (.id == item.id)
-        card = card.item
-        $log.info card
-        $window.location.href = card.get_absolute_url
+        if card
+            card = card.item
+            $log.info card
+            $window.location.href = card.get_absolute_url
+        else
+            $log.warn "card is undefined"
+            $window.document.getElementById("navbar-input").value = "";
 
 ]
