@@ -158,16 +158,17 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
             lang: $scope.language
 
         promise = utils.getCards args
-        promise.then (res) ->
-            $scope.cards_fetched = res
-            if utils.is_isbn query and res.length == 1
-               setTimeout( ->
-                 $window.document.getElementById("default-input").value = ""
-                 $scope.add_selected_card res[0]
-               , 700)
-               return
+        if promise
+            promise.then (res) ->
+                $scope.cards_fetched = res
+                if utils.is_isbn query and res.length == 1
+                   setTimeout( ->
+                     $window.document.getElementById("default-input").value = ""
+                     $scope.add_selected_card res[0]
+                   , 700)
+                   return
 
-            return res
+                return res
 
     $scope.add_selected_card = (card) !->
         """ Add the card selected from the autocomplete to the current list's copies.

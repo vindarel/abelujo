@@ -116,11 +116,23 @@ utils.factory 'utils', ['$http', '$window', '$log', ($http, $window, $log) ->
         getCards: (args) ->
             "Search cards, api call. Used in navbar's search, in baskets, etc.
 
+            args: object with query, language, with_quantity and other keys.
+
             Use as a promise:
             >> promise = utils.getCards args
             >> promise.then (results) ->
                 $scope.var = results
             "
+            # If we're typing numbers, it's probably a slow barcode scanner
+            # that is inputing the ISBN: don't fire queries yet.
+            re = /^(\d+)$/
+            res = args.query.match(re)
+            if res and res.length == 2 and args.query.length < 10  # EAN10 maybe?
+               # wait for a full ISBN
+               $log.info "Incomplete ISBN."
+               return
+
+
             # repetition: that's a fail :(
             params = do
                 query: args.query

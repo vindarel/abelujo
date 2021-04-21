@@ -34,18 +34,19 @@ angular.module "abelujo" .controller 'navbarController', ['$http', '$scope', '$l
             with_quantity: false
 
         promise = utils.getCards args
-        promise.then (res) ->
-            $scope.cards_fetched = res
-            if utils.is_isbn(query) and res.length == 1
-               $scope.go_to_card res[0]
-            if utils.is_isbn(query) and res.length == 0
-               Notiflix.Notify.Merge({
-                 timeout: 20000,
-               })
-               Notiflix.Notify.Warning(gettext('ISBN not found.'))
-               Notiflix.Notify.Info gettext('You can still create a card manually.')
-               $window.document.getElementById("navbar-input").value = "";
-            return res
+        if promise
+            promise.then (res) ->
+                $scope.cards_fetched = res
+                if utils.is_isbn(query) and res.length == 1
+                   $scope.go_to_card res[0]
+                if utils.is_isbn(query) and res.length == 0
+                   Notiflix.Notify.Merge({
+                     timeout: 20000,
+                   })
+                   Notiflix.Notify.Warning(gettext('ISBN not found.'))
+                   Notiflix.Notify.Info gettext('You can still create a card manually.')
+                   $window.document.getElementById("navbar-input").value = "";
+                return res
 
     $scope.go_to_card = (item) !->
         $log.info item

@@ -34,6 +34,29 @@ angular.module('abelujo', [
 //     tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
 // });
 
+'use strict';
+
+/* Directives */
+
+
+angular.module('abelujo.directives', []).
+  directive('appVersion', ['version', function(version) {
+    return function(scope, elm, attrs) {
+      elm.text(version);
+    };
+  }]);
+
+'use strict';
+
+/* Filters */
+
+angular.module('abelujo.filters', []).
+  filter('interpolate', ['version', function(version) {
+    return function(text) {
+      return String(text).replace(/\%VERSION\%/mg, version);
+    };
+  }]);
+
 // Copyright 2014 - 2020 The Abelujo Developers
 // See the COPYRIGHT file at the top-level directory of this distribution
 
@@ -879,29 +902,217 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
   }]);
 
-'use strict';
-
-/* Filters */
-
-angular.module('abelujo.filters', []).
-  filter('interpolate', ['version', function(version) {
-    return function(text) {
-      return String(text).replace(/\%VERSION\%/mg, version);
+var api;
+angular.module('abelujo.services', []).value('version', '0.1');
+"Simple wrapper around the api to have hardcoded urls in one place.\n\nTo get the results, we still need to get the result of the promise with .then:\n\n```\napi.distributors!\n.then (response) ->\n    $scope.distributors = response.data\n```";
+api = angular.module('abelujo.services', []);
+api.factory('api', function($http){
+  var ref$, Obj, join, reject, sum, map, filter, find, lines;
+  ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines;
+  return {
+    distributors: function(){
+      return $http.get("/api/distributors");
+    }
+  };
+});
+var utils;
+angular.module('abelujo.services', []).value('version', '0.1');
+utils = angular.module('abelujo.services', []);
+utils.factory('utils', [
+  '$http', '$window', '$log', function($http, $window, $log){
+    var ref$, Obj, join, reject, sum, map, filter, find, lines, sortBy, reverse, take, uniqueBy, mean, id, each;
+    ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines, sortBy = ref$.sortBy, reverse = ref$.reverse, take = ref$.take, uniqueBy = ref$.uniqueBy, mean = ref$.mean, id = ref$.id, each = ref$.each;
+    return {
+      transformRequestAsFormPost: function(obj){
+        var str, p;
+        str = [];
+        for (p in obj) {
+          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        }
+        return str.join("&");
+      },
+      url_language: function(url){
+        var re, res;
+        re = /\/([a-z][a-z])\//;
+        res = url.match(re);
+        if (res) {
+          return res[1];
+        }
+        return "en";
+      },
+      locale_language: function(str){
+        "Take a short string specifying a language (exple: fr,\nes; taken from the url) and return one that has meaning\nfor angular's $locale.";
+        if (str === "fr") {
+          return "fr-fr";
+        }
+        if (str === "es") {
+          return "es-es";
+        }
+        if (str === "de") {
+          return "de-de";
+        }
+        return "en-gb";
+      },
+      url_id: function(url){
+        var re, res;
+        re = /\/(\d+)/;
+        res = url.match(re);
+        if (res && res.length === 2) {
+          return res[1];
+        }
+        return null;
+      },
+      set_focus: function(){
+        angular.element('#default-input').trigger('focus');
+      },
+      total_price: function(copies){
+        return sum(map(function(it){
+          return it.price * it.basket_qty;
+        }, copies)).toFixed(2);
+      },
+      total_price_discounted: function(copies){
+        return sum(map(function(it){
+          return it.price_discounted * it.basket_qty;
+        }, copies)).toFixed(2);
+      },
+      total_price_excl_vat: function(copies){
+        return sum(map(function(it){
+          return it.price_excl_vat * it.basket_qty;
+        }, copies)).toFixed(2);
+      },
+      total_price_discounted_excl_vat: function(copies){
+        return sum(map(function(it){
+          return it.price_discounted_excl_vat * it.basket_qty;
+        }, copies)).toFixed(2);
+      },
+      total_copies: function(copies){
+        return sum(map(function(it){
+          return it.basket_qty;
+        }, copies));
+      },
+      save_quantity: function(card, basket_id, is_box){
+        "Save this card in the given basket. Card has a quantity field.";
+        var params;
+        is_box == null && (is_box = false);
+        params = {
+          card_id: card.id,
+          quantity: card.basket_qty
+        };
+        if (is_box) {
+          params['is_box'] = true;
+        }
+        $http.post("/api/baskets/" + basket_id + "/update/", params).then(function(response){
+          var alerts;
+          alerts = response.data.msgs;
+        });
+      },
+      distributors: function(){
+        return $http.get("/api/distributors");
+      },
+      shelfs: function(){
+        return $http.get("/api/shelfs");
+      },
+      best_sells: function(sells){
+        "- sells: list of objects, with a .total_sold (see function above)\n- return: the 10 best sells";
+        var best_sells;
+        best_sells = take(10)(
+        reverse(
+        sortBy(function(it){
+          return it.total_sold;
+        })(
+        uniqueBy(function(it){
+          return it.card_id;
+        })(
+        sells))));
+        return best_sells;
+      },
+      sells_mean: function(sells){
+        "- return the global mean of sells operation: how much in a sell by average.";
+        var i$, len$, sell;
+        for (i$ = 0, len$ = sells.length; i$ < len$; ++i$) {
+          sell = sells[i$];
+          sell.total_sell = mean(
+          map(fn$)(
+          filter(fn1$)(
+          sells)));
+        }
+        return mean(
+        map(function(it){
+          return it.total_sell;
+        })(
+        uniqueBy(function(it){
+          return it.sell_id;
+        })(
+        sells)));
+        function fn$(it){
+          return it.price_sold * it.quantity;
+        }
+        function fn1$(it){
+          return it.sell_id === sell.sell_id;
+        }
+      },
+      getCards: function(args){
+        "Search cards, api call. Used in navbar's search, in baskets, etc.args: object with query, language, with_quantity and other keys.Use as a promise:>> promise = utils.getCards args>> promise.then (results) ->$scope.var = results";
+        var re, res, params, cards_fetched;
+        re = /^(\d+)$/;
+        res = args.query.match(re);
+        if (res && res.length === 2 && args.query.length < 10) {
+          $log.info("Incomplete ISBN.");
+          return;
+        }
+        params = {
+          query: args.query,
+          language: args.language,
+          with_quantity: args.with_quantity
+        };
+        cards_fetched = [];
+        return $http.get("/api/cards/", {
+          params: params
+        }).then(function(response){
+          map(function(it){
+            var repr;
+            repr = (it.title + ", " + it.authors_repr + ", ") + gettext("éd.") + " " + it.pubs_repr;
+            it.basket_qty = 1;
+            cards_fetched.push({
+              repr: repr,
+              id: it.id,
+              item: it
+            });
+            return {
+              repr: repr,
+              id: it.id
+            };
+          }, response.data.cards);
+          return cards_fetched;
+        });
+      },
+      is_isbn: function(text){
+        var reg;
+        reg = /^[0-9]{10,13}/g;
+        return text.match(reg);
+      },
+      card_command: function(id){
+        var url, position;
+        url = "/api/card/" + id + "/command";
+        position = $window.scrollY;
+        $http.post(url, {}, {
+          ignoreLoadingBar: true
+        }).then(function(response){
+          var elt;
+          $log.info(response);
+          if (response.data.status === "success") {
+            Notiflix.Notify.Success("OK");
+            elt = $window.document.getElementById('command' + id);
+            elt.innerText = response.data.data.nb;
+            $window.scrollTo(0, position);
+          } else {
+            Notiflix.Notify.Warning("Warning");
+          }
+        });
+      }
     };
-  }]);
-
-'use strict';
-
-/* Directives */
-
-
-angular.module('abelujo.directives', []).
-  directive('appVersion', ['version', function(version) {
-    return function(scope, elm, attrs) {
-      elm.text(version);
-    };
-  }]);
-
+  }
+]);
 angular.module("abelujo").controller("DistributorCreateModalController", function($http, $scope, $modal, $log, utils){
   $scope.animationsEnabled = true;
   $scope.open = function(size){
@@ -1462,17 +1673,19 @@ angular.module("abelujo").controller('basketsController', [
         lang: $scope.language
       };
       promise = utils.getCards(args);
-      return promise.then(function(res){
-        $scope.cards_fetched = res;
-        if (utils.is_isbn(query) && res.length === 1) {
-          setTimeout(function(){
-            $window.document.getElementById("default-input").value = "";
-            return $scope.add_selected_card(res[0]);
-          }, 700);
-          return;
-        }
-        return res;
-      });
+      if (promise) {
+        return promise.then(function(res){
+          $scope.cards_fetched = res;
+          if (utils.is_isbn(query) && res.length === 1) {
+            setTimeout(function(){
+              $window.document.getElementById("default-input").value = "";
+              return $scope.add_selected_card(res[0]);
+            }, 700);
+            return;
+          }
+          return res;
+        });
+      }
     };
     $scope.add_selected_card = function(card){
       " Add the card selected from the autocomplete to the current list's copies.\nSave it.";
@@ -3704,21 +3917,23 @@ angular.module("abelujo").controller('navbarController', [
         with_quantity: false
       };
       promise = utils.getCards(args);
-      return promise.then(function(res){
-        $scope.cards_fetched = res;
-        if (utils.is_isbn(query) && res.length === 1) {
-          $scope.go_to_card(res[0]);
-        }
-        if (utils.is_isbn(query) && res.length === 0) {
-          Notiflix.Notify.Merge({
-            timeout: 20000
-          });
-          Notiflix.Notify.Warning(gettext('ISBN not found.'));
-          Notiflix.Notify.Info(gettext('You can still create a card manually.'));
-          $window.document.getElementById("navbar-input").value = "";
-        }
-        return res;
-      });
+      if (promise) {
+        return promise.then(function(res){
+          $scope.cards_fetched = res;
+          if (utils.is_isbn(query) && res.length === 1) {
+            $scope.go_to_card(res[0]);
+          }
+          if (utils.is_isbn(query) && res.length === 0) {
+            Notiflix.Notify.Merge({
+              timeout: 20000
+            });
+            Notiflix.Notify.Warning(gettext('ISBN not found.'));
+            Notiflix.Notify.Info(gettext('You can still create a card manually.'));
+            $window.document.getElementById("navbar-input").value = "";
+          }
+          return res;
+        });
+      }
     };
     $scope.go_to_card = function(item){
       var card;
@@ -3855,17 +4070,19 @@ angular.module("abelujo").controller('receptionController', [
         lang: $scope.language
       };
       promise = utils.getCards(args);
-      return promise.then(function(res){
-        $scope.cards_fetched = res;
-        if (utils.is_isbn(query) && res.length === 1) {
-          setTimeout(function(){
-            $window.document.getElementById("default-input").value = "";
-            return $scope.add_selected_card(res[0]);
-          }, 700);
-          return;
-        }
-        return res;
-      });
+      if (promise) {
+        return promise.then(function(res){
+          $scope.cards_fetched = res;
+          if (utils.is_isbn(query) && res.length === 1) {
+            setTimeout(function(){
+              $window.document.getElementById("default-input").value = "";
+              return $scope.add_selected_card(res[0]);
+            }, 700);
+            return;
+          }
+          return res;
+        });
+      }
     };
     $scope.add_selected_card = function(card){
       "Add the card selected from the autocomplete to the current list's copies.\nAnd then, save it. If there is an error at this phase, show it asynchronously.";
@@ -4304,17 +4521,19 @@ angular.module("abelujo").controller('returnsController', [
         lang: $scope.language
       };
       promise = utils.getCards(args);
-      return promise.then(function(res){
-        $scope.cards_fetched = res;
-        if (utils.is_isbn(query) && res.length === 1) {
-          setTimeout(function(){
-            $window.document.getElementById("default-input").value = "";
-            return $scope.add_selected_card(res[0]);
-          }, 700);
-          return;
-        }
-        return res;
-      });
+      if (promise) {
+        return promise.then(function(res){
+          $scope.cards_fetched = res;
+          if (utils.is_isbn(query) && res.length === 1) {
+            setTimeout(function(){
+              $window.document.getElementById("default-input").value = "";
+              return $scope.add_selected_card(res[0]);
+            }, 700);
+            return;
+          }
+          return res;
+        });
+      }
     };
     $scope.add_selected_card = function(card){
       " Add the card selected from the autocomplete to the current list's copies.\nSave it.";
@@ -4972,208 +5191,3 @@ function in$(x, xs){
   while (++i < l) if (x === xs[i]) return true;
   return false;
 }
-var api;
-angular.module('abelujo.services', []).value('version', '0.1');
-"Simple wrapper around the api to have hardcoded urls in one place.\n\nTo get the results, we still need to get the result of the promise with .then:\n\n```\napi.distributors!\n.then (response) ->\n    $scope.distributors = response.data\n```";
-api = angular.module('abelujo.services', []);
-api.factory('api', function($http){
-  var ref$, Obj, join, reject, sum, map, filter, find, lines;
-  ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines;
-  return {
-    distributors: function(){
-      return $http.get("/api/distributors");
-    }
-  };
-});
-var utils;
-angular.module('abelujo.services', []).value('version', '0.1');
-utils = angular.module('abelujo.services', []);
-utils.factory('utils', [
-  '$http', '$window', '$log', function($http, $window, $log){
-    var ref$, Obj, join, reject, sum, map, filter, find, lines, sortBy, reverse, take, uniqueBy, mean, id, each;
-    ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines, sortBy = ref$.sortBy, reverse = ref$.reverse, take = ref$.take, uniqueBy = ref$.uniqueBy, mean = ref$.mean, id = ref$.id, each = ref$.each;
-    return {
-      transformRequestAsFormPost: function(obj){
-        var str, p;
-        str = [];
-        for (p in obj) {
-          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        }
-        return str.join("&");
-      },
-      url_language: function(url){
-        var re, res;
-        re = /\/([a-z][a-z])\//;
-        res = url.match(re);
-        if (res) {
-          return res[1];
-        }
-        return "en";
-      },
-      locale_language: function(str){
-        "Take a short string specifying a language (exple: fr,\nes; taken from the url) and return one that has meaning\nfor angular's $locale.";
-        if (str === "fr") {
-          return "fr-fr";
-        }
-        if (str === "es") {
-          return "es-es";
-        }
-        if (str === "de") {
-          return "de-de";
-        }
-        return "en-gb";
-      },
-      url_id: function(url){
-        var re, res;
-        re = /\/(\d+)/;
-        res = url.match(re);
-        if (res && res.length === 2) {
-          return res[1];
-        }
-        return null;
-      },
-      set_focus: function(){
-        angular.element('#default-input').trigger('focus');
-      },
-      total_price: function(copies){
-        return sum(map(function(it){
-          return it.price * it.basket_qty;
-        }, copies)).toFixed(2);
-      },
-      total_price_discounted: function(copies){
-        return sum(map(function(it){
-          return it.price_discounted * it.basket_qty;
-        }, copies)).toFixed(2);
-      },
-      total_price_excl_vat: function(copies){
-        return sum(map(function(it){
-          return it.price_excl_vat * it.basket_qty;
-        }, copies)).toFixed(2);
-      },
-      total_price_discounted_excl_vat: function(copies){
-        return sum(map(function(it){
-          return it.price_discounted_excl_vat * it.basket_qty;
-        }, copies)).toFixed(2);
-      },
-      total_copies: function(copies){
-        return sum(map(function(it){
-          return it.basket_qty;
-        }, copies));
-      },
-      save_quantity: function(card, basket_id, is_box){
-        "Save this card in the given basket. Card has a quantity field.";
-        var params;
-        is_box == null && (is_box = false);
-        params = {
-          card_id: card.id,
-          quantity: card.basket_qty
-        };
-        if (is_box) {
-          params['is_box'] = true;
-        }
-        $http.post("/api/baskets/" + basket_id + "/update/", params).then(function(response){
-          var alerts;
-          alerts = response.data.msgs;
-        });
-      },
-      distributors: function(){
-        return $http.get("/api/distributors");
-      },
-      shelfs: function(){
-        return $http.get("/api/shelfs");
-      },
-      best_sells: function(sells){
-        "- sells: list of objects, with a .total_sold (see function above)\n- return: the 10 best sells";
-        var best_sells;
-        best_sells = take(10)(
-        reverse(
-        sortBy(function(it){
-          return it.total_sold;
-        })(
-        uniqueBy(function(it){
-          return it.card_id;
-        })(
-        sells))));
-        return best_sells;
-      },
-      sells_mean: function(sells){
-        "- return the global mean of sells operation: how much in a sell by average.";
-        var i$, len$, sell;
-        for (i$ = 0, len$ = sells.length; i$ < len$; ++i$) {
-          sell = sells[i$];
-          sell.total_sell = mean(
-          map(fn$)(
-          filter(fn1$)(
-          sells)));
-        }
-        return mean(
-        map(function(it){
-          return it.total_sell;
-        })(
-        uniqueBy(function(it){
-          return it.sell_id;
-        })(
-        sells)));
-        function fn$(it){
-          return it.price_sold * it.quantity;
-        }
-        function fn1$(it){
-          return it.sell_id === sell.sell_id;
-        }
-      },
-      getCards: function(args){
-        "Search cards, api call. Used in navbar's search, in baskets, etc.Use as a promise:>> promise = utils.getCards args>> promise.then (results) ->$scope.var = results";
-        var params, cards_fetched;
-        params = {
-          query: args.query,
-          language: args.language,
-          with_quantity: args.with_quantity
-        };
-        cards_fetched = [];
-        return $http.get("/api/cards/", {
-          params: params
-        }).then(function(response){
-          map(function(it){
-            var repr;
-            repr = (it.title + ", " + it.authors_repr + ", ") + gettext("éd.") + " " + it.pubs_repr;
-            it.basket_qty = 1;
-            cards_fetched.push({
-              repr: repr,
-              id: it.id,
-              item: it
-            });
-            return {
-              repr: repr,
-              id: it.id
-            };
-          }, response.data.cards);
-          return cards_fetched;
-        });
-      },
-      is_isbn: function(text){
-        var reg;
-        reg = /^[0-9]{10,13}/g;
-        return text.match(reg);
-      },
-      card_command: function(id){
-        var url, position;
-        url = "/api/card/" + id + "/command";
-        position = $window.scrollY;
-        $http.post(url, {}, {
-          ignoreLoadingBar: true
-        }).then(function(response){
-          var elt;
-          $log.info(response);
-          if (response.data.status === "success") {
-            Notiflix.Notify.Success("OK");
-            elt = $window.document.getElementById('command' + id);
-            elt.innerText = response.data.data.nb;
-            $window.scrollTo(0, position);
-          } else {
-            Notiflix.Notify.Warning("Warning");
-          }
-        });
-      }
-    };
-  }
-]);
