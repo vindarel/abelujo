@@ -64,6 +64,7 @@ from toolz.itertoolz import groupby
 from abelujo import settings
 from search.models import history
 from search.models.users import Client
+from search.models.users import Reservation
 from search.models.common import ALERT_ERROR
 from search.models.common import ALERT_SUCCESS
 from search.models.common import ALERT_WARNING
@@ -1139,6 +1140,7 @@ class Card(TimeStampedModel):
 
         if with_quantity:
             res['quantity'] = self.quantity
+            res['quantity_clients_reserved'] = self.quantity_clients_reserved()
 
         return res
 
@@ -2257,6 +2259,9 @@ class Card(TimeStampedModel):
         Quantity in the to_command list.
         """
         return Basket.auto_command_quantity_of(self)
+
+    def quantity_clients_reserved(self):
+        return Reservation.objects.filter(card=self).count()
 
     def get_first_deposit(self):
         names_ids = self.deposits

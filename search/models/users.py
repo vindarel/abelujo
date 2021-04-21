@@ -30,12 +30,22 @@ log = get_logger()
 
 
 class Reservation(models.Model):
-
+    """
+    A reservation links a client to a card he reserved.
+    """
     class Meta:
         pass
 
+    def __str__(self):
+        if self.client:
+            return "client {}".format(self.client)
+        else:
+            return ""
+
     client = models.ForeignKey("search.Client")
-    card = models.ManyToManyField("search.Card")
+    card = models.ForeignKey("search.Card", null=True, blank=True)
+    #: optional: a quantity to reserve. Defaults to 1.
+    nb = models.IntegerField(default=1, null=True, blank=True)
 
 
 class Contact(models.Model):
@@ -138,11 +148,18 @@ class Client(Contact):
 
         return res
 
-    def reserve(card_id):
+    def reserve(self, card_id):
         """
         Reserve this card.
+
+        Return a tuple: Reservation object, created? (boolean).
         """
-        raise NotImplementedError
+        resa, created = Reservation.objects.get_or_create(
+            client=self,
+            card_id=card_id,
+        )
+        resa.save()
+        return resa, created
 
 
 class Bookshop(Contact):

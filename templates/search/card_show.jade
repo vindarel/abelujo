@@ -72,10 +72,11 @@
         a.btn.btn-default#heart(href="", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})")
           i.glyphicon.glyphicon-heart
 
-    // ONGOING hide button
-    //button(type="button", class="btn btn-default", data-toggle="modal", data-target="#myModal")
-
+    // ONGOING reservation hide button
+    //- button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", title="Réserver pour un client")
       i.glyphicon.glyphicon-user
+      span &nbsp; x
+          span(id="nb_to_command") {{ object.quantity_clients_reserved }}
 
     h3 {{ object.title }}
 
@@ -299,7 +300,7 @@ script(type="text/ng-template", id="commandModal.html")
         div(ng-repeat="card in cards")
           div {{'card.title'|ng}}
 
-div.modal(id="myModal")
+div.modal(id="reserveModal")
   div.modal-dialog
     div.modal-content
 

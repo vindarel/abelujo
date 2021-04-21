@@ -128,11 +128,15 @@ function validate_reservation() {
             })
             .then((myJson) => {
                 console.log("response: ", myJson);
-                if (myJson.status == 200) {
+                if (myJson.status == "success") {
                     Notiflix.Notify.Success('OK');
+                    // Close the modal.
+                    // so we have JQuery.
+                    $('#reserveModal').modal('toggle');
                 }
                 else {
                     console.log("status is not success: ", myJson.status);
+                    Notiflix.Notify.Warning('mmh');
                 }
             })
             .catch((error) => {

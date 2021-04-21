@@ -629,8 +629,13 @@ def card_reserve(request, pk, **kw):
 
         if not client:
             logging.warning("Could not reserve card, client {} actually doesn't exist.".format(client_id))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['data'] = "Could not reserve, this client does not exist!"
         else:
-            client.reserve(pk)
+            resa, created = client.reserve(pk)
+            # import ipdb; ipdb.set_trace()
+
+        return JsonResponse(to_ret)
 
 
 def cardtype(request, **response_kwargs):

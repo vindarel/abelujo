@@ -179,6 +179,9 @@ div(ng-cloak, ng-controller="receptionController")
          td
            .col-md-12
             a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
+            // ONGOING reservation feature locked
+            //div(ng-show="it.quantity_clients_reserved > 0")
+              strong Notice reservée !
             div(ng-show="show_images") {{'it.authors_repr'|ng}}
          td
            div.badge.badge-secondary.mouse-pointer(style="padding: 3px", ng-click="showShelfById(it.shelf_id)") {{ 'it.shelf' | ng }}
