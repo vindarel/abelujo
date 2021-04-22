@@ -51,6 +51,7 @@ class Reservation(models.Model):
         return {
             "client_id": self.client.id,
             "client_repr": self.client.__repr__(),
+            "client": self.client.to_dict(),
             "card_id": self.card.id,
             "nb": self.nb,
         }
@@ -115,6 +116,10 @@ class Contact(models.Model):
 
         super(Contact, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return "/admin/search/{}/{}".format(self.__class__.__name__.lower(),
+                                            self.id)
+
     def to_dict(self):
         rep = self.__repr__()
         return {'id': self.id,
@@ -123,6 +128,7 @@ class Contact(models.Model):
                 'mobilephone': self.mobilephone,
                 '__repr__': rep,
                 'repr': rep,  # in templates, can't use __repr__
+                'url': self.get_absolute_url(),
         }
 
     def __repr__(self):

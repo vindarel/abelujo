@@ -237,13 +237,21 @@ div(ng-cloak, ng-controller="receptionController")
           div(ng-repeat="resa in cur_card_reservations.reservations")
             div(id="#resa-{{ 'resa.client_id' | ng }}")
               h4 {{ 'resa.client_repr' | ng }}
+                a(ng-href="{{ 'resa.client.url' | ng }}", target="_blank")
+                  i.glyphicon.glyphicon-share
+              div(ng-show="resa.client.mobilephone")
+                span {{ 'resa.client.mobilephone' | ng }} 
+                  i.glyphicon.glyphicon-phone
               button.btn.btn-success(type="button",
                 ng-click="validate_reservation(resa)",
                 ng-disabled="resa.disabled",
                 title="Enlever ce livre du fonds"
                 ) OK
                 i.glyphicon.glyphicon-minus
-              button.btn.btn-info(type="button", ng-click="validate_reservation_send_email()") Send email
+              button.btn.btn-info(type="button",
+                ng-click="validate_reservation_send_email()",
+                ng-disabled="resa.disabled",
+                ) Send email
                 i.glyphicon.glyphicon-email
 
           p(style="margin-top: 1em;")
