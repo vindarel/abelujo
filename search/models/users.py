@@ -47,6 +47,21 @@ class Reservation(models.Model):
     #: optional: a quantity to reserve. Defaults to 1.
     nb = models.IntegerField(default=1, null=True, blank=True)
 
+    def to_dict(self):
+        return {
+            "client_id": self.client.id,
+            "client_repr": self.client.__repr__(),
+            "card_id": self.card.id,
+            "nb": self.nb,
+        }
+
+    @staticmethod
+    def get_card_reservations(card_id, to_dict=False):
+        res = Reservation.objects.filter(card=card_id)
+        if to_dict:
+            res = [it.to_dict() for it in res]
+        return res
+
 
 class Contact(models.Model):
     """

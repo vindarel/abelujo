@@ -180,8 +180,11 @@ div(ng-cloak, ng-controller="receptionController")
            .col-md-12
             a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
             // ONGOING reservation feature locked
-            //div(ng-show="it.quantity_clients_reserved > 0")
+            div(ng-show="it.quantity_clients_reserved > 0")
               strong Notice reservée !
+              button(type="button", class="btn btn-default", data-toggle="modal", data-target="#fixreservationModal", title="Mettre de côté, prévenir le client de sa réservation", ng-click="reservation_details(it.id)")
+                i.glyphicon.glyphicon-user
+
             div(ng-show="show_images") {{'it.authors_repr'|ng}}
          td
            div.badge.badge-secondary.mouse-pointer(style="padding: 3px", ng-click="showShelfById(it.shelf_id)") {{ 'it.shelf' | ng }}
@@ -220,5 +223,30 @@ div(ng-cloak, ng-controller="receptionController")
         select.form-control(ng-show="copies.length", ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
 
 
+ div.modal(id="fixreservationModal")
+    div.modal-dialog
+      div.modal-content
+
+        div.modal-header
+          h4.modal-title Réservations
+          button(type="button", class="close", data-dismiss="modal")
+
+        div.modal-body
+          h5 {% trans "Ces clients ont réservé cette notice" %}
+          //- div {{ 'cur_card_reservations | json' | ng }}
+          div(ng-repeat="resa in cur_card_reservations.reservations")
+            div(id="#resa-{{ 'resa.client_id' | ng }}")
+              h4 {{ 'resa.client_repr' | ng }}
+              button.btn.btn-success(type="button",
+                ng-click="validate_reservation(resa)",
+                ng-disabled="resa.disabled",
+                title="Enlever ce livre du fonds"
+                ) OK
+                i.glyphicon.glyphicon-minus
+              button.btn.btn-info(type="button", ng-click="validate_reservation_send_email()") Send email
+                i.glyphicon.glyphicon-email
+
+          p(style="margin-top: 1em;")
+            button.btn.btn-warning(type="button", ng-click="validate_reservation_send_all_emails()") Send email to all
 
 {% endblock content %}

@@ -31,6 +31,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
     $scope.all_copies = []  # all from reception.
     $scope.cards_fetched = []  # from user input
     $scope.copy_selected = undefined
+    $scope.cur_card_reservations = "hello"
 
     $scope.show_buttons = {}
     $scope.copy_selected = undefined
@@ -270,6 +271,40 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
             , (response) !->
                 Notiflix.Notify.Warning "Something went wrong."
+
+    # Reservation.
+    $scope.reservation_details = (card_id) !->
+      $log.info "I was here ", card_id
+      ## params = do
+          ## card_id: card_id
+      $http.post "/api/card/" + card_id + "/reservations/",
+      .then (response) !->
+          if response.data.status == 'success'
+              ## $window.location.href = "/#{$scope.language}/reception/"
+              ## $scope.all_copies = []
+              copy = $scope.all_copies
+              |> find (.id == card_id)
+              if copy
+                 copy.reservations = response.data.data
+                 $scope.cur_card_reservations = copy
+                 $log.info "-- response: ", response
+                 $log.info "-- cur_card_reservations ", $scope.cur_card_reservations
+              else
+                 Notiflix.Notify.Warning "Server is busy, please wait a bit."
+
+          else
+              Notiflix.Notify.Warning "Something went wrong."
+
+      , (response) !->
+          Notiflix.Notify.Warning "Something went wrong."
+
+    # Validate a reservation for a book:
+    # - rm from stock (we put this book on the side)
+    # - send email to a client
+    # - send email to all clients.
+    $scope.validate_reservation = (resa) !->
+      $log.info "-- ok validate"
+      resa.disabled = true
 
 
     ##############################

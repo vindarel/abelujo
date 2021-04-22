@@ -31,8 +31,14 @@ from search.models import Card
 from search.models import Preferences
 from search.models import users
 from search.models.users import Client
+from search.models.users import Reservation
 from search.models.utils import get_logger
 from search.models.utils import price_fmt
+from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_INFO
+from search.models.common import ALERT_SUCCESS
+from search.models.common import ALERT_WARNING
+
 
 log = get_logger()
 
@@ -297,3 +303,19 @@ def bill(request, *args, **response_kwargs):
         response = JsonResponse({'status': 400})
 
     return response
+
+def card_reservations(request, pk, **kw):
+    """
+    Return the list of clients that reserved this card.
+    """
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+        'alerts': [],
+    }
+    if request.method == 'POST':
+        params = kw.copy()
+        # client_id = params.get('client_id')
+        reservations = Reservation.get_card_reservations(card_id=pk, to_dict=True)
+        to_ret['data'] = reservations
+        return JsonResponse(to_ret)
