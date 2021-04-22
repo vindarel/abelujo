@@ -25,11 +25,12 @@ from common import CHAR_LENGTH
 from common import TEXT_LENGTH
 from common import TimeStampedModel
 from search.models.utils import get_logger
+from search.models.utils import Messages
 
 log = get_logger()
 
 
-class Reservation(models.Model):
+class Reservation(TimeStampedModel):
     """
     A reservation links a client to a card he reserved.
     """
@@ -46,15 +47,25 @@ class Reservation(models.Model):
     card = models.ForeignKey("search.Card", null=True, blank=True)
     #: optional: a quantity to reserve. Defaults to 1.
     nb = models.IntegerField(default=1, null=True, blank=True)
+    #: If we have taken an action on this reservation.
+    #: We can put the book on the side, waiting for the client or
+    #: send an email.
+    notified = models.BooleanField(default=False)
+    #: This reservation is dealed with.
+    archived = models.BooleanField(default=False)
+    #: If it is archived, is it upon success ?
+    success = models.BooleanField(default=True)
 
     def to_dict(self):
-        return {
-            "client_id": self.client.id,
-            "client_repr": self.client.__repr__(),
-            "client": self.client.to_dict(),
-            "card_id": self.card.id,
+        res = {
+            "created": self.created,
+            "client_id": self.client.id if hasattr(self, 'client') and self.client else None,
+            "client_repr": self.client.__repr__() if hasattr(self, 'client') else None,
+            "client": self.client.to_dict() if hasattr(self, 'client') and self.client else None,
+            "card_id": self.card.id if hasattr(self, 'card') and self.card else None,
             "nb": self.nb,
         }
+        return res
 
     @staticmethod
     def get_card_reservations(card_id, to_dict=False):
