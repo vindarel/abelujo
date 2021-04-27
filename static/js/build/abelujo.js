@@ -4161,9 +4161,12 @@ angular.module("abelujo").controller('receptionController', [
         } else {
           $log.info("PAS DE CARD !");
         }
+        if ($scope.cur_basket.id !== -1 && card.shelf_id && $scope.cur_basket.pk !== card.shelf_id) {
+          card.shelf_id = $scope.cur_basket.pk;
+          card.shelf = $scope.cur_basket.fields.name;
+        }
         Notiflix.Notify.Success("OK!");
         $scope.get_basket_quantity();
-        $log.info("-- update copies");
         $scope.showShelfById($scope.cur_basket.pk);
       }, function(response){
         var elt;

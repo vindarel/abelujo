@@ -175,9 +175,9 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
             # Best place for an update, after server validation ?
             # update card shelf
-            ## if $scope.cur_basket.id != -1 and card.shelf_id and $scope.cur_basket.pk != card.shelf_id
-                ## card.shelf_id = $scope.cur_basket.pk
-                ## card.shelf = $scope.cur_basket.fields.name
+            if $scope.cur_basket.id != -1 and card.shelf_id and $scope.cur_basket.pk != card.shelf_id
+                card.shelf_id = $scope.cur_basket.pk
+                card.shelf = $scope.cur_basket.fields.name
 
             Notiflix.Notify.Success "OK!"
 
