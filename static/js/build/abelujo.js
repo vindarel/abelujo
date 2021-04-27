@@ -1695,6 +1695,12 @@ angular.module("abelujo").controller('basketsController', [
         return it.repr === card.repr;
       })(
       $scope.cards_fetched);
+      if (!tmpcard) {
+        $log.warn("we were expecting an existing tmpcard amongst cards_fetched ", $scope.cards_fetched);
+        Notiflix.Notify.Warning("Le serveur n'est pas prêt ! Veuillez attendre un instant et ré-essayer, merci.");
+        $scope.copy_selected = undefined;
+        return;
+      }
       tmpcard = tmpcard.item;
       existing = find(function(it){
         return it.id === tmpcard.id;
