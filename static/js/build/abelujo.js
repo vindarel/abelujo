@@ -1053,10 +1053,11 @@ utils.factory('utils', [
       },
       getCards: function(args){
         "Search cards, api call. Used in navbar's search, in baskets, etc.args: object with query, language, with_quantity and other keys.Use as a promise:>> promise = utils.getCards args>> promise.then (results) ->$scope.var = results";
-        var re, res, params, cards_fetched;
+        var re, res, ISBN_LENGTH, params, cards_fetched;
         re = /^(\d+)$/;
         res = args.query.match(re);
-        if (res && res.length === 2 && args.query.length < 10) {
+        ISBN_LENGTH = 13;
+        if (res && res.length === 2 && args.query.length < ISBN_LENGTH) {
           $log.info("Incomplete ISBN.");
           return;
         }
