@@ -4134,6 +4134,9 @@ angular.module("abelujo").controller('receptionController', [
       if ($scope.cur_basket.id !== -1 && existing.shelf_id && $scope.cur_basket.pk !== existing.shelf_id) {
         title = Str.take(20, existing.title);
         Notiflix.Notify.Info("Attention vous êtes dans le menu '" + $scope.cur_basket.fields.name + "' et le livre '" + title + "' a déjà un rayon ('" + existing.shelf + "').");
+      } else {
+        tmpcard.shelf_id = $scope.cur_basket.pk;
+        tmpcard.shelf = $scope.cur_basket.fields.name;
       }
       $scope.save_card_to_reception(tmpcard.id);
     };
@@ -4160,16 +4163,18 @@ angular.module("abelujo").controller('receptionController', [
         }
         Notiflix.Notify.Success("OK!");
         $scope.get_basket_quantity();
+        $log.info("-- update copies");
+        $scope.showShelfById($scope.cur_basket.pk);
       }, function(response){
         var elt;
         Notiflix.Notify.Warning("Something went wrong.");
         elt = $window.document.getElementById("card" + tmpcard.id);
       });
     };
-    $scope.getCopies = function(id){
+    $scope.getCopies = function(shelf_id){
       var res;
       res = filter(function(it){
-        return it.shelf_id === id;
+        return it.shelf_id === shelf_id;
       })(
       $scope.all_copies);
       $scope.copies = res;

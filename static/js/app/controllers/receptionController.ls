@@ -147,6 +147,11 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         if $scope.cur_basket.id != -1 and existing.shelf_id and $scope.cur_basket.pk != existing.shelf_id
             title = Str.take 20 existing.title
             Notiflix.Notify.Info("Attention vous êtes dans le menu '#{$scope.cur_basket.fields.name}' et le livre '#{title}' a déjà un rayon ('#{existing.shelf}').")
+        else
+            # Add this card to the list of the current basket.
+            # The view is updated just later with showShelfById
+            tmpcard.shelf_id = $scope.cur_basket.pk
+            tmpcard.shelf = $scope.cur_basket.fields.name
 
         # Now, we want to register the card in the reception list.
         $scope.save_card_to_reception tmpcard.id
@@ -167,19 +172,29 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
                 card.alerts = response.data.alerts
             else
                 $log.info "PAS DE CARD !"
+
+            # Best place for an update, after server validation ?
+            # update card shelf
+            ## if $scope.cur_basket.id != -1 and card.shelf_id and $scope.cur_basket.pk != card.shelf_id
+                ## card.shelf_id = $scope.cur_basket.pk
+                ## card.shelf = $scope.cur_basket.fields.name
+
             Notiflix.Notify.Success "OK!"
 
             # update total count
             $scope.get_basket_quantity!
+            # update the copies we show (in this shelf view).
+            $scope.showShelfById($scope.cur_basket.pk)
 
         , (response) !->
             Notiflix.Notify.Warning "Something went wrong."
             elt = $window.document.getElementById "card#{tmpcard.id}"
 
 
-    $scope.getCopies = (id) !->
+    $scope.getCopies = (shelf_id) !->
+        # Filter the current copies to show from this shelf id.
         res = $scope.all_copies
-        |> filter (.shelf_id == id)
+        |> filter (.shelf_id == shelf_id)
         $scope.copies = res
         return res
 
