@@ -69,7 +69,7 @@ class ClientAdmin(admin.ModelAdmin):
         model = Client
 
     search_fields = ["name", "firstname", "mobilephone", "address1", "city", "country", "zip_code"]
-    list_display = ["name", "firstname", "mobilephone", "email"]
+    list_display = ["name", "firstname", "mobilephone", "email", "discount"]
     ordering = ["name", "firstname"]
 
 

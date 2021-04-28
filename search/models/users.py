@@ -152,7 +152,7 @@ class Client(Contact):
     He can reserve books (not implemented), buy coupons, etc.
     """
     #: Default discount. Specially useful when the client is a collectivity.
-    discount = models.IntegerField(blank=True, null=True, verbose_name=__("Discount"))
+    discount = models.IntegerField(blank=True, null=True, verbose_name=__("Discount (%)"))
 
     #: A client is linked to sells.
     #
