@@ -132,6 +132,7 @@ def bill(request, *args, **response_kwargs):
         discount_fmt = discount['name']
     elif client and client.discount:
         discount_fmt = "{} %".format(client.discount)
+        discount = client.discount
     else:
         discount_fmt = '0%'
 
@@ -224,6 +225,7 @@ def bill(request, *args, **response_kwargs):
     total_fmt = price_fmt(total, default_currency)
     if client and client.discount:
         total_with_client_discount = total - total * client.discount / 100
+        total_discounted = total_with_client_discount
 
     if not prices_sold:
         total_discounted = total_with_client_discount
