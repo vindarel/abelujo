@@ -3505,11 +3505,13 @@ class Reception(Basket):
                 # add
                 basket_copy.nb += nb
                 basket_copy.save()
-            elif set_quantity and nb:
-                # set
+            elif set_quantity and nb is not None:
+                # set (can be 1 or more or 0)
                 origin_qty = basket_copy.nb
                 basket_copy.nb = nb
                 basket_copy.save()
+            else:
+                log.error("Reception add_copy: unknown case.")
 
             if not shelf_id and not basket_copy.card.shelf_id:
                 msgs.add_info(MSG_NO_SHELF)

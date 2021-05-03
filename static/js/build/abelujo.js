@@ -4154,7 +4154,7 @@ angular.module("abelujo").controller('receptionController', [
         card_id: card_id,
         shelf_id: $scope.cur_basket.pk
       };
-      if (quantity) {
+      if (quantity !== null) {
         params['quantity'] = quantity;
       }
       $http.post("/api/reception/add/", params).then(function(response){

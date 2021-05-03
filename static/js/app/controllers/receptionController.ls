@@ -161,7 +161,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         params = do
             card_id: card_id
             shelf_id: $scope.cur_basket.pk
-        if quantity
+        if quantity is not null
             params['quantity'] = quantity
         $http.post "/api/reception/add/", params
         .then (response) !->
