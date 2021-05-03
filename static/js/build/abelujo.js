@@ -1883,7 +1883,8 @@ angular.module("abelujo").controller('basketsController', [
           }
         }
       });
-      modalInstance.result.then(function(basket){
+      modalInstance.result.then()(function(){
+        var basket;
         basket = $scope.baskets[cur_basket_id];
         basket.copies = [];
         $scope.copies = [];
@@ -2619,7 +2620,6 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
       var currency;
       currency = document.getElementById('data-currency').dataset['currency'];
       $scope.meta.currency = currency;
-      $log.info("-- meta currency: ", currency, $scope.meta);
       $scope.price_choices = [
         {
           name: gettext(" "),

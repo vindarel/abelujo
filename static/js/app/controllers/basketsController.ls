@@ -375,7 +375,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 utils: ->
                     utils
 
-        modalInstance.result.then (basket) !->
+        modalInstance.result.then () !->
             # Empty the basket (double work from the api).
             basket = $scope.baskets[cur_basket_id]
             basket.copies = []
