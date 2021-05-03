@@ -80,10 +80,11 @@ head
           td
             b {% trans "Total" %}
           td
-          td
           td(style='{text-align: center;}')
             b {{ total }} €
           td(style='{text-align: center;}')
+            {% if total_with_discount and total_with_discount != -1 %}
             b {{ total_with_discount }} €
+            {% endif %}
           td(style='{text-align: center;}')
             b {{ total_qty }}
