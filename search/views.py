@@ -1125,6 +1125,8 @@ def basket_export(request, pk):
     list_name = _("Liste")
     if distributor:
         list_name = list_name + " {}".format(distributor.name)
+    elif basket:
+        list_name = list_name + " {}".format(basket.name)
 
     if copies_set and report and format:
         response = _export_response(copies_set, report=report, format=format,
