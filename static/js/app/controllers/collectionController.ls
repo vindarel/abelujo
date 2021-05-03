@@ -55,8 +55,13 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     ]
     $scope.price_choice = null
     $scope.price_choices = []
+    $scope.meta = {}
 
     $scope.define_price_choices = !->
+        # the currency symbol was sent by the API, it is now set in the template.
+        currency = document.getElementById('data-currency').dataset['currency']
+        $scope.meta.currency = currency
+
         $scope.price_choices = [
           {name: gettext(" "), id: ""}
           {name: "0", id: "0"}
@@ -71,6 +76,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
           {name: gettext("> 10 #{$scope.meta.currency}"), id: ">10"}
           {name: gettext("> 20 #{$scope.meta.currency}"), id: ">20"}
         ]
+    $scope.define_price_choices!
 
     $scope.date_created = null
     $scope.date_created_sort = ""

@@ -27,6 +27,8 @@
 
 div(ng-cloak, ng-controller="collectionController")
 
+ div#data-currency(data-currency="{{ currency }}")
+
  {% if messages %}
  ul.messages
   {% for msg in messages %}

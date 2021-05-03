@@ -2838,12 +2838,20 @@ class Preferences(models.Model):
 
     @staticmethod
     def get_default_currency():
+        """
+        Return default currency symbol (€, CHF etc).
+        """
         try:
-            currency = json.loads(Preferences.prefs().others)
-            Preferences.default_currency = currency
-            return currency.get('default_currency', '€').upper()
-        except Exception:
-            pass
+            prefs = Preferences.prefs()
+            if prefs and prefs.others:
+                currency = json.loads(prefs.others)
+                Preferences.default_currency = currency
+                return currency.get('default_currency', '€').upper()
+            else:
+                return "€"
+        except Exception as e:
+            log.warning("Could not get default currency: {}".format(e))
+            return "€"
 
     @staticmethod
     def price_excl_tax(price):

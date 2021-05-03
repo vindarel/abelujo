@@ -800,8 +800,10 @@ def collection(request):
 
     - return: a list (of card dicts)
     """
-
-    return render(request, "search/collection.jade")
+    currency = Preferences.get_default_currency() or "€"
+    return render(request, "search/collection.jade", {
+        'currency': currency,
+    })
 
 @login_required
 def sell(request):

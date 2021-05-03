@@ -2614,7 +2614,12 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
     ];
     $scope.price_choice = null;
     $scope.price_choices = [];
+    $scope.meta = {};
     $scope.define_price_choices = function(){
+      var currency;
+      currency = document.getElementById('data-currency').dataset['currency'];
+      $scope.meta.currency = currency;
+      $log.info("-- meta currency: ", currency, $scope.meta);
       $scope.price_choices = [
         {
           name: gettext(" "),
@@ -2655,6 +2660,7 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
         }
       ];
     };
+    $scope.define_price_choices();
     $scope.date_created = null;
     $scope.date_created_sort = "";
     $scope.date_created_sort_choices = [
