@@ -4066,6 +4066,8 @@ angular.module("abelujo").controller('receptionController', [
       messageMaxLength: 220,
       position: "center-top"
     });
+    $http.defaults.headers.common.XCSRFToken = getCSRFToken();
+    $log.info("token: ", getCSRFToken());
     $http.get("/api/shelfs").then(function(response){
       "Get the shelves.";
       return $scope.shelves = response.data;

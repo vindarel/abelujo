@@ -57,6 +57,12 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         messageMaxLength: 220
         position: "center-top"
 
+    # CSRF token in headers
+    $http.defaults.headers.common.X-CSRFToken = getCSRFToken()  # might need a double-check
+    $log.info "token: ", getCSRFToken()
+    ## headers: {'X-CSRFToken': getCSRFToken()}
+
+
     $http.get "/api/shelfs"
     .then (response) ->
         """
