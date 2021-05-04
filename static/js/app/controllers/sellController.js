@@ -436,6 +436,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.selected_ids = [];
         $scope.cards_selected = [];
         $scope.cards_fetched = [];
+        $scope.client_selected = null;
+        $scope.discounts.global_discount = null;
     };
 
     $scope.remove_payment_2 = function() {
