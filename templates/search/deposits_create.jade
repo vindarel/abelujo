@@ -91,6 +91,7 @@ div(ng-controller="DepositCreateController")
           ng-model='{% verbatim %} copy_selected {% endverbatim %}'
           typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue) {% endverbatim %}'
           typeahead-min-length="3"
+          typeahead-wait-ms="300"
           typeahead-on-select="add_selected_card($item)"
         )
 

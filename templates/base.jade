@@ -91,6 +91,7 @@ html(ng-app="abelujo")
               ng-model='copy_selected'
               uib-typeahead='copy.repr for copy in getCards($viewValue)'
               typeahead-min-length="3"
+              typeahead-wait-ms="300"
               typeahead-on-select="go_to_card($item)"
               title="{% trans 'Use TAB to validate your choice, Enter to proceed.' %}"
               title='{% trans "Search any isbn, search by keywords in your stock" %}'

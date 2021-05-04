@@ -85,6 +85,7 @@ div.ng-cloak(ng-controller="cardCreateController", ng-show="ready")
                   ng-model="{% verbatim %} author_input {% endverbatim %}"
                   uib-typeahead="{% verbatim %} author.fields.name for author in getItemsApi('/api/authors', $viewValue, 'authors_selected') {% endverbatim %}"
                   typeahead-min-length="3"
+                  typeahead-wait-ms="300"
                   typeahead-on-select="add_selected_item($item, 'author_input', 'authors_selected')"
               )
               a(target="_blank", href="/admin/search/author/add")

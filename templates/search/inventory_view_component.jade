@@ -81,6 +81,7 @@ div(ng-controller=controller)
                   ng-model='{% verbatim %}copy_selected{% endverbatim %}'
                   uib-typeahead='{% verbatim %} copy.repr for copy in getCards($viewValue, card_type_id) {% endverbatim %}'
                   typeahead-min-length="3"
+                  typeahead-wait-ms="300"
                   typeahead-on-select="add_selected_card($item)"
                   title="{% trans 'Use TAB to validate your choice, Enter to proceed.'%}"
                   id="default-input"
