@@ -4044,6 +4044,7 @@ angular.module("abelujo").controller('receptionController', [
     $scope.all_copies = [];
     $scope.cards_fetched = [];
     $scope.copy_selected = undefined;
+    $scope.cur_card_reservations = "hello";
     $scope.show_buttons = {};
     $scope.copy_selected = undefined;
     $scope.show_images = false;
@@ -4292,6 +4293,49 @@ angular.module("abelujo").controller('receptionController', [
           Notiflix.Notify.Warning("Something went wrong.");
         });
       }
+    };
+    $scope.reservation_details = function(card_id){
+      $log.info("I was here ", card_id);
+      $http.post("/api/card/" + card_id + "/reservations/").then(function(response){
+        var copy;
+        if (response.data.status === 'success') {
+          copy = find(function(it){
+            return it.id === card_id;
+          })(
+          $scope.all_copies);
+          if (copy) {
+            copy.reservations = response.data.data;
+            $scope.cur_card_reservations = copy;
+            $log.info("-- response: ", response);
+            $log.info("-- cur_card_reservations ", $scope.cur_card_reservations);
+          } else {
+            Notiflix.Notify.Warning("Server is busy, please wait a bit.");
+          }
+        } else {
+          Notiflix.Notify.Warning("Something went wrong.");
+        }
+      }, function(response){
+        Notiflix.Notify.Warning("Something went wrong.");
+      });
+    };
+    $scope.validate_reservation = function(resa){
+      var params;
+      $log.info("-- ok validate");
+      params = {
+        card_id: resa.card_id,
+        client_id: resa.client_id
+      };
+      $log.info("-- params: ", params);
+      $http.post("/api/card/" + resa.card_id + "/putaside/", params).then(function(response){
+        if (response.data.status) {
+          resa.disabled = true;
+          Notiflix.Notify.Success("OK");
+        } else {
+          Notiflix.Notify.Warning("mmh");
+        }
+      }, function(response){
+        Notiflix.Notify.Warning("Something went wrong.");
+      });
     };
     hotkeys.bindTo($scope).add({
       combo: "d",

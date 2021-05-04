@@ -69,6 +69,7 @@ from search.models.utils import get_logger
 from search.models.utils import get_page_count
 from search.models.utils import page_start_index
 from search.models.utils import price_fmt
+from search.models import users
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 from search.views_utils import dilicom_enabled
@@ -634,6 +635,44 @@ def card_reserve(request, pk, **kw):
         else:
             resa, created = client.reserve(pk)
             # import ipdb; ipdb.set_trace()
+
+        return JsonResponse(to_ret)
+
+def card_putaside(request, pk, **kw):
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+        'alerts': [],
+    }
+    if request.method == 'POST':
+        params = request.body  # sometimes they're in kw, sometimes in body: depends on JS.
+        if params:
+            try:
+                params = json.loads(params)
+            except:
+                log.warn("putaside: bad json body: {}".format(params))
+                params = {}
+        client_id = params.get('client_id')
+        try:
+            card = Card.objects.get(id=pk)
+            client = Client.objects.filter(id=client_id).first()
+        except Exception as e:
+            logging.error(u"error reserving card {}: {}".format(pk, e))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'] += "Something went wrong."
+
+        if not card:
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'].append("This card does not exist.")
+
+        if not client:
+            logging.warning("Could not put card aside, client {} doesn't exist.".format(client_id))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'].append("Could not put aside this card, this client does not exist!")
+        else:
+            status, messages = users.Reservation.putaside(card, client)
+            to_ret['alerts'] = messages
+            to_ret['status'] = status
 
         return JsonResponse(to_ret)
 

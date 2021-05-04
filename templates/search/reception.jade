@@ -180,8 +180,8 @@ div(ng-cloak, ng-controller="receptionController")
          td
            .col-md-12
             a(href="{{ 'it.get_absolute_url' | ng}}") {{ 'it.title' | ng }}
-            // ONGOING reservation feature locked
-            div(ng-show="it.quantity_clients_reserved > 0")
+            // WIP reservation feature locked
+            div(ng-show="it.quantity_clients_reserved_to_be_notified > 0")
               strong Notice reservée !
               button(type="button", class="btn btn-default", data-toggle="modal", data-target="#fixreservationModal", title="Mettre de côté, prévenir le client de sa réservation", ng-click="reservation_details(it.id)")
                 i.glyphicon.glyphicon-user

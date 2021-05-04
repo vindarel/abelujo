@@ -47,6 +47,7 @@ apipatterns = patterns("",
     url(r'^api/cards/update$', 'search.models.api.card_update', name="api_card_update"),
     url(r'^api/card/(?P<pk>\d+)/reserve/(?P<client_id>\d+)/?', 'search.models.api.card_reserve', name="api_card_reserve"),
     url(r'^api/card/(?P<pk>\d+)/reservations/?', 'search.models.api_users.card_reservations', name="api_card_reservations"),
+    url(r'^api/card/(?P<pk>\d+)/putaside/?', 'search.models.api.card_putaside', name="api_card_putaside"),
     url(r'^api/card/(?P<pk>\d+)/add/?$', 'search.models.api.card_add', name="api_card_add"),
     url(r'^api/card/(?P<pk>\d+)/command/?$', 'search.models.api.card_command', name="api_card_command"),
     url(r'^api/card/(?P<pk>\d+)/select_catalogue/?$', 'search.models.api.card_select_catalogue', name="api_card_select_catalogue"),
@@ -57,6 +58,8 @@ apipatterns = patterns("",
     url(r'^api/cards/set_supplier$', 'search.models.api.cards_set_supplier', name="api_cards_set_supplier"),
     url(r'^api/cards/set_shelf$', 'search.models.api.cards_set_shelf', name="api_cards_set_shelf"),
 
+    # Reservations
+    url(r'^api/reservations/?$', 'search.models.api_users.all_reservations', name="api_all_reservations"),
     # Shelves
     url(r'^api/shelfs', 'search.models.api.shelfs', name="api_shelfs"),
 
@@ -94,6 +97,7 @@ apipatterns = patterns("",
     # Reception
     url(r'^api/reception/shelfs?$', 'search.models.api.reception_shelfs', name="api_reception_shelfs"),
     url(r'^api/reception/add/?$', 'search.models.api.reception_add_card', name="api_reception_add_card"),
+    # url(r'^api/reception/putaside/?$', 'search.models.api_users.reception_putaside', name="api_reception_card_putaside"),
     url(r'^api/reception/validate/?$', 'search.models.api.reception_validate', name="api_reception_validate"),
     url(r'^api/reception/?$', 'search.models.api.reception_cards', name="api_reception_cards"),
 

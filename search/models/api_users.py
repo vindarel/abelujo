@@ -321,3 +321,13 @@ def card_reservations(request, pk, **kw):
         reservations = Reservation.get_card_reservations(card_id=pk, to_dict=True)
         to_ret['data'] = reservations
         return JsonResponse(to_ret)
+
+
+def all_reservations(request):
+    # currently for CLI usage.
+    res = [it.to_dict() for it in Reservation.objects.exclude(card__isnull=True)\
+           .exclude(client__isnull=True)\
+           .exclude(card_id__isnull=True)\
+           .exclude(archived=True)\
+           .all()]
+    return JsonResponse(res, safe=False)

@@ -1140,7 +1140,8 @@ class Card(TimeStampedModel):
 
         if with_quantity:
             res['quantity'] = self.quantity
-            res['quantity_clients_reserved'] = self.quantity_clients_reserved()
+            # res['quantity_clients_reserved'] = self.quantity_clients_reserved()
+            res['quantity_clients_reserved_to_be_notified'] = self.quantity_clients_reserved_to_be_notified()
 
         return res
 
@@ -2262,6 +2263,9 @@ class Card(TimeStampedModel):
 
     def quantity_clients_reserved(self):
         return Reservation.objects.filter(card=self).count()
+
+    def quantity_clients_reserved_to_be_notified(self):
+        return Reservation.objects.filter(card=self, notified=False).count()
 
     def get_first_deposit(self):
         names_ids = self.deposits

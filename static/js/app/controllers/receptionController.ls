@@ -320,12 +320,25 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
           Notiflix.Notify.Warning "Something went wrong."
 
     # Validate a reservation for a book:
-    # - rm from stock (we put this book on the side)
+    # - rm 1 from stock (we put this book on the side)
     # - send email to a client
     # - send email to all clients.
     $scope.validate_reservation = (resa) !->
       $log.info "-- ok validate"
-      resa.disabled = true
+      params = do
+          card_id: resa.card_id
+          client_id: resa.client_id
+      $log.info "-- params: ", params
+      $http.post "/api/card/" + resa.card_id + "/putaside/", params
+      .then (response) !->
+          if response.data.status
+            resa.disabled = true
+            Notiflix.Notify.Success "OK"
+          else
+            Notiflix.Notify.Warning "mmh"
+
+      , (response) !->
+          Notiflix.Notify.Warning "Something went wrong."
 
 
     ##############################

@@ -64,6 +64,7 @@ class Reservation(TimeStampedModel):
             "client": self.client.to_dict() if hasattr(self, 'client') and self.client else None,
             "card_id": self.card.id if hasattr(self, 'card') and self.card else None,
             "nb": self.nb,
+            "notified": self.notified,
         }
         return res
 
@@ -73,6 +74,27 @@ class Reservation(TimeStampedModel):
         if to_dict:
             res = [it.to_dict() for it in res]
         return res
+
+    @staticmethod
+    def putaside(card, client):
+        """
+        Remove 1 exemplary from the stock.
+        """
+        msgs = Messages()
+        resa = Reservation.objects.filter(card=card, client=client).first()
+        if not resa:
+            msgs.add_error("No reservation for this card and this client exist.")
+            return False, msgs.msgs()
+        try:
+            card.remove_card()
+            resa.notified = True
+            resa.save()
+        except Exception as e:
+            msgs.add_error(u"Could not put card {} aside: {}".format(card.pk, e))
+            log.error(msgs.msgs)
+            return False, msgs.msgs
+
+        return True, msgs.msgs
 
 
 class Contact(models.Model):
@@ -170,6 +192,20 @@ class Client(Contact):
 
     def __unicode__(self):
         return "{} {}".format(self.name, self.firstname)
+
+    def to_dict(self):
+        # res = super(Contact, self).to_dict()
+        rep = self.__repr__()
+        return {'id': self.id,
+                'name': self.name.upper(),
+                'firstname': self.firstname.capitalize(),
+                'mobilephone': self.mobilephone,
+                '__repr__': rep,
+                'repr': rep,  # in templates, can't use __repr__
+                'url': self.get_absolute_url(),
+                # addition:
+                'discount': self.discount,
+        }
 
     @staticmethod
     def search(query, to_dict=False):
