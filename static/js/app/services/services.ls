@@ -128,11 +128,12 @@ utils.factory 'utils', ['$http', '$window', '$log', ($http, $window, $log) ->
             re = /^(\d+)$/
             res = args.query.match(re)
             ISBN_LENGTH = 13  # watch out for EAN10 maybe?
-            if res and res.length == 2 and args.query.length < ISBN_LENGTH
+            if not (args.query.startsWith('97') or args.query.startsWith('313'))
+               "continue"
+            else if res and res.length == 2 and args.query.length < ISBN_LENGTH
                # wait for a full ISBN
                $log.info "Incomplete ISBN."
                return
-
 
             # repetition: that's a fail :(
             params = do

@@ -424,8 +424,16 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Livescript version: see basketsController.ls
       $scope.getCards = function(val){
 
+          // We want to wait for a complete ISBN input,
+          // but we also want to search for "1984" when the user types it.
+          // It's ok if we don't filter out everything, the important is everyday use.
           if ($scope.all_digits_re.test(val)) {
-              if (val.length < 13) {
+              if (!val.startsWith('97') |  // book
+                  !val.startsWith('313'))  // game
+              {
+                  // this is not an ISBN
+              }
+              else if (val.length < 13) {
                   return;
               }
           };
@@ -1057,7 +1065,9 @@ utils.factory('utils', [
         re = /^(\d+)$/;
         res = args.query.match(re);
         ISBN_LENGTH = 13;
-        if (res && res.length === 2 && args.query.length < ISBN_LENGTH) {
+        if (!(args.query.startsWith('97') || args.query.startsWith('313'))) {
+          "continue";
+        } else if (res && res.length === 2 && args.query.length < ISBN_LENGTH) {
           $log.info("Incomplete ISBN.");
           return;
         }
