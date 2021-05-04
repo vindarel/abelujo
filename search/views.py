@@ -352,6 +352,9 @@ def card_show(request, pk):
         "total_sold": total_sold,
         "pending_commands": pending_commands,
         "page_title": "Abelujo - " + card.title[:50],
+
+        # Feature flags.
+        "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON
     })
 
 def card_history(request, pk):

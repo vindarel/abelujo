@@ -435,10 +435,22 @@ else:
 # If True, don't bother user custom shelf names, use Dilicom's CLIL themes.
 USE_THEMES_FOR_SHELVES = False
 
+# Feature flags
+# Show a reservation button on the card page.
+FEATURE_SHOW_RESERVATION_BUTTON = False
+
 if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     try:
         import config  # noqa: F401
     except Exception as e:
         print("Could not load user config.py: {}".format(e))
+
+    try:
+        if config:
+            if hasattr(config, 'FEATURE_SHOW_RESERVATION_BUTTON'):
+                FEATURE_SHOW_RESERVATION_BUTTON = config.FEATURE_SHOW_RESERVATION_BUTTON
+                print "FEATURE ENABLED: FEATURE_SHOW_RESERVATION_BUTTON"
+    except Exception:
+        pass
 
 print "INFO: Abelujo running on {}".format(os.getcwd())
