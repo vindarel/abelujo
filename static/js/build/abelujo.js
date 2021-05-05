@@ -3971,6 +3971,7 @@ angular.module("abelujo").controller('navbarController', [
         $window.location.href = card.get_absolute_url;
       } else {
         $log.warn("card is undefined");
+        $window.document.getElementById("navbar-input").value = "";
       }
     };
   }
