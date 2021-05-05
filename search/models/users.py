@@ -71,7 +71,10 @@ class Reservation(TimeStampedModel):
 
     @staticmethod
     def get_card_reservations(card_id, to_dict=False):
-        res = Reservation.objects.filter(card=card_id)
+        """
+        Get the ongoing reservations for this card.
+        """
+        res = Reservation.objects.filter(card=card_id, archived=False)
         if to_dict:
             res = [it.to_dict() for it in res]
         return res

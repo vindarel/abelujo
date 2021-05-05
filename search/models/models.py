@@ -2262,10 +2262,10 @@ class Card(TimeStampedModel):
         return Basket.auto_command_quantity_of(self)
 
     def quantity_clients_reserved(self):
-        return Reservation.objects.filter(card=self).count()
+        return Reservation.objects.filter(card=self, archived=False).count()
 
     def quantity_clients_reserved_to_be_notified(self):
-        return Reservation.objects.filter(card=self, notified=False).count()
+        return Reservation.objects.filter(card=self, archived=False, notified=False).count()
 
     def get_first_deposit(self):
         names_ids = self.deposits
@@ -5180,6 +5180,18 @@ class Sell(models.Model):
                 status = ALERT_ERROR
                 sell.delete()
                 return None, status, msg
+
+        #
+        # Archive the reservation, if applicable.
+        #
+        try:
+            card_ids = [it['id'] for it in ids_prices_nb]
+            if card_ids:
+                reservations = Reservation.objects.filter(client=client_id, card__id__in=card_ids)
+                if reservations:
+                    reservations.update(archived=True, success=True)
+        except Exception as e:
+            log.warning("Could not mark reservation(s) as done: {}".format(e))
 
         #
         # Add the cards and their attributes in the Sell.

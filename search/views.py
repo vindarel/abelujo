@@ -343,6 +343,7 @@ def card_show(request, pk):
 
         # Client reservations
         reservations = users.Reservation.get_card_reservations(pk)
+
     return render(request, template, {
         "object": card,
         "sells": sells,
