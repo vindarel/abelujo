@@ -4295,14 +4295,18 @@ angular.module("abelujo").controller('receptionController', [
       }
     };
     $scope.reservation_details = function(card_id){
+      var copy, NEWLINE, ESPERLUETTE;
       $log.info("I was here ", card_id);
+      copy = find(function(it){
+        return it.id === card_id;
+      })(
+      $scope.all_copies);
+      NEWLINE = "%0D%0A";
+      ESPERLUETTE = "%26";
+      $scope.body = "Votre réservation suivante est arrivée à la librairie:" + NEWLINE + NEWLINE + "-  " + copy.title + " " + copy.price + copy.price_fmt;
+      $scope.body += NEWLINE + NEWLINE + "Nous vous l'avons mise de côté." + NEWLINE + NEWLINE + "À bientôt.";
       $http.post("/api/card/" + card_id + "/reservations/").then(function(response){
-        var copy;
         if (response.data.status === 'success') {
-          copy = find(function(it){
-            return it.id === card_id;
-          })(
-          $scope.all_copies);
           if (copy) {
             copy.reservations = response.data.data;
             $scope.cur_card_reservations = copy;
@@ -4337,6 +4341,7 @@ angular.module("abelujo").controller('receptionController', [
         Notiflix.Notify.Warning("Something went wrong.");
       });
     };
+    $scope.body = "";
     hotkeys.bindTo($scope).add({
       combo: "d",
       description: gettext("show or hide the book details in tables."),

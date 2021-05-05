@@ -204,7 +204,8 @@ class Client(Contact):
         return {'id': self.id,
                 'name': self.name.upper(),
                 'firstname': self.firstname.capitalize(),
-                'mobilephone': self.mobilephone,
+                'mobilephone': self.mobilephone if hasattr(self, 'mobilephone') else "",
+                'email': self.email if hasattr(self, 'email') else "",
                 '__repr__': rep,
                 'repr': rep,  # in templates, can't use __repr__
                 'url': self.get_absolute_url(),

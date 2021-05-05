@@ -247,15 +247,12 @@ div(ng-cloak, ng-controller="receptionController")
                 ng-click="validate_reservation(resa)",
                 ng-disabled="resa.disabled",
                 title="Enlever ce livre du fonds"
-                ) OK
+                ) OK &nbsp;
                 i.glyphicon.glyphicon-minus
-              button.btn.btn-info(type="button",
-                ng-click="validate_reservation_send_email()",
-                ng-disabled="resa.disabled",
-                ) Send email
-                i.glyphicon.glyphicon-email
+              a(href="mailto:{{'resa.client.email'|ng}}?subject={% trans 'Your reservation has arrived' %}&body={% trans 'Hello' %} %0D%0A %0D%0A {{ 'body' | ng }}")
+                i.glyphicon.glyphicon-envelope(title="{% trans 'Write to' %}  {{ 'distributor.name' | ng}} {% trans ' with your desktop mail client' %}", style="margin-left: 1em")
 
-          p(style="margin-top: 1em;")
+          //p(style="margin-top: 1em;")
             button.btn.btn-warning(type="button", ng-click="validate_reservation_send_all_emails()") Send email to all
 
 {% endblock content %}

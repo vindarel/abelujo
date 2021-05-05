@@ -39,6 +39,8 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
     $scope.language = utils.url_language($window.location.pathname)
     $window.document.title = "Abelujo - " + gettext("Reception")
 
+    $scope.body = ""  # email body
+
     # pagination
     $scope.page = 1
     $scope.page_size = 200
@@ -298,13 +300,19 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
       $log.info "I was here ", card_id
       ## params = do
           ## card_id: card_id
+      copy = $scope.all_copies
+      |> find (.id == card_id)
+
+      NEWLINE = "%0D%0A"
+      ESPERLUETTE = "%26"
+      $scope.body = "Votre réservation suivante est arrivée à la librairie:" + NEWLINE + NEWLINE + "-  " + copy.title + " " + copy.price + copy.price_fmt
+      $scope.body += NEWLINE + NEWLINE + """Nous vous l'avons mise de côté.""" + NEWLINE + NEWLINE + "À bientôt."
+
       $http.post "/api/card/" + card_id + "/reservations/",
       .then (response) !->
           if response.data.status == 'success'
               ## $window.location.href = "/#{$scope.language}/reception/"
               ## $scope.all_copies = []
-              copy = $scope.all_copies
-              |> find (.id == card_id)
               if copy
                  copy.reservations = response.data.data
                  $scope.cur_card_reservations = copy
@@ -339,7 +347,6 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
       , (response) !->
           Notiflix.Notify.Warning "Something went wrong."
-
 
     ##############################
     # Keyboard shortcuts (hotkeys)
