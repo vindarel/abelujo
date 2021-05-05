@@ -341,6 +341,8 @@ def card_show(request, pk):
         # List of clients (for modale)
         clients = [it.to_dict() for it in Client.objects.order_by("name").all()]
 
+        # Client reservations
+        reservations = users.Reservation.get_card_reservations(pk)
     return render(request, template, {
         "object": card,
         "sells": sells,
@@ -353,6 +355,7 @@ def card_show(request, pk):
         "total_sold": total_sold,
         "pending_commands": pending_commands,
         "page_title": "Abelujo - " + card.title[:50],
+        "reservations": reservations,
 
         # Feature flags.
         "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON

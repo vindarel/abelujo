@@ -58,6 +58,7 @@ class Reservation(TimeStampedModel):
 
     def to_dict(self):
         res = {
+            "id": self.pk,
             "created": self.created,
             "client_id": self.client.id if hasattr(self, 'client') and self.client else None,
             "client_repr": self.client.__repr__() if hasattr(self, 'client') else None,
@@ -189,6 +190,10 @@ class Client(Contact):
 
     def __repr__(self):
         return u"{} {}".format(self.name, self.firstname)
+
+    def repr(self):
+        # for templates. Method cannot start with an underscore. Stupid templates
+        return self.__repr__()
 
     def __unicode__(self):
         return "{} {}".format(self.name, self.firstname)

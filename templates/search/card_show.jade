@@ -320,8 +320,20 @@ div.modal(id="reserveModal")
         select#clients-select
           for client in clients
             option(id="{{ client.id }}") {{ client.repr }}
-
         button.btn.btn-success(type="button", onclick="validate_reservation()") OK
+
+        br
+        if reservations
+          h5 {% trans "Ces clients ont réservé cette notice" %}:
+          for resa in reservations
+            div(id="#resa-{{ resa.client.id }}")
+              h4 {{ resa.client.repr }}
+                a(href="{{ resa.client.url }}", target="_blank")
+                  i.glyphicon.glyphicon-share
+              if resa.client.mobilephone
+                span {{ resa.client.mobilephone }} 
+                  i.glyphicon.glyphicon-phone
+
 
 // important to run this last, so CSS selectors select something.
 script(type='text/javascript', src="{% static 'search/js/card.js' %}")
