@@ -203,17 +203,18 @@
                 span &nbsp; ({% trans "reserved" %}: &nbsp;
                 span(id="reservation") {{ object.quantity_clients_reserved }})
 
-          tr
-            td {% trans "Presente in" %}
-            if not object.quantity
-              td ---
-            else
-             td
-              table.table.table-condensed
-                for name_qty in places_quantities
-                  tr
-                    td(id="{{ name_qty.2 }}") {{ name_qty.0 }} 
-                    td(id="{{ name_qty.2}}_quantity")  {{ name_qty.1 }}
+          if has_many_places
+            tr
+              td {% trans "Presente in" %}
+              if not object.quantity
+                td ---
+              else
+               td
+                table.table.table-condensed
+                  for name_qty in places_quantities
+                    tr
+                      td(id="{{ name_qty.2 }}") {{ name_qty.0 }} 
+                      td(id="{{ name_qty.2}}_quantity")  {{ name_qty.1 }}
 
           tr
             td {% trans "Boxes" %}

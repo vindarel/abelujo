@@ -347,6 +347,7 @@ def card_show(request, pk):
         "clients": clients,
         # "shelves": Shelf.objects.order_by("name").all(),
         "places_quantities": places_quantities,
+        "has_many_places": len(places) > 1,
         "quantity_boxes": quantity_boxes,
         "last_entry": last_entry,
         "total_sold": total_sold,
