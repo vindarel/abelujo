@@ -527,6 +527,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                     if (price_alert.price_changed) {
                         existing.price = price_alert.updated_price;
                         existing.price_sold = price_alert.updated_price;
+                        $scope.updateTotalPrice();
                         Notiflix.Notify.Success('Prix mis à jour pour ' + existing.title);
                     }
                 }
