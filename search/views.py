@@ -1193,13 +1193,14 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
 
     elif report == 'listing':
         # inv_cards = inv.inventorycopies_set.all()
-        header = (_("Title"), _("Authors"), _("Publishers"), _("Supplier"),
+        header = ("ISBN", _("Title"), _("Authors"), _("Publishers"), _("Supplier"),
                   _("Shelf"),
                   _("Price"),
                   _("with discount"),
                   _("Quantity"))
         rows = [
-            (ic.card.title,
+            (ic.card.isbn if ic.card.isbn else "",
+             ic.card.title,
              ic.card.authors_repr,
              ic.card.pubs_repr,
              ic.card.distributor_repr,
