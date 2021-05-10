@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as __  # in Meta and model fi
 from common import CHAR_LENGTH
 from common import TEXT_LENGTH
 from common import TimeStampedModel
+# note: can't import models, circular dependencies.
 from search.models.utils import get_logger
 from search.models.utils import Messages
 
@@ -229,13 +230,24 @@ class Client(Contact):
         """
         Reserve this card.
 
+        Create a Reservation object.
+        NOTE: to finish the reservation, decrement it from the stock,
+        for example with Card.remove_card_id.
+
         Return a tuple: Reservation object, created? (boolean).
         """
         resa, created = Reservation.objects.get_or_create(
             client=self,
             card_id=card_id,
+            archived=False,
         )
         resa.save()
+
+        # Decrement card from stock (done in api).
+        # because of damn circular deps, we can't import the Card model.
+        # card = Card.objects.filter(id=card_id).first()
+        # card.remove_card()
+
         return resa, created
 
 

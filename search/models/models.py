@@ -1525,7 +1525,7 @@ class Card(TimeStampedModel):
         return result, msgs.msgs
 
     @staticmethod
-    def sell(id=None, quantity=1, place_id=None, place=None, silence=False):
+    def sell(id=None, quantity=1, place_id=None, place=None, silence=False, decrement=True):
         """Sell a card. Decreases its quantity in the given place.
 
         If it is not present anymore in the selling place (aka in its
@@ -1587,9 +1587,12 @@ class Card(TimeStampedModel):
                     msgs.status = ALERT_WARNING
                     msgs.add_warning(_("The card '{}' ({}) wasn't associated to any place. We had to sell it from the default place {}. This can happen if you manipulated it from lists or inventories but didn't properly add it to your stock.".format(card.title, card.id, place_obj.name)))
 
-            place_copy.nb -= quantity
-            place_copy.save()
-            card.save()
+            # Decrement the quantity in stock,
+            # unless if it was already decremented, from a client reservation.
+            if decrement:
+                place_copy.nb -= quantity
+                place_copy.save()
+                card.save()
 
         except ObjectDoesNotExist as e:
             log.warning("Requested card %s does not exist: %s" % (id, e))
@@ -2136,7 +2139,7 @@ class Card(TimeStampedModel):
 
     def remove_card(self, place=None, movement=None):
         """
-        Remove this card from a place.
+        Remove (decrement) this card from a place.
 
         Find what's the place to remove it from, and call the method on this place.
         """
@@ -5135,7 +5138,20 @@ class Sell(models.Model):
             log.error("Error on creating Sell object: {}".format(e))
             return None, status, "Error registering the sell"
 
-        # Decrement cards quantities from their place or deposit.
+        #
+        # Get the client reservations.
+        # - archive them, if applicable, after the sell (below),
+        # - don't decrement the quantity a second time.
+        #
+        try:
+            card_ids = [it['id'] for it in ids_prices_nb]
+            if card_ids:
+                reservations = Reservation.objects.filter(client=client_id, card__id__in=card_ids, archived=False)
+        except Exception as e:
+            log.warning("Could not mark reservation(s) as done: {}".format(e))
+
+        # Decrement cards quantities from their place or deposit
+        # (except if already done with a client reservation).
         # A quantity < 0 is a return (or reimboursement).
         for it in ids_prices_nb:
             # "sell" a card.
@@ -5145,6 +5161,10 @@ class Sell(models.Model):
                 log.error("Error: id {} shouldn't be None.".format(id))
             card = Card.objects.get(id=id)
             cards_obj.append(card)
+
+            # For a real sell, decrement the quantity in stock,
+            # but don't do it twice with a reservation.
+            decrement = True
 
             # Check each card if it is in a deposit.
             deposit_obj = None
@@ -5165,7 +5185,11 @@ class Sell(models.Model):
                 # either sell from a place or the default (selling) place.
                 # A quantity < 0 gets added back.
                 else:
-                    status, alerts = Card.sell(id=id, quantity=quantity, place=place_obj)
+                    resa = reservations.filter(card=id)
+                    if resa:
+                        decrement = False
+                    status, alerts = Card.sell(id=id, quantity=quantity, place=place_obj,
+                                               decrement=decrement)
 
             except ObjectDoesNotExist:
                 msg = "Error: the card of id {} doesn't exist.".format(id)
@@ -5182,16 +5206,10 @@ class Sell(models.Model):
                 return None, status, msg
 
         #
-        # Archive the reservation, if applicable.
+        # Archive the reservations.
         #
-        try:
-            card_ids = [it['id'] for it in ids_prices_nb]
-            if card_ids:
-                reservations = Reservation.objects.filter(client=client_id, card__id__in=card_ids)
-                if reservations:
-                    reservations.update(archived=True, success=True)
-        except Exception as e:
-            log.warning("Could not mark reservation(s) as done: {}".format(e))
+        if reservations:
+            reservations.update(archived=True, success=True)
 
         #
         # Add the cards and their attributes in the Sell.

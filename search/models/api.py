@@ -634,7 +634,8 @@ def card_reserve(request, pk, **kw):
             to_ret['data'] = "Could not reserve, this client does not exist!"
         else:
             resa, created = client.reserve(pk)
-            # import ipdb; ipdb.set_trace()
+            # Decrement from stock.
+            Card.remove_card_id(pk)
 
         return JsonResponse(to_ret)
 
