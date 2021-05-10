@@ -133,6 +133,8 @@ function validate_reservation() {
                     // Close the modal.
                     // so we have JQuery.
                     $('#reserveModal').modal('toggle');
+                    // Reload page.
+                    location.reload(true);
                 }
                 else {
                     console.log("status is not success: ", myJson.status);
