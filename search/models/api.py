@@ -620,6 +620,7 @@ def card_reserve(request, pk, **kw):
     if request.method == 'POST':
         params = kw.copy()
         client_id = params.get('client_id')
+        card = None
         try:
             # card = Card.objects.get(id=pk)
             client = Client.objects.filter(id=client_id).first()
@@ -633,9 +634,14 @@ def card_reserve(request, pk, **kw):
             to_ret['status'] = ALERT_ERROR
             to_ret['data'] = "Could not reserve, this client does not exist!"
         else:
-            resa, created = client.reserve(pk)
-            # Decrement from stock.
-            Card.remove_card_id(pk)
+            try:
+                card = Card.objects.filter(id=pk).first()
+            except Exception as e:
+                log.error("card_reserve: could not find card of id {}: {}".format(pk, e))
+            if card:
+                resa, created = client.reserve(card)
+                # Decrement from stock.
+                # Card.remove_card_id(pk)
 
         return JsonResponse(to_ret)
 

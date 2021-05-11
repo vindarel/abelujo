@@ -5066,6 +5066,8 @@ class Sell(models.Model):
         status = ALERT_SUCCESS
         cards_obj = []
         sell = None
+        # If we find reservations, don't decrement quantities again and close them.
+        reservations = None
 
         TEST_DEFAULT_QUANTITY = 1
         if cards:
@@ -5145,10 +5147,10 @@ class Sell(models.Model):
         #
         try:
             card_ids = [it['id'] for it in ids_prices_nb]
-            if card_ids:
-                reservations = Reservation.objects.filter(client=client_id, card__id__in=card_ids, archived=False)
+            if client and card_ids:
+                reservations = Reservation.objects.filter(client=client).filter(card_id__in=card_ids).filter(archived=False)
         except Exception as e:
-            log.warning("Could not mark reservation(s) as done: {}".format(e))
+            log.warning("Could not find reservation(s): {}".format(e))
 
         # Decrement cards quantities from their place or deposit
         # (except if already done with a client reservation).
@@ -5185,7 +5187,9 @@ class Sell(models.Model):
                 # either sell from a place or the default (selling) place.
                 # A quantity < 0 gets added back.
                 else:
-                    resa = reservations.filter(card=id)
+                    resa = None
+                    if reservations:
+                        resa = reservations.filter(card=id)
                     if resa:
                         decrement = False
                     status, alerts = Card.sell(id=id, quantity=quantity, place=place_obj,
@@ -5208,6 +5212,8 @@ class Sell(models.Model):
         #
         # Archive the reservations.
         #
+        # ... is it possible one reservation fails to succeed and thus gets
+        # wrongly archived?
         if reservations:
             reservations.update(archived=True, success=True)
 

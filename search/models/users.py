@@ -71,10 +71,15 @@ class Reservation(TimeStampedModel):
         return res
 
     @staticmethod
-    def get_card_reservations(card_id, to_dict=False):
+    def get_card_reservations(card, to_dict=False):
         """
         Get the ongoing reservations for this card.
+
+        - card: int or object
         """
+        card_id = card
+        if isinstance(card, models.base.Model):
+            card_id = card.id
         res = Reservation.objects.filter(card=card_id, archived=False)
         if to_dict:
             res = [it.to_dict() for it in res]
@@ -83,13 +88,13 @@ class Reservation(TimeStampedModel):
     @staticmethod
     def putaside(card, client):
         """
-        Remove 1 exemplary from the stock.
+        Create a Reservation, remove 1 exemplary from the stock.
         """
         msgs = Messages()
-        resa = Reservation.objects.filter(card=card, client=client).first()
+        resa = Reservation.objects.filter(card=card, client=client, archived=False).first()
         if not resa:
             msgs.add_error("No reservation for this card and this client exist.")
-            return False, msgs.msgs()
+            return False, msgs.msgs
         try:
             card.remove_card()
             resa.notified = True
@@ -206,8 +211,8 @@ class Client(Contact):
         # res = super(Contact, self).to_dict()
         rep = self.__repr__()
         return {'id': self.id,
-                'name': self.name.upper(),
-                'firstname': self.firstname.capitalize(),
+                'name': self.name,
+                'firstname': self.firstname,
                 'mobilephone': self.mobilephone if hasattr(self, 'mobilephone') else "",
                 'email': self.email if hasattr(self, 'email') else "",
                 '__repr__': rep,
@@ -226,16 +231,21 @@ class Client(Contact):
 
         return res
 
-    def reserve(self, card_id):
+    def reserve(self, card):
         """
         Reserve this card.
+        Create a Reservation object and decrement it from the stock,
 
-        Create a Reservation object.
-        NOTE: to finish the reservation, decrement it from the stock,
-        for example with Card.remove_card_id.
+        - card: card object.
 
         Return a tuple: Reservation object, created? (boolean).
         """
+        # XXX: lol, same as putaside ??
+        card_id = card.id
+        if isinstance(card, int):
+            log.error("reserve: we don't accept card_id anymore but a Card object.")
+            return None, False
+
         resa, created = Reservation.objects.get_or_create(
             client=self,
             card_id=card_id,
@@ -243,12 +253,21 @@ class Client(Contact):
         )
         resa.save()
 
-        # Decrement card from stock (done in api).
-        # because of damn circular deps, we can't import the Card model.
-        # card = Card.objects.filter(id=card_id).first()
-        # card.remove_card()
+        # Decrement card from stock.
+        card.remove_card()
 
         return resa, created
+
+    def cancel_reservation(self, card):
+        """
+        Cancel the Reservation object.
+        NOTE: to correctly finish it, increment the card in stock too.
+        """
+        resa = Reservation.objects.filter(client=self, card_id=card.id, archived=False).first()
+        if resa:
+            card.add_card()
+            resa.delete()
+        return True
 
 
 class Bookshop(Contact):
