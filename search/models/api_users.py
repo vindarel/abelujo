@@ -318,7 +318,7 @@ def card_reservations(request, pk, **kw):
     if request.method == 'POST':
         params = kw.copy()
         # client_id = params.get('client_id')
-        reservations = Reservation.get_card_reservations(card_id=pk, to_dict=True)
+        reservations = Reservation.get_card_reservations(pk, to_dict=True)
         to_ret['data'] = reservations
         return JsonResponse(to_ret)
 
