@@ -1857,6 +1857,37 @@ def inventories(request):
         return render(request, template)
 
 @login_required
+def inventories_archived(request):
+    """
+    View archived inventories.
+
+    GET params:
+    - year
+    """
+    template = "search/inventories_archived.jade"
+    params = request.GET.copy()
+    years_set = set()
+    allcreated_dates = Inventory.objects.filter(archived=True).values_list('created', flat=True)
+    for date in allcreated_dates:
+        years_set.add(date.year)
+    years = list(years_set)
+    MAX_YEARS = 5
+    years = list(reversed(sorted(years)))[:MAX_YEARS]
+
+    inventories = []
+    if years:
+        if params and params.get('year'):
+            archive_year = params.get('year')
+        else:
+            archive_year = years[0]
+        inventories = Inventory.objects.filter(archived=True).filter(created__year=archive_year).order_by("-created")
+    if request.method == 'GET':
+        return render(request, template, {
+            'inventories': inventories,
+            'years': years,
+        })
+
+@login_required
 def inventory(request, pk):
     template = "search/inventory_view.jade"
     if request.method == "GET":

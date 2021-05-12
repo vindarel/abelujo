@@ -170,6 +170,7 @@ urlpatterns = patterns('',
     url(r'^alerts/', login_required(TemplateView.as_view(template_name="search/alerts.jade")),
         name="search_alerts"),
 
+    url(r'^inventories/archived/?$', 'search.views.inventories_archived', name="inventories_archived"),
     url(r'^inventories/$', 'search.views.inventories', name="inventories"),
     url(r'^inventories/new$', login_required(TemplateView.as_view(template_name="search/inventory_view.jade")),
         name="inventory_new"),

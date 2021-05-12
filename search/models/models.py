@@ -5513,6 +5513,9 @@ class InventoryBase(TimeStampedModel):
         ret = roundfloat(ret)
         return ret
 
+    def value_fmt(self, discount=False):
+        return price_fmt(self.value(), Preferences.get_default_currency())
+
     def to_dict(self, details=False):
         """Return a dict ready to be serialized. Simplest form: id and name.
 

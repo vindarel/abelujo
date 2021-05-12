@@ -32,7 +32,14 @@ ul.messages
   {% endfor %}
 {% endif %}
 
-h3 {% trans "Inventories started" %}
+{% get_current_language as LANGUAGE_CODE %}
+
+.row
+  .col-lg-10
+    ul.nav.nav-tabs
+      li.active(role="presentation"): a(href="#") {% trans "Inventories started" %}
+      li(role="presentation")
+        a(href="/{{ LANGUAGE_CODE}}/inventories/archived") {% trans "Inventories archived" %}
 
 div(ng-controller="InventoryModalController")
   script(type="text/ng-template", id="modalContent.html")
