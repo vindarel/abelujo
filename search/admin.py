@@ -32,6 +32,7 @@ from search.models import Inventory
 from search.models import Place
 from search.models import Publisher
 from search.models import RestockingCopies
+from search.models import Reservation
 from search.models import Sell
 
 # Custom admin for the client admin:
@@ -124,6 +125,13 @@ class PublisherAdmin(admin.ModelAdmin):
     ordering = ("name",)
 
 
+class ReservationAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Reservation
+
+    list_display = ("client", "card", "archived")
+
+
 class ShelfAdmin(admin.ModelAdmin):
     class Meta:
         model = Shelf
@@ -154,6 +162,7 @@ admin.site.register(Inventory, InventoryAdmin)
 admin.site.register(Place)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(RestockingCopies)
+admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Sell)
 
 admin_site = MyAdmin(name='myadmin')
@@ -167,4 +176,5 @@ admin_site.register(Deposit, DepositAdmin)
 admin_site.register(Place)
 admin_site.register(Publisher, PublisherAdmin)
 admin_site.register(Sell)
+admin_site.register(Reservation, ReservationAdmin)
 admin_site.register(Shelf, ShelfAdmin)
