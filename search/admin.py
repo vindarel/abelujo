@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
 
@@ -128,6 +129,10 @@ class PublisherAdmin(admin.ModelAdmin):
 class ReservationAdmin(admin.ModelAdmin):
     class Meta:
         model = Reservation
+
+    def get_queryset(self, request):
+        qs = super(ReservationAdmin, self).get_queryset(request)
+        return qs.filter(archived=False)
 
     list_display = ("client", "card", "archived")
 
