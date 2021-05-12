@@ -473,25 +473,34 @@ def theme_name(code):
 def parent_theme_name(code):
     """
     Get the first parent theme name.
-    3781 (action et aventure) => Bande dessinée"""
+    3781 (action et aventure) => Bande dessinée
+
+    - code: string
+
+    Return: string
+    """
     if not code:
         return ""
+    if isinstance(code, int):
+        code = str(code)
     try:
         parents_list = settings.CLIL_THEME_HIERARCHIES.get(code)
-        parents_list = [it.strip() for it in parents_list]
+        parents_list = [it.strip() for it in parents_list] if parents_list else []
         parent = None
         # element 0 is the first parent. List of 4 elements. The list ends with
         # the theme code (same as the key):
         # code => grand-parent, parent, code, blank string.
-        if parents_list[0] == code:
-            return ""
-        elif parents_list[1] == code:
-            return parents_list[0]
-        elif parents_list[2] == code:
-            parent = parents_list[1]
-        elif parents_list[3] == code:
-            parent = parents_list[2]
-        return settings.CLIL_THEMES.get(parent)
+        if parents_list:
+            if parents_list[0] == code:
+                return ""
+            elif parents_list[1] == code:
+                parent = parents_list[0]
+            elif parents_list[2] == code:
+                parent = parents_list[1]
+            elif parents_list[3] == code:
+                parent = parents_list[2]
+            return settings.CLIL_THEMES.get(parent)
+        return ""
     except Exception as e:
         log.warning(u"Could not get the parent theme of {}: {}".format(code, e))
         return ""

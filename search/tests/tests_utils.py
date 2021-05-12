@@ -24,6 +24,7 @@ from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 
 from search.models.utils import Messages, is_isbn, split_query, isbns_from_query, is_truthy, toIntOrFloat
+from search.models.utils import parent_theme_name
 
 class TestMessages(TestCase):
 
@@ -96,3 +97,10 @@ class TestUtils(TestCase):
         self.assertEqual(1, toIntOrFloat("1"))
         self.assertEqual(1.10, toIntOrFloat("1.10"))
         self.assertEqual(4.0, toIntOrFloat("4.[Filtered]"))
+
+    def test_parent_theme_name(self):
+        self.assertTrue(parent_theme_name(3781).startswith('Bandes'))
+        res = parent_theme_name("3008")
+        self.assertTrue(res.startswith('Manuels'))
+        res = parent_theme_name("3001")
+        self.assertTrue(res.startswith('SCOLAIRE'))
