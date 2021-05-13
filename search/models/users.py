@@ -38,9 +38,9 @@ class Reservation(TimeStampedModel):
     class Meta:
         pass
 
-    def __str__(self):
+    def __unicode__(self):
         if self.client:
-            return "client {}".format(self.client)
+            return unicode("client {}".format(self.client))
         else:
             return ""
 
@@ -201,11 +201,11 @@ class Client(Contact):
         return u"{} {}".format(self.name, self.firstname)
 
     def repr(self):
-        # for templates. Method cannot start with an underscore. Stupid templates
+        # for templates. Method cannot start with an underscore. Stupid templates.
         return self.__repr__()
 
     def __unicode__(self):
-        return "{} {}".format(self.name, self.firstname)
+        return unicode("{} {}".format(self.name, self.firstname))
 
     def to_dict(self):
         # res = super(Contact, self).to_dict()
