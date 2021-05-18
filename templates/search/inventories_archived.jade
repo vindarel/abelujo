@@ -1,0 +1,146 @@
+// Copyright 2014 - 2020 The Abelujo Developers
+// See the COPYRIGHT file at the top-level directory of this distribution
+
+// Abelujo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Abelujo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
+{% extends "base.jade" %}
+
+{% block auto_command_nb %} {{ auto_command_nb }} {% endblock %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load ngfilter %}
+
+{% if messages %}
+ul.messages
+  {% for msg in messages %}
+  uib-alert(type="success")  {{ msg }}
+  {% endfor %}
+{% endif %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+.row
+  .col-lg-10
+    ul.nav.nav-tabs
+      li(role="presentation"): a(href="/{{ LANGUAGE_CODE }}/inventories") {% trans "Inventories started" %}
+      li.active(role="presentation")
+        a(href="#") {% trans "Inventories archived" %}
+
+div
+
+  div
+    uib-alert(
+      ng-repeat="alert in alerts"
+      type="{{ 'alert.level' | ng }}"
+      close="closeAlert($item)"
+      ng-click="closeAlert($item)"
+    )
+      {{ 'alert.message' | ng }}
+
+  //- .row
+    .btn-group
+      span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="inventories.length", ng-cloak)
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+  div(style="clear: both")
+    for year in years
+      h3(style="float: left")
+        a(href="/{{ LANGUAGE_CODE }}/inventories/archived?year={{ year }}") {{ year }} &nbsp;
+
+  table.table.table-striped.table-hover
+
+    thead
+     tr
+      th.mouse-pointer(ng-click="sort_by('created')") {% trans "Created the" %}
+        span.caret
+      th.mouse-pointer(ng-click="sort_by('name')") {% trans "Inventory of..." %}
+        span.caret
+      th.mouse-pointer(ng-click="sort_by('nb_cards')") {% trans "Nb of titles/copies" %}
+        span.caret
+      th.mouse-pointer(ng-click="sort_by('value')") {% trans "Value" %}
+        span.caret
+      //- th.mouse-pointer(ng-click="sort_by('closed')")(title='{% trans "Was this inventory already applied to your stock ?" %}') {% trans "Applied ?" %}
+        span.caret
+      //- th
+
+    tbody
+     for inv in inventories
+      tr.my-animated-item
+        td {{ inv.created  }}
+        td: a(href="{{ inv.get_absolute_url }}") {{ inv.name }}
+        td {{ inv.nb_cards  }} / {{ inv.nb_copies  }}
+        td(title='{% trans "Value of all the copies in this inventory" %}') {{ inv.value_fmt  }}
+
+        td.i.glyphicon.glyphicon-refresh(title="{% trans 'the inventory is being applied' %}", ng-if="inv.ongoing")
+        //td
+          if inv.applied
+           div.i.glyphicon.glyphicon-ok(title="{{'inv.closed'|ng}}", ng-if="inv.applied")
+        //- td(ng-if="(! inv.applied) && (! inv.ongoing)")
+
+        td
+          //.btn-group
+            button.btn.btn-primary.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Action" %}...
+              span.caret
+            ul.dropdown-menu
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}") {% trans "Continue" %}
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/terminate/") {% trans "Analyse" %}
+              li: a(href="#", ng-click="validate( $index )", title='{% trans "Apply this inventory to your stock. This will modify your stock" %}') {% trans "Apply to your stock" %}
+              li.divider(role="separator")
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/archive") {% trans "Archive" %}
+              li: a.i.glyphicon.glyphicon-trash(href="/inventories/{{ 'inv.id'|ng  }}/delete") {% trans "Delete" %}
+
+          //- .btn-group
+            button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown") {% trans "Export" %}...
+              span.caret
+            ul.dropdown-menu
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=bill&format=pdf", title='{% trans "Get the list of the cards sold with their quantity" %}') {% trans "Sells" %} - pdf
+
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=bill&format=csv") {% trans "Sells" %} - csv
+
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=listing&format=csv") {% trans "Full list" %} - csv
+
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=listing&format=pdf") {% trans "Full list" %} - pdf
+
+              li: a(href="/inventories/{{ 'inv.id'|ng  }}/export?report=simplelisting&format=csv") {% trans "isbn and quantities (Dilicom)" %} - csv
+
+  //- .row
+    .btn-group
+      span.text-right(aria-label="page navigation")
+           ul.pagination(ng-show="inventories.length", ng-cloak)
+             li.page-item
+               a.page-link(ng-click="firstPage()")  &laquo;
+             li.page-item
+               a.page-link(ng-click="previousPage()") <
+             li.page-item
+               a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+             li.page-item
+               a.page-link(ng-click="nextPage()") >
+             li.page-item
+               a.page-link(ng-click="lastPage()") &raquo;
+
+{% endblock content %}
