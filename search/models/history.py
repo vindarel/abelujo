@@ -429,7 +429,8 @@ class Entry(TimeStampedModel):
         price_entered = 0
         total_price_entered = 0
         TWO_DIGITS_SPEC = '0>2'
-        YMD = '%Y-%M-%d'  # for datetime it is %m
+        # YMD = '%Y-%M-%d'  # for datetime it is %m
+        YMD = '%Y-%m-%d'  # It's finally %m not %M
         for day in range(1, last_day + 1):
             # start = pendulum.now()
             date = "{}-{}-{}".format(year,
