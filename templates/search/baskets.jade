@@ -149,6 +149,8 @@ div(ng-cloak, ng-controller="basketsController")
    div.middle(ng-hide="copies.length", style="height: 80%; width: 30%")
      img(src="/static/search/bee.png", height="200px", style="opacity: 0.7")
 
+   div(ng-show="boxes_page && meta.total_weight") {% trans "Weight:" %}  {{ 'meta.total_weight' | ng }}g
+
    .col-md-7
       .btn-group
         span.text-right(aria-label="page navigation")

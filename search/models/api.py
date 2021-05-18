@@ -1202,6 +1202,11 @@ def basket(request, pk, action="", card_id="", **kwargs):
         page_size = request.GET.get('page_size', page_size)
         page_size = to_int(page_size)
         copies = basket.basketcopies_set.order_by("card__title").all()
+        total_weight = 0
+        try:
+            total_weight = sum([it.weight() for it in copies])
+        except Exception as e:
+            log.error("Error summing the total weight: {}".format(e))
         # We must re-sort to get downcase and accents right.
         copies = sorted(copies, cmp=locale.strcoll, key=lambda it: it.card.title)
         nb_results = len(copies)
@@ -1221,6 +1226,7 @@ def basket(request, pk, action="", card_id="", **kwargs):
             'nb_results': nb_results,
             'num_pages': num_pages,
             'default_currency': Preferences.get_default_currency(),
+            'total_weight': total_weight,
         }
         return JsonResponse(to_ret, safe=False)
 

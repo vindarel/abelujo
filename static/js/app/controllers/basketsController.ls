@@ -27,6 +27,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.cards_fetched = [] # fetched from the autocomplete
     $scope.copy_selected = undefined
     $scope.show_images = false
+    $scope.total_weight = undefined
 
     $scope.selected_client = null  # in a modale.
 
@@ -52,6 +53,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.meta = do
         num_pages: null
         nb_results: null
+        total_weight: 0
     page_size = $window.localStorage.getItem "baskets_page_size"
     if page_size != null
         $scope.page_size = parseInt(page_size)
@@ -95,6 +97,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
                 $scope.baskets[index].copies = response.data.data
                 $scope.meta = response.data.meta
                 $scope.copies = response.data.data
+                $scope.total_weight = $scope.meta.total_weight
 
     $scope.showBasket = (index) !->
         "Show the copies of the given basket."
@@ -112,6 +115,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
 
             # Set focus.
             angular.element('#default-input').trigger('focus')
+            ## $scope.get_total_weight!
 
     $scope.empty_basket = !->
         sure = confirm(gettext("Are you sure to empty this list {}?")replace "{}", $scope.cur_basket.name)
@@ -220,6 +224,8 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         .then (response) !->
             $log.info "added cards to basket"
             # $scope.alerts = response.data.msgs # the confirmation alert should be less intrusive
+            ## $scope.get_total_weight!
+
         , (response) !->
             Notiflix.Notify.Warning "Something went wrong."
             ... # error
@@ -231,6 +237,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         now = luxon.DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss')
         utils.save_quantity card, $scope.cur_basket.id, is_box = $scope.boxes_page
         card.modified = now  # there is no success check
+        ## $scope.get_total_weight!
 
     $scope.command = !->
         """Add the copies of the current basket to the Command basket. Api call.
@@ -266,6 +273,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
         .then (response) !->
             $scope.copies.splice(index_to_rm, 1)
             # $scope.alerts = response.data.msgs # useless
+            ## $scope.get_total_weight!
 
         .catch (resp) !->
             $log.info "Error when trying to remove the card " + card_id
@@ -282,6 +290,13 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
     $scope.get_total_copies = ->
         utils.total_copies $scope.copies
 
+    $scope.get_total_weight = !->
+        # We got the original total weight from the API (in case the basket is large)
+        # and we now sum or substract the weight of books we add or remove.
+        #XXX: not ready. Updates stupidely.
+        $scope.total_weight = $scope.copies
+        |> map ( -> it.weight * it.quantity )
+        |> sum
 
     $scope.receive_command = !->
         if not $scope.cur_basket.distributor

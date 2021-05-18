@@ -1120,6 +1120,7 @@ class Card(TimeStampedModel):
             "threshold": self.threshold,
             "theme_name": theme_name,
             "theme_code": theme_code,
+            "weight": self.weight if self.weight else 0,
         }
 
         if in_deposits:
@@ -2902,6 +2903,12 @@ class BasketCopies(TimeStampedModel):
     def quantity(self):
         # should rename the arg
         return self.nb
+
+    def weight(self):
+        if self.card.weight:
+            return self.card.weight * self.nb
+        else:
+            return 0
 
 @python_2_unicode_compatible
 class Basket(models.Model):
