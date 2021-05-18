@@ -4744,6 +4744,10 @@ class Sell(models.Model):
         # nb_sells = sells.count()  # = nb of articles sold, != nb sells (passages en caisse).
         book_type = CardType.objects.filter(name='book').first()
         nb_sells = sells.values('sell_id').distinct().count()
+        #
+        # Get the number of sells that concern at least a book.
+        # tip: second-hand sells are cheaper, they can lower the mean of sells.
+        # To have a higher mean of sells, sell them separetely.
         nb_books_sells = sells.filter(card__card_type=book_type).values('sell_id').distinct().count()
         # nb_cards_sold = sum([it.quantity for it in sells])
         nb_cards_sold = sum(sells.filter(quantity__gt=0).values_list('quantity', flat=True))
@@ -4755,6 +4759,7 @@ class Sell(models.Model):
         total_price_sold = None
         total_price_sold_books = None
         total_price_sold_not_books = None
+        total_sells_for_mean = None
         sell_mean = None
         books_sell_mean = 0
         sold_books = []
@@ -4791,11 +4796,11 @@ class Sell(models.Model):
             total_price_sold_not_books = sum([it[0] * it[1] for it in not_books])
             total_price_sold = total_price_sold_books + total_price_sold_not_books
             total_sells_for_mean = sum([it[0] * it[1] for it in sells_for_mean.values_list('quantity', 'price_sold')])
-            if total_sells_for_mean:
-                sell_mean = total_sells_for_mean / nb_cards_sold
+            if total_sells_for_mean and nb_sells:
+                sell_mean = total_sells_for_mean / nb_sells
             books_sell_mean = 0
-            if sold_books:
-                books_sell_mean = total_price_sold_books / nb_books_sold
+            if sold_books and nb_books_sold:
+                books_sell_mean = total_price_sold_books / nb_books_sells
 
         # Pagination.
         if page is not None and page_size is not None:
