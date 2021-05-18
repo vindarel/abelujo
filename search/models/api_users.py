@@ -224,7 +224,7 @@ def bill(request, *args, **response_kwargs):
     vat_book = Preferences.get_vat_book()
     total_fmt = price_fmt(total, default_currency)
     if client and client.discount:
-        total_with_client_discount = total - total * client.discount / 100
+        total_with_client_discount = total - total * client.discount / 100.0
         total_discounted = total_with_client_discount
 
     if not prices_sold:
