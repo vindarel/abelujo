@@ -108,6 +108,10 @@ function validate_reservation() {
     console.log("-- elt: ", elt);
     let name = elt.value;
     console.log("-- client name ? ", name);
+    if (!name) {
+        console.log("no client selected");
+        return;
+    }
     let client_id = undefined;
     // get id
     for (var i = 0; i < clients_select.options.length; i++) {

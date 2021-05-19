@@ -317,7 +317,7 @@ div.modal(id="reserveModal")
 
       div.modal-body
         h5 {% trans "Clients" %}
-        input#clients-input(list="clients-select")
+        input#clients-input(list="clients-select", onkeydown="if (event.keyCode == 13) validate_reservation()")
         datalist#clients-select
           for client in clients
             option(value="{{ client.repr }}", id="{{ client.id }}")
