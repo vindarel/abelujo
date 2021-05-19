@@ -34,10 +34,10 @@ from search.models.users import Client
 from search.models.users import Reservation
 from search.models.utils import get_logger
 from search.models.utils import price_fmt
-from search.models.common import ALERT_ERROR
-from search.models.common import ALERT_INFO
+# from search.models.common import ALERT_ERROR
+# from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
-from search.models.common import ALERT_WARNING
+# from search.models.common import ALERT_WARNING
 
 
 log = get_logger()
@@ -316,7 +316,7 @@ def card_reservations(request, pk, **kw):
         'alerts': [],
     }
     if request.method == 'POST':
-        params = kw.copy()
+        # params = kw.copy()
         # client_id = params.get('client_id')
         reservations = Reservation.get_card_reservations(pk, to_dict=True)
         to_ret['data'] = reservations
@@ -325,9 +325,10 @@ def card_reservations(request, pk, **kw):
 
 def all_reservations(request):
     # currently for CLI usage.
-    res = [it.to_dict() for it in Reservation.objects.exclude(card__isnull=True)\
-           .exclude(client__isnull=True)\
-           .exclude(card_id__isnull=True)\
-           .exclude(archived=True)\
-           .all()]
+    res = [it.to_dict() for it in Reservation.objects.exclude(card__isnull=True)
+           .exclude(client__isnull=True)
+           .exclude(card_id__isnull=True)
+           .exclude(archived=True)
+           .all()
+           ]
     return JsonResponse(res, safe=False)

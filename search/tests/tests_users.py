@@ -26,7 +26,7 @@ import datetime
 from django.test import TestCase
 
 from search.models import Bill
-from search.models import Card
+# from search.models import Card
 from search.models import Client
 from search.models import Reservation
 from search.models import Sell

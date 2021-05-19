@@ -674,6 +674,8 @@ def card_cancel_reservation(request, pk, **kw):
                 log.error("card_reserve: could not find card of id {}: {}".format(pk, e))
             if card:
                 status = client.cancel_reservation(card)
+                if not status:
+                    to_ret['status'] = ALERT_ERROR
 
         return JsonResponse(to_ret)
 
@@ -688,7 +690,7 @@ def card_putaside(request, pk, **kw):
         if params:
             try:
                 params = json.loads(params)
-            except:
+            except Exception:
                 log.warn("putaside: bad json body: {}".format(params))
                 params = {}
         client_id = params.get('client_id')
