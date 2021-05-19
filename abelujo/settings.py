@@ -453,4 +453,10 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     except Exception:
         pass
 
+def dilicom_enabled():
+    return os.getenv('DILICOM_PASSWORD') is not None \
+        and os.getenv('DILICOM_USER') is not None
+if dilicom_enabled():
+    print "FEATURE: DILICOM ENABLED"
+
 print "INFO: Abelujo running on {}".format(os.getcwd())
