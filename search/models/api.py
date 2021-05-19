@@ -645,6 +645,38 @@ def card_reserve(request, pk, **kw):
 
         return JsonResponse(to_ret)
 
+def card_cancel_reservation(request, pk, **kw):
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+        'alerts': [],
+    }
+    if request.method == 'POST':
+        params = kw.copy()
+        client_id = params.get('client_id')
+        card = None
+        try:
+            # card = Card.objects.get(id=pk)
+            client = Client.objects.filter(id=client_id).first()
+        except Exception as e:
+            logging.error(u"error reserving card {}: {}".format(pk, e))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['alerts'] += "Something went wrong."
+
+        if not client:
+            logging.warning("Could not delete reservation, client {} actually doesn't exist.".format(client_id))
+            to_ret['status'] = ALERT_ERROR
+            to_ret['data'] = "Could not reserve, this client does not exist!"
+        else:
+            try:
+                card = Card.objects.filter(id=pk).first()
+            except Exception as e:
+                log.error("card_reserve: could not find card of id {}: {}".format(pk, e))
+            if card:
+                status = client.cancel_reservation(card)
+
+        return JsonResponse(to_ret)
+
 def card_putaside(request, pk, **kw):
     to_ret = {
         'data': {},

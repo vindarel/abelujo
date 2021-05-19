@@ -330,14 +330,20 @@ div.modal(id="reserveModal")
         br
         if reservations
           h5 {% trans "Ces clients ont réservé cette notice" %}:
-          for resa in reservations
-            div(id="#resa-{{ resa.client.id }}")
-              h4 {{ resa.client.repr }}
-                a(href="{{ resa.client.url }}", target="_blank")
-                  i.glyphicon.glyphicon-share
-              if resa.client.mobilephone
-                span {{ resa.client.mobilephone }} 
-                  i.glyphicon.glyphicon-phone
+          table.table.table-condensed
+            for resa in reservations
+              tr(id="#resa-{{ resa.client.id }}")
+                td
+                  h4 {{ resa.client.repr }} &nbsp;
+                    a(href="{{ resa.client.url }}", target="_blank")
+                      i.glyphicon.glyphicon-share
+                td
+                  if resa.client.mobilephone
+                    span {{ resa.client.mobilephone }} 
+                      i.glyphicon.glyphicon-phone
+                td
+                  button(type="button", onclick="cancel_reservation({{ resa.client.id }})", name="cancel-reservation", alt="Cancel reservation")
+                    i.glyphicon.glyphicon-remove
 
 
 // important to run this last, so CSS selectors select something.

@@ -260,13 +260,16 @@ class Client(Contact):
 
     def cancel_reservation(self, card):
         """
-        Cancel the Reservation object.
-        NOTE: to correctly finish it, increment the card in stock too.
+        Cancel the Reservation object, thus increment the card in stock too.
         """
-        resa = Reservation.objects.filter(client=self, card_id=card.id, archived=False).first()
-        if resa:
-            card.add_card()
-            resa.delete()
+        try:
+            resa = Reservation.objects.filter(client=self, card_id=card.id, archived=False).first()
+            if resa:
+                card.add_card()
+                resa.delete()
+        except Exception as e:
+            log.error(u"Error canceling reservation {}: {}".format(self.pk, e))
+            return False
         return True
 
 

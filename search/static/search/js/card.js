@@ -155,3 +155,36 @@ function validate_reservation() {
     }
 
 };
+
+function cancel_reservation(client_id) {
+    console.log(" -- delete ", client_id);
+    let card_id = url_id(window.location.pathname);
+
+    let url = "/api/card/" + card_id + "/cancelreservation/" + client_id;
+    console.log("url: ", url);
+    fetch(url, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRFToken()}
+    })
+        .then((response) => {
+            return response.json();
+        })
+        .then((myJson) => {
+            console.log("response: ", myJson);
+            if (myJson.status == "success") {
+                Notiflix.Notify.Success('OK');
+                // Close the modal.
+                // so we have JQuery.
+                $('#reserveModal').modal('toggle');
+                // Reload page.
+                location.reload(true);
+            }
+            else {
+                console.log("status is not success: ", myJson.status);
+                Notiflix.Notify.Warning('mmh');
+            }
+        })
+        .catch((error) => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+}
