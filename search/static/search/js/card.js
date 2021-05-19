@@ -103,18 +103,21 @@ function url_id (url) {
 )();
 
 function validate_reservation() {
-    let elt = document.getElementById('clients-select');
+    let elt = document.getElementById('clients-input');
+    let clients_select = document.getElementById('clients-select')
+    console.log("-- elt: ", elt);
     let name = elt.value;
     console.log("-- client name ? ", name);
     let client_id = undefined;
     // get id
-    for (var i = 0; i < elt.options.length; i++) {
-        if (elt.options[i].value == name) {
-            client_id = elt.options[i].id;
+    for (var i = 0; i < clients_select.options.length; i++) {
+        if (clients_select.options[i].value == name) {
+            client_id = clients_select.options[i].id;
+            console.log("-- client id: ", client_id);
+            break;
         }
     }
 
-    console.log("-- client id: ", client_id);
     if (client_id != undefined) {
         let card_id = url_id(window.location.pathname);
         let url = "/api/card/" + card_id + "/reserve/" + client_id;

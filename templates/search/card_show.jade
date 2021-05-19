@@ -317,7 +317,12 @@ div.modal(id="reserveModal")
 
       div.modal-body
         h5 {% trans "Clients" %}
-        select#clients-select
+        input#clients-input(list="clients-select")
+        datalist#clients-select
+          for client in clients
+            option(value="{{ client.repr }}", id="{{ client.id }}")
+
+        //- select#clients-select
           for client in clients
             option(id="{{ client.id }}") {{ client.repr }}
         button.btn.btn-success(type="button", onclick="validate_reservation()") OK
