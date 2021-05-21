@@ -642,6 +642,9 @@ def card_reserve(request, pk, **kw):
                 resa, created = client.reserve(card)
                 # Decrement from stock.
                 # Card.remove_card_id(pk)
+            else:
+                to_ret['status'] = ALERT_ERROR
+                to_ret['alerts'].append("Card of id {} does not exist".format(pk))
 
         return JsonResponse(to_ret)
 

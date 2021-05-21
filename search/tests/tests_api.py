@@ -43,6 +43,13 @@ from tests_models import PreferencesFactory
 
 log = get_logger()
 
+
+class ClientFactory(DjangoModelFactory):
+    class Meta:
+        model = models.Client
+
+    name = factory.Sequence(lambda n: "client test %d" % n)
+
 class DistributorFactory(DjangoModelFactory):
     class Meta:
         model = models.Distributor
@@ -280,6 +287,38 @@ class TestBaskets(TestCase):
         data = json.loads(resp.content)
         self.assertEqual(data['status'], ALERT_ERROR)
 
+class TestReservations(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory.create()
+        self.basket = BasketFactory.create()
+        self.basket.add_copy(self.card)
+        self.client = ClientFactory.create()
+        self.params = {
+            "cards_id": self.card.id,
+        }
+        self.place = PlaceFactory.create()
+        self.preferences = models.Preferences(default_place=self.place).save()
+        self.c = Client()
+
+    def test_get_card(self):
+        resp = self.c.post(reverse("api_card_reserve", args=(1, 1)))
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        self.assertEqual(data["status"], ALERT_SUCCESS)
+        self.assertEqual(data["alerts"], [])
+
+        # no card:
+        # hide warnings.
+        log.setLevel(logging.CRITICAL)  # XXX: doesn't hide them.
+        resp = self.c.post(reverse("api_card_reserve", args=(999, 1)))
+        data = json.loads(resp.content)
+        self.assertEqual(data["status"], ALERT_ERROR)
+        # no client:
+        resp = self.c.post(reverse("api_card_reserve", args=(1, 999)))
+        data = json.loads(resp.content)
+        self.assertEqual(data["status"], ALERT_ERROR, "the client we request does not exist.")
+        log.setLevel(logging.DEBUG)
 
 class TestUtils(TestCase):
 
