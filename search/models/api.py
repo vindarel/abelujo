@@ -612,6 +612,9 @@ def card_select_catalogue(request, pk, **kw):
     return JsonResponse(to_ret)
 
 def card_reserve(request, pk, **kw):
+    """
+    - pk: card id or ISBN.
+    """
     to_ret = {
         'data': {},
         'status': ALERT_SUCCESS,
@@ -635,7 +638,32 @@ def card_reserve(request, pk, **kw):
             to_ret['data'] = "Could not reserve, this client does not exist!"
         else:
             try:
-                card = Card.objects.filter(id=pk).first()
+                # We can reserve a card given its id or its ISBN (to reserve any book).
+                if is_isbn(pk):
+                    #
+                    card = Card.objects.filter(isbn=pk).first()
+                    if not card:
+                        # Search on datasource.
+                        import ipdb; ipdb.set_trace()
+                        lang = request.GET.get("lang") or "fr"  # XXX: send lang parameter.
+                        datasource = get_datasource_from_lang(lang)
+                        data, traces = search_on_data_source(datasource, pk)
+
+                        # Add the result into our db
+                        if data:
+                            try:
+                                # We need to wait for it to get its id.
+                                card, _ = Card.from_dict(data[0])
+                            except Exception as e:
+                                log.warning("Reserve: error while adding card from isbn search in db: {}".format(e))
+                        else:
+                            log.info("card reserve: we tried to search for {} but found nothing.".format(pk))
+                            to_ret['status'] = ALERT_WARNING
+                            to_ret['alerts'].append("No result found on the external databases.")
+
+                # pk is a pk.
+                else:
+                    card = Card.objects.filter(id=pk).first()
             except Exception as e:
                 log.error("card_reserve: could not find card of id {}: {}".format(pk, e))
             if card:

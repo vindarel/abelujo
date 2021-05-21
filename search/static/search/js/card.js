@@ -2,6 +2,9 @@
 // Add a select for shelves, populated with JS (not even needed…).
 // Save the new shelf value.
 //
+// Used where there is a reservation button:
+// - card_show.jade
+// - searchresults.jade
 
 function url_id (url) {
     // extract an id
@@ -11,6 +14,11 @@ function url_id (url) {
         return res[1];
     }
     return null;
+};
+
+function is_isbn(text) {
+    let reg = /^[0-9]{10,13}/g;
+    return text.match(reg);
 };
 
 (function() {
@@ -30,6 +38,13 @@ function url_id (url) {
     function get_shelves() {
         // Create a select with all shelves.
         // This is doable with the template…
+
+        let current_shelf_name = document.getElementById('shelf-name');
+        if (!current_shelf_name) {
+            console.log("No shelf line on this page.");
+            return;
+        }
+
         fetch("/api/shelfs", {
             method: 'GET',
         })
@@ -38,7 +53,6 @@ function url_id (url) {
             })
             .then((myJson) => {
                 shelves = myJson;
-                let current_shelf_name = document.getElementById('shelf-name');
                 let select_td = document.getElementById('shelf-select-td');
                 if (current_shelf_name && current_shelf_name.innerText !== "") {
                     current_shelf_name = current_shelf_name.innerText;
@@ -64,11 +78,13 @@ function url_id (url) {
             });
     }
 
-    shelf_select.addEventListener('change', (event) => {
-        let options = shelf_select.options;
-        let new_shelf = shelves[parseInt(event.target.value)];
-        update_shelf(new_shelf.pk);
-    });
+    if (shelf_select) {
+        shelf_select.addEventListener('change', (event) => {
+            let options = shelf_select.options;
+            let new_shelf = shelves[parseInt(event.target.value)];
+            update_shelf(new_shelf.pk);
+        });
+    }
 
     function update_shelf(shelf_id) {
         let card_id = url_id(window.location.pathname);
@@ -103,6 +119,10 @@ function url_id (url) {
 )();
 
 function validate_reservation() {
+    // Get the card id (or ISBN),
+    // get the client id,
+    // call the api,
+    // reload the page (unless on searchresults).
     let elt = document.getElementById('clients-input');
     let clients_select = document.getElementById('clients-select')
     console.log("-- elt: ", elt);
@@ -124,6 +144,17 @@ function validate_reservation() {
 
     if (client_id != undefined) {
         let card_id = url_id(window.location.pathname);
+
+        if (!card_id) {
+            // check in local storage (for searchresults page).
+            card_id = window.localStorage.getItem('isbn_for_reservation');
+            console.log("--- found isbn: ", card_id);
+        }
+        if (!card_id) {
+            console.log("--- OOPS: we didn't find a card id or isbn to reserve.");
+            return;
+        }
+
         let url = "/api/card/" + card_id + "/reserve/" + client_id;
         console.log("url: ", url);
         fetch(url, {
@@ -140,8 +171,11 @@ function validate_reservation() {
                     // Close the modal.
                     // so we have JQuery.
                     $('#reserveModal').modal('toggle');
-                    // Reload page.
-                    location.reload(true);
+
+                    // Reload page (unless on searchresults page).
+                    if (!is_isbn(card_id)) {
+                        location.reload(true);
+                    }
                 }
                 else {
                     console.log("status is not success: ", myJson.status);
@@ -160,6 +194,16 @@ function cancel_reservation(client_id) {
     console.log(" -- delete ", client_id);
     let card_id = url_id(window.location.pathname);
 
+    if (!card_id) {
+        // check in local storage (for searchresults page).
+        card_id = window.localStorage.getItem('isbn_for_reservation');
+        console.log("--- isbn localstorage: ", card_id);
+    }
+    if (card_id == undefined || card_id == null) {
+        console.log("--- OOPS: we didn't find a card id or isbn to reserve.");
+        return;
+    }
+
     let url = "/api/card/" + card_id + "/cancelreservation/" + client_id;
     console.log("url: ", url);
     fetch(url, {
@@ -176,6 +220,10 @@ function cancel_reservation(client_id) {
                 // Close the modal.
                 // so we have JQuery.
                 $('#reserveModal').modal('toggle');
+
+                // data cleanup
+                // cleanup localstorage or beware of async events ?
+
                 // Reload page.
                 location.reload(true);
             }
@@ -187,4 +235,12 @@ function cancel_reservation(client_id) {
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
         });
-}
+};
+
+function save_isbn_for_reservation (isbn) {
+    // Save in local storage so that the modal can pick it up easily.
+    // Can the modal know which button clicked it?
+    console.log("--- saving isbn ", isbn);
+    console.log(" -- this? ", this);
+    window.localStorage.setItem('isbn_for_reservation', isbn);
+};

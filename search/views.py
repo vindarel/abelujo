@@ -237,7 +237,14 @@ def _session_result_set(request, key, val):
 @login_required
 def search(request):
     template = "search/searchresults.jade"
-    return render(request, template)
+
+    # List of clients (for modale)
+    clients = [it.to_dict() for it in Client.objects.order_by("name").all()]
+
+    return render(request, template, {
+        "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON,
+        "clients": clients,
+    })
 
 def cards_without_eans(request):
     """

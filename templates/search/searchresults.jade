@@ -15,6 +15,7 @@
 // along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
 {% extends "base.jade" %}
 
+{% load staticfiles %}
 
 {% block content %}
 {% load i18n %}
@@ -117,7 +118,8 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                 title='{% trans "This card is already in your stock" %}')
                   {{'card.in_stock'|ng}}
               span
-                a(href="{{ 'details_url_for(card)' | ng }}", target="_blank") {{ 'card.title' | ng }}
+                //- a(href="/stock/card/quickcreate/{{ 'card.isbn' | ng }}", target="_blank") &nbsp; {{ 'card.title' | ng }}
+                a(href="{{ 'details_url_for(card)' | ng }}", target="_blank") &nbsp; {{ 'card.title' | ng }}
 
               div(ng-show="show_images && card.isbn")
                     b isbn: 
@@ -140,6 +142,11 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         td
           div.row
             button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}', target="_blank") {% trans "Add…" %}
+            if feature_show_reservation_button
+              //div isbn: {{ 'card.isbn' | ng }}
+              button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", id="{{ 'card.isbn' | ng }}", title="Réserver pour un client", onclick="save_isbn_for_reservation(this.id)")
+                i.glyphicon.glyphicon-user
+
           //div.row
             button.btn(ng-click="create_and_command_client(card)", title='{% trans "Command for a client" %}') {% trans "Command…" %}
 
@@ -183,5 +190,48 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         .col-lg-3
 
             button.btn.btn-primary(ng-click="ok()") OK
+
+// ! Copied from card_show :(
+div.modal(id="reserveModal")
+  div.modal-dialog
+    div.modal-content
+
+      div.modal-header
+        h4.modal-title Réserver
+        button(type="button", class="close", data-dismiss="modal")
+
+      div.modal-body
+        h5 {% trans "Clients" %}
+        input#clients-input(list="clients-select", onkeydown="if (event.keyCode == 13) validate_reservation()")
+        datalist#clients-select
+          for client in clients
+            option(value="{{ client.repr }}", id="{{ client.id }}")
+
+        //- select#clients-select
+          for client in clients
+            option(id="{{ client.id }}") {{ client.repr }}
+        button.btn.btn-success(type="button", onclick="validate_reservation()") OK
+
+        br
+        if reservations
+          h5 {% trans "Ces clients ont réservé cette notice" %}:
+          table.table.table-condensed
+            for resa in reservations
+              tr(id="#resa-{{ resa.client.id }}")
+                td
+                  h4 {{ resa.client.repr }} &nbsp;
+                    a(href="{{ resa.client.url }}", target="_blank")
+                      i.glyphicon.glyphicon-share
+                td
+                  if resa.client.mobilephone
+                    span {{ resa.client.mobilephone }} 
+                      i.glyphicon.glyphicon-phone
+                td
+                  button(type="button", onclick="cancel_reservation({{ resa.client.id }})", name="cancel-reservation", alt="Cancel reservation")
+                    i.glyphicon.glyphicon-remove
+
+
+// important to run this last, so CSS selectors select something.
+script(type='text/javascript', src="{% static 'search/js/card.js' %}")
 
 {% endblock content %}
