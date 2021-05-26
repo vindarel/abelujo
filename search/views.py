@@ -2045,3 +2045,13 @@ def catalogue_selection(request):
         return render(request, template, {
             'cards': cards,
         })
+
+@login_required
+def reservations(request):
+    template = "search/reservations.html"
+    if request.method == 'GET':
+        res = users.Reservation.get_reservations()
+        return render(request, template, {
+            'reservations': res,
+            'title': _("Reservations"),
+        })

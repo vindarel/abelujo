@@ -644,7 +644,6 @@ def card_reserve(request, pk, **kw):
                     card = Card.objects.filter(isbn=pk).first()
                     if not card:
                         # Search on datasource.
-                        import ipdb; ipdb.set_trace()
                         lang = request.GET.get("lang") or "fr"  # XXX: send lang parameter.
                         datasource = get_datasource_from_lang(lang)
                         data, traces = search_on_data_source(datasource, pk)
@@ -707,6 +706,17 @@ def card_cancel_reservation(request, pk, **kw):
                 status = client.cancel_reservation(card)
                 if not status:
                     to_ret['status'] = ALERT_ERROR
+
+        meta = request.META
+        # Call from HTMX?
+        if meta.get('HTTP_HX_REQUEST'):
+            return HttpResponse("")
+            # I tried to return the full page but finding the hx-target that
+            # would not error out or that would replace correctly the page was difficult.
+            # I think we must return only a list of reservations, not the full HTML
+            # with the headers again (inherited from base.jade).
+            # I don't want to create a new endpoint yet, so let's return "".
+            # return HttpResponseRedirect(reverse('reservations'))
 
         return JsonResponse(to_ret)
 

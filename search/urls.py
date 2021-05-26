@@ -146,6 +146,9 @@ urlpatterns = patterns('',
         login_required(TemplateView.as_view(template_name="search/reception.jade")),
         name="reception"),
 
+    # Client Reservations
+    url(r'^reservations/?$', 'search.views.reservations', name="reservations"),
+
     # Sells history
     url(r'^history/sells/month/(?P<date>.*)/export/?', 'search.views.history_sells_month_export', name="history_sells_month_export"),
     url(r'^history/sells/month/(?P<date>.*)/?', 'search.views.history_sells_month', name="history_sells_month"),

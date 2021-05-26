@@ -71,6 +71,14 @@ class Reservation(TimeStampedModel):
         return res
 
     @staticmethod
+    def get_reservations(to_dict=False):
+        """
+        Return all current reservations.
+        """
+        res = Reservation.objects.filter(archived=False).order_by('client__name')
+        return res
+
+    @staticmethod
     def get_card_reservations(card, to_dict=False):
         """
         Get the ongoing reservations for this card.
