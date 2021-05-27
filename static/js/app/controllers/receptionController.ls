@@ -305,7 +305,7 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
 
       NEWLINE = "%0D%0A"
       ESPERLUETTE = "%26"
-      $scope.body = "Votre réservation suivante est arrivée à la librairie:" + NEWLINE + NEWLINE + "-  " + copy.title + " " + copy.price + copy.price_fmt
+      $scope.body = "Votre réservation suivante est arrivée à la librairie:" + NEWLINE + NEWLINE + "-  " + copy.title + " " + copy.price_fmt
       $scope.body += NEWLINE + NEWLINE + """Nous vous l'avons mise de côté.""" + NEWLINE + NEWLINE + "À bientôt."
 
       $http.post "/api/card/" + card_id + "/reservations/",
