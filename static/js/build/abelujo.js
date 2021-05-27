@@ -4337,6 +4337,7 @@ angular.module("abelujo").controller('receptionController', [
         if (response.data.status) {
           resa.disabled = true;
           Notiflix.Notify.Success("OK");
+          $('#fixreservationModal').modal('toggle');
         } else {
           Notiflix.Notify.Warning("mmh");
         }

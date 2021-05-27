@@ -342,6 +342,11 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
           if response.data.status
             resa.disabled = true
             Notiflix.Notify.Success "OK"
+
+            # Close the modal.
+            # Is the reservation removed or disabled?
+            $('#fixreservationModal').modal('toggle')
+
           else
             Notiflix.Notify.Warning "mmh"
 
