@@ -364,6 +364,7 @@ def card_show(request, pk):
         "pending_commands": pending_commands,
         "page_title": "Abelujo - " + card.title[:50],
         "reservations": reservations,
+        "has_one_reservation": reservations.count() == 1,
 
         # Feature flags.
         "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON

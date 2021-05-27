@@ -201,7 +201,10 @@
               span {{ object.quantity_compute }}
               if object.quantity_clients_reserved
                 span &nbsp; ({% trans "reserved" %}: &nbsp;
-                span(id="reservation") {{ object.quantity_clients_reserved }})
+                span(id="reservation") {{ object.quantity_clients_reserved }}
+                  if has_one_reservation
+                    span &nbsp; {{ reservations.0.client.repr }}
+                span )
 
           if has_many_places
             tr
