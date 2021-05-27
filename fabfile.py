@@ -403,7 +403,7 @@ def ssh_to(client):
     user = client.get('user') or CFG.get('user')
     cmd = "ssh -Y {}@{}".format(user, ip)
     if CFG.get('dir') or client.get('dir'):
-        cmd += " -t 'cd {}; zsh --login;'".format(
+        cmd += " -t 'cd {}; bash --login;'".format(
             os.path.join(fabutils.wd(client, CFG)))
     print("todo: workon venv")
     print("connecting to {}".format(cmd))
