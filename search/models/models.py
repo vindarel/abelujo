@@ -2259,6 +2259,13 @@ class Card(TimeStampedModel):
         res = min(max(0, ideal_quantity), self.quantity_reserve())
         return res
 
+    def add_to_auto_command(self, nb=1):
+        """
+        Add to the command list.
+        """
+        # wrapper to be used from a card object, from users.py which would have circular imports.
+        Basket.add_to_auto_command(self, nb=nb)
+
     def quantity_to_command(self):
         """
         Quantity in the to_command list.

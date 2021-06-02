@@ -25,6 +25,7 @@ import datetime
 
 from django.test import TestCase
 
+from search.models import Basket
 from search.models import Bill
 # from search.models import Card
 from search.models import Client
@@ -72,6 +73,8 @@ class TestClient(TestCase):
         self.card = CardFactory.create()
         # a Place
         self.place = PlaceFactory.create()
+        # the command Basket
+        self.to_command = Basket.objects.create(name="auto_command").save()
 
     def tearDown(self):
         pass
@@ -80,10 +83,14 @@ class TestClient(TestCase):
         self.assertTrue(Client.search("test"))
 
     def test_reserve(self):
+        self.assertEqual(self.card.quantity_to_command(), 0)
         # Reserve: create a reservation object, decrement quantity.
         resa, created = self.client.reserve(self.card)
         self.assertTrue(resa)
         self.assertEqual(self.card.quantity_compute(), -1)
+
+        # The book was added in the command list (because quantity is < 0).
+        self.assertEqual(self.card.quantity_to_command(), 1)
 
         # Find open reservations.
         resas = Reservation.get_card_reservations(self.card)
@@ -96,6 +103,44 @@ class TestClient(TestCase):
         # No more open reservations for this card.
         resas = Reservation.get_card_reservations(self.card.id)
         self.assertFalse(resas)
+
+        # Somehow we reserve a card and add it to the command list.
+        # Then somehow its quantity becomes > 1 (+1 button).
+        # When we cancel the reservation, the card is removed from the command.
+        # start with 1.
+        self.place.add_copy(self.card)
+        # reserve
+        resa, created = self.client.reserve(self.card)
+        self.assertEqual(self.card.quantity_compute(), 0)
+        # nothing to command so far.
+        self.assertEqual(self.card.quantity_to_command(), 1)
+        # inc. quantity
+        self.place.add_copy(self.card, nb=2)
+        self.assertEqual(self.card.quantity, 2)
+        # now we have 1 to command.
+        self.assertEqual(self.card.quantity_to_command(), 1)
+        # cancel reservation.
+        self.client.cancel_reservation(self.card)
+        # quantity in command is back to 0.
+        self.assertEqual(self.card.quantity_to_command(), 0)
+
+    def test_cancel_reservation(self):
+        # XXX: tests sur l'application moyennement concluants. Tjrs 1 dans la liste.
+        # Same from above, but start with 0.
+        # reserve
+        resa, created = self.client.reserve(self.card)
+        self.assertEqual(self.card.quantity_compute(), -1)
+        # nothing to command so far.
+        self.assertEqual(self.card.quantity_to_command(), 1)
+        # inc. quantity
+        self.place.add_copy(self.card, nb=2)
+        self.assertEqual(self.card.quantity, 1)
+        # now we have 1 to command.
+        self.assertEqual(self.card.quantity_to_command(), 1)
+        # cancel reservation.
+        self.client.cancel_reservation(self.card)
+        # quantity in command is back to 0.
+        self.assertEqual(self.card.quantity_to_command(), 0)
 
     def test_putaside(self):
         # bare bones: no reservation.

@@ -243,6 +243,7 @@ class Client(Contact):
         """
         Reserve this card.
         Create a Reservation object and decrement it from the stock,
+        If its quantity gets lower than 0, add it to the commands.
 
         - card: card object.
 
@@ -264,17 +265,31 @@ class Client(Contact):
         # Decrement card from stock.
         card.remove_card()
 
+        # Command (if needed).
+        if card.quantity < 0:
+            card.add_to_auto_command()
+
         return resa, created
 
     def cancel_reservation(self, card):
         """
         Cancel the Reservation object, thus increment the card in stock too.
+
+        If it was in the command list, remove it.
         """
         try:
             resa = Reservation.objects.filter(client=self, card_id=card.id, archived=False).first()
             if resa:
                 card.add_card()
                 resa.delete()
+
+            # Remove from the command list.
+            # If it reaches 0 it will still be visible on the list,
+            # but at a 0 quantity to command.
+            # That's ok, that way we see it when we double check the command list.
+            if card.quantity >= 0:
+                card.add_to_auto_command(nb=-1)
+
         except Exception as e:
             log.error(u"Error canceling reservation {}: {}".format(self.pk, e))
             return False
