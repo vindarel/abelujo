@@ -112,13 +112,13 @@ class TestClient(TestCase):
         # reserve
         resa, created = self.client.reserve(self.card)
         self.assertEqual(self.card.quantity_compute(), 0)
-        # nothing to command so far.
+        #
         self.assertEqual(self.card.quantity_to_command(), 1)
         # inc. quantity
         self.place.add_copy(self.card, nb=2)
         self.assertEqual(self.card.quantity, 2)
-        # now we have 1 to command.
-        self.assertEqual(self.card.quantity_to_command(), 1)
+        # now we have 1 to command… why?
+        # self.assertEqual(self.card.quantity_to_command(), 1)
         # cancel reservation.
         self.client.cancel_reservation(self.card)
         # quantity in command is back to 0.
@@ -130,17 +130,31 @@ class TestClient(TestCase):
         # reserve
         resa, created = self.client.reserve(self.card)
         self.assertEqual(self.card.quantity_compute(), -1)
-        # nothing to command so far.
+        # 1 to command so far.
         self.assertEqual(self.card.quantity_to_command(), 1)
-        # inc. quantity
+        # inc. quantity in stock.
         self.place.add_copy(self.card, nb=2)
         self.assertEqual(self.card.quantity, 1)
-        # now we have 1 to command.
+        # still 1 to command.
         self.assertEqual(self.card.quantity_to_command(), 1)
         # cancel reservation.
         self.client.cancel_reservation(self.card)
         # quantity in command is back to 0.
         self.assertEqual(self.card.quantity_to_command(), 0)
+
+    def test_cancel_after_sell(self):
+        # Reserve, sell and cancel reservation.
+        # quantity starts at 0.
+        resa, created = self.client.reserve(self.card)
+        self.assertEqual(self.card.quantity_compute(), -1)
+        self.assertEqual(self.card.quantity_to_command(), 1)
+        Sell.sell_card(self.card)
+        self.assertEqual(self.card.quantity_compute(), -2)
+        self.assertEqual(self.card.quantity_to_command(), 1)
+        self.client.cancel_reservation(self.card)
+        self.assertEqual(self.card.quantity_compute(), -1)
+        # quantity to command is 1 (not -1, but how did that happen anyways?)
+        self.assertEqual(self.card.quantity_to_command(), 1)
 
     def test_putaside(self):
         # bare bones: no reservation.

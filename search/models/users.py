@@ -283,12 +283,15 @@ class Client(Contact):
                 card.add_card()
                 resa.delete()
 
-            # Remove from the command list.
-            # If it reaches 0 it will still be visible on the list,
+            # Remove from the command list if needed.
+            # It's possible we used the +1 button,
+            # or sold the book to the client without saying so in the Sell view.
+            # If the qty to command reaches 0 it will still be visible on the list,
             # but at a 0 quantity to command.
             # That's ok, that way we see it when we double check the command list.
-            if card.quantity >= 0:
-                card.add_to_auto_command(nb=-1)
+            if card.quantity > 0:
+                if card.quantity_to_command() > 0:
+                    card.add_to_auto_command(nb=-1)
 
         except Exception as e:
             log.error(u"Error canceling reservation {}: {}".format(self.pk, e))
