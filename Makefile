@@ -100,7 +100,6 @@ update: stash
 	@echo "For development, don't forget make pip-dev. To update Debian dependencies, use make update-apt."
 
 update-code: stash
-	make set-prod
 	make pull
 	make migrate
 	make collectstatic
