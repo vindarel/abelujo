@@ -62,7 +62,7 @@
       a.btn.btn-warning(href="#", title='{% trans "Remember to command this card. Add it to the list for later." %}', onclick="card_command({{ object.pk }})")
         i.glyphicon.glyphicon-shopping-cart
         span &nbsp; x
-          span(id="nb_to_command") {{ object.quantity_to_command }}
+          span(id="nb_to_command_{{ object.pk }}") {{ object.quantity_to_command }}
 
     .btn-group(style="margin-left: 1em")
       if object.is_catalogue_selection

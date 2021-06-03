@@ -124,7 +124,7 @@ function card_command(card_id) {
                 Notiflix.Notify.Success('OK');
 
                 // Update quantity.
-                let elt = document.getElementById('nb_to_command');
+                let elt = document.getElementById('nb_to_command_' + card_id);
                 elt.innerText = myJson.data.nb;
             }
             else {

@@ -159,6 +159,7 @@
     <th>{% trans "Payment" %}</th>
     <th>{% trans "Client" %}</th>
     <th></th>
+    <th></th>
   </thead>
 
   {% for it,bg_color,payment,new_sell,sell_id in data %}
@@ -191,6 +192,19 @@
       <div href="#" title="{{ it.sell.client.name }}, {{ it.sell.client.firstname }}">{{ it.sell.client.name | truncatechars:9 }}</div>
       {% endif %}
     </td>
+
+    <td>
+      <div class="btn-group", style="margin-left: 1em" data-comment="copied from card_show">
+        <a class="btn btn-warning", href="#" title='{% trans "Remember to command this card. Add it to the list for later." %}' onclick="card_command({{ it.card.pk }})">
+          <i class="glyphicon glyphicon-shopping-cart"> </i>
+          <span> x
+            <span id="nb_to_command_{{ it.card.pk }}"> {{ it.card.quantity_to_command }}
+            </span>
+          </span>
+        </a>
+      </div>
+    </td>
+
     <td>
       {% if  new_sell %}
       <div onclick="sellUndo({{ sell_id }})" title="{% trans "Cancel a sell" %}" class="mouse-pointer glyphicon glyphicon-remove"></div>
