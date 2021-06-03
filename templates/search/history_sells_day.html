@@ -161,7 +161,7 @@
     <th></th>
   </thead>
 
-  {% for it,bg_color,payment,payment_2,new_sell,sell_id in data %}
+  {% for it,bg_color,payment,new_sell,sell_id in data %}
   <tr style="background-color: {{ bg_color }}" id="sell{{ sell_id }}">
     <td>{{ it.pk }}</td>
     <td>{{ it.created | date:'H:i' }} </td>
@@ -185,9 +185,6 @@
     </td>
     <td>
       {{ payment }}
-      {% if payment_2 %}
-      {{ payment_2 }}
-      {% endif %}
     </td>
     <td>
       {% if  it.sell.client %}

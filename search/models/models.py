@@ -4624,13 +4624,16 @@ class Sell(models.Model):
     def payments_repr(self):
         """
         Print payment means humanly (string).
+        If there was 2 payments, show sum of each.
         Avoid accents in config.py PAYMENT_CHOICES and all will be good.
         """
         res = get_payment_abbr(self.payment)
         res = res.encode('utf8')
         if self.payment_2 and self.payment_2 not in [0, "0"]:
+            res += "({})".format(self.total_payment_1)
             try:
-                res += ",{}".format(get_payment_abbr(self.payment_2).encode('utf8'))
+                res += ",{} ({})".format(get_payment_abbr(self.payment_2).encode('utf8'),
+                                         self.total_payment_2)
             except UnicodeDecodeError:
                 res = res.decode('utf8')
                 res += self.payment_2

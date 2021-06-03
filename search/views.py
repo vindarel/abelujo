@@ -1555,11 +1555,10 @@ def history_sells_day(request, date, **kwargs):
             cur_color = flip_color(cur_color)
             bg_colors.append(cur_color)
             previous_sell_id = it.sell_id
-            payments.append(get_payment_abbr(it.sell.payment))
-            payments_2.append(get_payment_abbr(it.sell.payment_2) or "")
+            payments.append(it.sell.payments_repr())
             sell_transaction_markers.append(True)
 
-    data = list(zip(sells_data['data'], bg_colors, payments, payments_2, sell_transaction_markers, sells_ids))
+    data = list(zip(sells_data['data'], bg_colors, payments, sell_transaction_markers, sells_ids))
 
     return render(request, template, {'sells_data': sells_data,
                                       'data': data,
