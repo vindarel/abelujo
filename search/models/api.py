@@ -73,6 +73,7 @@ from search.models import users
 from search.views_utils import get_datasource_from_lang
 from search.views_utils import search_on_data_source
 from search.views_utils import dilicom_enabled
+from search.views_utils import electre_enabled
 from search.views_utils import update_from_dilicom
 
 from .utils import _is_truthy
@@ -188,13 +189,21 @@ def datasource_search(request, **response_kwargs):
     default_datasource = 'librairiedeparis'
     if os.getenv('DEFAULT_DATASOURCE'):
         default_datasource = os.getenv('DEFAULT_DATASOURCE')
-    if (not is_isbn_query and not isbn_list) or not res:
+    if not res or (not is_isbn_query and not isbn_list):
         datasource = request.GET.get('datasource', default_datasource)
         page = request.GET.get('page', 1)
         if (not is_isbn_query) and datasource == 'dilicom' and os.getenv('DILICOM_USER'):
             # We can not make text searches on Dilicom :/ Only ISBN queries.
             # So we make keyword searches with the right datasource.
             datasource = default_datasource
+        elif (not is_isbn_query) and datasource == 'electre' and electre_enabled():
+            # No text search on Electre's API either.
+            datasource = default_datasource
+
+        if is_isbn_query and electre_enabled():
+            datasource = 'electre'
+        elif is_isbn_query and dilicom_enabled():
+            datasource = 'dilicom'
         res, traces = search_on_data_source(datasource, query, PAGE=page)
 
     data = {"data": res,

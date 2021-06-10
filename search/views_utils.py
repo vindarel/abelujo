@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 import os
 import unicodecsv
+import termcolor
 
 from django.utils.translation import ugettext as _
 
@@ -39,10 +40,26 @@ from search.datasources.bookshops.frFR.filigranes import \
     filigranesScraper as filigranes  # noqa: F401
 from search.models import Card
 
+try:
+    # The Electre API connector is installed separetely.
+    import pyelectre
+except:
+    pass
+
 #: Default datasource to be used when searching isbn, if source not supplied.
 DEFAULT_DATASOURCE = "librairiedeparis"
 if os.getenv('DILICOM_PASSWORD') and os.getenv('DILICOM_PASSWORD').strip():
     DEFAULT_DATASOURCE = 'dilicom'
+    print(termcolor.colored('default datasource is DILICOM', 'blue'))
+
+def electre_enabled():
+    return os.getenv('ELECTRE_PASSWORD') is not None \
+        and os.getenv('ELECTRE_USER') is not None
+
+if electre_enabled():
+    DEFAULT_DATASOURCE = 'electre'
+    print(termcolor.colored('default datasource is ELECTRE', 'blue'))
+
 if os.getenv('DEFAULT_DATASOURCE') and os.getenv('DEFAULT_DATASOURCE').strip():
     DEFAULT_DATASOURCE = os.getenv('DEFAULT_DATASOURCE')
 
@@ -83,6 +100,9 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     return: a couple (search results, stacktraces). Search result is a
     list of dicts.
     """
+    if data_source == 'electre':
+        res, traces = pyelectre.search_on_electre(search_terms)
+        return res, traces
     # get the imported module by name.
     # They all must have a class Scraper.
     scraper = getattr(globals()[data_source], "Scraper")
