@@ -23,6 +23,8 @@ import warnings
 
 import ruamel.yaml
 
+import termcolor
+
 """
 Django settings for abelujo project.
 
@@ -439,6 +441,11 @@ USE_THEMES_FOR_SHELVES = False
 # Show a reservation button on the card page.
 FEATURE_SHOW_RESERVATION_BUTTON = False
 
+#
+# Electre API
+#
+FEATURE_ELECTRE_API = False
+
 if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     try:
         import config  # noqa: F401
@@ -449,7 +456,10 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
         if config:
             if hasattr(config, 'FEATURE_SHOW_RESERVATION_BUTTON'):
                 FEATURE_SHOW_RESERVATION_BUTTON = config.FEATURE_SHOW_RESERVATION_BUTTON
-                print "FEATURE ENABLED: FEATURE_SHOW_RESERVATION_BUTTON"
+                print(termcolor.colored("FEATURE: FEATURE_SHOW_RESERVATION_BUTTON", "green"))
+
+            if hasattr(config, 'FEATURE_ELECTRE_API'):
+                FEATURE_ELECTRE_API = config.FEATURE_ELECTRE_API
     except Exception:
         pass
 
@@ -457,8 +467,18 @@ def dilicom_enabled():
     return os.getenv('DILICOM_PASSWORD') is not None \
         and os.getenv('DILICOM_USER') is not None
 
+def electre_enabled():
+    return os.getenv('ELECTRE_PASSWORD') is not None \
+        and os.getenv('ELECTRE_USER') is not None
+
 
 if dilicom_enabled():
-    print "FEATURE: DILICOM ENABLED"
+    print(termcolor.colored("FEATURE: DILICOM ENABLED", "green"))
+
+if FEATURE_ELECTRE_API:
+    if not electre_enabled():
+        print(termcolor.colored("WARN: no username/password for Electre API", "red"))
+    else:
+        print(termcolor.colored("FEATURE ENABLED: FEATURE_ELECTRE_API", "green"))
 
 print "INFO: Abelujo running on {}".format(os.getcwd())

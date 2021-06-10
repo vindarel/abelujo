@@ -16,6 +16,7 @@ Changelog starting from v0.5 (2018/09/18)
 - added a button to collapse the left menu. We can now work in "full screen". Especially useful for the Raspberry Pis and views with a lot of information (Reception, lists…).
 - We can choose what books to show on the ABStock catalogue from within Abelujo (see new page `/catalogue-selection`).
 - We can now see the past inventories.
+- preliminary support for connection to the Electre API ("à la demande")
 
 ### Other enhancements
 
