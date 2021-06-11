@@ -1716,6 +1716,7 @@ class Card(TimeStampedModel):
                          authors=[],
                          distributor=None,
                          distributor_gln="",
+                         distributor_name="",
                          publishers=[],
                          publisher_name=None):
         """
@@ -1746,7 +1747,8 @@ class Card(TimeStampedModel):
         if distributor_gln:
             dist = None
             # Get an existing dist by GLN or create it.
-            dist = Distributor.get_or_create(gln=distributor_gln)
+            dist, created = Distributor.objects.get_or_create(gln=distributor_gln,
+                                                              name=distributor_name)
             if dist:
                 card_obj.distributor = dist
 
