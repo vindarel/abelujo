@@ -92,7 +92,9 @@ from search.models.utils import truncate
 from views_utils import Echo
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
+from views_utils import electre_enabled
 from views_utils import update_from_dilicom
+from views_utils import update_from_electre
 
 log = get_logger()
 
@@ -317,8 +319,13 @@ def card_show(request, pk):
     if request.method == 'GET':
         card = get_object_or_404(Card, id=pk)
 
-        # Update critical data from Dilicom, if possible.
-        if dilicom_enabled():
+        # Update critical data from Electre or Dilicom, if possible.
+        if electre_enabled():
+            try:
+                card, msgs = update_from_electre(card)
+            except Exception as e:
+                log.warn(e)
+        elif dilicom_enabled():
             try:
                 card, msgs = update_from_dilicom(card)
             except Exception:  # for ConnectionError

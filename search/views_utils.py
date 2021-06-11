@@ -171,6 +171,21 @@ def update_from_dilicom(card):
         res = card
     return card, traces
 
+def update_from_electre(card):
+    if not card or not card.isbn or not (is_isbn(card.isbn)):
+        return card, []
+
+    res, traces = pyelectre.search_on_electre(card.isbn)
+    if res and res[0]:
+        res = res[0]
+        newcard = Card.update_from_dict(card, res,
+                                        distributor_name=res.get('distributor_name'),
+                                        distributor_gln=res.get('distributor_gln'),
+            )
+        return newcard
+
+    return card, traces
+
 
 class Echo(object):
     """An object that implements just the write method of the file-like
