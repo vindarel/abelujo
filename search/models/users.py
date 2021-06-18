@@ -231,6 +231,16 @@ class Client(Contact):
         }
 
     @staticmethod
+    def get_clients(to_dict=False):
+        """
+        Return a list of all clients, sorted alphabetically.
+        """
+        res = Client.objects.all().order_by("name")
+        if to_dict:
+            res = [it.to_dict() for it in res]
+        return res
+
+    @staticmethod
     def search(query, to_dict=False):
         res = Client.objects.filter(Q(name__icontains=query) |
                                     Q(firstname__icontains=query))
