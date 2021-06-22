@@ -40,6 +40,7 @@ from datetime import date
 
 import barcode
 import dateparser
+import django
 import pendulum
 import pytz
 
@@ -1255,6 +1256,7 @@ class Card(TimeStampedModel):
         isbn_list_search_complete = None
 
         cards = []
+        cards_with_pubs = []
         msgs = Messages()
 
         # Get all isbns, eans.
@@ -1428,6 +1430,19 @@ class Card(TimeStampedModel):
             nb_results = len(cards)
         else:
             nb_results = cards.count()
+
+        # If we have too few results, also search on publishers.
+        # Now the search becomes difficult to "do what I mean". If we search "soleil",
+        # we don't want to get all the publisher's books, we want to find the titles first.
+        # We need ranking…
+        if nb_results < 5:
+            for elt in words:
+                cards_with_pubs = Card.objects.filter(publishers__name__icontains=elt)
+                # cards = cards.filter(Q(publishers__name__icontains=elt))
+            if isinstance(cards, django.db.models.query.QuerySet):
+                cards = list(cards.all())
+            # join the two independent results.
+            cards += cards_with_pubs[:10]
 
         # Pagination
         paginator = Paginator(cards, page_size)
