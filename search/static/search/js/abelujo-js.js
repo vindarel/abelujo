@@ -114,9 +114,6 @@ function card_command(card_id) {
     let places_ids_qties = "";
 
     let url = "/api/card/" + card_id + "/command";
-    // Strangely, the ajax call sends us back to the top of the page.
-    // Remember the position in page and come back to it (even though it introduces a flickering effect).
-    let position = window.scrollY;
     console.log("-- POSTing to ", url);
     fetch(url, {
         method: 'POST'
@@ -138,9 +135,6 @@ function card_command(card_id) {
                 console.log("status is not success: ", myJson.status);
                 Notiflix.Notify.Warning("OK ou pas ?");
             }
-            // Coming back is not the best, it gives a flickering effect.
-            window.scrollTo(0, position);  // x, y
-
         })
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
