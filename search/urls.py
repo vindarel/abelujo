@@ -21,7 +21,7 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-# from django.views.generic.base import RedirectView
+from django.views.generic.base import RedirectView
 from search import views
 from search.admin import admin_site
 
@@ -190,4 +190,7 @@ urlpatterns = patterns('',
 
     # Catalogue's sélection du libraire
     url(r'^catalogue-selection/$', 'search.views.catalogue_selection', name="catalogue_selection"),
+
+    # fix: on logout and re-login, Django sends us to accounts/profile which was undefined.
+    url(r'^accounts/profile/?', RedirectView.as_view(url='/', permanent=True), name="accounts_profile_redirect"),
 )
