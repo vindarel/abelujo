@@ -1151,7 +1151,13 @@ def basket_export(request, pk):
     if distributor:
         list_name = list_name + " {}".format(distributor.name)
     elif basket:
-        list_name = list_name + " {}".format(basket.name)
+        if basket.name == "auto_command":
+            list_name = "command"
+        else:
+            list_name = list_name + " {}".format(basket.name)
+    now = PENDULUM_YMD
+    now = pendulum.now()
+    list_name += "-" + now.strftime(PENDULUM_YMD)
 
     if copies_set and report and format:
         response = _export_response(copies_set, report=report, format=format,
