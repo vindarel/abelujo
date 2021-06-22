@@ -1,3 +1,7 @@
+function is_isbn(text) {
+    let reg = /^[0-9]{10,13}/g
+    return text.match(reg);
+};
 
 function sellUndo(id) {
     // Undo the sell of the given id.
