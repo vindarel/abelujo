@@ -17,6 +17,7 @@ Changelog starting from v0.5 (2018/09/18)
 - We can choose what books to show on the ABStock catalogue from within Abelujo (see new page `/catalogue-selection`).
 - We can now see the past inventories.
 - preliminary support for connection to the Electre API ("à la demande")
+- quick search bar: we introduce a way to filter our search. Type "keyword ed:foo" (`ed:foo` is important here) to filter the results by publisher containing "foo" in its name.
 
 ### Other enhancements
 

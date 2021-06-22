@@ -1257,11 +1257,19 @@ class Card(TimeStampedModel):
         cards = []
         msgs = Messages()
 
+        def contains(word, char):
+            return word.find(char) != -1
+
+        def is_dsl_search(word):
+            # this word contains a colon ":": we are using our DSL.
+            return contains(word, ':')
+
         # Get all isbns, eans.
         if words:
             # Separate search terms that are isbns.
             isbns = list(filter(is_isbn, words))
-            words = list(set(words) - set(isbns))
+            dsl = list(filter(is_dsl_search, words))
+            words = list(set(words) - set(isbns) - set(dsl))
 
         if words:
             # Doesn't pass data validation of the view.
@@ -1286,6 +1294,15 @@ class Card(TimeStampedModel):
 
         elif not isbns:
             cards = Card.objects.all()  # returns a QuerySets, which are lazy.
+
+        # We introduce a small DSL to filter our search terms from the input field.
+        # Type in "title ed:foo" to search only on publisher "foo".
+        if dsl:
+            for key_val in dsl:
+                key = key_val.split(':')[0]
+                val = key_val.split(':')[1]
+                if key == "ed":
+                    cards = cards.filter(publishers__name__icontains=val)
 
         if cards and date_created and date_created_sort:
             if date_created_sort == "<=":
