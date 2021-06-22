@@ -93,6 +93,7 @@ from views_utils import Echo
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
 from views_utils import electre_enabled
+from views_utils import format_price_for_locale
 from views_utils import update_from_dilicom
 from views_utils import update_from_electre
 
@@ -1175,6 +1176,7 @@ def basket_export(request, pk):
 
     return response
 
+
 def _export_response(copies_set, report="", format="", inv=None, name="", distributor_id=None,
                      discount=0,
                      covers=False,
@@ -1226,7 +1228,7 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
              ic.card.pubs_repr,
              ic.card.distributor_repr,
              ic.card.shelf.name if ic.card.shelf else "",
-             ic.card.price,
+             format_price_for_locale(ic.card.price),
              ic.card.price_discounted,
              ic.quantity)
             for ic in copies_set]
@@ -1441,8 +1443,8 @@ def history_sells_month_export(request, date, **response_kwargs):
          soldcard.card.pubs_repr,
          soldcard.card.distributor_repr,
          soldcard.card.shelf.name if soldcard.card.shelf else "",
-         soldcard.card.price,
-         soldcard.card.price_discounted,
+         format_price_for_locale(soldcard.card.price),
+         format_price_for_locale(soldcard.card.price_discounted),
          soldcard.sell.payments_repr(),
          soldcard.quantity)
         for soldcard in data['data']]

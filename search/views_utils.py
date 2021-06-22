@@ -40,6 +40,8 @@ from search.datasources.bookshops.frFR.filigranes import \
     filigranesScraper as filigranes  # noqa: F401
 from search.models import Card
 
+from abelujo import settings
+
 try:
     # The Electre API connector is installed separetely.
     import pyelectre
@@ -221,3 +223,18 @@ def cards2csv(cards):
     rows.insert(0, header)
     content = b"".join([writer.writerow(row) for row in rows])
     return content
+
+
+def format_price_for_locale(price):
+    """
+    For french-ish locales, a comma should be the decimal separator.
+    """
+    try:
+        if settings.LOCALE_FOR_EXPORTS == "fr":
+            return str(price).replace('.', ',')
+    except:  # noqa: E722
+        pass
+    try:
+        return str(price)
+    except:  # noqa: E722
+        return price

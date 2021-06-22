@@ -437,6 +437,10 @@ else:
 # If True, don't bother user custom shelf names, use Dilicom's CLIL themes.
 USE_THEMES_FOR_SHELVES = False
 
+# User locale for CSV exports.
+# Change the decimal separator (point to comma).
+LOCALE_FOR_EXPORTS = "fr"
+
 # Feature flags
 # Show a reservation button on the card page.
 FEATURE_SHOW_RESERVATION_BUTTON = False
