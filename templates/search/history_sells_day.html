@@ -46,7 +46,7 @@
   </div>
 </div>
 
-<h1>{{ day | date:'l d F Y' | title }}</h1>
+<h3>{{ day | date:'l d F Y' | title }}</h3>
 
 <div  class="row">
   <!-- div plus gros panier (?)-->
@@ -146,7 +146,7 @@
 
 
 
-<table class="table">
+<table class="table table-condensed">
   <!-- better: iterate over sells, and iterate over soldcards.-->
   <thead>
     <th>{% trans "Transaction" %}</th>
