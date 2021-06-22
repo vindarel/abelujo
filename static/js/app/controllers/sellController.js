@@ -192,7 +192,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           $scope.tmpcard = $scope.tmpcard[0].item;
           $scope.tmpcard.price_orig = $scope.tmpcard.price_sold;
           if (!_.contains($scope.selected_ids, $scope.tmpcard.id)) {
-              $scope.cards_selected.push($scope.tmpcard);
+              $scope.cards_selected.unshift($scope.tmpcard);
               $scope.total_price += $scope.tmpcard.price;
               $scope.selected_ids.push($scope.tmpcard.id);
           } else {
