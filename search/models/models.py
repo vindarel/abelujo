@@ -352,12 +352,15 @@ class Distributor(TimeStampedModel):
         return self.to_list()
 
     @staticmethod
-    def get_all(**kwargs):
-        """Return a list of deposits.
+    def get_all(to_dict=False):
+        """Return a list of distributors.
 
         No arguments: return all.
         """
-        return Deposit.objects.order_by("name")
+        res = Distributor.objects.order_by("name")
+        if to_dict:
+            return [it.to_dict() for it in res.all()]
+        return res
 
     @staticmethod
     def search(query=None, to_list=False):
