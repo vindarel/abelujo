@@ -26,7 +26,7 @@
 {% load ngfilter %}
 
 <div class="row">
-  <h3 class="col-md-4"> {% trans "Reservations" %} </h3>
+  <h3 class="col-md-4"> {% trans "Reservations" %} ({{ nb_reservations }})</h3>
 </div>
 <div>
     <a class="btn btn-default" href="http://abelujo.cc/docs/clients/" target="_blank" title=''{% trans "Read the documentation" %}'>
@@ -35,24 +35,25 @@
     </a>
 </div>
 
-<div>
-  {% for resa in reservations %}
+<div class="container">
+  {% for client_reservations in reservations %}
+  {% with client=client_reservations.0 reservations=client_reservations.1 %}
   <div id="resa-{{ resa.pk }}" class="row">
     <div class="col-md-4">
       <h4>
         <a href="{{ resa.client.get_absolute_url }}">
-          {{ resa.client }}
+          {{ client }}
         </a>
       </h4>
 
       <div>
-        {{ resa.client.mobilephone }}
+        {{ client.mobilephone }}
       </div>
 
       <div>
-        {{ resa.client.email }}
+        {{ client.email }}
 
-        {% if resa.client.email %}
+        {% if client.email %}
         <a href="mailto:{{ resa.client.email }}?subject={% trans 'Your reservation has arrived' %}&body={% trans 'Hello' %} %0D%0A %0D%0A Votre commande de '{{ resa.card.title }}' est arrivée à la librairie. Nous vous l'avons mise de côté. %0D%0A %0D%0A Merci">
           <i class="glyphicon glyphicon-envelope" title="{% trans 'Write to' %}  {{ resa.client}} {% trans ' with your desktop mail client' %}" style="margin-left: 1em">
           </i>
@@ -60,25 +61,28 @@
         {% endif %}
       </div>
 
-
-
     </div>
 
-    <div class="col-md-4">
-      <a href="{{ resa.card.get_absolute_url }}">
-        <h4> {{ resa.card.title }} </h4>
-      </a>
+    <div class="col-md-8">
+    {% for resa in reservations %}
+    <div class="row">
+        <div class="col-md-8">
 
-      <div style="clear: both">
-        <div style="float: left"> {{ resa.card.pubs_repr }} </div>
-        <div  style="color: grey"> &nbsp; {{ resa.card.isbn }} </div>
-      </div>
+          <a href="{{ resa.card.get_absolute_url }}">
+            <h4> {{ resa.card.title }} </h4>
+          </a>
 
-      <div> {{ resa.card.price_fmt }} </div>
+          <div style="clear: both">
+            <div style="float: left"> {{ resa.card.pubs_repr }} </div>
+            <div  style="color: grey"> &nbsp; {{ resa.card.isbn }} </div>
+          </div>
 
-    </div>
+          <div> {{ resa.card.price_fmt }} </div>
 
-    <div class="col-md-2">
+        </div>
+
+
+    <div class="col-md-3">
       <div> {{ resa.created }} </div>
     </div>
 
@@ -91,8 +95,13 @@
         <i class="glyphicon glyphicon-remove"> </i>
       </a>
     </div>
+      </div>
+    {% endfor %}
+    </div>
   </div>
 
+
+  {% endwith %}
   {% endfor %}
 </div>
 

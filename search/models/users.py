@@ -17,6 +17,7 @@
 
 from __future__ import unicode_literals
 
+import collections
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
@@ -79,19 +80,19 @@ class Reservation(TimeStampedModel):
         return res
 
     @staticmethod
-    def get_card_reservations(card, to_dict=False):
+    def group_by_client(reservations):
         """
-        Get the ongoing reservations for this card.
+        Group this list of reservations by client.
 
-        - card: int or object
+        Returns: a list of tuples: client -> list of reservations.
         """
-        card_id = card
-        if isinstance(card, models.base.Model):
-            card_id = card.id
-        res = Reservation.objects.filter(card=card_id, archived=False)
-        if to_dict:
-            res = [it.to_dict() for it in res]
-        return res
+        seen = collections.OrderedDict()
+        # group by client.
+        for resa in reservations:
+            if seen.get(resa.client):
+                seen[resa.client].append(resa)
+            else:
+                seen[resa.client] = [resa]
 
     @staticmethod
     def putaside(card, client):
