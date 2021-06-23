@@ -54,8 +54,8 @@
         {{ client.email }}
 
         {% if client.email %}
-        <a href="mailto:{{ resa.client.email }}?subject={% trans 'Your reservation has arrived' %}&body={% trans 'Hello' %} %0D%0A %0D%0A Votre commande de '{{ resa.card.title }}' est arrivée à la librairie. Nous vous l'avons mise de côté. %0D%0A %0D%0A Merci">
-          <i class="glyphicon glyphicon-envelope" title="{% trans 'Write to' %}  {{ resa.client}} {% trans ' with your desktop mail client' %}" style="margin-left: 1em">
+        <a href="mailto:{{ client.email }}?subject={% trans 'Your reservation has arrived' %}&body={{ client.reservation_email_body }}">
+          <i class="glyphicon glyphicon-envelope" title="{% trans 'Write to' %}  {{ client}} {% trans ' with your desktop mail client' %}" style="margin-left: 1em">
           </i>
         </a>
         {% endif %}

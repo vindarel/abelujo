@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python
 # Copyright 2014 - 2020 The Abelujo Developers
 # See the COPYRIGHT file at the top-level directory of this distribution
@@ -33,6 +34,24 @@ from search.models.utils import get_logger
 
 log = get_logger()
 
+
+def generate_email_body(resas):
+    linebreak = "%0A"
+    newline = "{} {}".format(linebreak, linebreak)
+    ending = "Nous vous l'avons mise de côté.{} merci et à tout bientôt.".format(newline)
+    if len(resas) == 1:
+        res = "Bonjour, {} Le livre commandé: {} est bien arrivé. \
+        Nous vous l'avons mis de côté. %0D%0A %0D%0A \
+        Merci et à tout bientôt.".format(newline,
+                                         "{} - {} {}".format(
+                                             newline, resas[0].card.title, newline))
+    else:
+        res = "Bonjour, {} Votre commande des titres suivants est bien arrivée à la librairie: {}".format(newline, newline)
+        list_titles = ""
+        for resa in resas:
+            list_titles += " - {} {}".format(resa.card.title, linebreak)
+        res += list_titles + linebreak + ending
+    return res
 
 class Reservation(TimeStampedModel):
     """
@@ -97,6 +116,18 @@ class Reservation(TimeStampedModel):
                 seen[resa.client] = [resa]
 
         return seen.items()
+
+    @staticmethod
+    def generate_email_bodies(tuples):
+        """
+        From this list of tuples from group_by_client, add an email_body field.
+        """
+        for client_reservations in tuples:
+            client = client_reservations[0]
+            resas = client_reservations[1]
+            body = generate_email_body(resas)
+            client.reservation_email_body = body
+        return tuples
 
     def is_quite_old(self):
         """
