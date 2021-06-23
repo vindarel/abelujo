@@ -2066,7 +2066,12 @@ def reservations(request):
     template = "search/reservations.html"
     if request.method == 'GET':
         res = users.Reservation.get_reservations()
+        nb_reservations = len(res)
+        res = users.Reservation.group_by_client(res)
+        res = users.Reservation.generate_email_bodies(res)
+
         return render(request, template, {
             'reservations': res,
+            'nb_reservations': nb_reservations,
             'title': _("Reservations"),
         })
