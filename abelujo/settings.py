@@ -471,6 +471,12 @@ def dilicom_enabled():
     return os.getenv('DILICOM_PASSWORD') is not None \
         and os.getenv('DILICOM_USER') is not None
 
+def dilicom_ftp_enabled():
+    """
+    The username is different than the FEL À LA DEMANDE.
+    """
+    return os.getenv('DILICOM_FTP_USER') is not None
+
 def electre_enabled():
     return os.getenv('ELECTRE_PASSWORD') is not None \
         and os.getenv('ELECTRE_USER') is not None
@@ -478,6 +484,8 @@ def electre_enabled():
 
 if dilicom_enabled():
     print(termcolor.colored("FEATURE: DILICOM ENABLED", "green"))
+if dilicom_ftp_enabled():
+    print(termcolor.colored("FEATURE: dilicom FTP enabled", "green"))
 
 if FEATURE_ELECTRE_API:
     if not electre_enabled():
