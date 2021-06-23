@@ -18,6 +18,8 @@
 from __future__ import unicode_literals
 
 import collections
+
+import pendulum
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as __  # in Meta and model fields.
@@ -26,8 +28,8 @@ from common import CHAR_LENGTH
 from common import TEXT_LENGTH
 from common import TimeStampedModel
 # note: can't import models, circular dependencies.
-from search.models.utils import get_logger
 from search.models.utils import Messages
+from search.models.utils import get_logger
 
 log = get_logger()
 
@@ -94,6 +96,22 @@ class Reservation(TimeStampedModel):
             else:
                 seen[resa.client] = [resa]
 
+        return seen.items()
+
+    def is_quite_old(self):
+        """
+        Return True if this Reservation is older than 2 weeks.
+        """
+        OLD_RESERVATION_DAYS = 14
+        try:
+            now = pendulum.now()
+            created = pendulum.instance(self.created)
+            diff = created.diff(now)
+            if diff.days >= OLD_RESERVATION_DAYS:
+                return True
+        except Exception as e:
+            log.warning(e)
+        return False
 
     @staticmethod
     def get_card_reservations(card, to_dict=False):

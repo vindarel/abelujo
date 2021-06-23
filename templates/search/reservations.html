@@ -29,10 +29,10 @@
   <h3 class="col-md-4"> {% trans "Reservations" %} ({{ nb_reservations }})</h3>
 </div>
 <div>
-    <a class="btn btn-default" href="http://abelujo.cc/docs/clients/" target="_blank" title=''{% trans "Read the documentation" %}'>
-      <i class="glyphicon glyphicon-question-sign">
-      </i>
-    </a>
+  <a class="btn btn-default" href="http://abelujo.cc/docs/clients/" target="_blank" title=''{% trans "Read the documentation" %}'>
+    <i class="glyphicon glyphicon-question-sign">
+    </i>
+  </a>
 </div>
 
 <div class="container">
@@ -64,8 +64,8 @@
     </div>
 
     <div class="col-md-8">
-    {% for resa in reservations %}
-    <div class="row">
+      {% for resa in reservations %}
+      <div class="row">
         <div class="col-md-8">
 
           <a href="{{ resa.card.get_absolute_url }}">
@@ -82,21 +82,26 @@
         </div>
 
 
-    <div class="col-md-3">
-      <div> {{ resa.created }} </div>
-    </div>
+        <div class="col-md-3">
+          {% if resa.is_quite_old %}
+          <div style="color: darkorange"> {{ resa.created }} </div>
+          {% else %}
+          <div> {{ resa.created }} </div>
+          {% endif %}
+        </div>
 
-    <div class="col-md-1">
-      <a class="btn btn-default"
-          id="remove-card-{{ resa.card.pk }}"
-          hx-post="/api/card/{{ resa.card.pk }}/cancelreservation/{{ resa.client.pk}}"
-          hx-target="#resa-{{ resa.pk }}"
-      >
-        <i class="glyphicon glyphicon-remove"> </i>
-      </a>
-    </div>
+        <div class="col-md-1">
+          {{ resa.card.pk}} & {{ resa.pk }}
+          <a class="btn btn-default"
+              id="remove-card-{{ resa.card.pk }}"
+              hx-post="/api/card/{{ resa.card.pk }}/cancelreservation/{{ resa.client.pk}}"
+              hx-target="#resa-{{ resa.pk }}"
+          >
+            <i class="glyphicon glyphicon-remove"> </i>
+          </a>
+        </div>
       </div>
-    {% endfor %}
+      {% endfor %}
     </div>
   </div>
 
