@@ -94,6 +94,22 @@ class Reservation(TimeStampedModel):
             else:
                 seen[resa.client] = [resa]
 
+
+    @staticmethod
+    def get_card_reservations(card, to_dict=False):
+        """
+        Get the ongoing reservations for this card.
+
+        - card: int or object
+        """
+        card_id = card
+        if isinstance(card, models.base.Model):
+            card_id = card.id
+        res = Reservation.objects.filter(card=card_id, archived=False)
+        if to_dict:
+            res = [it.to_dict() for it in res]
+        return res
+
     @staticmethod
     def putaside(card, client):
         """
