@@ -1273,6 +1273,7 @@ angular.module("abelujo").controller('baseController', [
     $scope.alerts_open = null;
     $scope.auto_command_total = null;
     $scope.restocking_total = null;
+    $scope.FEATURE_SHOW_RESERVATION_BUTTON = false;
     $http.get("/api/alerts/open").then(function(response){
       $scope.alerts_open = response.data;
       return response.data.data;
@@ -1287,6 +1288,11 @@ angular.module("abelujo").controller('baseController', [
     });
     $http.get("/api/restocking/nb_ongoing").then(function(response){
       $scope.restocking_total = response.data.data;
+      return response.data.data;
+    });
+    $http.get("/api/reservations/nb_ongoing").then(function(response){
+      $scope.client_commands_nb = response.data.data;
+      $scope.FEATURE_SHOW_RESERVATION_BUTTON = response.data.FEATURE_SHOW_RESERVATION_BUTTON;
       return response.data.data;
     });
     $scope.url = "";

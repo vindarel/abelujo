@@ -101,6 +101,11 @@ class Reservation(TimeStampedModel):
         return res
 
     @staticmethod
+    def nb_ongoing():
+        res = Reservation.objects.filter(archived=False).count()
+        return res
+
+    @staticmethod
     def group_by_client(reservations):
         """
         Group this list of reservations by client.

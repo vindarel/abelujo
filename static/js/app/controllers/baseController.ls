@@ -22,6 +22,7 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
     $scope.alerts_open = null
     $scope.auto_command_total = null
     $scope.restocking_total = null
+    $scope.FEATURE_SHOW_RESERVATION_BUTTON = false
 
     $http.get("/api/alerts/open")
         .then (response) ->
@@ -41,6 +42,12 @@ angular.module "abelujo" .controller 'baseController', ['$http', '$scope', '$win
     $http.get("/api/restocking/nb_ongoing")
     .then (response) ->
         $scope.restocking_total = response.data.data
+        return response.data.data
+
+    $http.get("/api/reservations/nb_ongoing")
+    .then (response) ->
+        $scope.client_commands_nb = response.data.data
+        $scope.FEATURE_SHOW_RESERVATION_BUTTON = response.data.FEATURE_SHOW_RESERVATION_BUTTON
         return response.data.data
 
     # Goal: Grab what url we're on to highlight the active menu bar,

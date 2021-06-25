@@ -116,6 +116,8 @@ apipatterns = patterns("",
     url(r'^api/commands/(?P<pk>\d+)/receive/diff/?$', 'search.models.api.command_receive_diff', name="api_command_receive_diff"),
     url(r'^api/commands/(?P<pk>\d+)/receive/apply/?$', 'search.models.api.command_receive_apply', name="api_command_receive_apply"),
 
+    # Client commands (Reservations)
+    url(r'^api/reservations/nb_ongoing/?$', 'search.models.api.reservations_nb_ongoing', name="reservations_nb_ongoing"),
 
     # Sell
     url(r'^api/sell/(?P<pk>\d+)/undo$', 'search.models.api.sell_undo', name="api_sell_undo"),

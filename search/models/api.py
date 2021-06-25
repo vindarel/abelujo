@@ -38,6 +38,8 @@ from django.utils.translation import ugettext as _
 from django_q.tasks import async
 
 from drfserializers import PreferencesSerializer
+
+from abelujo import settings
 from models import Alert
 from models import Author
 from models import Basket
@@ -53,6 +55,7 @@ from models import Place
 from models import Preferences
 from models import Publisher
 from models import Reception
+from models import Reservation
 from models import Restocking
 from models import Sell
 from models import Shelf
@@ -727,6 +730,16 @@ def card_cancel_reservation(request, pk, **kw):
             # I don't want to create a new endpoint yet, so let's return "".
             # return HttpResponseRedirect(reverse('reservations'))
 
+        return JsonResponse(to_ret)
+
+def reservations_nb_ongoing(request, **kwargs):
+    if request.method == 'GET':
+        nb = Reservation.nb_ongoing()
+        to_ret = {
+            'status': ALERT_SUCCESS,
+            'data': nb,
+            'FEATURE_SHOW_RESERVATION_BUTTON': settings.FEATURE_SHOW_RESERVATION_BUTTON,
+        }
         return JsonResponse(to_ret)
 
 def card_putaside(request, pk, **kw):
