@@ -24,7 +24,7 @@ django==1.8
 django-bootstrap3==6.2.2
 pyjade                  # process jade templates.
 bootstrap-admin==0.3.6  # bootstrap theme, nice search feature.
-pyyaml
+pyyaml==5.4.1
 pytz			# timezone
 
 # Python2/3
@@ -69,4 +69,7 @@ html5lib==1.0b8         # for "cannot import viewkeys" runtime error.
 pendulum==1.1           # easy timezone, diffs, human info, etc
 raven==6.0              # sentry
 
-ruamel.yaml             # to remove the yaml.load unsafe warning (of third party libs).
+# To remove the yaml.load unsafe warning (of third party libs).
+ruamel.yaml==0.16.12
+ruamel.yaml.clib==0.2.2
+ruamel.ordereddict==0.4.15
