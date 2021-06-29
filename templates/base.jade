@@ -154,7 +154,7 @@ html(ng-app="abelujo")
               span.badge.ng-cloak(title='{% trans "Number of cards needing a command." %}') {{ "auto_command_total" | ng }}
               span.badge.ng-cloak(title='{% trans "Number of ongoing commands." %}') {{ "ongoing_commands_nb" | ng }}
 
-          li(ng-show="FEATURE_SHOW_RESERVATION_BUTTON", ng-class="{active: url == 'commands' }")
+          li(ng-show="FEATURE_SHOW_RESERVATION_BUTTON", ng-class="{active: url == 'reservations' }")
             a(href='{% url "reservations" %}') {% trans "Client Commands" %}
               span.badge.ng-cloak(title='{% trans "Number of ongoing client commands." %}') {{ "client_commands_nb" | ng }}
 
