@@ -66,6 +66,14 @@ class CardTypeAdmin(admin.ModelAdmin):
         model = CardType
 
 
+class AuthorAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Author
+
+    search_fields = ["name"]
+    # list_editable = ("name",)
+
+
 class ClientAdmin(admin.ModelAdmin):
     class Meta:
         model = Client
@@ -150,7 +158,7 @@ class ShelfAdmin(admin.ModelAdmin):
     ordering = ("name",)
 
 
-admin.site.register(Author)
+admin.site.register(Author, AuthorAdmin)
 admin.site.register(Basket)
 admin.site.register(Bookshop)
 admin.site.register(Bill, BillAdmin)
@@ -171,7 +179,7 @@ admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Sell)
 
 admin_site = MyAdmin(name='myadmin')
-admin_site.register(Author)
+admin_site.register(Author, AuthorAdmin)
 admin_site.register(Basket)
 admin_site.register(Card, CardAdmin)
 admin_site.register(Client, ClientAdmin)
