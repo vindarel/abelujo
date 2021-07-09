@@ -197,6 +197,8 @@ def get_best_sells(soldcards):
 class Author(TimeStampedModel):
     name = models.CharField(unique=True, max_length=200, verbose_name=__("name"))
     name_ascii = models.CharField(null=True, blank=True, max_length=200, verbose_name=__("name_ascii"), editable=False)
+    #: Biography of this author.
+    bio = models.TextField(null=True, blank=True, verbose_name=__("biography"))
 
     class Meta:
         ordering = ('name',)
