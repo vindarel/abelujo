@@ -708,6 +708,9 @@ class Card(TimeStampedModel):
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
+    #: meta: a text field to store a custom JSON, specific to an external application.
+    meta = models.TextField(blank=True)
+
     class Meta:
         ordering = ('sortkey', 'year_published', 'title')
         verbose_name = __("card")
