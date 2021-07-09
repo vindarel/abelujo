@@ -612,7 +612,7 @@ class Card(TimeStampedModel):
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
     #: Internal representation without accents, used for search.
-    title_ascii = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title_ascii"), null=True, blank=True)
+    title_ascii = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title_ascii"), null=True, blank=True, editable=False)
 
     #: type of the card, if specified (book, CD, tshirt, …)
     card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=__("card type"))
