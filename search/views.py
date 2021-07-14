@@ -82,7 +82,6 @@ from search.models import Stats
 from search.models import history
 from search.models import users
 from search.models.api import _get_command_or_return
-from search.models.common import get_payment_abbr
 from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 from search.models.utils import is_isbn
