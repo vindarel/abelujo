@@ -28,6 +28,7 @@ from weasyprint import HTML
 from abelujo import settings
 from search.models import Basket
 from search.models import Card
+from search.models import CardType
 from search.models import Preferences
 from search.models import users
 from search.models.users import Client
@@ -61,6 +62,13 @@ def clients(request, **response_kwargs):
 
 def bill_from_basket():
     pass
+
+def is_only_books(cards):
+    type_book = CardType.get_book_type()
+    for it in cards:
+        if it.card_type != type_book:
+            return False
+    return True
 
 def bill(request, *args, **response_kwargs):
     """
@@ -233,10 +241,20 @@ def bill(request, *args, **response_kwargs):
     total_discounted_fmt = price_fmt(total_discounted, default_currency)
 
     template = get_template(template)
+
+    # Compute the VAT from the discounted price (after for example 9% discount to an official client).
     total_vat = 0
-    for card_qty in cards_data:
-        card = card_qty[0]
-        total_vat += card.get_price_vat()
+    # easy method when everything is books.
+    if is_only_books(cards):
+        # total_vat = Card.get_vat_for_cards(cards)
+        tax = Preferences.get_vat_book()
+        total_vat = total_discounted - total_discounted / (1 + tax / 100)
+    # mixed method when there are not only books objects.
+    # thing is, does it sum up correctly ?
+    else:
+        total_vat = Card.get_vat_for_mixed_cards(cards)
+        # XXX: and quantity ?? in cards_data
+
     total_vat_fmt = price_fmt(total_vat, default_currency)
 
     # Document title.

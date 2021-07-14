@@ -772,12 +772,27 @@ class Card(TimeStampedModel):
             tax = Preferences.get_vat_other_product()
         return tax
 
-    def get_price_vat(self):
+    @staticmethod
+    def get_vat_for_mixed_cards(cards):
+        """
+        Return the VAT for these cards.
+        If they are only books, prefer the simple computation.
+        """
+        total_vat = 0
+        for card in cards:
+            total_vat += card.get_price_vat(round=False)
+        total_vat = roundfloat(total_vat)
+        return total_vat
+
+    def get_price_vat(self, round=True):
         """
         Return the value of the VAT for this card's price.
         """
         tax = self.get_vat()
-        return roundfloat(self.price * tax / 100)
+        res = (self.price * tax / 100)
+        if round:
+            return roundfloat(res)
+        return res
 
     @property
     def price_excl_vat(self):
