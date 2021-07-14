@@ -72,12 +72,20 @@
         a.btn.btn-default#heart(href="", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})")
           i.glyphicon.glyphicon-heart
 
-    // WIP reservation button. Enable with feature flag in settings.
-    if feature_show_reservation_button
-      button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", title="Réserver pour un client")
-        i.glyphicon.glyphicon-user
-        span &nbsp; x
-            span(id="nb_to_command") {{ object.quantity_clients_reserved }}
+      if feature_exclude_for_website
+        if object.is_excluded_for_website
+          a.btn.btn-default(id="exclude-{{ object.pk }}", href="", title='{% trans "Exclude this card from the online catalogue." %}', onclick="card_catalogue_exclude({{ object.pk }})", style="background-color: pink")
+            i.glyphicon.glyphicon-eye-close
+        else
+          a.btn.btn-default(id="exclude-{{ object.pk }}", href="", title='{% trans "Exclude this card from the online catalogue." %}', onclick="card_catalogue_exclude({{ object.pk }})")
+            i.glyphicon.glyphicon-eye-close
+
+      // WIP reservation button. Enable with feature flag in settings.
+      if feature_show_reservation_button
+        button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", title="Réserver pour un client", onclick="focus_input()")
+            i.glyphicon.glyphicon-user
+            span &nbsp; x
+                span(id="nb_to_command") {{ object.quantity_clients_reserved }}
 
     h3 {{ object.title }}
 

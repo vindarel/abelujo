@@ -2242,6 +2242,22 @@ class Card(TimeStampedModel):
         card.save()
         return card.is_catalogue_selection
 
+    @staticmethod
+    def toggle_exclude_for_catalogue(pk):
+        """
+        Mark (toggle) this card as excluded to show on the client's frontend website.
+        """
+        card = Card.objects.filter(pk=pk).first()
+        if not card:
+            return None
+        if card.is_excluded_for_website:
+            card.is_excluded_for_website = False
+        else:
+            card.is_excluded_for_website = True
+        card.save()
+        return card.is_excluded_for_website
+
+
     def display_year_published(self):
         "We only care about the year"
         return self.year_published.strftime('%Y')

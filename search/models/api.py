@@ -623,6 +623,27 @@ def card_select_catalogue(request, pk, **kw):
     to_ret['data']['is_catalogue_selection'] = res
     return JsonResponse(to_ret)
 
+def card_exclude_catalogue(request, pk, **kw):
+    """
+    Toggle the catalogue exclusion.
+    """
+    property_name = 'is_excluded_for_website'
+    to_ret = {
+        'data': {property_name: None},
+        'status': ALERT_SUCCESS,
+    }
+    try:
+        res = Card.toggle_exclude_for_catalogue(pk)
+    except Exception as e:
+        log.error(u'Error excluding from catalogue: {}'.format(e))
+        status = ALERT_WARNING
+        to_ret['status'] = status
+        to_ret['alerts'] = [e]
+
+    to_ret['data'][property_name] = res
+    return JsonResponse(to_ret)
+
+
 def card_reserve(request, pk, **kw):
     """
     - pk: card id or ISBN.

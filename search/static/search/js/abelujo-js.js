@@ -186,6 +186,50 @@ function card_catalogue_select(card_id) {
 
 }
 
+function card_catalogue_exclude(card_id) {
+    // Called from: card_show.jade.
+    console.log("-- exclude from catalogue ", card_id);
+    let places_ids_qties = "";
+
+    let url = "/api/card/" + card_id + "/exclude_catalogue";
+    console.log("-- POSTing to ", url);
+    fetch(url, {
+        method: 'POST'
+    })
+        .then((response) => {
+            console.log("response is ", response);
+            return response.json();
+        })
+        .then((myJson) => {
+            if (myJson.status == 200 || myJson.status == "success") {
+                // Update and toggle the exclude colour.
+                var heart_selector = "exclude-" + card_id;
+                let elt = document.getElementById(heart_selector);
+                console.log("--- got elt: ", elt);
+                if (elt != null && elt != undefined) {
+                    if (myJson.data.is_excluded_for_website) {
+                        elt.style = "background-color: pink";
+                    } else {
+                        elt.style = "";
+                    }
+                    Notiflix.Notify.Success('OK');
+                }
+                else {
+                    console.warn("warn: we did not find ", heart_selector);
+                }
+            }
+            else {
+                console.log("status is not success: ", myJson.status);
+                Notiflix.Notify.Warning("OK ou pas ?");
+            }
+        })
+        .catch((error) => {
+            console.error('There has been a problem with your fetch operation:', error);
+            Notiflix.Notify.Warning("An error occured, sorry. We have been notified.");
+        });
+
+}
+
 function getCookie(name) {
     // Used to get Django's CSRF token.
     // source: Django documentation.

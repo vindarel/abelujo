@@ -441,7 +441,9 @@ USE_THEMES_FOR_SHELVES = False
 # Change the decimal separator (point to comma).
 LOCALE_FOR_EXPORTS = "fr"
 
+#
 # Feature flags
+#
 # Show a reservation button on the card page.
 FEATURE_SHOW_RESERVATION_BUTTON = False
 
@@ -494,3 +496,13 @@ if FEATURE_ELECTRE_API:
         print(termcolor.colored("FEATURE ENABLED: FEATURE_ELECTRE_API", "green"))
 
 print "INFO: Abelujo running on {}".format(os.getcwd())
+
+# Exclude cards for the website (catalogue).
+FEATURE_EXCLUDE_FOR_WEBSITE = False
+try:
+    if config:
+        if hasattr(config, 'FEATURE_EXCLUDE_FOR_WEBSITE'):
+            FEATURE_EXCLUDE_FOR_WEBSITE = config.FEATURE_EXCLUDE_FOR_WEBSITE
+            print(termcolor.colored("FEATURE: FEATURE_EXCLUDE_FOR_WEBSITE", "cyan"))
+except Exception:
+    pass

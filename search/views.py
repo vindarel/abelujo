@@ -374,7 +374,8 @@ def card_show(request, pk):
         "has_one_reservation": reservations.count() == 1,
 
         # Feature flags.
-        "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON
+        "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON,
+        "feature_exclude_for_website": settings.FEATURE_EXCLUDE_FOR_WEBSITE,
     })
 
 def card_history(request, pk):
