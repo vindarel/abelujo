@@ -1283,6 +1283,7 @@ class Card(TimeStampedModel):
         def contains(word, char):
             return word.find(char) != -1
 
+        dsl = None
         def is_dsl_search(word):
             # this word contains a colon ":": we are using our DSL.
             return contains(word, ':')
