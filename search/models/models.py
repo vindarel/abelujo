@@ -707,6 +707,10 @@ class Card(TimeStampedModel):
     # This works with ABStock.
     is_catalogue_selection = models.BooleanField(default=False, blank=True, verbose_name=__("Sélection du libraire pour le catalogue en ligne"))
 
+    #: Do not show, exclude this card on the website? By default, every card is shown.
+    # This was done for a client, it is not used by default.
+    is_excluded_for_website = models.BooleanField(default=False, blank=True, verbose_name=__("Ne pas montrer sur le site vitrine"))
+
     #: a user's comment
     comment = models.TextField(blank=True, verbose_name=__("comment"))
 
