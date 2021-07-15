@@ -265,6 +265,9 @@ def cards(request, **response_kwargs):
         date_created_choice,
         settings={'PREFER_DAY_OF_MONTH': prefer_day_of_month})
 
+    excluded_from_catalogue = request.GET.get("excluded_from_catalogue")
+    excluded_from_catalogue = _is_truthy(excluded_from_catalogue)
+
     # The quantity of a card is costly. It was a bottleneck. Avoid
     # this calculation if possible.
     # update: it *was* costly, the field is now denormalized.
@@ -291,6 +294,7 @@ def cards(request, **response_kwargs):
                              shelf_id=shelf_id,
                              order_by=order_by,
                              in_deposits=True,
+                             excluded_from_catalogue=excluded_from_catalogue,
                              with_quantity=with_quantity,
                              quantity_choice=quantity_choice,
                              price_choice=price_choice,

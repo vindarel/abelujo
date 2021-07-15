@@ -1234,6 +1234,7 @@ class Card(TimeStampedModel):
                deposit_id=None,
                bought=False,
                in_deposits=False,
+               excluded_from_catalogue=True,  # return also these cards.
                order_by=None,
                with_quantity=True,
                quantity_choice=None,
@@ -1449,6 +1450,9 @@ class Card(TimeStampedModel):
                 cards = cards.filter(price__gte=10)
             elif price_choice == ">20":
                 cards = cards.filter(price__gte=20)
+
+        if excluded_from_catalogue is False:
+            cards = cards.exclude(is_excluded_for_website=True)
 
         # Sort
         if cards and order_by:
