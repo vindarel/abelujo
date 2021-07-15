@@ -87,6 +87,10 @@ html(ng-app="abelujo")
                 li.divider(role="separator")
                 li(href="#")
                     a(href='/{{ LANGUAGE_CODE }}/catalogue-selection') {% trans "Sélection du libraire" %}
+                if FEATURE_EXCLUDE_FOR_WEBSITE
+                  li.divider(role="separator")
+                  li(href="#")
+                    a(href='/{{ LANGUAGE_CODE }}/catalogue-excluded') {% trans "Livres exclus du site vitrine" %}
 
         form.navbar-form.navbar-left
           .form-group

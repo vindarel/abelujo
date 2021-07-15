@@ -159,6 +159,7 @@ TEMPLATES = [
                 "django.core.context_processors.media",
                 "django.core.context_processors.static",
                 "django.core.context_processors.tz",
+                "search.context_processors.global_settings",  # give global settings to templates
             ],
             'loaders': [
                 ('pyjade.ext.django.Loader', (

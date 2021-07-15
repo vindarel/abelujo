@@ -190,6 +190,8 @@ urlpatterns = patterns('',
 
     # Catalogue's sélection du libraire
     url(r'^catalogue-selection/$', 'search.views.catalogue_selection', name="catalogue_selection"),
+    # Books excluded from the catalogue website
+    url(r'^catalogue-excluded/$', 'search.views.catalogue_excluded', name="catalogue_excluded"),
 
     # fix: on logout and re-login, Django sends us to accounts/profile which was undefined.
     url(r'^accounts/profile/?', RedirectView.as_view(url='/', permanent=True), name="accounts_profile_redirect"),

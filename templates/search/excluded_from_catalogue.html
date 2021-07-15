@@ -1,0 +1,59 @@
+<!-- Copyright 2014 - 2020 The Abelujo Developers-->
+<!-- See the COPYRIGHT file at the top-level directory of this distribution-->
+<!-- Abelujo is free software: you can redistribute it and/or modify-->
+<!-- it under the terms of the GNU Affero General Public License as published by-->
+<!-- the Free Software Foundation, either version 3 of the License, or-->
+<!-- (at your option) any later version.-->
+<!-- Abelujo is distributed in the hope that it will be useful,-->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of-->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the-->
+<!-- GNU Affero General Public License for more details.-->
+<!-- You should have received a copy of the GNU Affero General Public License-->
+<!-- along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.-->{% extends "base.jade" %}
+
+<!-- info: html generated from a .jade -->
+
+{% block content %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load i18n %}
+{% load currencyfilter %}
+
+<h3> Livres exclus du site vitrine </h3>
+
+<div>
+  Ces livres ont été sélectionnés pour ne pas être affichés sur le site vitrine.
+</div>
+
+{% for card in cards %}
+
+<div class="row">
+
+  <div class="col-md-2">
+    <img class="media-object" src="{{ card.cover }}" alt="cover">
+  </div>
+
+  <div class="col-md-4">
+    <a href="{{ card.get_absolute_url }}">
+      <h4> {{ card.title }} </h4>
+    </a>
+    <div style="color: grey"> {{ card.isbn }} </div>
+    <div> {{ card.price_fmt }} </div>
+  </div>
+
+
+  <div class="col-md-2">
+    <a class="btn btn-default" id="exclude-{{ card.pk }}" onclick="card_catalogue_exclude({{ card.pk }})", title="Sélectionner ou déselectionner ce livre" {% if card.is_excluded_for_website %} style="background-color: pink" {% endif %}>
+      <i class="glyphicon glyphicon-eye-close">
+      </i>
+    </a>
+  </div>
+</div>
+
+
+
+{% endfor %}
+
+
+{% endblock content %}

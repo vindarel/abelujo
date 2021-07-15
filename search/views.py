@@ -2062,6 +2062,17 @@ def catalogue_selection(request):
         })
 
 @login_required
+def catalogue_excluded(request):
+    """
+    """
+    template = "search/excluded_from_catalogue.html"
+    if request.method == 'GET':
+        cards = Card.objects.filter(is_excluded_for_website=True)
+        return render(request, template, {
+            'cards': cards,
+        })
+
+@login_required
 def reservations(request):
     template = "search/reservations.html"
     if request.method == 'GET':
