@@ -2494,6 +2494,20 @@ class Place (models.Model):
             log.error(e)
             return False
 
+    def move_all(self, dest, create_movement=True, with_progress=False):
+        """
+        Move all the cards of this place to the destination.
+        """
+        try:
+            pcs = self.placecopies_set.all()
+            print("--- Moving {} cards from {} to {}...".format(pcs.count(), self.name, dest.name))
+            for pc in pcs:
+                if with_progress:
+                    print("\tmoving {}...".format(pc))
+                self.move(dest, pc.card, pc.nb, create_movement=create_movement)
+        except Exception as e:
+            log.error("Error trying to move all cards from {} to {}. Happened with {}.".format(self.name, dest.name, pc))
+
     def remove(self, card, quantity=1):
         """
         Remove this card from this place, with this quantity.

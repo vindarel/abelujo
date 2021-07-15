@@ -32,6 +32,10 @@ Changelog starting from v0.5 (2018/09/18)
 - deposits: we don't mention anymore the type of deposits that are sent by us to the exterior world.
 - **speed up** to display the list of commands.
 
+### For administrators
+
+- new script: `./manage.py move_from_place --origin <id>` to move all cards from one place to another (the destination defaults to the default place). It might be useful, because Abelujo doesn't encourage to use more than one selling place anymore.
+
 ### Upgrade instructions
 
 - Abelujo doesn't need npm or Node packages any more for its installation, making the installation and updates much easier.
