@@ -277,6 +277,9 @@ def cards(request, **response_kwargs):
     with_quantity = request.GET.get("with_quantity", True)
     with_quantity = _is_truthy(with_quantity)
 
+    with_authors = request.GET.get("with_authors")
+    with_authors = _is_truthy(with_authors)
+
     # pagination
     page = request.GET.get("page", 1)
     page = to_int(page)
@@ -300,6 +303,7 @@ def cards(request, **response_kwargs):
                              is_catalogue_selection=is_catalogue_selection,
                              excluded_from_catalogue=excluded_from_catalogue,
                              with_quantity=with_quantity,
+                             with_authors=with_authors,
                              quantity_choice=quantity_choice,
                              price_choice=price_choice,
                              date_created=date_created_choice,

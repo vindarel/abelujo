@@ -207,6 +207,14 @@ class Author(TimeStampedModel):
     def __str__(self):
         return "{}".format(self.name)
 
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'name': self.name,
+            'name_ascii': self.name_ascii,
+            'bio': self.bio,
+        }
+
     def save(self, *args, **kwargs):
         """
         Create name_ascii, with no accentuated letters.
@@ -416,8 +424,11 @@ class Publisher (models.Model):
 
     def to_dict(self):
         return {
-            "name": self.name,
             "id": self.id,
+            "name": self.name,
+            "isbn": self.isbn,
+            "address": self.address,
+            "comment": self.comment,
         }
 
     @staticmethod
@@ -1019,6 +1030,14 @@ class Card(TimeStampedModel):
         authors_repr = ", ".join([it.name for it in authors])
         return authors_repr
 
+    def authors_to_list(self):
+        authors = self.authors.all()
+        res = []
+        for aut in authors:
+            obj = aut.to_dict()
+            res.append(obj)
+        return res
+
     @property
     def shelf_repr(self):
         """Return the shelf name, or "".
@@ -1063,15 +1082,21 @@ class Card(TimeStampedModel):
     def to_dict(self):
         return self.to_list()
 
-    def to_list(self, in_deposits=False, with_quantity=True, with_authors=True,
+    def to_list(self, in_deposits=False, with_quantity=True,
+                with_authors=True,
                 with_publishers=True):
         """
         Return a *dict* of this card's fields.
 
         The with_xxx parameters allow to gain some SQL queries and some speed up.
         """
-        authors_repr = self.authors_repr
+        authors_repr = ""
+        if with_authors:
+            authors_repr = self.authors_repr
+
+        authors = []
         pubs_repr = self.pubs_repr
+        publishers = [it.to_dict() for it in self.publishers.all()]
 
         isbn = ""
         if self.isbn is not None:
@@ -1124,6 +1149,7 @@ class Card(TimeStampedModel):
             "img": self.img,
             "cover": self.cover,  # either the url, either the saved file on file system.
             "isbn": isbn,
+            "meta": self.meta,
             "model": self.__class__.__name__,  # useful to sort history.
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
@@ -1140,9 +1166,11 @@ class Card(TimeStampedModel):
             "price_excl_vat_fmt": price_fmt(self.price_excl_vat, currency),
             "currency": currency,
             "pubs_repr": pubs_repr,
+            "publishers": publishers,
             # "shelf": self.shelf.name if self.shelf else "",
             "shelf": shelf_name,
             "shelf_id": self.shelf.pk if self.shelf else None,
+            "summary": self.summary,
             "title": self.title,
             "threshold": self.threshold,
             "theme_name": theme_name,
@@ -1156,7 +1184,7 @@ class Card(TimeStampedModel):
         if with_authors:
             authors = self.authors.all()
             # comply to JS format (needs harmonization!)
-            auth = [{"fields": {'name': it.name, "id": it.id}} for it in authors]
+            auth = [{"fields": {'name': it.name, "id": it.id, "bio": it.bio or ""}} for it in authors]
             res['authors'] = auth
 
         if with_publishers:
@@ -1238,6 +1266,7 @@ class Card(TimeStampedModel):
                excluded_from_catalogue=True,  # return also these cards.
                order_by=None,
                with_quantity=True,
+               with_authors=False,
                quantity_choice=None,
                price_choice=None,
                date_created=None,
@@ -1499,7 +1528,7 @@ class Card(TimeStampedModel):
                 cards,
                 in_deposits=in_deposits,
                 with_quantity=with_quantity,
-                with_authors=False,
+                with_authors=with_authors,
                 with_publishers=False,
             )
 
