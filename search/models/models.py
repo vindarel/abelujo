@@ -1175,7 +1175,13 @@ class Card(TimeStampedModel):
             "threshold": self.threshold,
             "theme_name": theme_name,
             "theme_code": theme_code,
+            # dimensions:
+            "height": self.height if self.height else 0,
             "weight": self.weight if self.weight else 0,
+            "width": self.width if self.width else 0,
+            "thickness": self.thickness if self.thickness else 0,
+            "presedit": self.presedit,
+            "fmt": self.fmt,
         }
 
         if in_deposits:
