@@ -27,6 +27,7 @@ from weasyprint import HTML
 
 from abelujo import settings
 from search.models import Basket
+from search.models import Bill
 from search.models import Card
 from search.models import CardType
 from search.models import Preferences
@@ -207,7 +208,11 @@ def bill(request, *args, **response_kwargs):
     # Name, filename
     bill_label = _("Bill")
     bookshop_name = bookshop.name if bookshop else ""
-    name = "{}-{}-{}".format(bill_label, bookshop_name, creation_date_fmt)
+    # Unique ID.
+    # Even if we don't use the Bill object, create one so we get unique IDs.
+    bill_object = Bill(name="{}-{}".format(bookshop_name, creation_date_fmt))
+    bill_object.save()
+    name = "{}-{}_{}-{}".format(bill_label, bookshop_name, bill_object.pk, creation_date_fmt)
     filename = name + '.pdf'
 
     # File 2, with books list.
@@ -265,8 +270,9 @@ def bill(request, *args, **response_kwargs):
     else:
         document_type = _("Bill")
 
-    document_title = "{} {}".format(document_type,
-                                    pendulum.now().strftime('%Y%m%d'))
+    document_title = "{} {}-{}".format(document_type,
+                                       bill_object.pk,
+                                       pendulum.now().strftime('%Y%m%d'))
 
     # Totals
 

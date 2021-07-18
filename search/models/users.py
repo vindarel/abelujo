@@ -408,6 +408,7 @@ class Bill(TimeStampedModel):
 
     When needed we want to associate a bill to a Card we buy.
 
+    When we generate a bill, it's ok not to save all fields, but we need a unique ID (the pk).
     """
     # created and modified fields
     ref = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
