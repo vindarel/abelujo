@@ -401,7 +401,7 @@ class BillCopies(models.Model):
 
 class Bill(TimeStampedModel):
     """A bill represents the cost of a set of cards to pay to a
-    distributor.
+    someone (client, distributor...).
 
     We can have many bills for a single command (if some cards are
     sent later for example).
@@ -410,12 +410,12 @@ class Bill(TimeStampedModel):
 
     """
     # created and modified fields
-    ref = models.CharField(max_length=CHAR_LENGTH)
+    ref = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True)
     name = models.CharField(max_length=CHAR_LENGTH)
     # distributor = models.ForeignKey("search.distributor", null=True)
     #: we must pay the bill at some time (even if the received card is
     #: not sold, this isn't a deposit!)
-    due_date = models.DateField()
+    due_date = models.DateField(null=True, blank=True)
     #: total cost of the bill, without taxes.
     total_no_taxes = models.FloatField(null=True, blank=True)
     #: shipping costs, with taxes.
@@ -423,7 +423,7 @@ class Bill(TimeStampedModel):
     #: reference also the list of cards, their quantity and their discount.
     copies = models.ManyToManyField("search.Card", through="BillCopies", blank=True)
     #: total to pay.
-    total = models.FloatField()
+    total = models.FloatField(null=True, blank=True)
 
     def __unicode__(self):
         return "{}, total: {}, due: {}".format(self.name, self.total, self.due_date)
