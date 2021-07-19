@@ -159,6 +159,8 @@ apipatterns = patterns("",
     # User config / settings
     url(r'^api/config/payment_choices?', 'search.models.api_config.api_payment_choices', name='api_payment_choices'),
 
+    # Stripe (not for general use)
+    url(r'^api/checkout/?', 'search.api_stripe.api_stripe', name='api_stripe_checkout'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

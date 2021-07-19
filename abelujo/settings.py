@@ -507,3 +507,22 @@ try:
             print(termcolor.colored("FEATURE: FEATURE_EXCLUDE_FOR_WEBSITE", "cyan"))
 except Exception:
     pass
+
+# Stripe checkout integration
+FEATURE_STRIPE_CHECKOUT = False
+STRIPE_SECRET_API_KEY = ""
+try:
+    if config:
+        if hasattr(config, 'FEATURE_STRIPE_CHECKOUT'):
+            FEATURE_STRIPE_CHECKOUT = config.FEATURE_STRIPE_CHECKOUT
+            print(termcolor.colored("FEATURE: FEATURE_STRIPE_CHECKOUT", "yellow"))
+        if FEATURE_STRIPE_CHECKOUT:
+            if hasattr(config, 'STRIPE_SECRET_API_KEY'):
+                STRIPE_SECRET_API_KEY = config.STRIPE_SECRET_API_KEY
+            if not STRIPE_SECRET_API_KEY:
+                print(termcolor.colored('No Stripe secret key found', 'red'))
+            else:
+                print(termcolor.colored('Stripe secret key: OK', 'green'))
+except Exception as e:
+    print(e)
+    pass
