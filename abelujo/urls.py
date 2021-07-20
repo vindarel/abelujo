@@ -161,6 +161,7 @@ apipatterns = patterns("",
 
     # Stripe (not for general use)
     url(r'^api/checkout/?', 'search.api_stripe.api_stripe', name='api_stripe_checkout'),
+    url(r'^api/webhooks/?', 'search.api_stripe.api_stripe_hooks', name='api_stripe_hooks'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

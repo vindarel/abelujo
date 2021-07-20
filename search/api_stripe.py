@@ -23,6 +23,7 @@ import logging
 
 import stripe
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from abelujo import settings
 from search.models.utils import get_logger
@@ -122,6 +123,57 @@ def api_stripe(request, **response_kwargs):
         except Exception as e:
             res['alerts'].append("{}".format(e))
             res['status'] = httplib.INTERNAL_SERVER_ERROR
-            return JsonResponse(res)
+            return JsonResponse(res, status=500)
     else:
         return JsonResponse({'alerts': ['Use a POST request']})
+
+@csrf_exempt
+def api_stripe_hooks(request, **response_kwargs):
+    """
+    Handle post-payment webhooks.
+    https://stripe.com/docs/payments/handling-payment-events
+    """
+    import ipdb; ipdb.set_trace()
+    payload = request.body
+    signature = request.META.get('HTTP_STRIPE_SIGNATURE')
+    webhook_secret = settings.STRIPE_WEBHOOK_SECRET
+
+    event = None
+    res = {'data': "",
+           'alerts': [],
+           'status': httplib.OK,
+           }
+
+    try:
+        # stripe.event.construct_from(
+        #   json.loads(payload), stripe.api_key
+        # )
+        event = stripe.Webhook.construct_event(
+            payload, signature, webhook_secret
+        )
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        res['data'].append('Invalid Stripe signature')
+        return JsonResponse(res, status=400)
+    except ValueError as e:
+        # Invalid payload
+        res['alerts'].append("{}".format(e))
+        return JsonResponse(res, status=400)
+
+
+    # Handle the event
+    if event.get('type') == 'payment_intent.succeeded':
+        payment_intent = event.data.object # contains a stripe.PaymentIntent
+        msg = "PaymentIntent was successful!"
+        res['data'].append(msg)
+        print(msg)
+    elif event.get('type') == 'payment_method.attached':
+        payment_method = event.data.object # contains a stripe.PaymentMethod
+        print('PaymentMethod was attached to a Customer!')
+    # ... handle other event types
+    else:
+        print('Unhandled event type {}'.format(event.get('type')))
+        res['alerts'].append('Unhandled event type: {}'.format(event.get('type')))
+        return JsonResponse(res, status=200)
+
+    return JsonResponse(res, status=200)

@@ -511,6 +511,7 @@ except Exception:
 # Stripe checkout integration
 FEATURE_STRIPE_CHECKOUT = False
 STRIPE_SECRET_API_KEY = ""
+STRIPE_WEBHOOK_SECRET = ""
 try:
     if config:
         if hasattr(config, 'FEATURE_STRIPE_CHECKOUT'):
@@ -523,6 +524,12 @@ try:
                 print(termcolor.colored('No Stripe secret key found', 'red'))
             else:
                 print(termcolor.colored('Stripe secret key: OK', 'green'))
+            if hasattr(config, 'STRIPE_WEBHOOK_SECRET'):
+                STRIPE_WEBHOOK_SECRET = config.STRIPE_WEBHOOK_SECRET
+            if not STRIPE_WEBHOOK_SECRET:
+                print(termcolor.colored('No Stripe Webhook secret found', 'red'))
+            else:
+                print(termcolor.colored('Stripe webhook secret: OK', 'green'))
 except Exception as e:
     print(e)
     pass
