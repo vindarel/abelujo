@@ -2930,8 +2930,9 @@ class Preferences(models.Model):
     @staticmethod
     def get_default_place():
         """
-        Return the default place object, or the first place of the DB
-        (the one that should be created at the installation).
+        Return the default place object,
+        or the first place of the DB (the one that should be created at the installation),
+        or create one.
         - return: a place object.
         """
         try:
@@ -2948,7 +2949,14 @@ class Preferences(models.Model):
                         prefs.save()
                     return place
             else:
-                return Place.objects.first()
+                # Get one ?
+                place = Place.objects.first()
+                # or create
+                if not place:
+                    place = Place(name='default_place')
+                    place.save()
+                return place
+
         except Exception as e:
             log.warning("Could not get the default place: {}".format(e))
             return Place.objects.first()
