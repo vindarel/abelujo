@@ -357,7 +357,8 @@ def cards(request, **response_kwargs):
     return JsonResponse(to_ret)
 
 def card(request, **kwargs):
-    """Get a card by id.
+    """
+    Get a card by id.
     """
     ret = {"data": []}
     msgs = Messages()
@@ -365,14 +366,23 @@ def card(request, **kwargs):
         pk = kwargs.pop('pk')
         try:
             card = Card.objects.get(id=pk)
-            card = card.to_list()
-            ret['data'] = card
             ret['alerts'] = msgs
 
         except Exception as e:
             msg = _("couldn't find card of id {}: {}".format(pk, e))
             log.warning(msg)
             msgs.add_error(msg)
+
+        # Get and return Dilicom-only data, like the market availability?
+        with_dilicom_update = request.GET.get('with_dilicom_update')
+        with_dilicom_update = _is_truthy(with_dilicom_update)
+        if with_dilicom_update:
+            if dilicom_enabled():
+                card, messages = update_from_dilicom(card)
+                ret['alerts'].append(messages)
+
+        card = card.to_list()
+        ret['data'] = card
 
     ret["alerts"] = msgs.msgs
     return JsonResponse(ret)

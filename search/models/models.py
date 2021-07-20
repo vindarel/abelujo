@@ -1210,6 +1210,14 @@ class Card(TimeStampedModel):
             # res['quantity_clients_reserved'] = self.quantity_clients_reserved()
             res['quantity_clients_reserved_to_be_notified'] = self.quantity_clients_reserved_to_be_notified()
 
+        # Some data that are not saved in DB
+        # but that can be in an object after an update from Dilicom.
+        # For example, happens from /api/card/:id?with_dilicom_update=1
+        if hasattr(self, 'availability'):
+            res['availability'] = self.availability
+        if hasattr(self, 'availability_fmt'):
+            res['availability_fmt'] = self.availability_fmt
+
         return res
 
     def get_currency(self):
