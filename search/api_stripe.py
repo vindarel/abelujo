@@ -25,6 +25,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from abelujo import settings
+from search.models import Card
+from search.models import Client
 from search.models.utils import get_logger
 
 try:
@@ -114,6 +116,107 @@ def create_checkout_session(abelujo_payload):
 # }
 
 
+def handle_api_stripe(payload):
+    """
+    From this payload (dict), find or create the client, the reservation of the cards,
+    create a stripe session if required.
+
+    Important keys:
+    - buyer.billing_address, buyer.shipping_address
+    - order.stripe_payload (optional)
+
+    Return: dict (data, status, alerts).
+    """
+    res = {'data': "",
+           'alerts': [],
+           'status': httplib.OK,
+           }
+    buyer = payload.get('buyer')
+    order = payload.get('order')
+
+    ###################
+    ## Basic checks. ##
+    ###################
+    if not order:
+        msg = "We are asked to process a payment with no order, that's not possible. payload: {}".format(payload)
+        log.warning(msg)
+        res['alerts'].append(msg)
+        res['status'] = 400
+        # return JsonResponse(res, status=400)
+        return res
+
+    if not buyer:
+        log.warning('We are asked to process a payment with no buyer, strange! payload is {}'.format(payload))
+
+    ############################
+    ## Handle Stripe session. ##
+    ############################
+    try:
+        if payload.get('order').get('stripe_payload'):
+            log.info("Processing Stripe payload...")
+            session = create_checkout_session(payload)
+        else:
+            log.info("No Stripe payload to process.")
+        # return JsonResponse(session)
+    except Exception as e:
+        res['alerts'].append("{}".format(e))
+        res['status'] = httplib.INTERNAL_SERVER_ERROR
+        status = 500
+        # return JsonResponse(res, status=500)
+
+    ###########################################
+    ## Create clients, commands, send bills. ##
+    ###########################################
+    billling_address = buyer.get('billling_address')
+    delivery_address = buyer.get('delivery_address')
+
+    existing_client = Client.objects.filter(email=billling_address.get('email'))
+    if not existing_client:
+        try:
+            existing_client = Client(
+                name=billling_address.get('last_name').strip(),
+                firstname=billling_address.get('first_name').strip(),
+                email=billling_address.get('email').strip(),
+                city=billling_address.get('city').strip(),
+                country=billling_address.get('country').strip(),
+                zip_code=billling_address.get('postcode').strip(),
+                address1=billling_address.get('address').strip(),
+                address2=billling_address.get('address_comp').strip(),
+                telephone=billling_address.get('phone').strip(),
+            )
+            existing_client.save()
+        except Exception as e:
+            log.error("This new client ({}) could not be created in DB: {}. billling_address is: {}".format(billling_address.get('name'), e, billling_address))
+            res['alerts'].append('Error creating a new client')
+            res['status'] = 500
+
+    # cards we sell: list of 'id' and 'qty'.
+    ids_qties = order.get('abelujo_items')
+    # cards_ids = [it.get('id') for it in cards_qties]
+    # cards, msgs = Card.get_from_id_list(cards_ids)
+    # if msgs:
+        # res['alerts'].append(msgs)
+
+    cards_qties = []
+    for id_qty in ids_qties:
+        card = Card.objects.filter(pk=id_qty.get('id')).first()
+        if card:
+            cards_qties.append({'card': card, 'qty': id_qty.get('qty')})
+
+    # Reserve.
+    # PERFORMANCE:
+    reservations = []  # should be one for all...
+    try:
+        for card_qty in cards_qties:
+            resa, created = existing_client.reserve(card_qty.get('card'),
+                                                    nb=card_qty.get('qty'))
+            if resa:
+                reservations.append(resa)
+    except Exception as e:
+        log.error("Error creating reservations for {}: {}".format(cards_qties, e))
+
+    return res
+
 def api_stripe(request, **response_kwargs):
     """
     """
@@ -125,15 +228,16 @@ def api_stripe(request, **response_kwargs):
            'alerts': [],
            'status': httplib.OK,
            }
+    payload = {}
+    session = None
+    status = 200
     if request.method == 'POST':
-        try:
+        if request.body:
             payload = json.loads(request.body)
-            session = create_checkout_session(payload)
-            return JsonResponse(session)
-        except Exception as e:
-            res['alerts'].append("{}".format(e))
-            res['status'] = httplib.INTERNAL_SERVER_ERROR
-            return JsonResponse(res, status=500)
+            res = handle_api_stripe(payload)
+
+        return JsonResponse(res)
+
     else:
         return JsonResponse({'alerts': ['Use a POST request']})
 

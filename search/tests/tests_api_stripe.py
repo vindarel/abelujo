@@ -32,6 +32,9 @@ import json
 from django.test import TestCase
 
 from search import api_stripe
+from search.models import Reservation
+
+from tests_api import CardFactory
 
 # Payload
 # La partie Stripe_Payload est à passer tel-quelle à stripe.checkout.Session.create.
@@ -99,6 +102,7 @@ real_test_payload = {
             'city': 'Toulouse',
             'postcode': '31400',
             'country': 'France',
+            'phone': '07 33',
         },
         'delivery_address': {
             'last_name': 'Sifoni',
@@ -117,7 +121,7 @@ real_test_payload = {
         'shipping_method': 'colissimo',
         'mondial_relay_AP': None,
         'amount': 5050,
-        'abelujo_items': [{'id': 712, 'qty': 1}],
+        'abelujo_items': [{'id': 1, 'qty': 1}],
         'stripe_payload': {
             'payment_method_types': ["card"],
             'line_items': [
@@ -157,13 +161,22 @@ def send_test_payload():
 
 class TestStripe(TestCase):
 
+    def setUp(self):
+        self.card = CardFactory.create()
+
+    def tearDown(self):
+        pass
+
     def test_initial(self):
         session = api_stripe.create_checkout_session(test_payload)
         self.assertTrue(session)
         print(session)
 
-        session = api_stripe.create_checkout_session(real_test_payload)
+        nb_resas_orig = Reservation.objects.count()
+        session = api_stripe.handle_api_stripe(real_test_payload)
         self.assertTrue(session)
+        nb_resas = Reservation.objects.count()
+        self.assertTrue(nb_resas_orig < nb_resas)
         print(session)
 
 class TestLive(TestCase):
@@ -171,4 +184,3 @@ class TestLive(TestCase):
         req = send_test_payload()
         self.assertTrue(req)
         print(req.text)
-        # import ipdb; ipdb.set_trace()

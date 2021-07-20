@@ -67,6 +67,8 @@ class Reservation(TimeStampedModel):
             return ""
 
     client = models.ForeignKey("search.Client")
+    #: Reserve one card.
+    # Shoudn't it be many?
     card = models.ForeignKey("search.Card", null=True, blank=True)
     #: optional: a quantity to reserve. Defaults to 1.
     nb = models.IntegerField(default=1, null=True, blank=True)
@@ -320,9 +322,9 @@ class Client(Contact):
 
         return res
 
-    def reserve(self, card):
+    def reserve(self, card, nb=1):
         """
-        Reserve this card.
+        Reserve this card at this quantity.
         Create a Reservation object and decrement it from the stock,
         If its quantity gets lower than 0, add it to the commands.
 
@@ -331,14 +333,16 @@ class Client(Contact):
         Return a tuple: Reservation object, created? (boolean).
         """
         # XXX: lol, same as putaside ??
-        card_id = card.id
         if isinstance(card, int):
             log.error("reserve: we don't accept card_id anymore but a Card object.")
+
             return None, False
 
+        card_id = card.id
         resa, created = Reservation.objects.get_or_create(
             client=self,
             card_id=card_id,
+            nb=nb,
             archived=False,
         )
         resa.save()

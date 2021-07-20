@@ -1616,6 +1616,9 @@ class Card(TimeStampedModel):
         result = []
         msgs = Messages()
 
+        # PERFORMANCE: this can be done more effectively:
+        # Card.objects.filter(pk__in=cards_id)
+        # and then find the set difference for the missing ones.
         for id in cards_id:
             try:
                 card = Card.objects.get(id=id)
