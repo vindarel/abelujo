@@ -21,18 +21,21 @@ import httplib
 import json
 import logging
 
-import stripe
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from abelujo import settings
 from search.models.utils import get_logger
 
+try:
+    import stripe
+    stripe.api_key = settings.STRIPE_SECRET_API_KEY
+except ImportError:
+    pass
+
 logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
 log = get_logger()
 
-
-stripe.api_key = settings.STRIPE_SECRET_API_KEY
 
 def create_checkout_session(abelujo_payload):
     assert stripe.api_key
@@ -133,7 +136,6 @@ def api_stripe_hooks(request, **response_kwargs):
     Handle post-payment webhooks.
     https://stripe.com/docs/payments/handling-payment-events
     """
-    import ipdb; ipdb.set_trace()
     payload = request.body
     signature = request.META.get('HTTP_STRIPE_SIGNATURE')
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
@@ -160,16 +162,19 @@ def api_stripe_hooks(request, **response_kwargs):
         res['alerts'].append("{}".format(e))
         return JsonResponse(res, status=400)
 
-
     # Handle the event
     if event.get('type') == 'payment_intent.succeeded':
-        payment_intent = event.data.object # contains a stripe.PaymentIntent
+        payment_intent = event.data.object  # contains a stripe.PaymentIntent
         msg = "PaymentIntent was successful!"
-        res['data'].append(msg)
+        res['alerts'].append(msg)
+        res['data'] = payment_intent
         print(msg)
     elif event.get('type') == 'payment_method.attached':
-        payment_method = event.data.object # contains a stripe.PaymentMethod
-        print('PaymentMethod was attached to a Customer!')
+        payment_method = event.data.object  # contains a stripe.PaymentMethod
+        msg = 'PaymentMethod was attached to a Customer!'
+        print(msg)
+        res['alerts'].append(msg)
+        res['data'] = payment_method
     # ... handle other event types
     else:
         print('Unhandled event type {}'.format(event.get('type')))

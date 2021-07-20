@@ -73,3 +73,8 @@ raven==6.0              # sentry
 ruamel.yaml==0.16.12
 ruamel.yaml.clib==0.2.2
 ruamel.ordereddict==0.4.15
+
+#
+# Not installed by default, required for experimental features.
+#
+# stripe==2.60.0
