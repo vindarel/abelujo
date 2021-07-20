@@ -713,6 +713,8 @@ class Card(TimeStampedModel):
     presedit = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True,
                                 editable=False,
                                 verbose_name=__("Présentation éditeur"))
+    #: Number of pages. NA in Dilicom FEL à la demande, only FEL complet.
+    nb_pages = models.IntegerField(blank=True, null=True, verbose_name=__("Number of pages"))
 
     #: Is it selected to appear on the front page of the online catalogue?
     # This works with ABStock.
