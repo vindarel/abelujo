@@ -38,7 +38,8 @@ log = get_logger()
 
 
 def create_checkout_session(abelujo_payload):
-    assert stripe.api_key
+    if settings.STRIPE_SECRET_API_KEY:
+        assert stripe.api_key
     session = None
     payload = abelujo_payload.get('order').get('stripe_payload')
     if payload:
