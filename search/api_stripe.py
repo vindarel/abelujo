@@ -40,6 +40,8 @@ log = get_logger()
 def create_checkout_session(abelujo_payload):
     if settings.STRIPE_SECRET_API_KEY:
         assert stripe.api_key
+    else:
+        return
     session = None
     payload = abelujo_payload.get('order').get('stripe_payload')
     if payload:
@@ -115,6 +117,10 @@ def create_checkout_session(abelujo_payload):
 def api_stripe(request, **response_kwargs):
     """
     """
+    if not settings.STRIPE_SECRET_API_KEY:
+        # Don't fail unit tests on CI.
+        # I don't feel like installing the Stripe python lib by default…
+        return
     res = {'data': "",
            'alerts': [],
            'status': httplib.OK,
@@ -137,6 +143,10 @@ def api_stripe_hooks(request, **response_kwargs):
     Handle post-payment webhooks.
     https://stripe.com/docs/payments/handling-payment-events
     """
+    if not settings.STRIPE_SECRET_API_KEY:
+        # Don't fail unit tests on CI.
+        # I don't feel like installing the Stripe python lib by default…
+        return
     payload = request.body
     signature = request.META.get('HTTP_STRIPE_SIGNATURE')
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
