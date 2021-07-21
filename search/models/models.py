@@ -2543,12 +2543,13 @@ class Place (models.Model):
                 dest_copies.save()
             dest_copies.nb += nb
             dest_copies.save()
+
             # Delete the intermediate object when nb is 0, so a search
             # filter by this place doesn't erronously return (see card.search: we
             # filter by the place id present in placecopies).
             # That broke placecopies_set.get => used .filter() and first().
-            if dest_copies.nb == 0:
-                dest_copies.delete()
+            if pc.nb == 0:
+                pc.delete()
 
             if create_movement:
                 mvt = history.InternalMovement(origin=self, dest=dest, card=card, nb=nb)
