@@ -622,6 +622,10 @@ class Card(TimeStampedModel):
     """A Card represents a book, a CD, a t-shirt, etc. This isn't the
     physical object.
     """
+    #: A cache to help in to_dict, especially during an inventory diff.
+    #: Is discarded at each server restart.
+    cache_cards_to_dict = TTLCache(50000, 60*24*60)
+
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
     #: Internal representation without accents, used for search.
@@ -1081,17 +1085,25 @@ class Card(TimeStampedModel):
             return self.distributor.to_list()['name']
         return ""
 
-    def to_dict(self):
-        return self.to_list()
+    def to_dict(self, with_cache=False):
+        return self.to_list(with_cache=with_cache)
 
     def to_list(self, in_deposits=False, with_quantity=True,
                 with_authors=True,
-                with_publishers=True):
+                with_publishers=True,
+                with_cache=False):
         """
         Return a *dict* of this card's fields.
 
         The with_xxx parameters allow to gain some SQL queries and some speed up.
         """
+        if with_cache:
+            if hasattr(Card, 'cache_cards_to_dict') and \
+               Card.cache_cards_to_dict and \
+               Card.cache_cards_to_dict.get(self.pk) is not None:
+                # print("--- hit card to_dict cache !")
+                return Card.cache_cards_to_dict.get(self.pk)
+
         authors_repr = ""
         if with_authors:
             authors_repr = self.authors_repr
@@ -1217,6 +1229,9 @@ class Card(TimeStampedModel):
             res['availability'] = self.availability
         if hasattr(self, 'availability_fmt'):
             res['availability_fmt'] = self.availability_fmt
+
+        if hasattr(Card, 'cache_cards_to_dict'):
+            Card.cache_cards_to_dict[self.pk] = res
 
         return res
 
@@ -5883,6 +5898,7 @@ class InventoryBase(TimeStampedModel):
         - return a tuple with the diff, the object name, total copies in the inv, total in stock.
 
         """
+        start = pendulum.now()
         d_stock = None
         inv_cards_set = self.copies_set.all()
         obj_name = ""
@@ -5910,6 +5926,7 @@ class InventoryBase(TimeStampedModel):
         d_inv = {it.card.id: {'card': it.card, 'quantity': it.quantity} for it in inv_cards_set}
         # Total copies inventoried
         total_copies_in_inv = sum([it.quantity for it in inv_cards_set.all()])
+
         # Cards of the stock (the reference)
         if d_stock is None:
             d_stock = {it.card.id: {'card': it.card, 'quantity': it.nb} for it in stock_cards_set}
@@ -5954,10 +5971,17 @@ class InventoryBase(TimeStampedModel):
                              }
         # we must have all cards in d_dif and all info.
 
+        s5 = pendulum.now()
         if to_dict:
             # Update each sub-dict in place, to replace the card obj with its to_dict.
-            d_diff = {key: update_in(val, ['card'], lambda copy: copy.to_dict()) for key, val in list(d_diff.items())}
+            # import ipdb; ipdb.set_trace()
+            d_diff = {key: update_in(val, ['card'],
+                                     lambda copy: copy.to_dict(with_cache=True)) for key, val in list(d_diff.items())}
+        e5 = pendulum.now()
+        print("   - final to_dict: {}".format(e5 - s5))
 
+        end = pendulum.now()
+        # print("--- inventory of {} cards took {}".format(inv_cards_set.count(), end - start))
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
     def archive(self):

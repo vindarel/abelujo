@@ -31,6 +31,7 @@ Changelog starting from v0.5 (2018/09/18)
 - **speed up** improvements to the CSV and TXT download of history logs (30%).
 - deposits: we don't mention anymore the type of deposits that are sent by us to the exterior world.
 - **speed up** to display the list of commands.
+- **speed up** of the analysis of inventories (x10, but not always at the first access).
 
 ### For administrators
 
