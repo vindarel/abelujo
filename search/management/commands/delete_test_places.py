@@ -12,9 +12,8 @@ Delete test places that are created by the buggy test runner...
 from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
-from django.core.exceptions import ObjectDoesNotExist
 
-from search.models import Preferences, Place
+from search.models import Place
 
 # py2/3
 try:
