@@ -2514,6 +2514,15 @@ class Place (models.Model):
         except Exception as e:
             log.error("--- error while setting the default place: %s" % (e,))
 
+    @staticmethod
+    def delete_test_places():
+        """
+        It is not supposed to happen, but sometimes the test framework creates test places in the real DB instead of in the tmp one... delete them.
+        """
+        if Place.objects.filter(name__icontains="place test").delete():
+            return True
+
+
     def move(self, dest, card, nb, create_movement=True):
         """Move the given card from this place to "dest" and create an history
         movement (unless create_movement is set to False).
