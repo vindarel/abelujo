@@ -57,13 +57,15 @@ div(ng-cloak, ng-controller="collectionController")
           placeholder='{% trans "Search on title, authors or isbn" %}'
         )
 
-   .col-md-6
-    div.form-group
-        label.col-sm-4 {% trans "Place" %}
-        div.col-md-8
-          select.form-control(
-            ng-model="place"
-            ng-options="elt.name for elt in places")
+   if show_places
+     .col-md-6
+      div.form-group
+          div {{ 'places' | ng }}
+          label.col-sm-4 {% trans "Place" %}
+          div.col-md-8
+            select.form-control(
+              ng-model="place"
+              ng-options="elt.name for elt in places")
 
   .row
    form

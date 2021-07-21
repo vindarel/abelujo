@@ -827,6 +827,7 @@ def collection(request):
     currency = Preferences.get_default_currency() or "€"
     return render(request, "search/collection.jade", {
         'currency': currency,
+        'show_places': Place.objects.count() > 1,
     })
 
 @login_required
