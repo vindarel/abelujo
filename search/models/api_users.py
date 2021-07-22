@@ -203,11 +203,16 @@ def bill(request, *args, **response_kwargs):
             return JsonResponse(to_ret)
 
     # The bookshop identity.
-    bookshop = users.Bookshop.objects.first()
+    bookshop = None
+    bookshop_name = ""
+    try:
+        bookshop = users.Bookshop.objects.first()
+        bookshop_name = bookshop.name if bookshop else ""
+    except Exception as e:
+        log.warning("Error getting users.Bookshop: {}".format(e))
 
     # Name, filename
     bill_label = _("Bill")
-    bookshop_name = bookshop.name if bookshop else ""
     # Unique ID.
     # Even if we don't use the Bill object, create one so we get unique IDs.
     bill_object = Bill(name="{}-{}".format(bookshop_name, creation_date_fmt))
