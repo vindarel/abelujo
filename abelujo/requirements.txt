@@ -79,3 +79,6 @@ ruamel.ordereddict==0.4.15
 # We install by default anyways, so the unit tests pass with no workarounds.
 #
 stripe==2.60.0
+
+# Emails
+sendgrid==6.7.0

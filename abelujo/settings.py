@@ -537,3 +537,43 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     except Exception as e:
         print(e)
         pass
+
+# Email settings.
+# The sender must be verified.
+FEATURE_MAILER = True
+EMAIL_SENDER = 'contact+commandes@abelujo.cc'
+SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
+
+def get_from_config(key, verbose=True, msg="{}: {}", color="green"):
+    if os.path.exists(os.path.join(BASE_DIR, "config.py")):
+        try:
+            if config:
+                if hasattr(config, key):
+                    print("--- got {}: {}".format(key, getattr(config, key)))
+                    val = getattr(config, key)
+                    if val is None:
+                        print(termcolor.colored("warn: {} is None", "red"))
+                    if color is not None:
+                        msg = msg.format(key, "OK")
+                        print(termcolor.colored(msg, color))
+                    return val
+        except Exception as e:
+            pass
+
+# val = get_from_config('SENDGRID_API_KEY')
+# if val:
+    # SENDGRID_API_KEY = val
+
+sendgrid_file_path = 'sendgrid.txt'
+if os.path.exists(sendgrid_file_path):
+    key = ""
+    with open(sendgrid_file_path, 'r') as f:
+        key = f.read()
+    if key:
+        key = key.strip()
+
+        SENDGRID_API_KEY = key
+        print("Sendgrid key from file: OK")
+    else:
+        if FEATURE_MAILER:
+            print(termcolor.colored("WARN: we want to be able to send emails, but we couldn't find our Sendgrid secret api key.", "red"))
