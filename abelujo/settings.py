@@ -442,6 +442,7 @@ USE_THEMES_FOR_SHELVES = False
 # Change the decimal separator (point to comma).
 LOCALE_FOR_EXPORTS = "fr"
 
+
 #
 # Feature flags
 #
@@ -452,6 +453,26 @@ FEATURE_SHOW_RESERVATION_BUTTON = False
 # Electre API
 #
 FEATURE_ELECTRE_API = False
+
+def dilicom_enabled():
+    return os.getenv('DILICOM_PASSWORD') is not None \
+        and os.getenv('DILICOM_USER') is not None
+
+def dilicom_ftp_enabled():
+    """
+    The username is different than the FEL À LA DEMANDE.
+    """
+    return os.getenv('DILICOM_FTP_USER') is not None
+
+def electre_enabled():
+    return os.getenv('ELECTRE_PASSWORD') is not None \
+        and os.getenv('ELECTRE_USER') is not None
+
+if dilicom_enabled():
+    print(termcolor.colored("FEATURE: DILICOM ENABLED", "green"))
+if dilicom_ftp_enabled():
+    print(termcolor.colored("FEATURE: dilicom FTP enabled", "green"))
+
 
 if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     try:
@@ -470,25 +491,6 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
     except Exception:
         pass
 
-def dilicom_enabled():
-    return os.getenv('DILICOM_PASSWORD') is not None \
-        and os.getenv('DILICOM_USER') is not None
-
-def dilicom_ftp_enabled():
-    """
-    The username is different than the FEL À LA DEMANDE.
-    """
-    return os.getenv('DILICOM_FTP_USER') is not None
-
-def electre_enabled():
-    return os.getenv('ELECTRE_PASSWORD') is not None \
-        and os.getenv('ELECTRE_USER') is not None
-
-
-if dilicom_enabled():
-    print(termcolor.colored("FEATURE: DILICOM ENABLED", "green"))
-if dilicom_ftp_enabled():
-    print(termcolor.colored("FEATURE: dilicom FTP enabled", "green"))
 
 if FEATURE_ELECTRE_API:
     if not electre_enabled():
@@ -500,36 +502,38 @@ print "INFO: Abelujo running on {}".format(os.getcwd())
 
 # Exclude cards for the website (catalogue).
 FEATURE_EXCLUDE_FOR_WEBSITE = False
-try:
-    if config:
-        if hasattr(config, 'FEATURE_EXCLUDE_FOR_WEBSITE'):
-            FEATURE_EXCLUDE_FOR_WEBSITE = config.FEATURE_EXCLUDE_FOR_WEBSITE
-            print(termcolor.colored("FEATURE: FEATURE_EXCLUDE_FOR_WEBSITE", "cyan"))
-except Exception:
-    pass
+if os.path.exists(os.path.join(BASE_DIR, "config.py")):
+    try:
+        if config:
+            if hasattr(config, 'FEATURE_EXCLUDE_FOR_WEBSITE'):
+                FEATURE_EXCLUDE_FOR_WEBSITE = config.FEATURE_EXCLUDE_FOR_WEBSITE
+                print(termcolor.colored("FEATURE: FEATURE_EXCLUDE_FOR_WEBSITE", "cyan"))
+    except Exception:
+        pass
 
 # Stripe checkout integration
 FEATURE_STRIPE_CHECKOUT = False
 STRIPE_SECRET_API_KEY = ""
 STRIPE_WEBHOOK_SECRET = ""
-try:
-    if config:
-        if hasattr(config, 'FEATURE_STRIPE_CHECKOUT'):
-            FEATURE_STRIPE_CHECKOUT = config.FEATURE_STRIPE_CHECKOUT
-            print(termcolor.colored("FEATURE: FEATURE_STRIPE_CHECKOUT", "yellow"))
-        if FEATURE_STRIPE_CHECKOUT:
-            if hasattr(config, 'STRIPE_SECRET_API_KEY'):
-                STRIPE_SECRET_API_KEY = config.STRIPE_SECRET_API_KEY
-            if not STRIPE_SECRET_API_KEY:
-                print(termcolor.colored('No Stripe secret key found', 'red'))
-            else:
-                print(termcolor.colored('Stripe secret key: OK', 'green'))
-            if hasattr(config, 'STRIPE_WEBHOOK_SECRET'):
-                STRIPE_WEBHOOK_SECRET = config.STRIPE_WEBHOOK_SECRET
-            if not STRIPE_WEBHOOK_SECRET:
-                print(termcolor.colored('No Stripe Webhook secret found', 'red'))
-            else:
-                print(termcolor.colored('Stripe webhook secret: OK', 'green'))
-except Exception as e:
-    print(e)
-    pass
+if os.path.exists(os.path.join(BASE_DIR, "config.py")):
+    try:
+        if config:
+            if hasattr(config, 'FEATURE_STRIPE_CHECKOUT'):
+                FEATURE_STRIPE_CHECKOUT = config.FEATURE_STRIPE_CHECKOUT
+                print(termcolor.colored("FEATURE: FEATURE_STRIPE_CHECKOUT", "yellow"))
+            if FEATURE_STRIPE_CHECKOUT:
+                if hasattr(config, 'STRIPE_SECRET_API_KEY'):
+                    STRIPE_SECRET_API_KEY = config.STRIPE_SECRET_API_KEY
+                if not STRIPE_SECRET_API_KEY:
+                    print(termcolor.colored('No Stripe secret key found', 'red'))
+                else:
+                    print(termcolor.colored('Stripe secret key: OK', 'green'))
+                if hasattr(config, 'STRIPE_WEBHOOK_SECRET'):
+                    STRIPE_WEBHOOK_SECRET = config.STRIPE_WEBHOOK_SECRET
+                if not STRIPE_WEBHOOK_SECRET:
+                    print(termcolor.colored('No Stripe Webhook secret found', 'red'))
+                else:
+                    print(termcolor.colored('Stripe webhook secret: OK', 'green'))
+    except Exception as e:
+        print(e)
+        pass
