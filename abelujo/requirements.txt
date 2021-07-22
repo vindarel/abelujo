@@ -75,6 +75,7 @@ ruamel.yaml.clib==0.2.2
 ruamel.ordereddict==0.4.15
 
 #
-# Not installed by default, required for experimental features.
+# Only required for experimental features.
+# We install by default anyways, so the unit tests pass with no workarounds.
 #
-# stripe==2.60.0
+stripe==2.60.0
