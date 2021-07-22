@@ -40,7 +40,7 @@ from tests_api import CardFactory
 # La partie Stripe_Payload est à passer tel-quelle à stripe.checkout.Session.create.
 test_payload = {
     # 'buyer': {
-    #    'billling_address': {
+    #    'billing_address': {
     #       'last_name',
     #       'first_name',
     #       'email',
@@ -93,7 +93,7 @@ test_payload = {
 
 real_test_payload = {
     'buyer': {
-        'billling_address': {
+        'billing_address': {
             'last_name': 'Sifoni',
             'first_name': 'Lucas',
             'email': 'lucas@documents.design',
