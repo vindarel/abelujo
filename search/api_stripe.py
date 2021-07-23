@@ -167,26 +167,26 @@ def handle_api_stripe(payload):
     ###########################################
     ## Create clients, commands, send bills. ##
     ###########################################
-    billling_address = buyer.get('billling_address')
+    billing_address = buyer.get('billing_address')
     delivery_address = buyer.get('delivery_address')
 
-    existing_client = Client.objects.filter(email=billling_address.get('email'))
+    existing_client = Client.objects.filter(email=billing_address.get('email'))
     if not existing_client:
         try:
             existing_client = Client(
-                name=billling_address.get('last_name').strip(),
-                firstname=billling_address.get('first_name').strip(),
-                email=billling_address.get('email').strip(),
-                city=billling_address.get('city').strip(),
-                country=billling_address.get('country').strip(),
-                zip_code=billling_address.get('postcode').strip(),
-                address1=billling_address.get('address').strip(),
-                address2=billling_address.get('address_comp').strip(),
-                telephone=billling_address.get('phone').strip(),
+                name=billing_address.get('last_name').strip(),
+                firstname=billing_address.get('first_name').strip(),
+                email=billing_address.get('email').strip(),
+                city=billing_address.get('city').strip(),
+                country=billing_address.get('country').strip(),
+                zip_code=billing_address.get('postcode').strip(),
+                address1=billing_address.get('address').strip(),
+                address2=billing_address.get('address_comp').strip(),
+                telephone=billing_address.get('phone').strip(),
             )
             existing_client.save()
         except Exception as e:
-            log.error("This new client ({}) could not be created in DB: {}. billling_address is: {}".format(billling_address.get('name'), e, billling_address))
+            log.error("This new client ({}) could not be created in DB: {}. billing_address is: {}".format(billing_address.get('name'), e, billing_address))
             res['alerts'].append('Error creating a new client')
             res['status'] = 500
 
