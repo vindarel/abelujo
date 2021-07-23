@@ -176,6 +176,7 @@ def handle_api_stripe(payload):
     delivery_address = buyer.get('delivery_address')
 
     existing_client = Client.objects.filter(email=billing_address.get('email')).first()
+    # TODO: update existing client.
     if not existing_client:
         try:
             existing_client = Client(
@@ -226,7 +227,7 @@ def handle_api_stripe(payload):
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
 
-    return res
+    return JsonResponse(res)
 
 def api_stripe(request, **response_kwargs):
     """
