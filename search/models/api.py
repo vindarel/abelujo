@@ -362,7 +362,7 @@ def card(request, **kwargs):
     """
     msgs = Messages()
     ret = {"data": [],
-           "alerts": msgs}  # bad idea?
+           "msgs": []}
     if request.method == 'GET':
         pk = kwargs.pop('pk')
         try:
