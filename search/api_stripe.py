@@ -175,7 +175,7 @@ def handle_api_stripe(payload):
     billing_address = buyer.get('billing_address')
     delivery_address = buyer.get('delivery_address')
 
-    existing_client = Client.objects.filter(email=billing_address.get('email'))
+    existing_client = Client.objects.filter(email=billing_address.get('email')).first()
     if not existing_client:
         try:
             existing_client = Client(
