@@ -380,7 +380,7 @@ def card(request, **kwargs):
         if with_dilicom_update:
             if dilicom_enabled():
                 card, messages = update_from_dilicom(card)
-                ret['alerts'] = messages
+                # ret['alerts'] = messages
 
         card = card.to_list()
         ret['data'] = card
