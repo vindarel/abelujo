@@ -155,6 +155,7 @@ def handle_api_stripe(payload):
         if payload.get('order').get('stripe_payload'):
             log.info("Processing Stripe payload...")
             session = create_checkout_session(payload)
+            res['data'] = session
         else:
             log.info("No Stripe payload to process.")
         # return JsonResponse(session)
@@ -212,6 +213,8 @@ def handle_api_stripe(payload):
                                                     nb=card_qty.get('qty'))
             if resa:
                 reservations.append(resa)
+        res['alerts'].append("client commands created successfully")
+
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
 
