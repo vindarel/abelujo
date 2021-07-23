@@ -360,18 +360,19 @@ def card(request, **kwargs):
     """
     Get a card by id.
     """
-    ret = {"data": []}
     msgs = Messages()
+    ret = {"data": [],
+           "alerts": msgs}  # bad idea?
     if request.method == 'GET':
         pk = kwargs.pop('pk')
         try:
             card = Card.objects.get(id=pk)
-            ret['alerts'] = msgs
 
         except Exception as e:
             msg = _("couldn't find card of id {}: {}".format(pk, e))
             log.warning(msg)
             msgs.add_error(msg)
+            ret["alerts"] = msgs.msgs
 
         # Get and return Dilicom-only data, like the market availability?
         with_dilicom_update = request.GET.get('with_dilicom_update')
@@ -379,12 +380,11 @@ def card(request, **kwargs):
         if with_dilicom_update:
             if dilicom_enabled():
                 card, messages = update_from_dilicom(card)
-                ret['alerts'].append(messages)
+                ret['alerts'] = messages
 
         card = card.to_list()
         ret['data'] = card
 
-    ret["alerts"] = msgs.msgs
     return JsonResponse(ret)
 
 def card_create(request, **response_kwargs):
