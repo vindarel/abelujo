@@ -234,7 +234,13 @@ def api_stripe(request, **response_kwargs):
     if request.method == 'POST':
         if request.body:
             payload = json.loads(request.body)
-            res = handle_api_stripe(payload)
+            try:
+                res = handle_api_stripe(payload)
+            except Exception as e:
+                log.error("Error handling the api stripe payment: {}. Payload used: {}".format(e, payload))
+                res = None
+                res['status'] = 500
+                res['alerts'].append(e)
 
         return JsonResponse(res)
 
