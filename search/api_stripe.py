@@ -272,6 +272,7 @@ def api_stripe_hooks(request, **response_kwargs):
     signature = request.META.get('HTTP_STRIPE_SIGNATURE')
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
+    cards = []  # TODO:
     event = None
     res = {'data': "",
            'alerts': [],
@@ -299,11 +300,10 @@ def api_stripe_hooks(request, **response_kwargs):
     if event.get('type') == 'payment_intent.succeeded':
         payment_intent = event.data.object  # contains a stripe.PaymentIntent
         cards = []
-        mail_res = mailer.send_command_confirmation(cards)
         msg = "PaymentIntent was successful!"
         res['alerts'].append(msg)
-        res['data'] = payment_intent
-        print(msg)
+        # res['data'] = payment_intent  # this is not a JSON but an object.
+        # print(msg)
         sell_successful = True
     elif event.get('type') == 'payment_method.attached':
         payment_method = event.data.object  # contains a stripe.PaymentMethod
@@ -321,7 +321,17 @@ def api_stripe_hooks(request, **response_kwargs):
     payload = json.loads(request.body)
     to_email = ""
     amount = 0
+    description = ""
+    is_stripe_cli_test = False
+    cli_test_sign = "(created by Stripe CLI)"
     if sell_successful:
+        try:
+            description = payload['data']['object']['charges']['data'][0]['description']
+            if description and cli_test_sign in description:
+                is_stripe_cli_test = True
+        except Exception as e:
+            log.warning("api_stripe_hooks: could not get the description: {}".format(e))
+
         try:
             to_email = payload['data']['object']['charges']['data'][0]['billing_details']['email']
         except Exception as e:
@@ -332,16 +342,20 @@ def api_stripe_hooks(request, **response_kwargs):
             log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
 
         # Ensure ascii for python Stripe library... shame on you.
-        try:
-            to_email = to_email.encode('ascii', 'ignore')
-        except Exception as e:
-            log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
+        if is_stripe_cli_test:
+            to_email = "".join(list(reversed('gro.zliam@leradniv')))  # me@vindarel
+        if to_email:
+            try:
+                to_email = to_email.encode('ascii', 'ignore')
+            except Exception as e:
+                log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
 
         # Send it, damn it.
         try:
             if to_email:
                 mailer.send_command_confirmation(cards=cards, total_price=amount,
                                                  to_emails=to_email)
+                log.info("stripe webhook: confirmation mail sent to {}".format(to_email))
         except Exception as e:
             log.error("api_stripe: could not send confirmation email: {}".format(e))
 
