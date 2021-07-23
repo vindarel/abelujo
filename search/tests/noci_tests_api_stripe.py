@@ -173,11 +173,14 @@ class TestStripe(TestCase):
         print(session)
 
         nb_resas_orig = Reservation.objects.count()
-        session = api_stripe.handle_api_stripe(real_test_payload)
-        self.assertTrue(session)
+        res = api_stripe.handle_api_stripe(real_test_payload)
+        self.assertTrue(res)
+        self.assertTrue(res['status'])
+        self.assertTrue(res['data'])
+        self.assertTrue(res['alerts'])
         nb_resas = Reservation.objects.count()
         self.assertTrue(nb_resas_orig < nb_resas)
-        print(session)
+        print(res)
 
 class TestLive(TestCase):
     def test_send_payload(self):

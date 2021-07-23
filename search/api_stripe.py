@@ -227,7 +227,7 @@ def handle_api_stripe(payload):
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
 
-    return JsonResponse(res)
+    return res
 
 def api_stripe(request, **response_kwargs):
     """
@@ -241,13 +241,12 @@ def api_stripe(request, **response_kwargs):
            'status': httplib.OK,
            }
     payload = {}
-    session = None
     status = 200
     if request.method == 'POST':
         if request.body:
             payload = json.loads(request.body)
             try:
-                req = handle_api_stripe(payload)
+                res = handle_api_stripe(payload)
             except Exception as e:
                 log.error("Error handling the api stripe payment: {}. Payload used: {}".format(e, payload))
                 res['status'] = 500
