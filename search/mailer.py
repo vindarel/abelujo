@@ -31,7 +31,7 @@ from abelujo import settings
 FROM_EMAIL = 'contact+commandes@abelujo.cc'
 
 TEST_SUBJECT = "Abelujo: new message"
-TEST_BODY = '<strong>and easy to do anywhere, even with Python</strong>'
+TEST_BODY = '<strong>Hello from Abelujo</strong> with Sendgrid.'
 TEST_TO_EMAILS = "".join(list(reversed('gro.zliam@leradniv')))  # me@vindarel
 
 def send_email(from_email=FROM_EMAIL,
@@ -77,6 +77,56 @@ def send_email(from_email=FROM_EMAIL,
         return False
 
     return True
+
+
+####################################################################
+# Command confirmations.
+####################################################################
+
+SUBJECT_COMMAND_OK = "Votre commande"
+
+def generate_card_summary(cards):
+    res = ""
+    for card in cards:
+        res += "- {}".format(card.title)
+    return res
+
+def generate_body_for_command_confirmation(price, cards):
+    linebreak = "</br>"
+    newline = "{} {}".format(linebreak, linebreak)
+    body = """Bonjour, {newline}
+
+Votre commande des titres suivants pour un total de {PRICE} a bien été reçue. {newline}
+
+{CARDS}
+{newline}
+
+Merci beaucoup et à bientôt ! {newline}
+
+L'équipe
+    """
+    body = body.format(linebreak=linebreak,
+                       newline=newline,
+                       PRICE=price,
+                       CARDS=generate_card_summary(cards))
+    return body
+
+
+def send_command_confirmation(cards=[],  # list of cards sold
+                              total_price="",
+                              to_emails=TEST_TO_EMAILS,
+                              verbose=False):
+    # Build HTML body.
+    body = generate_body_for_command_confirmation(total_price, cards)
+
+    # Send.
+    res = send_email(to_emails=to_emails,
+                     from_email=FROM_EMAIL,
+                     subject=SUBJECT_COMMAND_OK,
+                     html_content=body,
+                     verbose=verbose)
+    return res
+
 
 if __name__ == "__main__":
     exit(send_email())
