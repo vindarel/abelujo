@@ -25,6 +25,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from abelujo import settings
+from search import mailer
 from search.models import Card
 from search.models import Client
 from search.models.utils import _is_truthy
@@ -134,6 +135,7 @@ def handle_api_stripe(payload):
            }
     buyer = payload.get('buyer')
     order = payload.get('order')
+    sell_successful = True
 
     ###################
     ## Basic checks. ##
@@ -166,6 +168,7 @@ def handle_api_stripe(payload):
         res['alerts'].append("{}".format(e))
         res['status'] = httplib.INTERNAL_SERVER_ERROR
         status = 500
+        sell_successful = False
         # return JsonResponse(res, status=500)
 
     ###########################################
@@ -193,6 +196,7 @@ def handle_api_stripe(payload):
             log.error("This new client ({}) could not be created in DB: {}. billing_address is: {}".format(billing_address.get('name'), e, billing_address))
             res['alerts'].append('Error creating a new client')
             res['status'] = 500
+            sell_successful = False
 
     # cards we sell: list of 'id' and 'qty'.
     ids_qties = order.get('abelujo_items')
@@ -202,10 +206,14 @@ def handle_api_stripe(payload):
         # res['alerts'].append(msgs)
 
     cards_qties = []
+    cards = []
     for id_qty in ids_qties:
         card = Card.objects.filter(pk=id_qty.get('id')).first()
         if card:
             cards_qties.append({'card': card, 'qty': id_qty.get('qty')})
+            cards.append(card)
+        else:
+            log.warning("Selling cards with Stripe, we could not find a card: {}".format(id_qty))
 
     # Reserve.
     # PERFORMANCE:
@@ -220,6 +228,33 @@ def handle_api_stripe(payload):
 
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
+        sell_successful = False
+
+    # Send confirmation emails.
+    if sell_successful:
+        amount = order.get('amount')
+        to_email = ""
+        if billing_address and billing_address.get('email'):
+            to_email = billing_address.get('email')
+        elif delivery_address and delivery_address.get('email'):
+            to_email = delivery_address.get('email')
+        else:
+            log.warning("api_stripe: we can't find the buyer email address ??! payload: {}".format(payload))
+
+        # Ensure ascii for python Stripe library... shame on you.
+        try:
+            to_email = to_email.encode('ascii', 'ignore')
+        except Exception as e:
+            log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
+
+        # Send it, damn it.
+        try:
+            if to_email:
+                mailer.send_command_confirmation(cards=cards, total_price=amount,
+                                                 to_emails=to_email)
+        except Exception as e:
+            log.error("api_stripe: could not send confirmation email: {}".format(e))
+
 
     return res
 
@@ -292,6 +327,8 @@ def api_stripe_hooks(request, **response_kwargs):
     # Handle the event
     if event.get('type') == 'payment_intent.succeeded':
         payment_intent = event.data.object  # contains a stripe.PaymentIntent
+        cards = []
+        mail_res = mailer.send_command_confirmation(cards)
         msg = "PaymentIntent was successful!"
         res['alerts'].append(msg)
         res['data'] = payment_intent

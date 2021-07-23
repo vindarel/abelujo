@@ -94,26 +94,26 @@ test_payload = {
 real_test_payload = {
     'buyer': {
         'billing_address': {
-            'last_name': 'Sifoni',
-            'first_name': 'Lucas',
-            'email': 'lucas@documents.design',
-            'address': '20 avenue victor ségoffin',
-            'address_comp': 'appart 4',
-            'city': 'Toulouse',
-            'postcode': '31400',
+            'last_name': 'Vincent',
+            'first_name': 'vindarel',
+            'email': 'vindarel@mailz.org',
+            'address': 'here my city',
+            'address_comp': 'comp',
+            'city': 'Touwin',
+            'postcode': '34100',
             'country': 'France',
-            'phone': '07 33',
+            'phone': '07 33 88 88 77',
         },
         'delivery_address': {
-            'last_name': 'Sifoni',
-            'first_name': 'Lucas',
-            'email': 'lucas@documents.design',
-            'address': '20 avenue victor ségoffin',
-            'address_comp': 'appart 4',
-            'city': 'Toulouse',
-            'postcode': '31400',
+            'last_name': 'Vincent',
+            'first_name': 'vindarel',
+            'email': 'vindarel@mailz.org',
+            'address': 'here France',
+            'address_comp': 'comp',
+            'city': 'Touwin',
+            'postcode': '34100',
             'country': 'France',
-            'phone': '07 67 02 55 72'
+            'phone': '07 98 88 88 88'
         },
     },
     'order': {
