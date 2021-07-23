@@ -85,28 +85,30 @@ def send_email(from_email=FROM_EMAIL,
 
 SUBJECT_COMMAND_OK = "Votre commande"
 
+LINEBREAK = "</br>"
+NEWLINE = "{} {}".format(LINEBREAK, LINEBREAK)
+
 def generate_card_summary(cards):
     res = ""
     for card in cards:
         res += "- {}".format(card.title)
+    if cards:
+        res += "{}".format(NEWLINE)
     return res
 
 def generate_body_for_command_confirmation(price, cards):
-    linebreak = "</br>"
-    newline = "{} {}".format(linebreak, linebreak)
     body = """Bonjour, {newline}
 
 Votre commande des titres suivants pour un total de {PRICE} a bien été reçue. {newline}
 
 {CARDS}
-{newline}
 
 Merci beaucoup et à bientôt ! {newline}
 
 L'équipe
     """
-    body = body.format(linebreak=linebreak,
-                       newline=newline,
+    body = body.format(linebreak=LINEBREAK,
+                       newline=NEWLINE,
                        PRICE=price,
                        CARDS=generate_card_summary(cards))
     return body

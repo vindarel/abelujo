@@ -135,7 +135,6 @@ def handle_api_stripe(payload):
            }
     buyer = payload.get('buyer')
     order = payload.get('order')
-    sell_successful = True
 
     ###################
     ## Basic checks. ##
@@ -168,7 +167,6 @@ def handle_api_stripe(payload):
         res['alerts'].append("{}".format(e))
         res['status'] = httplib.INTERNAL_SERVER_ERROR
         status = 500
-        sell_successful = False
         # return JsonResponse(res, status=500)
 
     ###########################################
@@ -196,7 +194,6 @@ def handle_api_stripe(payload):
             log.error("This new client ({}) could not be created in DB: {}. billing_address is: {}".format(billing_address.get('name'), e, billing_address))
             res['alerts'].append('Error creating a new client')
             res['status'] = 500
-            sell_successful = False
 
     # cards we sell: list of 'id' and 'qty'.
     ids_qties = order.get('abelujo_items')
@@ -228,33 +225,6 @@ def handle_api_stripe(payload):
 
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
-        sell_successful = False
-
-    # Send confirmation emails.
-    if sell_successful:
-        amount = order.get('amount')
-        to_email = ""
-        if billing_address and billing_address.get('email'):
-            to_email = billing_address.get('email')
-        elif delivery_address and delivery_address.get('email'):
-            to_email = delivery_address.get('email')
-        else:
-            log.warning("api_stripe: we can't find the buyer email address ??! payload: {}".format(payload))
-
-        # Ensure ascii for python Stripe library... shame on you.
-        try:
-            to_email = to_email.encode('ascii', 'ignore')
-        except Exception as e:
-            log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
-
-        # Send it, damn it.
-        try:
-            if to_email:
-                mailer.send_command_confirmation(cards=cards, total_price=amount,
-                                                 to_emails=to_email)
-        except Exception as e:
-            log.error("api_stripe: could not send confirmation email: {}".format(e))
-
 
     return res
 
@@ -307,6 +277,7 @@ def api_stripe_hooks(request, **response_kwargs):
            'alerts': [],
            'status': httplib.OK,
            }
+    sell_successful = None
 
     try:
         # stripe.event.construct_from(
@@ -333,6 +304,7 @@ def api_stripe_hooks(request, **response_kwargs):
         res['alerts'].append(msg)
         res['data'] = payment_intent
         print(msg)
+        sell_successful = True
     elif event.get('type') == 'payment_method.attached':
         payment_method = event.data.object  # contains a stripe.PaymentMethod
         msg = 'PaymentMethod was attached to a Customer!'
@@ -344,5 +316,33 @@ def api_stripe_hooks(request, **response_kwargs):
         print('Unhandled event type {}'.format(event.get('type')))
         res['alerts'].append('Unhandled event type: {}'.format(event.get('type')))
         return JsonResponse(res, status=200)
+
+    # Send confirmation emails.
+    payload = json.loads(request.body)
+    to_email = ""
+    amount = 0
+    if sell_successful:
+        try:
+            to_email = payload['data']['object']['charges']['data'][0]['billing_details']['email']
+        except Exception as e:
+            log.warning("api_stripe_hooks: could not get the buyer email: {}".format(e))
+        try:
+            amount = payload['data']['object']['charges']['data'][0]['amount']
+        except Exception as e:
+            log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
+
+        # Ensure ascii for python Stripe library... shame on you.
+        try:
+            to_email = to_email.encode('ascii', 'ignore')
+        except Exception as e:
+            log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
+
+        # Send it, damn it.
+        try:
+            if to_email:
+                mailer.send_command_confirmation(cards=cards, total_price=amount,
+                                                 to_emails=to_email)
+        except Exception as e:
+            log.error("api_stripe: could not send confirmation email: {}".format(e))
 
     return JsonResponse(res, status=200)
