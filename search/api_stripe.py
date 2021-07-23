@@ -210,7 +210,7 @@ def handle_api_stripe(payload):
             cards_qties.append({'card': card, 'qty': id_qty.get('qty')})
             cards.append(card)
         else:
-            log.warning("Selling cards with Stripe, we could not find a card: {}".format(id_qty))
+            log.warning("Selling cards with Stripe, we could not find a card: {}".format(id_qty.get('id')))
 
     # Reserve.
     # PERFORMANCE:
@@ -246,10 +246,9 @@ def api_stripe(request, **response_kwargs):
         if request.body:
             payload = json.loads(request.body)
             try:
-                res = handle_api_stripe(payload)
+                req = handle_api_stripe(payload)
             except Exception as e:
                 log.error("Error handling the api stripe payment: {}. Payload used: {}".format(e, payload))
-                res = None
                 res['status'] = 500
                 res['alerts'].append(e)
 
