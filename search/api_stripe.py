@@ -27,6 +27,7 @@ from django.views.decorators.csrf import csrf_exempt
 from abelujo import settings
 from search.models import Card
 from search.models import Client
+from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 
 try:
@@ -151,8 +152,10 @@ def handle_api_stripe(payload):
     ############################
     ## Handle Stripe session. ##
     ############################
+    online_payment = payload.get('order').get('online_payment')
+    online_payment = _is_truthy(online_payment)
     try:
-        if payload.get('order').get('stripe_payload'):
+        if online_payment and payload.get('order').get('stripe_payload'):
             log.info("Processing Stripe payload...")
             session = create_checkout_session(payload)
             res['data'] = session
