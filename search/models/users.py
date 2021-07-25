@@ -56,6 +56,11 @@ def generate_email_body(resas):
 class Reservation(TimeStampedModel):
     """
     A reservation links a client to a card he reserved.
+
+    It can have been paid, online or at the bookshop (unlikely though).
+
+    The client will either come to the bookshop get it (and pay), or
+    we have to send it by post.
     """
     class Meta:
         pass
@@ -68,10 +73,18 @@ class Reservation(TimeStampedModel):
 
     client = models.ForeignKey("search.Client")
     #: Reserve one card.
-    # Shoudn't it be many?
+    # XXX: Shoudn't it be many?
     card = models.ForeignKey("search.Card", null=True, blank=True)
     #: optional: a quantity to reserve. Defaults to 1.
     nb = models.IntegerField(default=1, null=True, blank=True)
+    #: This reservation is already paid. For example, online with Stripe.
+    is_paid = models.BooleanField(default=False)
+    #: Payment origin: Stripe?
+    payment_origin = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("Origin of the payment (Stripe?)"))
+    #: Do we have to send it by post?
+    send_by_post = models.BooleanField(default=False)
+    #: More information to remember, in a JSON (text) field.
+    payment_meta = models.TextField(max_length=TEXT_LENGTH, null=True, blank=True, verbose_name=__("More data (JSON as text)"))
     #: If we have taken an action on this reservation.
     #: We can put the book on the side, waiting for the client or
     #: send an email.
