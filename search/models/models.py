@@ -2317,6 +2317,11 @@ class Card(TimeStampedModel):
         return card.is_catalogue_selection
 
     @staticmethod
+    def selection_catalogue():
+        res = Card.objects.filter(is_catalogue_selection=True).all()
+        return res
+
+    @staticmethod
     def toggle_exclude_for_catalogue(pk):
         """
         Mark (toggle) this card as excluded to show on the client's frontend website.

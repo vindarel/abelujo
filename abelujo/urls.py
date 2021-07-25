@@ -60,6 +60,9 @@ apipatterns = patterns("",
     url(r'^api/cards/set_supplier$', 'search.models.api.cards_set_supplier', name="api_cards_set_supplier"),
     url(r'^api/cards/set_shelf$', 'search.models.api.cards_set_shelf', name="api_cards_set_shelf"),
 
+    # Catalogue selection.
+    url(r'^api/selection/?$', 'search.models.api.selection_catalogue', name="api_selection_catalogue"),
+
     # Reservations
     url(r'^api/reservations/?$', 'search.models.api_users.all_reservations', name="api_all_reservations"),
     # Shelves

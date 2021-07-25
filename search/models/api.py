@@ -645,6 +645,24 @@ def card_select_catalogue(request, pk, **kw):
     to_ret['data']['is_catalogue_selection'] = res
     return JsonResponse(to_ret)
 
+def selection_catalogue(request, **kwargs):
+    """
+    Return the "selection du libraire".
+    """
+    to_ret = {
+        'data': "",
+        'status': ALERT_SUCCESS,
+    }
+    try:
+        res = Card.selection_catalogue()
+        res = [it.to_dict(with_cache=True) for it in res]
+        to_ret['data'] = res
+    except Exception as e:
+        log.error("Error getting the catalogue selection: {}".format(e))
+        to_ret['status'] = ALERT_ERROR
+
+    return JsonResponse(to_ret)
+
 def card_exclude_catalogue(request, pk, **kw):
     """
     Toggle the catalogue exclusion.
