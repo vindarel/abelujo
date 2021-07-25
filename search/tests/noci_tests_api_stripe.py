@@ -121,7 +121,8 @@ real_test_payload = {
         'shipping_method': 'colissimo',
         'mondial_relay_AP': None,
         'amount': 5050,
-        'abelujo_items': [{'id': 1, 'qty': 1}],
+        # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
+        'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
         'stripe_payload': {
             'payment_method_types': ["card"],
             'line_items': [
@@ -163,6 +164,7 @@ class TestStripe(TestCase):
 
     def setUp(self):
         self.card = CardFactory.create()
+        self.card2 = CardFactory.create()
 
     def tearDown(self):
         pass
@@ -183,7 +185,7 @@ class TestStripe(TestCase):
         print(res)
 
 class TestLive(TestCase):
-    def test_send_payload(self):
+    def notest_send_payload(self):
         req = send_test_payload()
         self.assertTrue(req)
         print(req.text)

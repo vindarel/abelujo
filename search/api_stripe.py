@@ -219,7 +219,11 @@ def handle_api_stripe(payload):
     try:
         for card_qty in cards_qties:
             resa, created = existing_client.reserve(card_qty.get('card'),
-                                                    nb=card_qty.get('qty'))
+                                                    nb=card_qty.get('qty'),
+                                                    send_by_post=True,
+                                                    is_paid=True,  # no stripe hook confirmation yet!
+                                                    payment_origin="stripe",
+                                                    payment_meta=payload)
             if resa:
                 reservations.append(resa)
         res['alerts'].append("client commands created successfully")

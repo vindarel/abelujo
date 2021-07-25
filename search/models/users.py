@@ -335,7 +335,8 @@ class Client(Contact):
 
         return res
 
-    def reserve(self, card, nb=1):
+    def reserve(self, card, nb=1, send_by_post=False, is_paid=False,
+                payment_origin="", payment_meta=""):
         """
         Reserve this card at this quantity.
         Create a Reservation object and decrement it from the stock,
@@ -357,6 +358,10 @@ class Client(Contact):
             card_id=card_id,
             nb=nb,
             archived=False,
+            send_by_post=send_by_post,
+            is_paid=is_paid,
+            payment_origin=payment_origin,
+            payment_meta=payment_meta
         )
         resa.save()
 
