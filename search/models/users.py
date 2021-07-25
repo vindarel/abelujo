@@ -71,6 +71,9 @@ class Reservation(TimeStampedModel):
         else:
             return ""
 
+    def get_absolute_url(self):
+        return "/admin/search/reservation/{}/".format(self.id)
+
     client = models.ForeignKey("search.Client")
     #: Reserve one card.
     # XXX: Shoudn't it be many?
