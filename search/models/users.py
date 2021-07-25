@@ -304,6 +304,9 @@ class Client(Contact):
     def __unicode__(self):
         return unicode("{} {}".format(self.name, self.firstname))
 
+    def get_absolute_url(self):
+        return "/admin/search/client/{}/".format(self.id)
+
     def to_dict(self):
         # res = super(Contact, self).to_dict()
         rep = self.__repr__()

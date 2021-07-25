@@ -41,13 +41,21 @@
   <div class="row">
     <div class="col-md-4">
       <h4>
-        <a href="{{ resa.client.get_absolute_url }}">
+        <a href="{{ client.get_absolute_url }}">
           {{ client }}
         </a>
       </h4>
 
       <div>
+        <i class="glyphicon glyphicon-earphone"> </i>
+        {% if client.mobilephone %}
         {{ client.mobilephone }}
+        {% endif %}
+
+        {% if client.telephone %}
+        / {{ client.telephone }}
+        {% endif %}
+
       </div>
 
       <div>
