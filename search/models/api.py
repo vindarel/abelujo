@@ -375,14 +375,24 @@ def card(request, **kwargs):
             ret["alerts"] = msgs.msgs
 
         # Get and return Dilicom-only data, like the market availability?
+        # see also card update API...
         with_dilicom_update = request.GET.get('with_dilicom_update')
         with_dilicom_update = _is_truthy(with_dilicom_update)
+        messages = []
         if with_dilicom_update:
             if dilicom_enabled():
                 card, messages = update_from_dilicom(card)
-                # ret['alerts'] = messages
+                ret['alerts'] = {'dilicom_update': messages}
+
+        # If EAN was not found on Dilicom, add a key in the returned card.
+        # It's easier to spot for the API end-user.
+        dilicom_unknown_ean = False
+        for mess in messages:
+            if mess.startswith('EAN inconnu'):
+                dilicom_unknown_ean = True
 
         card = card.to_list()
+        card['dilicom_unknown_ean'] = dilicom_unknown_ean
         ret['data'] = card
 
     return JsonResponse(ret)
@@ -505,6 +515,7 @@ def card_update(request, **response_kwargs):
             if dilicom_enabled():
                 card, messages = update_from_dilicom(card)
                 price_was_checked = True
+                msgs['dilicom_update'] = messages
             updated_price = card.price
             price_changed = False
             if old_price != updated_price:

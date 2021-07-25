@@ -19,6 +19,10 @@ Changelog starting from v0.5 (2018/09/18)
 - preliminary support for connection to the Electre API ("à la demande")
 - quick search bar: we introduce a way to filter our search. Type "keyword ed:foo" (`ed:foo` is important here) to filter the results by publisher containing "foo" in its name.
 
+More data delivered with the API:
+
+- say if a book was found on Dilicom or not (`dilicom_unknown_ean`), on `/api/card/:id?with_dilicom_update=1`.
+
 ### Other enhancements
 
 - on a card page, the cart button to add a card to the command list was fixed to add 1 copy at each click (instead of adding the book, but not updating the quantity to command).
