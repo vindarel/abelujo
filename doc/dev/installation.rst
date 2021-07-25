@@ -41,6 +41,8 @@ Some tasks need to run asynchronously (applying an inventory,…). Start
 
     make taskqueue
 
+If you are subscribed to Dilicom, see `Dilicom documentation <dilicom.html >`_.
+
 
 deployment and website management
 ---------------------------------

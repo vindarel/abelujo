@@ -7,6 +7,7 @@ Contents:
    :maxdepth: 2
 
    installation.rst
+   dilicom.rst
    use-manage.rst
    angular-crash-course
    webscraping.rst
