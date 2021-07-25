@@ -66,7 +66,7 @@
     <div class="col-md-8">
       {% for resa in reservations %}
       <div id="resa-{{ resa.pk }}" class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
 
           <h4>
             <a href="{{ resa.get_absolute_url }}">
@@ -87,6 +87,15 @@
 
         </div>
 
+        <div class="col-md-2">
+          {% if resa.is_paid %}
+          <i style="color: green" class="glyphicon glyphicon-usd" title="Cette commande a déjà été payée ({{ resa.payment_origin }})"> </i>
+          {% endif %}
+
+          {% if resa.send_by_post %}
+          <i class="glyphicon glyphicon-gift" title="Cette commande doit être envoyée par colis au client"> </i>
+          {% endif %}
+        </div>
 
         <div class="col-md-3">
           {% if resa.is_quite_old %}
