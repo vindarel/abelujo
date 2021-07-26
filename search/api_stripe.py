@@ -300,14 +300,17 @@ def api_stripe_hooks(request, **response_kwargs):
         return JsonResponse(res, status=400)
 
     # Handle the event
-    if event.get('type') == 'payment_intent.succeeded':
+    if event.get('type') == 'checkout.session.completed':
+        # We consider the payment was succesfull only with this event.
+        sell_successful = True
+    elif event.get('type') == 'payment_intent.succeeded':
         payment_intent = event.data.object  # contains a stripe.PaymentIntent
         cards = []
         msg = "PaymentIntent was successful!"
         res['alerts'].append(msg)
         # res['data'] = payment_intent  # this is not a JSON but an object.
         # print(msg)
-        sell_successful = True
+        # sell_successful = True
     elif event.get('type') == 'payment_method.attached':
         payment_method = event.data.object  # contains a stripe.PaymentMethod
         msg = 'PaymentMethod was attached to a Customer!'
