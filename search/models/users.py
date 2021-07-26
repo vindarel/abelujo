@@ -88,6 +88,11 @@ class Reservation(TimeStampedModel):
     send_by_post = models.BooleanField(default=False)
     #: More information to remember, in a JSON (text) field.
     payment_meta = models.TextField(max_length=TEXT_LENGTH, null=True, blank=True, verbose_name=__("More data (JSON as text)"))
+    #: Payment session: the answer of Stripe when creating a checkout session.
+    # Contains the payment_intent ID.
+    payment_session = models.TextField(max_length=TEXT_LENGTH, null=True, blank=True, verbose_name=__("Stripe payment session (internal field)"))
+    #: Payment intent ID. Is returned by the creation of the Stripe session (step 1) and is present in the webhook for validation (step 2).
+    payment_intent = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True, verbose_name=__("Stripe payment intent ID (internal field"))
     #: If we have taken an action on this reservation.
     #: We can put the book on the side, waiting for the client or
     #: send an email.
@@ -342,7 +347,8 @@ class Client(Contact):
         return res
 
     def reserve(self, card, nb=1, send_by_post=False, is_paid=False,
-                payment_origin="", payment_meta=""):
+                payment_origin=None, payment_meta=None, payment_session=None,
+                payment_intent=None):
         """
         Reserve this card at this quantity.
         Create a Reservation object and decrement it from the stock,
@@ -367,7 +373,9 @@ class Client(Contact):
             send_by_post=send_by_post,
             is_paid=is_paid,
             payment_origin=payment_origin,
-            payment_meta=payment_meta
+            payment_meta=payment_meta,
+            payment_session=payment_session,
+            payment_intent=payment_intent,
         )
         resa.save()
 
