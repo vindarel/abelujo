@@ -40,6 +40,7 @@ More data delivered with the API:
 ### For administrators
 
 - new script: `./manage.py move_from_place --origin <id>` to move all cards from one place to another (the destination defaults to the default place). It might be useful, because Abelujo doesn't encourage to use more than one selling place anymore.
+- new script: `./manage.py get_higher_covers`: replace book covers (gotten from librairie-de-paris) to higher resolution ones. To run once.
 
 ### Upgrade instructions
 
