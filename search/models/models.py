@@ -1165,6 +1165,7 @@ class Card(TimeStampedModel):
             "isbn": isbn,
             "meta": self.meta,
             "model": self.__class__.__name__,  # useful to sort history.
+            "nb_pages": self.nb_pages,
             "places": ", ".join([p.name for p in self.places.all()]),
             "price": self.price,
             "selling_price": self.selling_price,
