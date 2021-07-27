@@ -14,12 +14,11 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with Abelujo.  If not, see <http://www.gnu.org/licenses/>.
-import json
 
 from django.test import TestCase
 
 from search import mailer
-from search.models import Reservation
+# from search.models import Reservation
 
 from tests_api import CardFactory
 

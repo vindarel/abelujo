@@ -28,6 +28,7 @@ from abelujo import settings
 from search import mailer
 from search.models import Card
 from search.models import Client
+from search.models import Reservation
 from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 
@@ -42,6 +43,12 @@ log = get_logger()
 
 
 def create_checkout_session(abelujo_payload):
+    """
+    Create a session object on Stripe.
+    It returns a JSON. Our identifiers can be its ID or the payment_intent ID. We will find them back on the webhook.
+
+    Mocked in unit tests.
+    """
     if settings.STRIPE_SECRET_API_KEY:
         assert stripe.api_key
     else:
@@ -97,7 +104,7 @@ def create_checkout_session(abelujo_payload):
 #   "metadata": {},
 #   "mode": "payment",
 #   "object": "checkout.session",
-#   "payment_intent": "pi_1JEwbgJqOLQjpdKj4T1cdrI3",
+#   "payment_intent": "pi_1JEwbgJqOLQjpdKj4T1cdrI3",  # returned also in webhook
 #   "payment_method_options": {},
 #   "payment_method_types": [
 #     "card"
@@ -121,7 +128,9 @@ def create_checkout_session(abelujo_payload):
 def handle_api_stripe(payload):
     """
     From this payload (dict), find or create the client, the reservation of the cards,
-    create a stripe session if required.
+
+    If it's an online payment, create a stripe session and only pre-sell the reservations.
+    They have to be validated in the webhook.
 
     Important keys:
     - buyer.billing_address, buyer.shipping_address
@@ -166,12 +175,13 @@ def handle_api_stripe(payload):
     except Exception as e:
         res['alerts'].append("{}".format(e))
         res['status'] = httplib.INTERNAL_SERVER_ERROR
-        status = 500
+        # status = 500
         # return JsonResponse(res, status=500)
 
-    ###########################################
-    ## Create clients, commands, send bills. ##
-    ###########################################
+    ################################################
+    ## Create clients, commands.
+    ## If online payment, they are not validated yet.
+    ################################################
     billing_address = buyer.get('billing_address')
     delivery_address = buyer.get('delivery_address')
 
@@ -201,7 +211,7 @@ def handle_api_stripe(payload):
     # cards_ids = [it.get('id') for it in cards_qties]
     # cards, msgs = Card.get_from_id_list(cards_ids)
     # if msgs:
-        # res['alerts'].append(msgs)
+    #     res['alerts'].append(msgs)
 
     cards_qties = []
     cards = []
@@ -217,13 +227,20 @@ def handle_api_stripe(payload):
     # PERFORMANCE:
     reservations = []  # should be one for all...
     try:
+        is_paid = True
+        payment_intent = None
+        if online_payment:
+            is_paid = False  # needs to be validated in the webhook.
+            payment_intent = session.get('payment_intent')
         for card_qty in cards_qties:
             resa, created = existing_client.reserve(card_qty.get('card'),
                                                     nb=card_qty.get('qty'),
                                                     send_by_post=True,
-                                                    is_paid=True,  # no stripe hook confirmation yet!
+                                                    is_paid=is_paid,
                                                     payment_origin="stripe",
-                                                    payment_meta=payload)
+                                                    payment_meta=payload,
+                                                    payment_session=session,
+                                                    payment_intent=payment_intent)
             if resa:
                 reservations.append(resa)
         res['alerts'].append("client commands created successfully")
@@ -245,7 +262,7 @@ def api_stripe(request, **response_kwargs):
            'status': httplib.OK,
            }
     payload = {}
-    status = 200
+    # status = 200
     if request.method == 'POST':
         if request.body:
             payload = json.loads(request.body)
@@ -261,18 +278,32 @@ def api_stripe(request, **response_kwargs):
     else:
         return JsonResponse({'alerts': ['Use a POST request']})
 
+def stripe_construct_event(payload, signature, webhook_secret):
+    event = stripe.Webhook.construct_event(
+        payload, signature, webhook_secret
+    )
+    return event
+
 @csrf_exempt
 def api_stripe_hooks(request, **response_kwargs):
     """
     Handle post-payment webhooks.
     https://stripe.com/docs/payments/handling-payment-events
+
+    Find the pre-saved reservations with the payment_intent ID and validates them.
+    Then, send validation emails.
     """
     if not settings.STRIPE_SECRET_API_KEY:
         # Don't fail unit tests on CI.
         # I don't feel like installing the Stripe python lib by default…
         return
-    payload = request.body
-    signature = request.META.get('HTTP_STRIPE_SIGNATURE')
+
+    # Mocking stripe functions, request object and having the right payloads
+    # is not so easy, so let's use is_test...
+    is_test = response_kwargs.get('is_test')
+    if not is_test:
+        payload = request.body
+        signature = request.META.get('HTTP_STRIPE_SIGNATURE')
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
     cards = []  # TODO:
@@ -287,12 +318,11 @@ def api_stripe_hooks(request, **response_kwargs):
         # stripe.event.construct_from(
         #   json.loads(payload), stripe.api_key
         # )
-        event = stripe.Webhook.construct_event(
-            payload, signature, webhook_secret
-        )
+        event = None
+        if not is_test:
+            event = stripe_construct_event(payload, signature, webhook_secret)
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        res['data'].append('Invalid Stripe signature')
+        res['alerts'].append('Invalid Stripe signature')
         return JsonResponse(res, status=400)
     except ValueError as e:
         # Invalid payload
@@ -300,10 +330,12 @@ def api_stripe_hooks(request, **response_kwargs):
         return JsonResponse(res, status=400)
 
     # Handle the event
-    if event.get('type') == 'checkout.session.completed':
+    if is_test:
+        sell_successful = True
+    if event and event.get('type') == 'checkout.session.completed':
         # We consider the payment was succesfull only with this event.
         sell_successful = True
-    elif event.get('type') == 'payment_intent.succeeded':
+    elif event and event.get('type') == 'payment_intent.succeeded':
         payment_intent = event.data.object  # contains a stripe.PaymentIntent
         cards = []
         msg = "PaymentIntent was successful!"
@@ -311,7 +343,7 @@ def api_stripe_hooks(request, **response_kwargs):
         # res['data'] = payment_intent  # this is not a JSON but an object.
         # print(msg)
         # sell_successful = True
-    elif event.get('type') == 'payment_method.attached':
+    elif event and event.get('type') == 'payment_method.attached':
         payment_method = event.data.object  # contains a stripe.PaymentMethod
         msg = 'PaymentMethod was attached to a Customer!'
         print(msg)
@@ -325,23 +357,49 @@ def api_stripe_hooks(request, **response_kwargs):
 
     # Send confirmation emails.
     payload = json.loads(request.body)
+    payment_intent = None
+    from pprint import pprint
+    pprint(payload)
+    try:
+        payment_intent = payload['data']['object']['id']
+    except Exception as e:
+        log.error("Could not get the payment intent ID in webhook: {}".format(e))
+
+    ongoing_reservations = Reservation.objects.filter(payment_intent=payment_intent)
+    # So we have several reservation objects, but they should be of the same client,
+    # part of the same command...
+    client = None
+    if ongoing_reservations:
+        client = ongoing_reservations.first().client
+
+    # Quickly check we have the same clients.
+    if client:
+        for resa in ongoing_reservations:
+            if resa.client != client:
+                log.warning("mmh we have ongoing reservations with payment_intent {} but not the same client ?? {} / {}".format(payment_intent, client, resa.client))
+
     to_email = ""
     amount = 0
     description = ""
     is_stripe_cli_test = False
     cli_test_sign = "(created by Stripe CLI)"
     if sell_successful:
+        # Now, validate the reservations.
+        for resa in ongoing_reservations:
+            resa.is_paid = True
+            resa.save()
+        ongoing_reservations.update(is_paid=True)
+
+        # Get emails.
+        to_email = client.email if client else ""
+
         try:
             description = payload['data']['object']['charges']['data'][0]['description']
             if description and cli_test_sign in description:
                 is_stripe_cli_test = True
         except Exception as e:
-            log.warning("api_stripe_hooks: could not get the description: {}".format(e))
+            log.info("api_stripe_hooks: could not get the description, I don't know if we are in a stripe cli test: {}".format(e))
 
-        try:
-            to_email = payload['data']['object']['charges']['data'][0]['billing_details']['email']
-        except Exception as e:
-            log.warning("api_stripe_hooks: could not get the buyer email: {}".format(e))
         try:
             amount = payload['data']['object']['charges']['data'][0]['amount']
         except Exception as e:

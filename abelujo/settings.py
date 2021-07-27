@@ -468,6 +468,7 @@ def electre_enabled():
     return os.getenv('ELECTRE_PASSWORD') is not None \
         and os.getenv('ELECTRE_USER') is not None
 
+
 if dilicom_enabled():
     print(termcolor.colored("FEATURE: DILICOM ENABLED", "green"))
 if dilicom_ftp_enabled():
@@ -557,12 +558,13 @@ def get_from_config(key, verbose=True, msg="{}: {}", color="green"):
                         msg = msg.format(key, "OK")
                         print(termcolor.colored(msg, color))
                     return val
-        except Exception as e:
+        except Exception:
             pass
 
 # val = get_from_config('SENDGRID_API_KEY')
 # if val:
     # SENDGRID_API_KEY = val
+
 
 sendgrid_file_path = 'sendgrid.txt'
 if os.path.exists(sendgrid_file_path):

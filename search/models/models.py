@@ -624,7 +624,7 @@ class Card(TimeStampedModel):
     """
     #: A cache to help in to_dict, especially during an inventory diff.
     #: Is discarded at each server restart.
-    cache_cards_to_dict = TTLCache(50000, 60*24*60)
+    cache_cards_to_dict = TTLCache(50000, 60 * 24 * 60)
 
     #: Title:
     title = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title"))
