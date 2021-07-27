@@ -425,6 +425,13 @@ class TestStripe(TestCase):
         self.assertTrue(res)
 
 class TestLive(TestCase):
+
+    def setUp(self):
+        self.card = CardFactory.create()
+        self.card2 = CardFactory.create()
+        self.client = Client(name="toto", firstname="Firstname", address1="5 rue Hugo")
+        self.client.save()
+
     def notest_send_payload(self):
         req = send_test_payload()
         self.assertTrue(req)
@@ -437,4 +444,14 @@ class TestLive(TestCase):
         $ stripe trigger payment_intent.succeeded
         """
         req = send_test_webhook()
+        return req
+
+    def notest_send_test_owner_email(self):
+        req = mailer.send_owner_confirmation(cards=[self.card, self.card2],
+                                             client=self.client,
+                                             total_price=10,
+                                             email=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
+                                             owner_name=settings.TEST_BOOKSHOP_OWNER_NAME,
+                                             )
+        self.assertTrue(req)
         return req

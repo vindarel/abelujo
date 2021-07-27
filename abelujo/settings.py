@@ -544,7 +544,9 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
 FEATURE_MAILER = True
 EMAIL_SENDER = 'contact+commandes@abelujo.cc'
 EMAIL_BOOKSHOP_RECIPIENT = None
+TEST_EMAIL_BOOKSHOP_RECIPIENT = None
 BOOKSHOP_OWNER_NAME = None  # for emails
+TEST_BOOKSHOP_OWNER_NAME = None  # for emails
 SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
 
 def get_from_config(key, verbose=True, msg="{}: {}", color="green", secret=False):
@@ -587,7 +589,14 @@ if os.path.exists(sendgrid_file_path):
 val = get_from_config('EMAIL_BOOKSHOP_RECIPIENT')
 if val:
     EMAIL_BOOKSHOP_RECIPIENT = val
+val = get_from_config('TEST_EMAIL_BOOKSHOP_RECIPIENT')
+if val:
+    TEST_EMAIL_BOOKSHOP_RECIPIENT = val
 
 val = get_from_config('BOOKSHOP_OWNER_NAME')
 if val:
     BOOKSHOP_OWNER_NAME = val
+
+val = get_from_config('TEST_BOOKSHOP_OWNER_NAME')
+if val:
+    TEST_BOOKSHOP_OWNER_NAME = val

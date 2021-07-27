@@ -91,7 +91,7 @@ NEWLINE = "{} {}".format(LINEBREAK, LINEBREAK)
 def generate_card_summary(cards):
     res = ""
     for card in cards:
-        res += "- {}".format(card.title)
+        res += "- {} {}".format(card.title, LINEBREAK)
     if cards:
         res += "{}".format(NEWLINE)
     return res
@@ -128,11 +128,11 @@ L'équipe
 def generate_body_for_owner_confirmation(price, cards, client, owner_name):
     body = """Bonjour {owner_name}, {newline}
 
-Vous avez reçu une nouvelle commande:
+Vous avez reçu une nouvelle commande: {newline}
 
 {CARDS}
 
-Total: {amount}
+Pour un total de: {amount} {newline}
 
 Ce client est: {newline}
 

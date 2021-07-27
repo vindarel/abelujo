@@ -427,6 +427,7 @@ def api_stripe_hooks(request, **response_kwargs):
         if settings.EMAIL_BOOKSHOP_RECIPIENT:
             try:
                 mailer.send_owner_confirmation(cards=cards,
+                                               client=client,
                                                total_price=amount,
                                                email=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                owner_name=settings.BOOKSHOP_OWNER_NAME,
@@ -434,5 +435,7 @@ def api_stripe_hooks(request, **response_kwargs):
                 log.info("stripe webhook: confirmation sent to owner: {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT))
             except Exception as e:
                 log.error("api_stripe webhook: could not send confirmation email to owner: {}".format(e))
+        else:
+            log.warning("stripe webhook: sell with payment intent {} was successfull and we wanted to send an email to the bookshop owner, but we can't find its email in settings.".format(payment_intent))
 
     return JsonResponse(res, status=200)
