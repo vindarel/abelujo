@@ -411,6 +411,7 @@ class TestStripe(TestCase):
             }
         }
         res = api_stripe.api_stripe_hooks(request, is_test=True)
+        return res
 
     def test_email_body(self):
         self.client = Client(name="toto", firstname="Firstname", address1="5 rue Hugo")
@@ -436,3 +437,4 @@ class TestLive(TestCase):
         $ stripe trigger payment_intent.succeeded
         """
         req = send_test_webhook()
+        return req

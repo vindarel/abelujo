@@ -98,7 +98,7 @@ def generate_card_summary(cards):
 
 def generate_client_data(client):
     if not client:
-        log.warning("generate_client_data: no client.")
+        # log.warning("generate_client_data: no client.")
         return ""
     res = ""
     res += client.__repr__()
@@ -165,6 +165,7 @@ def send_command_confirmation(cards=[],  # list of cards sold
 
 
 def send_owner_confirmation(cards=[], total_price="", email="", client=None,
+                            owner_name="",
                             verbose=False):
     body = generate_body_for_owner_confirmation(total_price, cards, client, owner_name)
 
@@ -174,6 +175,4 @@ def send_owner_confirmation(cards=[], total_price="", email="", client=None,
                      html_content=body,
                      verbose=verbose,
                      )
-
-if __name__ == "__main__":
-    exit(send_email())
+    return res

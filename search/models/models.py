@@ -1196,7 +1196,6 @@ class Card(TimeStampedModel):
             "width": self.width if self.width else 0,
             "thickness": self.thickness if self.thickness else 0,
             "presedit": self.presedit,
-            "fmt": self.fmt,
         }
 
         if in_deposits:
@@ -2337,7 +2336,6 @@ class Card(TimeStampedModel):
         card.save()
         return card.is_excluded_for_website
 
-
     def display_year_published(self):
         "We only care about the year"
         return self.year_published.strftime('%Y')
@@ -2543,7 +2541,6 @@ class Place (models.Model):
         if Place.objects.filter(name__icontains="place test").delete():
             return True
 
-
     def move(self, dest, card, nb, create_movement=True):
         """Move the given card from this place to "dest" and create an history
         movement (unless create_movement is set to False).
@@ -2592,7 +2589,7 @@ class Place (models.Model):
                     print("\tmoving {}...".format(pc))
                 self.move(dest, pc.card, pc.nb, create_movement=create_movement)
         except Exception as e:
-            log.error("Error trying to move all cards from {} to {}. Happened with {}.".format(self.name, dest.name, pc))
+            log.error("Error trying to move all cards from {} to {}. Happened with {}. {}".format(self.name, dest.name, pc, e))
 
     def remove(self, card, quantity=1):
         """
@@ -5904,7 +5901,7 @@ class InventoryBase(TimeStampedModel):
         - return a tuple with the diff, the object name, total copies in the inv, total in stock.
 
         """
-        start = pendulum.now()
+        # start = pendulum.now()
         d_stock = None
         inv_cards_set = self.copies_set.all()
         obj_name = ""
@@ -5986,7 +5983,7 @@ class InventoryBase(TimeStampedModel):
         e5 = pendulum.now()
         print("   - final to_dict: {}".format(e5 - s5))
 
-        end = pendulum.now()
+        # end = pendulum.now()
         # print("--- inventory of {} cards took {}".format(inv_cards_set.count(), end - start))
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
 
