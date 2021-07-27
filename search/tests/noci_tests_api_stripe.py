@@ -429,7 +429,10 @@ class TestLive(TestCase):
     def setUp(self):
         self.card = CardFactory.create()
         self.card2 = CardFactory.create()
-        self.client = Client(name="toto", firstname="Firstname", address1="5 rue Hugo")
+        self.client = Client(name="toto", firstname="Firstname", address1="5 rue Hugo",
+                             mobilephone="06 09 09 09 09", telephone="05 98 98 98 98",
+                             email="test@test.fr",
+                             city="Touwin", country="France", zip_code="31000")
         self.client.save()
 
     def notest_send_payload(self):

@@ -103,7 +103,19 @@ def generate_client_data(client):
     res = ""
     res += client.__repr__()
     res += NEWLINE
-    res += client.address1
+    res += "tel: {} / {} {}".format(client.mobilephone, client.telephone if client.telephone else "", LINEBREAK)
+    res += "email: {} {}".format(client.email if client.email else "", LINEBREAK)
+    res += client.address1 if client.address1 else ""
+    res += LINEBREAK
+    res += client.address2 if client.address2 else ""   # shiiit None default values
+    res += LINEBREAK
+    res += client.zip_code if client.zip_code else ""
+    res += LINEBREAK
+    res += client.city if client.city else ""
+    res += LINEBREAK
+    res += client.state if client.state else ""
+    res += LINEBREAK
+    res += client.country if client.country else ""
     res += NEWLINE
     return res
 
@@ -125,14 +137,17 @@ L'équipe
     return body
 
 
-def generate_body_for_owner_confirmation(price, cards, client, owner_name):
+def generate_body_for_owner_confirmation(price, cards, client, owner_name,
+                                         send_by_post=False):
     body = """Bonjour {owner_name}, {newline}
 
 Vous avez reçu une nouvelle commande: {newline}
 
 {CARDS}
 
-Pour un total de: {amount} {newline}
+Pour un total de: {amount}€ {newline}
+
+{maybe_send_by_post} {newline}
 
 Ce client est: {newline}
 
@@ -140,11 +155,15 @@ Ce client est: {newline}
 
 À bientôt
 """
+    maybe_send_by_post = "Vous n'avez pas à envoyer cette commande."
+    if send_by_post:
+        maybe_send_by_post = "Vous devez envoyer cette commande."
     body = body.format(newline=NEWLINE,
                        owner_name=owner_name,
                        CARDS=generate_card_summary(cards),
                        client_data=generate_client_data(client),
                        amount=price,
+                       maybe_send_by_post=maybe_send_by_post,
                        )
     return body
 
@@ -165,9 +184,10 @@ def send_command_confirmation(cards=[],  # list of cards sold
 
 
 def send_owner_confirmation(cards=[], total_price="", email="", client=None,
-                            owner_name="",
+                            owner_name="", send_by_post=False,
                             verbose=False):
-    body = generate_body_for_owner_confirmation(total_price, cards, client, owner_name)
+    body = generate_body_for_owner_confirmation(total_price, cards, client, owner_name,
+                                                send_by_post=send_by_post)
 
     res = send_email(to_emails=email,
                      from_email=FROM_EMAIL,

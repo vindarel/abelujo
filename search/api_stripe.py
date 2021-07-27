@@ -369,8 +369,10 @@ def api_stripe_hooks(request, **response_kwargs):
     # So we have several reservation objects, but they should be of the same client,
     # part of the same command...
     client = None
+    send_by_post = False
     if ongoing_reservations:
         client = ongoing_reservations.first().client
+        send_by_post = ongoing_reservations.first().send_by_post
 
     # Quickly check we have the same clients.
     if client:
@@ -385,9 +387,9 @@ def api_stripe_hooks(request, **response_kwargs):
     cli_test_sign = "(created by Stripe CLI)"
     if sell_successful:
         # Now, validate the reservations.
-        for resa in ongoing_reservations:
-            resa.is_paid = True
-            resa.save()
+        # for resa in ongoing_reservations:
+        #     resa.is_paid = True
+        #     resa.save()
         ongoing_reservations.update(is_paid=True)
 
         # Get emails.
@@ -431,6 +433,7 @@ def api_stripe_hooks(request, **response_kwargs):
                                                total_price=amount,
                                                email=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                owner_name=settings.BOOKSHOP_OWNER_NAME,
+                                               send_by_post=send_by_post,
                                                )
                 log.info("stripe webhook: confirmation sent to owner: {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT))
             except Exception as e:
