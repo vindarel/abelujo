@@ -433,6 +433,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
                   $scope.date = new Date();
 
+                  $scope.focus_input();
+
                   return response.data;
               });
       };
@@ -598,7 +600,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.format = $scope.formats[0];
 
     // Set focus:
-    angular.element('#default-input').trigger('focus');
+    $scope.focus_input = function() {
+        angular.element('#default-input').trigger('focus');
+    }
+    $scope.focus_input();
 
     $window.document.title = "Abelujo - " + gettext("Sell");
 
