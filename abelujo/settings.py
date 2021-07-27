@@ -543,9 +543,11 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
 # The sender must be verified.
 FEATURE_MAILER = True
 EMAIL_SENDER = 'contact+commandes@abelujo.cc'
+EMAIL_BOOKSHOP_RECIPIENT = None
+BOOKSHOP_OWNER_NAME = None  # for emails
 SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
 
-def get_from_config(key, verbose=True, msg="{}: {}", color="green"):
+def get_from_config(key, verbose=True, msg="{}: {}", color="green", secret=False):
     if os.path.exists(os.path.join(BASE_DIR, "config.py")):
         try:
             if config:
@@ -555,13 +557,15 @@ def get_from_config(key, verbose=True, msg="{}: {}", color="green"):
                     if val is None:
                         print(termcolor.colored("warn: {} is None", "red"))
                     if color is not None:
-                        msg = msg.format(key, "OK")
+                        if secret:
+                            val = "OK"
+                        msg = msg.format(key, val)
                         print(termcolor.colored(msg, color))
                     return val
         except Exception:
             pass
 
-# val = get_from_config('SENDGRID_API_KEY')
+# val = get_from_config('SENDGRID_API_KEY', secret=True)
 # if val:
     # SENDGRID_API_KEY = val
 
@@ -579,3 +583,11 @@ if os.path.exists(sendgrid_file_path):
     else:
         if FEATURE_MAILER:
             print(termcolor.colored("WARN: we want to be able to send emails, but we couldn't find our Sendgrid secret api key.", "red"))
+
+val = get_from_config('EMAIL_BOOKSHOP_RECIPIENT')
+if val:
+    EMAIL_BOOKSHOP_RECIPIENT = val
+
+val = get_from_config('BOOKSHOP_OWNER_NAME')
+if val:
+    BOOKSHOP_OWNER_NAME = val

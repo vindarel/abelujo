@@ -21,7 +21,6 @@
 # Bad library quality overall :(
 # from __future__ import unicode_literals
 
-import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
@@ -84,6 +83,7 @@ def send_email(from_email=FROM_EMAIL,
 ####################################################################
 
 SUBJECT_COMMAND_OK = "Votre commande"
+SUBJECT_COMMAND_OWNER = "Nouvelle commande"
 
 LINEBREAK = "</br>"
 NEWLINE = "{} {}".format(LINEBREAK, LINEBREAK)
@@ -94,6 +94,17 @@ def generate_card_summary(cards):
         res += "- {}".format(card.title)
     if cards:
         res += "{}".format(NEWLINE)
+    return res
+
+def generate_client_data(client):
+    if not client:
+        log.warning("generate_client_data: no client.")
+        return ""
+    res = ""
+    res += client.__repr__()
+    res += NEWLINE
+    res += client.address1
+    res += NEWLINE
     return res
 
 def generate_body_for_command_confirmation(price, cards):
@@ -114,6 +125,29 @@ L'équipe
     return body
 
 
+def generate_body_for_owner_confirmation(price, cards, client, owner_name):
+    body = """Bonjour {owner_name}, {newline}
+
+Vous avez reçu une nouvelle commande:
+
+{CARDS}
+
+Total: {amount}
+
+Ce client est: {newline}
+
+{client_data}
+
+À bientôt
+"""
+    body = body.format(newline=NEWLINE,
+                       owner_name=owner_name,
+                       CARDS=generate_card_summary(cards),
+                       client_data=generate_client_data(client),
+                       amount=price,
+                       )
+    return body
+
 def send_command_confirmation(cards=[],  # list of cards sold
                               total_price="",
                               to_emails=TEST_TO_EMAILS,
@@ -129,6 +163,17 @@ def send_command_confirmation(cards=[],  # list of cards sold
                      verbose=verbose)
     return res
 
+
+def send_owner_confirmation(cards=[], total_price="", email="", client=None,
+                            verbose=False):
+    body = generate_body_for_owner_confirmation(total_price, cards, client, owner_name)
+
+    res = send_email(to_emails=email,
+                     from_email=FROM_EMAIL,
+                     subject=SUBJECT_COMMAND_OWNER,
+                     html_content=body,
+                     verbose=verbose,
+                     )
 
 if __name__ == "__main__":
     exit(send_email())

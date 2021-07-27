@@ -423,4 +423,16 @@ def api_stripe_hooks(request, **response_kwargs):
         except Exception as e:
             log.error("api_stripe: could not send confirmation email: {}".format(e))
 
+        # Send confirmation to bookshop owner.
+        if settings.EMAIL_BOOKSHOP_RECIPIENT:
+            try:
+                mailer.send_owner_confirmation(cards=cards,
+                                               total_price=amount,
+                                               email=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                               owner_name=settings.BOOKSHOP_OWNER_NAME,
+                                               )
+                log.info("stripe webhook: confirmation sent to owner: {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT))
+            except Exception as e:
+                log.error("api_stripe webhook: could not send confirmation email to owner: {}".format(e))
+
     return JsonResponse(res, status=200)

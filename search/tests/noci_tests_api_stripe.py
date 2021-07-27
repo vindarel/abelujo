@@ -32,7 +32,10 @@ import mock
 
 from django.test import TestCase
 
+from abelujo import settings
 from search import api_stripe
+from search import mailer
+from search.models import Client
 from search.models import Reservation
 
 from tests_api import CardFactory
@@ -408,6 +411,17 @@ class TestStripe(TestCase):
             }
         }
         res = api_stripe.api_stripe_hooks(request, is_test=True)
+
+    def test_email_body(self):
+        self.client = Client(name="toto", firstname="Firstname", address1="5 rue Hugo")
+        self.client.save()
+        res = mailer.generate_client_data(self.client)
+        self.assertTrue(res)
+
+        res = mailer.generate_body_for_owner_confirmation("10", [self.card, self.card2],
+                                                          self.client,
+                                                          owner_name=settings.BOOKSHOP_OWNER_NAME)
+        self.assertTrue(res)
 
 class TestLive(TestCase):
     def notest_send_payload(self):
