@@ -361,7 +361,7 @@ def api_stripe_hooks(request, **response_kwargs):
     from pprint import pprint
     pprint(payload)
     try:
-        payment_intent = payload['data']['object']['id']
+        payment_intent = payload['data']['object']['payment_intent']
     except Exception as e:
         log.error("Could not get the payment intent ID in webhook: {}".format(e))
 
@@ -373,6 +373,8 @@ def api_stripe_hooks(request, **response_kwargs):
     if ongoing_reservations:
         client = ongoing_reservations.first().client
         send_by_post = ongoing_reservations.first().send_by_post
+    else:
+        log.warning("stripe webhook: we didn't find any ongoing reservation with payment intent {}. We won't be able to find a related client and to send confirmation emails.".format(payment_intent))
 
     # Quickly check we have the same clients.
     if client:
