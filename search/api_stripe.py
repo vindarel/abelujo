@@ -306,7 +306,8 @@ def api_stripe_hooks(request, **response_kwargs):
         signature = request.META.get('HTTP_STRIPE_SIGNATURE')
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
-    cards = []  # TODO:
+    ongoing_reservations = []
+    cards = []
     event = None
     res = {'data': "",
            'alerts': [],
@@ -373,6 +374,7 @@ def api_stripe_hooks(request, **response_kwargs):
     if ongoing_reservations:
         client = ongoing_reservations.first().client
         send_by_post = ongoing_reservations.first().send_by_post
+        cards = [it.card for it in ongoing_reservations]
     else:
         log.warning("stripe webhook: we didn't find any ongoing reservation with payment intent {}. We won't be able to find a related client and to send confirmation emails.".format(payment_intent))
 
@@ -421,23 +423,28 @@ def api_stripe_hooks(request, **response_kwargs):
         # Send it, damn it.
         try:
             if to_email:
-                mailer.send_command_confirmation(cards=cards, total_price=amount,
-                                                 to_emails=to_email)
-                log.info("stripe webhook: confirmation mail sent to {}".format(to_email))
+                mail_sent = mailer.send_command_confirmation(cards=cards, total_price=amount,
+                                                             to_emails=to_email)
+                log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
+                if not mail_sent:
+                    pass  # TODO: register info in reservation.
         except Exception as e:
             log.error("api_stripe: could not send confirmation email: {}".format(e))
 
         # Send confirmation to bookshop owner.
         if settings.EMAIL_BOOKSHOP_RECIPIENT:
             try:
-                mailer.send_owner_confirmation(cards=cards,
+                mail_sent = mailer.send_owner_confirmation(cards=cards,
                                                client=client,
                                                total_price=amount,
                                                email=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                owner_name=settings.BOOKSHOP_OWNER_NAME,
                                                send_by_post=send_by_post,
                                                )
-                log.info("stripe webhook: confirmation sent to owner: {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT))
+                log.info("stripe webhook: confirmation sent to owner: {} ? {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT, mail_sent))
+                if not mail_sent:
+                    # TODO:
+                    pass
             except Exception as e:
                 log.error("api_stripe webhook: could not send confirmation email to owner: {}".format(e))
         else:
