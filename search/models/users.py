@@ -431,6 +431,15 @@ class Bookshop(Contact):
     def __repr__(self):
         return "Bookshop {}".format(self.name)
 
+    @staticmethod
+    def name():
+        try:
+            bookshop = Bookshop.objects.first()
+            if bookshop:
+                return bookshop.name
+        except Exception as e:
+            log.warning("Could not find the bookshop name: {}".format(e))
+
 
 class BillCopies(models.Model):
     card = models.ForeignKey("search.Card")

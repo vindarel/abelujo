@@ -199,6 +199,9 @@ testscrapers:
 # Run all tests possible.
 test: unit ods testscrapers
 
+send_test_emails:
+	./manage.py test search.tests.noci_tests_api_stripe.TestLive.notest_send_test_emails
+
 testcafe:
 	# Firefox has pbs with the new syntax (async/await).
 	cd search/tests/integration-tests/ && testcafe chromium test*.js
@@ -251,6 +254,13 @@ translation-files:
 translation-compile:
 	django-admin.py compilemessages 	# gunicorn needs a restart
 
+
+
+
+###########################################################
+# QA
+###########################################################
+
 flake8:
 	flake8 --config=setup.cfg abelujo search *.py
 
@@ -263,6 +273,9 @@ qa: flake8
 pylint:
 	pylint abelujo search
 
+###########################################################
+# Cleanup
+###########################################################
 uninstall-js:
 	@echo "##### Removing local JS libraries..."
 	rm -rf node_modules/

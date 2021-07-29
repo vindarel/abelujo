@@ -37,6 +37,7 @@ from search import api_stripe
 from search import mailer
 from search.models import Client
 from search.models import Reservation
+from search.models.users import Bookshop
 
 from tests_api import CardFactory
 
@@ -405,6 +406,7 @@ class TestStripe(TestCase):
         print(res)
 
     def test_webhooks(self):
+        # TODO: to finish, doesn't integrate well.
         request = {
             'body': {
                 'HTTP_STRIPE_SIGNATURE': 'test',
@@ -433,6 +435,8 @@ class TestLive(TestCase):
                              mobilephone="06 09 09 09 09", telephone="05 98 98 98 98",
                              email="test@test.fr",
                              city="Touwin", country="France", zip_code="31000")
+        self.bookshop = Bookshop(name="La librairie")
+        self.bookshop.save()
         self.client.save()
 
     def notest_send_payload(self):
@@ -449,12 +453,16 @@ class TestLive(TestCase):
         req = send_test_webhook()
         return req
 
-    def notest_send_test_owner_email(self):
+    def notest_send_test_emails(self):
         req = mailer.send_owner_confirmation(cards=[self.card, self.card2],
                                              client=self.client,
-                                             total_price=10,
+                                             total_price="10,00 €",
                                              email=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                              owner_name=settings.TEST_BOOKSHOP_OWNER_NAME,
                                              )
+        client_req = mailer.send_command_confirmation(cards=[self.card, self.card2],
+                                               to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
+                                               total_price="10,00 €",
+                                             )
         self.assertTrue(req)
-        return req
+        self.assertTrue(client_req)

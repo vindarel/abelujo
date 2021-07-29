@@ -26,6 +26,8 @@ from sendgrid.helpers.mail import Mail
 
 from abelujo import settings
 
+from search.models.users import Bookshop
+
 # FROM_EMAIL = settings.EMAIL_SENDER  # doesn't like UTF8...
 FROM_EMAIL = 'contact+commandes@abelujo.cc'
 
@@ -128,12 +130,15 @@ Votre commande des titres suivants pour un total de {PRICE} a bien été reçue.
 
 Merci beaucoup et à bientôt ! {newline}
 
-L'équipe
+{BOOKSHOP}
     """
+    bookshop_name = Bookshop.name() or ""
     body = body.format(linebreak=LINEBREAK,
                        newline=NEWLINE,
                        PRICE=price,
-                       CARDS=generate_card_summary(cards))
+                       CARDS=generate_card_summary(cards),
+                       BOOKSHOP=bookshop_name,
+                       )
     return body
 
 
@@ -145,7 +150,7 @@ Vous avez reçu une nouvelle commande: {newline}
 
 {CARDS}
 
-Pour un total de: {amount}€ {newline}
+Pour un total de: {amount} {newline}
 
 {maybe_send_by_post} {newline}
 
@@ -153,7 +158,7 @@ Ce client est: {newline}
 
 {client_data}
 
-À bientôt
+À bientôt {newline}
 """
     maybe_send_by_post = "Vous n'avez pas à envoyer cette commande."
     if send_by_post:
