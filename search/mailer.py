@@ -37,6 +37,7 @@ TEST_TO_EMAILS = "".join(list(reversed('gro.zliam@leradniv')))  # me@vindarel
 
 def send_email(from_email=FROM_EMAIL,
                to_emails=TEST_TO_EMAILS,
+               reply_to=None,
                subject=TEST_SUBJECT,
                html_content=TEST_BODY,
                verbose=False):
@@ -51,8 +52,11 @@ def send_email(from_email=FROM_EMAIL,
         # Use a verified sender.
         from_email=from_email,
         to_emails=to_emails,
+        # reply_to="ehvince@mailz.org",  # unavailable, LOL. Sent a PR.
         subject=subject,
         html_content=html_content)
+    if reply_to:
+        message_obj.reply_to = reply_to
 
     try:
         api_key = settings.SENDGRID_API_KEY,
@@ -63,7 +67,6 @@ def send_email(from_email=FROM_EMAIL,
                 print('api key OK')
 
         # Synchronous send:
-        # import ipdb; ipdb.set_trace()
         if isinstance(api_key, tuple):
             api_key = api_key[0]  # don't ask me why!!!
         sg = SendGridAPIClient(api_key)
@@ -175,6 +178,7 @@ Ce client est: {newline}
 def send_command_confirmation(cards=[],  # list of cards sold
                               total_price="",
                               to_emails=TEST_TO_EMAILS,
+                              reply_to=None,
                               verbose=False):
     # Build HTML body.
     body = generate_body_for_command_confirmation(total_price, cards)
@@ -182,6 +186,7 @@ def send_command_confirmation(cards=[],  # list of cards sold
     # Send.
     res = send_email(to_emails=to_emails,
                      from_email=FROM_EMAIL,
+                     reply_to=reply_to,
                      subject=SUBJECT_COMMAND_OK,
                      html_content=body,
                      verbose=verbose)

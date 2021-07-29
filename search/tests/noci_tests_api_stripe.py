@@ -462,6 +462,7 @@ class TestLive(TestCase):
                                              )
         client_req = mailer.send_command_confirmation(cards=[self.card, self.card2],
                                                to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
+                                                      reply_to=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                total_price="10,00 €",
                                              )
         self.assertTrue(req)

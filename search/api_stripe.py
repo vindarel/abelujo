@@ -433,7 +433,8 @@ def api_stripe_hooks(request, **response_kwargs):
         try:
             if to_email:
                 mail_sent = mailer.send_command_confirmation(cards=cards, total_price=amount_fmt,
-                                                             to_emails=to_email)
+                                                             to_emails=to_email,
+                                                             reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
                 if not mail_sent:
                     pass  # TODO: register info in reservation.
