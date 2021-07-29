@@ -122,8 +122,9 @@ class Reservation(TimeStampedModel):
     def get_reservations(to_dict=False):
         """
         Return all current reservations.
+        Discard the reservations not ready, i.e. they were started with an online payment but the payment process was not confirmed.
         """
-        res = Reservation.objects.filter(archived=False).order_by('client__name')
+        res = Reservation.objects.filter(archived=False, is_ready=True).order_by('client__name')
         return res
 
     @staticmethod
@@ -350,6 +351,7 @@ class Client(Contact):
         return res
 
     def reserve(self, card, nb=1, send_by_post=False, is_paid=False,
+                is_ready=True,
                 payment_origin=None, payment_meta=None, payment_session=None,
                 payment_intent=None):
         """
@@ -375,6 +377,7 @@ class Client(Contact):
             archived=False,
             send_by_post=send_by_post,
             is_paid=is_paid,
+            is_ready=is_ready,
             payment_origin=payment_origin,
             payment_meta=payment_meta,
             payment_session=payment_session,

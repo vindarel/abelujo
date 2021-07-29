@@ -237,6 +237,7 @@ def handle_api_stripe(payload):
                                                     nb=card_qty.get('qty'),
                                                     send_by_post=True,
                                                     is_paid=is_paid,
+                                                    is_ready=False,
                                                     payment_origin="stripe",
                                                     payment_meta=payload,
                                                     payment_session=session,
@@ -395,6 +396,7 @@ def api_stripe_hooks(request, **response_kwargs):
         #     resa.is_paid = True
         #     resa.save()
         ongoing_reservations.update(is_paid=True)
+        ongoing_reservations.update(is_ready=True)
 
         # Get emails.
         to_email = client.email if client else ""
