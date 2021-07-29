@@ -539,16 +539,6 @@ if os.path.exists(os.path.join(BASE_DIR, "config.py")):
         print(e)
         pass
 
-# Email settings.
-# The sender must be verified.
-FEATURE_MAILER = True
-EMAIL_SENDER = 'contact+commandes@abelujo.cc'
-EMAIL_BOOKSHOP_RECIPIENT = None
-TEST_EMAIL_BOOKSHOP_RECIPIENT = None
-BOOKSHOP_OWNER_NAME = None  # for emails
-TEST_BOOKSHOP_OWNER_NAME = None  # for emails
-SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
-
 def get_from_config(key, verbose=True, msg="{}: {}", color="green", secret=False):
     if os.path.exists(os.path.join(BASE_DIR, "config.py")):
         try:
@@ -567,24 +557,36 @@ def get_from_config(key, verbose=True, msg="{}: {}", color="green", secret=False
         except Exception:
             pass
 
+
+# Email settings.
+# The sender must be verified.
+FEATURE_MAILER = True
+EMAIL_SENDER = 'contact+commandes@abelujo.cc'
+EMAIL_BOOKSHOP_RECIPIENT = None
+TEST_EMAIL_BOOKSHOP_RECIPIENT = None
+BOOKSHOP_OWNER_NAME = None  # for emails
+TEST_BOOKSHOP_OWNER_NAME = None  # for emails
+SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
+
 # val = get_from_config('SENDGRID_API_KEY', secret=True)
 # if val:
-    # SENDGRID_API_KEY = val
-
+#    SENDGRID_API_KEY = val
 
 sendgrid_file_path = 'sendgrid.txt'
-if os.path.exists(sendgrid_file_path):
-    key = ""
-    with open(sendgrid_file_path, 'r') as f:
-        key = f.read()
-    if key:
-        key = key.strip()
+if FEATURE_MAILER:
+    if os.path.exists(sendgrid_file_path):
+        key = ""
+        with open(sendgrid_file_path, 'r') as f:
+            key = f.read()
+        if key:
+            key = key.strip()
 
-        SENDGRID_API_KEY = key
-        print("Sendgrid key from file: OK")
-    else:
-        if FEATURE_MAILER:
+            SENDGRID_API_KEY = key
+            print("Sendgrid key from file: OK")
+        else:
             print(termcolor.colored("WARN: we want to be able to send emails, but we couldn't find our Sendgrid secret api key.", "red"))
+    else:
+        print("MAILER feature is DISABLED")
 
 val = get_from_config('EMAIL_BOOKSHOP_RECIPIENT')
 if val:
