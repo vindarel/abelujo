@@ -389,7 +389,7 @@ def api_stripe_hooks(request, **response_kwargs):
     amount = None
     amount_fmt = ""
     currency = ""
-    currency_symbol = "€"
+    currency_symbol = "EUR"
     description = ""
     is_stripe_cli_test = False
     cli_test_sign = "(created by Stripe CLI)"
@@ -415,7 +415,7 @@ def api_stripe_hooks(request, **response_kwargs):
             amount = payload['data']['object']['amount_total']
             currency = payload['data']['object']['currency']
             if currency in ['eur', u'eur']:
-                currency_symbol = "€"
+                currency_symbol = "EUR"  # PySendgrid doesn't like UTF8 symbols? It works locally though :S
             amount_fmt = "{:.2f} {}".format(amount / 100.0, currency_symbol)
         except Exception as e:
             log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
