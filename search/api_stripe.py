@@ -386,7 +386,10 @@ def api_stripe_hooks(request, **response_kwargs):
                 log.warning("mmh we have ongoing reservations with payment_intent {} but not the same client ?? {} / {}".format(payment_intent, client, resa.client))
 
     to_email = ""
-    amount = 0
+    amount = None
+    amount_fmt = ""
+    currency = ""
+    currency_symbol = "€"
     description = ""
     is_stripe_cli_test = False
     cli_test_sign = "(created by Stripe CLI)"
@@ -409,7 +412,11 @@ def api_stripe_hooks(request, **response_kwargs):
             log.info("api_stripe_hooks: could not get the description, I don't know if we are in a stripe cli test: {}".format(e))
 
         try:
-            amount = payload['data']['object']['charges']['data'][0]['amount']
+            amount = payload['data']['object']['amount_total']
+            currency = payload['data']['object']['currency']
+            if currency in ['eur', u'eur']:
+                currency_symbol = "€"
+            amount_fmt = "{:.2f} {}".format(amount / 100.0, currency_symbol)
         except Exception as e:
             log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
 
@@ -425,7 +432,7 @@ def api_stripe_hooks(request, **response_kwargs):
         # Send it, damn it.
         try:
             if to_email:
-                mail_sent = mailer.send_command_confirmation(cards=cards, total_price=amount,
+                mail_sent = mailer.send_command_confirmation(cards=cards, total_price=amount_fmt,
                                                              to_emails=to_email)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
                 if not mail_sent:
@@ -438,7 +445,7 @@ def api_stripe_hooks(request, **response_kwargs):
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
                                                client=client,
-                                               total_price=amount,
+                                               total_price=amount_fmt,
                                                email=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                owner_name=settings.BOOKSHOP_OWNER_NAME,
                                                send_by_post=send_by_post,
