@@ -80,6 +80,9 @@ class Reservation(TimeStampedModel):
     card = models.ForeignKey("search.Card", null=True, blank=True)
     #: optional: a quantity to reserve. Defaults to 1.
     nb = models.IntegerField(default=1, null=True, blank=True)
+    #: This reservation is ready, we must show it to the bookshop owner.
+    # With a Stripe payment, it is first not ready and then it is confirmed in the webhook.
+    is_ready = models.BooleanField(default=True)
     #: This reservation is already paid. For example, online with Stripe.
     is_paid = models.BooleanField(default=False)
     #: Payment origin: Stripe?
