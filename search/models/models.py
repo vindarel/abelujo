@@ -1165,6 +1165,7 @@ class Card(TimeStampedModel):
             "distributor": dist,
             "fmt": self.fmt,
             "img": self.img,
+            "is_unavailable": self.is_unavailable,
             "cover": self.cover,  # either the url, either the saved file on file system.
             "isbn": isbn,
             "meta": self.meta,

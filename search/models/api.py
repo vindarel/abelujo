@@ -363,6 +363,7 @@ def card(request, **kwargs):
     msgs = Messages()
     ret = {"data": [],
            "msgs": []}
+    card = None
     if request.method == 'GET':
         pk = kwargs.pop('pk')
         try:
@@ -373,6 +374,7 @@ def card(request, **kwargs):
             log.warning(msg)
             msgs.add_error(msg)
             ret["alerts"] = msgs.msgs
+            return JsonResponse(ret)
 
         # Get and return Dilicom-only data, like the market availability?
         # see also card update API...

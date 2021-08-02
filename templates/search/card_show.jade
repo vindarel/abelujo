@@ -112,7 +112,11 @@
             tr
               td {% trans "isbn" %}
               td {{ object.isbn }}
-            if object.availability
+            if object.is_unavailable
+              tr.my-yellow-bg
+                td Disponibilité
+                td {% trans "Not available" %}
+            else object.availability
               tr
                 td Disponibilité
                 td {{ object.availability_fmt }}
