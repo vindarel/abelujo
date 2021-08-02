@@ -69,6 +69,30 @@
         {% endif %}
       </div>
 
+      <div>
+        {% if client.address1 %}
+        {{ client.address1 }},
+
+        {% if client.address2 %}
+        {{ client.address2 }},
+        {% endif %}
+        {% if client.zip_code %}
+        {{ client.zip_code }}
+        {% endif %}
+        {% endif %}
+
+        {% if client.city %}
+        {{ client.city }}
+        {% endif %}
+        {% if client.state %}
+        {{ client.state }}
+        {% endif %}
+
+        {% if client.country %}
+        {{ client.country }}
+        {% endif %}
+      </div>
+
     </div>
 
     <div class="col-md-8">
