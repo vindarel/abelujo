@@ -664,6 +664,10 @@ class Card(TimeStampedModel):
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))
     #: Quantity (caution: this field is denormalized, computed on each save).
     quantity = models.IntegerField(null=True, blank=True, editable=False, verbose_name=__("quantity"))
+    #: If we know this book is unavailable, mark this.
+    #: Normally, the availability is asked on book updates to Dilicom.
+    #: But with manually-created books, we have to set this.
+    is_unavailable = models.BooleanField(default=False, verbose_name=__("This book is not available. Don't check on Dilicom. Don't show it on a website."))
     #: The minimal quantity we want to always have in stock:
     threshold = models.IntegerField(blank=True, null=True, default=THRESHOLD_DEFAULT,
                                     verbose_name=__("Minimal quantity before command"))
