@@ -23,10 +23,35 @@
 {% bootstrap_javascript %}
 {% load ngfilter %}
 
-h3 {% trans "Selling cards" %}
+style.
+  @media print {
+    .noprint {
+      display: none;
+    }
+    .onlyprint {
+      display: block;
+    }
+  }
+
+  @media screen {
+    .noprint {
+      display: block;
+    }
+    .onlyprint {
+      display: none;
+    }
+  }
+
+h3.noprint {% trans "Selling cards" %}
+h3.onlyprint {% if bookshop %} {{ bookshop.name }} {% endif %}
 div.ng-cloak(ng-controller="sellController")
 
-  div
+  //- div.onlyprint
+    div Hello print \o/
+
+  h4.onlyprint {{ 'date | date: "yyyy-MM-dd HH:mm"' | ng }}
+
+  div.noprint
     uib-alert(
       ng-repeat="alert in alerts"
       type="{{ 'alert.level' | ng }}"
@@ -35,7 +60,7 @@ div.ng-cloak(ng-controller="sellController")
     )
       {{ 'alert.message' | ng }}
 
-  form(method='post', novalidate)
+  form.noprint(method='post', novalidate)
       .row
         .col-md-3
           form
@@ -103,7 +128,7 @@ div.ng-cloak(ng-controller="sellController")
           )
       {% endif %}
 
-      .row
+      .row.noprint
         .col-md-12
           p.input-group
            form()
@@ -122,7 +147,7 @@ div.ng-cloak(ng-controller="sellController")
             )
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
-  .row(style="margin-left: 1em")
+  .row.noprint(style="margin-left: 1em")
           h3 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
             div(ng-show="cards_selected.length") {% trans "Total:" %} {{ 'total_price ' | ng }} {{ 'cards_selected[0].currency' | ng }}
           span Payer
@@ -132,7 +157,7 @@ div.ng-cloak(ng-controller="sellController")
           span(ng-repeat="payment in payment_means")
             input.btn.btn-success(id="payment", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }}
 
-  .row(ng-show="show_payment_2")
+  .row.noprint(ng-show="show_payment_2")
           span Payer
             input(type="number", step="0.01", ng-model="total_payment_2")
             span &nbsp; en
@@ -141,7 +166,10 @@ div.ng-cloak(ng-controller="sellController")
             input.btn.btn-success(id="payment_2", type="submit", value="{{ 'payment.name' | ng }}", ng-click="sellCardsWith(payment)") {{ 'payment.name' | ng }} &nbsp;
           i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_payment_2()")
 
-  .row(ng-show="cards_selected.length > 0")
+  .row.onlyprint
+    h3 Total TTC: {{ 'total_price' | ng }} {{ 'cards_selected[0].currency' | ng }}
+
+  .row.noprint(ng-show="cards_selected.length > 0")
           .col-md-5
           .col-md-1
           .col-md-1
@@ -159,7 +187,8 @@ div.ng-cloak(ng-controller="sellController")
 
       .row(ng-show="cards_selected", ng-repeat="card in cards_selected")
         h4.col-md-4
-          a(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
+          a.noprint(target="_blank", href="{{ 'card.get_absolute_url' | ng }}") {{ 'card.title' | ng }}
+          div.onlyprint {{ 'card.title | limitTo:40' | ng }}
 
         //- .col-md-3
           i.glyphicon.glyphicon-warning-sign(
@@ -168,7 +197,7 @@ div.ng-cloak(ng-controller="sellController")
           //- i.glyphicon.glyphicon-exclamation-s
 
         .col-md-2
-            p.input-group
+            p.input-group.noprint
                 label.sr-only {% trans "Price" %}
                 input.form-control(
                   type="number", step="0.1", min=0
@@ -178,8 +207,11 @@ div.ng-cloak(ng-controller="sellController")
                 )
                 span.input-group-addon {{ 'card.currency' | ng }}
                 div(ng-show="card.price_alert.price_changed") {% trans "ancien prix:" %} &nbsp; {{ 'card.price_alert.old_price' | ng }}
+            p.onlyprint {{ card.price_sold }}
 
-        .col-md-1
+        .col-md-2.onlyprint {{ 'card.price_sold' | ng }} {{ 'card.currency' | ng }}
+
+        .col-md-1.noprint
             select(
               ng-options="elt.name for elt in preferences.sell_discounts_with_labels"
               title='{% trans "Choose a discount" %}'
@@ -187,7 +219,7 @@ div.ng-cloak(ng-controller="sellController")
               ng-change='discount_apply($index)'
               )
 
-        .col-md-2
+        .col-md-2.noprint
             p.input-group
                 label.sr-only {% trans "Quantity" %}
                 span.input-group-addon X
@@ -197,7 +229,7 @@ div.ng-cloak(ng-controller="sellController")
                   ng-change="{% verbatim %} updateTotalPrice() {% endverbatim %}"
                 )
 
-        .col-md-2
+        .col-md-2.noprint
           span stock: {{ 'card.quantity' | ng }} => {{ 'card.quantity - card.quantity_sell' | ng }}
           span &nbsp;
             a.btn.btn-default(title='{% trans "Remember to command this card. Add it to the list for later." %}', href="#", ng-click="do_card_command(card.id)")
@@ -205,10 +237,27 @@ div.ng-cloak(ng-controller="sellController")
               span &nbsp; x
                 span(id="command{{ 'card.id' | ng }}") {{ 'card.quantity_in_command' | ng }}
 
-        .col-md-1
+        .col-md-1.noprint
             i.glyphicon.glyphicon-remove.mouse-pointer(ng-click="remove_from_selection($index)", style="float: right;")
 
+      div.onlyprint
+        div --------------
+        div Rappel TVA: livres 5,50€, autres 20,0%
 
 
+script.
+  window.addEventListener("beforeprint", function(event) {
+    console.log("Hello print");
+  });
+
+br
+div.onlyprint {% trans "Merci et à bientôt !" %}
+{% if bookshop %}
+div.onlyprint  {{ bookshop.website }}
+div.onlyprint  {{ bookshop.mobilephone }}
+div.onlyprint  {{ bookshop.telephone }}
+div.onlyprint  {{ bookshop.address1 }} {{ bookshop.address2 }} {{ bookshop.zip_code }} {{ bookshop.city }}
+
+{% endif %}
 
 {% endblock content %}

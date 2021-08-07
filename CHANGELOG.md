@@ -12,6 +12,7 @@ Changelog starting from v0.5 (2018/09/18)
 - History: the history gets more **breakdown**: it shows totals for each type of product (book, CD, beverage…)
 - History: the history page of the month and the day show the **best sells** for each kind of product: books, but not only.
 - Sell page: we can pay with **two payment methods**.
+- Sell page: print adapted to print **receipts** (tested with Epson TM-20)
 - the Commands page shows **all cards to command**, in addition to them grouped by supplier. This makes it easier to download a CSV and send it to a supplier.
 - added a button to collapse the left menu. We can now work in "full screen". Especially useful for the Raspberry Pis and views with a lot of information (Reception, lists…).
 - We can choose what books to show on the ABStock catalogue from within Abelujo (see new page `/catalogue-selection`).

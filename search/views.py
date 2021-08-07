@@ -835,9 +835,15 @@ def sell(request):
     show_selling_places = False
     if Place.objects.count() > 1:
         show_selling_places = True
+    try:
+        bookshop = users.Bookshop.objects.first()
+    except Exception as e:
+        log.error("Error getting Bookshop: {}".format(e))
+        bookshop = None
     return render(request, "search/sell_create.jade",
                   {
-                      "show_selling_places": show_selling_places
+                      "show_selling_places": show_selling_places,
+                      "bookshop": bookshop,
                   })
 
 @login_required
