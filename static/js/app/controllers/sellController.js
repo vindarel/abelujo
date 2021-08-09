@@ -114,6 +114,21 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
 
     $scope.select_client = function(item) {
         $scope.client = item;
+        $log.info("-- client: ", item);
+        // If client has a default discount, apply it.
+        if (item.discount > 0) {
+            let discount = _.find($scope.discounts.choices, {'discount': item.discount});
+            $log.info("-- found: ", discount);
+            if (discount) {
+                // TODO: apply the discount automatically.
+                // $scope.discounts.global_discount = discount;
+                // $scope.discount_global();
+                // For now, just show an alert we should apply it:
+                Notiflix.Notify.Info(gettext("Discount: ") + discount.name);
+            } else {
+                Notiflix.Notify.Warning("La remise de ce client n'est pas valable.");
+            }
+        }
     };
 
     $http.get("/api/places")
