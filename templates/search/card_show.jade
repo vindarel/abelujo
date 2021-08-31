@@ -131,10 +131,8 @@
               td
                 if object.fmt
                   span {{ object.fmt }}
-                if object.width
-                  span ({{ object.width }} x {{ object.height }}
-                if object.thickness
-                  span x {{ object.thickness }})
+                if object
+                  span(title='{% trans "width" %} {% trans "height" %} {% trans "thickness" %}') ({{ object.width }} x {{ object.height }} x {{ object.thickness }})
 
             if object.weight
               tr
