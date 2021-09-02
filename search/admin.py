@@ -59,6 +59,7 @@ class CardAdmin(admin.ModelAdmin):
     list_display = ("title", "distributor", "price",)
     list_editable = ("distributor", "price",)
     filter_horizontal = ("authors", "publishers",)
+    exclude = ("in_stock",)
 
 
 class CardTypeAdmin(admin.ModelAdmin):
