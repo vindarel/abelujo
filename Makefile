@@ -89,7 +89,7 @@ stash:
 
 update: stash
 	make pull
-	make set-prod
+	# make set-prod  # issues with serving the PDF bills… (2021-08 still)
 	make pip
 	make pip-submodule
 	make migrate
