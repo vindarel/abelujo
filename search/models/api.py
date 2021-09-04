@@ -2345,11 +2345,25 @@ def inventories_remove(request, **kwargs):
     return JsonResponse(to_ret)
 
 def inventory_diff(request, pk, **kwargs):
-    diff, name, total_copies_in_inv, total_copies_in_stock = Inventory.diff_inventory(pk, to_dict=True)
+    page = 1
+    page_size = 50
+    params = request.GET.copy()
+    if params:
+        if params.get('page'):
+            page = int(params.get('page'))
+
+    # diff, name, total_copies_in_inv, total_copies_in_stock = Inventory.diff_inventory(pk, to_dict=True)
+    diff, name, total_copies_in_inv, total_copies_in_stock, diff_items_length = Inventory.diff_inventory(pk, page=page, page_size=page_size)
+
+    num_pages, remainder = divmod(diff_items_length, page_size)
+    if remainder > 0:
+        num_pages += 1
+    meta = {'num_pages': num_pages}
     to_ret = {'cards': diff,
               'total_copies_in_inv': total_copies_in_inv,
               'total_copies_in_stock': total_copies_in_stock,
-              'name': name}
+              'name': name,
+              'meta': meta}
     return JsonResponse(to_ret)
 
 def inventory_apply(request, pk, **kwargs):

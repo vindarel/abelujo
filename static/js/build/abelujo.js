@@ -3894,34 +3894,51 @@ angular.module("abelujo").controller('inventoryTerminateController', [
     $scope.is_more_in_inv = false;
     $scope.is_less_in_inv = false;
     $scope.is_missing = false;
+    $scope.page = 1;
+    $scope.page_size = 50;
+    $scope.page_sizes = [25, 50, 100, 200];
+    $scope.page_max = 1;
+    $scope.meta = {
+      num_pages: 1
+    };
     $scope.inv_id = utils.url_id($window.location.pathname);
     $scope.language = utils.url_language($window.location.pathname);
-    $http.get(get_api(api_inventory_id_diff)).then(function(response){
-      $scope.diff = response.data.cards;
-      $scope.name = response.data.name;
-      $scope.total_copies_in_inv = response.data.total_copies_in_inv;
-      $scope.total_copies_in_stock = response.data.total_copies_in_stock;
-      $scope.more_in_inv = Obj.filter(function(it){
-        return it.diff < 0;
-      })(
-      $scope.diff);
-      $scope.is_more_in_inv = !Obj.empty($scope.more_in_inv);
-      $scope.less_in_inv = Obj.filter(function(it){
-        return it.diff > 0;
-      })(
-      $scope.diff);
-      $scope.is_less_in_inv = !Obj.empty($scope.less_in_inv);
-      $scope.missing = Obj.filter(function(it){
-        return it.inv === 0;
-      })(
-      $scope.diff);
-      $scope.is_missing = !Obj.empty($scope.missing);
-      $scope.no_origin = Obj.filter(function(it){
-        return it.stock === 0;
-      })(
-      $scope.diff);
-      $scope.is_no_origin = !Obj.empty($scope.no_origin);
-    });
+    $scope.get_diff = function(){
+      var params;
+      params = {
+        page: $scope.page
+      };
+      $http.get(get_api(api_inventory_id_diff), {
+        params: params
+      }).then(function(response){
+        $scope.diff = response.data.cards;
+        $scope.name = response.data.name;
+        $scope.total_copies_in_inv = response.data.total_copies_in_inv;
+        $scope.total_copies_in_stock = response.data.total_copies_in_stock;
+        $scope.meta = response.data.meta;
+        $scope.more_in_inv = Obj.filter(function(it){
+          return it.diff < 0;
+        })(
+        $scope.diff);
+        $scope.is_more_in_inv = !Obj.empty($scope.more_in_inv);
+        $scope.less_in_inv = Obj.filter(function(it){
+          return it.diff > 0;
+        })(
+        $scope.diff);
+        $scope.is_less_in_inv = !Obj.empty($scope.less_in_inv);
+        $scope.missing = Obj.filter(function(it){
+          return it.inv === 0;
+        })(
+        $scope.diff);
+        $scope.is_missing = !Obj.empty($scope.missing);
+        $scope.no_origin = Obj.filter(function(it){
+          return it.stock === 0;
+        })(
+        $scope.diff);
+        $scope.is_no_origin = !Obj.empty($scope.no_origin);
+      });
+    };
+    $scope.get_diff();
     $scope.obj_length = function(obj){
       return Obj.keys(obj).length;
     };
@@ -3939,6 +3956,26 @@ angular.module("abelujo").controller('inventoryTerminateController', [
     };
     $scope.closeAlert = function(index){
       $scope.alerts.splice(index, 1);
+    };
+    $scope.nextPage = function(){
+      if ($scope.page < $scope.meta.num_pages) {
+        $scope.page += 1;
+        $scope.get_diff();
+      }
+    };
+    $scope.lastPage = function(){
+      $scope.page = $scope.meta.num_pages;
+      $scope.get_diff();
+    };
+    $scope.previousPage = function(){
+      if ($scope.page > 1) {
+        $scope.page -= 1;
+        $scope.get_diff();
+      }
+    };
+    $scope.firstPage = function(){
+      $scope.page = 1;
+      $scope.get_diff();
     };
     focus = function(){
       angular.element('#default-input').trigger('focus');

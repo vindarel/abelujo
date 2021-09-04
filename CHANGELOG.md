@@ -37,6 +37,7 @@ More data delivered with the API:
 - deposits: we don't mention anymore the type of deposits that are sent by us to the exterior world.
 - **speed up** to display the list of commands.
 - **speed up** of the analysis of inventories (x10, but not always at the first access).
+- **speed up** of the inventory analysis page.
 
 ### For administrators
 

@@ -86,8 +86,28 @@ div(ng-controller="inventoryTerminateController")
     .col-md-3
      h4 {% trans "Difference" %}: {{'total_copies_in_inv - total_copies_in_stock'|ng}}
 
+
+  .col-md-7
+        .btn-group
+          span.text-right(aria-label="page navigation")
+             ul.pagination()
+               li.page-item
+                 a.page-link(ng-click="firstPage()")  &laquo;
+               li.page-item
+                 a.page-link(ng-click="previousPage()") <
+               li.page-item
+                 a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+               li.page-item
+                 a.page-link(ng-click="nextPage()") >
+               li.page-item
+                 a.page-link(ng-click="lastPage()") &raquo;
+
+        .btn-group
+          select.form-control( ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
+
+
   .row
-   table.table.table-condensed.table-striped.table-hover(datatable='ng')
+   table.table.table-condensed.table-striped.table-hover()
      thead
        th {% trans "Title" %}
        th {% trans "Qty origin" %}
@@ -100,6 +120,24 @@ div(ng-controller="inventoryTerminateController")
         td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.stock' | ng}}
         td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.inv' | ng}}
         td(ng-class="{'my-green-bg': data.diff == 0, 'my-red-bg': data.diff < 0, 'my-yellow-bg': data.diff > 0}") {{ 'data.diff' |ng }}
+
+  .col-md-7
+        .btn-group
+          span.text-right(aria-label="page navigation")
+             ul.pagination
+               li.page-item
+                 a.page-link(ng-click="firstPage()")  &laquo;
+               li.page-item
+                 a.page-link(ng-click="previousPage()") <
+               li.page-item
+                 a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+               li.page-item
+                 a.page-link(ng-click="nextPage()") >
+               li.page-item
+                 a.page-link(ng-click="lastPage()") &raquo;
+
+        .btn-group
+          select.form-control(ng-model="page_size", ng-options="it for it in page_sizes", style="width: 5em")
 
 
 

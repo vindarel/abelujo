@@ -1453,7 +1453,7 @@ class TestInventory(TestCase):
         self.inv.add_copy(self.card2, nb=2)
         self.inv.add_copy(self.card3, nb=1)
         # the inventory...
-        d_diff, objname, _, _ = self.inv.diff()
+        d_diff, objname, _, _, _ = self.inv.diff()
         # - ... has not the card 1
         self.assertEqual(d_diff[1]['stock'], 1)
         self.assertEqual(d_diff[1]['inv'], 0)
@@ -1470,10 +1470,6 @@ class TestInventory(TestCase):
         self.assertEqual(d_diff[3]['inv'], 1)
         self.assertEqual(d_diff[3]['in_orig'], False)
         self.assertEqual(d_diff[3]['in_inv'], True)
-
-        # With to_dict:
-        d_diff, objname, _, _ = self.inv.diff(to_dict=True)
-        self.assertTrue(d_diff)
 
     def test_apply(self):
         # create a few cards, put some in the place and in our

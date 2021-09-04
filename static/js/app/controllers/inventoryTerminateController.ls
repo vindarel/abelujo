@@ -88,37 +88,53 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
     $scope.is_less_in_inv = false
     $scope.is_missing     = false
 
+    # pagination
+    $scope.page = 1
+    $scope.page_size = 50
+    $scope.page_sizes = [25, 50, 100, 200]
+    $scope.page_max = 1
+
+    $scope.meta = {num_pages: 1}
+
     # If we're on page /../inventories/XX/, get info of inventory XX.
     #XXX use angular routing
     $scope.inv_id = utils.url_id($window.location.pathname) # the regexp could include "inventories"
     $scope.language = utils.url_language($window.location.pathname)
 
-    $http.get get_api api_inventory_id_diff
-    .then (response) !->
-        # $scope.alerts = response.data.msgs
-        $scope.diff = response.data.cards
-        $scope.name = response.data.name
-        $scope.total_copies_in_inv = response.data.total_copies_in_inv
-        $scope.total_copies_in_stock = response.data.total_copies_in_stock
+    $scope.get_diff = !->
+        params = do
+            page: $scope.page
 
-        # Cards that are too much in the inventory
-        $scope.more_in_inv = $scope.diff
-        |> Obj.filter (.diff < 0)
-        $scope.is_more_in_inv = ! Obj.empty $scope.more_in_inv
-        # Cards that are present in less qty in the inventory
-        $scope.less_in_inv = $scope.diff
-        |> Obj.filter (.diff > 0)
-        $scope.is_less_in_inv = ! Obj.empty $scope.less_in_inv
-        # Cards that are missing in the inventory
-        # (not a list but an object: id-> card)
-        $scope.missing = $scope.diff
-        |> Obj.filter (.inv == 0)
+        $http.get get_api(api_inventory_id_diff), do
+          params: params
+        .then (response) !->
+            # $scope.alerts = response.data.msgs
+            $scope.diff = response.data.cards
+            $scope.name = response.data.name
+            $scope.total_copies_in_inv = response.data.total_copies_in_inv
+            $scope.total_copies_in_stock = response.data.total_copies_in_stock
+            $scope.meta = response.data.meta
 
-        $scope.is_missing = ! Obj.empty $scope.missing
-        # Cards not present initially
-        $scope.no_origin = $scope.diff
-        |> Obj.filter (.stock == 0)
-        $scope.is_no_origin = ! Obj.empty $scope.no_origin
+            # Cards that are too much in the inventory
+            $scope.more_in_inv = $scope.diff
+            |> Obj.filter (.diff < 0)
+            $scope.is_more_in_inv = ! Obj.empty $scope.more_in_inv
+            # Cards that are present in less qty in the inventory
+            $scope.less_in_inv = $scope.diff
+            |> Obj.filter (.diff > 0)
+            $scope.is_less_in_inv = ! Obj.empty $scope.less_in_inv
+            # Cards that are missing in the inventory
+            # (not a list but an object: id-> card)
+            $scope.missing = $scope.diff
+            |> Obj.filter (.inv == 0)
+
+            $scope.is_missing = ! Obj.empty $scope.missing
+            # Cards not present initially
+            $scope.no_origin = $scope.diff
+            |> Obj.filter (.stock == 0)
+            $scope.is_no_origin = ! Obj.empty $scope.no_origin
+
+    $scope.get_diff!
 
     $scope.obj_length = (obj) ->
         Obj.keys obj .length
@@ -134,6 +150,25 @@ angular.module "abelujo" .controller 'inventoryTerminateController', ['$http', '
 
     $scope.closeAlert = (index) !->
         $scope.alerts.splice index, 1
+
+    $scope.nextPage = !->
+        if $scope.page < $scope.meta.num_pages
+            $scope.page += 1
+            $scope.get_diff!
+
+    $scope.lastPage = !->
+        $scope.page = $scope.meta.num_pages
+        $scope.get_diff!
+
+    $scope.previousPage = !->
+        if $scope.page > 1
+            $scope.page -= 1
+            $scope.get_diff!
+
+    $scope.firstPage =!->
+        $scope.page = 1
+        $scope.get_diff!
+
 
     # Set focus:
     focus = !->

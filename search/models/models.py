@@ -5895,7 +5895,7 @@ class InventoryBase(TimeStampedModel):
             log.error("Error getting inventory: {}".format(e))
             return None
 
-    def diff(self, to_dict=False):
+    def diff(self, page=1, page_size=50):
         """Diff the inventory's state with the database: get
         - which cards are ok,
         - which ones are missing from the inventory,
@@ -5905,8 +5905,9 @@ class InventoryBase(TimeStampedModel):
 
         - return a tuple with the diff, the object name, total copies in the inv, total in stock.
 
+        If page is non-false (default), return a paginated result
+        (cards are transformed to dict with their to_dict method).
         """
-        # start = pendulum.now()
         d_stock = None
         inv_cards_set = self.copies_set.all()
         obj_name = ""
@@ -5944,7 +5945,7 @@ class InventoryBase(TimeStampedModel):
         in_stock = list(set(d_stock) - set(d_inv))  # list of ids
         in_stock = {it: d_stock[it] for it in in_stock}
 
-        # cards in the inventory but not in stoc:
+        # cards in the inventory but not in stock:
         in_inv = list(set(d_inv) - set(d_stock))
         in_inv = {it: d_inv[it] for it in in_inv}
 
@@ -5979,18 +5980,23 @@ class InventoryBase(TimeStampedModel):
                              }
         # we must have all cards in d_dif and all info.
 
+        # Inventory length (for pagination)
+        diff_items_length = len(d_diff.items())
+
         s5 = pendulum.now()
-        if to_dict:
-            # Update each sub-dict in place, to replace the card obj with its to_dict.
-            # import ipdb; ipdb.set_trace()
+        # self.d_diff = d_diff
+        if page:
+            page_start = max((page - 1) * page_size, 0)
+            page_end = min(page * page_size, diff_items_length)
+
+            # XXX: the page selection is not sorted.
             d_diff = {key: update_in(val, ['card'],
-                                     lambda copy: copy.to_dict(with_cache=True)) for key, val in list(d_diff.items())}
+                                     lambda copy: copy.to_dict(with_cache=True))
+                      for key, val in d_diff.items()[page_start:page_end]}
+
         e5 = pendulum.now()
         print("   - final to_dict: {}".format(e5 - s5))
-
-        # end = pendulum.now()
-        # print("--- inventory of {} cards took {}".format(inv_cards_set.count(), end - start))
-        return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock
+        return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock, diff_items_length
 
     def archive(self):
         """
