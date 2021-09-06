@@ -229,6 +229,7 @@ def bill(request, *args, **response_kwargs):
     # Totals
     total = 0
     total_discounted = 0  # when a discount is applied at the sell page.
+    total_discounted_fmt = None
     total_with_client_discount = total
     if not (len(ids) == len(prices) == len(quantities)):  # prices_sold: not for basket(?)
         log.error("Bill: post params are malformed. ids, prices, prices_sold and quantities should be of same length.")
@@ -246,9 +247,11 @@ def bill(request, *args, **response_kwargs):
         total_with_client_discount = total - total * client.discount / 100.0
         total_discounted = total_with_client_discount
 
-    if not prices_sold:
-        total_discounted = total_with_client_discount
+    # if not prices_sold:
+        # total_discounted = total_with_client_discount
 
+    if not total_discounted:
+        total_discounted = total
     total_discounted_fmt = price_fmt(total_discounted, default_currency)
 
     template = get_template(template)
