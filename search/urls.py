@@ -193,6 +193,10 @@ urlpatterns = patterns('',
     # Books excluded from the catalogue website
     url(r'^catalogue-excluded/$', 'search.views.catalogue_excluded', name="catalogue_excluded"),
 
+    # Views supposed to show dummy data for testing.
+    # Here we render a template.
+    url(r'^private/test/mailer/owner-confirmation.html', 'search.views.test_owner_confirmation'),
+
     # fix: on logout and re-login, Django sends us to accounts/profile which was undefined.
     url(r'^accounts/profile/?', RedirectView.as_view(url='/', permanent=True), name="accounts_profile_redirect"),
 )

@@ -455,15 +455,17 @@ class TestLive(TestCase):
 
     def notest_send_test_emails(self):
         req = mailer.send_owner_confirmation(cards=[self.card, self.card2],
+                                             payload=real_test_payload,
                                              client=self.client,
                                              total_price="10,00 €",
                                              email=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                              owner_name=settings.TEST_BOOKSHOP_OWNER_NAME,
                                              )
         client_req = mailer.send_command_confirmation(cards=[self.card, self.card2],
-                                               to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
+                                                      payload=real_test_payload,
+                                                      to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                       reply_to=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
-                                               total_price="10,00 €",
+                                                      total_price="10,00 €",
                                              )
         self.assertTrue(req)
         self.assertTrue(client_req)

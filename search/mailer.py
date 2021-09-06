@@ -21,11 +21,11 @@
 # Bad library quality overall :(
 # from __future__ import unicode_literals
 
+from django.template.loader import get_template
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from abelujo import settings
-
 from search.models.users import Bookshop
 
 # FROM_EMAIL = settings.EMAIL_SENDER  # doesn't like UTF8...
@@ -124,7 +124,7 @@ def generate_client_data(client):
     res += NEWLINE
     return res
 
-def generate_body_for_command_confirmation(price, cards):
+def generate_body_for_command_confirmation(price, cards, payload={}):
     body = """Bonjour, {newline}
 
 Votre commande des titres suivants pour un total de {PRICE} a bien été reçue. {newline}
@@ -146,42 +146,54 @@ Merci beaucoup et à bientôt ! {newline}
 
 
 def generate_body_for_owner_confirmation(price, cards, client, owner_name,
+                                         payload={},
                                          send_by_post=False):
-    body = """Bonjour {owner_name}, {newline}
+    template = get_template('mailer/new_command_template.html')
+    bookshop_name = Bookshop.name() or ""
+    body = template.render({'payload': payload,
+                            'bookshop_name': bookshop_name,
+                            })
+#     body = """Bonjour {owner_name}, {newline}
 
-Vous avez reçu une nouvelle commande: {newline}
+# Vous avez reçu une nouvelle commande: {newline}
 
-{CARDS}
+# {CARDS}
 
-Pour un total de: {amount} {newline}
+# Pour un total de: {amount} {newline}
 
-{maybe_send_by_post} {newline}
+# {maybe_send_by_post} {newline}
 
-Ce client est: {newline}
+# Ce client est: {newline}
 
-{client_data}
+# {client_data}
 
-À bientôt {newline}
-"""
-    maybe_send_by_post = "Vous n'avez pas à envoyer cette commande."
-    if send_by_post:
-        maybe_send_by_post = "Vous devez envoyer cette commande."
-    body = body.format(newline=NEWLINE,
-                       owner_name=owner_name,
-                       CARDS=generate_card_summary(cards),
-                       client_data=generate_client_data(client),
-                       amount=price,
-                       maybe_send_by_post=maybe_send_by_post,
-                       )
-    return body
+# À bientôt {newline}
+# """
+#     maybe_send_by_post = "Vous n'avez pas à envoyer cette commande."
+#     if send_by_post:
+#         maybe_send_by_post = "Vous devez envoyer cette commande."
+#     body = body.format(newline=NEWLINE,
+#                        owner_name=owner_name,
+#                        CARDS=generate_card_summary(cards),
+#                        client_data=generate_client_data(client),
+#                        amount=price,
+#                        maybe_send_by_post=maybe_send_by_post,
+#                        )
+    html_body = body
+    try:
+        html_body = body.encode('utf8')
+    except Exception as e:
+        log.warn('Could not encode the Django template to utf8: {}. Payload is: {}'.format(e, Payload))
+    return html_body
 
 def send_command_confirmation(cards=[],  # list of cards sold
                               total_price="",
+                              payload={},
                               to_emails=TEST_TO_EMAILS,
                               reply_to=None,
                               verbose=False):
     # Build HTML body.
-    body = generate_body_for_command_confirmation(total_price, cards)
+    body = generate_body_for_command_confirmation(total_price, cards, payload=payload)
 
     # Send.
     res = send_email(to_emails=to_emails,
@@ -190,13 +202,17 @@ def send_command_confirmation(cards=[],  # list of cards sold
                      subject=SUBJECT_COMMAND_OK,
                      html_content=body,
                      verbose=verbose)
+    if not res:
+        print("Could not send email to owner: {}".format(res))
     return res
 
 
 def send_owner_confirmation(cards=[], total_price="", email="", client=None,
+                            payload={},
                             owner_name="", send_by_post=False,
                             verbose=False):
     body = generate_body_for_owner_confirmation(total_price, cards, client, owner_name,
+                                                payload=payload,
                                                 send_by_post=send_by_post)
 
     res = send_email(to_emails=email,

@@ -1,5 +1,15 @@
 Changelog starting from v0.5 (2018/09/18)
 
+## DEV
+
+### New features
+
+- support for **Stripe payments**, sent from a front website.
+  - with validation emails (to the client and the show owner)
+  - shipping costs
+  - books bought online create **reservation objects** on Abelujo side, then the show owner validates the sell (or not).
+
+
 ## v0.16 (2020-12, ...)
 
 ### New features

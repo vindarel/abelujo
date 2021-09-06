@@ -1,0 +1,82 @@
+{% load i18n %}
+
+{% load dividefilter %}
+
+<!doctype html>
+<html>
+  <head>
+  </head>
+
+  <body>
+
+
+    <p>
+      Bonjour {{ bookshop_name }},
+    </p>
+
+    <p>
+      Une nouvelle commande vient d'être passée sur le site. </br>
+
+      ATTENTION : CROISER CE MAIL AVEC LE MAIL DE PAIEMENT. </br>
+    </p>
+
+    <p>
+      <strong>client</strong> : {{ payload.buyer.billing_address.last_name }} {{ payload.buyer.billing_address.first_name }} </br>
+
+      <strong>Email</strong> : {{ payload.buyer.billing_address.email }} </br>
+
+      <strong>Téléphone</strong> : {{ payload.buyer.billing_address.phone }} </br>
+
+      <strong>Adresse de facturation</strong> : {{ payload.buyer.billing_address.address }} {{ payload.buyer.billing_address.address_comp }} </br>
+      {{ payload.buyer.billing_address.city }} {{ payload.buyer.billing_address.postcode }} {{ payload.buyer.billing_address.country }} </br>
+
+      <strong>Adresse de livraison (le cas échéant)</strong> : {{ payload.buyer.delivery_address.address }} {{ payload.buyer.delivery_address.address_comp }} </br>
+      {{ payload.buyer.delivery_address.city }} {{ payload.buyer.delivery_address.postcode }} {{ payload.buyer.delivery_address.country }} </br>
+
+      <strong>Montant</strong> : {{ payload.order.amount | div:100 }}€ </br>
+      Code promo utilisé : {{ payload.order.used_promo_code }} </br>
+      <strong>Paiement en ligne </strong> : {{ payload.order.online_payment | yesno  }} </br>
+      {% comment %}
+      <!-- Mode de livraison : {{ payload.order.shipping_method === 'standard' ? 'Colissimo' : (payload.order.shipping_method === 'relay' ? 'Mondial Relay' : 'Retrait au local') }} -->
+      {% endcomment %}
+
+      <strong>Mode de livraison</strong> : {{ payload.order.shipping_method }} </br>
+
+      {% comment %}
+      <!-- <?php if (payload.order.shipping_method }} -->
+      <!-- <?php $mr = json_decode(payload["order"]["mondial_relay_AP"], true); }} -->
+      {% endcomment %}
+
+      <strong>Si Mondial relay, informations du point relais</strong> : </br>
+      {% comment %}
+      <!-- ID {{ $mr["ID"] }} -->
+
+      <!-- {{ $mr["Nom"] }} {{ $mr["Adresse1"] }} -->
+
+      <!-- {{ $mr["Adresse2"] }} {{ $mr["Ville"] }} {{ $mr["CP"] }} -->
+
+      <!-- <?php endif; }} -->
+      {% endcomment %}
+
+      <strong>Lignes produits</strong> :
+
+      <ul>
+        {% for line_item in payload.order.stripe_payload.line_items  %}
+        <li>
+          {{ line_item.price_data.product_data.name }}, {{ line_item.price_data.unit_amount |div:100 }}€ X {{ line_item.quantity }}
+        </li>
+        {% endfor %}
+      </ul>
+
+    </p>
+
+    Bonne journée et à bientôt.
+
+  </body>
+
+  <br>
+  <p>
+    <small>Abelujo</small>
+  </p>
+
+</html>
