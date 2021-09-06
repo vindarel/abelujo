@@ -693,6 +693,9 @@ class Card(TimeStampedModel):
     cover = models.URLField(null=True, blank=True, verbose_name=__("cover url"))
     #: the cover, saved on the file system. Use card.cover to get the most relevant.
     imgfile = models.ImageField(upload_to="covers", null=True, blank=True)
+    imgfile2 = models.ImageField(upload_to="covers", null=True, blank=True)
+    imgfile3 = models.ImageField(upload_to="covers", null=True, blank=True)
+    imgfile4 = models.ImageField(upload_to="covers", null=True, blank=True)
     #: the internet source from which we got the card's informations
     data_source = models.CharField(max_length=CHAR_LENGTH, null=True, blank=True,
                                    editable=False,
@@ -1165,6 +1168,9 @@ class Card(TimeStampedModel):
             "distributor": dist,
             "fmt": self.fmt,
             "img": self.img,
+            "img2": self.imgfile2.url if self.imgfile2 else None,
+            "img3": self.imgfile3.url if self.imgfile3 else None,
+            "img4": self.imgfile4.url if self.imgfile4 else None,
             "is_unavailable": self.is_unavailable,
             "cover": self.cover,  # either the url, either the saved file on file system.
             "isbn": isbn,
