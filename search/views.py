@@ -2093,3 +2093,79 @@ def reservations(request):
             'nb_reservations': nb_reservations,
             'title': _("Reservations"),
         })
+
+@login_required
+def test_owner_confirmation(request):
+    template = 'mailer/new_command_template.html'
+    bookshop_name = "hello name"
+    # XXX: copy-paste from noci test!
+    real_test_payload = {
+        'buyer': {
+            'billing_address': {
+                'last_name': 'Vincent',
+                'first_name': 'vindarel',
+                'email': 'vindarel@mailz.org',
+                'address': 'here my city',
+                'address_comp': 'comp',
+                'city': 'Touwin',
+                'postcode': '34100',
+                'country': 'France',
+                'phone': '07 33 88 88 77',
+            },
+            'delivery_address': {
+                'last_name': 'Vincent',
+                'first_name': 'vindarel',
+                'email': 'vindarel@mailz.org',
+                'address': 'here France',
+                'address_comp': 'comp',
+                'city': 'Touwin',
+                'postcode': '34100',
+                'country': 'France',
+                'phone': '07 98 88 88 88'
+            },
+        },
+        'order': {
+            'online_payment': True,
+            'shipping_method': 'colissimo',
+            'mondial_relay_AP': None,
+            'amount': 5050,
+            # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
+            # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
+        'abelujo_items': [{'id': 1, 'qty': 1}],
+            'stripe_payload': {
+                'payment_method_types': ["card"],
+                'line_items': [
+                    {
+                        'price_data': {
+                            'currency': 'eur',
+                            'product_data': {
+                                'name': 'Art Du Chantier, Construire Et Demolir Du Xvi Au Xxie Siecle',
+                                'description': 'ISBN: 9789461614728',
+                            },
+                            'unit_amount': 4200,
+                        },
+                        'quantity': 1,
+                    },
+                    {
+                        'price_data': {
+                            'currency': 'eur',
+                            'product_data': {
+                                'name': 'Frais de port',
+                                'description': 'Colissimo, 1450g',
+                            },
+                            'unit_amount': 850,
+                        },
+                        'quantity': 1,
+                    }
+                ],
+                'mode': "payment",
+                'success_url': 'https://techne-bookshop.fr/commande-effectuee',
+                'cancel_url': 'https://techne-bookshop.fr/commande-annulee',
+            }
+        }
+    }
+
+    return render(request, template,
+                  {'payload': real_test_payload,
+                   'bookshop_name': "super librairie",
+                   })
