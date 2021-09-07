@@ -35,7 +35,8 @@ div(ng-controller="inventoryTerminateController")
 
 
   h3 {% trans "Terminate the inventory of" %} {{ 'name' | ng}}
-  .col-md-12
+  // The following numbers are not appropriate with pagination anymore (2021-09).
+  //.col-md-12
    .col-md-3(ng-if="is_no_origin").panel.panel-warning
     div.panel-heading
     div.panel-body {% trans "Warning: we inventoried some cards that were not here originally." %} (x {{'obj_length(no_origin)'|ng}})
