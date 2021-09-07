@@ -97,7 +97,7 @@ div(ng-controller="inventoryTerminateController")
                li.page-item
                  a.page-link(ng-click="previousPage()") <
                li.page-item
-                 a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'meta.nb_results' | ng }})
+                 a.page-link Page {{ 'page' | ng }} / {{ 'meta.num_pages' | ng }} ({{ 'total_copies_in_inv' | ng }})
                li.page-item
                  a.page-link(ng-click="nextPage()") >
                li.page-item
