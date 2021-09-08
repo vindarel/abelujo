@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 # yesno: True means "yes"
 
-import six
-
 from django import template
-
-from search.models import Preferences
 
 register = template.Library()
 

@@ -423,8 +423,10 @@ class TestStripe(TestCase):
 
         res = mailer.generate_body_for_owner_confirmation("10", [self.card, self.card2],
                                                           self.client,
+                                                          payload=real_test_payload,
                                                           owner_name=settings.BOOKSHOP_OWNER_NAME)
         self.assertTrue(res)
+        print(res)
 
 class TestLive(TestCase):
 

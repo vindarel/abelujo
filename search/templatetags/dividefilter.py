@@ -5,8 +5,6 @@ import six
 
 from django import template
 
-from search.models import Preferences
-
 register = template.Library()
 
 """
@@ -26,6 +24,14 @@ prints 2
 def dividefilter(nb, divisor):
     if nb is None:
         return ''
+    if not nb:
+        return ''
+
+    if isinstance(nb, six.string_types) or isinstance(nb, six.text_type):
+        nb = int(nb)
+    if isinstance(divisor, six.string_types) or isinstance(divisor, six.text_type):
+        divisor = int(divisor)
+
     if divisor is 0:
         return nb
 

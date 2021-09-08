@@ -1,0 +1,96 @@
+{% load i18n %}
+
+{% load dividefilter %}
+
+<!-- Check at http://localhost:8000/en/private/test/mailer/client-confirmation.html -->
+
+<!-- and add ?paid=0 -->
+
+<!doctype html>
+<html>
+  <head>
+  </head>
+
+  <body>
+
+
+    <p>
+      Bonjour {{ payload.buyer.billing_address.last_name }},
+    </p>
+
+    <p>
+      Votre commande des titres suivants pour un total de {{ payload.order.amount | div:100 }}€ a bien été reçue: <br>
+
+        <ul>
+          {% for line_item in payload.order.stripe_payload.line_items  %}
+          <li>
+            {{ line_item.price_data.product_data.name }}, {{ line_item.price_data.unit_amount |div:100 }}€ X {{ line_item.quantity }}
+          </li>
+          {% endfor %}
+        </ul>
+
+
+      <p>
+
+        {% if payload.order.online_payment %}
+
+        L'adresse de facturation est la suivante:
+        <br>
+        <pre>
+        {{ payload.buyer.billing_address.address }} {{ payload.buyer.billing_address.address_comp }}
+        {{ payload.buyer.billing_address.city }} {{ payload.buyer.billing_address.postcode }} {{ payload.buyer.billing_address.country }} <br>
+        </pre>
+
+        {% if payload.buyer.delivery_address.address %}
+        Et celle de livraison celle-ci (le cas échéant) :
+        <pre>
+        {{ payload.buyer.delivery_address.address }} {{ payload.buyer.delivery_address.address_comp }} <br>
+        {{ payload.buyer.delivery_address.city }} {{ payload.buyer.delivery_address.postcode }} {{ payload.buyer.delivery_address.country }}
+        </pre>
+        {% endif %}
+
+        Vous avez choisi le mode de livraison {{ payload.order.shipping_method }}.
+        <br>
+        {% if payload.order.used_promo_code %}
+        Le code promo utilisé : {{ payload.order.used_promo_code }}. <br>
+        {% endif %}
+
+        {% comment %}
+        Si Mondial relay, informations du point relais : <br>
+
+        <!-- ID {{ $mr["ID"] }} -->
+
+        <!-- {{ $mr["Nom"] }} {{ $mr["Adresse1"] }} -->
+
+        <!-- {{ $mr["Adresse2"] }} {{ $mr["Ville"] }} {{ $mr["CP"] }} -->
+
+        <!-- <?php endif; }} -->
+        {% endcomment %}
+
+        {% else %}
+        <p>
+          Vous pouvez venir retirer les livres à la librairie.
+        </p>
+        {% endif %}
+
+
+        <br>
+
+        Merci beaucoup et à bientôt !
+
+        <p>
+          <small> {{ bookshop_name }} </small>
+        </p>
+
+      </p>
+
+      <p>
+
+      </p>
+
+  </body>
+
+  <br>
+
+
+</html>

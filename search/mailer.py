@@ -21,12 +21,18 @@
 # Bad library quality overall :(
 # from __future__ import unicode_literals
 
+import logging
+
 from django.template.loader import get_template
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from abelujo import settings
 from search.models.users import Bookshop
+from search.models.utils import get_logger
+
+logging.basicConfig(format='%(levelname)s [%(name)s:%(lineno)s]:%(message)s', level=logging.DEBUG)
+log = get_logger()
 
 # FROM_EMAIL = settings.EMAIL_SENDER  # doesn't like UTF8...
 FROM_EMAIL = 'contact+commandes@abelujo.cc'
@@ -124,24 +130,16 @@ def generate_client_data(client):
     res += NEWLINE
     return res
 
-def generate_body_for_command_confirmation(price, cards, payload={}):
-    body = """Bonjour, {newline}
-
-Votre commande des titres suivants pour un total de {PRICE} a bien été reçue. {newline}
-
-{CARDS}
-
-Merci beaucoup et à bientôt ! {newline}
-
-{BOOKSHOP}
-    """
+def generate_body_for_client_command_confirmation(price, cards, payload={}):
+    template = get_template('mailer/client_confirmation_template.html')
     bookshop_name = Bookshop.name() or ""
-    body = body.format(linebreak=LINEBREAK,
-                       newline=NEWLINE,
-                       PRICE=price,
-                       CARDS=generate_card_summary(cards),
-                       BOOKSHOP=bookshop_name,
-                       )
+    body = template.render({'payload': payload,
+                            'bookshop_name': bookshop_name,
+                            })
+    try:
+        body = body.encode('utf8')
+    except Exception as e:
+        log.warn('Could not encode the Django template to utf8: {}. Payload is: {}'.format(e, payload))
     return body
 
 
@@ -153,47 +151,20 @@ def generate_body_for_owner_confirmation(price, cards, client, owner_name,
     body = template.render({'payload': payload,
                             'bookshop_name': bookshop_name,
                             })
-#     body = """Bonjour {owner_name}, {newline}
-
-# Vous avez reçu une nouvelle commande: {newline}
-
-# {CARDS}
-
-# Pour un total de: {amount} {newline}
-
-# {maybe_send_by_post} {newline}
-
-# Ce client est: {newline}
-
-# {client_data}
-
-# À bientôt {newline}
-# """
-#     maybe_send_by_post = "Vous n'avez pas à envoyer cette commande."
-#     if send_by_post:
-#         maybe_send_by_post = "Vous devez envoyer cette commande."
-#     body = body.format(newline=NEWLINE,
-#                        owner_name=owner_name,
-#                        CARDS=generate_card_summary(cards),
-#                        client_data=generate_client_data(client),
-#                        amount=price,
-#                        maybe_send_by_post=maybe_send_by_post,
-#                        )
-    html_body = body
     try:
-        html_body = body.encode('utf8')
+        body = body.encode('utf8')
     except Exception as e:
-        log.warn('Could not encode the Django template to utf8: {}. Payload is: {}'.format(e, Payload))
-    return html_body
+        log.warn('Could not encode the Django template to utf8: {}. Payload is: {}'.format(e, payload))
+    return body
 
-def send_command_confirmation(cards=[],  # list of cards sold
-                              total_price="",
-                              payload={},
-                              to_emails=TEST_TO_EMAILS,
-                              reply_to=None,
-                              verbose=False):
+def send_client_command_confirmation(cards=[],  # list of cards sold
+                                     total_price="",
+                                     payload={},
+                                     to_emails=TEST_TO_EMAILS,
+                                     reply_to=None,
+                                     verbose=False):
     # Build HTML body.
-    body = generate_body_for_command_confirmation(total_price, cards, payload=payload)
+    body = generate_body_for_client_command_confirmation(total_price, cards, payload=payload)
 
     # Send.
     res = send_email(to_emails=to_emails,
@@ -221,4 +192,6 @@ def send_owner_confirmation(cards=[], total_price="", email="", client=None,
                      html_content=body,
                      verbose=verbose,
                      )
+    if not res:
+        log.warn("Could not send email to owner: {}".format(res))
     return res

@@ -32,7 +32,7 @@ class TestMailer(TestCase):
         pass
 
     def test_body(self):
-        body = mailer.generate_body_for_command_confirmation("10 €", [self.card])
+        body = mailer.generate_body_for_client_command_confirmation("10 €", [self.card])
         self.assertTrue(body)
 
     def notest_send_mail(self):

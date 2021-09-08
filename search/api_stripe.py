@@ -132,6 +132,8 @@ def handle_api_stripe(payload):
     If it's an online payment, create a stripe session and only pre-sell the reservations.
     They have to be validated in the webhook.
 
+    If it isn't an online payment, warn the client and the bookshop already.
+
     Important keys:
     - buyer.billing_address, buyer.shipping_address
     - order.stripe_payload (optional)
@@ -144,6 +146,9 @@ def handle_api_stripe(payload):
            }
     buyer = payload.get('buyer')
     order = payload.get('order')
+
+    # Is is an online payment?
+    is_online_payment = False
 
     ###################
     ## Basic checks. ##
@@ -162,28 +167,29 @@ def handle_api_stripe(payload):
     ############################
     ## Handle Stripe session. ##
     ############################
-    online_payment = payload.get('order').get('online_payment')
-    online_payment = _is_truthy(online_payment)
-    try:
-        if online_payment and payload.get('order').get('stripe_payload'):
-            log.info("Processing Stripe payload...")
-            session = create_checkout_session(payload)
-            res['data'] = session
-        else:
-            log.info("No Stripe payload to process.")
-        # return JsonResponse(session)
-    except Exception as e:
-        res['alerts'].append("{}".format(e))
-        res['status'] = httplib.INTERNAL_SERVER_ERROR
-        # status = 500
-        # return JsonResponse(res, status=500)
+    is_online_payment = payload.get('order').get('online_payment')
+    is_online_payment = _is_truthy(is_online_payment)
+    if is_online_payment:
+        try:
+            if payload.get('order').get('stripe_payload'):
+                log.info("Processing Stripe payload...")
+                session = create_checkout_session(payload)
+                res['data'] = session
+            else:
+                log.info("No Stripe payload to process.")
+            # return JsonResponse(session)
+        except Exception as e:
+            res['alerts'].append("{}".format(e))
+            res['status'] = httplib.INTERNAL_SERVER_ERROR
+            # status = 500
+            # return JsonResponse(res, status=500)
 
     ################################################
     ## Create clients, commands.
     ## If online payment, they are not validated yet.
     ################################################
     billing_address = buyer.get('billing_address')
-    delivery_address = buyer.get('delivery_address')
+    # delivery_address = buyer.get('delivery_address')
 
     existing_client = Client.objects.filter(email=billing_address.get('email')).first()
     # TODO: update existing client.
@@ -229,7 +235,7 @@ def handle_api_stripe(payload):
     try:
         is_paid = True
         payment_intent = None
-        if online_payment:
+        if is_online_payment:
             is_paid = False  # needs to be validated in the webhook.
             payment_intent = session.get('payment_intent')
         for card_qty in cards_qties:
@@ -249,10 +255,31 @@ def handle_api_stripe(payload):
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
 
+    ##############################################
+    ## Send confirmation email to both parties. ##
+    ##############################################
+    if not is_online_payment:
+        try:
+            mail_sent = mailer.send_client_command_confirmation(cards=cards,
+                                                                payload=payload,
+                                                                reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
+            log.info("stripe: confirmation email sent to client ? {} (not an online payment). Payload: {}".format(mail_sent, payload))
+            if not mail_sent:
+                log.warning("stripe: confirmation email to client (not an online payment) was not sent :S")
+                pass  # TODO: register info in reservation.
+        except Exception as e:
+            log.error("api_stripe: could not send confirmation email (not an online payment): {}".format(e))
+
     return res
 
 def api_stripe(request, **response_kwargs):
     """
+    API entry point of the Stripe handling machinery. The frontend calls here.
+
+    If Stripe settings are configured (we find the secret API key) and if
+    we receive a POST request, then call `handle_api_stripe` to do the job.
+
+    Return: a JsonResponse to return to the web client.
     """
     if not settings.STRIPE_SECRET_API_KEY:
         # Don't fail unit tests on CI.
@@ -279,7 +306,12 @@ def api_stripe(request, **response_kwargs):
     else:
         return JsonResponse({'alerts': ['Use a POST request']})
 
-def stripe_construct_event(payload, signature, webhook_secret):
+def _stripe_construct_event(payload, signature, webhook_secret):
+    """
+    Helper to construct a Stripe event object.
+
+    Return: a stripe event object.
+    """
     event = stripe.Webhook.construct_event(
         payload, signature, webhook_secret
     )
@@ -288,11 +320,14 @@ def stripe_construct_event(payload, signature, webhook_secret):
 @csrf_exempt
 def api_stripe_hooks(request, **response_kwargs):
     """
-    Handle post-payment webhooks.
+    API endpoint to handle post-payment webhooks and validate the payment.
     https://stripe.com/docs/payments/handling-payment-events
 
-    Find the pre-saved reservations with the payment_intent ID and validates them.
-    Then, send validation emails.
+    Find the pre-saved reservations with the payment_intent ID and validate them.
+
+    Then, send validation emails to the client and the bookshop.
+
+    Return: a JsonResponse (to Stripe).
     """
     if not settings.STRIPE_SECRET_API_KEY:
         # Don't fail unit tests on CI.
@@ -316,13 +351,14 @@ def api_stripe_hooks(request, **response_kwargs):
            }
     sell_successful = None
 
+    # Build a Stripe event object from the payload.
     try:
         # stripe.event.construct_from(
         #   json.loads(payload), stripe.api_key
         # )
         event = None
         if not is_test:
-            event = stripe_construct_event(payload, signature, webhook_secret)
+            event = _stripe_construct_event(payload, signature, webhook_secret)
     except stripe.error.SignatureVerificationError as e:
         res['alerts'].append('Invalid Stripe signature')
         return JsonResponse(res, status=400)
@@ -331,7 +367,8 @@ def api_stripe_hooks(request, **response_kwargs):
         res['alerts'].append("{}".format(e))
         return JsonResponse(res, status=400)
 
-    # Handle the event
+    # Handle the event.
+    # We consider the sell successfull on receiving the session.completed event.
     if is_test:
         sell_successful = True
     if event and event.get('type') == 'checkout.session.completed':
@@ -368,7 +405,7 @@ def api_stripe_hooks(request, **response_kwargs):
         log.error("Could not get the payment intent ID in webhook: {}".format(e))
 
     ongoing_reservations = Reservation.objects.filter(payment_intent=payment_intent)
-    # So we have several reservation objects, but they should be of the same client,
+    # So we have several reservation objects, but they should be of the same client and
     # part of the same command...
     client = None
     send_by_post = False
@@ -432,10 +469,10 @@ def api_stripe_hooks(request, **response_kwargs):
         # Send it, damn it.
         try:
             if to_email:
-                mail_sent = mailer.send_command_confirmation(cards=cards, total_price=amount_fmt,
-                                                             to_emails=to_email,
-                                                             payload=payload,
-                                                             reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
+                mail_sent = mailer.send_client_command_confirmation(cards=cards, total_price=amount_fmt,
+                                                                    to_emails=to_email,
+                                                                    payload=payload,
+                                                                    reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
                 if not mail_sent:
                     pass  # TODO: register info in reservation.
@@ -460,5 +497,9 @@ def api_stripe_hooks(request, **response_kwargs):
                 log.error("api_stripe webhook: could not send confirmation email to owner: {}".format(e))
         else:
             log.warning("stripe webhook: sell with payment intent {} was successfull and we wanted to send an email to the bookshop owner, but we can't find its email in settings.".format(payment_intent))
+
+    # Sell not validated.
+    else:
+        pass
 
     return JsonResponse(res, status=200)
