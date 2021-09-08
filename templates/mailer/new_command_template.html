@@ -17,7 +17,12 @@
     <p>
       Une nouvelle commande vient d'être passée sur le site. </br>
 
+      {% if is_online_payment %}
       ATTENTION : CROISER CE MAIL AVEC LE MAIL DE PAIEMENT. </br>
+      <small>C'est un achat en ligne et la transaction n'est pas encore confirmée.</small>
+      {% else %}
+      Ce n'est <em>pas</em> un achat en ligne.
+      {% endif %}
     </p>
 
     <p>

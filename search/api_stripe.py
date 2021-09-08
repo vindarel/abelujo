@@ -259,6 +259,7 @@ def handle_api_stripe(payload):
     ## Send confirmation email to both parties. ##
     ##############################################
     if not is_online_payment:
+        # Send confirmation to client.
         try:
             mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                                 payload=payload,
@@ -268,7 +269,24 @@ def handle_api_stripe(payload):
                 log.warning("stripe: confirmation email to client (not an online payment) was not sent :S")
                 pass  # TODO: register info in reservation.
         except Exception as e:
-            log.error("api_stripe: could not send confirmation email (not an online payment): {}".format(e))
+            log.error("stripe: could not send confirmation email (not an online payment): {}".format(e))
+
+        # Send confirmation to bookshop owner.
+        if settings.EMAIL_BOOKSHOP_RECIPIENT:
+            try:
+                mail_sent = mailer.send_owner_confirmation(cards=cards,
+                                                           payload=payload,
+                                                           is_online_payment=is_online_payment,
+                                                           email=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                           owner_name=settings.BOOKSHOP_OWNER_NAME,
+                                               )
+                log.info("stripe, reservation but no payment: confirmation sent to owner: {} ? {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT, mail_sent))
+                if not mail_sent:
+                    log.warning("stripe: confirmation email to owner (not an online payment) was not sent :S")
+            except Exception as e:
+                log.error("api_stripe: could not send confirmation email to owner: {} (not a payment)".format(e))
+        else:
+            log.warning("stripe: sell with payment intent {} was successfull and we wanted to send an email to the bookshop owner, but we can't find its email in settings.".format(payment_intent))
 
     return res
 
@@ -352,11 +370,11 @@ def api_stripe_hooks(request, **response_kwargs):
     sell_successful = None
 
     # Build a Stripe event object from the payload.
+    event = {}
     try:
         # stripe.event.construct_from(
         #   json.loads(payload), stripe.api_key
         # )
-        event = None
         if not is_test:
             event = _stripe_construct_event(payload, signature, webhook_secret)
     except stripe.error.SignatureVerificationError as e:
@@ -408,10 +426,10 @@ def api_stripe_hooks(request, **response_kwargs):
     # So we have several reservation objects, but they should be of the same client and
     # part of the same command...
     client = None
-    send_by_post = False
+    # send_by_post = False
     if ongoing_reservations:
         client = ongoing_reservations.first().client
-        send_by_post = ongoing_reservations.first().send_by_post
+        # send_by_post = ongoing_reservations.first().send_by_post
         cards = [it.card for it in ongoing_reservations]
     else:
         log.warning("stripe webhook: we didn't find any ongoing reservation with payment intent {}. We won't be able to find a related client and to send confirmation emails.".format(payment_intent))
@@ -423,10 +441,10 @@ def api_stripe_hooks(request, **response_kwargs):
                 log.warning("mmh we have ongoing reservations with payment_intent {} but not the same client ?? {} / {}".format(payment_intent, client, resa.client))
 
     to_email = ""
-    amount = None
-    amount_fmt = ""
-    currency = ""
-    currency_symbol = "EUR"
+    # amount = None
+    # amount_fmt = ""
+    # currency = ""
+    # currency_symbol = "EUR"
     description = ""
     is_stripe_cli_test = False
     cli_test_sign = "(created by Stripe CLI)"
@@ -448,14 +466,14 @@ def api_stripe_hooks(request, **response_kwargs):
         except Exception as e:
             log.info("api_stripe_hooks: could not get the description, I don't know if we are in a stripe cli test: {}".format(e))
 
-        try:
-            amount = payload['data']['object']['amount_total']
-            currency = payload['data']['object']['currency']
-            if currency in ['eur', u'eur']:
-                currency_symbol = "EUR"  # PySendgrid doesn't like UTF8 symbols? It works locally though :S
-            amount_fmt = "{:.2f} {}".format(amount / 100.0, currency_symbol)
-        except Exception as e:
-            log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
+        # try:
+        #     amount = payload['data']['object']['amount_total']
+        #     currency = payload['data']['object']['currency']
+        #     if currency in ['eur', u'eur']:
+        #         currency_symbol = "EUR"  # PySendgrid doesn't like UTF8 symbols? It works locally though :S
+        #     amount_fmt = "{:.2f} {}".format(amount / 100.0, currency_symbol)
+        # except Exception as e:
+        #     log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
 
         # Ensure ascii for python Stripe library... shame on you.
         if is_stripe_cli_test:
@@ -469,13 +487,15 @@ def api_stripe_hooks(request, **response_kwargs):
         # Send it, damn it.
         try:
             if to_email:
-                mail_sent = mailer.send_client_command_confirmation(cards=cards, total_price=amount_fmt,
+                mail_sent = mailer.send_client_command_confirmation(cards=cards,
+                                                                    # total_price=amount_fmt,
                                                                     to_emails=to_email,
                                                                     payload=payload,
                                                                     reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
                 if not mail_sent:
-                    pass  # TODO: register info in reservation.
+                    # TODO: register info in reservation.
+                    log.warning("stripe hook: payment confirmation email to client was not sent :S")
         except Exception as e:
             log.error("api_stripe: could not send confirmation email: {}".format(e))
 
@@ -483,16 +503,16 @@ def api_stripe_hooks(request, **response_kwargs):
         if settings.EMAIL_BOOKSHOP_RECIPIENT:
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
-                                               client=client,
-                                               total_price=amount_fmt,
-                                               email=settings.EMAIL_BOOKSHOP_RECIPIENT,
-                                               owner_name=settings.BOOKSHOP_OWNER_NAME,
-                                               send_by_post=send_by_post,
-                                               )
+                                                           payload=payload,
+                                                           is_online_payment=True,
+                                                           client=client,
+                                                           # total_price=amount_fmt,
+                                                           email=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                           owner_name=settings.BOOKSHOP_OWNER_NAME,
+                                                           )
                 log.info("stripe webhook: confirmation sent to owner: {} ? {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT, mail_sent))
                 if not mail_sent:
-                    # TODO:
-                    pass
+                    log.warning("stripe hook: payment confirmation email to client was not sent :S")
             except Exception as e:
                 log.error("api_stripe webhook: could not send confirmation email to owner: {}".format(e))
         else:

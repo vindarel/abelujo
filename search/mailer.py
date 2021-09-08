@@ -143,9 +143,10 @@ def generate_body_for_client_command_confirmation(price, cards, payload={}):
     return body
 
 
-def generate_body_for_owner_confirmation(price, cards, client, owner_name,
+def generate_body_for_owner_confirmation(client,
+                                         owner_name,
                                          payload={},
-                                         send_by_post=False):
+                                         ):
     template = get_template('mailer/new_command_template.html')
     bookshop_name = Bookshop.name() or ""
     body = template.render({'payload': payload,
@@ -178,13 +179,14 @@ def send_client_command_confirmation(cards=[],  # list of cards sold
     return res
 
 
-def send_owner_confirmation(cards=[], total_price="", email="", client=None,
+def send_owner_confirmation(cards=[], email="", client=None,
                             payload={},
-                            owner_name="", send_by_post=False,
+                            owner_name="",
                             verbose=False):
-    body = generate_body_for_owner_confirmation(total_price, cards, client, owner_name,
+    body = generate_body_for_owner_confirmation(client,
+                                                owner_name,
                                                 payload=payload,
-                                                send_by_post=send_by_post)
+                                                )
 
     res = send_email(to_emails=email,
                      from_email=FROM_EMAIL,

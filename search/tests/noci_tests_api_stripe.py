@@ -127,7 +127,8 @@ real_test_payload = {
         'mondial_relay_AP': None,
         'amount': 5050,
         # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
-        'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
+        # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
+        'abelujo_items': [{'id': 1, 'qty': 1}],
         'stripe_payload': {
             'payment_method_types': ["card"],
             'line_items': [
@@ -421,10 +422,10 @@ class TestStripe(TestCase):
         res = mailer.generate_client_data(self.client)
         self.assertTrue(res)
 
-        res = mailer.generate_body_for_owner_confirmation("10", [self.card, self.card2],
-                                                          self.client,
+        res = mailer.generate_body_for_owner_confirmation(self.client,
+                                                          settings.BOOKSHOP_OWNER_NAME,
                                                           payload=real_test_payload,
-                                                          owner_name=settings.BOOKSHOP_OWNER_NAME)
+                                                          )
         self.assertTrue(res)
         print(res)
 
@@ -455,15 +456,79 @@ class TestLive(TestCase):
         req = send_test_webhook()
         return req
 
+    # webhook payload
+    # '{
+#   "id": "evt_1JIC2vJqOLQjpdKj1LELQAXy",
+#   "object": "event",
+#   "api_version": "2019-10-17",
+#   "created": 1627475976,
+#   "data": {
+#     "object": {
+#       "id": "cs_test_b1eq1InDLWryMbFSug1X83oWlXIWhyXZQniut36ra9OsM0VmbQspq5J8pG",
+#       "object": "checkout.session",
+#       "allow_promotion_codes": null,
+#       "amount_subtotal": 600,
+#       "amount_total": 600,
+#       "automatic_tax": {
+#         "enabled": false,
+#         "status": null
+#       },
+#       "billing_address_collection": null,
+#       "cancel_url": "https://techne-bookshop.fr.documents.design/commande-annulee",
+#       "client_reference_id": null,
+#       "currency": "eur",
+#       "customer": "cus_Jw4B970dIf5YvG",
+#       "customer_details": {
+#         "email": "ehvince@mailz.org",
+#         "tax_exempt": "none",
+#         "tax_ids": [
+#
+#         ]
+#       },
+#       "customer_email": null,
+#       "livemode": false,
+#       "locale": null,
+#       "metadata": {
+#       },
+#       "mode": "payment",
+#       "payment_intent": "pi_1JIC2VJqOLQjpdKj30wAgnYs",
+#       "payment_method_options": {
+#       },
+#       "payment_method_types": [
+#         "card"
+#       ],
+#       "payment_status": "paid",
+#       "setup_intent": null,
+#       "shipping": null,
+#       "shipping_address_collection": null,
+#       "submit_type": null,
+#       "subscription": null,
+#       "success_url": "https://techne-bookshop.fr.documents.design/commande-effectuee",
+#       "total_details": {
+#         "amount_discount": 0,
+#         "amount_shipping": 0,
+#         "amount_tax": 0
+#       },
+#       "url": null
+#     }
+#   },
+#   "livemode": false,
+#   "pending_webhooks": 3,
+#   "request": {
+#     "id": null,
+#     "idempotency_key": null
+#   },
+#   "type": "checkout.session.completed"
+# }'
+
     def notest_send_test_emails(self):
         req = mailer.send_owner_confirmation(cards=[self.card, self.card2],
                                              payload=real_test_payload,
                                              client=self.client,
-                                             total_price="10,00 €",
                                              email=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                              owner_name=settings.TEST_BOOKSHOP_OWNER_NAME,
                                              )
-        client_req = mailer.send_command_confirmation(cards=[self.card, self.card2],
+        client_req = mailer.send_client_command_confirmation(cards=[self.card, self.card2],
                                                       payload=real_test_payload,
                                                       to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                       reply_to=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,

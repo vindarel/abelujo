@@ -2165,8 +2165,12 @@ def test_owner_confirmation(request):
         }
     }
 
+    params = request.GET.copy()
+    if params.get('paid') and not _is_truthy(params.get('paid')):
+        real_test_payload['order']['online_payment'] = False
     return render(request, template,
                   {'payload': real_test_payload,
+                   'is_online_payment': real_test_payload.get('order').get('online_payment'),
                    'bookshop_name': bookshop_name,
                    })
 
