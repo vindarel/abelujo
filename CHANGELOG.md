@@ -14,11 +14,22 @@ Changelog starting from v0.5 (2018/09/18)
 
 ### New features
 
+- new **Reception menu**: receive books, scan them in a row and register them quickly in the appropriate shelf (if they don't have one already).
+- new **Client commands**: register commands for clients from the book view or from the search view. See them all, send an email to the client.
+  - if the book is not in stock, show it in the command list.
+- Abelujo now supports the **Electre API** as an alternative to Dilicom's FEL à la demande (the FEL Onix complet is being worked on).
+- new special page to list books to *not* show on the frontend website (exclude them from the API). This feature must be enabled, see in admin.
+- **Sell**: support to **print sell receipts** with the USB thermic receipt printer [Epson TM-20](https://www.amazon.fr/gp/product/B07Y59V9LP/ref=as_li_tl?ie=UTF8&camp=1642&creative=6746&creativeASIN=B07Y59V9LP&linkCode=as2&tag=abelujo-21&linkId=b3938b7d12f66b76d2d9e1c5d6f6e8b7). Previously, you could print a bill. The process is now must faster.
+  - install the printer
+  - print a test page
+  - before validating a new sell, ask your browser to print the current page and choose the ticket printer.
+
 - Baskets: added an action to add all the cards to the stock, without having to choose a shelf. This greatly **speeds up the registration of new books**.
 - We added a global parameter to **use CLIL themes for the shelf** name,
   in order to speed up the registration of new books (this removes the
   only required manual step until now). We can use the new action
   above, and still have shelves for our books.
+- History: added a button to quickly **command** a book (add it into the command list).
 - History: the history gets more **breakdown**: it shows totals for each type of product (book, CD, beverage…)
 - History: the history page of the month and the day show the **best sells** for each kind of product: books, but not only.
 - Sell page: we can pay with **two payment methods**.
@@ -27,7 +38,6 @@ Changelog starting from v0.5 (2018/09/18)
 - added a button to collapse the left menu. We can now work in "full screen". Especially useful for the Raspberry Pis and views with a lot of information (Reception, lists…).
 - We can choose what books to show on the ABStock catalogue from within Abelujo (see new page `/catalogue-selection`).
 - We can now see the past inventories.
-- preliminary support for connection to the Electre API ("à la demande")
 - quick search bar: we introduce a way to filter our search. Type "keyword ed:foo" (`ed:foo` is important here) to filter the results by publisher containing "foo" in its name.
 
 More data delivered with the API:
@@ -36,12 +46,16 @@ More data delivered with the API:
 
 ### Other enhancements
 
+- **Bills** enhancements (added a unique number, better TVA details, other fixes).
 - on a card page, the cart button to add a card to the command list was fixed to add 1 copy at each click (instead of adding the book, but not updating the quantity to command).
   - in addition, the button also shows the quantity in the command list.
 - new **Preference setting**: choose wether or not to automatically add a card to the list of commands after a sell (if its quantity in stock gets lower its minimal treshold).
   - **changed**: this features is now disabled by default.
 - when we have more than one places in the database, allow to choose where we sell books from in the **sell page** (this was removed seven months ago, it is back but hidden by default).
 - during a sell, we warn the user if a price of a book that is being sold was updated (it can be updated asynchronously, just after it was added to the sell).
+- we do not emphasize about many (selling) places anymore. It adds too much complexity and was seldom used. Now Abelujo expects one stocking place and one selling place.
+  - you can still create other (selling) places, it mostly works, but some details are lacking. You might get some confusion (but no data loss).
+- fixed the broken redirection after a logout and new login.
 - **speed up** improvements for the history display (more than 10x).
 - **speed up** improvements to the CSV and TXT download of history logs (30%).
 - deposits: we don't mention anymore the type of deposits that are sent by us to the exterior world.
@@ -51,6 +65,9 @@ More data delivered with the API:
 
 ### For administrators
 
+- **ease of installation**: the installation requires many fewer steps and dependencies, see below.
+- new feature flag: `FEATURE_EXCLUDE_FOR_WEBSITE` (defaults to False): exclude books from the API to not show them on the frontend website.
+- new feature flag: `FEATURE_ELECTRE_API` (False), as well as the related password and username settings.
 - new script: `./manage.py move_from_place --origin <id>` to move all cards from one place to another (the destination defaults to the default place). It might be useful, because Abelujo doesn't encourage to use more than one selling place anymore.
 - new script: `./manage.py get_higher_covers`: replace book covers (gotten from librairie-de-paris) to higher resolution ones. To run once.
 
