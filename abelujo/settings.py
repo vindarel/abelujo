@@ -447,7 +447,7 @@ LOCALE_FOR_EXPORTS = "fr"
 # Feature flags
 #
 # Show a reservation button on the card page.
-FEATURE_SHOW_RESERVATION_BUTTON = False
+FEATURE_SHOW_RESERVATION_BUTTON = True
 
 #
 # Electre API
