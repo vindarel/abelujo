@@ -139,11 +139,8 @@ class ReservationAdmin(admin.ModelAdmin):
     class Meta:
         model = Reservation
 
-    # def get_queryset(self, request):
-    #     qs = super(ReservationAdmin, self).get_queryset(request)
-    #     return qs.filter(archived=False)
-
-    list_display = ("client", "card", "archived")
+    search_fields = ["card__title"]
+    list_display = ("pk", "client", "card", "created", "archived")
 
 
 class ShelfAdmin(admin.ModelAdmin):
