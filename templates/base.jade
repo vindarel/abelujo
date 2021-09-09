@@ -174,12 +174,18 @@ html(ng-app="abelujo")
 
 
     #page-content-wrapper
-      #page-content
+      #page-content(style="padding: 1em")
         .container-fluid
           .row
             .col-md-12
                 {% block content %}
                 {% endblock content %}
+
+    footer(style="padding: 0 1em 1em 1em;")
+      hr
+      small
+        if ABELUJO_VERSION
+          div Abelujo version: {{ ABELUJO_VERSION }}
 
   // brunch: load our Vue app.
   // script
