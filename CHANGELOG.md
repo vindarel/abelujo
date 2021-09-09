@@ -10,7 +10,9 @@ Changelog starting from v0.5 (2018/09/18)
   - books bought online create **reservation objects** on Abelujo side, then the show owner validates the sell (or not).
 
 
-## v0.16 (2020-12, ...)
+## v0.18 (2020-12, 2021-09)
+
+yes it's a +3 version jump because we are late and have 3 big new features!
 
 ### New features
 
