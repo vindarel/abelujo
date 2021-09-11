@@ -25,22 +25,28 @@
 {% load currencyfilter %}
 {% load ngfilter %}
 
-<div class="row">
-  <h3 class="col-md-4"> {% trans "Reservations" %} ({{ nb_reservations }})</h3>
-</div>
-<div>
-  <a class="btn btn-default" href="http://abelujo.cc/docs/clients/" target="_blank" title=''{% trans "Read the documentation" %}'>
-    <i class="glyphicon glyphicon-question-sign">
-    </i>
-  </a>
+<div style="clear: both;">
+  <h3 style="vertical-align: top; float: left;">
+    {% trans "Reservations" %} ({{ nb_reservations }}) &nbsp;
+  </h3>
+  <div style="padding: 1em 0 0 2em;">
+    <a class="btn btn-default" href="http://abelujo.cc/docs/clients/" target="_blank" title=''{% trans "Read the documentation" %}'>
+      <i class="glyphicon glyphicon-question-sign">
+      </i>
+    </a>
+  </div>
+  <hr>
 </div>
 
+
 <div class="container">
+
   {% for client_reservations in reservations %}
   {% with client=client_reservations.0 reservations=client_reservations.1 %}
+
   <div class="row">
     <div class="col-md-4">
-      <h4>
+      <h4 id="client-{{ client.pk }}">
         <a href="{{ client.get_absolute_url }}">
           {{ client }}
         </a>
