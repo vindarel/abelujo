@@ -64,7 +64,7 @@ class TestBill(TestCase):
 class TestClient(TestCase):
 
     def setUp(self):
-        self.client = Client(name="client test", discount=9)  # TODO: fails with unicode
+        self.client = Client(name="Élodie Ô client test", discount=9)
         self.client.save()
         self.assertTrue(self.client.repr())
         self.assertTrue(self.client.to_dict())
