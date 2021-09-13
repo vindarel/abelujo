@@ -392,33 +392,21 @@ def api_stripe_hooks(request, **response_kwargs):
     if event and event.get('type') == 'checkout.session.completed':
         # We consider the payment was succesfull only with this event.
         sell_successful = True
-    elif event and event.get('type') == 'payment_intent.succeeded':
-        payment_intent = event.data.object  # contains a stripe.PaymentIntent
-        cards = []
-        msg = "PaymentIntent was successful!"
-        res['alerts'].append(msg)
-        # res['data'] = payment_intent  # this is not a JSON but an object.
-        # print(msg)
-        # sell_successful = True
-    elif event and event.get('type') == 'payment_method.attached':
-        payment_method = event.data.object  # contains a stripe.PaymentMethod
-        msg = 'PaymentMethod was attached to a Customer!'
-        print(msg)
-        res['alerts'].append(msg)
-        res['data'] = payment_method
+        log.info("stripe hook: received checkout.session.completed signal. Now looking for the payment intent id.")
     # ... handle other event types
     else:
-        print('Unhandled event type {}'.format(event.get('type')))
+        log.info('Unhandled event type {}'.format(event.get('type')))
         res['alerts'].append('Unhandled event type: {}'.format(event.get('type')))
         return JsonResponse(res, status=200)
 
-    ########################################################
-    ## If the sell was not successful, warn the bookshop. ##
-    ########################################################
+    # If the sell was not successful, warn the bookshop.
+    # ... or let Stripe handle it.
     if not sell_successful:
-        pass
+        return JsonResponse(res, status=200)
 
-    # Send confirmation emails.
+    #
+    # Look for the payment intent ID.
+    #
     payload = json.loads(request.body)
     payment_intent = None
     from pprint import pprint
@@ -427,9 +415,31 @@ def api_stripe_hooks(request, **response_kwargs):
         try:
             payment_intent = payload['data']['object']['payment_intent']
         except Exception as e:
-            log.error("Could not get the payment intent ID in webhook: {}".format(e))
+            log.error("Could not get the payment intent ID in in webhook (in data.object.payment_intent). Let me search in charges.0.data now. {}".format(e))
 
-    ongoing_reservations = Reservation.objects.filter(payment_intent=payment_intent)
+        if not payment_intent:
+            try:
+                payload_data = payload['data']['object']['charges']['data']
+                if payload_data and len(payload_data):
+                    payment_intent = payload_data[0].get('payment_intent')
+                if len(payload_data) > 1:
+                    log.info("stripe hook: payload's charges has more than 1 element and we don't handle it: {}".format(payload_data))
+            except Exception as e:
+                log.warning("stripe hook: looking for the payment_intent failed: it was not in data.object.payment_intent and we don't find it in data.object.charges.data.0 either. {}".format(e))
+
+    #
+    # If no payment ID found, log, but send an email to the owner anyways
+    # (so she knows something happened).
+    #
+    if not payment_intent:
+        log.warning("stripe hook: we did not find the payment_intent, so we won't validate reservations or send emails. {}".format(e))
+
+    #
+    # Confirm the reservations.
+    #
+    ongoing_reservations = None
+    if payment_intent:
+        ongoing_reservations = Reservation.objects.filter(payment_intent=payment_intent)
     # So we have several reservation objects, but they should be of the same client and
     # part of the same command...
     client = None
@@ -447,6 +457,9 @@ def api_stripe_hooks(request, **response_kwargs):
             if resa.client != client:
                 log.warning("mmh we have ongoing reservations with payment_intent {} but not the same client ?? {} / {}".format(payment_intent, client, resa.client))
 
+    ###############################
+    ## Send confirmation emails. ##
+    ###############################
     to_email = ""
     # amount = None
     # amount_fmt = ""
@@ -460,11 +473,13 @@ def api_stripe_hooks(request, **response_kwargs):
         # for resa in ongoing_reservations:
         #     resa.is_paid = True
         #     resa.save()
-        ongoing_reservations.update(is_paid=True, is_ready=True)
+        if ongoing_reservations:
+            ongoing_reservations.update(is_paid=True, is_ready=True)
         # ongoing_reservations.update(is_ready=True)
 
         # Get emails.
-        to_email = client.email if client else ""
+        if client:
+            to_email = client.email if client else ""
 
         try:
             description = payload['data']['object']['charges']['data'][0]['description']
@@ -506,7 +521,9 @@ def api_stripe_hooks(request, **response_kwargs):
         except Exception as e:
             log.error("api_stripe: could not send confirmation email: {}".format(e))
 
+        #
         # Send confirmation to bookshop owner.
+        #
         if settings.EMAIL_BOOKSHOP_RECIPIENT:
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
