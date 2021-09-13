@@ -36,6 +36,9 @@ log = get_logger()
 
 
 def generate_email_body(resas):
+    """
+    dev note: to use a template for emails, see mailer.py and templates/mailer/.
+    """
     linebreak = "%0A"
     newline = "{} {}".format(linebreak, linebreak)
     ending = "Nous vous l'avons mise de côté.{} merci et à tout bientôt.".format(newline)
@@ -74,10 +77,11 @@ class Reservation(TimeStampedModel):
     def get_absolute_url(self):
         return "/admin/search/reservation/{}/".format(self.id)
 
-    client = models.ForeignKey("search.Client")
+    client = models.ForeignKey("search.Client", null=True, on_delete=models.SET_NULL)
     #: Reserve one card.
     # XXX: Shoudn't it be many?
-    card = models.ForeignKey("search.Card", null=True, blank=True)
+    card = models.ForeignKey("search.Card", null=True, blank=True,
+                             on_delete=models.SET_NULL,)
     #: optional: a quantity to reserve. Defaults to 1.
     nb = models.IntegerField(default=1, null=True, blank=True)
     #: This reservation is ready, we must show it to the bookshop owner.
@@ -404,7 +408,9 @@ class Client(Contact):
             resa = Reservation.objects.filter(client=self, card_id=card.id, archived=False).first()
             if resa:
                 card.add_card()
-                resa.delete()
+                resa.archived = True
+                resa.success = False  # XXX: say it is a manual cancelation?
+                resa.save()
 
             # Remove from the command list if needed.
             # It's possible we used the +1 button,

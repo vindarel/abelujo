@@ -2487,9 +2487,9 @@ class PlaceCopies (models.Model):
 
     # so than we can add custom fields to the join.
     #: The card
-    card = models.ForeignKey("Card")
+    card = models.ForeignKey("Card", null=True, on_delete=models.SET_NULL)
     #: The place
-    place = models.ForeignKey("Place")
+    place = models.ForeignKey("Place", null=True, on_delete=models.SET_NULL)
 
     #: Number of copies
     nb = models.IntegerField(default=0)
@@ -3067,8 +3067,8 @@ class Preferences(models.Model):
 class BasketCopies(TimeStampedModel):
     """Copies present in a basket (intermediate table).
     """
-    card = models.ForeignKey("Card")
-    basket = models.ForeignKey("Basket")
+    card = models.ForeignKey("Card", null=True, on_delete=models.SET_NULL)
+    basket = models.ForeignKey("Basket", null=True, on_delete=models.SET_NULL)
     nb = models.IntegerField(default=0)
 
     def __str__(self):
@@ -3837,7 +3837,8 @@ class Restocking(models.Model):
             if copy.card.quantity_selling_places() <= 0:
                 res.append(copy.card)
             else:
-                copy.delete()
+                # copy.delete()
+                log.warning("This restocking operation wants us to delete card {}, but this is creates a potential loss of data. Deletion is suspended now.".format(copy.pk))
 
         return res
 
@@ -3874,7 +3875,8 @@ class Restocking(models.Model):
             res = RestockingCopies.objects.filter(card_id=pk)
             if res:
                 copy = res[0]
-                copy.delete()
+                # copy.delete()
+                log.warning("Restocking.remove_card_id wants us to delete card {}, but let's not do it yet. Who uses restocking ?".format(copy.pk))
         except Exception as e:
             log.error("Error while removing the card {} from the restocking list: {}".format(pk, e))
 
@@ -4668,7 +4670,7 @@ class Deposit(TimeStampedModel):
 
 @python_2_unicode_compatible
 class SoldCards(TimeStampedModel):
-    card = models.ForeignKey(Card)
+    card = models.ForeignKey(Card, null=True, on_delete=models.SET_NULL)
     sell = models.ForeignKey("Sell")
     #: Number of this card sold:
     quantity = models.IntegerField(default=0)
@@ -5605,7 +5607,7 @@ class InventoryCopiesBase(models.Model):
     """The list of cards of an inventory, plus other information:
     - the quantity of them in this inventory.
     """
-    card = models.ForeignKey(Card)
+    card = models.ForeignKey(Card, null=True, on_delete=models.SET_NULL)
     #: How many copies of it did we find in our stock ?
     quantity = models.IntegerField(default=0)
 
