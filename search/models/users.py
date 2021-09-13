@@ -70,7 +70,7 @@ class Reservation(TimeStampedModel):
 
     def __unicode__(self):
         if self.client:
-            return unicode("client {}".format(self.client))
+            return unicode("client {}, card {}".format(self.client, self.card.pk))
         else:
             return ""
 
