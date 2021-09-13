@@ -662,6 +662,8 @@ class Card(TimeStampedModel):
     #: Did we buy this card once, or did we register it only to use in
     #: lists (baskets), without buying it ?
     in_stock = models.BooleanField(default=False, verbose_name=__("in stock"))
+    archived = models.BooleanField(default=False, verbose_name=__("This card is archived: it was 'deleted' one day, but it's kept for historical purposes."))
+    archived_date = models.DateField(blank=True, null=True, verbose_name=__("date archived"))
     #: Quantity (caution: this field is denormalized, computed on each save).
     quantity = models.IntegerField(null=True, blank=True, editable=False, verbose_name=__("quantity"))
     #: If we know this book is unavailable, mark this.
@@ -757,6 +759,27 @@ class Card(TimeStampedModel):
             publishers = publishers[0:MAX_LENGTH] + "..."
         distributor = self.distributor.name if self.distributor else _("none")
         return "{}:{}, {}, editor: {}, distributor: {}".format(self.id, self.title, authors, publishers, distributor)
+
+    def delete(self):
+        """
+        Ultimate deletion protection. We want to keep cards around for
+        historical purposes.  When needed, we could still properly
+        delete cards that were registered but never used.
+
+        CAUTION: we can still delete cards by deleting a QuerySet.
+        """
+        return self.archive()
+
+    def archive(self):
+        log.warning("We are trying to delete the card {}. We archive it instead.".format(self.pk))
+        try:
+            self.archived = True
+            self.archived_date = timezone.now()
+            self.save()
+            return True
+        except Exception as e:
+            log.error("Could not archive card {}: {}".format(self.pk, e))
+            return False
 
     @property
     def ean(self):
