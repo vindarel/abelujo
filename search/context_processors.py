@@ -36,6 +36,7 @@ def get_abelujo_version():
     except Exception as e:
         print("Could not get abelujo git tag version: \n {}".format(e))
 
+
 get_abelujo_version()
 
 

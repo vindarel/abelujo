@@ -121,3 +121,7 @@ Testing the sending of emails
 See ``make send_test_emails``. It will call a unit test, create fake data and construct an email object **and send it**, to your testing address configured in conf.py.
 
 See the URL http://localhost:8000/en/private/test/mailer/owner-confirmation.html to see how an email is rendered.
+
+To test Stripe hook validation, install the Stripe CLI tool and run::
+
+    stripe trigger payment_intent.succeeded

@@ -419,9 +419,6 @@ class TestStripe(TestCase):
     def test_email_body(self):
         self.client = Client(name="toto", firstname="Firstname", address1="5 rue Hugo")
         self.client.save()
-        res = mailer.generate_client_data(self.client)
-        self.assertTrue(res)
-
         res = mailer.generate_body_for_owner_confirmation(self.client,
                                                           settings.BOOKSHOP_OWNER_NAME,
                                                           payload=real_test_payload,

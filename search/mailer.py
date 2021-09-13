@@ -96,39 +96,6 @@ def send_email(from_email=FROM_EMAIL,
 SUBJECT_COMMAND_OK = "Votre commande"
 SUBJECT_COMMAND_OWNER = "Nouvelle commande"
 
-LINEBREAK = "</br>"
-NEWLINE = "{} {}".format(LINEBREAK, LINEBREAK)
-
-def generate_card_summary(cards):
-    res = ""
-    for card in cards:
-        res += "- {} {}".format(card.title, LINEBREAK)
-    if cards:
-        res += "{}".format(NEWLINE)
-    return res
-
-def generate_client_data(client):
-    if not client:
-        # log.warning("generate_client_data: no client.")
-        return ""
-    res = ""
-    res += client.__repr__()
-    res += NEWLINE
-    res += "tel: {} / {} {}".format(client.mobilephone, client.telephone if client.telephone else "", LINEBREAK)
-    res += "email: {} {}".format(client.email if client.email else "", LINEBREAK)
-    res += client.address1 if client.address1 else ""
-    res += LINEBREAK
-    res += client.address2 if client.address2 else ""   # shiiit None default values
-    res += LINEBREAK
-    res += client.zip_code if client.zip_code else ""
-    res += LINEBREAK
-    res += client.city if client.city else ""
-    res += LINEBREAK
-    res += client.state if client.state else ""
-    res += LINEBREAK
-    res += client.country if client.country else ""
-    res += NEWLINE
-    return res
 
 def generate_body_for_client_command_confirmation(price, cards, payload={}):
     template = get_template('mailer/client_confirmation_template.html')
@@ -146,14 +113,14 @@ def generate_body_for_client_command_confirmation(price, cards, payload={}):
 def generate_body_for_owner_confirmation(client,
                                          owner_name,
                                          payload={},
+                                         is_online_payment = False,
                                          ):
     template = get_template('mailer/new_command_template.html')
     bookshop_name = Bookshop.name() or ""
-    is_online_payment = False
     try:
         is_online_payment = payload.get('order').get('online_payment')
-    except:
-        pass
+    except Exception as e:
+        log.warn("generate_body_for_owner_confirmation: {}".format(e))
     body = template.render({'payload': payload,
                             'bookshop_name': bookshop_name,
                             'is_online_payment': is_online_payment,
@@ -188,10 +155,12 @@ def send_client_command_confirmation(cards=[],  # list of cards sold
 def send_owner_confirmation(cards=[], email="", client=None,
                             payload={},
                             owner_name="",
+                            is_online_payment=None,
                             verbose=False):
     body = generate_body_for_owner_confirmation(client,
                                                 owner_name,
                                                 payload=payload,
+                                                is_online_payment=is_online_payment,
                                                 )
 
     res = send_email(to_emails=email,

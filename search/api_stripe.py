@@ -150,8 +150,6 @@ def handle_api_stripe(payload):
     # Is is an online payment?
     is_online_payment = False
 
-    session = {}
-
     ###################
     ## Basic checks. ##
     ###################
@@ -361,8 +359,6 @@ def api_stripe_hooks(request, **response_kwargs):
         payload = request.body
         signature = request.META.get('HTTP_STRIPE_SIGNATURE')
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
-
-    session = {}
 
     ongoing_reservations = []
     cards = []
