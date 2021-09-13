@@ -414,6 +414,7 @@ def api_stripe_hooks(request, **response_kwargs):
     if sell_successful:
         try:
             payment_intent = payload['data']['object']['payment_intent']
+            log.info("stripe hook: found payment intent: {}. Everything goes well.".format(payment_intent))
         except Exception as e:
             log.error("Could not get the payment intent ID in in webhook (in data.object.payment_intent). Let me search in charges.0.data now. {}".format(e))
 
@@ -422,6 +423,8 @@ def api_stripe_hooks(request, **response_kwargs):
                 payload_data = payload['data']['object']['charges']['data']
                 if payload_data and len(payload_data):
                     payment_intent = payload_data[0].get('payment_intent')
+                    log.info("stripe hook: found payment intent inside charges.data.0: {}. Payload: {}".format(payment_intent, payload))
+
                 if len(payload_data) > 1:
                     log.info("stripe hook: payload's charges has more than 1 element and we don't handle it: {}".format(payload_data))
             except Exception as e:
@@ -486,7 +489,7 @@ def api_stripe_hooks(request, **response_kwargs):
             if description and cli_test_sign in description:
                 is_stripe_cli_test = True
         except Exception as e:
-            log.info("api_stripe_hooks: could not get the description, I don't know if we are in a stripe cli test: {}".format(e))
+            log.info("api_stripe_hooks: could not get the description, so we are probably NOT in a stripe cli test but in production. The exception is: {}".format(e))
 
         # try:
         #     amount = payload['data']['object']['amount_total']
@@ -513,6 +516,7 @@ def api_stripe_hooks(request, **response_kwargs):
                                                                     # total_price=amount_fmt,
                                                                     to_emails=to_email,
                                                                     payload=payload,
+                                                                    is_online_payment=True,
                                                                     reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
                 if not mail_sent:

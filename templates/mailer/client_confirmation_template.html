@@ -19,6 +19,7 @@
     </p>
 
     <p>
+      {% if payload.order.amonut %}
       Votre commande des titres suivants pour un total de {{ payload.order.amount | div:100 }}€ a bien été reçue: <br>
 
         <ul>
@@ -29,10 +30,13 @@
           {% endfor %}
         </ul>
 
+      {% else %}
+      Votre commande a bien été reçue: <br>
+      {% endif %}
 
       <p>
 
-        {% if payload.order.online_payment %}
+        {% if is_online_payment %}
 
         L'adresse de facturation est la suivante:
         <br>

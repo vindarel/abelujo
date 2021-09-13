@@ -97,11 +97,13 @@ SUBJECT_COMMAND_OK = "Votre commande"
 SUBJECT_COMMAND_OWNER = "Nouvelle commande"
 
 
-def generate_body_for_client_command_confirmation(price, cards, payload={}):
+def generate_body_for_client_command_confirmation(price, cards, payload={},
+                                                  is_online_payment=None):
     template = get_template('mailer/client_confirmation_template.html')
     bookshop_name = Bookshop.name() or ""
     body = template.render({'payload': payload,
                             'bookshop_name': bookshop_name,
+                            'is_online_payment': is_online_payment,
                             })
     try:
         body = body.encode('utf8')
@@ -113,14 +115,10 @@ def generate_body_for_client_command_confirmation(price, cards, payload={}):
 def generate_body_for_owner_confirmation(client,
                                          owner_name,
                                          payload={},
-                                         is_online_payment = False,
+                                         is_online_payment=False,
                                          ):
     template = get_template('mailer/new_command_template.html')
     bookshop_name = Bookshop.name() or ""
-    try:
-        is_online_payment = payload.get('order').get('online_payment')
-    except Exception as e:
-        log.warn("generate_body_for_owner_confirmation: {}".format(e))
     body = template.render({'payload': payload,
                             'bookshop_name': bookshop_name,
                             'is_online_payment': is_online_payment,
@@ -134,11 +132,13 @@ def generate_body_for_owner_confirmation(client,
 def send_client_command_confirmation(cards=[],  # list of cards sold
                                      total_price="",
                                      payload={},
+                                     is_online_payment=None,
                                      to_emails=TEST_TO_EMAILS,
                                      reply_to=None,
                                      verbose=False):
     # Build HTML body.
-    body = generate_body_for_client_command_confirmation(total_price, cards, payload=payload)
+    body = generate_body_for_client_command_confirmation(total_price, cards, payload=payload,
+                                                         is_online_payment=is_online_payment)
 
     # Send.
     res = send_email(to_emails=to_emails,
