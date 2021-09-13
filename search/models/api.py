@@ -1920,8 +1920,10 @@ def baskets_archive(request, pk, **kw):
         return JsonResponse(to_ret)
 
 def baskets_delete(request, pk, **kw):
-    """Delete the given basket.
     """
+    Delete the given basket. Oh no, archive it.
+    """
+    log.warning("Deleting a basket should not be accessible from the API. Archive it instead. Tried to delete basket {}".format(pk))
     if request.method == "POST":
         msg = {'status': ALERT_SUCCESS,
                "message": _("Basket deleted succesfully")}
@@ -1933,7 +1935,9 @@ def baskets_delete(request, pk, **kw):
                                  'message': "basket {} does not exist".format(pk)})
 
         try:
-            b_obj.delete()
+            # b_obj.delete()
+            b_obj.archived = True
+            b_obj.save()
         except Exception as e:
             log.error("Basket {} could not be deleted: {}".format(b_obj.id, e))
             msg = {'status': ALERT_ERROR,

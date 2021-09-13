@@ -632,7 +632,7 @@ class Card(TimeStampedModel):
     title_ascii = models.CharField(max_length=CHAR_LENGTH, verbose_name=__("title_ascii"), null=True, blank=True, editable=False)
 
     #: type of the card, if specified (book, CD, tshirt, …)
-    card_type = models.ForeignKey(CardType, blank=True, null=True, verbose_name=__("card type"))
+    card_type = models.ForeignKey(CardType, blank=True, null=True, on_delete=models.SET_NULL, verbose_name=__("card type"))
     #: VAT (tax. French: TVA)
     vat = models.FloatField(null=True, blank=True, verbose_name=__("VAT tax"))
     sortkey = models.TextField('Authors', blank=True)
@@ -675,7 +675,7 @@ class Card(TimeStampedModel):
     publishers = models.ManyToManyField(Publisher, blank=True, verbose_name=__("publishers"))
     year_published = models.DateField(blank=True, null=True, verbose_name=__("year published"))
     #: Distributor:
-    distributor = models.ForeignKey("Distributor", blank=True, null=True, verbose_name=__("distributor"))
+    distributor = models.ForeignKey("Distributor", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=__("distributor"))
     #: Collection
     collection = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("collection"))
     #: Official theme, following the CLIL classification, given by Dilicom. A code of 4 digits.
@@ -683,7 +683,7 @@ class Card(TimeStampedModel):
     # So, let's not create a special table.
     theme = models.CharField(max_length=4, blank=True, null=True, verbose_name=__("Theme (Dilicom)"))
     #: Shelf (for now, only one shelf).
-    shelf = models.ForeignKey("Shelf", blank=True, null=True, verbose_name=__("shelf"))
+    shelf = models.ForeignKey("Shelf", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=__("shelf"))
     # location = models.ForeignKey(Location, blank=True, null=True)
     #    default='?', on_delete=models.SET_DEFAULT)
     #: the places were we can find this card (and how many).
@@ -3118,7 +3118,7 @@ class Basket(models.Model):
     comment = models.CharField(max_length=TEXT_LENGTH, blank=True, null=True, verbose_name=__("comment"))
     #: We can also choose a supplier for this basket.
     #: This will help when applying the basket to the stock, receiving a parcel, etc.
-    distributor = models.ForeignKey(Distributor, blank=True, null=True, verbose_name=__("distributor"))
+    distributor = models.ForeignKey(Distributor, blank=True, null=True, on_delete=models.SET_NULL, verbose_name=__("distributor"))
     archived = models.BooleanField(default=False, verbose_name=__("archived"))
     archived_date = models.DateField(blank=True, null=True, verbose_name=__("date archived"))
 
