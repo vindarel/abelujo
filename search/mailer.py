@@ -149,8 +149,14 @@ def generate_body_for_owner_confirmation(client,
                                          ):
     template = get_template('mailer/new_command_template.html')
     bookshop_name = Bookshop.name() or ""
+    is_online_payment = False
+    try:
+        is_online_payment = payload.get('order').get('online_payment')
+    except:
+        pass
     body = template.render({'payload': payload,
                             'bookshop_name': bookshop_name,
+                            'is_online_payment': is_online_payment,
                             })
     try:
         body = body.encode('utf8')
