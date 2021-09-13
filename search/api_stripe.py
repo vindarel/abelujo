@@ -412,15 +412,22 @@ def api_stripe_hooks(request, **response_kwargs):
         res['alerts'].append('Unhandled event type: {}'.format(event.get('type')))
         return JsonResponse(res, status=200)
 
+    ########################################################
+    ## If the sell was not successful, warn the bookshop. ##
+    ########################################################
+    if not sell_successful:
+        pass
+
     # Send confirmation emails.
     payload = json.loads(request.body)
     payment_intent = None
     from pprint import pprint
     pprint(payload)
-    try:
-        payment_intent = payload['data']['object']['payment_intent']
-    except Exception as e:
-        log.error("Could not get the payment intent ID in webhook: {}".format(e))
+    if sell_successful:
+        try:
+            payment_intent = payload['data']['object']['payment_intent']
+        except Exception as e:
+            log.error("Could not get the payment intent ID in webhook: {}".format(e))
 
     ongoing_reservations = Reservation.objects.filter(payment_intent=payment_intent)
     # So we have several reservation objects, but they should be of the same client and
@@ -453,8 +460,8 @@ def api_stripe_hooks(request, **response_kwargs):
         # for resa in ongoing_reservations:
         #     resa.is_paid = True
         #     resa.save()
-        ongoing_reservations.update(is_paid=True)
-        ongoing_reservations.update(is_ready=True)
+        ongoing_reservations.update(is_paid=True, is_ready=True)
+        # ongoing_reservations.update(is_ready=True)
 
         # Get emails.
         to_email = client.email if client else ""
