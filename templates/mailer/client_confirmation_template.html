@@ -31,12 +31,14 @@
         </ul>
 
       {% else %}
-      Votre commande a bien été reçue: <br>
+      Votre commande a bien été reçue. <br>
       {% endif %}
 
       <p>
 
         {% if is_online_payment %}
+
+        {% if payment_meta %}
 
         L'adresse de facturation est la suivante:
         <br>
@@ -58,6 +60,8 @@
         {% if payment_meta.order.used_promo_code %}
         Le code promo utilisé : {{ payment_meta.order.used_promo_code }}. <br>
         {% endif %}
+
+        {% endif %} <!-- payment_meta -->
 
         {% comment %}
         Si Mondial relay, informations du point relais : <br>

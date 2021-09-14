@@ -465,6 +465,7 @@ def api_stripe_hooks(request, **response_kwargs):
             log.info("payment_meta decoded from json")
         except Exception as e:
             log.warning("stripe hook: we are trying to decode the payment_meta from a JSON string, but it failed. We maybe have data from before sept, 14th. {}".format(e))
+            payment_meta = None  # prevent decoding errors in templates (?).
 
     else:
         log.warning("stripe webhook: we didn't find any ongoing reservation with payment intent {}. We won't be able to find a related client and to send confirmation emails.".format(payment_intent))

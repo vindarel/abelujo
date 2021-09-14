@@ -25,6 +25,7 @@
       {% endif %}
     </p>
 
+
     <p>
       <strong>client</strong> : {{ payment_meta.buyer.billing_address.last_name }} {{ payment_meta.buyer.billing_address.first_name }} </br>
 
@@ -74,6 +75,28 @@
       </ul>
 
     </p>
+
+    {% if payment_meta %}
+    <div></div>
+    {% else %}
+
+    <p>
+      The client is {{ client }}.
+    </p>
+
+    <p>
+      Il s'agit des titres suivants:
+      <ul>
+        {% for card in cards  %}
+        <li>
+          {{ card.title }}, {{ card.price }}€
+        </li>
+        {% endfor %}
+      </ul>
+
+    </p>
+
+    {% endif %}
 
     Bonne journée et à bientôt.
 
