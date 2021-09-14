@@ -238,6 +238,11 @@ def handle_api_stripe(payload):
         if is_online_payment:
             is_paid = False  # needs to be validated in the webhook.
             payment_intent = session.get('payment_intent')
+        payment_meta = payload
+        try:
+            payment_meta = json.dumps(payload)
+        except Exception as e:
+            log.warning("stripe api: we try to encode payload to JSON to store it in payment_meta, but that failed: {}".format(e))
         for card_qty in cards_qties:
             resa, created = existing_client.reserve(card_qty.get('card'),
                                                     nb=card_qty.get('qty'),
@@ -245,7 +250,7 @@ def handle_api_stripe(payload):
                                                     is_paid=is_paid,
                                                     is_ready=False,
                                                     payment_origin="stripe",
-                                                    payment_meta=payload,
+                                                    payment_meta=payment_meta,
                                                     payment_session=session,
                                                     payment_intent=payment_intent)
             if resa:
