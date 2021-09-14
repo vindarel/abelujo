@@ -20,7 +20,7 @@
 
     <p>
       {% if payment_meta.order.amount %}
-      Votre commande des titres suivants pour un total de {{ payment_meta.order.amount | div:100 }}€ a bien été reçue: <br>
+      Votre commande des titres suivants pour un total de {{ payment_meta.order.amount | div:100 }}€ a bien été reçue : <br>
 
         <ul>
           {% for line_item in payment_meta.order.stripe_payload.line_items  %}
@@ -40,7 +40,7 @@
 
         {% if payment_meta %}
 
-        L'adresse de facturation est la suivante:
+        L'adresse de facturation est la suivante :
         <br>
         <pre>
         {{ payment_meta.buyer.billing_address.address }} {{ payment_meta.buyer.billing_address.address_comp }}
@@ -63,17 +63,20 @@
 
         {% endif %} <!-- payment_meta -->
 
-        {% comment %}
-        Si Mondial relay, informations du point relais : <br>
+        {% if payment_meta.order.shipping_method == "relay" %}
+        {% with mr=payment_meta.order.mondial_relay_AP %}
 
-        <!-- ID {{ $mr["ID"] }} -->
+        Votre point de retrait est le suivant : <br>
 
-        <!-- {{ $mr["Nom"] }} {{ $mr["Adresse1"] }} -->
+        <ul>
+          <li> {{ mr.Nom }} {{ mr.Adresse1 }} </li>
 
-        <!-- {{ $mr["Adresse2"] }} {{ $mr["Ville"] }} {{ $mr["CP"] }} -->
+          <li>{{ mr.Adresse2 }} {{ mr.Ville }} {{ mr.CP }} </li>
+          <li> L'identifiant précis du point relais est {{ mr.ID }} </li>
+        </ul>
 
-        <!-- <?php endif; }} -->
-        {% endcomment %}
+        {% endwith %}
+        {% endif %} <!-- relay -->
 
         {% else %}
         <p>
@@ -88,6 +91,16 @@
 
         <p>
           <small> {{ bookshop_name }} </small>
+          <p>
+            <em>
+              <div>
+                <small>Besoin d’une facture ? Besoin d’aide ? Contactez-nous.</small>
+              </div>
+              <div>
+                <small>Vous pouvez répondre à ce courriel.</small>
+              </div>
+            </em>
+          </p>
         </p>
 
       </p>

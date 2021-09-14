@@ -123,8 +123,15 @@ real_test_payload = {
     },
     'order': {
         'online_payment': True,
-        'shipping_method': 'colissimo',
-        'mondial_relay_AP': None,
+        'shipping_method': 'relay',  # colissimo
+        'mondial_relay_AP': {
+            'Adresse1': 'avenue URSS',
+            'CP': '31000',
+            'Nom': 'mon point relay',
+            'Ville': "toulouse",
+            'Adresse2': 'ad 2',
+            'ID': 'Id relais'
+            },
         'amount': 5050,
         # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
         # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],

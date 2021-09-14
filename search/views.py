@@ -2126,8 +2126,16 @@ def test_owner_confirmation(request):
         },
         'order': {
             'online_payment': True,
-            'shipping_method': 'colissimo',
-            'mondial_relay_AP': None,
+            'shipping_method': 'relay',  # colissimo
+            'mondial_relay_AP': {
+                'Adresse1': 'avenue URSS',
+                'CP': '31000',
+                'Nom': 'mon point relay',
+                'Ville': "toulouse",
+                'Adresse2': 'ad 2',
+                'ID': 'Id relais'
+            },
+
             'amount': 5050,
             # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
             # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
@@ -2166,12 +2174,14 @@ def test_owner_confirmation(request):
     }
 
     params = request.GET.copy()
+    is_online_payment = True
     if params.get('paid') and not _is_truthy(params.get('paid')):
         real_test_payload['order']['online_payment'] = False
+        is_online_payment = False
     return render(request, template,
                   {'payload': real_test_payload,
                    'payment_meta': real_test_payload,
-                   'is_online_payment': real_test_payload.get('order').get('online_payment'),
+                   'is_online_payment': is_online_payment,
                    'bookshop_name': bookshop_name,
                    })
 
@@ -2207,8 +2217,16 @@ def test_client_confirmation_email(request):
         },
         'order': {
             'online_payment': True,
-            'shipping_method': 'colissimo',
-            'mondial_relay_AP': None,
+            'shipping_method': 'relay',  # colissimo
+            'mondial_relay_AP': {
+                'Adresse1': 'avenue URSS',
+                'CP': '31000',
+                'Nom': 'mon point relay',
+                'Ville': "toulouse",
+                'Adresse2': 'ad 2',
+                'ID': 'Id relais'
+            },
+
             'amount': 5050,
             # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
             # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
@@ -2247,11 +2265,14 @@ def test_client_confirmation_email(request):
     }
 
     params = request.GET.copy()
+    is_online_payment = True
     if params.get('paid') and not _is_truthy(params.get('paid')):
         real_test_payload['order']['online_payment'] = False
+        is_online_payment = False
 
     return render(request, template,
                   {'payload': real_test_payload,
                    'payment_meta': real_test_payload,
+                   'is_online_payment': is_online_payment,
                    'bookshop_name': bookshop_name,
                    })

@@ -53,16 +53,19 @@
       <!-- <?php $mr = json_decode(payment_meta["order"]["mondial_relay_AP"], true); }} -->
       {% endcomment %}
 
-      <strong>Si Mondial relay, informations du point relais</strong> : </br>
-      {% comment %}
-      <!-- ID {{ $mr["ID"] }} -->
+      {% if payment_meta.order.shipping_method == "relay" %}
+      <strong> Informations du point relais</strong> : </br>
 
-      <!-- {{ $mr["Nom"] }} {{ $mr["Adresse1"] }} -->
+      {% with mr=payment_meta.order.mondial_relay_AP %}
+      <ul>
+        <li> {{ mr.Nom }} {{ mr.Adresse1 }} </li>
 
-      <!-- {{ $mr["Adresse2"] }} {{ $mr["Ville"] }} {{ $mr["CP"] }} -->
+        <li>{{ mr.Adresse2 }} {{ mr.Ville }} {{ mr.CP }} </li>
+        <li> Identifiant : {{ mr.ID }} </li>
+      </ul>
 
-      <!-- <?php endif; }} -->
-      {% endcomment %}
+      {% endwith %}
+      {% endif %} <!-- relay -->
 
       <strong>Lignes produits</strong> :
 
