@@ -2170,6 +2170,7 @@ def test_owner_confirmation(request):
         real_test_payload['order']['online_payment'] = False
     return render(request, template,
                   {'payload': real_test_payload,
+                   'payment_meta': real_test_payload,
                    'is_online_payment': real_test_payload.get('order').get('online_payment'),
                    'bookshop_name': bookshop_name,
                    })
@@ -2251,5 +2252,6 @@ def test_client_confirmation_email(request):
 
     return render(request, template,
                   {'payload': real_test_payload,
+                   'payment_meta': real_test_payload,
                    'bookshop_name': bookshop_name,
                    })

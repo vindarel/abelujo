@@ -26,30 +26,30 @@
     </p>
 
     <p>
-      <strong>client</strong> : {{ payload.buyer.billing_address.last_name }} {{ payload.buyer.billing_address.first_name }} </br>
+      <strong>client</strong> : {{ payment_meta.buyer.billing_address.last_name }} {{ payment_meta.buyer.billing_address.first_name }} </br>
 
-      <strong>Email</strong> : {{ payload.buyer.billing_address.email }} </br>
+      <strong>Email</strong> : {{ payment_meta.buyer.billing_address.email }} </br>
 
-      <strong>Téléphone</strong> : {{ payload.buyer.billing_address.phone }} </br>
+      <strong>Téléphone</strong> : {{ payment_meta.buyer.billing_address.phone }} </br>
 
-      <strong>Adresse de facturation</strong> : {{ payload.buyer.billing_address.address }} {{ payload.buyer.billing_address.address_comp }} </br>
-      {{ payload.buyer.billing_address.city }} {{ payload.buyer.billing_address.postcode }} {{ payload.buyer.billing_address.country }} </br>
+      <strong>Adresse de facturation</strong> : {{ payment_meta.buyer.billing_address.address }} {{ payment_meta.buyer.billing_address.address_comp }} </br>
+      {{ payment_meta.buyer.billing_address.city }} {{ payment_meta.buyer.billing_address.postcode }} {{ payment_meta.buyer.billing_address.country }} </br>
 
-      <strong>Adresse de livraison (le cas échéant)</strong> : {{ payload.buyer.delivery_address.address }} {{ payload.buyer.delivery_address.address_comp }} </br>
-      {{ payload.buyer.delivery_address.city }} {{ payload.buyer.delivery_address.postcode }} {{ payload.buyer.delivery_address.country }} </br>
+      <strong>Adresse de livraison (le cas échéant)</strong> : {{ payment_meta.buyer.delivery_address.address }} {{ payment_meta.buyer.delivery_address.address_comp }} </br>
+      {{ payment_meta.buyer.delivery_address.city }} {{ payment_meta.buyer.delivery_address.postcode }} {{ payment_meta.buyer.delivery_address.country }} </br>
 
-      <strong>Montant</strong> : {{ payload.order.amount | div:100 }}€ </br>
-      Code promo utilisé : {{ payload.order.used_promo_code }} </br>
-      <strong>Paiement en ligne </strong> : {{ payload.order.online_payment | yesno  }} </br>
+      <strong>Montant</strong> : {{ payment_meta.order.amount | div:100 }}€ </br>
+      Code promo utilisé : {{ payment_meta.order.used_promo_code }} </br>
+      <strong>Paiement en ligne </strong> : {{ payment_meta.order.online_payment | yesno  }} </br>
       {% comment %}
-      <!-- Mode de livraison : {{ payload.order.shipping_method === 'standard' ? 'Colissimo' : (payload.order.shipping_method === 'relay' ? 'Mondial Relay' : 'Retrait au local') }} -->
+      <!-- Mode de livraison : {{ payment_meta.order.shipping_method === 'standard' ? 'Colissimo' : (payment_meta.order.shipping_method === 'relay' ? 'Mondial Relay' : 'Retrait au local') }} -->
       {% endcomment %}
 
-      <strong>Mode de livraison</strong> : {{ payload.order.shipping_method }} </br>
+      <strong>Mode de livraison</strong> : {{ payment_meta.order.shipping_method }} </br>
 
       {% comment %}
-      <!-- <?php if (payload.order.shipping_method }} -->
-      <!-- <?php $mr = json_decode(payload["order"]["mondial_relay_AP"], true); }} -->
+      <!-- <?php if (payment_meta.order.shipping_method }} -->
+      <!-- <?php $mr = json_decode(payment_meta["order"]["mondial_relay_AP"], true); }} -->
       {% endcomment %}
 
       <strong>Si Mondial relay, informations du point relais</strong> : </br>
@@ -66,7 +66,7 @@
       <strong>Lignes produits</strong> :
 
       <ul>
-        {% for line_item in payload.order.stripe_payload.line_items  %}
+        {% for line_item in payment_meta.order.stripe_payload.line_items  %}
         <li>
           {{ line_item.price_data.product_data.name }}, {{ line_item.price_data.unit_amount |div:100 }}€ X {{ line_item.quantity }}
         </li>

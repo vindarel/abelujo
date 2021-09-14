@@ -422,6 +422,7 @@ class TestStripe(TestCase):
         res = mailer.generate_body_for_owner_confirmation(self.client,
                                                           settings.BOOKSHOP_OWNER_NAME,
                                                           payload=real_test_payload,
+                                                          payment_meta=real_test_payload,
                                                           is_online_payment=True,
                                                           )
         self.assertTrue(res)
@@ -522,6 +523,7 @@ class TestLive(TestCase):
     def notest_send_test_emails(self):
         req = mailer.send_owner_confirmation(cards=[self.card, self.card2],
                                              payload=real_test_payload,
+                                             payment_meta=real_test_payload,
                                              is_online_payment=True,
                                              client=self.client,
                                              email=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
@@ -529,6 +531,7 @@ class TestLive(TestCase):
                                              )
         client_req = mailer.send_client_command_confirmation(cards=[self.card, self.card2],
                                                       payload=real_test_payload,
+                                                      payment_meta=real_test_payload,
                                                       is_online_payment=True,
                                                       to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                       reply_to=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,

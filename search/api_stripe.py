@@ -446,6 +446,7 @@ def api_stripe_hooks(request, **response_kwargs):
     # Confirm the reservations.
     #
     ongoing_reservations = None
+    payment_meta = None  # Data from the first POST: buyer.billing_address, order.amount etc.
     if payment_intent:
         ongoing_reservations = Reservation.objects.filter(payment_intent=payment_intent)
     # So we have several reservation objects, but they should be of the same client and
@@ -454,8 +455,17 @@ def api_stripe_hooks(request, **response_kwargs):
     # send_by_post = False
     if ongoing_reservations:
         client = ongoing_reservations.first().client
+        log.info("stripe hook: found client: {}".format(client))
         # send_by_post = ongoing_reservations.first().send_by_post
         cards = [it.card for it in ongoing_reservations]
+        payment_meta = ongoing_reservations.first().payment_meta  # text field
+        log.info("stripe hook: found payment meta data: {}".format(payment_meta))
+        try:
+            payment_meta = json.loads(payment_meta)
+            log.info("payment_meta decoded from json")
+        except Exception as e:
+            log.warning("stripe hook: we are trying to decode the payment_meta from a JSON string, but it failed. We maybe have data from before sept, 14th. {}".format(e))
+
     else:
         log.warning("stripe webhook: we didn't find any ongoing reservation with payment intent {}. We won't be able to find a related client and to send confirmation emails.".format(payment_intent))
 
@@ -521,6 +531,7 @@ def api_stripe_hooks(request, **response_kwargs):
                                                                     # total_price=amount_fmt,
                                                                     to_emails=to_email,
                                                                     payload=payload,
+                                                                    payment_meta=payment_meta,
                                                                     is_online_payment=True,
                                                                     reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
@@ -537,6 +548,7 @@ def api_stripe_hooks(request, **response_kwargs):
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
                                                            payload=payload,
+                                                           payment_meta=payment_meta,
                                                            is_online_payment=True,
                                                            client=client,
                                                            # total_price=amount_fmt,

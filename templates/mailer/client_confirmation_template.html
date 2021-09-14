@@ -15,15 +15,15 @@
 
 
     <p>
-      Bonjour {{ payload.buyer.billing_address.last_name }},
+      Bonjour,
     </p>
 
     <p>
-      {% if payload.order.amonut %}
-      Votre commande des titres suivants pour un total de {{ payload.order.amount | div:100 }}€ a bien été reçue: <br>
+      {% if payment_meta.order.amount %}
+      Votre commande des titres suivants pour un total de {{ payment_meta.order.amount | div:100 }}€ a bien été reçue: <br>
 
         <ul>
-          {% for line_item in payload.order.stripe_payload.line_items  %}
+          {% for line_item in payment_meta.order.stripe_payload.line_items  %}
           <li>
             {{ line_item.price_data.product_data.name }}, {{ line_item.price_data.unit_amount |div:100 }}€ X {{ line_item.quantity }}
           </li>
@@ -41,22 +41,22 @@
         L'adresse de facturation est la suivante:
         <br>
         <pre>
-        {{ payload.buyer.billing_address.address }} {{ payload.buyer.billing_address.address_comp }}
-        {{ payload.buyer.billing_address.city }} {{ payload.buyer.billing_address.postcode }} {{ payload.buyer.billing_address.country }} <br>
+        {{ payment_meta.buyer.billing_address.address }} {{ payment_meta.buyer.billing_address.address_comp }}
+        {{ payment_meta.buyer.billing_address.city }} {{ payment_meta.buyer.billing_address.postcode }} {{ payment_meta.buyer.billing_address.country }} <br>
         </pre>
 
-        {% if payload.buyer.delivery_address.address %}
+        {% if payment_meta.buyer.delivery_address.address %}
         Et celle de livraison celle-ci (le cas échéant) :
         <pre>
-        {{ payload.buyer.delivery_address.address }} {{ payload.buyer.delivery_address.address_comp }} <br>
-        {{ payload.buyer.delivery_address.city }} {{ payload.buyer.delivery_address.postcode }} {{ payload.buyer.delivery_address.country }}
+        {{ payment_meta.buyer.delivery_address.address }} {{ payment_meta.buyer.delivery_address.address_comp }} <br>
+        {{ payment_meta.buyer.delivery_address.city }} {{ payment_meta.buyer.delivery_address.postcode }} {{ payment_meta.buyer.delivery_address.country }}
         </pre>
         {% endif %}
 
-        Vous avez choisi le mode de livraison {{ payload.order.shipping_method }}.
+        Vous avez choisi le mode de livraison {{ payment_meta.order.shipping_method }}.
         <br>
-        {% if payload.order.used_promo_code %}
-        Le code promo utilisé : {{ payload.order.used_promo_code }}. <br>
+        {% if payment_meta.order.used_promo_code %}
+        Le code promo utilisé : {{ payment_meta.order.used_promo_code }}. <br>
         {% endif %}
 
         {% comment %}
