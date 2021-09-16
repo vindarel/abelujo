@@ -277,7 +277,7 @@ class TestAddView(TestCase):
 
         self.c = Client()
 
-        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.user = auth.models.User.objects.create_superuser("admin", "admin@test.test", "admin")
         self.c.login(username="admin", password="admin")
 
     def test_move(self, mock_data_source):
@@ -295,7 +295,7 @@ class TestDeposit(TestCase, DBFixture):
     def setUp(self):
         DBFixture.__init__(self)
         self.c = Client()
-        self.user = auth.models.User.objects.create_user(username="admin", password="admin")
+        self.user = auth.models.User.objects.create_superuser("admin", "admin@test.test", "admin")
         self.c.login(username="admin", password="admin")
 
     def test_new_nominal(self):
