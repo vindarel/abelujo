@@ -23,11 +23,13 @@
 {% load i18n %}
 
 span
-  a(href="{% url 'history_sells_month' previous_month %}") &larr; {% trans "Previous" %}
+  a(href="{% url 'history_sells_month' previous_month %}")
+    button(style="margin-bottom: 5px") &larr; {% trans "Previous" %}
   span  &nbsp;
 if day.year < now.year or day.month < now.month
   span
-    a(href="{% url 'history_sells_month' next_month %}") {% trans "Next" %} &rarr;
+    a(href="{% url 'history_sells_month' next_month %}")
+      button {% trans "Next" %} &rarr;
 
 .row
   .col-lg-10
@@ -37,7 +39,7 @@ if day.year < now.year or day.month < now.month
       li(role="presentation"): a(href="{% url 'history_entries_month' day|date:'Y-m'  %}") {% trans "Entries" %}
 
 span
-  span(style="font-size: 36pt; font-size: 500; margin-right: 1em;") {{ day | date:'F Y' | title }}
+  span(style="font-size: 36pt; font-size: 500; margin-right: 1em; vertical-align: middle;") {{ day | date:'F Y' | title }}
   span
     .btn-group
       .dropdown

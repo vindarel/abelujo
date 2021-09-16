@@ -21,12 +21,20 @@
 {% load currencyfilter %}
 
 <span>
-  <a href="{% url 'history_sells_day' previous_day_fmt %}">&larr; {% trans "Previous" %}</a><span>&nbsp;</span>
-  <a href="{% url 'history_sells_month' month_fmt %}">{{ day | date:'F' | title }}</a>
+  <a href="{% url 'history_sells_day' previous_day_fmt %}">
+    <button style="margin-bottom: 5px">&larr; {% trans "Previous" %} </button>
+  </a>
+  <span>&nbsp;</span>
+  <a href="{% url 'history_sells_month' month_fmt %}">
+    <button>{{ day | date:'F' | title }} </button>
+  </a>
   <span>&nbsp;</span>
 </span>
 {% if  next_day_fmt %}
-<span><a href="{% url 'history_sells_day' next_day_fmt %}">{% trans "Next" %} &rarr;</a>
+<span>
+  <a href="{% url 'history_sells_day' next_day_fmt %}">
+    <button> {% trans "Next" %} &rarr; </button>
+  </a>
 </span>
 {% endif %}
 
