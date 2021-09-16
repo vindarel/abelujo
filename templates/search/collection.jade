@@ -47,28 +47,17 @@ div(ng-cloak, ng-controller="collectionController")
 
  form(ng-submit="validate()")
   .row
-   .col-md-6
-    div.form-group
-      label.col-md-4 {% trans "Search terms" %}
-      div.col-md-8
-        input.form-control#default-input(
-          ng-model="query"
-          type="text"
-          placeholder='{% trans "Search on title, authors or isbn" %}'
-        )
-
-   if show_places
-     .col-md-6
-      div.form-group
-          label.col-sm-4 {% trans "Place" %}
-          div.col-md-8
-            select.form-control(
-              ng-model="place"
-              ng-options="elt.name for elt in places")
-
-  .row
    form
     .col-md-6
+     div.form-group
+        label.col-md-4 {% trans "Search terms" %}
+        div.col-md-8
+          input.form-control#default-input(
+            ng-model="query"
+            type="text"
+            placeholder='{% trans "Search on title, authors or isbn" %}'
+          )
+
      div
         label.col-sm-4 {% trans "Type of card" %}
         div.col-md-8
@@ -90,6 +79,23 @@ div(ng-cloak, ng-controller="collectionController")
           select.form-control(
             ng-model="distributor"
             ng-options="elt.repr for elt in distributors")
+
+     if feature_dilicom_enabled
+       div
+          label.col-sm-4 {% trans "Distributor" %}
+          div.col-md-8
+            select.form-control(
+              ng-model="dilicom_distributor"
+              data-dilicom-distributors="{{ dilicom_distributors }}"
+              ng-options="elt.repr for elt in dilicom_distributors")
+
+     if show_places
+        div.form-group
+            label.col-sm-4 {% trans "Place" %}
+            div.col-md-8
+              select.form-control(
+                ng-model="place"
+                ng-options="elt.name for elt in places")
 
     .col-md-6
       div.form-group
