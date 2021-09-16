@@ -131,7 +131,7 @@ real_test_payload = {
             'Ville': "toulouse",
             'Adresse2': 'ad 2',
             'ID': 'Id relais'
-            },
+        },
         'amount': 5050,
         # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
         # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
