@@ -195,7 +195,12 @@
 
     <td>
       <div class="btn-group", style="margin-left: 1em" data-comment="copied from card_show">
+        {% if user.is_staff %}
         <a class="btn btn-warning" title='{% trans "Remember to command this card. Add it to the list for later." %}' onclick="card_command({{ it.card.pk }})">
+          {% else %}
+          <!-- Same, no onclick -->
+          <a class="btn btn-warning" title='{% trans "Remember to command this card. Add it to the list for later." %}' disabled>
+          {% endif %}
           <i class="glyphicon glyphicon-shopping-cart"> </i>
           <span> x
             <span id="nb_to_command_{{ it.card.pk }}"> {{ it.card.quantity_to_command }}
@@ -207,7 +212,15 @@
 
     <td>
       {% if  new_sell %}
-      <div onclick="sellUndo({{ sell_id }})" title="{% trans "Cancel a sell" %}" class="mouse-pointer glyphicon glyphicon-remove"></div>
+      <div title="{% trans "Cancel a sell" %}"
+           {% if user.is_staff %}
+           class="mouse-pointer glyphicon glyphicon-remove"
+           onclick="sellUndo({{ sell_id }})"
+           {% else %}
+           class="glyphicon glyphicon-remove"
+           disabled
+           {% endif %}
+           ></div>
       {% endif %}
     </td>
   </tr>

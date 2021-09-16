@@ -30,6 +30,8 @@ import toolz
 import unicodecsv
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -141,6 +143,7 @@ def get_reverse_url(cleaned_data, url_name="card_search"):
 
 
 @login_required
+@staff_member_required
 def preferences(request):
     """
     """
@@ -259,6 +262,7 @@ def cards_without_eans(request):
     })
 
 @login_required
+@staff_member_required
 def card_create_manually(request):
     template = 'search/card_create.jade'
     if request.method == 'GET':
@@ -415,6 +419,7 @@ def card_history(request, pk):
 
 
 @login_required
+@staff_member_required
 def card_buy(request, pk=None):
     form = viewforms.BuyForm()
     template = "search/card_buy.jade"
@@ -470,6 +475,7 @@ def card_buy(request, pk=None):
     })
 
 @login_required
+@staff_member_required
 def card_places_add(request, pk=None):
     """
     Add the given card to Places.
@@ -508,6 +514,7 @@ def card_places_add(request, pk=None):
 
 
 @login_required
+@staff_member_required
 def card_move(request, pk=None):
     template = "search/card_move.jade"
     BasketsForm = viewforms.CardMove2BasketForm()
@@ -567,6 +574,7 @@ def card_move(request, pk=None):
 
 
 @login_required
+@staff_member_required
 def cards_set_supplier(request, **kwargs):
     template = 'search/set_supplier.jade'
     form = viewforms.SetSupplierForm()
@@ -643,6 +651,7 @@ def cards_set_supplier(request, **kwargs):
         return HttpResponseRedirect(reverse('card_collection'))
 
 @login_required
+@staff_member_required
 def cards_set_shelf(request, **kwargs):
     template = 'search/set_shelf.jade'
     form = viewforms.SetShelfForm()
@@ -831,6 +840,7 @@ def collection(request):
     })
 
 @login_required
+@staff_member_required
 def sell(request):
     show_selling_places = False
     if Place.objects.count() > 1:
@@ -847,6 +857,7 @@ def sell(request):
                   })
 
 @login_required
+@staff_member_required
 def sell_details(request, pk):
     template = "search/sell_details.jade"
     sell = None
@@ -911,12 +922,14 @@ def deposits(request):
     })
 
 @login_required
+@staff_member_required
 def deposits_new(request):
     return render(request, "search/deposits_create.jade", {
         "DepositForm": viewforms.DepositForm(),
     })
 
 @login_required
+@staff_member_required
 def deposits_create(request):
     # results = 200
     if request.method == "POST":
@@ -942,6 +955,7 @@ def deposits_create(request):
     return redirect("/deposits/")  # should make status follow
 
 @login_required
+@staff_member_required
 def deposits_add_card(request):
     """Add the given card (post) to the given deposit (in the form).
     """
@@ -971,6 +985,7 @@ def deposits_add_card(request):
 
 
 @login_required
+@staff_member_required
 def deposits_view(request, pk):
     """Display the given deposit."""
     deposit = None
@@ -991,6 +1006,7 @@ def deposits_view(request, pk):
     })
 
 @login_required
+@staff_member_required
 def deposits_checkout(request, pk):
     """
     """
@@ -1010,12 +1026,14 @@ def deposits_checkout(request, pk):
     return HttpResponseRedirect(reverse("deposits_view", args=(pk,)))
 
 @login_required
+@staff_member_required
 def deposit_delete(request, pk):
     """
     """
     pass
 
 @login_required
+@staff_member_required
 def deposit_add_copies(request, pk):
     """Add copies to this deposit. (only ones that already exist)
     """
@@ -1041,6 +1059,7 @@ def deposit_add_copies(request, pk):
 
 
 @login_required
+@staff_member_required
 def basket_auto_command(request):
     template = "search/to_command_index.jade"
 
@@ -1067,6 +1086,7 @@ def basket_auto_command(request):
         })
 
 @login_required
+@staff_member_required
 def basket_auto_command_empty(request):
     if request.method == "POST":
         basket = Basket.auto_command_basket()
@@ -1076,17 +1096,20 @@ def basket_auto_command_empty(request):
     return HttpResponseRedirect(reverse('basket_auto_command'))
 
 @login_required
+@staff_member_required
 def command_supplier(request, pk):
     template = "search/to_command.jade"
     return render(request, template)
 
 @login_required
+@staff_member_required
 def baskets(request):
     template = "search/baskets.jade"
     if request.method == "GET":
         return render(request, template)
 
 @login_required
+@staff_member_required
 def basket_list(request):
     """
     Simple list of baskets. Vue stuff only on a basket page.
@@ -1099,6 +1122,7 @@ def basket_list(request):
         })
 
 @login_required
+@staff_member_required
 def boxes(request):
     template = "search/baskets.jade"
     if request.method == "GET":
@@ -1106,6 +1130,7 @@ def boxes(request):
         })
 
 @login_required
+@staff_member_required
 def basket_view(request, pk):
     template = 'search/basket_view.html'
     if request.method == "GET":
@@ -1851,6 +1876,7 @@ def distributors_sells_month_list(request, pk, date, **kwargs):
     })
 
 @login_required
+@staff_member_required
 def inventory_export(request, pk):
     total = total_with_discount = 0
     try:
@@ -1878,6 +1904,7 @@ def inventory_export(request, pk):
     return response
 
 @login_required
+@staff_member_required
 def inventories(request):
     """Get all inventories.
     """
@@ -1886,6 +1913,7 @@ def inventories(request):
         return render(request, template)
 
 @login_required
+@staff_member_required
 def inventories_archived(request):
     """
     View archived inventories.
@@ -1917,6 +1945,7 @@ def inventories_archived(request):
         })
 
 @login_required
+@staff_member_required
 def inventory(request, pk):
     template = "search/inventory_view.jade"
     if request.method == "GET":
@@ -1929,6 +1958,7 @@ def inventory(request, pk):
             return render(request, template)
 
 @login_required
+@staff_member_required
 def inventory_archive(request, pk):
     # if request.method == "POST":
     if request.method == "GET":
@@ -1947,6 +1977,7 @@ def inventory_archive(request, pk):
     return HttpResponseRedirect(reverse("inventories"))
 
 @login_required
+@staff_member_required
 def inventory_delete(request, pk):
     #XXX should be a post
     if request.method == "GET":
@@ -1966,6 +1997,7 @@ def inventory_delete(request, pk):
     return HttpResponseRedirect(reverse("inventories"))
 
 @login_required
+@staff_member_required
 def inventory_terminate(request, pk):
     """
     """
@@ -1987,6 +2019,7 @@ class CommandDetailView(DetailView):
 
 
 @login_required
+@staff_member_required
 def command_receive(request, pk):
     """
     GET: get the inventory state for this command.
@@ -2013,6 +2046,7 @@ def command_receive(request, pk):
 
 
 @login_required
+@staff_member_required
 def command_receive_terminate(request, pk):
     """
     """
@@ -2021,6 +2055,7 @@ def command_receive_terminate(request, pk):
 
 
 @login_required
+@staff_member_required
 def command_receive_export(request, pk):
     cmd = _get_command_or_return(pk)
     inv = cmd.get_inventory()
@@ -2041,6 +2076,7 @@ def command_receive_export(request, pk):
     return response
 
 @login_required
+@staff_member_required
 def command_card(request, pk):
     """
     Command the card of the given id, choose a client (optional).

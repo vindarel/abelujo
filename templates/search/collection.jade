@@ -136,15 +136,15 @@ div(ng-cloak, ng-controller="collectionController")
    .col-md-7(style="margin-top: 7px; margin-bottom: 7px")
      input.btn.btn-primary(value="{% trans 'Search' %}", ng-click="validate()", type="submit")
 
-     .btn-group
+     if user.is_staff
+       .btn-group
+         button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+           span.caret
 
-       button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
-         span.caret
-
-       ul.dropdown-menu
-         li: a(href="#", ng-click="add_to_lists()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to baskets…' %}
-         li: a(href="#", ng-click="set_supplier()", ng-show="selected", title='{% trans "Set the supplier for the selection" %}'){% trans 'Set supplier…' %}
-         li: a(href="#", ng-click="set_shelf()", ng-show="selected", title='{% trans "Set the shelf for the selection" %}'){% trans 'Set shelf…' %}
+         ul.dropdown-menu
+           li: a(href="#", ng-click="add_to_lists()", ng-show="selected", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add selection to baskets…' %}
+           li: a(href="#", ng-click="set_supplier()", ng-show="selected", title='{% trans "Set the supplier for the selection" %}'){% trans 'Set supplier…' %}
+           li: a(href="#", ng-click="set_shelf()", ng-show="selected", title='{% trans "Set the shelf for the selection" %}'){% trans 'Set shelf…' %}
 
      .btn-group
        button.btn.btn-success.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Export" %}…
@@ -166,6 +166,7 @@ div(ng-cloak, ng-controller="collectionController")
                           title='{% trans "Read the documentation" %}')
           i.glyphicon.glyphicon-question-sign
        span &nbsp;
+         if user.is_staff
             a(href="{% url 'card_create_manually' %}") {% trans "Add a card manually" %}
 
 

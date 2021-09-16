@@ -46,46 +46,49 @@
 
 .row
   .col-lg-3
-    .btn-group
-      a.btn.btn-default(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
-      a.btn.btn-default(href="{% url 'card_places_add' object.pk %}", title="{% trans 'Add to places' %}") {% trans "Add..." %}
-      a.btn.btn-default(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
+    if user.is_staff
+      .btn-group
+        a.btn.btn-default(href="{% url 'card_edit' object.pk %}", title="{% trans 'Edit the card' %}") {% trans "Edit" %}
+        a.btn.btn-default(href="{% url 'card_places_add' object.pk %}", title="{% trans 'Add to places' %}") {% trans "Add..." %}
+        a.btn.btn-default(href="{% url 'card_move' object.pk %}") {% trans 'Move…' %}
 
   .col-lg-7
-    .btn-group
-      a.btn.btn-default(href="#", title='{% trans "Add 1 copy to the default place" %}', onclick="card_add_one_to_default_place({{ object.pk }})")
-        i.glyphicon.glyphicon-plus 1
-      a.btn.btn-default(href="#", title='{% trans "Remove 1 copy to the default place" %}', onclick="card_remove_one_from_default_place({{ object.pk }})")
-        i.glyphicon.glyphicon-minus 1
+    if user.is_staff
+     div
+      .btn-group
+        a.btn.btn-default(href="#", title='{% trans "Add 1 copy to the default place" %}', onclick="card_add_one_to_default_place({{ object.pk }})")
+          i.glyphicon.glyphicon-plus 1
+        a.btn.btn-default(href="#", title='{% trans "Remove 1 copy to the default place" %}', onclick="card_remove_one_from_default_place({{ object.pk }})")
+          i.glyphicon.glyphicon-minus 1
 
-    .btn-group(style="margin-left: 1em")
-      a.btn.btn-warning(href="#", title='{% trans "Remember to command this card. Add it to the list for later." %}', onclick="card_command({{ object.pk }})")
-        i.glyphicon.glyphicon-shopping-cart
-        span &nbsp; x
-          span(id="nb_to_command_{{ object.pk }}") {{ object.quantity_to_command }}
+      .btn-group(style="margin-left: 1em")
+        a.btn.btn-warning(href="#", title='{% trans "Remember to command this card. Add it to the list for later." %}', onclick="card_command({{ object.pk }})")
+          i.glyphicon.glyphicon-shopping-cart
+          span &nbsp; x
+            span(id="nb_to_command_{{ object.pk }}") {{ object.quantity_to_command }}
 
-    .btn-group(style="margin-left: 1em")
-      if object.is_catalogue_selection
-        a.btn.btn-default(id="heart-{{ object.pk }}", href="", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})", style="background-color: pink")
-          i.glyphicon.glyphicon-heart
-      else
-        a.btn.btn-default#heart(href="", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})")
-          i.glyphicon.glyphicon-heart
-
-      if feature_exclude_for_website
-        if object.is_excluded_for_website
-          a.btn.btn-default(id="exclude-{{ object.pk }}", href="", title='{% trans "Exclude this card from the online catalogue." %}', onclick="card_catalogue_exclude({{ object.pk }})", style="background-color: pink")
-            i.glyphicon.glyphicon-eye-close
+      .btn-group(style="margin-left: 1em")
+        if object.is_catalogue_selection
+          a.btn.btn-default(id="heart-{{ object.pk }}", href="", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})", style="background-color: pink")
+            i.glyphicon.glyphicon-heart
         else
-          a.btn.btn-default(id="exclude-{{ object.pk }}", href="", title='{% trans "Exclude this card from the online catalogue." %}', onclick="card_catalogue_exclude({{ object.pk }})")
-            i.glyphicon.glyphicon-eye-close
+          a.btn.btn-default#heart(href="", title='{% trans "Select this card for the online catalogue special selection." %}', onclick="card_catalogue_select({{ object.pk }})")
+            i.glyphicon.glyphicon-heart
 
-      // WIP reservation button. Enable with feature flag in settings.
-      if feature_show_reservation_button
-        button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", title="Réserver pour un client", onclick="focus_input()")
-            i.glyphicon.glyphicon-user
-            span &nbsp; x
-                span(id="nb_to_command") {{ object.quantity_clients_reserved }}
+        if feature_exclude_for_website
+          if object.is_excluded_for_website
+            a.btn.btn-default(id="exclude-{{ object.pk }}", href="", title='{% trans "Exclude this card from the online catalogue." %}', onclick="card_catalogue_exclude({{ object.pk }})", style="background-color: pink")
+              i.glyphicon.glyphicon-eye-close
+          else
+            a.btn.btn-default(id="exclude-{{ object.pk }}", href="", title='{% trans "Exclude this card from the online catalogue." %}', onclick="card_catalogue_exclude({{ object.pk }})")
+              i.glyphicon.glyphicon-eye-close
+
+        // WIP reservation button. Enable with feature flag in settings.
+        if feature_show_reservation_button
+          button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", title="Réserver pour un client", onclick="focus_input()")
+              i.glyphicon.glyphicon-user
+              span &nbsp; x
+                  span(id="nb_to_command") {{ object.quantity_clients_reserved }}
 
     h3 {{ object.title }}
 

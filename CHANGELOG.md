@@ -8,6 +8,14 @@ Changelog starting from v0.5 (2018/09/18)
   - with validation emails (to the client and the show owner)
   - shipping costs
   - books bought online create **reservation objects** on Abelujo side, then the show owner validates the sell (or not).
+- **user permissions**: non-staff members can only see the stock. They can:
+ - see the stock
+ - search for books
+ - see a books' page
+ - see the history
+ - see client reservations
+ - see special pages (bookshop selection for website)
+ - => Create a new user from the admin panel, don't give it any rights.
 
 
 ## v0.18 (2020-12, 2021-09)

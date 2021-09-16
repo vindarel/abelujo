@@ -144,12 +144,18 @@
         </div>
 
         <div class="col-md-1">
+          {% if user.is_staff %}
           <a class="btn btn-default"
               id="remove-card-{{ resa.card.pk }}"
               hx-post="/api/card/{{ resa.card.pk }}/cancelreservation/{{ resa.client.pk}}"
               hx-target="#resa-{{ resa.pk }}"
           >
             <i class="glyphicon glyphicon-remove"> </i>
+            {% else %}
+            <a class="btn btn-default" disabled>
+              <i class="glyphicon glyphicon-remove"> </i>
+            </a>
+            {% endif %}
           </a>
         </div>
       </div>

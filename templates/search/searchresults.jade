@@ -53,21 +53,23 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
         span.input-group-btn
           button.btn.btn-primary#submit-button(ng-click="validate()", type="submit", placeholder="{% trans 'Key words, or ean/isbn' %}") {% trans "Search" %}
       div.col-md-4
-        span  {% trans "or" %}: 
-            a(href="{% url 'card_create_manually' %}") {% trans "Add a card manually" %}
+        if user.is_staff
+          span  {% trans "or" %}: 
+              a(href="{% url 'card_create_manually' %}") {% trans "Add a card manually" %}
 
- .row(ng-show="cards.length != 0")
+ .row(ng-show="cards.length != 0", style="padding-top: 5px")
     .col-md-10
-     .btn-group
-       button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
-         span.caret
+     if user.is_staff
+       .btn-group
+         button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {% trans "Action" %}
+           span.caret
 
-       ul.dropdown-menu
-        li: a(href="#", ng-click="add_to_command()", title='{% trans "Mark this card to command." %}'){% trans 'Add to the command…' %}
+         ul.dropdown-menu
+          li: a(href="#", ng-click="add_to_command()", title='{% trans "Mark this card to command." %}'){% trans 'Add to the command…' %}
 
-        li: a(href="#", ng-click="open_list_select()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
+          li: a(href="#", ng-click="open_list_select()", title='{% trans "Add the cards selected to basket(s)" %}'){% trans 'Add to list…' %}
 
-        li: a(href="#", ng-click="open_inv_select()", title='{% trans "Add the cards selected to an ongoing inventory" %}') {% trans "Add to inventory…" %}
+          li: a(href="#", ng-click="open_inv_select()", title='{% trans "Add the cards selected to an ongoing inventory" %}') {% trans "Add to inventory…" %}
 
      .btn-group
        button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers" %}')
@@ -140,12 +142,13 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           div{{ 'card.pubs_repr' | ng }}
         td: div {{ 'card.price_fmt'|ng }}&nbsp;
         td
-          div.row
-            button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}', target="_blank") {% trans "Add…" %}
-            if feature_show_reservation_button
-              //div isbn: {{ 'card.isbn' | ng }}
-              button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", id="{{ 'card.isbn' | ng }}", title="Réserver pour un client", onclick="save_isbn_for_reservation(this.id)")
-                i.glyphicon.glyphicon-user
+          if user.is_staff
+            div.row
+              button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}', target="_blank") {% trans "Add…" %}
+              if feature_show_reservation_button
+                //div isbn: {{ 'card.isbn' | ng }}
+                button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", id="{{ 'card.isbn' | ng }}", title="Réserver pour un client", onclick="save_isbn_for_reservation(this.id)")
+                  i.glyphicon.glyphicon-user
 
           //div.row
             button.btn(ng-click="create_and_command_client(card)", title='{% trans "Command for a client" %}') {% trans "Command…" %}
