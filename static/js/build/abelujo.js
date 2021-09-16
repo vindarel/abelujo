@@ -2715,6 +2715,40 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
         id: ">="
       }
     ];
+    $scope.order_by_choices = [
+      {
+        name: gettext("Last created first"),
+        id: "-created"
+      }, {
+        name: gettext("First created first"),
+        id: "created"
+      }, {
+        name: gettext("Titles"),
+        id: "title"
+      }, {
+        name: gettext("Titles") + " ⤵",
+        id: "-title"
+      }, {
+        name: gettext("Price"),
+        id: "price"
+      }, {
+        name: gettext("Price") + " ⤵",
+        id: "-price"
+      }, {
+        name: gettext("Publisher"),
+        id: "publisher"
+      }, {
+        name: gettext("Publisher") + " ⤵",
+        id: "-publisher"
+      }, {
+        name: gettext("Shelf"),
+        id: "shelf__name"
+      }, {
+        name: gettext("Shelf") + " ⤵",
+        id: "-shelf__name"
+      }
+    ];
+    $scope.order_by = $scope.order_by_choices[0];
     $scope.page = 1;
     $scope.page_size = 50;
     $scope.page_sizes = [25, 50, 100, 200];
@@ -2801,8 +2835,9 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
       var params;
       params = {
         query: $scope.query,
-        order_by: "-created",
-        in_stock: true
+        order_by: $scope.order_by.id,
+        in_stock: true,
+        with_authors: true
       };
       if ($scope.publisher) {
         params.publisher_id = $scope.publisher.pk;

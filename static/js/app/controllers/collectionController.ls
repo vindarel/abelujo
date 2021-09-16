@@ -87,6 +87,25 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
       {name: ">=", id: ">=" }
     ]
 
+    $scope.order_by_choices = [
+        # These choices are passed to the Django ORM.
+        {name: gettext("Most recent created first"), id: "-created"},
+        {name: gettext("Oldest created first"), id: "created"},
+        {name: gettext("Titles"), id: "title"},
+        {name: gettext("Titles") + " ⤵", id: "-title"},
+        # authors is a many-to-many, so not as straightforward and efficient to sort by.
+        # It should be done client side. ⤴
+        ## {name: gettext("Authors alpha"), id: "authors"},
+        ## {name: gettext("Authors anti-alpha"), id: "-authors"},
+        {name: gettext("Price"), id: "price"},
+        {name: gettext("Price") + " ⤵", id: "-price"},
+        {name: gettext("Publisher"), id: "publisher"},
+        {name: gettext("Publisher") + " ⤵", id: "-publisher"},
+        {name: gettext("Shelf"), id: "shelf__name"},
+        {name: gettext("Shelf") + " ⤵", id: "-shelf__name"},
+    ]
+    $scope.order_by = $scope.order_by_choices[0]
+
     # pagination
     $scope.page = 1
     $scope.page_size = 50
@@ -170,8 +189,10 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.validate = !->
         params = do
             query: $scope.query
-            order_by: "-created"  # Should be by title for custom searches. Modified python-side.
+            ## order_by: "-created"  # Should be by title for custom searches. Modified python-side.
+            order_by: $scope.order_by.id  # Should be by title for custom searches. Modified python-side.
             in_stock: true
+            with_authors: true
 
         if $scope.publisher
             params.publisher_id = $scope.publisher.pk

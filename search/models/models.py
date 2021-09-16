@@ -1564,14 +1564,18 @@ class Card(TimeStampedModel):
                place_id or shelf_id:
                 order_by = "title"
 
-            if not type(cards) == list:
+            if not isinstance(cards, list):
                 # this precaution shouldn't be necessary now (fixed).
                 cards = cards.order_by(order_by)
 
-            # We must re-sort by locale, to get downcased and
-            # accented letters sorted properly. See comment below and issue #122.
-            if order_by != "-created":
-                cards = sorted(cards, cmp=locale.strcoll, key=lambda it: it.title)
+        # We must re-sort by locale, to get downcased and
+        # accentuated letters sorted properly. See comment below and issue #122.
+        if cards and order_by in ["title", "-title"]:
+            please_reverse = False
+            if order_by == "-title":
+                please_reverse = True
+            cards = sorted(cards, cmp=locale.strcoll, key=lambda it: it.title,
+                           reverse=please_reverse)
 
         if type(cards) == list:
             # shouldn't be necessary now (fixed).

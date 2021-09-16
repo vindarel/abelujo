@@ -17,6 +17,10 @@ Changelog starting from v0.5 (2018/09/18)
  - see special pages (bookshop selection for website)
  - => Create a new user from the admin panel, don't give it any rights.
 
+### Other enhancements
+
+- searching our **stock**: more sort order options (sort by creation date of the book, by title (anti) alphabetically, by price, by shelf, by publisher.
+
 
 ## v0.18 (2020-12, 2021-09)
 

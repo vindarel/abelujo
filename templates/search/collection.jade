@@ -135,6 +135,13 @@ div(ng-cloak, ng-controller="collectionController")
               type="text"
               placeholder='{% trans "exple: juin 2020" %}'
             )
+      div
+          label.col-sm-4 {% trans "Sort order" %}
+          div.col-md-8
+            select.form-control(
+              ng-model="order_by"
+              ng-options="elt.name group by elt.group for elt in order_by_choices"
+            )
 
       input(type="submit", hidden="true", onsubmit="validate()")
 
@@ -238,8 +245,7 @@ div(ng-cloak, ng-controller="collectionController")
           div {{ 'card.price_fmt' | ng}}
 
         td
-          div(ng-repeat="author in card.authors")
-            div {{ 'author.fields.name' |ng}}
+          div {{ 'card.authors_repr' | ng }}
         td {{ 'card.pubs_repr' | ng }}
         td {{ 'card.distributor_repr' | ng }}
         td
