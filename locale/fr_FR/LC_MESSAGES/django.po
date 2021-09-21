@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-16 17:30+0000\n"
-"PO-Revision-Date: 2021-09-16 19:37+0200\n"
+"PO-Revision-Date: 2021-09-20 10:58+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -2746,7 +2746,7 @@ msgstr "Vider la liste de commandes."
 
 #: templates/search/to_command_index.jade:42
 msgid "Empty…"
-msgstr "Vide…"
+msgstr "Vider…"
 
 #: templates/search/to_command_index.jade:61
 msgid "Cards with no supplier"

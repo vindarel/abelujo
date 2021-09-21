@@ -144,10 +144,14 @@ angular.module "abelujo" .controller 'basketToCommandController', ['$http', '$sc
     $scope.empty = !->
         sure = confirm(gettext("Are you sure to remove all the cards from the command basket ?"))
         if sure
-            $http.post "/api/baskets/#{AUTO_COMMAND_ID}/empty/",
-            .then (response) !->
-                Notiflix.Notify.Info("OK")
+            params = do
+              distributor_id: $scope.distributor_id
+            $http.post "/api/baskets/#{AUTO_COMMAND_ID}/empty/", params
+            .success (response) !->
+                Notiflix.Notify.Success("OK")
                 $window.location.reload!
+            .error (respons) !->
+                Notiflix.Notify.Warning("mmmh")
 
     $scope.validate_command = !->
         """Validate the command. We'll wait for it. Remove the list from the ToCommand basket.

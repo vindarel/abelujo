@@ -1869,7 +1869,12 @@ def baskets_add_to_stock(request, pk, **kw):
 
 def baskets_empty(request, pk, **kw):
     """
-    Empty this basket (remove all the cards).
+    Empty this basket.
+
+    If a distributor_id is given, remove only cards of this
+    distributor/supplier. Used for the autocommand basket.
+
+    Otherwise (the default), remove all the cards of this basket.
     """
     if request.method == 'POST':
         msg = {'status': ALERT_SUCCESS,
@@ -1880,6 +1885,18 @@ def baskets_empty(request, pk, **kw):
             log.error("Basket empty: {}".format(e))
             return JsonResponse({'status': ALERT_ERROR,
                                  'message': "We could not archive the basket n° {}.".format(pk)})
+
+        # Do we have a distributor_id parameter?
+        params = request.body
+        if params:
+            try:
+                params = json.loads(params)
+            except Exception as e:
+                log.error("Unable to decode request.body as JSON: {}".format(e))
+                params = {}
+        if params.get('distributor_id'):
+            distributor_id = params.get('distributor_id')
+            basketcopies = basketcopies.filter(card__distributor__id=distributor_id)
 
         try:
             basketcopies.delete()

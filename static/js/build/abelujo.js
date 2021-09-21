@@ -1454,12 +1454,17 @@ angular.module("abelujo").controller('basketToCommandController', [
       }
     };
     $scope.empty = function(){
-      var sure;
+      var sure, params;
       sure = confirm(gettext("Are you sure to remove all the cards from the command basket ?"));
       if (sure) {
-        $http.post("/api/baskets/" + AUTO_COMMAND_ID + "/empty/").then(function(response){
-          Notiflix.Notify.Info("OK");
+        params = {
+          distributor_id: $scope.distributor_id
+        };
+        $http.post("/api/baskets/" + AUTO_COMMAND_ID + "/empty/", params).success(function(response){
+          Notiflix.Notify.Success("OK");
           $window.location.reload();
+        }).error(function(respons){
+          Notiflix.Notify.Warning("mmmh");
         });
       }
     };
