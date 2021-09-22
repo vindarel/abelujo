@@ -25,15 +25,28 @@
 {% load currencyfilter %}
 {% load ngfilter %}
 
+<div class="row">
+  <div class="col-lg-10">
+    <ul class="nav nav-tabs">
+      <li class="active", role="presentation">
+        <a href="#">
+          <h3> {% trans "Reservations" %} ({{ nb_reservations }}) &nbsp;
+          </h3>
+      </li>
+      <li role="presentation">
+        <a href="/databasesearch/reservation" target="_blank"> {% trans "History" %} </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div style="clear: both;">
-  <h3 style="vertical-align: top; float: left;">
-    {% trans "Reservations" %} ({{ nb_reservations }}) &nbsp;
-  </h3>
   <div style="padding: 1em 0 0 2em;">
     <a class="btn btn-default" href="http://abelujo.cc/docs/clients/" target="_blank" title=''{% trans "Read the documentation" %}'>
       <i class="glyphicon glyphicon-question-sign">
       </i>
     </a>
+
   </div>
   <hr>
 </div>
