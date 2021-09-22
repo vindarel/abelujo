@@ -291,8 +291,9 @@ class EntryTypes:
 
 
 class Entry(TimeStampedModel):
-    """An entry. Can be for many cards at once.
-    We record the original price.
+    """
+    An entry. Can be for many cards at once.  We record the original
+    price.
 
     An entry can be:
     - a new card saved in the DB
@@ -300,7 +301,6 @@ class Entry(TimeStampedModel):
     - a card received in a command
     - a sell, canceled
     - ...
-
     """
 
     ENTRY_TYPES_CHOICES = (

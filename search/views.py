@@ -1421,6 +1421,9 @@ def _csv_response_from_rows(rows, headers=None, filename=''):
     return response
 
 def _txt_response_from_rows(rows, filename=""):
+    """
+    For sells export.
+    """
     # 63 = MAX_CELL + 3 because of trailing "..."
     # Not ideal, but for compliance with the csv method we get a list of data, not a dict:
     # (sell.card.title,         # 0
@@ -1510,6 +1513,86 @@ def history_entries_month(request, date, **kwargs):
                                       'previous_month': previous_month,
                                       'next_month': next_month,
                                       'year': year})
+
+def _csv_response_from_rows_entries(rows, headers=None, filename=''):
+    pseudo_buffer = Echo()
+    writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
+    content = writer.writerow(b"")
+
+    if headers:
+        rows.insert(0, headers)
+    start = timezone.now()
+    content = b"".join([writer.writerow(row) for row in rows])
+    end = timezone.now()
+    print("writing rows to csv took {}".format(end - start))
+
+    response = StreamingHttpResponse(content, content_type="text/csv")
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+    return response
+
+def _txt_response_from_rows_entries(rows, filename=""):
+    """
+    For entries export.
+    """
+    format_str = "{:63} {} {:23} {:20} {:5} {:5} {:3}"
+    rows = [format_str.
+            format(truncate(it[0]),
+                   it[1],
+                   truncate(it[3], max_length=20),
+                   it[4],
+                   it[6],
+                   it[7],
+                   it[8],
+            ) for it in rows]
+    rows = sorted(rows)
+    content = "\n".join(rows)
+    response = HttpResponse(content, content_type="text/raw")
+    response['Content-Disposition'] = 'attachment; filename={}.txt'.format(filename)
+    return response
+
+def history_entries_month_export(request, date, **kwargs):
+    """
+    Export the entries of this month.
+    """
+    try:
+        date = pendulum.datetime.strptime(date, '%Y-%m')
+    except Exception:
+        return HttpResponseRedirect(reverse('history_entries'))  # xxx: loop?
+
+    # data = Sell.search(year=day.year, month=day.month,
+                       # with_total_price_sold=False)
+    data = EntryCopies.objects.filter(created__year=date.year,
+                                      created__month=date.month)
+
+    fileformat = request.GET.get('fileformat')
+    filename = _("Entries_{}-{}".format(date.year, date.month))
+
+    headers = (_("Date"),
+               _("Title"), "ISBN", _("Authors"), _("Publishers"), _("Supplier"),
+               _("Shelf"),
+               _("Price"),
+               )
+    rows = [
+        (entrycopy.entry.created.strftime(PENDULUM_YMD),
+         entrycopy.card.title,
+         entrycopy.card.isbn,
+         entrycopy.card.authors_repr,
+         entrycopy.card.pubs_repr,
+         entrycopy.card.distributor_repr,
+         entrycopy.card.shelf.name if entrycopy.card.shelf else "",
+         format_price_for_locale(entrycopy.card.price),
+         )
+        for entrycopy in data]
+    rows = sorted(rows)
+
+    if fileformat in ['csv']:
+        response = _csv_response_from_rows_entries(rows, headers=headers, filename=filename)
+        return response
+
+    if fileformat in ['txt']:
+        response = _txt_response_from_rows_entries(rows, filename=filename)
+        return response
+
 
 def history_sells_day(request, date, **kwargs):
     """

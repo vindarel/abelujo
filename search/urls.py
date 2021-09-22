@@ -157,6 +157,7 @@ urlpatterns = patterns('',
         name="history_sells_exports"),
 
     # Entries history
+    url(r'^history/entries/month/(?P<date>.*)/export/?', 'search.views.history_entries_month_export', name="history_entries_month_export"),
     url(r'^history/entries/month/(?P<date>.*)/?', 'search.views.history_entries_month', name="history_entries_month"),
     url(r'^history/entries/day/(?P<date>.*)/?', 'search.views.history_entries_day', name="history_entries_day"),
 
