@@ -200,6 +200,9 @@ class Echo(object):
 
 
 def cards2csv(cards):
+    """
+    Cards: as dicts.
+    """
     pseudo_buffer = Echo()
     writer = unicodecsv.writer(pseudo_buffer, delimiter=b';')
     content = writer.writerow(b"")
@@ -210,7 +213,7 @@ def cards2csv(cards):
              it['quantity'],
              it['shelf'],
              it['isbn'],
-         )
+            )
             for it in cards]
 
     header = (_("title"),

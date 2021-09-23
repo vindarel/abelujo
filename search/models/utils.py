@@ -197,7 +197,8 @@ def total_quantity(cards):
     return sum(it.quantity for it in cards)
 
 def ppcard(cards):
-    """Pretty Print a list of Card objects OR list of dicts.
+    """
+    Pretty Print a list of Card objects OR list of dicts.
 
     args: a list of Card objects or list of dicts.
 

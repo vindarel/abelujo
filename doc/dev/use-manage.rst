@@ -127,6 +127,16 @@ This can happen specially after the full update from Dilicom. Run::
 There is a confirmation prompt.
 
 
+Export all books in stock
+-------------------------
+
+Run::
+
+  ./manage.py export_stock --format csv
+
+This will create a CSV file with all cards in stock with a quantity > 0.
+
+
 Other management commands
 -------------------------
 

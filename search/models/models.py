@@ -1305,7 +1305,8 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def first_cards(nb, to_list=False):
-        """get the first n cards from our collection (very basic, to test)
+        """
+        Get the first n cards from our collection (very basic, to test).
         """
         ret = Card.objects.order_by("-created")[:nb]
         if to_list:
@@ -1314,7 +1315,8 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def cards_in_stock():
-        """Return all cards in stock (will not return ones that are only in
+        """
+        Return all cards in stock (will not return ones that are only in
         deposits or in lists).
         """
         return Card.objects.filter(in_stock=True)\
