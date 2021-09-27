@@ -133,7 +133,7 @@ class Reservation(TimeStampedModel):
 
     @staticmethod
     def nb_ongoing():
-        res = Reservation.objects.filter(archived=False).count()
+        res = Reservation.objects.filter(archived=False, is_ready=True).count()
         return res
 
     @staticmethod

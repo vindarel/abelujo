@@ -21,6 +21,10 @@ Changelog starting from v0.5 (2018/09/18)
 
 - searching our **stock**: more sort order options (sort by creation date of the book, by title (anti) alphabetically, by price, by shelf, by publisher.
 
+### Admin
+
+- new script: `manage.py export_stock --format csv` to create a csv file from all cards in stock and with a quantity > 0. Because doing that from the UI can be too long.
+
 
 ## v0.18 (2020-12, 2021-09)
 
