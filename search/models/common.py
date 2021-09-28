@@ -21,6 +21,7 @@ Avoid circular imports.
 """
 from django.db import models
 import logging
+from django.utils import six
 from django.utils.translation import ugettext as _
 
 from abelujo import settings
@@ -128,7 +129,7 @@ def get_payment_abbr(id):
                 # *Should* be avoided now (current 2021, still happened in Sept.).
                 # Transform Sell data on the REPL to fix in the DB.
                 id = id[0]
-            if isinstance(id, str):
+            if isinstance(id, six.string_types):
                 # Same.
                 id_payment = id.split(',')  # => ["(7", "_"]
                 # Extract the int.
