@@ -102,7 +102,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     $scope.getClients = function(val) {
         return $http.get("/api/clients", {
             params: {
-                query: val
+                query: val,
+                check_reservations: true
             }
         })
             .then(function(response) {

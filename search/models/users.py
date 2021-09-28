@@ -132,6 +132,10 @@ class Reservation(TimeStampedModel):
         return res
 
     @staticmethod
+    def client_has_reservations(pk):
+        return Reservation.objects.filter(client=pk, archived=False, is_ready=True).count()
+
+    @staticmethod
     def nb_ongoing():
         res = Reservation.objects.filter(archived=False, is_ready=True).count()
         return res
@@ -426,6 +430,20 @@ class Client(Contact):
             log.error(u"Error canceling reservation {}: {}".format(self.pk, e))
             return False
         return True
+
+    def has_reservations(self):
+        """
+        His this client ongoing, open reservations?
+
+        We check when we enter this client in a sell.
+
+        Return: int (0 or the number of reservations).
+        """
+        return Reservation.objects.filter(client=self.pk).count()
+
+    @staticmethod
+    def client_has_reservations(pk):
+        return Reservation.objects.filter(client=pk, archived=False, is_ready=True).count()
 
 
 class Bookshop(Contact):

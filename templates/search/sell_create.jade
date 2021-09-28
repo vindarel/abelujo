@@ -130,6 +130,14 @@ div.ng-cloak(ng-controller="sellController")
 
       .row.noprint
         .col-md-12
+          //- div client has reservations? {{ 'client' | ng }}
+          div.alert.alert-info(role="alert", ng-show="client.ongoing_reservations")
+           a(href="{{ 'client.url' | ng }}", target="_blank") {{ 'client.repr' | ng }}
+           span  &nbsp; a des réservations en cours ({{ 'client.ongoing_reservations' | ng }})
+           //- button.btn Importer
+
+      .row.noprint
+        .col-md-12
           p.input-group
            form()
             input.nullable.form-control(

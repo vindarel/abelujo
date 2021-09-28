@@ -41,6 +41,7 @@ from search.models.utils import price_fmt
 # from search.models.common import ALERT_INFO
 from search.models.common import ALERT_SUCCESS
 # from search.models.common import ALERT_WARNING
+from .utils import _is_truthy
 
 
 log = get_logger()
@@ -53,8 +54,18 @@ def clients(request, **response_kwargs):
         try:
             params = request.GET
             query = params.get('query')
+            ongoing_reservations = None
             if query:
                 res = Client.search(query, to_dict=True)
+
+                # Does this client have ongoing reservations?
+                check_reservations = params.get('check_reservations')
+                check_reservations = _is_truthy(check_reservations)
+                if check_reservations and res and len(res) == 1 and \
+                   res[0] and res[0]['id']:
+                    ongoing_reservations = Reservation.client_has_reservations(res[0]['id'])
+                    res[0]['ongoing_reservations'] = ongoing_reservations
+
             else:
                 res = Client.get_clients(to_dict=True)
             return JsonResponse({'data': res})
