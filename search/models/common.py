@@ -128,6 +128,11 @@ def get_payment_abbr(id):
                 # *Should* be avoided now (current 2021, still happened in Sept.).
                 # Transform Sell data on the REPL to fix in the DB.
                 id = id[0]
+            if isinstance(id, str):
+                # Same.
+                id_payment = id.split(',')  # => ["(7", "_"]
+                # Extract the int.
+                id = id_payment[0].replace('(', '')
             id = int(id)
             for it in PAYMENT_ABBR:
                 if id == it[0]:
