@@ -5233,7 +5233,11 @@ class Sell(models.Model):
             total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
             data['total'] = total
             data['total_fmt'] = price_fmt(total, default_currency)
-            total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+            try:
+                total_public_price = sum([public_prices[i] or 0 * cards_sold[i] for i in range(len(cards_sold))])
+            except Exception as e:
+                log.error("Error getting total_public_price: {}".format(e))
+                total_public_price = -1
             data['total_public_price'] = total_public_price
             data['total_public_price_fmt'] = price_fmt(total_public_price, default_currency)
             publishers_data.append(data)
@@ -5255,7 +5259,11 @@ class Sell(models.Model):
             total = sum([cards_sold[i] * prices_sold[i] for i in range(len(prices_sold))])
             data['total'] = total
             data['total_fmt'] = price_fmt(total, default_currency)
-            total_public_price = sum([public_prices[i] * cards_sold[i] for i in range(len(cards_sold))])
+            try:
+                total_public_price = sum([public_prices[i] or 0 * cards_sold[i] for i in range(len(cards_sold))])
+            except Exception as e:
+                log.error("Error getting total_public_price of distributors: {}".format(e))
+                total_public_price = -1
             data['total_public_price'] = total_public_price
             data['total_public_price_fmt'] = price_fmt(total_public_price, default_currency)
             distributors_data.append(data)
