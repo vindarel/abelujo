@@ -23,11 +23,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to='search.Card', null=True),
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='payment',
-            field=models.CharField(blank=True, max_length=200, null=True, choices=[(7, 'ESPECES'), (9, 'CB'), (8, 'CHEQUE'), (12, 'cheque lire'), (10, 'transfert'), (100, "bon d'achat"), (11, 'autre')]),
-        ),
-        migrations.AlterField(
             model_name='inventorycommandcopies',
             name='card',
             field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to='search.Card', null=True),
