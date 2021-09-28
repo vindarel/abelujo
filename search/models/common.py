@@ -121,10 +121,20 @@ def get_payment_name(id):
 
 def get_payment_abbr(id):
     if id is not None:
-        id = int(id)
-        for it in PAYMENT_ABBR:
-            if id == it[0]:
-                return it[1]
+        try:
+            if isinstance(id, tuple):
+                # It can still happen to be "(7, 'ESP\\xc3\\x88CES')"
+                # Originated as a bad migration default value.
+                # *Should* be avoided now (current 2021, still happened in Sept.).
+                # Transform Sell data on the REPL to fix in the DB.
+                id = id[0]
+            id = int(id)
+            for it in PAYMENT_ABBR:
+                if id == it[0]:
+                    return it[1]
+        except Exception as e:
+            log.error("Error in get_payment_abbr for id {}: {}".format(id, e))
+            return str(id)
 
     return get_payment_name(id)
 
