@@ -268,7 +268,8 @@ def cards(request, **response_kwargs):
     is_catalogue_selection = request.GET.get("is_catalogue_selection")
     is_catalogue_selection = _is_truthy(is_catalogue_selection)
 
-    excluded_from_catalogue = request.GET.get("excluded_from_catalogue")
+    # If False, we don't want to see the cards excluded. Default is Yes, show them.
+    excluded_from_catalogue = request.GET.get("excluded_from_catalogue", True)
     excluded_from_catalogue = _is_truthy(excluded_from_catalogue)
 
     # The quantity of a card is costly. It was a bottleneck. Avoid
