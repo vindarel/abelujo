@@ -202,7 +202,7 @@
     </td>
 
     <td>
-      <div class="btn-group", style="margin-left: 1em" data-comment="copied from card_show">
+      <span class="btn-group", style="margin-left: 1em" data-comment="copied from card_show">
         {% if user.is_staff %}
         <a class="btn btn-warning" title='{% trans "Remember to command this card. Add it to the list for later." %}' onclick="card_command({{ it.card.pk }})">
           {% else %}
@@ -214,8 +214,9 @@
             <span id="nb_to_command_{{ it.card.pk }}"> {{ it.card.quantity_to_command }}
             </span>
           </span>
-        </a>
-      </div>
+          </a>
+      </span>
+      <span title="{% trans 'En stock' %}"> {{ it.card.quantity }} </span>
     </td>
 
     <td>
