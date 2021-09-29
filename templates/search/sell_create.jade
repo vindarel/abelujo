@@ -162,8 +162,10 @@ div.ng-cloak(ng-controller="sellController")
             i.glyphicon.glyphicon-search(ng-show='loadingCards')
 
   .row.noprint(style="margin-left: 1em")
-          h3 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
-            div(ng-show="cards_selected.length") {% trans "Total:" %} {{ 'total_price ' | ng }} {{ 'cards_selected[0].currency' | ng }}
+          div
+            h3 {{ 'getTotalCopies() ' | ng }} {% trans "titles selected." %}
+              span(ng-show="cards_selected.length", style="color: darkred;") {% trans "Total:" %} {{ 'total_price ' | ng }} {{ 'cards_selected[0].currency' | ng }}
+            hr
           span Payer
             input(type="number", step="0.01", ng-model="total_payment_1")
             span &nbsp; en

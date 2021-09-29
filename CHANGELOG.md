@@ -19,6 +19,8 @@ Changelog starting from v0.5 (2018/09/18)
 
 ### Other enhancements
 
+- **Sell: import a client's reservations** (the ones we received, but import all of them anyways if needed).
+- **Sell: show the total price in red**.
 - searching our **stock**: more sort order options (sort by creation date of the book, by title (anti) alphabetically, by price, by shelf, by publisher.
 
 ### Admin
