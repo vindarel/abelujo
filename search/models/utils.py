@@ -525,3 +525,28 @@ def is_book(card):
     if card.isbn.startswith('97'):
         return True
     return False
+
+def enrich_cards_dict_for_quantity_in_command(cards, basket_copies):
+    """
+    - cards: list of dicts
+    - basket_copies: queryset (from the command list).
+
+    Return: cards, with quantity_in_command added in.
+    """
+    # Init.
+    for card in cards:
+        card['quantity_in_command'] = 0
+
+    def find_id_in_cards_list(pk):
+        for it in cards:
+            if it['id'] == pk:
+                return it
+        return {}
+
+    # Get the quantity in command.
+    for bc in basket_copies:
+        card_dict = find_id_in_cards_list(bc.card.id)
+        if card_dict and bc.nb:
+            card_dict['quantity_in_command'] = bc.nb
+
+    return cards

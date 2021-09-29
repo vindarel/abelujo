@@ -136,6 +136,12 @@ class Reservation(TimeStampedModel):
         return Reservation.objects.filter(client=pk, archived=False, is_ready=True).count()
 
     @staticmethod
+    def client_has_ready_reservations(pk):
+        res = Reservation.objects.filter(client=pk, archived=False, is_ready=True,
+                                          card__quantity__gte=0)
+        return res.count()
+
+    @staticmethod
     def nb_ongoing():
         res = Reservation.objects.filter(archived=False, is_ready=True).count()
         return res

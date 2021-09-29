@@ -28,7 +28,6 @@ import os
 
 import pendulum
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from abelujo import settings
 from search.models import Card
@@ -68,9 +67,9 @@ class Command(BaseCommand):
         # distributor_id = request.GET.get("distributor_id")
         # card_type_id = request.GET.get("card_type_id")
         # publisher_id = request.GET.get("publisher_id")
-        place_id = 1
+        # place_id = 1
         # shelf_id = request.GET.get("shelf_id")
-        order_by = "title"
+        # order_by = "title"
         # quantity_choice = request.GET.get("quantity_choice")
         # bought = request.GET.get("in_stock")
 
@@ -116,7 +115,7 @@ class Command(BaseCommand):
             with open(filename, 'w') as f:
                 f.write(content)
         else:
-            with io.open(filepath, 'w', encoding='utf8') as f:
+            with open(filepath, 'w', encoding='utf8') as f:
                 f.write(content)
 
         # Build the response.

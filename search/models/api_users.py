@@ -35,6 +35,7 @@ from search.models import Preferences
 from search.models import users
 from search.models.users import Client
 from search.models.users import Reservation
+from search.models.utils import enrich_cards_dict_for_quantity_in_command
 from search.models.utils import get_logger
 from search.models.utils import price_fmt
 # from search.models.common import ALERT_ERROR
@@ -61,10 +62,18 @@ def clients(request, **response_kwargs):
                 # Does this client have ongoing reservations?
                 check_reservations = params.get('check_reservations')
                 check_reservations = _is_truthy(check_reservations)
+                ongoing_reservations = None
+                client_id = None
                 if check_reservations and res and len(res) == 1 and \
                    res[0] and res[0]['id']:
-                    ongoing_reservations = Reservation.client_has_reservations(res[0]['id'])
+                    client_id = res[0]['id']
+                    ongoing_reservations = Reservation.client_has_reservations(client_id)
                     res[0]['ongoing_reservations'] = ongoing_reservations
+
+                # But how many of them are in stock, ready to be sold?
+                if ongoing_reservations and client_id:
+                    ready_reservations = Reservation.client_has_ready_reservations(client_id)
+                    res[0]['ready_reservations'] = ready_reservations
 
             else:
                 res = Client.get_clients(to_dict=True)
@@ -366,13 +375,74 @@ def card_reservations(request, pk, **kw):
         to_ret['data'] = reservations
         return JsonResponse(to_ret)
 
+def reserved_cards(request, **kw):
+    """
+    Return the list of cards that this client reserved.
 
-def all_reservations(request):
+    Used in the sell to import the cards a client reserved (and the
+    ones that are available in the stock right now, quantity > 0).
+
+    The returned card objects must be augmented for the sell:
+    price_orig, quantity to sell, quantity in the command basket…
+
+    Return: JsonResponse with object status, data, alerts.
+    """
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+        'alerts': [],
+    }
+    params = request.GET.copy()
+    if request.method == 'GET':
+        client_id = None
+        if params:
+            client_id = params.get('client_id')
+        qs = Reservation.objects.exclude(card__isnull=True) \
+                            .exclude(client__isnull=True) \
+                            .exclude(card_id__isnull=True) \
+                            .exclude(archived=True) \
+                            .exclude(is_ready=False)
+        if client_id:
+            qs = qs.filter(client=client_id)
+
+        # Only the ones with quantity > 0 in stock?
+        in_stock = params.get('in_stock')
+        in_stock = _is_truthy(in_stock)
+        if in_stock:
+            qs = qs.filter(card__quantity__gte=0)
+
+        cards = [it.card for it in qs.all()]
+        res = [it.to_dict() for it in cards]  # PERF: slow with hundreds.
+
+        # Enrich result with quantity in the command list.
+        auto_command = Basket.auto_command_basket()
+        ids = [it['id'] for it in res]
+        basket_copies = auto_command.basketcopies_set.filter(card__id__in=ids).select_related()
+        res = enrich_cards_dict_for_quantity_in_command(res, basket_copies)
+        for card in res:
+            card['quantity_sell'] = 1   # TODO: set the right quantity to sell
+            card['price_sold'] = card['price']
+            card['price_orig'] = card['price']
+
+        to_ret['data'] = res
+        return JsonResponse(to_ret)
+
+
+def all_reservations(request, *args, **kw):
+    """
+    Return all reservations.
+    If client_id is given, filter by this client (return her ongoing reservations).
+    """
     # currently for CLI usage.
-    res = [it.to_dict() for it in Reservation.objects.exclude(card__isnull=True)
-           .exclude(client__isnull=True)
-           .exclude(card_id__isnull=True)
-           .exclude(archived=True)
-           .all()
-           ]
+    params = request.GET.copy()
+    if params:
+        client_id = params.get('client_id')
+    qs = Reservation.objects.exclude(card__isnull=True) \
+                            .exclude(client__isnull=True) \
+                            .exclude(card_id__isnull=True) \
+                            .exclude(archived=True) \
+                            .exclude(is_ready=False)
+    if client_id:
+        qs.filter(client=client_id)
+    res = [it.to_dict() for it in qs.all()]
     return JsonResponse(res, safe=False)

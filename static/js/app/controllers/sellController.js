@@ -201,6 +201,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       };
 
       $scope.add_selected_card = function(card){
+          // Find the card.
           // $scope.cards_selected.push(card);
           $scope.tmpcard = _.filter($scope.cards_fetched, function(it){
               return it.repr === card.repr;
@@ -226,6 +227,25 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
           // Prevent from quitting the page when sells are entered but not confirmed.
           $window.addEventListener('beforeunload', unloadlistener);
       };
+
+    $scope.import_reservations = function(import_all) {
+        /// Import this client's ongoing reservations into the sell.
+        // $scope.cards_selected += [];
+        let params = {
+            "client_id": $scope.client.id,
+            // "in_stock": true,  // only cards with quantity > 0
+        };
+        if (import_all == 0) {
+            params['in_stock'] = true;
+        }
+        $http.get("/api/card/reserved/", {
+            params: params})
+            .then(function(response) {
+                console.log(response);
+                $scope.cards_selected = response.data.data;
+                $scope.updateTotalPrice();
+            });
+    };
 
     $scope.update_from_datasource = function(card) {
         // Check if the public price changed.
@@ -464,6 +484,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.cards_selected = [];
         $scope.cards_fetched = [];
         $scope.client_selected = null;
+        $scope.client = null;
         $scope.discounts.global_discount = null;
     };
 

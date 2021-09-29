@@ -132,9 +132,15 @@ div.ng-cloak(ng-controller="sellController")
         .col-md-12
           //- div client has reservations? {{ 'client' | ng }}
           div.alert.alert-info(role="alert", ng-show="client.ongoing_reservations")
-           a(href="{{ 'client.url' | ng }}", target="_blank") {{ 'client.repr' | ng }}
-           span  &nbsp; a des réservations en cours ({{ 'client.ongoing_reservations' | ng }})
-           //- button.btn Importer
+            div(ng-show="client.ready_reservations")
+              a(href="{{ 'client.url' | ng }}", target="_blank") {{ 'client.repr' | ng }}
+              span  &nbsp; {% trans "a des réservations de disponibles" %}({{ 'client.ready_reservations' | ng }}/ {{ 'client.ongoing_reservations' | ng }})
+              button.btn(ng-click="import_reservations(0)") {% trans "Importer" %}
+              button.btn(ng-click="import_reservations(1)") {% trans "Tout Importer" %}
+            div(ng-hide="client.ready_reservations")
+              a(href="{{ 'client.url' | ng }}", target="_blank") {{ 'client.repr' | ng }}
+              span  &nbsp; {% trans "a des réservations en cours mais aucune n'est prête" %} ({{ 'client.ready_reservations' | ng }} / {{ 'client.ongoing_reservations' | ng }})
+              button.btn(ng-click="import_reservations(1)") {% trans "Importer quand même" %}
 
       .row.noprint
         .col-md-12

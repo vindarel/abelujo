@@ -316,6 +316,7 @@ def cards(request, **response_kwargs):
     # msgs = meta.get('msgs')
 
     # Enrich result with quantity in the command list.
+    # NB: we factored this in utils.enrich_cards_dict_for_quantity_in_command, used in api_users.
     auto_command = Basket.auto_command_basket()
     ids = [it['id'] for it in data]
     basket_copies = auto_command.basketcopies_set.filter(card__id__in=ids).select_related()

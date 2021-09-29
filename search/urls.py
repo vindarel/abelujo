@@ -131,6 +131,8 @@ urlpatterns = patterns('',
     url(r'^baskets/(?P<pk>\d+)/$',
         login_required(TemplateView.as_view(template_name="search/baskets.jade")),
         name="basket_view"),
+
+    # Boxes (Returns)
     url(r'^boxes/?$', 'search.views.boxes', name="boxes"),
     url(r'^boxes/(?P<pk>\d+)/$',
         login_required(TemplateView.as_view(template_name="search/baskets.jade")),
