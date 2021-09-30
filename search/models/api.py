@@ -140,7 +140,8 @@ def preferences(request, **response_kwargs):
 
 
 def datasource_search(request, **response_kwargs):
-    """Search for new cards on external sources.
+    """
+    Search for new cards on external sources.
 
     If query is an ISBN, search into our DB first.
 
@@ -402,7 +403,9 @@ def card(request, **kwargs):
     return JsonResponse(ret)
 
 def card_create(request, **response_kwargs):
-    """Create or edit a card with either request params or json in request.body
+    """
+    Create or edit a card with either request params or json in
+    request.body
 
     Return: a tuple (card_id, status, alerts)
     """
@@ -467,6 +470,67 @@ def card_create(request, **response_kwargs):
 
     else:
         log.error("creating a card should be done with POST.")
+
+def card_quickcreate(request, **kw):
+    """
+    From an ISBN, fetch the full data on datasources, create the card in BD.
+
+    If command is truthy, add it to the command list.
+    """
+    to_ret = {
+        'data': {},
+        'status': ALERT_SUCCESS,
+        'alerts': [],
+    }
+    if request.method == 'POST':
+        params = request.body
+        try:
+            params = json.loads(params)
+        except Exception as e:
+            log.error("quickcreate: could not get POST params as JSON: {}".format(e))
+            params = {}
+        isbn = params.get('isbn')
+        if not isbn:
+            to_ret['status'] = ALERT_WARNING
+            to_ret['alerts'] = [_("No ISBN provided.")]
+            return JsonResponse(to_ret, status=ALERT_WARNING)
+        if not is_isbn(isbn):
+            to_ret['status'] = ALERT_WARNING
+            to_ret['alerts'] = [_("ISBN not valid.")]
+            return JsonResponse(to_ret, status=ALERT_WARNING)
+
+        # Get remaining card data on datasources.
+        # Check we don't have this in DB.
+        data = []
+        res = Card.objects.filter(isbn=isbn).first()
+        if res:
+            res = [res.to_dict()]
+
+        # If not, search on datasource.
+        if not res:
+            lang = params.get("lang", 'fr')  # XXX: send lang parameter.
+            datasource = get_datasource_from_lang(lang)
+            data, traces = search_on_data_source(datasource, isbn)
+
+        # Shall we add it to the command list?
+        to_command = params.get('command')
+        if to_command:
+            # Then, save this card in DB.
+            if data:
+                try:
+                    card, messages = Card.from_dict(data[0])
+                    card_id = card.pk
+                except Exception as e:
+                    log.error("quickcreate: could not save card from dict: {}".format(e))
+                    card = None
+                    card_id = None
+            elif res:
+                card_id = res[0]['id']
+            in_command = Basket.add_to_auto_command(card_id)
+
+        to_ret['data'] = data or res
+        to_ret['meta'] = {'in_command': in_command}
+        return JsonResponse(to_ret)
 
 def card_update(request, **response_kwargs):
     """

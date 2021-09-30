@@ -145,10 +145,12 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           if user.is_staff
             div.row
               button.btn.btn-primary(ng-click="create_and_add(card)", title='{% trans "Add to your stock" %}', target="_blank") {% trans "Add…" %}
-              if feature_show_reservation_button
+              div
                 //div isbn: {{ 'card.isbn' | ng }}
                 button(type="button", class="btn btn-default", data-toggle="modal", data-target="#reserveModal", id="{{ 'card.isbn' | ng }}", title="Réserver pour un client", onclick="save_isbn_for_reservation(this.id)")
                   i.glyphicon.glyphicon-user
+                button(type="button", class="btn btn-warning", id="command-{{ 'card.isbn' | ng }}", title="Command", ng-click="do_card_command(card.isbn)")
+                    i.glyphicon.glyphicon-shopping-cart
 
           //div.row
             button.btn(ng-click="create_and_command_client(card)", title='{% trans "Command for a client" %}') {% trans "Command…" %}

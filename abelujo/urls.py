@@ -44,6 +44,7 @@ apipatterns = patterns("",
 
     # Card
     url(r'^api/cards/create$', 'search.models.api.card_create', name="api_card_create"),
+    url(r'^api/cards/quickcreate/?$', 'search.models.api.card_quickcreate', name="api_card_quickcreate"),
     url(r'^api/cards/update$', 'search.models.api.card_update', name="api_card_update"),
     url(r'^api/card/(?P<pk>\d+)/reserve/(?P<client_id>\d+)/?', 'search.models.api.card_reserve', name="api_card_reserve"),
     url(r'^api/card/(?P<pk>\d+)/cancelreservation/(?P<client_id>\d+)/?', 'search.models.api.card_cancel_reservation', name="api_card_cancel_reservation"),

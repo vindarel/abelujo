@@ -486,6 +486,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.client_selected = null;
         $scope.client = null;
         $scope.discounts.global_discount = null;
+        $scope.focus_input();
     };
 
     $scope.remove_payment_2 = function() {
@@ -528,7 +529,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     };
 
     $scope.create_bill = function() {
-    // $scope.bill_url_params = function() {
+        // $scope.bill_url_params = function() {
         // copied from sell_cards.
         var ids = [];
         var prices = [];

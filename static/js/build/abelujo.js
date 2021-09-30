@@ -543,6 +543,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                 $scope.cards_selected = response.data.data;
                 $scope.updateTotalPrice();
             });
+        $scope.focus_input();
     };
 
     $scope.update_from_datasource = function(card) {
@@ -783,6 +784,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.cards_fetched = [];
         $scope.client_selected = null;
         $scope.client = null;
+        $scope.focus_input();
     };
 
     $scope.remove_payment_2 = function() {
@@ -1147,19 +1149,15 @@ utils.factory('utils', [
         return text.match(reg);
       },
       card_command: function(id){
-        var url, position;
+        var url;
         url = "/api/card/" + id + "/command";
-        position = $window.scrollY;
-        $http.post(url, {}, {
-          ignoreLoadingBar: true
-        }).then(function(response){
+        $http.post(url, {}).then(function(response){
           var elt;
           $log.info(response);
           if (response.data.status === "success") {
             Notiflix.Notify.Success("OK");
             elt = $window.document.getElementById('command' + id);
             elt.innerText = response.data.data.nb;
-            $window.scrollTo(0, position);
           } else {
             Notiflix.Notify.Warning("Warning");
           }
@@ -5237,6 +5235,22 @@ angular.module("abelujo").controller('searchResultsController', [
         }
       }, function(response){
         throw Error('unimplemented');
+      });
+    };
+    $scope.do_card_command = function(isbn){
+      var params;
+      if (!isbn) {
+        alert("Ce livre n'a pas d'ISBN ! Commande impossible.");
+        return;
+      }
+      $log.info("--- do_card_command ", isbn);
+      params = {
+        isbn: isbn,
+        command: true
+      };
+      $http.post("/api/cards/quickcreate/", params).then(function(response){
+        $log.info(response);
+        Notiflix.Notify.Success("Commandé");
       });
     };
     $scope.add_to_command = function(size){

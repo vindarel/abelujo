@@ -237,6 +237,21 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
     ########################################################
     # Add to Command
     ########################################################
+    $scope.do_card_command = (isbn) !->
+        # Need to create from the ISBN.
+        if not isbn
+            alert "Ce livre n'a pas d'ISBN ! Commande impossible."
+            return
+        $log.info "--- do_card_command ", isbn
+        params = do
+            isbn: isbn
+            command: true
+        $http.post "/api/cards/quickcreate/", params
+        .then (response) !->
+            $log.info response
+            Notiflix.Notify.Success "Commandé"
+
+
     $scope.add_to_command = (size) !->
         to_add = Obj.filter (.selected == true), $scope.cards
 

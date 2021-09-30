@@ -94,7 +94,8 @@ def get_datasource_from_lang(lang):
 
 
 def search_on_data_source(data_source, search_terms, PAGE=1):
-    """search with the appropriate scraper.
+    """
+    Search with the appropriate scraper.
 
     data_source is the name of an imported module.
     search_terms: list of strings.

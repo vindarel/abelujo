@@ -166,9 +166,7 @@ utils.factory 'utils', ['$http', '$window', '$log', ($http, $window, $log) ->
 
         card_command: (id) !->
             url = "/api/card/#{id}/command"
-            $http.post url, {}, do
-              # Is it the progress bar that makes the window scroll to top?
-              ignoreLoadingBar: true  # looks it helps, we still scroll.
+            $http.post url, {}
             .then (response) !->
                 $log.info response
                 if response.data.status == "success"

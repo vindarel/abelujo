@@ -16,6 +16,9 @@ Changelog starting from v0.5 (2018/09/18)
  - see client reservations
  - see special pages (bookshop selection for website)
  - => Create a new user from the admin panel, don't give it any rights.
+ - Added a button to **quickly command from search results**.
+   - this is handy, but keep in mind: it is slower than scanning ISBNs, and the free search is not endorced by Dilicom's FEL à la demande or Electre's API. The results may vary between Abelujo and those platforms.
+   - that being said, before saving and commanding the book, we do rightfully fetch the full book data on Dilicom or Electre (given you subscribed to one of them).
 
 ### Other enhancements
 
