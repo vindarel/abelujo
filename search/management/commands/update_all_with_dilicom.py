@@ -69,6 +69,7 @@ class Command(BaseCommand):
 
         isbns = cards.values_list("isbn", flat=True)  # [it.isbn for it in cards]
 
+        # isbns = isbns[:100]  # DEBUG:
         # isbns = isbns[50:500]  # TODO:
         # isbns = isbns[430:500]  # TODO:
         dilicom_query = dilicomScraper.Scraper(*isbns)
@@ -101,12 +102,19 @@ class Command(BaseCommand):
             pub_name = ""
             if bk.get('publishers'):
                 pub_name = bk.get('publishers')[0]
+            if not pub_name:
+                print("Could not find the name of distributor for {}. Exiting.".format(bk.get('publishers')[0]))
+                exit(1)
 
             print("* {} - updating {}".format(i, card.isbn))
 
             try:
+                gln = bk.get('distributor_gln')
+                if not gln:
+                    print("Could not get distributor GLN from {}. Exiting.".format(bk))
+                    exit(1)
                 Card.update_from_dict(card, bk,
-                                      distributor_gln=bk.get('distributor_gln'),
+                                      distributor_gln=gln,
                                       publisher_name=pub_name)
 
                 cards_updated.append(card)

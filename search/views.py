@@ -1560,7 +1560,7 @@ def history_entries_month_export(request, date, **kwargs):
         return HttpResponseRedirect(reverse('history_entries'))  # xxx: loop?
 
     # data = Sell.search(year=day.year, month=day.month,
-                       # with_total_price_sold=False)
+    # with_total_price_sold=False)
     data = EntryCopies.objects.filter(created__year=date.year,
                                       created__month=date.month)
 

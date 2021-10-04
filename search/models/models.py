@@ -149,6 +149,7 @@ PRESEDIT = {
 # Improve sorting.
 locale.setlocale(locale.LC_ALL, "")
 
+
 def get_best_sells(soldcards):
     """
     From a list of SoldCard objets, return a dict where each key is the name of a card type, and the value a list of tuples containing a card and its quantity sold.
@@ -1906,10 +1907,19 @@ class Card(TimeStampedModel):
         if distributor_gln:
             dist = None
             # Get an existing dist by GLN or create it.
-            dist, created = Distributor.objects.get_or_create(gln=distributor_gln,
-                                                              name=distributor_name)
-            if dist:
-                card_obj.distributor = dist
+            try:
+                if not distributor_name:
+                    _dist = settings.DILICOM_DISTRIBUTORS.get(distributor_gln)
+                    distributor_name = _dist.get('name')
+                if not distributor_name:
+                    log.warn("Can not create a distributor with a void name. Passing. GLN is {}.".format(distributor_gln))
+                else:
+                    dist, created = Distributor.objects.get_or_create(gln=distributor_gln,
+                                                                      name=distributor_name)
+                    if dist:
+                        card_obj.distributor = dist
+            except Exception as e:
+                log.error("Could not get, create and/or save the distributor of gln {} for card {}: {}".format(distributor_gln, card_obj.pk, e))
 
         if publishers:
             if isinstance(publishers[0], models.base.Model):
