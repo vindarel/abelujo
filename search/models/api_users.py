@@ -256,9 +256,10 @@ def bill(request, *args, **response_kwargs):
         return
     for i, price in enumerate(prices):
         # XXX: check price type and value
-        total += price * quantities[i]
-        if prices_sold:
-            total_discounted += prices_sold[i] * quantities[i]
+        if price is not None and quantities[i] is not None:
+            total += price * quantities[i]
+            if prices_sold:
+                total_discounted += prices_sold[i] * quantities[i]
 
     default_currency = Preferences.get_default_currency()
     vat_book = Preferences.get_vat_book()
