@@ -61,7 +61,7 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         $window.localStorage.setItem('datasource', $scope.datasource.id)
 
     $scope.details_url_for = (card) ->
-        if card.in_stock
+        if card.in_stock is not null
            return card.get_absolute_url
 
         return card.details_url
