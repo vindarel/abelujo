@@ -97,20 +97,22 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     """
     Search with the appropriate scraper.
 
-    data_source is the name of an imported module.
-    search_terms: list of strings.
+    - data_source is the name of an imported module.  Electre takes
+      priority (it supports EAN search and free search, but not search of
+      many EANs).
+    - search_terms: list of strings.
 
-    return: a couple (search results, stacktraces). Search result is a
+    Return: a tuple (search results, stacktraces). Search result is a
     list of dicts.
     """
-    if data_source == 'electre':
+    if data_source == 'electre' or DEFAULT_DATASOURCE == 'electre':
         res, traces = pyelectre.search_on_electre(search_terms)
-        return res, traces
-    # get the imported module by name.
-    # They all must have a class Scraper.
-    scraper = getattr(globals()[data_source], "Scraper")
-    # res, traces = scraper(*search_terms).search()
-    res, traces = scraper(search_terms, PAGE=PAGE).search()
+    else:
+        # get the imported module by name.
+        # They all must have a class Scraper.
+        scraper = getattr(globals()[data_source], "Scraper")
+        # res, traces = scraper(*search_terms).search()
+        res, traces = scraper(search_terms, PAGE=PAGE).search()
 
     # Check if we already have these cards in stock (with isbn).
     res = Card.is_in_stock(res)
@@ -175,6 +177,10 @@ def update_from_dilicom(card):
     return card, traces
 
 def update_from_electre(card):
+    """
+    Update this card from Electre's API (using the pyelectre Electre).
+    Search by ISBN and update the important fields.
+    """
     if not card or not card.isbn or not (is_isbn(card.isbn)):
         return card, []
 

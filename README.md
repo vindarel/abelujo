@@ -206,6 +206,14 @@ under `sentry_token` (see the fabfile).
 
 Test with `python manage.py raven test` and see the new message in your dashboard.
 
+
+### Electre API (optional)
+
+We support fetching data on Electre's API. We can search by ISBN or with a free text search.
+
+The `pyelectre` module is developed separately, you will to get in touch with us.
+
+
 Run unit tests
 --------------
 

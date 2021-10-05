@@ -26,6 +26,9 @@ Changelog starting from v0.5 (2018/09/18)
 - **Sell: show the total price in red**.
 - searching our **stock**: more sort order options (sort by creation date of the book, by title (anti) alphabetically, by price, by shelf, by publisher.
 - **History**: we display the actual quantity in stock next to the command button.
+- **Search**: shows the **distributor** name in a new column.
+  - **Search**: can use Electre's API.
+  - if Electre is not available, we can only show the distributor name of a book we already have in stock. Without Electre, the distributor is *not* given by the search results (and keep in mind that Dilicom's FEL à la demande doesn't provide a free text search).
 
 ### Admin
 
