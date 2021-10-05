@@ -102,6 +102,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
       th {% trans "Title" %}
       th {% trans "Authors" %}
       th {% trans "Publishers" %}
+      th {% trans "Supplier" %}
       th {% trans "Price" %}
       th
 
@@ -127,7 +128,6 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                     b isbn: 
                     span {{ 'card.isbn' |ng}}
 
-
               div(ng-show="show_images") {{ 'card.date_publication' | ng }}
 
               div(ng-show="show_images && card.fmt") {{ 'card.fmt' | ng }}
@@ -140,6 +140,11 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
           div {{ 'card.authors_repr' | ng }}
         td
           div{{ 'card.pubs_repr' | ng }}
+        td
+          div(ng-show="card.distributor_repr") {{ 'card.distributor_repr' | ng }}
+          div(ng-hide="card.distributor_repr", style="color: grey", title="Cette donnée n'est pas disponible dans les résultats de recherche. Vous avez besoin d'un abonnement supérieur (FEL complet, Electre).") {% trans "not available" %} &nbsp;
+            i.glyphicon.glyphicon-question-sign()
+
         td: div {{ 'card.price_fmt'|ng }}&nbsp;
         td
           if user.is_staff

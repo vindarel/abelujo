@@ -1627,12 +1627,14 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def is_in_stock(cards):
-        """Check by isbn if the given cards (dicts) are in stock.
+        """
+        Check by isbn if the given cards (dicts) are in stock.
 
         Return a list of dicts with new keys each:
         - "in_stock": 0/the quantity
         - "id"
         - "url": the absolute url to the card in our DB.
+        - "distributor_repr": the supplier.
 
         Used when searching for cards on the datasource. If a result
         already exists in our DB, add the quantity and id fields.
@@ -1646,11 +1648,13 @@ class Card(TimeStampedModel):
         for card in cards:
             quantity = None
             found_id = 0
+            distributor_repr = None
             try:
                 found, _ = Card.exists(card)
                 if found:
                     quantity = found.quantity
                     found_id = found.id
+                    distributor_repr = found.distributor_repr
             except ObjectDoesNotExist:
                 quantity = None
                 found_id = None
@@ -1660,6 +1664,7 @@ class Card(TimeStampedModel):
             url = reverse("card_show", args=(card['id'],))  # XXX: it switches to /en/ :(
             card['get_absolute_url'] = url
             card['url'] = url
+            card['distributor_repr'] = distributor_repr
 
         return cards
 
