@@ -131,7 +131,8 @@ def dilicom_enabled():
 
 def update_from_dilicom(card):
     """
-    Update "critical" data: price, price excl vat, vat, availability, distributor.
+    Update data: price, price excl vat, vat, availability, distributor,
+    dimensions, weight.
     - card: card object.
 
     Return:
@@ -153,6 +154,25 @@ def update_from_dilicom(card):
 
         if res['theme'] and card.theme != res['theme']:
             card.theme = res['theme']
+            to_save = True
+
+        if res.get('width') and card.width != res.get('width'):
+            card.width = res.get('width')
+            to_save = True
+        if res.get('weight') and card.weight != res.get('weight'):
+            card.weight = res.get('weight')
+            to_save = True
+        if res.get('height') and card.height != res.get('height'):
+            card.height = res.get('height')
+            to_save = True
+        if res.get('thickness') and card.thickness != res.get('thickness'):
+            card.thickness = res.get('thickness')
+            to_save = True
+        if res.get('details_url') and card.width != res.get('details_url'):
+            card.details_url = res.get('details_url')
+            to_save = True
+        if res.get('data_source') and card.width != res.get('data_source'):
+            card.data_source = res.get('data_source')
             to_save = True
 
         # # "price_excl_vat" is already a model property.
