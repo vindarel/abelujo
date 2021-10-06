@@ -120,9 +120,15 @@
                 td Disponibilité
                 td {% trans "Not available" %}
             else object.availability
+             if object.availability == 1
               tr
                 td Disponibilité
                 td {{ object.availability_fmt }}
+             else
+               tr.my-yellow-bg
+                td Disponibilité
+                td {{ object.availability_fmt }}
+
             if object.date_publication
               tr
                 td {% trans "Publication date" %}

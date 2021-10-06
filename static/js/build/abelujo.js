@@ -5020,7 +5020,7 @@ angular.module("abelujo").controller('searchResultsController', [
     var ref$, Obj, join, reject, sum, map, filter, find, lines, search_obj, previous_query, source_id, datasource_id;
     ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines;
     $scope.language = utils.url_language($window.location.pathname);
-    $scope.not_available_status = ["Indisponible temporairement", "Indisponible", "Epuise", "Epuisé"];
+    $scope.not_available_status = ["Indisponible temporairement", "Indisponible", "Epuise", "epuise", "Epuisé", "epuisé", "06", "6"];
     $scope.is_not_available = function(label){
       return in$(label, $scope.not_available_status);
     };

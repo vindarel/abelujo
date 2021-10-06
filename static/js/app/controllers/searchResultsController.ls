@@ -24,7 +24,13 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         "Indisponible temporairement"
         "Indisponible"
         "Epuise"
+        "epuise"
         "Epuisé"
+        "epuisé"
+        "06"
+        "6"
+        "7"
+        "Manque sans date"
         ...
 
     $scope.is_not_available = (label) ->
