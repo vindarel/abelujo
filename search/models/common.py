@@ -95,9 +95,10 @@ PAYMENT_ABBR = [
 ]
 
 DEFAULT_VAT_CHOICES = [
-    # "2.1"  # in French DOM-TOM
-    (1, "5.5"),
-    (2, "20"),
+    (1, "5.5%"),
+    (0, "0 (dépôt/vente)"),
+    (2.1, "2.1% (DOM-TOM)"),  # in French DOM-TOM
+    (2, "20%"),
 ]
 try:
     if settings.config.VAT_CHOICES:
