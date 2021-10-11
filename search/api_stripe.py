@@ -263,10 +263,28 @@ def handle_api_stripe(payload):
     ##############################################
     ## Send confirmation email to both parties. ##
     ##############################################
+
+    # If the client is the tester, send him the email, an abort early to not
+    # send to the owner... ("tmp" oct, 2021).
+    client_email = billing_address.get('email')
+    client_lastname = billing_address.get('last_name').strip()
+    client_firstname = billing_address.get('first_name').strip()
+    if client_email == settings.TEST_EMAIL_BOOKSHOP_RECIPIENT \
+       or client_lastname == settings.TEST_LASTNAME \
+       or client_firstname == settings.TEST_FIRSTNAME:
+        mail_sent = mailer.send_client_command_confirmation(cards=cards,
+                                                            to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
+                                                            payload=payload,
+                                                            reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
+        log.warning("We send a confirmation email to the tester and return early. Mail sent? {} cards: {}, payload: {}".format(mail_sent, cards, payload))
+        res['status'] = mail_sent
+        return res
+
     if not is_online_payment:
         # Send confirmation to client.
         try:
             mail_sent = mailer.send_client_command_confirmation(cards=cards,
+                                                                # to_emails=??
                                                                 payload=payload,
                                                                 reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
             log.info("stripe: confirmation email sent to client ? {} (not an online payment). Payload: {}".format(mail_sent, payload))

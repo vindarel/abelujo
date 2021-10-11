@@ -566,6 +566,9 @@ EMAIL_BOOKSHOP_RECIPIENT = None
 TEST_EMAIL_BOOKSHOP_RECIPIENT = None
 BOOKSHOP_OWNER_NAME = None  # for emails
 TEST_BOOKSHOP_OWNER_NAME = None  # for emails
+TEST_LASTNAME = None
+TEST_FIRSTNAME = None
+
 SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
 
 # It is possible to use custom mail templates,
@@ -594,6 +597,7 @@ if FEATURE_MAILER:
     else:
         print("MAILER feature is DISABLED")
 
+# email bookshop OWNER.
 val = get_from_config('EMAIL_BOOKSHOP_RECIPIENT')
 if val:
     EMAIL_BOOKSHOP_RECIPIENT = val
@@ -605,10 +609,18 @@ val = get_from_config('BOOKSHOP_OWNER_NAME')
 if val:
     BOOKSHOP_OWNER_NAME = val
 
+# email TEST settings.
 val = get_from_config('TEST_BOOKSHOP_OWNER_NAME')
 if val:
     TEST_BOOKSHOP_OWNER_NAME = val
+val = get_from_config('TEST_LASTNAME')
+if val:
+    TEST_LASTNAME = val
+val = get_from_config('TEST_FIRSTNAME')
+if val:
+    TEST_FIRSTNAME = val
 
+# email THEME.
 val = get_from_config('EMAIL_THEME')
 if val:
     EMAIL_THEME = val
