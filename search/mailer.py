@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 
 import logging
 import os
+import six
 
 from django.template.loader import get_template
 from sendgrid import SendGridAPIClient
@@ -56,6 +57,11 @@ def send_email(from_email=FROM_EMAIL,
     #     to_emails='ehvince@mailz.org',
     #     subject='Sending with Twilio SendGrid is Fun',
     #     html_content='<strong>and easy to do anywhere, even with Python</strong>')
+
+    if isinstance(to_emails, six.string_types):
+        to_emails = str(to_emails)
+    if isinstance(from_email, six.string_types):
+        from_email = str(from_email)
 
     message_obj = Mail(
         # Use a verified sender.
