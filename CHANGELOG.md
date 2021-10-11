@@ -32,6 +32,7 @@ Changelog starting from v0.5 (2018/09/18)
 
 ### Admin
 
+- it is possible to theme templates, especially client confirmation emails. See `settings.EMAIL_THEME`. Theme templates should be located in `templates/theme/<theme name>/`.
 - new script: `manage.py export_stock --format csv` to create a csv file from all cards in stock and with a quantity > 0. Because doing that from the UI can be too long.
 
 

@@ -2305,7 +2305,10 @@ def test_owner_confirmation(request):
 
 @login_required
 def test_client_confirmation_email(request):
-    template = 'mailer/client_confirmation_template.html'
+    # template = 'mailer/client_confirmation_template.html'
+    import mailer
+    template = mailer.find_theme_template('client_confirmation_template.html')
+    only_testing = mailer.get_template_with_default(template, 'mailer/client_confirmation_template.html')  # TODO:
     bookshop_name = "Librairie"
     # XXX: copy-paste from noci test!
     real_test_payload = {
@@ -2393,4 +2396,5 @@ def test_client_confirmation_email(request):
                    'payment_meta': real_test_payload,
                    'is_online_payment': is_online_payment,
                    'bookshop_name': bookshop_name,
+                   'date': "2021-03-98",
                    })

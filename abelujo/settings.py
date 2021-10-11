@@ -568,6 +568,12 @@ BOOKSHOP_OWNER_NAME = None  # for emails
 TEST_BOOKSHOP_OWNER_NAME = None  # for emails
 SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
 
+# It is possible to use custom mail templates,
+# especially to send a confirmation to clients that command online.
+# The theme project should be cloned in templates/themes/<theme name>.
+# The views on mailer.py check if a repository matching this theme name exist.
+EMAIL_THEME = None
+
 # val = get_from_config('SENDGRID_API_KEY', secret=True)
 # if val:
 #    SENDGRID_API_KEY = val
@@ -602,3 +608,7 @@ if val:
 val = get_from_config('TEST_BOOKSHOP_OWNER_NAME')
 if val:
     TEST_BOOKSHOP_OWNER_NAME = val
+
+val = get_from_config('EMAIL_THEME')
+if val:
+    EMAIL_THEME = val

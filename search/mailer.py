@@ -21,7 +21,10 @@
 # Bad library quality overall :(
 # from __future__ import unicode_literals
 
+from __future__ import unicode_literals
+
 import logging
+import os
 
 from django.template.loader import get_template
 from sendgrid import SendGridAPIClient
@@ -97,10 +100,49 @@ SUBJECT_COMMAND_OK = "Votre commande"
 SUBJECT_COMMAND_OWNER = "Nouvelle commande"
 
 
+def find_theme_template(filename):
+    """
+    If we defined a custom theme, get the mail theme.
+    It's located in /templates/themes/<theme name>/<filename> (with its file extension).
+    The themes/ directory must be created.
+
+    Return: the template name (string), relative to the templates/ directory. If nothing found, return None.
+    """
+    # If we defined a custom theme, check a template repository with that name.
+    # template_filename = 'client_confirmation_template.html'
+    template_filename = filename
+    if hasattr(settings, 'EMAIL_THEME') and settings.EMAIL_THEME:
+        theme_name = settings.EMAIL_THEME
+        # Django's get_template doesn't need the template/ prefix in the file name.
+        # File name that works: /themes/flora/template.html
+        theme_path = 'themes/{}/'.format(theme_name)
+        theme_file_path = theme_path + template_filename
+        if os.path.isdir('templates/themes/') and \
+           os.path.exists('templates/' + theme_path) and \
+           os.path.isdir('templates/' + theme_path) \
+           and os.path.exists('templates/' + theme_file_path):
+            return theme_file_path
+
+    return
+
+def get_template_with_default(template_name, default_path):
+    template = None
+    if template_name:
+        try:
+            template = get_template(template_name)
+        except Exception as e:
+            log.warn("Could not get mailer template from {}: {}".format(template_name, e))
+
+    if not template:
+        template = get_template(default_path)
+
+    return template
+
 def generate_body_for_client_command_confirmation(price, cards, payload={},
                                                   payment_meta=None,
                                                   is_online_payment=None):
-    template = get_template('mailer/client_confirmation_template.html')
+    template_name = find_theme_template('client_confirmation_template.html')
+    template = get_template_with_default(template_name, "mailer/client_confirmation_template.html")
     bookshop_name = Bookshop.name() or ""
     body = template.render({'payload': payload,
                             'payment_meta': payment_meta,
