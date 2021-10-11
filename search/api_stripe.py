@@ -167,6 +167,7 @@ def handle_api_stripe(payload):
     ############################
     ## Handle Stripe session. ##
     ############################
+    session = {}
     is_online_payment = payload.get('order').get('online_payment')
     is_online_payment = _is_truthy(is_online_payment)
     if is_online_payment:
