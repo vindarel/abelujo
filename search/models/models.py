@@ -1664,7 +1664,15 @@ class Card(TimeStampedModel):
             url = reverse("card_show", args=(card['id'],))  # XXX: it switches to /en/ :(
             card['get_absolute_url'] = url
             card['url'] = url
-            card['distributor_repr'] = distributor_repr
+            if distributor_repr:
+                card['distributor_repr'] = distributor_repr
+            else:
+                gln = card.get('distributor_gln')
+                if gln:
+                    if isinstance(gln, int):
+                        gln = str(gln)
+                    dist = settings.DILICOM_DISTRIBUTORS.get(gln)
+                    card['distributor_repr'] = dist.get('name')
 
         return cards
 
@@ -6284,7 +6292,8 @@ class Stats(object):
 
     @staticmethod
     def stock(to_json=False):
-        """Simple figures about our stock:
+        """
+        Simple figures about our stock:
         - how many products
         - how many titles
         - how many titles (copies)
@@ -6293,8 +6302,7 @@ class Stats(object):
         # - value of the stock, excl. vat
         - idem for stock in deposits
 
-        return: a dict by default, a json if to_json is set to True.
-
+        Return: a dict by default, a json if to_json is set to True.
         """
         default_currency = Preferences.get_default_currency()
         places = Place.objects.all()
