@@ -2743,10 +2743,10 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
     ];
     $scope.order_by_choices = [
       {
-        name: gettext("Last created first"),
+        name: gettext("Most recent created first"),
         id: "-created"
       }, {
-        name: gettext("First created first"),
+        name: gettext("Oldest created first"),
         id: "created"
       }, {
         name: gettext("Titles"),
@@ -5037,6 +5037,9 @@ angular.module("abelujo").controller('searchResultsController', [
         name: "dilicom - fr",
         id: "dilicom"
       }, {
+        name: "electre - fr",
+        id: "electre"
+      }, {
         name: "lelivre - ch",
         id: "lelivre"
       }, {
@@ -5053,6 +5056,15 @@ angular.module("abelujo").controller('searchResultsController', [
         id: "discogs"
       }
     ];
+    defaultdatasource = $window.document.getElementById('defaultdatasource');
+    if (defaultdatasource) {
+      defaultdatasource = defaultdatasource.textContent;
+      datasource = find(function(it){
+        return it.id === defaultdatasource;
+      })(
+      $scope.datasources);
+      $scope.datasource = datasource;
+    }
     $scope.results_page = [];
     $scope.show_images = true;
     $scope.saveDatasource = function(){

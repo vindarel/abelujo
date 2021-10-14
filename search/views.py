@@ -90,6 +90,7 @@ from search.models.utils import ppcard
 from search.models.utils import price_fmt
 from search.models.utils import truncate
 from views_utils import Echo
+from views_utils import DEFAULT_DATASOURCE
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
 from views_utils import electre_enabled
@@ -246,8 +247,8 @@ def search(request):
     clients = [it.to_dict() for it in Client.objects.order_by("name").all()]
 
     return render(request, template, {
-        "feature_show_reservation_button": settings.FEATURE_SHOW_RESERVATION_BUTTON,
         "clients": clients,
+        "default_datasource": DEFAULT_DATASOURCE,
     })
 
 def cards_without_eans(request):
