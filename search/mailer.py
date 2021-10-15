@@ -146,9 +146,18 @@ def get_template_with_default(template_name, default_path):
 
 def generate_body_for_client_command_confirmation(price, cards, payload={},
                                                   payment_meta=None,
-                                                  is_online_payment=None):
-    template_name = find_theme_template('client_confirmation_template.html')
-    template = get_template_with_default(template_name, "mailer/client_confirmation_template.html")
+                                                  is_online_payment=None,
+                                                  use_theme=False):
+    """
+    If use_theme is not False, look for a mail template theme.
+    We use a switch, and not only one setting, to be able to use it once in specific cases (for tests on prod).
+    """
+    if use_theme:
+        template_name = find_theme_template('client_confirmation_template.html')
+        template = get_template_with_default(template_name, "mailer/client_confirmation_template.html")
+    else:
+        template = get_template('mailer/client_confirmation_template.html')
+
     bookshop_name = Bookshop.name() or ""
     body = template.render({'payload': payload,
                             'payment_meta': payment_meta,
@@ -189,11 +198,13 @@ def send_client_command_confirmation(cards=[],  # list of cards sold
                                      is_online_payment=None,
                                      to_emails=TEST_TO_EMAILS,
                                      reply_to=None,
+                                     use_theme=False,
                                      verbose=False):
     # Build HTML body.
     body = generate_body_for_client_command_confirmation(total_price, cards, payload=payload,
                                                          payment_meta=payment_meta,
-                                                         is_online_payment=is_online_payment)
+                                                         is_online_payment=is_online_payment,
+                                                         use_theme=use_theme)
 
     # Send.
     res = send_email(to_emails=to_emails,

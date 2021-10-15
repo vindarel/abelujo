@@ -230,7 +230,23 @@ def handle_api_stripe(payload):
         else:
             log.warning("Selling cards with Stripe, we could not find a card: {}".format(id_qty.get('id')))
 
+    ##################################################
+    # Test configuration?
+    # If the client is the developer, we are testing.
+    ##################################################
+    its_only_a_test = False
+    client_email = billing_address.get('email')
+    client_lastname = billing_address.get('last_name').strip()
+    client_firstname = billing_address.get('first_name').strip()
+    if client_email == settings.TEST_EMAIL_BOOKSHOP_RECIPIENT \
+       or client_lastname == settings.TEST_LASTNAME \
+       or client_firstname == settings.TEST_FIRSTNAME:
+        its_only_a_test = True
+
+    ##################################################
     # Reserve.
+    # (if it's not a live test by the developer)
+    ##################################################
     # PERFORMANCE:
     reservations = []  # should be one for all...
     try:
@@ -244,19 +260,20 @@ def handle_api_stripe(payload):
             payment_meta = json.dumps(payload)
         except Exception as e:
             log.warning("stripe api: we try to encode payload to JSON to store it in payment_meta, but that failed: {}".format(e))
-        for card_qty in cards_qties:
-            resa, created = existing_client.reserve(card_qty.get('card'),
-                                                    nb=card_qty.get('qty'),
-                                                    send_by_post=True,
-                                                    is_paid=is_paid,
-                                                    is_ready=False,
-                                                    payment_origin="stripe",
-                                                    payment_meta=payment_meta,
-                                                    payment_session=session,
-                                                    payment_intent=payment_intent)
-            if resa:
-                reservations.append(resa)
-        res['alerts'].append("client commands created successfully")
+        if not its_only_a_test:
+            for card_qty in cards_qties:
+                resa, created = existing_client.reserve(card_qty.get('card'),
+                                                        nb=card_qty.get('qty'),
+                                                        send_by_post=True,
+                                                        is_paid=is_paid,
+                                                        is_ready=False,
+                                                        payment_origin="stripe",
+                                                        payment_meta=payment_meta,
+                                                        payment_session=session,
+                                                        payment_intent=payment_intent)
+                if resa:
+                    reservations.append(resa)
+            res['alerts'].append("client commands created successfully")
 
     except Exception as e:
         log.error("Error creating reservations for {}: {}".format(cards_qties, e))
@@ -267,18 +284,16 @@ def handle_api_stripe(payload):
 
     # If the client is the tester, send him the email, an abort early to not
     # send to the owner... ("tmp" oct, 2021).
-    client_email = billing_address.get('email')
-    client_lastname = billing_address.get('last_name').strip()
-    client_firstname = billing_address.get('first_name').strip()
-    if client_email == settings.TEST_EMAIL_BOOKSHOP_RECIPIENT \
-       or client_lastname == settings.TEST_LASTNAME \
-       or client_firstname == settings.TEST_FIRSTNAME:
+    if its_only_a_test:
         mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                             to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                             payload=payload,
-                                                            reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
+                                                            reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                            # added:
+                                                            use_theme=True)
         log.warning("We send a confirmation email to the tester and return early. Mail sent? {} cards: {}, payload: {}".format(mail_sent, cards, payload))
         res['status'] = mail_sent
+        # and return early, don't mail the owner.
         return res
 
     if not is_online_payment:

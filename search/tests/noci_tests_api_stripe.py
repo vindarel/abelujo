@@ -543,6 +543,7 @@ class TestLive(TestCase):
                                                       to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                       reply_to=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                       total_price="10,00 €",
+                                                      use_theme=True
                                              )
         self.assertTrue(req)
         self.assertTrue(client_req)
