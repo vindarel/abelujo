@@ -292,7 +292,11 @@ def handle_api_stripe(payload):
                                                             # added:
                                                             use_theme=True)
         log.warning("We send a confirmation email to the tester and return early. Mail sent? {} cards: {}, payload: {}".format(mail_sent, cards, payload))
-        res['status'] = mail_sent
+        if mail_sent:
+            status = 200
+        else:
+            status = 500
+        res['status'] = status
         # and return early, don't mail the owner.
         return res
 
