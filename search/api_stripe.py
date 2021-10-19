@@ -319,7 +319,6 @@ def handle_api_stripe(payload):
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
                                                            payload=payload,
-                                                           payment_meta=payload,
                                                            is_online_payment=is_online_payment,
                                                            email=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                            owner_name=settings.BOOKSHOP_OWNER_NAME,
