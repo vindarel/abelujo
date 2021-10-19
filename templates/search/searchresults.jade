@@ -120,10 +120,11 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
                 ng-class="{'label-success': card.in_stock > 0, 'label-danger': card.in_stock < 0}"
                 ng-show="card.in_stock != null"
                 title='{% trans "This card is already in your stock" %}')
-                  {{'card.in_stock'|ng}}
+                  {{'card.in_stock'|ng}} &nbsp;
               span
                 //- a(href="/stock/card/quickcreate/{{ 'card.isbn' | ng }}", target="_blank") &nbsp; {{ 'card.title' | ng }}
-                a(href="{{ 'details_url_for(card)' | ng }}", target="_blank") &nbsp; {{ 'card.title' | ng }}
+                a(ng-show="details_url_for(card)", href="{{ 'details_url_for(card)' | ng }}", target="_blank") &nbsp; {{ 'card.title' | ng }}
+                span(ng-hide="details_url_for(card)")  {{ 'card.title' | ng }}
 
               div(ng-show="show_images && card.isbn")
                     b isbn: 

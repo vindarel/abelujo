@@ -5074,7 +5074,10 @@ angular.module("abelujo").controller('searchResultsController', [
       if (card.in_stock !== null) {
         return card.get_absolute_url;
       }
-      return card.details_url;
+      if (card.details_url) {
+        return card.details_url;
+      }
+      return null;
     };
     $scope.next_results = function(){
       var search_obj, page;

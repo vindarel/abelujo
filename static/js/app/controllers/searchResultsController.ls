@@ -81,7 +81,10 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
         if card.in_stock is not null
            return card.get_absolute_url
 
-        return card.details_url
+        if card.details_url
+           return card.details_url
+
+        return null
 
     $scope.next_results = !->
         if not $scope.query
