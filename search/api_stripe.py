@@ -288,6 +288,7 @@ def handle_api_stripe(payload):
         mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                             to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                             payload=payload,
+                                                            payment_meta=payload,
                                                             reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                             # added:
                                                             use_theme=True)
