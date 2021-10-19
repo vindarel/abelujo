@@ -5017,10 +5017,10 @@ angular.module("abelujo").controller("ChooseShelfModalControllerInstance", funct
 
 angular.module("abelujo").controller('searchResultsController', [
   '$http', '$scope', '$timeout', '$filter', '$window', '$uibModal', '$log', 'utils', '$location', 'hotkeys', function($http, $scope, $timeout, $filter, $window, $uibModal, $log, utils, $location, hotkeys){
-    var ref$, Obj, join, reject, sum, map, filter, find, lines, search_obj, previous_query, source_id, datasource_id;
+    var ref$, Obj, join, reject, sum, map, filter, find, lines, defaultdatasource, datasource, search_obj, previous_query, source_id, datasource_id;
     ref$ = require('prelude-ls'), Obj = ref$.Obj, join = ref$.join, reject = ref$.reject, sum = ref$.sum, map = ref$.map, filter = ref$.filter, find = ref$.find, lines = ref$.lines;
     $scope.language = utils.url_language($window.location.pathname);
-    $scope.not_available_status = ["Indisponible temporairement", "Indisponible", "Epuise", "epuise", "Epuisé", "epuisé", "06", "6"];
+    $scope.not_available_status = ["Indisponible temporairement", "Indisponible", "Epuise", "epuise", "Epuisé", "epuisé", "06", "6", "7", "Manque sans date"];
     $scope.is_not_available = function(label){
       return in$(label, $scope.not_available_status);
     };
