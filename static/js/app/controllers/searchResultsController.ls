@@ -47,6 +47,8 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
           id: "librairiedeparis"
         * name: "dilicom - fr"
           id: "dilicom"
+        * name: "electre - fr"
+          id: "electre"
         * name: "lelivre - ch"
           id: "lelivre"
         * name: "Casa del libro - es"
@@ -59,6 +61,15 @@ angular.module "abelujo" .controller 'searchResultsController', ['$http', '$scop
           id: "momox"
         * name: "discogs - CDs"
           id: "discogs"
+
+    # Find the default datasource from its hidden field (set by the server).
+    defaultdatasource = $window.document.getElementById('defaultdatasource')
+    if defaultdatasource
+       defaultdatasource = defaultdatasource.textContent
+       datasource = $scope.datasources
+       |> find ( -> it.id == defaultdatasource )
+       $scope.datasource = datasource
+
 
     $scope.results_page = [] # list of dicts with page and other search params.
     $scope.show_images = true

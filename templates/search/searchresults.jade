@@ -41,6 +41,7 @@ div(ng-cloak, ng-show="cards", ng-controller="searchResultsController")
  .row
    form(ng-submit="validate()")
     div
+      div#defaultdatasource(hidden) {{ default_datasource }}
       div.col-md-2
         select.form-control(ng-model="datasource", ng-options="elt.name for elt in datasources", ng-change="saveDatasource()")
       div.col-md-4
