@@ -575,11 +575,27 @@ def api_stripe_hooks(request, **response_kwargs):
                                                                     is_online_payment=True,
                                                                     reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
+
                 if not mail_sent:
                     # TODO: register info in reservation.
                     log.warning("stripe hook: payment confirmation email to client was not sent :S")
         except Exception as e:
             log.error("api_stripe: could not send confirmation email: {}".format(e))
+
+        # Send the same email to the developer, to check theme rendering.
+        try:
+            mail_sent = mailer.send_client_command_confirmation(cards=cards,
+                                                                is_online_payment=True,
+                                                        to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
+                                                        payload=payload,
+                                                        payment_meta=payload,
+                                                        reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                        # added: use custom theme.
+                                                        use_theme=True)
+            log.info("stripe webhook: confirmation mail sent to {} ? {}".format(settings.TEST_EMAIL_BOOKSHOP_RECIPIENT, mail_sent))
+        except Exception as e:
+            log.warn("api_stripe hook: could not send email with custom theme to developer: {}".format(e))
+
 
         #
         # Send confirmation to bookshop owner.
