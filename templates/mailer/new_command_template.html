@@ -40,7 +40,11 @@
       {{ payment_meta.buyer.delivery_address.city }} {{ payment_meta.buyer.delivery_address.postcode }} {{ payment_meta.buyer.delivery_address.country }} </br>
 
       <strong>Montant</strong> : {{ payment_meta.order.amount | div:100 }}€ </br>
+      {% if payment_meta.order.used_promo_code %}
       Code promo utilisé : {{ payment_meta.order.used_promo_code }} </br>
+      {% else %}
+      Code promo utilisé : --- </br>
+      {% endif %}
       <strong>Paiement en ligne </strong> : {{ payment_meta.order.online_payment | yesno  }} </br>
       {% comment %}
       <!-- Mode de livraison : {{ payment_meta.order.shipping_method === 'standard' ? 'Colissimo' : (payment_meta.order.shipping_method === 'relay' ? 'Mondial Relay' : 'Retrait au local') }} -->
