@@ -31,6 +31,7 @@ from search.models import Client
 from search.models import Reservation
 from search.models.utils import _is_truthy
 from search.models.utils import get_logger
+from search.models.utils import get_total_weight
 
 try:
     import stripe
@@ -317,8 +318,12 @@ def handle_api_stripe(payload):
 
         # Send confirmation to bookshop owner.
         if settings.EMAIL_BOOKSHOP_RECIPIENT:
+            # Get total weight of cards.
+            total_weight, weight_message = get_total_weight(cards)
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
+                                                           total_weight=total_weight,
+                                                           weight_message=weight_message,
                                                            payload=payload,
                                                            is_online_payment=is_online_payment,
                                                            email=settings.EMAIL_BOOKSHOP_RECIPIENT,
@@ -596,13 +601,16 @@ def api_stripe_hooks(request, **response_kwargs):
         except Exception as e:
             log.warn("api_stripe hook: could not send email with custom theme to developer: {}".format(e))
 
-
         #
         # Send confirmation to bookshop owner.
         #
         if settings.EMAIL_BOOKSHOP_RECIPIENT:
+            # Get total weight of cards.
+            total_weight, weight_message = get_total_weight(cards)
             try:
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
+                                                           total_weight=total_weight,
+                                                           weight_message=weight_message,
                                                            payload=payload,
                                                            payment_meta=payment_meta,
                                                            is_online_payment=True,

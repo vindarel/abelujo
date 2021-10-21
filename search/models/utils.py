@@ -550,3 +550,32 @@ def enrich_cards_dict_for_quantity_in_command(cards, basket_copies):
             card_dict['quantity_in_command'] = bc.nb
 
     return cards
+
+
+def get_total_weight(cards):
+    """
+    Sum the weight of these cards.
+    However, if we don't have the weight of one, also return a meaningful message.
+    To be used in the owner command confirmation template.
+
+    Return: tuple weight (float, in Kg), string (user-readable explanations).
+    """
+    total = 0
+    alerts = []
+    try:
+        for card in cards:
+            if card.weight:
+                try:
+                    total += card.weight
+                except Exception as e:
+                    # you never know what's in a field...
+                    log.warning("get_total_weight: looks like this weight is not a number? {}: {}".format(card.weight, e))
+                    alerts += ["Could not read the weight of {} (id {})".format(card.title[:20], card.pk)]
+            else:
+                alerts += ["No weight for {} (id {}).".format(card.title[:20], card.pk)]
+    except Exception as e:
+        log.warning("Could not get the total weight of these cards: {} because: {}".format(cards, e))
+
+    in_kg = total / 1000.0
+    message = " ".join(alerts)
+    return in_kg, message

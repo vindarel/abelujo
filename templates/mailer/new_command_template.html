@@ -83,14 +83,7 @@
 
     </p>
 
-    {% if payment_meta %}
-    <div></div>
-    {% else %}
-
-    <p>
-      The client is {{ client }}.
-    </p>
-
+    {% if cards %}
     <p>
       Il s'agit des titres suivants:
       <ul>
@@ -100,6 +93,11 @@
         </li>
         {% endfor %}
       </ul>
+
+      Poids total: {{ total_weight }} Kg.
+      {% if weight_message %}
+      (⚠ {{ weight_message }})
+      {% endif %}
 
     </p>
 

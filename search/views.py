@@ -85,6 +85,7 @@ from search.models import users
 from search.models.api import _get_command_or_return
 from search.models.utils import _is_truthy
 from search.models.utils import get_logger
+from search.models.utils import get_total_weight
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import price_fmt
@@ -2297,11 +2298,18 @@ def test_owner_confirmation(request):
     if params.get('paid') and not _is_truthy(params.get('paid')):
         real_test_payload['order']['online_payment'] = False
         is_online_payment = False
+
+    # Test total weight.
+    cards = Card.objects.all()[:4]
+    total_weight, weight_message = get_total_weight(cards)
     return render(request, template,
                   {'payload': real_test_payload,
                    'payment_meta': real_test_payload,
                    'is_online_payment': is_online_payment,
                    'bookshop_name': bookshop_name,
+                   'cards': cards,
+                   'total_weight': total_weight,
+                   'weight_message': weight_message,
                    })
 
 @login_required
