@@ -138,7 +138,7 @@
             {{ resa.card.price_fmt }}
 
             {% if resa.card.weight %}
-            &nbsp; {% trans "Poids:" %} {{ resa.card.get_weight_repr }}
+            &nbsp; {{ resa.card.get_weight_repr }}
             {% else %}
             {% trans "⚠ poids inconnu" %}
             {% endif %}
