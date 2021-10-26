@@ -173,6 +173,8 @@ def generate_body_for_client_command_confirmation(price, cards, payload={},
 
 def generate_body_for_owner_confirmation(client,
                                          owner_name,
+                                         total_weight="?",
+                                         weight_message="",
                                          payload={},
                                          payment_meta=None,
                                          is_online_payment=False,
@@ -183,6 +185,8 @@ def generate_body_for_owner_confirmation(client,
                             'payment_meta': payment_meta,
                             'bookshop_name': bookshop_name,
                             'is_online_payment': is_online_payment,
+                            'total_weight': total_weight,
+                            'weight_message': weight_message,
                             })
     try:
         body = body.encode('utf8')
@@ -219,6 +223,8 @@ def send_client_command_confirmation(cards=[],  # list of cards sold
 
 
 def send_owner_confirmation(cards=[], email="", client=None,
+                            total_weight="?",
+                            weight_message="",
                             payload={},
                             payment_meta=None,
                             owner_name="",
@@ -226,6 +232,8 @@ def send_owner_confirmation(cards=[], email="", client=None,
                             verbose=False):
     body = generate_body_for_owner_confirmation(client,
                                                 owner_name,
+                                                total_weight=total_weight,
+                                                weight_message=weight_message,
                                                 payload=payload,
                                                 payment_meta=payment_meta,
                                                 is_online_payment=is_online_payment,

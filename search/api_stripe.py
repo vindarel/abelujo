@@ -283,8 +283,7 @@ def handle_api_stripe(payload):
     ## Send confirmation email to both parties. ##
     ##############################################
 
-    # If the client is the tester, send him the email, an abort early to not
-    # send to the owner... ("tmp" oct, 2021).
+    # If the client is the tester, send him the email.
     if its_only_a_test:
         mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                             to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
@@ -293,7 +292,7 @@ def handle_api_stripe(payload):
                                                             reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                             # added:
                                                             use_theme=True)
-        log.warning("We send a confirmation email to the tester and return early. Mail sent? {} cards: {}, payload: {}".format(mail_sent, cards, payload))
+        log.warning("We send a confirmation email to the tester. Mail sent? {} cards: {}, payload: {}".format(mail_sent, cards, payload))
         if mail_sent:
             status = 200
         else:
