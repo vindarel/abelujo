@@ -134,7 +134,15 @@
             <div  style="color: grey"> &nbsp; {{ resa.card.isbn }} </div>
           </div>
 
-          <div> {{ resa.card.price_fmt }} </div>
+          <div>
+            {{ resa.card.price_fmt }}
+
+            {% if resa.card.weight %}
+            &nbsp; {% trans "Poids:" %} {{ resa.card.get_weight_repr }}
+            {% else %}
+            {% trans "⚠ poids inconnu" %}
+            {% endif %}
+          </div>
 
         </div>
 
