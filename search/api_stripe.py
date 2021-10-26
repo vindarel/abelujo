@@ -299,8 +299,6 @@ def handle_api_stripe(payload):
         else:
             status = 500
         res['status'] = status
-        # and return early, don't mail the owner.
-        return res
 
     if not is_online_payment:
         # Send confirmation to client.
