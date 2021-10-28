@@ -919,8 +919,11 @@ class Card(TimeStampedModel):
         return self.imgfile.url
 
     def save(self, *args, **kwargs):
-        """We override the save method in order to
-        save covers on disk and denormalize the quantity.
+        """
+        We override the save method in order to save covers on disk and
+        denormalize the quantity.
+
+        Also check the card_type is set and correct.
         """
         # Update quantity.
         self.quantity = self.quantity_compute()
@@ -929,6 +932,16 @@ class Card(TimeStampedModel):
         res = to_ascii(self.title)
         if res:
             self.title_ascii = res
+
+        # Check card_type is correctly, especially for a book.
+        try:
+            if not self.card_type:
+                if self.isbn.startswith('97'):
+                    self.card_type = CardType.objects.get(name='book')
+                elif self.isbn.startswith('377'):
+                    self.card_type = CardType.objects.get(name='game')
+        except Exception as e:
+            log.warning("While saving card {}, could not set its card_type: {}".format(self.pk, e))
 
         super(Card, self).save(*args, **kwargs)
 
@@ -953,7 +966,8 @@ class Card(TimeStampedModel):
             return ', '.join([a.name for a in self.authors.all()])
 
     def quantity_compute(self):
-        """Return the quantity of this card in all places (not deposits).
+        """
+        Return the quantity of this card in all places (not deposits).
 
         return: int
         """
@@ -970,13 +984,46 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def quantities_total():
-        """Total of quantities for all cards in this stock (for tests).
+        """
+        Total of quantities for all cards and all products in this stock.
         Return: int (None on error)
         """
         try:
             return sum([it.quantities_total() for it in Place.objects.all()])
         except Exception as e:
             log.error("Error while getting the total quantities of all cards: {}".format(e))
+
+    @staticmethod
+    def quantities_books_total():
+        """
+        Number of books products.
+        Return: int (None on error)
+        """
+        try:
+            return sum([it.quantities_books_total() for it in Place.objects.all()])
+        except Exception as e:
+            log.error("Error while getting the total quantities of books: {}".format(e))
+
+    @staticmethod
+    def nb_cards():
+        """
+        Number of cards, all products (titles, not copies). 1 count per title.
+        """
+        return sum([it.nb_cards() for it in Place.objects.all()])
+
+    @staticmethod
+    def nb_books_cards():
+        """
+        Number of cards, only books (titles, not copies). 1 count per title.
+        """
+        return sum([it.nb_books_cards() for it in Place.objects.all()])
+
+    @staticmethod
+    def nb_cards_all_time():
+        """
+        Number of cards, only books (titles, not copies). 1 count per title.
+        """
+        return sum([it.nb_cards_all_time() for it in Place.objects.all()])
 
     @staticmethod
     def cards_without_eans():
@@ -1655,6 +1702,7 @@ class Card(TimeStampedModel):
                     quantity = found.quantity
                     found_id = found.id
                     distributor_repr = found.distributor_repr
+
             except ObjectDoesNotExist:
                 quantity = None
                 found_id = None
@@ -2785,13 +2833,62 @@ class Place (models.Model):
         return True
 
     def quantities_total(self):
-        """Total quantity of cards in this place.
+        """
+        Total quantity of things in this place, all products, in stock.
         Return: int (None on error)
         """
         try:
             return sum(self.placecopies_set.values_list('nb', flat=True))
         except Exception as e:
             log.error("Error getting the total quantities in place {}: {}".format(self.name, e))
+
+    def quantities_books_total(self):
+        """
+        Total quantity of books (copies, exemplaries).
+        Nb of book physical products.
+
+        Ensure the card_type property is well set for the stock. See fix_types management script.
+        """
+        try:
+            book_type = CardType.objects.get(name='book')
+            qs = self.placecopies_set.exclude(nb=0).filter(card__card_type=book_type)
+            return sum(qs.values_list('nb', flat=True))
+        except Exception as e:
+            log.error("Could not get total quantity of books: {}".format(e))
+            return -1
+
+    def nb_cards(self):
+        """
+        Nb de titres uniques, tout type de produits confondus.
+        """
+        try:
+            res = self.placecopies_set.exclude(nb=0).count()
+            return res
+        except Exception as e:
+            log.error("rst {}".format(e))
+
+    def nb_books_cards(self):
+        """
+        Nb de titres de livres uniques.
+        """
+        try:
+            book_type = CardType.objects.get(name='book')
+            res = self.placecopies_set.filter(card__card_type=book_type)\
+                .exclude(nb=0).count()
+            return res
+        except Exception as e:
+            log.error("rst {}".format(e))
+
+    def nb_cards_all_time(self):
+        """
+        Nb de titres uniques, tout type de produits confondus, en stock ou pas:
+        qui ont été enregistrés une fois dans la BD.
+        """
+        try:
+            res = self.placecopies_set.count()
+            return res
+        except Exception as e:
+            log.error("rst {}".format(e))
 
     def quantity_cards(self):
         return self.quantities_total()
@@ -6311,18 +6408,24 @@ class Stats(object):
         type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
-        nb_cards = Card.quantities_total()
-        nb_not_books = Card.objects.filter(in_stock=True).exclude(card_type=type_book).count()
+        nb_all_products = Card.quantities_total()
+        nb_books_in_stock = Card.quantities_books_total()
+        nb_books_cards = Card.nb_books_cards()
+        nb_non_books_in_stock = nb_all_products - nb_books_in_stock
+        nb_cards_all_time = Card.nb_cards_all_time()
+
         # label: needed for graph creation in js.
-        res['nb_titles'] = {'label': _("Number of book titles"),
-                            'value': Card.objects.filter(in_stock=True).
-                            filter(card_type=type_book).count()}
-        res['nb_cards'] = {'label': _("Number of books"),
-                           'value': nb_cards}
-        res['nb_products'] = {'label': _("Number of products"),
-                              'value': nb_cards + nb_not_books}
+        res['nb_book_titles'] = {'label': _("Number of book titles"),
+                                 'value': nb_books_cards}
+        res['nb_in_stock'] = {'label': _("Number of books"),
+                              'value': nb_books_in_stock}
+        res['nb_non_book_products'] = {'label': _("Number of non book products"),
+                                       'value': nb_non_books_in_stock}
+        res['nb_titles_all_time'] = {'label': _("Number of titles, all time"),
+                                       'value': nb_cards_all_time}
+        nb_unknown = Card.objects.filter(card_type=type_unknown).count()
         res['nb_unknown'] = {'label': _("Number of products of unknown type"),
-                             'value': Card.objects.filter(card_type=type_unknown).count()}
+                             'value': nb_unknown}
         # the ones we bought
         # impossible atm
         res['nb_bought'] = {'label': "",
