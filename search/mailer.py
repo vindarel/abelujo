@@ -176,12 +176,14 @@ def generate_body_for_owner_confirmation(client,
                                          total_weight="?",
                                          weight_message="",
                                          payload={},
+                                         cards=[],
                                          payment_meta=None,
                                          is_online_payment=False,
                                          ):
     template = get_template('mailer/new_command_template.html')
     bookshop_name = Bookshop.name() or ""
     body = template.render({'payload': payload,
+                            # 'cards': cards,  # double use, but we'd have access to more fields (URL etc).
                             'payment_meta': payment_meta,
                             'bookshop_name': bookshop_name,
                             'is_online_payment': is_online_payment,
@@ -235,6 +237,7 @@ def send_owner_confirmation(cards=[], email="", client=None,
                                                 total_weight=total_weight,
                                                 weight_message=weight_message,
                                                 payload=payload,
+                                                cards=cards,
                                                 payment_meta=payment_meta,
                                                 is_online_payment=is_online_payment,
                                                 )

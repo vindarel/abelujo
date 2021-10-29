@@ -85,6 +85,7 @@
 
     {% if cards %}
     <p>
+      <!-- double data with payload, but we have access to more of the cards fields. -->
       Il s'agit des titres suivants:
       <ul>
         {% for card in cards  %}
@@ -93,14 +94,17 @@
         </li>
         {% endfor %}
       </ul>
+    </p>
 
+    {% endif %}
+
+    {% if total_weight or weight_message %}
+    <p>
       Poids total: {{ total_weight }} Kg.
       {% if weight_message %}
       (⚠ {{ weight_message }})
       {% endif %}
-
     </p>
-
     {% endif %}
 
     Bonne journée et à bientôt.
