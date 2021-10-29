@@ -26,10 +26,10 @@ Send test data to a running server:
 $ ./manage.py test search.tests.tests_api_stripe.TestLive
 """
 
-import requests
 import json
-import mock
 
+import mock
+import requests
 from django.test import TestCase
 
 from abelujo import settings
@@ -38,7 +38,7 @@ from search import mailer
 from search.models import Client
 from search.models import Reservation
 from search.models.users import Bookshop
-
+from search.models.utils import get_total_weight
 from tests_api import CardFactory
 
 # Payload
@@ -124,14 +124,16 @@ real_test_payload = {
     'order': {
         'online_payment': True,
         'shipping_method': 'relay',  # colissimo
-        'mondial_relay_AP': {
-            'Adresse1': 'avenue URSS',
-            'CP': '31000',
-            'Nom': 'mon point relay',
-            'Ville': "toulouse",
-            'Adresse2': 'ad 2',
-            'ID': 'Id relais'
-        },
+        # u'mondial_relay_AP': u'{"Adresse1":"28 RUE EMILE CARTAILHAC","Adresse2":null,"Available":true,"CP":"31000","HoursHtmlTable":"<table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Monday<\\/th><td>15h00-19h00<\\/td><td>-<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Tuesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Wednesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Thursday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Friday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Saturday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Sunday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table>","ID":"071058","Lat":"43,6076448","Long":"1,440779","Nature":"D","Nom":"CBD SHOP FRANCE","Pays":"FR","Photo":null,"Ville":"TOULOUSE","Warning":"","Letter":"A"}'}
+        'mondial_relay_AP': '{"Adresse1":"28 RUE EMILE CARTAILHAC","Adresse2":null,"Available":true,"CP":"31000","HoursHtmlTable":"<table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Monday<\\/th><td>15h00-19h00<\\/td><td>-<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Tuesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Wednesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Thursday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Friday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Saturday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Sunday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table>","ID":"071058","Lat":"43,6076448","Long":"1,440779","Nature":"D","Nom":"CBD SHOP FRANCE","Pays":"FR","Photo":null,"Ville":"TOULOUSE","Warning":"","Letter":"A"}',
+        # {
+        #     'Adresse1': 'avenue URSS',
+        #     'CP': '31000',
+        #     'Nom': 'mon point relay',
+        #     'Ville': "toulouse",
+        #     'Adresse2': 'ad 2',
+        #     'ID': 'Id relais'
+        # },
         'amount': 5050,
         # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
         # 'abelujo_items': [{'id': 1, 'qty': 1}, {'id': 2, 'qty': 1}],
@@ -528,13 +530,27 @@ class TestLive(TestCase):
 # }'
 
     def notest_send_test_emails(self):
-        req = mailer.send_owner_confirmation(cards=[self.card, self.card2],
+        # Test total weight.
+        cards = [self.card, self.card2]
+        total_weight, weight_message = get_total_weight(cards)
+
+        # Parse mondial relay data (it's JSON in another string).
+        try:
+            mondial_relay_json = real_test_payload['order']['mondial_relay_AP']
+            mondial_relay_dict = json.loads(mondial_relay_json)
+            real_test_payload['order']['mondial_relay_AP'] = mondial_relay_dict
+        except Exception as e:
+            log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}'.format(real_test_payload))
+
+        req = mailer.send_owner_confirmation(cards=cards,
                                              payload=real_test_payload,
                                              payment_meta=real_test_payload,
                                              is_online_payment=True,
                                              client=self.client,
                                              email=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                              owner_name=settings.TEST_BOOKSHOP_OWNER_NAME,
+                                             total_weight=total_weight,
+                                             weight_message=weight_message,
                                              )
         client_req = mailer.send_client_command_confirmation(cards=[self.card, self.card2],
                                                       payload=real_test_payload,

@@ -2247,14 +2247,16 @@ def test_owner_confirmation(request):
         'order': {
             'online_payment': True,
             'shipping_method': 'relay',  # colissimo
-            'mondial_relay_AP': {
-                'Adresse1': 'avenue URSS',
-                'CP': '31000',
-                'Nom': 'mon point relay',
-                'Ville': "toulouse",
-                'Adresse2': 'ad 2',
-                'ID': 'Id relais'
-            },
+            'mondial_relay_AP': '{"Adresse1":"28 RUE EMILE CARTAILHAC","Adresse2":null,"Available":true,"CP":"31000","HoursHtmlTable":"<table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Monday<\\/th><td>15h00-19h00<\\/td><td>-<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Tuesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Wednesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Thursday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Friday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Saturday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Sunday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table>","ID":"071058","Lat":"43,6076448","Long":"1,440779","Nature":"D","Nom":"CBD SHOP FRANCE","Pays":"FR","Photo":null,"Ville":"TOULOUSE","Warning":"","Letter":"A"}',
+
+            # {
+                # 'Adresse1': 'avenue URSS',
+                # 'CP': '31000',
+                # 'Nom': 'mon point relay',
+                # 'Ville': "toulouse",
+                # 'Adresse2': 'ad 2',
+                # 'ID': 'Id relais'
+            # },
 
             'amount': 5050,
             # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],
@@ -2298,6 +2300,14 @@ def test_owner_confirmation(request):
     if params.get('paid') and not _is_truthy(params.get('paid')):
         real_test_payload['order']['online_payment'] = False
         is_online_payment = False
+
+    # Parse mondial relay data (it's JSON in another string).
+    try:
+        mondial_relay_json = real_test_payload['order']['mondial_relay_AP']
+        mondial_relay_dict = json.loads(mondial_relay_json)
+        real_test_payload['order']['mondial_relay_AP'] = mondial_relay_dict
+    except Exception as e:
+        log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}'.format(real_test_payload))
 
     # Test total weight.
     cards = Card.objects.all()[:4]
@@ -2348,14 +2358,7 @@ def test_client_confirmation_email(request):
         'order': {
             'online_payment': True,
             'shipping_method': 'relay',  # colissimo
-            'mondial_relay_AP': {
-                'Adresse1': 'avenue URSS',
-                'CP': '31000',
-                'Nom': 'mon point relay',
-                'Ville': "toulouse",
-                'Adresse2': 'ad 2',
-                'ID': 'Id relais'
-            },
+            'mondial_relay_AP': '{"Adresse1":"28 RUE EMILE CARTAILHAC","Adresse2":null,"Available":true,"CP":"31000","HoursHtmlTable":"<table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Monday<\\/th><td>15h00-19h00<\\/td><td>-<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Tuesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Wednesday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Thursday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Friday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr class=\'d\'><th>Saturday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table><table class=\'PR-Hours\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\'><tr><th>Sunday<\\/th><td>11h00-13h00<\\/td><td>14h00-19h00<\\/td><\\/tr><\\/table>","ID":"071058","Lat":"43,6076448","Long":"1,440779","Nature":"D","Nom":"CBD SHOP FRANCE","Pays":"FR","Photo":null,"Ville":"TOULOUSE","Warning":"","Letter":"A"}',
 
             'amount': 5050,
             # 'abelujo_items': [{'id': 100, 'qty': 1}, {'id': 101, 'qty': 1}],

@@ -283,6 +283,9 @@ def handle_api_stripe(payload):
     ## Send confirmation email to both parties. ##
     ##############################################
 
+    # Cleanup optional mondial relay data (from string/JSON to dict).
+    payload = parse_mondial_relay_json_string(payload)
+
     # If the client is the tester, send him the email.
     if its_only_a_test:
         mail_sent = mailer.send_client_command_confirmation(cards=cards,
@@ -339,6 +342,22 @@ def handle_api_stripe(payload):
             log.warning("stripe: sell with payment intent {} was successfull and we wanted to send an email to the bookshop owner, but we can't find its email in settings.".format(payment_intent))
 
     return res
+
+
+def parse_mondial_relay_json_string(real_test_payload):
+    """
+    Parse mondial relay data (it's JSON in another string),
+    Return: the payload (dict) with a dict instead of the string.
+    """
+    try:
+        mondial_relay_json = real_test_payload['order']['mondial_relay_AP']
+        mondial_relay_dict = json.loads(mondial_relay_json)
+        real_test_payload['order']['mondial_relay_AP'] = mondial_relay_dict
+    except Exception as e:
+        log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}'.format(real_test_payload))
+
+    return real_test_payload
+
 
 def api_stripe(request, **response_kwargs):
     """
@@ -551,6 +570,12 @@ def api_stripe_hooks(request, **response_kwargs):
                 is_stripe_cli_test = True
         except Exception as e:
             log.info("api_stripe_hooks: could not get the description, so we are probably NOT in a stripe cli test but in production. The exception is: {}".format(e))
+
+        #
+        # Cleanup optional mondial relay data (from string/JSON to dict).
+        #
+        payload = parse_mondial_relay_json_string(payload)
+        payment_meta = parse_mondial_relay_json_string(payment_meta)
 
         # try:
         #     amount = payload['data']['object']['amount_total']
