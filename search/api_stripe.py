@@ -322,9 +322,10 @@ def handle_api_stripe(payload):
                 if its_only_a_test:
                     owner_email = settings.TEST_EMAIL_BOOKSHOP_RECIPIENT
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
+                                                           payload=payload,
+                                                           payment_meta=payload,
                                                            total_weight=total_weight,
                                                            weight_message=weight_message,
-                                                           payload=payload,
                                                            is_online_payment=is_online_payment,
                                                            email=owner_email,
                                                            owner_name=settings.BOOKSHOP_OWNER_NAME,
