@@ -329,7 +329,7 @@ def handle_api_stripe(payload):
                                                            email=owner_email,
                                                            owner_name=settings.BOOKSHOP_OWNER_NAME,
                                                )
-                log.info("stripe, reservation but no payment: confirmation sent to owner: {} ? {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT, mail_sent))
+                log.info("stripe, reservation but no payment: confirmation sent to owner: {} ? {}".format(owner_email, mail_sent))
                 if not mail_sent:
                     log.warning("stripe: confirmation email to owner (not an online payment) was not sent :S")
             except Exception as e:
