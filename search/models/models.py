@@ -935,7 +935,7 @@ class Card(TimeStampedModel):
 
         # Check card_type is correctly, especially for a book.
         try:
-            if not self.card_type:
+            if not self.card_type and self.isbn:
                 if self.isbn.startswith('97'):
                     self.card_type = CardType.objects.get(name='book')
                 elif self.isbn.startswith('377'):
