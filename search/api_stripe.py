@@ -318,12 +318,15 @@ def handle_api_stripe(payload):
             # Get total weight of cards.
             total_weight, weight_message = get_total_weight(cards)
             try:
+                owner_email = settings.EMAIL_BOOKSHOP_RECIPIENT
+                if its_only_a_test:
+                    owner_email = settings.TEST_EMAIL_BOOKSHOP_RECIPIENT
                 mail_sent = mailer.send_owner_confirmation(cards=cards,
                                                            total_weight=total_weight,
                                                            weight_message=weight_message,
                                                            payload=payload,
                                                            is_online_payment=is_online_payment,
-                                                           email=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                           email=owner_email,
                                                            owner_name=settings.BOOKSHOP_OWNER_NAME,
                                                )
                 log.info("stripe, reservation but no payment: confirmation sent to owner: {} ? {}".format(settings.EMAIL_BOOKSHOP_RECIPIENT, mail_sent))
