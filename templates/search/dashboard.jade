@@ -47,14 +47,20 @@ div(ng-controller="dashboardController", ng-cloak="stats")
               small {% trans "Le nombre d'autres objets en stock qui ne sont pas des livres." %}
             td: h4{{'stats.nb_non_book_products.value'|ng}}
           tr
-            td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %}
-            td: h4 {{'stats.total_cost.value_fmt'|ng }}
+            td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}')
+              h4 {% trans "Value of the stock" %}
+              small {% trans "(valeur mise à jour toutes les 2 heures)" %}
+            td
+              h4 {{'stats.total_cost.value_fmt'|ng }}
           tr
-            td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}'): h4 {% trans "Value of the stock" %} {% trans "excl. tax" %}
-            td: h4 {{'stats.total_cost_excl_tax.value_fmt'|ng }}
+            td(title='{% trans "Cost of each card by its quantity in stock, rounded to the upper decimal." %}')
+              h4 {% trans "Value of the stock" %} {% trans "excl. tax" %}
+              small {% trans "(valeur mise à jour toutes les 2 heures)" %}
+            td
+              h4 {{'stats.total_cost_excl_tax.value_fmt'|ng }}
           tr
             td
-              div {% trans "all time" %} 
+              div {% trans "all time" %}
               small {% trans "Le nombre de titres qui ont été enregistrés en base de donnée de tout temps, en stock ou pas." %}
             td: div {{'stats.nb_titles_all_time.value'|ng }}
 
