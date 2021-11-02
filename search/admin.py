@@ -74,6 +74,13 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     # list_editable = ("name",)
 
+class BasketAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Basket
+
+    search_fields = ["name"]
+    list_display = ["pk", "name", "comment", "archived", "is_box",]
+    list_editable = ("name",)
 
 class ClientAdmin(admin.ModelAdmin):
     class Meta:
@@ -157,7 +164,7 @@ class ShelfAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Author, AuthorAdmin)
-admin.site.register(Basket)
+admin.site.register(Basket, BasketAdmin)
 admin.site.register(Bookshop)
 admin.site.register(Bill, BillAdmin)
 admin.site.register(Card, CardAdmin)
@@ -178,7 +185,7 @@ admin.site.register(Sell)
 
 admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author, AuthorAdmin)
-admin_site.register(Basket)
+admin_site.register(Basket, BasketAdmin)
 admin_site.register(Card, CardAdmin)
 admin_site.register(Client, ClientAdmin)
 admin_site.register(Command, CommandAdmin)
