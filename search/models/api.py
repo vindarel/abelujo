@@ -175,6 +175,9 @@ def datasource_search(request, **response_kwargs):
         res = Card.objects.filter(isbn=query).first()
         if res:
             res = [res.to_dict()]
+            # in_stock is expected to be an int on the frontend…
+            for item in res:
+                item['in_stock'] = item['quantity']
     else:
         # XXX: This works with comas in the user input list of ISBNs, not semi-colons.
         # JS side seems to truncate the input up to the first semicolon.
@@ -183,6 +186,9 @@ def datasource_search(request, **response_kwargs):
             res = Card.objects.filter(isbn__in=isbn_list)
             if res:
                 res = [it.to_dict() for it in res]
+                # in_stock is expected to be an int on the frontend…
+                for item in res:
+                    item['in_stock'] = item['quantity']
             if len(res) == len(isbn_list):
                 isbn_list_search_complete = True
 

@@ -1678,7 +1678,7 @@ class Card(TimeStampedModel):
         Check by isbn if the given cards (dicts) are in stock.
 
         Return a list of dicts with new keys each:
-        - "in_stock": 0/the quantity
+        - "in_stock": 0/the quantity (previously it is a boolean)
         - "id"
         - "url": the absolute url to the card in our DB.
         - "distributor_repr": the supplier.
