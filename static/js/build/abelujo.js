@@ -5049,6 +5049,9 @@ angular.module("abelujo").controller('searchResultsController', [
         name: "Belgique - be",
         id: "filigranes"
       }, {
+        name: "Bookdepository",
+        id: "bookdepository"
+      }, {
         name: "DVDs",
         id: "momox"
       }, {

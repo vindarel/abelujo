@@ -38,6 +38,8 @@ from search.datasources.bookshops.frFR.lelivre import \
     lelivreScraper as lelivre  # noqa: F401
 from search.datasources.bookshops.frFR.filigranes import \
     filigranesScraper as filigranes  # noqa: F401
+from search.datasources.bookshops.all.bookdepository import \
+    bookdepositoryScraper as bookdepository  # noqa: F401
 from search.models import Card
 
 from abelujo import settings
@@ -105,7 +107,7 @@ def search_on_data_source(data_source, search_terms, PAGE=1):
     Return: a tuple (search results, stacktraces). Search result is a
     list of dicts.
     """
-    if data_source == 'electre' or DEFAULT_DATASOURCE == 'electre':
+    if data_source == 'electre':
         res, traces = pyelectre.search_on_electre(search_terms)
     else:
         # get the imported module by name.

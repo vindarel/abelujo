@@ -207,10 +207,15 @@ def datasource_search(request, **response_kwargs):
             # So we make keyword searches with the right datasource.
             datasource = default_datasource
 
-        if is_isbn_query and electre_enabled():
-            datasource = 'electre'
-        elif is_isbn_query and dilicom_enabled():
-            datasource = 'dilicom'
+        if is_isbn_query and datasource not in ['bookdepository']:
+            # We use bookdepository for some ISBN that are not referenced
+            # in Dilicom or Electre.
+            # But otherwise, priority should be given to them.
+            if is_isbn_query and electre_enabled():
+                datasource = 'electre'
+            elif is_isbn_query and dilicom_enabled():
+                datasource = 'dilicom'
+
         res, traces = search_on_data_source(datasource, query, PAGE=page)
 
     data = {"data": res,
