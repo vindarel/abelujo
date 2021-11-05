@@ -206,9 +206,6 @@ def datasource_search(request, **response_kwargs):
             # We can not make text searches on Dilicom :/ Only ISBN queries.
             # So we make keyword searches with the right datasource.
             datasource = default_datasource
-        elif (not is_isbn_query) and datasource == 'electre' and electre_enabled():
-            # No text search on Electre's API either.
-            datasource = default_datasource
 
         if is_isbn_query and electre_enabled():
             datasource = 'electre'
