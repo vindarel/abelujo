@@ -140,6 +140,7 @@ angular.module "abelujo" .controller 'basketsController', ['$http', '$scope', '$
            $scope.do_archive_basket!
 
     $scope.delete_basket =  !->
+        # deprecated, removed from UI nov, 2021.
         sure = confirm(gettext("You are going to delete the list {}. This can not be undone. Are you sure ?")replace "{}", $scope.cur_basket.name)
         if sure
             $http.post "/api/baskets/#{$scope.cur_basket.id}/delete"
