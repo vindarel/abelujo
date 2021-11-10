@@ -6439,7 +6439,7 @@ class Stats(object):
         places = Place.objects.all()
         # default_place = Preferences.get_default_place()
         # XXX: Everything below needs unit tests.
-        type_book = CardType.objects.get(name="book")
+        # type_book = CardType.objects.get(name="book")
         type_unknown = CardType.objects.get(name="unknown")
         res = {}
         nb_all_products = Card.quantities_total()

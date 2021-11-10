@@ -354,7 +354,7 @@ def parse_mondial_relay_json_string(real_test_payload):
         mondial_relay_dict = json.loads(mondial_relay_json)
         real_test_payload['order']['mondial_relay_AP'] = mondial_relay_dict
     except Exception as e:
-        log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}'.format(real_test_payload))
+        log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}: {}'.format(real_test_payload, e))
 
     return real_test_payload
 

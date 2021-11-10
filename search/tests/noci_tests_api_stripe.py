@@ -540,7 +540,7 @@ class TestLive(TestCase):
             mondial_relay_dict = json.loads(mondial_relay_json)
             real_test_payload['order']['mondial_relay_AP'] = mondial_relay_dict
         except Exception as e:
-            log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}'.format(real_test_payload))
+            print('Could not parse order.mondial_relay_AP JSON data from this payload: {}: {}'.format(real_test_payload, e))
 
         req = mailer.send_owner_confirmation(cards=cards,
                                              payload=real_test_payload,
