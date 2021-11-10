@@ -267,7 +267,7 @@ class Distributor(TimeStampedModel):
     gln = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("GLN"))
     #: The discount (in %). When we pay the distributor we keep the amount of
     # the discount.
-    discount = models.FloatField(default=0, blank=True, verbose_name=__("discount"))
+    discount = models.FloatField(default=0, blank=True, verbose_name=__("discount (%)"))
     #: Star the distributors to give precendence to our favourite ones.
     stars = models.IntegerField(default=0, null=True, blank=True)
     #: Contact: email adress. To complete, create a Contact class.
@@ -3432,10 +3432,36 @@ class Basket(models.Model):
             copies = copies.filter(card__distributor_id=distributor_id)
         return copies
 
+    def add_back_to_place(self):
+        """
+        For a box, add the copies back to the default place.
+        Case of a box that we archive, we need to put the books back in the stock.
+
+        Return: bool.
+        """
+        if self.is_box:
+            try:
+                place = Preferences.get_default_place()
+                if not place:
+                    log.error("archiving box {}: we are expecting to find a default place.".format(self.pk))
+                    return
+                # Put the books back in stock.
+                for card_copy in self.basketcopies_set.all():
+                    place.add_copy(card_copy.card, nb=card_copy.nb, is_box=True)
+            except Exception as e:
+                log.error("We could not re-put the cards from the box {} to the default place: {}".format(self.pk, e))
+                return
+            return True
+
+        else:
+            log.warning("Trying to add_back_to_place for a basket {} that is not a box.".format(self.pk))
+
     def archive(self):
         self.archived = True
         self.archived_date = timezone.now()
         self.save()
+        if self.is_box:
+            self.add_back_to_place()
         return True
 
     def add_copy(self, card, nb=1):
@@ -3572,6 +3598,14 @@ class Basket(models.Model):
         """
         Remove all the cards of this basket.
         """
+        try:
+            # If it's a box, put the books back on shelf.
+            if self.is_box:
+                self.add_back_to_place()
+        except Exception as e:
+            log.error("basket.empty: could not put the books back in stock. Not deleting. Error: {}".format(e))
+            return
+
         self.basketcopies_set.all().delete()
         return True
 

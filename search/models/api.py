@@ -1968,10 +1968,28 @@ def baskets_empty(request, pk, **kw):
             except Exception as e:
                 log.error("Unable to decode request.body as JSON: {}".format(e))
                 params = {}
-        if params.get('distributor_id'):
+        if params and params.get('distributor_id'):
             distributor_id = params.get('distributor_id')
             basketcopies = basketcopies.filter(card__distributor__id=distributor_id)
 
+        # Well, finally let's get the basket object.
+        try:
+            basket = Basket.objects.filter(pk=pk).first()
+            # If it's a box, put the books back on shelf.
+            if basket and basket.is_box:
+                basket.add_back_to_place()
+        except Exception as e:
+            log.error("emptying basket, could not put the books back in stock: {}".format(e))
+            msg = {'status': ALERT_ERROR,
+                    'message': _("The basket could not be emptied")}
+            # Return early in that case.
+            to_ret = {
+                "status": ALERT_SUCCESS,
+                "alerts": [msg],
+            }
+            return JsonResponse(to_ret)
+
+        # Now delete the copies.
         try:
             basketcopies.delete()
         except Exception as e:

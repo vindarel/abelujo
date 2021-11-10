@@ -603,6 +603,10 @@ class TestBoxes(TestCase):
 
     def setUp(self):
         self.basket = Basket.new(name="test")
+        self.card = Card(title="test card")
+        self.card.save()
+        self.card2 = Card(title="test card")
+        self.card2.save()
 
     def tearDown(self):
         pass
@@ -612,6 +616,24 @@ class TestBoxes(TestCase):
         test = Basket.new(name="test", box=True)
         self.assertTrue(box)
         self.assertTrue(test)
+
+    def test_box_archive(self):
+        # Archive and put the books back in stock.
+        box, status, messages = Basket.new(name="box", box=True)
+        box.add_copy(self.card)
+        box.add_copy(self.card2)
+        self.assertEqual(-1, self.card.quantity)
+        box.archive()
+        self.assertEqual(0, self.card.quantity_compute())
+
+    def test_box_empty(self):
+        # Archive and put the books back in stock.
+        box, status, messages = Basket.new(name="box", box=True)
+        box.add_copy(self.card)
+        box.add_copy(self.card2)
+        self.assertEqual(-1, self.card.quantity)
+        box.empty()
+        self.assertEqual(0, self.card.quantity_compute())
 
 
 class TestReturnBaskets(TestCase):
