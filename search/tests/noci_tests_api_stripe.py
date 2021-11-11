@@ -145,7 +145,7 @@ real_test_payload = {
                     'price_data': {
                         'currency': 'eur',
                         'product_data': {
-                            'name': 'Art Du Chantier, Construire Et Demolir Du Xvi Au Xxie Siecle',
+                            'name': 'ârt Du Chantier, Construire Et dééémolir Du Xvi Au Xxie Siecle',
                             'description': 'ISBN: 9789461614728',
                         },
                         'unit_amount': 4200,

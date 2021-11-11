@@ -386,7 +386,7 @@ def api_stripe(request, **response_kwargs):
             except Exception as e:
                 log.error("Error handling the api stripe payment: {}. Payload used: {}".format(e, payload))
                 res['status'] = 500
-                res['alerts'].append(e)
+                res['alerts'].append("Error handling the api stripe payment.")
 
         return JsonResponse(res)
 
