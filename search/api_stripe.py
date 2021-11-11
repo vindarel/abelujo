@@ -295,7 +295,7 @@ def handle_api_stripe(payload):
                                                             reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                             # added:
                                                             use_theme=True)
-        log.warning("We send a confirmation email to the tester. Mail sent? {} cards: {}, payload: {}".format(mail_sent, cards, payload))
+        log.warning("We send a confirmation email to the tester. Mail sent? {}, payload: {}".format(mail_sent, payload))
         if mail_sent:
             status = 200
         else:
