@@ -387,6 +387,9 @@ def api_stripe(request, **response_kwargs):
                 log.error("Error handling the api stripe payment: {}. Payload used: {}".format(e, payload))
                 res['status'] = 500
                 res['alerts'].append("Error handling the api stripe payment.")
+                import inspect  # debug
+                import pprint
+                pprint.pprint(inspect.trace())
 
         return JsonResponse(res)
 
