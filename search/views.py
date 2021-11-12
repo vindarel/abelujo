@@ -92,9 +92,11 @@ from search.models.utils import price_fmt
 from search.models.utils import truncate
 from views_utils import Echo
 from views_utils import DEFAULT_DATASOURCE
+from views_utils import bulk_import_from_dilicom
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
 from views_utils import electre_enabled
+from views_utils import extract_all_isbns_quantities
 from views_utils import format_price_for_locale
 from views_utils import update_from_dilicom
 from views_utils import update_from_electre
@@ -1375,6 +1377,62 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         response['Content-Disposition'] = 'attachment; filename="{}.pdf"'.format(name)
 
     return response
+
+def basket_import(request, **kwargs):
+    """
+    Get a file by POST request, search all ISBNs with Dilicom
+    (multiple EAN search at once).
+
+    Distinguish the ones found and not found.
+    """
+    pass
+
+
+def generic_import(request):
+    template = "search/upload.html"
+    status = 200
+    if request.method == 'POST':
+        inputrows = request.POST.get('inputrows')
+        if not inputrows:
+            return render(request, template, {'messages': ['could not find rows.']})
+
+        inputrows = inputrows.strip()
+        inputrows = inputrows.split('\n')  # \r probably remaining.
+        inputrows = [it.strip() for it in inputrows]
+
+        # Find and extract the isbns and an optional quantity.
+        isbns_quantities, msgs = extract_all_isbns_quantities(inputrows)
+        isbns = [it[0] for it in isbns_quantities]
+
+        # Bulk search.
+        if not isbns:
+            import ipdb; ipdb.set_trace()
+        dicts, msgs = bulk_import_from_dilicom(isbns)
+
+        # Did we find everything?
+        found_isbns = [it.get('isbn') for it in dicts]
+        # it's done on Dilicom's side too, except we get a list of messages,
+        # not the list of isbns not found. Could be fixed.
+        missing_isbns = set(isbns) - set(found_isbns)
+        if found_isbns:
+            if missing_isbns:
+                msgs.insert(0, "We could not find all the ISBNs!")
+                status = 502
+            else:
+                msgs.insert(0, "Searched {} ISBNs. All found.".format(len(isbns)))
+        else:
+            import ipdb; ipdb.set_trace()
+
+        # form = viewforms.UploadFileForm(request.POST, request.FILES)
+        # if form.is_valid():
+            # handle_uploaded_file(request.FILES['file'])
+            # return HttpResponseRedirect('/success/url/')
+    else:
+        form = viewforms.UploadFileForm()
+    return render(request, template, {'rows': dicts,
+                                      'status': status,
+                                      'alerts': msgs,
+                                      'feature_dilicom_enabled': dilicom_enabled()})
 
 def history_sells(request, **kwargs):
     now = pendulum.now()

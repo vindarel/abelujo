@@ -191,6 +191,9 @@ urlpatterns = patterns('',
     url(r'^inventories/(?P<pk>\d+)/export', 'search.views.inventory_export',
         name="inventory_export"),
 
+    url(r'^import/validate/?', 'search.views.import_validate', name='import_validate'),
+    url(r'^import/?', 'search.views.generic_import', name='generic_import'),
+
     # Catalogue's sélection du libraire
     url(r'^catalogue-selection/$', 'search.views.catalogue_selection', name="catalogue_selection"),
     # Books excluded from the catalogue website

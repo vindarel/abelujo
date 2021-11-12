@@ -44,6 +44,8 @@ from search.models import Card
 
 from abelujo import settings
 
+from search.models import utils
+
 try:
     # The Electre API connector is installed separetely.
     import pyelectre
@@ -198,6 +200,7 @@ def update_from_dilicom(card):
         res = card
     return card, traces
 
+
 def update_from_electre(card):
     """
     Update this card from Electre's API (using the pyelectre Electre).
@@ -217,6 +220,102 @@ def update_from_electre(card):
 
     return card, traces
 
+
+def _check_csv_format(rows):
+    """
+    For all these rows, check we have an ISBN and an integer.
+
+    Return: boolean, messages.
+    """
+    for row in rows:
+        if not row and not row[0]:
+            return None, ["rows missing data. They are expected to have an ISBN and a number."]
+        if not is_isbn(row[0]):
+            return False, ["Not all lines contain an ISBN."]
+        try:
+            int(row[1])
+        except Exception as e:
+            print(e)
+            return False, ["Not all lines contain a valid number."]
+
+    return True, []
+
+def extract_all_isbns_quantities(inputrows):
+    """
+    From a list of lines, find the ISBNs and an associated quantity.
+    Ignore the other columns.
+
+    If we have only lines of ISBNs, OK, associate 1 quantity by default.
+    If we have a comma-separated CSV with an ISBN and a number, OK.
+    If we have a CSV with more rows… find the quantity. TBD.
+
+    Ignore other optional columns.
+
+    Ignore the first line starting by // (form embedded comment).
+
+    Return: a tuple:
+    - list of tuples ISBN/quantity,
+    - list of messages
+    """
+    if inputrows[0].startswith('//'):
+        inputrows = inputrows[1:]
+    msgs = utils.Messages()
+    rows = []
+    res = []
+
+    def falsy_col(col):
+        return col in [None, '', u'']
+
+    # CSV
+    if ';' in inputrows[0]:
+        rows = [it.split(';') for it in inputrows]
+        rows = [it for it in rows if it[0] and it[0] and not falsy_col(it[0])]
+
+    # We simply have a list of ISBNs:
+    elif is_isbn(inputrows[0]):
+        log.error("TODO")
+
+    # Collect ISBNs (and numbers).
+    if rows and rows[0] and len(rows[0]) > 1:
+        # Find where is the ISBNs (should be usually 1st position).
+        first_col = rows[0][0]
+        second_col = rows[0][1]
+        try:
+            int(second_col)
+            is_number = True
+        except Exception as e:
+            print(e)
+            is_number = False
+        if is_isbn(first_col) and is_number:
+            # Check all first columns are ISBNs, all second are numbers
+            valid_csv, messages = _check_csv_format(rows)
+            if not valid_csv:
+                return None, messages
+            res = rows
+
+    else:
+        msgs.add_warning("We couldn't recognize data. Please check the first rows are valid ISBNs and numbers. They can be CSV rows separated by ';' or only an ISBN on each line.")
+        return [], msgs.msgs
+
+
+    return res, msgs.msgs
+
+def bulk_import_from_dilicom(isbns):
+    """
+    Import this list of ISBNs by batches of 100.
+
+    Only Dilicom provides this batch request for now.
+    Its search() methods handles the batch requests.
+
+    - isbns: list of strings, all verified to be valid isbns.
+
+    Return:
+    """
+    if not dilicom_enabled():
+        return [], ["Dilicom is not enabled."]
+    fel = dilicom.Scraper(*isbns)
+    dicts, messages = fel.search()
+    return dicts, messages
 
 class Echo(object):
     """An object that implements just the write method of the file-like

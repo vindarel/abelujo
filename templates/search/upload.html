@@ -1,0 +1,78 @@
+
+{% extends "base.jade" %}
+
+{% block content %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% load ngfilter %}
+
+<h3> Import to {{ source }} #{{ source_pk }} {{ source_name }} </h3>
+
+{% if not feature_dilicom_enabled %}
+<div id="success" role="alert" class="alert alert-warning">
+  ⚠ Dilicom is not enabled. You can't batch-import data.
+</div>
+{% endif %}
+
+{% for alert in alerts %}
+
+{% if status == 200 %}
+<div id="success" role="alert" class="alert alert-success">
+  {{ alert }}
+</div>
+{% endif %}
+
+{% if status != 200 %}
+<div id="success" role="alert" class="alert alert-warning">
+  {{ alert }}
+</div>
+{% endif %}
+
+{% endfor %}
+
+{% if rows %}
+<details style="mouse-pointer">
+  <summary> <strong> See results > </strong> </summary>
+  {% for row in rows %}
+  <div> {{ row.isbn }}: {{ row.title }}, {{ row.pubs_repr }} {{ row.price }} {{ currency }} </div>
+  {% endfor %}
+</details>
+
+<br>
+
+<form action="/fr/import/validate" name="csv_file_import" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <button class="btn btn-success" type="submit" value="validate"> Finish import </button>
+  <input type="hidden" name="source" value="{{ source }}">
+  <input type="hidden" name="source_name" value="{{ source_name }}">
+  <input type="hidden" name="source_pk" value="{{ source_pk }}">
+</form>
+
+<br>
+{% endif %}
+
+
+<form action="/fr/import/" name="csv_file_import" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <textarea id="inputrows" name="inputrows"
+      rows="12" cols="122">
+// Copy-paste all rows here.
+  </textarea>
+
+  <input type="hidden" name="source" value="{{ source }}">
+  <input type="hidden" name="source_name" value="{{ source_name }}">
+  <input type="hidden" name="source_pk" value="{{ source_pk }}">
+
+  <br>
+
+  <button class="btn btn-primary" type="submit" value="OK"> Search… </button>
+
+</form>
+
+{% endblock content %}
