@@ -1970,9 +1970,10 @@ def baskets_empty(request, pk, **kw):
                 params = {}
         if params and params.get('distributor_id'):
             distributor_id = params.get('distributor_id')
-            basketcopies = basketcopies.filter(card__distributor__id=distributor_id)
+            if not distributor_id == 'all':
+                basketcopies = basketcopies.filter(card__distributor__id=distributor_id)
 
-        # Well, finally let's get the basket object.
+        # Actually, we'll need the basket object.
         try:
             basket = Basket.objects.filter(pk=pk).first()
             # If it's a box, put the books back on shelf.
