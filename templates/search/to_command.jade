@@ -162,7 +162,11 @@ div(ng-cloak, ng-controller="basketToCommandController")
                       img.myImg(ng-show="card.cover", ng-src="{{ 'card.cover' | ng }}")
 
                   td.col-md-6
+                    span(ng-hide="card.isbn", title="Cette notice n'a pas d'ISBN. Elle ne peut pas être commandée via Dilicom.")
+                      i.glyphicon.glyphicon-warning-sign &nbsp;
                     span: a(href="{{ 'card.get_absolute_url' | ng}}") {{ 'card.title' | ng }}
+                    div(ng-show="show_images") {{ 'card.isbn' | ng }}
+
                   td.col-md-1 {{ 'card.authors_repr' | ng }}
                   td.col-md-1 {{ 'card.pubs_repr' | ng }}
                   td.col-md-1.text-right {{ 'card.price_fmt' |ng }}
