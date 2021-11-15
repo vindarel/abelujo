@@ -1144,7 +1144,9 @@ def basket_view(request, pk):
 
 @login_required
 def basket_export(request, pk):
-    """Export the given basket to txt, csv or pdf, with or without barcodes.
+    """
+    Export the given basket to txt, csv or pdf, with or without
+    barcodes.
 
     Possible GET parameters:
     - report: bill, listing, simplelisting
@@ -1274,13 +1276,8 @@ def _export_response(copies_set, report="", format="", inv=None, name="", distri
         rows = copies_set
         # List of ISBN / quantity to command (BasketCopy.nb)
         rows = copies_set.values_list('card__isbn', 'nb')
-        # rows = [
-        # (ic.card.isbn,
-        # ic.quantity)
-        # for ic in rows]
-        # generating simplelisting rows took 0:00:02.602288
-        # with values_list:
-        # generating simplelisting rows took 0:00:00.000188  \o/
+        # Cleanup: remove void ISBNs. A Dilicom command would fail.
+        rows = [it for it in rows if it[0]]
         rows = sorted(rows)
 
     # From here we have rows: list of tuples with the card obj and the quantity.
