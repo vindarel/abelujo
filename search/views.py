@@ -1386,10 +1386,20 @@ def basket_import(request, **kwargs):
 
 
 def generic_import(request):
+    """
+    Generic import view, and we send the results to a basket or something else.
+    """
     template = "search/upload.html"
     status = 200
+    isbns = None
+    dicts = None
+    msgs = []
+    source = None
+    source_pk = None
+    source_name = None
     if request.method == 'POST':
-        inputrows = request.POST.get('inputrows')
+        params = request.POST.copy()
+        inputrows = params.get('inputrows')
         if not inputrows:
             return render(request, template, {'messages': ['could not find rows.']})
 
@@ -1403,7 +1413,8 @@ def generic_import(request):
 
         # Bulk search.
         if not isbns:
-            import ipdb; ipdb.set_trace()
+            pass
+            # import ipdb; ipdb.set_trace()
         dicts, msgs = bulk_import_from_dilicom(isbns)
 
         # Did we find everything?
@@ -1418,18 +1429,80 @@ def generic_import(request):
             else:
                 msgs.insert(0, "Searched {} ISBNs. All found.".format(len(isbns)))
         else:
-            import ipdb; ipdb.set_trace()
+            pass
+            # import ipdb; ipdb.set_trace()
 
-        # form = viewforms.UploadFileForm(request.POST, request.FILES)
-        # if form.is_valid():
-            # handle_uploaded_file(request.FILES['file'])
-            # return HttpResponseRedirect('/success/url/')
+        # re-get the source_pk hidden fields.
+        if params.get('source'):
+            source = params.get('source')
+            source_pk = params.get('source_pk')
+            source_name = params.get('source_name')
+
+        # If not complete, save in session and ask for validation.
+        session_key = "import_{}_{}".format(source, source_pk)
+        try:
+            request.session[session_key] = {'isbns': isbns,
+                                            'dicts': dicts,
+                                            }
+        except Exception as e:
+            log.error("Could not save isbns search results in session, so we won't be able to validate the search, if needed. {}".format(e))
+
+
     else:
+        params = request.GET
+        source = params.get('source')
+        source_pk = params.get('id')
+        source_name = ""
+        if source == 'basket' and source_pk:
+            basket_obj = Basket.objects.filter(pk=source_pk).first()
+            source_name = basket_obj.name
         form = viewforms.UploadFileForm()
-    return render(request, template, {'rows': dicts,
-                                      'status': status,
-                                      'alerts': msgs,
-                                      'feature_dilicom_enabled': dilicom_enabled()})
+    return render(request, template, {
+        'source': source,
+        'source_pk': source_pk,
+        'source_name': source_name,
+        'rows': dicts,
+        'status': status,
+        'alerts': msgs,
+        'currency': "€",
+        'feature_dilicom_enabled': dilicom_enabled(),
+    })
+
+def import_validate(request, *args, **kwargs):
+    """
+    In the case we didn't find all asked ISBNs, we ask for the user confirmation.
+    """
+    template = "search/upload.html"
+    if request.method == 'POST':
+        params = request.POST.copy()
+        source = params.get('source')
+        source_pk = params.get('source_pk')
+        if not source or not source_pk:
+            return render(request, template, {
+                          'alerts': ['No data. Session expired?'],
+                          })
+        session_key = "import_{}_{}".format(source, source_pk)
+        session_val = request.session.get(session_key)
+        dicts = session_val.get('dicts')
+        if not dicts:
+            return render(request, template, {
+                          'alerts': ['No data found. Session expired?'],
+                          })
+
+        # Add all the books.
+        # TODO: with their quantities
+        # TODO: in the basket.
+        for card_dict in dicts:
+            card, created = Card.objects.get_or_create(isbn=card_dict.get('isbn'))
+            # if created:
+                # import ipdb; ipdb.set_trace()
+            card = Card.update_from_dict(card, card_dict=card_dict,
+                                            distributor_gln=card_dict.get('distributor_gln'))
+            print(card)
+
+        return render(request, template, {
+            'alerts': ['All imported'],
+            })
 
 def history_sells(request, **kwargs):
     now = pendulum.now()
