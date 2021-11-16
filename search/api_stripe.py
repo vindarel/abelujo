@@ -127,6 +127,18 @@ def create_checkout_session(abelujo_payload):
 # }
 
 
+def _ensure_ascii_email(to_email):
+    """
+    Ensure this email address is ascii. pysendgrid is very picky (grrrr).
+    """
+    if to_email:
+        try:
+            to_email = to_email.encode('ascii', 'ignore')
+            return to_email
+        except Exception as e:
+            log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
+            return ""
+
 def handle_api_stripe(payload):
     """
     From this payload (dict), find or create the client, the reservation of the cards,
@@ -589,10 +601,7 @@ def api_stripe_hooks(request, **response_kwargs):
         if is_stripe_cli_test:
             to_email = "".join(list(reversed('gro.zliam@leradniv')))  # me@vindarel
         if to_email:
-            try:
-                to_email = to_email.encode('ascii', 'ignore')
-            except Exception as e:
-                log.warning("api_stripe: error trying to encode the email address {} to ascii: {}".format(to_email, e))
+            to_email = _ensure_ascii_email(to_email)
 
         # Send it, damn it.
         try:
