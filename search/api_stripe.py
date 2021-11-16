@@ -23,6 +23,7 @@ import logging
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from pprint import pprint
 
 from abelujo import settings
 from search import mailer
@@ -169,7 +170,7 @@ def handle_api_stripe(payload):
     ## Handle Stripe session. ##
     ############################
     session = {}
-    is_online_payment = payload.get('order').get('online_payment')
+    is_online_payment = payload.get('order', {}).get('online_payment')
     is_online_payment = _is_truthy(is_online_payment)
     if is_online_payment:
         try:
@@ -307,7 +308,8 @@ def handle_api_stripe(payload):
         try:
             mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                                 # to_emails=??
-                                                                payload=payload,
+                                                                payload=payload,  # unused...
+                                                                payment_meta=payload,
                                                                 reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
             log.info("stripe: confirmation email sent to client ? {} (not an online payment). Payload: {}".format(mail_sent, payload))
             if not mail_sent:
@@ -346,15 +348,19 @@ def handle_api_stripe(payload):
 
 def parse_mondial_relay_json_string(real_test_payload):
     """
-    Parse mondial relay data (it's JSON in another string),
+    Parse mondial relay data if it exists. (it's JSON in another string).
+    If it doesn't exist, it's alright, return the payload as is.
     Return: the payload (dict) with a dict instead of the string.
     """
+    if real_test_payload is None:
+        log.warning('parsing mondial relay data, but this payload is None.')
     try:
         mondial_relay_json = real_test_payload['order']['mondial_relay_AP']
         mondial_relay_dict = json.loads(mondial_relay_json)
         real_test_payload['order']['mondial_relay_AP'] = mondial_relay_dict
+        log.info('We cleaned up the Mondial Relay data from string to JSON')
     except Exception as e:
-        log.warning('Could not parse order.mondial_relay_AP JSON data from this payload: {}: {}'.format(real_test_payload, e))
+        log.info('Could not parse order.mondial_relay_AP JSON data from the following payload, so there is no cleanup to do. If it is not a relay command, everything is OK! {}: {}'.format(real_test_payload, e))
 
     return real_test_payload
 
@@ -388,7 +394,6 @@ def api_stripe(request, **response_kwargs):
                 res['status'] = 500
                 res['alerts'].append("Error handling the api stripe payment.")
                 import inspect  # debug
-                import pprint
                 pprint.pprint(inspect.trace())
 
         return JsonResponse(res)
@@ -421,7 +426,6 @@ def api_stripe_hooks(request, **response_kwargs):
     """
     if not settings.STRIPE_SECRET_API_KEY:
         # Don't fail unit tests on CI.
-        # I don't feel like installing the Stripe python lib by default…
         return
 
     # Mocking stripe functions, request object and having the right payloads
@@ -481,7 +485,6 @@ def api_stripe_hooks(request, **response_kwargs):
     #
     payload = json.loads(request.body)
     payment_intent = None
-    from pprint import pprint
     pprint(payload)
     if sell_successful:
         try:
@@ -579,15 +582,6 @@ def api_stripe_hooks(request, **response_kwargs):
         #
         payload = parse_mondial_relay_json_string(payload)
         payment_meta = parse_mondial_relay_json_string(payment_meta)
-
-        # try:
-        #     amount = payload['data']['object']['amount_total']
-        #     currency = payload['data']['object']['currency']
-        #     if currency in ['eur', u'eur']:
-        #         currency_symbol = "EUR"  # PySendgrid doesn't like UTF8 symbols? It works locally though :S
-        #     amount_fmt = "{:.2f} {}".format(amount / 100.0, currency_symbol)
-        # except Exception as e:
-        #     log.warning("api_stripe_hooks: could not get the amount: {}".format(e))
 
         # Ensure ascii for python Stripe library... shame on you.
         if is_stripe_cli_test:
