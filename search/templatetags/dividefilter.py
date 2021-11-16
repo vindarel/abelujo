@@ -35,4 +35,5 @@ def dividefilter(nb, divisor):
     if divisor is 0:
         return nb
 
+    divisor = divisor / 1.0  # we want a float to get decimals. 100 -> 100.0
     return '{:.2f}'.format(nb / divisor)
