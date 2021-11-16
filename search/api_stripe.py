@@ -262,7 +262,9 @@ def handle_api_stripe(payload):
             payment_meta = json.dumps(payload)
         except Exception as e:
             log.warning("stripe api: we try to encode payload to JSON to store it in payment_meta, but that failed: {}".format(e))
-        if not its_only_a_test:
+        # XXX: for testing, we can avoid creating a reservation object.
+        # To test real payments, we need a reservation though.
+        if not its_only_a_test or True:  # XXX:
             for card_qty in cards_qties:
                 resa, created = existing_client.reserve(card_qty.get('card'),
                                                         nb=card_qty.get('qty'),
