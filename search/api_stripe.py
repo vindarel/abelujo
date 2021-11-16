@@ -301,7 +301,7 @@ def handle_api_stripe(payload):
     # Cleanup optional mondial relay data (from string/JSON to dict).
     payload = parse_mondial_relay_json_string(payload)
 
-    # If the client is the tester, send him the email.
+    # If the client is the tester (me), send him the email with the ongoing template.
     if its_only_a_test:
         mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                             to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
@@ -317,11 +317,19 @@ def handle_api_stripe(payload):
             status = 500
         res['status'] = status
 
+    log.info('is this an online payment ? {}'.format(is_online_payment))  # XXX:
     if not is_online_payment:
         # Send confirmation to client.
+        to_email = None
+        if existing_client and existing_client.email:
+            to_email = existing_client.email
+        # Defensive. Ensure the email adress is ascii.
+        if to_email:
+            to_email = _ensure_ascii_email(to_email)
+
         try:
             mail_sent = mailer.send_client_command_confirmation(cards=cards,
-                                                                # to_emails=??
+                                                                to_emails=to_email,
                                                                 payload=payload,  # unused...
                                                                 payment_meta=payload,
                                                                 reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
