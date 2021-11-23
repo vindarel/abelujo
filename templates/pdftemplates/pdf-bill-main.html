@@ -156,9 +156,29 @@
                                 {% endif %}
                                 {% if client.mobilephone %}
                                 {{ client.mobilephone }}
+                                <br>
                                 {% endif %}
-                                {% if client.email %}
-                                {{ client.email }}
+                                {% if client.company_number %}
+                                {{ client.company_number }}
+                                <br>
+                                {% endif %}
+
+                                {% if client.address1 %}
+                                {{ client.address1 }}
+                                {% endif %}
+                                {% if client.address2 %}
+                                {{ client.address2 }}
+                                {% endif %}
+                                {% if client.zip_code %}
+                                <br>
+                                {{ client.zip_code }}
+                                {% endif %}
+                                {% if client.city %}
+                                {{ client.city }}
+                                {% endif %}
+                                {% if client.country %}
+                                <br>
+                                {{ client.country }}
                                 {% endif %}
 
                             </td>
