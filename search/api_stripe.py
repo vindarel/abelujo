@@ -635,7 +635,7 @@ def api_stripe_hooks(request, **response_kwargs):
                                                                 is_online_payment=True,
                                                         to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                         payload=payload,
-                                                        payment_meta=payload,
+                                                        payment_meta=payment_meta,
                                                         reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
                                                         # added: use custom theme.
                                                         use_theme=True)
