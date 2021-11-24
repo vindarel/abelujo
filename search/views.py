@@ -1420,7 +1420,18 @@ def generic_import(request):
 
         # Bulk search.
         if not isbns:
-            pass
+            messages.add_message(request, messages.INFO, "Aucun ISBN ?")
+            return render(request, template, {
+                'source': source,
+                'source_pk': source_pk,
+                'source_name': source_name,
+                'rows': dicts,
+                'status': status,
+                'alerts': msgs,
+                'currency': "€",
+                'feature_dilicom_enabled': dilicom_enabled(),
+            })
+
         dicts, msgs = bulk_import_from_dilicom(isbns)
 
         # Did we find everything?

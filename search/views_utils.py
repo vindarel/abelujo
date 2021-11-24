@@ -251,35 +251,47 @@ def extract_all_isbns_quantities(inputrows):
 
     Ignore other optional columns.
 
-    Ignore the first line starting by // (form embedded comment).
+    Ignore the first line(s) starting by // (form embedded comment).
 
     Return: a tuple:
     - list of tuples ISBN/quantity,
     - list of messages
     """
-    if inputrows[0].startswith('//'):
-        inputrows = inputrows[1:]
     msgs = utils.Messages()
-    rows = []
+    lines = []  # inputrows, cleaned up.
+    rows = []   # final list of tuples.
     res = []
 
     def falsy_col(col):
         return col in [None, '', u'']
 
+    def is_comment(line):
+        return line.startswith('//')
+
+    # Quick cleanup.
+    for row in inputrows:
+        if row and not is_comment(row):
+            lines.append(row)
+
     # CSV
-    if ';' in inputrows[0]:
-        rows = [it.split(';') for it in inputrows]
-        rows = [it for it in rows if it[0] and it[0] and not falsy_col(it[0])]
+    if ';' in lines[0]:
+        for row in lines:
+            isbn, quantity = row.split(';')
+            if isbn and not falsy_col(isbn):
+                if not quantity:
+                    quantity = 1  # just in case
+                rows.append([isbn, quantity])
 
     # We simply have a list of ISBNs:
-    elif is_isbn(inputrows[0]):
-        for isbn in inputrows:
-            rows.append([isbn, 1])  # default quantity
+    elif is_isbn(lines[0]):
+        for line in lines:
+            rows.append([line, 1])  # default quantity
         return rows, []
-
+    else:
+        log.warning("extract_all_isbns_quantities: dead end.")
 
     # Collect ISBNs (and numbers).
-    if rows and rows[0] and len(rows[0]) > 1:
+    if rows and rows[-1] and len(rows[-1]) > 1:
         # Find where is the ISBNs (should be usually 1st position).
         first_col = rows[0][0]
         second_col = rows[0][1]
@@ -299,7 +311,6 @@ def extract_all_isbns_quantities(inputrows):
     else:
         msgs.add_warning("We couldn't recognize data. Please check the first rows are valid ISBNs and numbers. They can be CSV rows separated by ';' or only an ISBN on each line.")
         return [], msgs.msgs
-
 
     return res, msgs.msgs
 
