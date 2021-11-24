@@ -1443,6 +1443,7 @@ def generic_import(request):
         try:
             request.session[session_key] = {'isbns': isbns,
                                             'dicts': dicts,
+                                            'isbns_quantities': isbns_quantities,
                                             }
         except Exception as e:
             log.error("Could not save isbns search results in session, so we won't be able to validate the search, if needed. {}".format(e))
@@ -1473,6 +1474,7 @@ def import_validate(request, *args, **kwargs):
     In the case we didn't find all asked ISBNs, we ask for the user confirmation.
     """
     template = "search/upload.html"
+    alerts = []
     if request.method == 'POST':
         params = request.POST.copy()
         source = params.get('source')
@@ -1484,6 +1486,11 @@ def import_validate(request, *args, **kwargs):
         session_key = "import_{}_{}".format(source, source_pk)
         session_val = request.session.get(session_key)
         dicts = session_val.get('dicts')
+        isbns_quantities = session_val.get('isbns_quantities')
+
+        cards = []  # list of card objects
+        quantities_list = []  # list of ints, respecting cards order.
+
         if not dicts:
             return render(request, template, {
                           'alerts': ['No data found. Session expired?'],
@@ -1492,16 +1499,51 @@ def import_validate(request, *args, **kwargs):
         # Add all the books.
         # TODO: with their quantities
         # TODO: in the basket.
-        for card_dict in dicts:
+        # Create cards.
+        def find_quantity_for_isbn(isbns_quantities, isbn):
+            for isbn_qty in isbns_quantities:
+                if isbn_qty and isbn_qty[0] == isbn:
+                    return isbn_qty[1]
+
+        for i, card_dict in enumerate(dicts):
             card, created = Card.objects.get_or_create(isbn=card_dict.get('isbn'))
-            # if created:
-                # import ipdb; ipdb.set_trace()
             card = Card.update_from_dict(card, card_dict=card_dict,
                                             distributor_gln=card_dict.get('distributor_gln'))
+            if card and card.isbn:
+                cards.append(card)
+                quantities_list.append(find_quantity_for_isbn(isbns_quantities, card.isbn))
             print(card)
 
+        # Add cards to the basket / other source.
+        if not source:
+            log.warn("validate import: no basket or source to add cards to?")
+            alerts.append('Nowhere to add the imported books to?')
+            # return render(request, template, {
+                # 'alerts': alerts,
+                # })
+        if source == 'basket':
+            if not source_pk:
+                log.warn("validate import: we have a source name but no source pk??")
+                alerts.append("Could not import the cards to {}, missing its ID.".format(source))
+                # return render(request, template, {
+                    # 'alerts': alerts,
+                    # })
+            basket_obj = Basket.objects.filter(pk=source_pk).first()
+            if not basket_obj:
+                log.warn("validate import: could not find basket id {}".format(source_pk))
+                alerts.append("Could not finish import. Invalid destination.")
+            else:
+                alert_obj = basket_obj.add_cards(cards, quantities_list)
+
+        if not alerts:
+            url = reverse('basket_view', args=(source_pk,))
+            url += "##{}".format(source_pk)
+            messages.add_message(request, messages.SUCCESS,
+                                 _('All imported.'))
+            return HttpResponseRedirect(url)
+
         return render(request, template, {
-            'alerts': ['All imported'],
+            'alerts': alerts,
             })
 
 def history_sells(request, **kwargs):

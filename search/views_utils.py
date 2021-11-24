@@ -273,7 +273,10 @@ def extract_all_isbns_quantities(inputrows):
 
     # We simply have a list of ISBNs:
     elif is_isbn(inputrows[0]):
-        log.error("TODO")
+        for isbn in inputrows:
+            rows.append([isbn, 1])  # default quantity
+        return rows, []
+
 
     # Collect ISBNs (and numbers).
     if rows and rows[0] and len(rows[0]) > 1:

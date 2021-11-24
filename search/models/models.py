@@ -3535,18 +3535,29 @@ class Basket(models.Model):
         cards = Card.objects.filter(id__in=card_ids).all()
         return self.add_cards(cards)
 
-    def add_cards(self, cards):
+    def add_cards(self, cards, quantities=[]):
         """
         Add these cards to the basket.
         To add from a list of ids, use `add_copies`.
 
         - cards: objects
+        - quantities: list of ints, the same length of cards.
 
         return: an alert dictionnary (level, message)
         """
-        for it in cards:
+        if not len(cards) == len(quantities):
+            log.warning("Basket.add_cards: the list of quantities does not match the list of cards.")
+        for i, it in enumerate(cards):
             try:
-                self.add_copy(it)
+                # Get the quantity (optional):
+                nb = 1
+                try:
+                    nb = quantities[i]
+                except Exception as e:
+                    log.warning("Adding card to basket {}, could not get the quantity for {}: {}".format(self.pk, it, e))
+
+                # Add:
+                self.add_copy(it, nb=nb)
             except Exception as e:
                 log.error("Error while getting card of id {}: {}".format(id, e))
                 return {'level': ALERT_ERROR, 'message': "Internal error"}

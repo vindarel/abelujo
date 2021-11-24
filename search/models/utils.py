@@ -381,6 +381,14 @@ def _is_truthy(txt):
         return True
     return False
 
+def _is_falsy(txt):
+    """
+    - txt: string
+    """
+    if txt in [False, 'false', u'false', 'n', 'no', '0', 0]:
+        return True
+    return False
+
 
 def is_truthy(txt):
     return _is_truthy(txt)

@@ -125,6 +125,7 @@ urlpatterns = patterns('',
 
     # Baskets:
     url(r'^baskets/(?P<pk>\d+)/export/$', 'search.views.basket_export', name="basket_export"),
+    url(r'^baskets/(?P<pk>\d+)/import/$', 'search.views.basket_import', name="basket_import"),
     url(r'^baskets/(?P<pk>\d+)/receive/$',
         login_required(TemplateView.as_view(template_name="search/inventory_view.jade"))),
     url(r'^baskets/$', 'search.views.baskets', name="baskets"),
@@ -141,11 +142,11 @@ urlpatterns = patterns('',
     # Simple presentation:
     url(r'^lists/?$', 'search.views.basket_list', name="basket_list"),
     # Vue app
-    url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="basket_view"),
+    url(r'^lists/(?P<pk>\d+)/?$', login_required(views.basket_view), name="list_view"),
 
     # Reception.
     url(r'^reception/?$',
-        login_required(TemplateView.as_view(template_name="search/reception.jade")),
+        login_required(TemplateView.as_view(template_name="search/reception.jade",)),
         name="reception"),
 
     # Client Reservations

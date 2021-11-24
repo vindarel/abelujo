@@ -24,6 +24,13 @@
 
 {% load ngfilter %}
 
+{% if messages %}
+ul.messages
+  {% for msg in messages %}
+  uib-alert(type="success")  {{ msg }}
+  {% endfor %}
+{% endif %}
+
 div(ng-cloak, ng-controller="basketsController")
  .row
     uib-alert(
@@ -101,6 +108,14 @@ div(ng-cloak, ng-controller="basketsController")
          li: a(href="#", ng-click="choose_client_for_bill(cur_basket.id, 1)", title='{% trans "Create a bill for a client" %}') {% trans "Bill" %}…
          li: a(href="#", ng-click="choose_client_for_estimate(cur_basket.id)", title='{% trans "Create an estimate for a client" %}') {% trans "Estimate" %}…
 
+     .btn-group
+      .dropdown
+       button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button", aria-haspopup="true", aria-expanded="false", title="{% trans 'Import files' %}") {% trans "Import" %}
+         span.caret
+       ul.dropdown-menu
+         li
+           //- a(href="#", title='', ng-click="file_upload()") {% trans "isbn and quantity (Dilicom)" %} - csv
+           a(href="#", title='', href="/import?source=basket&id={{ 'cur_basket.id' | ng }}") {% trans "isbn and quantity (Dilicom)" %} - csv
 
      .btn-group
        button.btn.btn-default(ng-click="toggle_images()", title='{% trans "Hide and show covers (d)" %}')
