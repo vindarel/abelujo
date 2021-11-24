@@ -61,6 +61,10 @@ from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisS
 from search.datasources.bookshops.frFR.filigranes import filigranesScraper as filigranes  # noqa: F401
 
 from search import models
+
+from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_SUCCESS
+from search.models.common import ALERT_WARNING
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -84,6 +88,7 @@ from search.models import history
 from search.models import users
 from search.models.api import _get_command_or_return
 from search.models.utils import _is_truthy
+from search.models.utils import _is_falsy
 from search.models.utils import get_logger
 from search.models.utils import get_total_weight
 from search.models.utils import is_isbn
@@ -1390,6 +1395,8 @@ def generic_import(request):
     Generic import view, and we send the results to a basket or something else.
     """
     template = "search/upload.html"
+    alert = {'level': ALERT_SUCCESS,
+             'message': ""}
     status = 200
     isbns = None
     dicts = None
@@ -1414,7 +1421,6 @@ def generic_import(request):
         # Bulk search.
         if not isbns:
             pass
-            # import ipdb; ipdb.set_trace()
         dicts, msgs = bulk_import_from_dilicom(isbns)
 
         # Did we find everything?
@@ -1430,15 +1436,44 @@ def generic_import(request):
                 msgs.insert(0, "Searched {} ISBNs. All found.".format(len(isbns)))
         else:
             pass
-            # import ipdb; ipdb.set_trace()
 
         # re-get the source_pk hidden fields.
-        if params.get('source'):
+        if params.get('source') and not _is_falsy(params.get('source')):
             source = params.get('source')
             source_pk = params.get('source_pk')
             source_name = params.get('source_name')
 
-        # If not complete, save in session and ask for validation.
+        # If complete, add the cards to their place and then redirect to it.
+        # We don't need to validate in the validate view, everythings's ok,
+        # so save a step and a click.
+        if not missing_isbns:
+            # Get card objects.
+            # (loop copied from validate view)
+            cards = []
+            quantities_list = []
+            for i, card_dict in enumerate(dicts):
+                card, created = Card.objects.get_or_create(isbn=card_dict.get('isbn'))
+                card = Card.update_from_dict(card, card_dict=card_dict,
+                                                distributor_gln=card_dict.get('distributor_gln'))
+                if card and card.isbn:
+                    cards.append(card)
+                    quantities_list.append(_find_quantity_for_isbn(isbns_quantities, card.isbn))
+                print(card)
+
+            alert = _import_cards_to_destination(source, source_pk, cards, quantities_list)
+
+            # If import was ok:
+            if alert.get('level') == ALERT_SUCCESS:
+                url = reverse('basket_view', args=(source_pk,))
+                url += "##{}".format(source_pk)
+                messages.add_message(request, messages.SUCCESS,
+                                     _('All imported.'))
+                return HttpResponseRedirect(url)
+            # otherwise, show the alert in the validate view:
+            else:
+                messages.add_message(request, messages.INFO, alert.get('message'))
+
+        # If not complete, save data in session and ask for validation in another view.
         session_key = "import_{}_{}".format(source, source_pk)
         try:
             request.session[session_key] = {'isbns': isbns,
@@ -1448,7 +1483,7 @@ def generic_import(request):
         except Exception as e:
             log.error("Could not save isbns search results in session, so we won't be able to validate the search, if needed. {}".format(e))
 
-
+    # GET
     else:
         params = request.GET
         source = params.get('source')
@@ -1457,7 +1492,7 @@ def generic_import(request):
         if source == 'basket' and source_pk:
             basket_obj = Basket.objects.filter(pk=source_pk).first()
             source_name = basket_obj.name
-        form = viewforms.UploadFileForm()
+
     return render(request, template, {
         'source': source,
         'source_pk': source_pk,
@@ -1469,73 +1504,119 @@ def generic_import(request):
         'feature_dilicom_enabled': dilicom_enabled(),
     })
 
+
+def _find_quantity_for_isbn(isbns_quantities, isbn):
+    """
+    - isbns_quantities: list of tuples isbn, quantity.
+    - isbn: string.
+
+    Return: the corresponding quantity.
+
+    (why not use a dict? Because earlier we manipulate rows of data)
+    """
+    for isbn_qty in isbns_quantities:
+        if isbn_qty and isbn_qty[0] == isbn:
+            return isbn_qty[1]
+
+
+def _import_cards_to_destination(source, source_pk, cards, quantities_list):
+    """
+    - source: "basket"
+    - source_pk: int
+    - cards: card objects.
+    - quantities_list: list of tuples isbn, quantity.
+
+    Return: alert object.
+    """
+    alert = {'level': ALERT_SUCCESS,
+             'message': ""}
+    if source == 'basket':
+        if not source_pk:
+            log.warn("validate import: we have a source name but no source pk??")
+            alert['message'] = "Could not import the cards to {}, missing its ID.".format(source)
+            alert['level'] = ALERT_ERROR
+        basket_obj = Basket.objects.filter(pk=source_pk).first()
+        if not basket_obj:
+            log.warn("validate import: could not find basket id {}".format(source_pk))
+            alert['message'] = "Could not finish import. Invalid destination."
+            alert['level'] = ALERT_ERROR
+        else:
+            alert = basket_obj.add_cards(cards, quantities_list)
+
+    else:
+        log.warn("import cards: unhandled destination: {}".format(source))
+        alert['message'] = "Could not finish import. Invalid destination."
+        alert['level'] = ALERT_ERROR
+
+    return alert
+
+
 def import_validate(request, *args, **kwargs):
     """
     In the case we didn't find all asked ISBNs, we ask for the user confirmation.
     """
     template = "search/upload.html"
-    alerts = []
+    # alerts = []
+    alert = {'level': ALERT_SUCCESS,
+             'message': ""}
     if request.method == 'POST':
         params = request.POST.copy()
         source = params.get('source')
         source_pk = params.get('source_pk')
         if not source or not source_pk:
+            alert['message'] = "No data. Session expired?"
+            alert['level'] = ALERT_WARNING
             return render(request, template, {
-                          'alerts': ['No data. Session expired?'],
+                          'alerts': [alert],
                           })
         session_key = "import_{}_{}".format(source, source_pk)
         session_val = request.session.get(session_key)
         dicts = session_val.get('dicts')
         isbns_quantities = session_val.get('isbns_quantities')
 
+        # Now clear this session data.
+        # try:
+        #     del request.session[session_key]  # better keep for refreshes?
+        # except Exception as e:
+        #     log.warn("Could not delete the session key {}: {}".format(session_key, e))
+
         cards = []  # list of card objects
         quantities_list = []  # list of ints, respecting cards order.
 
         if not dicts:
+            alert['message'] = "No data. Session expired?"
+            alert['level'] = ALERT_WARNING
             return render(request, template, {
-                          'alerts': ['No data found. Session expired?'],
+                          'alerts': [alert],
                           })
 
         # Add all the books.
         # TODO: with their quantities
         # TODO: in the basket.
         # Create cards.
-        def find_quantity_for_isbn(isbns_quantities, isbn):
-            for isbn_qty in isbns_quantities:
-                if isbn_qty and isbn_qty[0] == isbn:
-                    return isbn_qty[1]
-
         for i, card_dict in enumerate(dicts):
             card, created = Card.objects.get_or_create(isbn=card_dict.get('isbn'))
             card = Card.update_from_dict(card, card_dict=card_dict,
                                             distributor_gln=card_dict.get('distributor_gln'))
             if card and card.isbn:
                 cards.append(card)
-                quantities_list.append(find_quantity_for_isbn(isbns_quantities, card.isbn))
+                quantities_list.append(_find_quantity_for_isbn(isbns_quantities, card.isbn))
             print(card)
 
         # Add cards to the basket / other source.
         if not source:
             log.warn("validate import: no basket or source to add cards to?")
-            alerts.append('Nowhere to add the imported books to?')
-            # return render(request, template, {
-                # 'alerts': alerts,
-                # })
+            alert['message'] = 'Nowhere to add the imported books to?'
+            alert['level'] = ALERT_WARNING
         if source == 'basket':
             if not source_pk:
                 log.warn("validate import: we have a source name but no source pk??")
-                alerts.append("Could not import the cards to {}, missing its ID.".format(source))
-                # return render(request, template, {
-                    # 'alerts': alerts,
-                    # })
-            basket_obj = Basket.objects.filter(pk=source_pk).first()
-            if not basket_obj:
-                log.warn("validate import: could not find basket id {}".format(source_pk))
-                alerts.append("Could not finish import. Invalid destination.")
-            else:
-                alert_obj = basket_obj.add_cards(cards, quantities_list)
+                alert['message'] = "Could not import the cards to {}, missing its ID.".format(source)
+                alert['level'] = ALERT_WARNING
+                # alerts.append("Could not import the cards to {}, missing its ID.".format(source))
+            alert = _import_cards_to_destination(source, source_pk, cards, quantities_list)
 
-        if not alerts:
+        if alert.get('level') == ALERT_SUCCESS:
             url = reverse('basket_view', args=(source_pk,))
             url += "##{}".format(source_pk)
             messages.add_message(request, messages.SUCCESS,
@@ -1543,8 +1624,12 @@ def import_validate(request, *args, **kwargs):
             return HttpResponseRedirect(url)
 
         return render(request, template, {
-            'alerts': alerts,
-            })
+            'alerts': alert,
+        })
+
+    else:
+        return HttpResponseRedirect(reverse('generic_import'))
+
 
 def history_sells(request, **kwargs):
     now = pendulum.now()

@@ -385,7 +385,7 @@ def _is_falsy(txt):
     """
     - txt: string
     """
-    if txt in [False, 'false', u'false', 'n', 'no', '0', 0]:
+    if txt in [False, 'false', u'false', 'n', 'no', '0', 0, 'none', 'None']:
         return True
     return False
 

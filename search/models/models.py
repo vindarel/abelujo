@@ -2019,7 +2019,7 @@ class Card(TimeStampedModel):
                       'details_url', 'currency',
                       'thickness', 'height', 'width', 'weight',
                       'theme', 'presedit', 'collection']:
-            if card_dict.get(field) not in [None, '', '']:
+            if card_dict.get(field) not in [None, '']:
                 setattr(card_obj, field, card_dict.get(field))
 
         if card_dict.get('isbn'):
@@ -2040,7 +2040,7 @@ class Card(TimeStampedModel):
         # Create the card with its simple fields.
         # Add the relationships afterwards.
         # for field, val in card_dict.items():
-        #     if val in [None, '', '']:
+        #     if val in [None, '']:
         #         del card_dict[field]
 
         # We should do more data validation before this.
