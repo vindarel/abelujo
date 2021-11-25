@@ -73,6 +73,9 @@ fixture_no_isbn = {"test search":
 
 fake_postSearch = {"isbn": "111"}
 
+def bulk_mock(isbns):  #noqa
+    return "hello"
+
 class DBFixture():
     """Create a card and required DB entries.
 
@@ -306,3 +309,55 @@ class TestDeposit(TestCase, DBFixture):
         deposit = DepositFactory()
         resp = self.c.get(reverse('deposit_add_copies', args=(deposit.id,)))
         self.assertEqual(resp.status_code, 200)
+
+
+# class TestImportView(TestCase):
+
+#     def setUp(self):
+#         # create an author
+#         self.GOLDMAN = "Emma Goldman"
+#         self.goldman = Author(name=self.GOLDMAN)
+#         self.goldman.save()
+#         # create a Card
+#         self.fixture_isbn = "9782918059363"
+#         self.fixture_title = "living my life"
+#         self.autobio = Card(title=self.fixture_title, isbn=self.fixture_isbn)
+#         self.autobio.save()
+#         self.autobio.authors.add(self.goldman)
+#         # mandatory: unknown card type
+#         typ = CardType(name="unknown")
+#         typ.save()
+#         # create other card types
+#         self.type_book = "book"
+#         typ = CardType(name=self.type_book)
+#         typ.save()
+#         # Basket.
+#         self.basket = Basket(name="some basket")
+#         self.basket.save()
+
+#         self.c = Client()
+
+#         self.user = auth.models.User.objects.create_superuser("admin", "admin@test.test", "admin")
+#         self.c.login(username="admin", password="admin")
+
+#     @mock.patch('search.views_utils.bulk_import_from_dilicom', side_effect=bulk_mock)
+#     def test_import_view(self, mock_data_source):
+#         # mock not working?
+#         inputrows = """// comment 1
+#                      // comment 1
+#                      //
+#                      // comment 3
+#                      9782918059363 ; 99
+#                      9782918059363;77
+#         """
+#         post_params = {}
+#         post_params['source'] = "basket"
+#         post_params['source_pk'] = 1
+#         post_params['source_name'] = "some basket"
+#         post_params['inputrows'] = inputrows
+
+#         resp = self.c.post(reverse("generic_import"), post_params)
+
+#         # We got redirected because all went well:
+#         self.assertEqual(resp.status_code, 302)
+#         self.assertEqual(resp.url, 'http://testserver/en/baskets/1/##1')

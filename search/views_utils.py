@@ -337,12 +337,15 @@ def bulk_import_from_dilicom(isbns):
     return dicts, messages
 
 class Echo(object):
-    """An object that implements just the write method of the file-like
+    """
+    An object that implements just the write method of the file-like
     interface.
     """
     # taken from Django docs
     def write(self, value):
-        """Write the value by returning it, instead of storing in a buffer."""
+        """
+        Write the value by returning it, instead of storing in a buffer.
+        """
         return value
 
 
