@@ -255,7 +255,7 @@ def extract_all_isbns_quantities(inputrows):
 
     Return: a tuple:
     - list of tuples ISBN/quantity,
-    - list of messages
+    - list of messages (strings)
     """
     msgs = utils.Messages()
     lines = []  # inputrows, cleaned up.
@@ -271,16 +271,21 @@ def extract_all_isbns_quantities(inputrows):
     # Quick cleanup.
     for row in inputrows:
         if row and not is_comment(row):
-            lines.append(row)
+            lines.append(row.strip())
 
     # CSV
     if ';' in lines[0]:
         for row in lines:
             isbn, quantity = row.split(';')
             if isbn and not falsy_col(isbn):
-                if not quantity:
-                    quantity = 1  # just in case
-                rows.append([isbn, quantity])
+                try:
+                    quantity = int(quantity)
+                    if not quantity:
+                        quantity = 1  # just in case
+                    rows.append([isbn.strip(), quantity])
+                except Exception as e:
+                    # logging.warning("extract_all_isbns_quantities: could not parse quantity {} to int: {}".format(quantity, e))
+                    msgs.add_warning("Could not parse quantity for ISBN {}".format(isbn))
 
     # We simply have a list of ISBNs:
     elif is_isbn(lines[0]):

@@ -26,6 +26,8 @@ from search.models.common import ALERT_SUCCESS
 from search.models.utils import Messages, is_isbn, split_query, isbns_from_query, is_truthy, toIntOrFloat
 from search.models.utils import parent_theme_name
 
+from search import views_utils
+
 class TestMessages(TestCase):
 
     def setUp(self):
@@ -104,3 +106,45 @@ class TestUtils(TestCase):
         self.assertTrue(res.startswith('Manuels'))
         res = parent_theme_name("3001")
         self.assertTrue(res.startswith('SCOLAIRE'))
+
+
+class TestViewUtils(TestCase):
+
+    def setUp(self):
+        pass
+    def tearDown(self):
+        pass
+
+    def test_extract_all_isbns_quantities(self):
+        # only ISBN
+        inputrows = ["// comment 1",
+                     "// comment 1",
+                     "//",
+                     "// comment 3",
+                     "9782918059363",
+                     ]
+        rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
+        self.assertEqual(rows, [["9782918059363", 1]])
+
+        # ISBN;qté
+        inputrows = ["// comment 1",
+                     "// comment 1",
+                     "//",
+                     "// comment 3",
+                     " 9782918059363 ; 99  ",
+                     "9782918059363;77",
+                     ]
+        rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
+        self.assertEqual(rows, [["9782918059363", 99],
+                                ["9782918059363", 77]])
+
+        # ISBN; bad qty
+        inputrows = ["// comment 1",
+                     "// comment 1",
+                     "//",
+                     "// comment 3",
+                     "9782918059363;TRASH",
+                     ]
+        rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
+        self.assertFalse(rows)
+        self.assertTrue(len(msgs))
