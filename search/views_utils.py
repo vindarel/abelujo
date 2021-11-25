@@ -247,7 +247,9 @@ def extract_all_isbns_quantities(inputrows):
 
     If we have only lines of ISBNs, OK, associate 1 quantity by default.
     If we have a comma-separated CSV with an ISBN and a number, OK.
-    If we have a CSV with more rows… find the quantity. TBD.
+    If we have a space-separated CSV with an ISBN and a number, OK.
+
+    If we have a CSV with more rows… find the quantity. Not implemented.
 
     Ignore other optional columns.
 
@@ -273,7 +275,7 @@ def extract_all_isbns_quantities(inputrows):
         if row and not is_comment(row):
             lines.append(row.strip())
 
-    # CSV
+    # ;-separated CSV?
     if ';' in lines[0]:
         for row in lines:
             isbn, quantity = row.split(';')
@@ -285,6 +287,20 @@ def extract_all_isbns_quantities(inputrows):
                     rows.append([isbn.strip(), quantity])
                 except Exception as e:
                     # logging.warning("extract_all_isbns_quantities: could not parse quantity {} to int: {}".format(quantity, e))
+                    msgs.add_warning("Could not parse quantity for ISBN {}".format(isbn))
+
+    # We have a space-separated ISBN_qty
+    elif ' ' in lines[0] and is_isbn(lines[0].split(' ')[0]):
+        import re
+        for row in lines:
+            isbn, quantity = re.split(' ', row, maxsplit=1)
+            if isbn and not falsy_col(isbn):
+                try:
+                    quantity = int(quantity.strip())
+                    if not quantity:
+                        quantity = 1
+                    rows.append([isbn.strip(), quantity])
+                except Exception as e:
                     msgs.add_warning("Could not parse quantity for ISBN {}".format(isbn))
 
     # We simply have a list of ISBNs:

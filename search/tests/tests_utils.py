@@ -148,3 +148,15 @@ class TestViewUtils(TestCase):
         rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
         self.assertFalse(rows)
         self.assertTrue(len(msgs))
+
+        # ISBN + space + qty
+        inputrows = ["// comment 1",
+                     "// comment 1",
+                     "//",
+                     "// comment 3",
+                     "9782918059363  99  ",
+                     "  9782918059363   77    ",
+                     ]
+        rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
+        self.assertEqual(rows, [["9782918059363", 99],
+                                ["9782918059363", 77]])
