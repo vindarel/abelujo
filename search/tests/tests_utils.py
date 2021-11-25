@@ -160,3 +160,13 @@ class TestViewUtils(TestCase):
         rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
         self.assertEqual(rows, [["9782918059363", 99],
                                 ["9782918059363", 77]])
+
+        # With \t instead of space (most real world)
+        inputrows = """ 9782918059363	99
+9782918059363	77
+        """
+        inputrows = inputrows.strip().split('\n')
+
+        rows, msgs = views_utils.extract_all_isbns_quantities(inputrows)
+        self.assertEqual(rows, [["9782918059363", 99],
+                                ["9782918059363", 77]])

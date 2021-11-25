@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 import os
 import unicodecsv
 import termcolor
+import re
 
 from django.utils.translation import ugettext as _
 
@@ -270,9 +271,21 @@ def extract_all_isbns_quantities(inputrows):
     def is_comment(line):
         return line.startswith('//')
 
+    def contains_spacing(line):
+        """
+        - space or tab \t
+        """
+        return ' ' in line or '\t' in line
+
+    def find_space_in_line(line):
+        if ' ' in line:
+            return ' '
+        if '\t' in line:
+            return '\t'
+
     # Quick cleanup.
     for row in inputrows:
-        if row and not is_comment(row):
+        if row and not is_comment(row) and not row in [u'']:
             lines.append(row.strip())
 
     # ;-separated CSV?
@@ -290,18 +303,22 @@ def extract_all_isbns_quantities(inputrows):
                     msgs.add_warning("Could not parse quantity for ISBN {}".format(isbn))
 
     # We have a space-separated ISBN_qty
-    elif ' ' in lines[0] and is_isbn(lines[0].split(' ')[0]):
-        import re
-        for row in lines:
-            isbn, quantity = re.split(' ', row, maxsplit=1)
-            if isbn and not falsy_col(isbn):
-                try:
-                    quantity = int(quantity.strip())
-                    if not quantity:
-                        quantity = 1
-                    rows.append([isbn.strip(), quantity])
-                except Exception as e:
-                    msgs.add_warning("Could not parse quantity for ISBN {}".format(isbn))
+    elif contains_spacing(lines[0]):
+        thespace = find_space_in_line(lines[0])
+        if thespace and is_isbn(lines[0].split(thespace)[0]):
+            for row in lines:
+                isbn, quantity = re.split(thespace, row, maxsplit=1)
+                if isbn and not falsy_col(isbn):
+                    try:
+                        quantity = int(quantity.strip())
+                        if not quantity:
+                            quantity = 1
+                        rows.append([isbn.strip(), quantity])
+                    except Exception as e:
+                        msgs.add_warning("Could not parse quantity for ISBN {}".format(isbn))
+
+        else:
+            msgs.add_warning("Could not parse the line {}".format(row))
 
     # We simply have a list of ISBNs:
     elif is_isbn(lines[0]):
@@ -309,7 +326,8 @@ def extract_all_isbns_quantities(inputrows):
             rows.append([line, 1])  # default quantity
         return rows, []
     else:
-        log.warning("extract_all_isbns_quantities: dead end.")
+        print("extract_all_isbns_quantities: dead end.")
+        msgs.add_error("Could not parse input. Bad lines format.")
 
     # Collect ISBNs (and numbers).
     if rows and rows[-1] and len(rows[-1]) > 1:
