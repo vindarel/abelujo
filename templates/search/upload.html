@@ -10,7 +10,11 @@
 
 {% load ngfilter %}
 
-<h3> Import to {{ source }} #{{ source_pk }} {{ source_name }} </h3>
+<h3> {% trans "Import" %}:
+  {% if  source == "basket" %}
+  liste
+  {% endif %}
+  #{{ source_pk }} {{ source_name }} </h3>
 
 {% if not feature_dilicom_enabled %}
 <div id="success" role="alert" class="alert alert-warning">
@@ -76,7 +80,7 @@
 
   <br>
 
-  <button class="btn btn-primary" type="submit" value="OK"> Search… </button>
+  <button class="btn btn-primary" type="submit" value="OK"> {% trans "Import" %}… </button>
 
 </form>
 
