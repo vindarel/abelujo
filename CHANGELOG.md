@@ -4,6 +4,8 @@ Changelog starting from v0.5 (2018/09/18)
 
 ### New features
 
+- **bulk import** of ISBNs with (optional) their associated quantity. Accepts the CSV format or a list of ISBNs.
+  - from the Lists menu, click on "Import…"
 - support for **Stripe payments**, sent from a front website.
   - with validation emails (to the client and the show owner)
   - shipping costs
