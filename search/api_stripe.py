@@ -302,7 +302,7 @@ def handle_api_stripe(payload):
     payload = parse_mondial_relay_json_string(payload)
 
     # If the client is the tester (me), send him the email with the ongoing template.
-    if its_only_a_test:
+    if its_only_a_test or True:  # DEV: for now, get the emails to check the layout.
         mail_sent = mailer.send_client_command_confirmation(cards=cards,
                                                             to_emails=settings.TEST_EMAIL_BOOKSHOP_RECIPIENT,
                                                             payload=payload,
@@ -332,7 +332,9 @@ def handle_api_stripe(payload):
                                                                 to_emails=to_email,
                                                                 payload=payload,  # unused...
                                                                 payment_meta=payload,
-                                                                reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
+                                                                reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                                # theme!
+                                                                use_theme=True)
             log.info("stripe: confirmation email sent to client ? {} (not an online payment). Payload: {}".format(mail_sent, payload))
             if not mail_sent:
                 log.warning("stripe: confirmation email to client (not an online payment) was not sent :S")
@@ -620,7 +622,9 @@ def api_stripe_hooks(request, **response_kwargs):
                                                                     payload=payload,
                                                                     payment_meta=payment_meta,
                                                                     is_online_payment=True,
-                                                                    reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT)
+                                                                    reply_to=settings.EMAIL_BOOKSHOP_RECIPIENT,
+                                                                    # theme!
+                                                                    use_theme=True)
                 log.info("stripe webhook: confirmation mail sent to {} ? {}".format(to_email, mail_sent))
 
                 if not mail_sent:
