@@ -79,7 +79,7 @@ class BasketAdmin(admin.ModelAdmin):
         model = Basket
 
     search_fields = ["name"]
-    list_display = ["pk", "name", "comment", "archived", "is_box",]
+    list_display = ["pk", "name", "comment", "archived", "is_box"]
     list_editable = ("name",)
 
 class ClientAdmin(admin.ModelAdmin):
@@ -187,6 +187,7 @@ admin_site = MyAdmin(name='myadmin')
 admin_site.register(Author, AuthorAdmin)
 admin_site.register(Basket, BasketAdmin)
 admin_site.register(Card, CardAdmin)
+admin_site.register(CardType, CardTypeAdmin)
 admin_site.register(Client, ClientAdmin)
 admin_site.register(Command, CommandAdmin)
 admin_site.register(Distributor)

@@ -80,8 +80,12 @@ html(ng-app="abelujo")
                 li(href="#")
                   a(href='/{{ LANGUAGE_CODE }}/stock/card/create') {% trans "Add a card manually" %}
                 li.divider(role="separator")
-                li(href="#")
+                //li(href="#")
                     a(href='/{{ LANGUAGE_CODE }}/databasesearch/place', title='{% trans "List and edit the bookshop\'s places" %}') {% trans "Places" %}
+                li(href="#")
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/card') {% trans "Card" %}
+                li(href="#")
+                    a(href='/{{ LANGUAGE_CODE }}/databasesearch/cardtype') {% trans "Card type" %}
                 li(href="#")
                     a(href='/{{ LANGUAGE_CODE }}/databasesearch/shelf', title='{% trans "List and edit the shelves" %}') {% trans "Shelves" %}
                 li(href="#")
