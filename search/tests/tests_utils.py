@@ -112,6 +112,7 @@ class TestViewUtils(TestCase):
 
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
 

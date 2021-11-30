@@ -73,7 +73,7 @@ fixture_no_isbn = {"test search":
 
 fake_postSearch = {"isbn": "111"}
 
-def bulk_mock(isbns):  #noqa
+def bulk_mock(isbns):  # noqa
     return "hello"
 
 class DBFixture():
