@@ -1390,6 +1390,7 @@ def basket_import(request, **kwargs):
     pass
 
 
+@login_required
 def generic_import(request):
     """
     Generic import view, and we send the results to a basket or something else.
@@ -1562,6 +1563,7 @@ def _import_cards_to_destination(source, source_pk, cards, quantities_list):
     return alert
 
 
+@login_required
 def import_validate(request, *args, **kwargs):
     """
     In the case we didn't find all asked ISBNs, we ask for the user confirmation.
@@ -1642,12 +1644,14 @@ def import_validate(request, *args, **kwargs):
         return HttpResponseRedirect(reverse('generic_import'))
 
 
+@login_required
 def history_sells(request, **kwargs):
     now = pendulum.now()
     url = reverse('history_sells_month',
                   args=(now.strftime('%Y-%m'),))
     return HttpResponseRedirect(url)
 
+@login_required
 def history_sells_month(request, date, **kwargs):
     template = 'search/history_sells.jade'
     try:
@@ -1720,6 +1724,7 @@ def _txt_response_from_rows(rows, filename=""):
     response['Content-Disposition'] = 'attachment; filename={}.txt'.format(filename)
     return response
 
+@login_required
 def history_sells_month_export(request, date, **response_kwargs):
     try:
         day = pendulum.datetime.strptime(date, '%Y-%m')
@@ -1761,6 +1766,7 @@ def history_sells_month_export(request, date, **response_kwargs):
         return response
 
 
+@login_required
 def history_entries_month(request, date, **kwargs):
     template = 'search/history_entries.jade'
     try:
@@ -1818,6 +1824,7 @@ def _txt_response_from_rows_entries(rows, filename=""):
     response['Content-Disposition'] = 'attachment; filename={}.txt'.format(filename)
     return response
 
+@login_required
 def history_entries_month_export(request, date, **kwargs):
     """
     Export the entries of this month.
@@ -1862,6 +1869,7 @@ def history_entries_month_export(request, date, **kwargs):
         return response
 
 
+@login_required
 def history_sells_day(request, date, **kwargs):
     """
     Return the list of sells of this day.
@@ -1970,6 +1978,7 @@ def history_sells_day(request, date, **kwargs):
                                       'now': now,
                                       'day': day})
 
+@login_required
 def history_entries_day(request, date, **kwargs):
     """
     Return the list of entries of this day.
@@ -2015,6 +2024,7 @@ def history_entries_day(request, date, **kwargs):
                                       'now': now,
                                       'day': day})
 
+@login_required
 def history_sells_exports(request, **kwargs):
     """Export a list of Sells in csv or txt.
     If no date nor distributor is given, export the first 50 results.
