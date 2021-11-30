@@ -4986,6 +4986,9 @@ class Sell(models.Model):
     place = models.ForeignKey("Place", blank=True, null=True, verbose_name=__("place"))
     #: We can also choose to sell from a specific deposit.
     deposit = models.ForeignKey("Deposit", blank=True, null=True, verbose_name=__("deposit"))
+    #: We can reference a "bon de commande" (order form):
+    bon_de_commande = models.CharField(max_length=CHAR_LENGTH, blank=True, null=True, verbose_name=__("Bon de commande"))
+
     #: If True, this sell was already canceled. It can not be undone twice.
     canceled = models.BooleanField(default=False, blank=True, verbose_name=__("canceled"))
 
@@ -5454,6 +5457,7 @@ class Sell(models.Model):
                    client=None, client_id=None,
                    total_payment_1=0,
                    total_payment_2=0,
+                   bon_de_commande="",
                    silence=False):
         """ids_prices_nb: list of dict {"id", "price sold", "quantity" to sell}.
 
@@ -5539,6 +5543,7 @@ class Sell(models.Model):
                         total_payment_2=total_payment_2,
                         total_for_revenue=total_for_revenue,
                         place=place_obj,
+                        bon_de_commande=bon_de_commande,
                         client=client)
             sell.save()
 

@@ -1154,6 +1154,8 @@ def sell(request, **response_kwargs):
             total_payment_2 = float(total_payment_2)
         client_id = int(params.get("client_id", -1))
 
+        bon_de_commande_id = params.get('bon_de_commande_id')
+
         # Sell from a place.
         try:
             sell, status, alerts = Sell.sell_cards(
@@ -1165,6 +1167,7 @@ def sell(request, **response_kwargs):
                 payment_2=payment_2_id,
                 total_payment_2=total_payment_2,
                 client_id=client_id,
+                bon_de_commande=bon_de_commande_id,
             )
 
         except Exception as e:

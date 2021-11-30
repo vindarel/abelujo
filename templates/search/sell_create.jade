@@ -78,7 +78,7 @@ div.ng-cloak(ng-controller="sellController")
                 button.btn.btn-default(type='button', ng-click='open($event)')
                   i.glyphicon.glyphicon-calendar
 
-        .col-md-3
+        .col-md-4
          form
             p.input-group
              input.nullable.form-control#client-input(
@@ -99,6 +99,8 @@ div.ng-cloak(ng-controller="sellController")
                  i.glyphicon.glyphicon-plus
                a.btn.btn.btn-default(role='button', title='{% trans "Create a bill for this client" %}', value="{% trans 'Bill' %}", ng-click="create_bill()", style="margin-left:1em;")
                     i.glyphicon.glyphicon-file
+               a.btn.btn.btn-default(role='button', title='{% trans "Lier à un bon de commande" %}', value="{% trans 'Bill' %}", ng-click="toggle_show_bon_de_commande()", style="margin-left:1em;")
+                    i.glyphicon.glyphicon-paperclip
 
         .col-md-3
          .btn-group
@@ -106,7 +108,6 @@ div.ng-cloak(ng-controller="sellController")
              span.caret
            ul.dropdown-menu
              li: a(href="#", ng-click="export_csv()") csv
-
 
           input.btn.btn.btn-default(type='button',value="{% trans 'Cancel' %}", ng-click="cancelCurrentData()")
          .btn-group
@@ -128,6 +129,12 @@ div.ng-cloak(ng-controller="sellController")
                 ng-options="it.name for it in places"
           )
       {% endif %}
+
+      .row.noprint
+        .col-md-4
+          div(ng-show="show_bon_de_commande")
+            form
+              input.nullable.form-control(type="text", placeholder="bon de commande ID", ng-model="bon_de_commande_id")
 
       .row.noprint
         .col-md-12

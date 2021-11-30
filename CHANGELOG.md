@@ -22,6 +22,7 @@ Changelog starting from v0.5 (2018/09/18)
  - Added a button to **quickly command from search results**.
    - this is handy, but keep in mind: it is slower than scanning ISBNs, and the free search is not endorced by Dilicom's FEL à la demande or Electre's API. The results may vary between Abelujo and those platforms.
    - that being said, before saving and commanding the book, we do rightfully fetch the full book data on Dilicom or Electre (given you subscribed to one of them).
+- **Sell**: added the ability to enter a purchase order ID, to show on a PDF bill and on a sell. We can see this ID in the history of a day.
 
 ### Other enhancements
 

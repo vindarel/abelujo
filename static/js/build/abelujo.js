@@ -322,6 +322,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
       // Remember the pairs card representation / object from the model.
       $scope.cards_fetched = [];
 
+    // optional: bon de commande ID.
+    $scope.show_bon_de_commande = false;
+    $scope.bon_de_commande_id = "";
+
     // Show the ISBNs not found, and propose to create a new card.
     $scope.isbns_not_found = [];
 
@@ -733,6 +737,10 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             params['total_payment_2'] = $scope.total_payment_2;
         }
 
+        if ($scope.bon_de_commande_id != "") {
+            params['bon_de_commande_id'] = $scope.bon_de_commande_id;
+        }
+
         if ($scope.client) {
             params['client_id'] = $scope.client.id;
         }
@@ -869,6 +877,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
             language: $scope.language,
             payment_id: payment_id,
             client_id: 0,
+            bon_de_commande_id: $scope.bon_de_commande_id,
         };
 
         var headers = {
@@ -906,6 +915,15 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
                 }});
     };
 
+    $scope.toggle_show_bon_de_commande = function() {
+        $scope.show_bon_de_commande = ! $scope.show_bon_de_commande;
+        $log.info($scope.show_bon_de_commande);
+    };
+
+    $scope.add_bon_de_command = function() {
+        // Add a label to enter a "bon de commande" number.
+    };
+
    // The date picker:
 
     $scope.today = function() {
@@ -938,7 +956,7 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
     // Set focus:
     $scope.focus_input = function() {
         angular.element('#default-input').trigger('focus');
-    }
+    };
     $scope.focus_input();
 
     $window.document.title = "Abelujo - " + gettext("Sell");

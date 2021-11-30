@@ -157,6 +157,9 @@ def bill(request, *args, **response_kwargs):
         if qs:
             client = qs.first()
 
+    # Bon de commande (order form ID), to show on the PDF.
+    bon_de_commande = params.get('bon_de_commande_id')
+
     discount = params.get('discount', {})
     if discount:
         discount_fmt = discount['name']
@@ -308,6 +311,7 @@ def bill(request, *args, **response_kwargs):
 
     sourceHtml = template.render({'name': name,
                                   'document_title': document_title,
+                                  'bon_de_commande': bon_de_commande,
                                   'vat_book': vat_book,
                                   'total_vat': total_vat,
                                   'total_vat_fmt': total_vat_fmt,

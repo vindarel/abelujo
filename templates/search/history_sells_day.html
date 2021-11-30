@@ -199,6 +199,13 @@
       {% if  it.sell.client %}
       <div href="#" title="{{ it.sell.client.name }}, {{ it.sell.client.firstname }}">{{ it.sell.client.name | truncatechars:9 }}</div>
       {% endif %}
+
+      {% if it.sell.bon_de_commande %}
+      <div title='{% trans "Bon de commande" %}'>
+        <i class="glyphicon glyphicon-paperclip"> </i>
+        {{ it.sell.bon_de_commande }}
+      </div>
+      {% endif %}
     </td>
 
     <td>
