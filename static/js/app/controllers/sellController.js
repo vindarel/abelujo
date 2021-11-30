@@ -494,6 +494,8 @@ angular.module("abelujo").controller('sellController', ['$http', '$scope', '$tim
         $scope.client_selected = null;
         $scope.client = null;
         $scope.discounts.global_discount = null;
+        $scope.bon_de_commande_id = "";
+        // $scope.show_bon_de_commande = false;
         $scope.focus_input();
     };
 
