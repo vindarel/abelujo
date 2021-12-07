@@ -74,10 +74,12 @@ class Reservation(TimeStampedModel):
         pass
 
     def __unicode__(self):
-        if self.client:
+        if self.client and self.card:
             return unicode("client {}, card {}".format(self.client, self.card.pk))
+        elif self.client:
+            return unicode("client {}, card: ???".format(self.client))
         else:
-            return ""
+            return "Reservation (no client, no card ?!)"
 
     def get_absolute_url(self):
         return "/admin/search/reservation/{}/".format(self.id)
