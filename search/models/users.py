@@ -43,11 +43,16 @@ def generate_email_body(resas):
     newline = "{} {}".format(linebreak, linebreak)
     ending = "Nous vous l'avons mise de côté.{} merci et à tout bientôt.".format(newline)
     if len(resas) == 1:
-        res = "Bonjour, {} Le livre commandé: {} est bien arrivé. \
-        Nous vous l'avons mis de côté. %0D%0A %0D%0A \
-        Merci et à tout bientôt.".format(newline,
-                                         "{} - {} {}".format(
-                                             newline, resas[0].card.title, newline))
+        try:
+            res = "Bonjour, {} Le livre commandé: {} est bien arrivé. \
+            Nous vous l'avons mis de côté. %0D%0A %0D%0A \
+            Merci et à # TODO: out bientôt.".format(newline,
+                                                    "{} - {} {}".format(
+                                                    newline, resas[0].card.title, newline))  # TODO: card.title can be null.
+        except Exception as e:
+            log.warning("generate_email_body: trying to pre-generate the email body for reservations: {}".format(e))
+            res = "Bonjour, {} Votre commande des titres suivants est bien arrivée à la librairie: {}".format(newline, newline)
+
     else:
         res = "Bonjour, {} Votre commande des titres suivants est bien arrivée à la librairie: {}".format(newline, newline)
         list_titles = ""
