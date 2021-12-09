@@ -765,6 +765,7 @@ def collection_export(request, **kwargs):
                                     shelf_id=shelf_id,
                                     quantity_choice=quantity_choice,
                                     order_by=order_by,
+                                    with_authors=True,
                                     in_deposits=True)
 
         elif select == "all":
