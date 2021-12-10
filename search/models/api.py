@@ -566,7 +566,12 @@ def card_update(request, **response_kwargs):
             card_obj = Card.objects.filter(id=card_id).first()
 
             shelf_obj = None
-            if shelf_id:
+            if shelf_id and shelf_id in [-1, "-1"]:
+                # Set to no shelf.
+                if card_obj.shelf_id and card_obj.shelf_id != shelf_id:
+                    card_obj.shelf = None
+                    card_obj.save()
+            elif shelf_id:
                 shelf_obj = Shelf.objects.filter(id=shelf_id).first()
                 if shelf_obj:
                     card_obj.shelf = shelf_obj

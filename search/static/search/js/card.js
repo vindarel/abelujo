@@ -60,6 +60,12 @@ function is_isbn(text) {
                     // current_shelf_name.display = 'none';
                 }
                 let elt = document.getElementById('shelf-select');
+                // Create blank shelf.
+                let option = document.createElement("option");;
+                option.text = "";
+                option.pk = -1;
+                option.value = -1;
+                elt.appendChild(option);
                 for (var i = 0; i < shelves.length; i++) {
                     let option = document.createElement("option");;
                     option.text = shelves[i].fields.name;
@@ -81,8 +87,13 @@ function is_isbn(text) {
     if (shelf_select) {
         shelf_select.addEventListener('change', (event) => {
             let options = shelf_select.options;
-            let new_shelf = shelves[parseInt(event.target.value)];
-            update_shelf(new_shelf.pk);
+            let pk = parseInt(event.target.value);
+            if (pk !== -1 && shelves[pk] !== undefined) {
+                let shelf = shelves[pk];
+                pk = shelf.pk;
+            }
+            update_shelf(pk);
+            console.log("new_shelf: ", event.target.value, pk);
         });
     }
 
