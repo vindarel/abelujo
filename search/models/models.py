@@ -2904,6 +2904,19 @@ class Place (models.Model):
         except Exception as e:
             log.error("rst {}".format(e))
 
+    def nb_non_books_cards(self):
+        """
+        Nb de titres de livres uniques.
+        """
+        # XXX: 2021/11: was for testing. Still used?
+        try:
+            book_type = CardType.objects.get(name='book')
+            res = self.placecopies_set.filter(card__card_type=book_type)\
+                .exclude(nb=0).count()
+            return res
+        except Exception as e:
+            log.error("Error getting nb_non_books_cards: {}".format(e))
+
     def nb_cards_all_time(self):
         """
         Nb de titres uniques, tout type de produits confondus, en stock ou pas:
@@ -6236,6 +6249,7 @@ class InventoryBase(TimeStampedModel):
 
         e5 = pendulum.now()
         print("   - final to_dict: {}".format(e5 - s5))
+        # XXX: the numbers are now only about one page, not global…
         return d_diff, obj_name, total_copies_in_inv, total_copies_in_stock, diff_items_length
 
     def archive(self):
