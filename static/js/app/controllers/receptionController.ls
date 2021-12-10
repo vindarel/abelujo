@@ -206,6 +206,11 @@ angular.module "abelujo" .controller 'receptionController', ['$http', '$scope', 
         $scope.copies = res
         return res
 
+    $scope.get_background_color = (loop_index) ->
+        if (loop_index % 2) == 1
+           return "lightgrey"
+        return
+
     $scope.showBasket = (index) !->
         "Show the copies of the shelf (by its index in the shelves list)."
         # Show all.

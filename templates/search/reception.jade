@@ -45,7 +45,7 @@ div(ng-cloak, ng-controller="receptionController")
 
      div(ng-repeat="it in shelves")
         li.list-group-item.mouse-pointer(
-          style="padding: 1px"
+          style="padding: 1px; background-color: {{ 'get_background_color($index)' | ng }}"
           ng-class="{active: cur_basket.pk == it.pk}"
           ng-click="showBasket($index)") {{ " it.fields.name " | ng }}
             span.badge(ng-show="shelves_length[it.pk]") {{ "shelves_length[it.pk]" | ng }}
