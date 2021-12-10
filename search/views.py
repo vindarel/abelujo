@@ -1671,7 +1671,9 @@ def history_sells_month(request, date, **kwargs):
     return render(request, template, {'sells_data': data,
                                       'day': day,
                                       'now': now,
+                                      # for computer:
                                       'previous_month_obj': previous_month,
+                                      # for the URL slug:
                                       'previous_month': previous_month.strftime('%Y-%m'),
                                       'next_month_obj': next_month,
                                       'next_month': next_month.strftime('%Y-%m'),
@@ -1917,7 +1919,7 @@ def history_sells_day(request, date, **kwargs):
 
     now = pendulum.datetime.today()
     previous_day = day.subtract(days=1)  # yes, not subStract.
-    previous_day_fmt = previous_day.strftime(PENDULUM_YMD)
+    previous_day_fmt = previous_day.strftime(PENDULUM_YMD)  # URL slug
     next_day = None
     next_day_fmt = None
     if day < now:

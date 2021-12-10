@@ -22,7 +22,7 @@
 
 <span>
   <a href="{% url 'history_sells_day' previous_day_fmt %}">
-    <button style="margin-bottom: 5px">&larr; {% trans "Previous" %} </button>
+    <button style="margin-bottom: 5px">&larr; {{ previous_day | date:'l' }} </button>
   </a>
   <span>&nbsp;</span>
   <a href="{% url 'history_sells_month' month_fmt %}">
@@ -33,7 +33,7 @@
 {% if  next_day_fmt %}
 <span>
   <a href="{% url 'history_sells_day' next_day_fmt %}">
-    <button> {% trans "Next" %} &rarr; </button>
+    <button> {{ next_day | date:'l' }} &rarr; </button>
   </a>
 </span>
 {% endif %}

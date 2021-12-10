@@ -24,12 +24,12 @@
 
 span
   a(href="{% url 'history_sells_month' previous_month %}")
-    button(style="margin-bottom: 5px") &larr; {% trans "Previous" %}
+    button(style="margin-bottom: 5px") &larr; {{ previous_month_obj | date:'F' | capfirst }}
   span  &nbsp;
 if day.year < now.year or day.month < now.month
   span
     a(href="{% url 'history_sells_month' next_month %}")
-      button {% trans "Next" %} &rarr;
+      button {{ next_month_obj | date:'F' | capfirst }} &rarr;
 
 .row
   .col-lg-10
