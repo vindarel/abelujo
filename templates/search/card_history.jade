@@ -62,7 +62,7 @@ div {% trans "Total sells" %}: {{ sells_data.total_sells }}
     if not entries
       div: em {% trans "There is no other entries." %}
     for it in entries
-      div {{ it.created}}
+      div {{ it.created | date:"Y-m-d (D d M Y)" }}
 
   .col-lg-3
    .row
