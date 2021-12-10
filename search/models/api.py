@@ -290,6 +290,9 @@ def cards(request, **response_kwargs):
     with_authors = request.GET.get("with_authors")
     with_authors = _is_truthy(with_authors)
 
+    with_total_sells = request.GET.get("with_total_sells", False)
+    with_total_sells = _is_truthy(with_total_sells)
+
     # pagination
     page = request.GET.get("page", 1)
     page = to_int(page)
@@ -314,6 +317,7 @@ def cards(request, **response_kwargs):
                              excluded_from_catalogue=excluded_from_catalogue,
                              with_quantity=with_quantity,
                              with_authors=with_authors,
+                             with_total_sells=with_total_sells,
                              quantity_choice=quantity_choice,
                              price_choice=price_choice,
                              date_created=date_created_choice,

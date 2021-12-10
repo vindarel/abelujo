@@ -2883,7 +2883,8 @@ angular.module("abelujo.controllers", []).controller('collectionController', [
         query: $scope.query,
         order_by: $scope.order_by.id,
         in_stock: true,
-        with_authors: true
+        with_authors: true,
+        with_total_sells: true
       };
       if ($scope.publisher) {
         params.publisher_id = $scope.publisher.pk;

@@ -1169,6 +1169,7 @@ class Card(TimeStampedModel):
     def to_list(self, in_deposits=False, with_quantity=True,
                 with_authors=True,
                 with_publishers=True,
+                with_total_sells=False,
                 with_cache=False):
         """
         Return a *dict* of this card's fields.
@@ -1304,6 +1305,10 @@ class Card(TimeStampedModel):
             # res['quantity_clients_reserved'] = self.quantity_clients_reserved()
             res['quantity_clients_reserved_to_be_notified'] = self.quantity_clients_reserved_to_be_notified()
 
+        # Get the total number of copies sold, all time.
+        if with_total_sells:
+            res['total_copies_sold'] = self.total_copies_sold()
+
         # Some data that are not saved in DB
         # but that can be in an object after an update from Dilicom.
         # For example, happens from /api/card/:id?with_dilicom_update=1
@@ -1334,7 +1339,9 @@ class Card(TimeStampedModel):
 
     @staticmethod
     def obj_to_list(cards, in_deposits=False, with_quantity=True,
-                    with_authors=True, with_publishers=True):
+                    with_authors=True,
+                    with_total_sells=False,
+                    with_publishers=True):
         """Transform a list of Card objects to a python list.
 
         Used to save a search result in the session, which needs a
@@ -1348,6 +1355,7 @@ class Card(TimeStampedModel):
         return [card.to_list(in_deposits=in_deposits,
                              with_quantity=with_quantity,
                              with_authors=with_authors,
+                             with_total_sells=with_total_sells,
                              with_publishers=with_publishers)
                 for card in cards]
 
@@ -1385,6 +1393,7 @@ class Card(TimeStampedModel):
                order_by=None,
                with_quantity=True,
                with_authors=False,
+               with_total_sells=False,
                quantity_choice=None,
                price_choice=None,
                date_created=None,
@@ -1651,6 +1660,7 @@ class Card(TimeStampedModel):
                 in_deposits=in_deposits,
                 with_quantity=with_quantity,
                 with_authors=with_authors,
+                with_total_sells=with_total_sells,
                 with_publishers=False,
             )
 
@@ -2561,6 +2571,21 @@ class Card(TimeStampedModel):
     def never_sold_nb():
         nb = Card.objects.filter(in_stock=True).exclude(id__in = SoldCards.objects.all().values_list('id', flat=True)).count()
         return nb
+
+    def total_copies_sold(self):
+        """
+        Return the number of copies sold for this card, all time.
+        (from client: with_total_sells).
+        """
+        try:
+            soldcards = self.soldcards_set.all()
+            if soldcards:
+                return sum([it.quantity for it in soldcards])
+            else:
+                return 0
+        except Exception as e:
+            log.warning("total_copies_sold: couldn't compute the total of copies sold: {}".format(e))
+            return
 
     def commands_received(self, to_list=False):
         """

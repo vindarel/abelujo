@@ -193,6 +193,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             order_by: $scope.order_by.id  # Should be by title for custom searches. Modified python-side.
             in_stock: true
             with_authors: true
+            with_total_sells: true
 
         if $scope.publisher
             params.publisher_id = $scope.publisher.pk

@@ -143,6 +143,7 @@ div(ng-cloak, ng-controller="collectionController")
               ng-options="elt.name group by elt.group for elt in order_by_choices"
             )
 
+      input(hidden="true", name="with_total_sells", value="true", data-comment="Set on the JS controller.")
       input(type="submit", hidden="true", onsubmit="validate()")
 
  .row
@@ -250,7 +251,9 @@ div(ng-cloak, ng-controller="collectionController")
         td {{ 'card.distributor_repr' | ng }}
         td
           div(class="badge badge-secondary") {{ 'card.shelf' | ng }}
-        td.text-right {{ 'card.quantity' | ng }}
+        td.text-right
+          div {{ 'card.quantity' | ng }}
+          div(ng-show="card.total_copies_sold", title='{% trans "Total number of copies sold, all time." %}') {% trans "sold" %}: {{ 'card.total_copies_sold' | ng }}
         td.text-right {{ 'card.qty_deposits' | ng }}
         td
           div(ng-show="card.places") {{ 'card.places' | ng }}
