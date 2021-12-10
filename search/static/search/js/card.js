@@ -129,6 +129,17 @@ function is_isbn(text) {
 }
 )();
 
+function do_focus() {
+    // XXX: no effect?
+    document.getElementById('#clients-input').trigger('focus');
+}
+
+function focus_input() {
+    // XXX: no effect? :(
+    console.log("--- focus!");
+    // window.setTimeout(do_focus(), 2*1000);
+}
+
 function validate_reservation() {
     // Get the card id (or ISBN),
     // get the client id,

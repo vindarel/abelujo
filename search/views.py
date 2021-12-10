@@ -2697,6 +2697,12 @@ def test_client_confirmation_email(request):
         }
     }
 
+    real_test_payload = """
+{"buyer": {"delivery_address": {"city": "V ille", "first_name": "vindarel", "last_name": "vindarel", "country": "France", "phone": "", "postcode": "31000", "address": "34", "address_comp": "", "email": "ehvince@mailz.org"}, "billing_address": {"city": "Ville", "first_name": "vindarel", "last_name": "vindarel", "country": "France", "phone": "", "postcode": "31000", "address": "34", "address_comp": "", " email": "ehvince@mailz.org"}}, "order": {"online_payment": false, "shipping_method": "local", "stripe_payload": {"line_items": [{"price_data": {"currency": "eur", "product_data": {"name" : "Comme un million de papillons noirs"}, "unit_amount": 1400}, "quantity": 1}], "customer_emai l": "ehvince@mailz.org", "cancel_url": "https://techne-bookshop.fr/commande-annulee", "success_ url": "https://techne-bookshop.fr/commande-effectuee", "mode": "payment", "payment_method_types ": ["card"]}, "used_promo_code": "", "amount": 1400, "abelujo_items": [{"id": 1045, "qty": 1}], "mondial_relay_AP": ""}}
+    """
+    real_test_payload = real_test_payload.strip()
+    real_test_payload = json.loads(real_test_payload)
+
     params = request.GET.copy()
     is_online_payment = True
     if params.get('paid') and not _is_truthy(params.get('paid')):
