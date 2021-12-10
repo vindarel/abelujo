@@ -1400,7 +1400,12 @@ class Card(TimeStampedModel):
                date_created_sort=None,
                page=None,
                page_size=10):
-        """Search a card (by title, authors' names, ean/isbn).
+        """
+        Search a card (by title, authors' names, ean/isbn).
+
+        Little DSL for the search input:
+        - "foo ed:bar" will search cards containing "bar" on all usual fields AND with publishers that contain "bar".
+        - "aut:xyz" constrains on authors.
 
         SIZE_LIMIT = 100
 
@@ -1434,7 +1439,6 @@ class Card(TimeStampedModel):
         - a list of objects or a list of dicts if to_list is
         specified,
         - a dict: list of messages, pagination meta info.
-
         """
         isbns = []
         isbn_list_search_complete = None
@@ -1487,8 +1491,11 @@ class Card(TimeStampedModel):
             for key_val in dsl:
                 key = key_val.split(':')[0]
                 val = key_val.split(':')[1]
+                val_ascii = to_ascii(val)
                 if key == "ed":
                     cards = cards.filter(publishers__name__icontains=val)
+                elif key == "aut":
+                    cards = cards.filter(authors__name_ascii__contains=val_ascii)
 
         if cards and date_created and date_created_sort:
             if date_created_sort == "<=":

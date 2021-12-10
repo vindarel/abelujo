@@ -21,6 +21,17 @@ function is_isbn(text) {
     return text.match(reg);
 };
 
+function url_language(url) {
+    // Extract the language from an url like /fr/foo/bar
+    let re = /\/([a-z][a-z])\//;
+    let res = url.match(re);
+    if (res) {
+        return res[1];
+    } else {
+        return "en";
+    }
+};
+
 (function() {
     let shelves = [];
     let shelf_select = document.getElementById('shelf-select');
@@ -121,7 +132,6 @@ function is_isbn(text) {
             .catch((error) => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
-
     };
 
     get_shelves();
@@ -265,4 +275,26 @@ function save_isbn_for_reservation (isbn) {
     console.log("--- saving isbn ", isbn);
     console.log(" -- this? ", this);
     window.localStorage.setItem('isbn_for_reservation', isbn);
+};
+
+
+// card_show
+function search_authors_stock() {
+    // We want to redirect to a search on authors on our stock.
+    //
+    // Our /collection URL doesn't use GET parameters
+    // but calls the API, powered by JS… so we can't use a well-formatted URL
+    // with &authors=xyz.
+    //
+    // We will save the search on local storage, redirect the
+    // current page, and re-read local storage there.
+    //
+    // We use the "aut:foo" DSL to restrict the search on authors.
+    console.log("hello search_authors_stock");
+    let elt = document.getElementById("authors");
+    let authors = elt.dataset['authors'];
+    let query = "aut:" + authors;
+    let lang = url_language(window.location.pathname);
+    window.localStorage.setItem('pre_collection_search', query);
+    window.location.pathname = lang + '/collection/';
 };

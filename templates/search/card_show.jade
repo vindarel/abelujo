@@ -91,6 +91,8 @@
                   span(id="nb_to_command") {{ object.quantity_clients_reserved }}
 
     h3 {{ object.title }}
+    h4
+      a(onclick="search_authors_stock()", href="", style="color: #333333; text-decoration: underline", data-authors="{{ object.display_authors }}", id="authors") {{ object.display_authors }}
 
 .row
   .col-lg-9
@@ -168,7 +170,6 @@
         em.my-border {{ object.comment }}
 
     .col-lg-8
-      h4 {{ object.display_authors }}
 
 
       table.table

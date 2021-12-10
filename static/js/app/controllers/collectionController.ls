@@ -113,6 +113,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
     $scope.page_max = 1
 
     # Read variables from local storage.
+    # We also check for a pre-search query, see after validate.
     show_images = $window.localStorage.getItem "show_images"
     if show_images != null
         if show_images == "true"
@@ -224,6 +225,15 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             $scope.meta = response.data.meta
             $window.document.getElementById("default-input").select()
             $scope.first_page_load = false
+
+    # Read a search term from localStorage (from card_show, we want to search for authors).
+    # This needs to be after the definition of validate...
+    pre_collection_search = $window.localStorage.getItem "pre_collection_search"
+    if pre_collection_search
+        $scope.query = pre_collection_search
+        $window.localStorage.removeItem "pre_collection_search"
+        $log.info "searching for ", $scope.query
+        $scope.validate!
 
     $scope.nextPage = !->
         if $scope.page < $scope.meta.num_pages
