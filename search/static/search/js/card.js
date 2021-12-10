@@ -298,3 +298,13 @@ function search_authors_stock() {
     window.localStorage.setItem('pre_collection_search', query);
     window.location.pathname = lang + '/collection/';
 };
+
+function search_publisher_stock() {
+    // We use the "ed:foo" DSL to restrict the search on authors.
+    let elt = document.getElementById("publisher_");  // _0 ?
+    let name = elt.dataset['publisher'];
+    let query = "ed:" + name;
+    let lang = url_language(window.location.pathname);
+    window.localStorage.setItem('pre_collection_search', query);
+    window.location.pathname = lang + '/collection/';
+};

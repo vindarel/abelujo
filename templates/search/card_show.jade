@@ -92,7 +92,7 @@
 
     h3 {{ object.title }}
     h4
-      a(onclick="search_authors_stock()", href="", style="color: #333333; text-decoration: underline", data-authors="{{ object.display_authors }}", id="authors") {{ object.display_authors }}
+      a(onclick="search_authors_stock()", href="", style="color: #333333; text-decoration: underline", data-authors="{{ object.display_authors }}", id="authors", title="Chercher dans le stock") {{ object.display_authors }}
 
 .row
   .col-lg-9
@@ -178,7 +178,7 @@
             td {% trans "Publishers" %}
             td
                 for pub in object.get_publishers
-                    div: a(href="{{pub.get_absolute_url}}", target="_blank"){{ pub.name }}
+                    div: a(id="publisher_{{ forloop_counter0 }}", href="", onclick="search_publisher_stock()", data-publisher="{{ pub.name }}", title="Chercher dans le stock") {{ pub.name }}
 
           tr
             td {% trans "Supplier" %}

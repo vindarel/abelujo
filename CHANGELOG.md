@@ -34,6 +34,8 @@ Changelog starting from v0.5 (2018/09/18)
 - **Search**: shows the **distributor** name in a new column.
   - **Search**: can use Electre's API.
   - if Electre is not available, we can only show the distributor name of a book we already have in stock. Without Electre, the distributor is *not* given by the search results (and keep in mind that Dilicom's FEL à la demande doesn't provide a free text search).
+- **Card**: on a card page, clicking on the author(s) now searches in our stock.
+  - and clicking on the publisher too.
 - **Reception**: the list of shelves is shown with an alternating white/grey color background, in order to ease reading and selecting a shelf.
 - Book page: if the book has no shelf, show a blank option in the select button. Before, we were showing the first shelf of our database, wrongly, that was misleading.
 
