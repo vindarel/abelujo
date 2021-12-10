@@ -576,6 +576,9 @@ SENDGRID_API_KEY = ""  # Secret. Tied to the verified sender.
 # The theme project should be cloned in templates/themes/<theme name>.
 # The views on mailer.py check if a repository matching this theme name exist.
 EMAIL_THEME = None
+# If True, don't use the theme for clients but try to send an email with send
+# to the developer.
+IS_TESTING_THEME = None
 
 # val = get_from_config('SENDGRID_API_KEY', secret=True)
 # if val:
@@ -619,6 +622,9 @@ if val:
 val = get_from_config('TEST_FIRSTNAME')
 if val:
     TEST_FIRSTNAME = val
+val = get_from_config('IS_TESTING_THEME')
+if val:
+    IS_TESTING_THEME = val
 
 # email THEME.
 val = get_from_config('EMAIL_THEME')
