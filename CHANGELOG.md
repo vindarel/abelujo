@@ -23,6 +23,7 @@ Changelog starting from v0.5 (2018/09/18)
    - this is handy, but keep in mind: it is slower than scanning ISBNs, and the free search is not endorced by Dilicom's FEL à la demande or Electre's API. The results may vary between Abelujo and those platforms.
    - that being said, before saving and commanding the book, we do rightfully fetch the full book data on Dilicom or Electre (given you subscribed to one of them).
 - **Sell**: added the ability to enter a purchase order ID, to show on a PDF bill and on a sell. We can see this ID in the history of a day.
+- **History**: export the sells with a new **CSV** format: **the total revenue for each day**, one line per day.
 
 ### Other enhancements
 
@@ -33,6 +34,8 @@ Changelog starting from v0.5 (2018/09/18)
 - **Search**: shows the **distributor** name in a new column.
   - **Search**: can use Electre's API.
   - if Electre is not available, we can only show the distributor name of a book we already have in stock. Without Electre, the distributor is *not* given by the search results (and keep in mind that Dilicom's FEL à la demande doesn't provide a free text search).
+- **Reception**: the list of shelves is shown with an alternating white/grey color background, in order to ease reading and selecting a shelf.
+- Book page: if the book has no shelf, show a blank option in the select button. Before, we were showing the first shelf of our database, wrongly, that was misleading.
 
 ### Admin
 
