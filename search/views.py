@@ -1737,9 +1737,39 @@ def history_sells_month_export(request, date, **response_kwargs):
     data = Sell.search(year=day.year, month=day.month,
                        with_total_price_sold=False)
 
-    fileformat = request.GET.get('fileformat')
+    params = request.GET.copy()
     filename = _("Sells_{}-{}".format(day.year, day.month))
 
+    fileformat = params.get('fileformat')
+    REPORT_CHOICES = [  # noqa:F841
+        'listing',      # basic: one soldcard per line
+        'totalperday',  # total revenue of day ; day (CA par jour)
+    ]
+    report = params.get('report', 'listing')
+
+    #
+    # Report is: one line per day with total revenue.
+    #
+    if report == 'totalperday':
+        revenue_per_day = {}
+        for i in xrange(day.days_in_month):
+            revenue_per_day[i + 1] = 0
+        for soldcard in data['data']:
+            try:
+                revenue_per_day[soldcard.created.day] += soldcard.price_sold
+            except Exception as e:
+                log.warning("error summing the total revenue per day for day {}: {}".format(day, e))
+        headers = ("total", _("day"))
+        # sort and format the first column to year/month/day.
+        raw_rows = sorted(revenue_per_day.items())
+        formatted_rows = []
+        for row in raw_rows:
+            label = "{}/{}/{}".format(day.year, day.month, row[0])
+            formatted_rows.append([label, row[1]])
+        response = _csv_response_from_rows(formatted_rows, headers=headers, filename=filename)
+        return response
+
+    # else: basic case, one line per sold item.
     headers = (_("Title"), "ISBN", _("Authors"), _("Publishers"), _("Supplier"),
                _("Shelf"),
                _("Price"),
