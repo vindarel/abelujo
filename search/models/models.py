@@ -3295,7 +3295,7 @@ class BasketCopies(TimeStampedModel):
             return 0
 
 @python_2_unicode_compatible
-class Basket(models.Model):
+class Basket(TimeStampedModel):
     """A basket is a set of copies that are put in it for later use. Its
     copies can be present in the stock or not. Manipulating a basket's
     copies has no consequences on physical copies of the stock.
