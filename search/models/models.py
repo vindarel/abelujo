@@ -3331,8 +3331,10 @@ class Basket(TimeStampedModel):
         return "/baskets/##{}".format(self.id)
 
     def to_dict(self):
+        created_date = self.created if self.created.year != 1970 else None
         return {"name": self.name,
                 "id": self.id,
+                "created": created_date,
                 "length": self.copies.count(),
                 "comment": self.comment,
                 "distributor": self.distributor.name if self.distributor else "",

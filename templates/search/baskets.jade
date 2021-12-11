@@ -150,6 +150,8 @@ div(ng-cloak, ng-controller="basketsController")
               button.btn.btn-default(type='button')
                 i.glyphicon.glyphicon-search
 
+   div(ng-show="cur_basket.created") {% trans "Created" %}: {{ 'cur_basket.created | date: "mediumDate"' | ng }}
+
    ul#supplier(ng-show="cur_basket.dist_repr")
      li {% trans "supplier" %}:  {{ 'cur_basket.dist_repr' | ng }}
 
