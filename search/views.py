@@ -29,8 +29,8 @@ import pendulum
 import toolz
 import unicodecsv
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -61,10 +61,6 @@ from search.datasources.bookshops.frFR.librairiedeparis import librairiedeparisS
 from search.datasources.bookshops.frFR.filigranes import filigranesScraper as filigranes  # noqa: F401
 
 from search import models
-
-from search.models.common import ALERT_ERROR
-from search.models.common import ALERT_SUCCESS
-from search.models.common import ALERT_WARNING
 from search.models import Barcode64
 from search.models import Basket
 from search.models import Bill
@@ -87,16 +83,20 @@ from search.models import Stats
 from search.models import history
 from search.models import users
 from search.models.api import _get_command_or_return
-from search.models.utils import _is_truthy
+from search.models.common import ALERT_ERROR
+from search.models.common import ALERT_SUCCESS
+from search.models.common import ALERT_WARNING
+from search.models.common import get_payment_abbr
 from search.models.utils import _is_falsy
+from search.models.utils import _is_truthy
 from search.models.utils import get_logger
 from search.models.utils import get_total_weight
 from search.models.utils import is_isbn
 from search.models.utils import ppcard
 from search.models.utils import price_fmt
 from search.models.utils import truncate
-from views_utils import Echo
 from views_utils import DEFAULT_DATASOURCE
+from views_utils import Echo
 from views_utils import bulk_import_from_dilicom
 from views_utils import cards2csv
 from views_utils import dilicom_enabled
@@ -1947,6 +1947,32 @@ def history_sells_day(request, date, **kwargs):
         datadict[1]['sell_mean'] = totalsold / len(soldcards) if soldcards else 0
         data_grouped_sells.append(datadict)
 
+    # Stats by payment mean.
+    total_per_payment = {}  # payment human abbreviation -> total
+    seen_sells_ids = []  # don't count the same soldcard.sell twice...
+    for soldcard in sells_data['data']:
+        if soldcard.sell.pk in seen_sells_ids:
+            continue
+        payment = soldcard.sell.payment
+        abbr = get_payment_abbr(payment) if payment else None
+        payment_2 = soldcard.sell.payment_2
+        abbr_2 = get_payment_abbr(payment_2) if payment_2 else None
+        if abbr and abbr not in total_per_payment:
+            total_per_payment[abbr] = 0
+        if abbr:
+            total_per_payment[abbr] += soldcard.sell.total_payment_1
+        if abbr_2:
+            if abbr_2 not in total_per_payment:
+                total_per_payment[abbr_2] = 0
+            total_per_payment[abbr_2] += soldcard.sell.total_payment_2
+
+        seen_sells_ids.append(soldcard.sell.pk)
+
+    # Sort by total.
+    total_per_payment_items = sorted(total_per_payment.items(),
+                                     key=lambda x: x[1],
+                                     reverse=True)
+
     now = pendulum.datetime.today()
     previous_day = day.subtract(days=1)  # yes, not subStract.
     previous_day_fmt = previous_day.strftime(PENDULUM_YMD)  # URL slug
@@ -2002,6 +2028,7 @@ def history_sells_day(request, date, **kwargs):
                                       'data': data,
                                       'best_sells': best_sells,
                                       'data_grouped_sells': data_grouped_sells,
+                                      'total_per_payment_items': total_per_payment_items,
                                       'previous_day': previous_day,
                                       'previous_day_fmt': previous_day_fmt,
                                       'next_day': next_day,
