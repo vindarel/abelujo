@@ -247,8 +247,8 @@
 
     <td>
       {% if  new_sell %}
-      <div title="{% trans "Cancel a sell" %}"
-          {% if user.is_staff %}
+      <div title="{% trans "Cancel a sell" %}. On ne peut pas annuler une vente du mois dernier."
+          {% if user.is_staff and now.year == day.year and now.month == day.month %}
           class="mouse-pointer glyphicon glyphicon-remove"
           onclick="sellUndo({{ sell_id }})"
           {% else %}
