@@ -195,6 +195,7 @@ angular.module "abelujo.controllers", [] .controller 'collectionController', ['$
             in_stock: true
             with_authors: true
             with_total_sells: true
+            language: $scope.language
 
         if $scope.publisher
             params.publisher_id = $scope.publisher.pk
