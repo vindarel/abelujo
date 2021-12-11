@@ -64,32 +64,32 @@
       <h4> {{ sells_data.total_price_sold_fmt }} </h4>
 
       <div class="col-md-12" style="padding-left: 0; margin-left: 0">
-      <div class="col-md-6">
-      <div>
-        <span class="badge badge-info"> {% trans "Books" %} </span>
-        <span> {{ sells_data.total_price_sold_books_fmt }} </span>
-      </div>
-      <div>
-        <span class="badge badge-info"> {% trans "Other products" %} </span>
-        <span> {{ sells_data.total_price_sold_not_books_fmt }} </span>
-      </div>
-      {% for it in data_grouped_sells %}
-      {% if it.0 != 'book' %}
-      <div>
-        {{ it.0 }} : {{ it.1.total_sold | currency }}
-      </div>
-      {% endif %}
-      {% endfor %}
-      </div>
+        <div class="col-md-6">
+          <div>
+            <span class="badge badge-info"> {% trans "Books" %} </span>
+            <span> {{ sells_data.total_price_sold_books_fmt }} </span>
+          </div>
+          <div>
+            <span class="badge badge-info"> {% trans "Other products" %} </span>
+            <span> {{ sells_data.total_price_sold_not_books_fmt }} </span>
+          </div>
+          {% for it in data_grouped_sells %}
+          {% if it.0 != 'book' %}
+          <div>
+            {{ it.0 }} : {{ it.1.total_sold | currency }}
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
 
-      <div class="col-md-6">
-      {% for total_per_payment in total_per_payment_items %}
-      <div>
-        <i class="glyphicon glyphicon-hand-right"></i>
-        {{ total_per_payment.0 }}: {{ total_per_payment.1 }}
-      </div>
-      {% endfor %}
-      </div>
+        <div class="col-md-6">
+          {% for total_per_payment in total_per_payment_items %}
+          <div>
+            <i class="glyphicon glyphicon-hand-right"></i>
+            {{ total_per_payment.0 }}: {{ total_per_payment.1 }}
+          </div>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
@@ -232,12 +232,12 @@
           {% else %}
           <!-- Same, no onclick -->
           <a class="btn btn-warning" title='{% trans "Remember to command this card. Add it to the list for later." %}' disabled>
-          {% endif %}
-          <i class="glyphicon glyphicon-shopping-cart"> </i>
-          <span> x
-            <span id="nb_to_command_{{ it.card.pk }}"> {{ it.card.quantity_to_command }}
+            {% endif %}
+            <i class="glyphicon glyphicon-shopping-cart"> </i>
+            <span> x
+              <span id="nb_to_command_{{ it.card.pk }}"> {{ it.card.quantity_to_command }}
+              </span>
             </span>
-          </span>
           </a>
       </span>
       <span title="{% trans 'En stock' %}"> {{ it.card.quantity }} </span>
@@ -246,14 +246,14 @@
     <td>
       {% if  new_sell %}
       <div title="{% trans "Cancel a sell" %}"
-           {% if user.is_staff %}
-           class="mouse-pointer glyphicon glyphicon-remove"
-           onclick="sellUndo({{ sell_id }})"
-           {% else %}
-           class="glyphicon glyphicon-remove"
-           disabled
-           {% endif %}
-           ></div>
+          {% if user.is_staff %}
+          class="mouse-pointer glyphicon glyphicon-remove"
+          onclick="sellUndo({{ sell_id }})"
+          {% else %}
+          class="glyphicon glyphicon-remove"
+          disabled
+          {% endif %}
+      ></div>
       {% endif %}
     </td>
   </tr>
@@ -276,14 +276,14 @@
         <h4>  </h4>
         <h5> {% trans "Books" %} </h5>
         <table class="table">
-        {% for it in best_sells.book %}
-        <tr>
-          <td>
-            <a href="{{it.0.get_absolute_url}}")> {{ it.0.title }} </a>
-          </td>
-          <td> {{ it.1 }} </td>
-        </tr>
-        {% endfor %}
+          {% for it in best_sells.book %}
+          <tr>
+            <td>
+              <a href="{{it.0.get_absolute_url}}")> {{ it.0.title }} </a>
+            </td>
+            <td> {{ it.1 }} </td>
+          </tr>
+          {% endfor %}
         </table>
 
         {% for other in best_sells.items %}
@@ -291,7 +291,7 @@
         {% if other.1 %}
         <h5> {{ other.0 }} </h5>
         <table class="table">
-        {% for it in other.1 %}
+          {% for it in other.1 %}
           <tr>
             <td>
               <a href="{{it.0.get_absolute_url}}")> {{ it.0.title }} </a>
