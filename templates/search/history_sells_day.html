@@ -172,7 +172,11 @@
 
   {% for it,bg_color,payment,new_sell,sell_id in data %}
   <tr style="background-color: {{ bg_color }}" id="sell{{ sell_id }}">
-    <td>{{ it.pk }}</td>
+    <td>
+      {% if new_sell %}
+      {{ sell_id }}
+      {% endif %}
+    </td>
     <td>{{ it.created | date:'H:i' }} </td>
     <td>&nbsp;<a href="{{ it.card.get_absolute_url }}">{{ it.card.title }}</a>
 
