@@ -64,6 +64,16 @@
       <h4> {{ sells_data.total_price_sold_fmt }} </h4>
 
       <div class="col-md-12" style="padding-left: 0; margin-left: 0">
+
+        <div class="col-md-6">
+          {% for total_per_payment in total_per_payment_items %}
+          <div>
+            <i class="glyphicon glyphicon-hand-right"></i>
+            {{ total_per_payment.0 }}: {{ total_per_payment.1 }}
+          </div>
+          {% endfor %}
+        </div>
+
         <div class="col-md-6">
           <div>
             <span class="badge badge-info"> {% trans "Books" %} </span>
@@ -82,14 +92,6 @@
           {% endfor %}
         </div>
 
-        <div class="col-md-6">
-          {% for total_per_payment in total_per_payment_items %}
-          <div>
-            <i class="glyphicon glyphicon-hand-right"></i>
-            {{ total_per_payment.0 }}: {{ total_per_payment.1 }}
-          </div>
-          {% endfor %}
-        </div>
       </div>
     </div>
   </div>
