@@ -34,7 +34,7 @@
         "gulp-uglify": "~0.2.1",
         "gulp-util": "~3.0",
         "http-server": "~0.6.1",
-        "jquery": "~1.9",
+        "jquery": "~3.5",
         "livescript": "latest",
         "lodash": "^4.17.4",
         "prelude-ls": "1.1.2",
