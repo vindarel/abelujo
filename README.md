@@ -1,6 +1,14 @@
 Abelujo - free software to manage independent book (and records) shops.
 =======================================================================
 
+-------------------
+
+**Please see https://gitlab.com/vindarel/abelujo/**
+
+This GitHub mirror is out of sync.
+
+--------------------
+
 français: [Lisez-moi](https://gitlab.com/vindarel/abelujo/blob/master/README_fr.md "README en français")
 
 This project is used daily by individuals, associations, tea and wine
